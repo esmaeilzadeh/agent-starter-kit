@@ -10,16 +10,15 @@ git config user.name t
 echo base > README.md
 git add README.md && git commit -q -m init
 # install kit scripts minimally
-mkdir -p scripts
-cp "$ROOT/scripts/check-clean-worktree.sh" "$ROOT/scripts/start-work.sh" scripts/
-chmod +x scripts/*.sh
-mkdir -p part-engineering/templates
+mkdir -p part-engineering/scripts part-engineering/templates
+cp "$ROOT/part-engineering/scripts/check-clean-worktree.sh" "$ROOT/part-engineering/scripts/start-work.sh" part-engineering/scripts/
+chmod +x part-engineering/scripts/*.sh
 cp "$ROOT/part-engineering/templates/"*.md "$ROOT/part-engineering/templates/"*.json part-engineering/templates/ 2>/dev/null || \
   cp "$ROOT/part-engineering/templates/"* part-engineering/templates/
 # dirty tree
 echo dirty > dirty.txt
 set +e
-./scripts/start-work.sh should-fail >/tmp/sw-out.txt 2>/tmp/sw-err.txt
+./part-engineering/scripts/start-work.sh should-fail >/tmp/sw-out.txt 2>/tmp/sw-err.txt
 code=$?
 set -e
 if [[ "$code" -eq 0 ]]; then

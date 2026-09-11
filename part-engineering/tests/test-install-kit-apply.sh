@@ -11,9 +11,9 @@ mkdir -p docs
 echo consumer > docs/README.md
 echo init > README.md
 git add . && git commit -q -m init
-SKIP_INSTALL=1 "$ROOT/scripts/install-kit.sh" --skip-prepare "$TMP"
+SKIP_INSTALL=1 "$ROOT/part-engineering/scripts/install-kit.sh" --skip-prepare "$TMP"
 test -d "$TMP/part-engineering"
-test -f "$TMP/scripts/check-clean-worktree.sh"
+test -f "$TMP/part-engineering/scripts/check-clean-worktree.sh"
 test -d "$TMP/.cursor"
 grep -q consumer "$TMP/docs/README.md"
 echo "PASS: install-kit apply leaves docs/ intact"

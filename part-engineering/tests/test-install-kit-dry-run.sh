@@ -11,7 +11,7 @@ mkdir -p docs
 echo consumer > docs/README.md
 echo init > README.md
 git add . && git commit -q -m init
-out="$("$ROOT/scripts/install-kit.sh" --dry-run "$TMP")"
+out="$("$ROOT/part-engineering/scripts/install-kit.sh" --dry-run "$TMP")"
 echo "$out" | grep -q 'docs/ excluded\|will not modify target docs'
 # ensure dry-run did not copy part-engineering yet
 if [[ -d "$TMP/part-engineering" ]]; then

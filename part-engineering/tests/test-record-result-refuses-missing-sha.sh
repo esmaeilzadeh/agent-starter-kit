@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 set +e
-"$ROOT/scripts/record-result.sh" --work-id demo --result pass >/dev/null 2>&1
+"$ROOT/part-engineering/scripts/record-result.sh" --work-id demo --result pass >/dev/null 2>&1
 code=$?
 set -e
 if [[ "$code" -eq 0 ]]; then
