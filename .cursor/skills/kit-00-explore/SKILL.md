@@ -68,3 +68,4 @@ STILL_FOGGY → continue Explore (or escalate to human)
 - Do **not** stuff R&D / destination discovery into `06 Implement`.
 - Non-empty `## Handoff to Intent` on the explore-map is required before `01 Grill`.
 - Run Skill Preparation for Explore-bound Community Skills before labor.
+- Never start Explore on a dirty worktree; if dirty, grill the human per `part-engineering/policies/worktree.md`.
