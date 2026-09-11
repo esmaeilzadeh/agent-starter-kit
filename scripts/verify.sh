@@ -17,9 +17,9 @@ if [[ -f .starter-kit/verify.conf ]]; then
 fi
 # Default discovery: kit tests + common project entrypoints if present
 if [[ ${#CHECKS[@]} -eq 0 ]]; then
-  if [[ -x tests/test-check-clean-worktree.sh ]]; then
-    CHECKS+=("tests/test-check-clean-worktree.sh")
-  fi
+  for t in tests/test-*.sh; do
+    [[ -x "$t" ]] && CHECKS+=("$t")
+  done
   if [[ -f package.json ]] && command -v npm >/dev/null 2>&1; then
     if grep -q '"test"' package.json; then CHECKS+=("npm test"); fi
   fi
