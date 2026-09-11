@@ -13,6 +13,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `part-engineering/tests/`
 - `part-engineering/docs/` (kit-author ADRs, demo, research)
 - Generated `.cursor/` projections (skills/commands/hooks wrappers produced by sync)
+- Root `pek` dispatcher
 - Monolith stubs (`ai-agent-engineering-guide.md`, `ai-agent-starter-kit-spec.md`)
 
 ## Consumer-owned (never clobber by default)

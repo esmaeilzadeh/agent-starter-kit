@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# pek — Part Engineering Kit. Thin dispatcher; logic lives under part-engineering/.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+SCRIPTS="$ROOT/part-engineering/scripts"
+SKILLS="$ROOT/part-engineering/skills"
+
+usage() {
+  cat <<'EOF'
+pek — Part Engineering Kit (not a generic scripts/ folder)
+
+Usage: ./pek <command> [args]
+
+Commands:
+  check-clean              refuse dirty worktree
+  start-work <work-id>     branch agent/<work-id> + seed work/<work-id>/
+  check-workstream <id>    preconditions before implement
+  verify                   run checks; print commit SHA
+  record-result …          provenance (requires --commit-sha)
+  sync                     regenerate .cursor projections
+  install <repo>           overlay kit package + adapter
+  upgrade --version <tag>  refresh kit-owned files
+  prepare                  prepare pinned Community Skills
+
+Unknown command names that match a file in part-engineering/scripts/<name>.sh are exec'd.
+EOF
+}
+
+cmd="${1:-}"
+if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
+  usage
+  exit 0
+fi
+shift
+
+case "$cmd" in
+  check-clean|check-clean-worktree)
+    exec "$SCRIPTS/check-clean-worktree.sh" "$@"
+    ;;
+  start-work|start)
+    exec "$SCRIPTS/start-work.sh" "$@"
+    ;;
+  check-workstream|check)
+    exec "$SCRIPTS/check-workstream.sh" "$@"
+    ;;
+  verify)
+    exec "$SCRIPTS/verify.sh" "$@"
+    ;;
+  record-result|record)
+    exec "$SCRIPTS/record-result.sh" "$@"
+    ;;
+  sync|sync-cursor-binding)
+    exec "$SCRIPTS/sync-cursor-binding.sh" "$@"
+    ;;
+  install|install-kit)
+    exec "$SCRIPTS/install-kit.sh" "$@"
+    ;;
+  upgrade|upgrade-kit)
+    exec "$SCRIPTS/upgrade-kit.sh" "$@"
+    ;;
+  prepare|prepare-skills)
+    exec "$SKILLS/prepare-skills.sh" "$@"
+    ;;
+  *)
+    if [[ -x "$SCRIPTS/${cmd}.sh" ]]; then
+      exec "$SCRIPTS/${cmd}.sh" "$@"
+    fi
+    echo "pek: unknown command '$cmd'" >&2
+    usage >&2
+    exit 2
+    ;;
+esac

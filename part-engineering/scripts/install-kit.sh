@@ -74,6 +74,7 @@ for rel in \
   .cursor \
   .gitignore \
   AGENTS.md \
+  pek \
   ai-agent-engineering-guide.md \
   ai-agent-starter-kit-spec.md
  do

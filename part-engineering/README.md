@@ -23,7 +23,7 @@ Root `AGENTS.md` is the short operational entrypoint. This tree holds the durabl
 
 ```text
 part-engineering/   # this kit package
-AGENTS.md .cursor/  # thin Cursor adapter
+pek AGENTS.md .cursor/  # thin adapter (pek = Part Engineering Kit CLI)
 specs/ work/        # product engineering state
 docs/ scripts/ …    # product-owned (kit never overlays these names)
 .agents/skills/     # prepared Community Skill bodies (gitignored)

@@ -14,10 +14,10 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 | 4 | Open **[CONTEXT.md](CONTEXT.md)** — domain vocabulary for this kit |
 
 ```bash
-./part-engineering/scripts/check-clean-worktree.sh
-./part-engineering/scripts/sync-cursor-binding.sh
+./pek check-clean
+./pek sync
 # optional (needs network / skills CLI):
-./part-engineering/skills/prepare-skills.sh
+./pek prepare
 ```
 
 ## How a product uses this kit
@@ -27,7 +27,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 | Layer | Paths |
 | --- | --- |
 | Kit package | `part-engineering/` (protocol, scripts, kit tests, kit-author docs) |
-| Adapter | `AGENTS.md`, `.cursor/` |
+| Adapter | `pek`, `AGENTS.md`, `.cursor/` |
 | Product state | `specs/`, `work/` (created by start-work) |
 | Product code/docs | everything else |
 
@@ -44,6 +44,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 ```text
 README.md                 ← human entry
 AGENTS.md                 ← agent entry
+pek                       ← Part Engineering Kit command (not scripts/)
 CONTEXT.md                ← glossary
 part-engineering/         ← entire kit (guide, spec, agents, policies,
                             templates, skills, scripts, tests, docs)
