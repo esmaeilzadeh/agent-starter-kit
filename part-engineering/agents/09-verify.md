@@ -1,0 +1,33 @@
+# Kit Protocol: 09 Verify
+
+Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
+
+Evidence via `scripts/verify.sh` and `part-engineering/templates/verification.json`.
+
+## 15.9 09 Verify Agent
+
+Purpose:
+
+```text
+Produce evidence appropriate to the changed system and risk class.
+```
+
+At minimum, discover and run the repository's existing checks as applicable:
+
+```text
+type checks
+lint
+unit tests
+integration/e2e tests
+build
+security checks
+configured project checks
+```
+
+Do not hard-code a universal Node/Nest command set.
+
+The verifier should inspect repository configuration and use project-specific commands.
+
+It must record the exact commit SHA.
+
+---

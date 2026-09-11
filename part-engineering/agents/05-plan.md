@@ -1,0 +1,28 @@
+# Kit Protocol: 05 Plan
+
+Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
+
+Output: `work/<work-id>/plan.md` (template `part-engineering/templates/plan.md`).
+
+## 15.5 05 Plan Agent
+
+Purpose:
+
+```text
+Derive the implementation plan from an accepted specification.
+```
+
+Must:
+
+```text
+reference exactly one accepted spec
+identify affected components
+identify dependencies
+identify verification steps
+identify escalation points
+identify possible spec-change triggers
+```
+
+Must not redefine the requirement.
+
+---
