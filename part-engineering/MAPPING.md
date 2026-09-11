@@ -33,3 +33,4 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Engineering-system evolution | [guide/README](guide/README.md) | review/verification outputs → rule/skill/check improvements |
 
 See also [spec/06-phases-and-acceptance.md](spec/06-phases-and-acceptance.md) §38.
+| Worktree / branch / commit discipline | [03-methods-governance](guide/03-methods-governance.md) | [`part-engineering/policies/worktree.md`](policies/worktree.md), [`scripts/check-clean-worktree.sh`](../scripts/check-clean-worktree.sh) |

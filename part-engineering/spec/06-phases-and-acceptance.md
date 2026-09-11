@@ -170,6 +170,7 @@ The implementation must preserve this mapping:
 | Skill provenance + preparation | `part-engineering/skills/manifest.yaml`, `prepare-skills.sh` |
 | Decision memory | `part-engineering/decisions/` |
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
+| Worktree / branch / commit discipline | `part-engineering/policies/worktree.md`, `scripts/check-clean-worktree.sh`, `scripts/start-work.sh` |
 | Git hygiene | `check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh` |
 | Cursor Binding sync | `scripts/sync-cursor-binding.sh`, `.cursor/` |
 | Install overlay | `scripts/install-kit.sh` |

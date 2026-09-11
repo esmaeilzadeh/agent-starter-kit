@@ -2,6 +2,28 @@
 
 # 23. Git guardrails
 
+
+## 23.0 Worktree, branch, and commit policy
+
+Canonical policy file:
+
+```text
+part-engineering/policies/worktree.md
+```
+
+Hard rules:
+
+```text
+never start labor on an unclean working tree
+if dirty: stop and grill the human on uncommitted/untracked paths
+do not stash/reset/absorb changes silently
+one plan / workstream → one dedicated branch (agent/<work-id>)
+commit after each meaningful step — do not wait until the plan finishes
+do not run multiple related branches in parallel when they modify shared files
+```
+
+`check-clean-worktree.sh` is the deterministic gate; agent grilling is required whenever it fails.
+
 ## 23.1 `check-clean-worktree.sh`
 
 Behavior:
