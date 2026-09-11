@@ -113,9 +113,14 @@ Create this structure:
 ```text
 .
 ├── AGENTS.md
-├── engineering/
+├── part-engineering/
 │   ├── README.md
+│   ├── guide/
+│   │   └── README.md
+│   ├── spec/
+│   │   └── README.md
 │   ├── agents/
+│   │   ├── 00-explore.md
 │   │   ├── 01-grill.md
 │   │   ├── 02-spec.md
 │   │   ├── 03-spec-challenge.md
@@ -133,8 +138,10 @@ Create this structure:
 │   ├── decisions/
 │   │   └── README.md
 │   ├── skills/
-│   │   └── manifest.yaml
+│   │   ├── manifest.yaml
+│   │   └── prepare-skills.sh
 │   └── templates/
+│       ├── explore-map.md
 │       ├── intent.md
 │       ├── spec.md
 │       ├── spec-challenge.md
@@ -152,9 +159,15 @@ Create this structure:
 ├── scripts/
 │   ├── check-clean-worktree.sh
 │   ├── start-work.sh
+│   ├── check-workstream.sh
 │   ├── verify.sh
 │   ├── record-result.sh
-│   └── check-workstream.sh
+│   ├── sync-cursor-binding.sh
+│   └── install-kit.sh
+├── .cursor/
+│   ├── hooks.json
+│   ├── hooks/
+│   └── rules/
 └── .gitignore
 ```
 
@@ -175,6 +188,12 @@ Capability
 Authority
 Accountability
 Skill
+Community Skill
+Kit Protocol File
+Skill Manifest
+Skill Preparation
+Explore Phase
+Engineering Pipeline
 Rule
 Policy
 Specification
@@ -187,6 +206,21 @@ Do not collapse them in documentation or implementation.
 Examples:
 
 ```text
+Community Skill:
+How to perform grilling or wayfinding (pinned from skills.sh / source repo).
+
+Kit Protocol File:
+part-engineering/agents/00-explore.md — the stage contract for Explore.
+
+Skill Preparation:
+Agent runs prepare-skills.sh / skills CLI to install pinned revisions.
+
+Explore Phase:
+Chart decisions until the destination is clear.
+
+Engineering Pipeline:
+01 Grill … 10 Accept after clarity.
+
 Skill:
 How to perform a code review.
 
@@ -213,6 +247,7 @@ Project/team remains responsible for the outcome.
 The exact logical agent names are:
 
 ```text
+00 Explore
 01 Grill
 02 Spec
 03 Spec Challenge
@@ -225,9 +260,44 @@ The exact logical agent names are:
 10 Accept
 ```
 
-These names should be preserved because the guide references them.
+Preserve `01`–`10` names for Guide ↔ kit mapping stability. `00 Explore` is the first-class on-ramp for foggy / R&D work; it does not renumber the Engineering Pipeline.
 
-The default flow is:
+## 5.1 Explore Phase (`00`)
+
+Use Explore when the destination is not yet clear enough to own What/Why as Intent:
+
+```text
+foggy idea / large feature / R&D question
+→ 00 Explore
+   → decision map (wayfinder-shaped)
+   → research tickets (facts)
+   → prototypes when needed
+→ destination clear
+→ enter Engineering Pipeline at Intent / 01 Grill
+```
+
+Explore **must**:
+
+```text
+keep decisions as durable artifacts (map + resolved tickets / ADRs as appropriate)
+distinguish decisions (human) from facts (research)
+bind Community Skills via the Skill Manifest + Skill Preparation
+hand off a clear destination into Grill / Spec — not silent chat residue
+```
+
+Explore **must not**:
+
+```text
+treat Implement as the place to discover the product destination
+vendor Community Skill bodies into the repo by default
+claim the destination is clear while material decisions remain open
+```
+
+Skip `00` when the human already has a destination sharp enough for Intent → Grill.
+
+## 5.2 Engineering Pipeline (`01`–`10`)
+
+The default pipeline after clarity:
 
 ```text
 Intent
@@ -242,7 +312,7 @@ Intent
 → Accept
 ```
 
-The following workflow can interrupt the main flow:
+The following workflow can interrupt the pipeline:
 
 ```text
 Any stage
@@ -254,11 +324,50 @@ Any stage
 → affected work resumes
 ```
 
+If fog returns at a scale that invalidates the destination itself, return to `00 Explore` rather than forcing Spec Change to do wayfinding.
+
 ---
 
 # 6. Artifact model
 
 Every material phase should have an artifact.
+
+## 6.0 Explore map
+
+**Canonical path (always, when Explore runs):**
+
+```text
+work/<work-id>/explore-map.md
+```
+
+This file is the source of truth for handoff into `01 Grill`, including in repos with no issue tracker.
+
+**Optional tracker mirror:** If the consumer has a configured issue tracker, Explore may also maintain a wayfinder-shaped tracker map for collaboration. The workstream file must include a pointer to that tracker map. The tracker must not replace the file as the Grill handoff artifact.
+
+**Child Explore tickets** (research / prototype / grilling): live on the tracker when mirroring; otherwise under `work/<work-id>/explore/`, always linked from the map file.
+
+Minimum fields:
+
+```markdown
+# Explore Map: <title>
+
+## Destination
+
+## Notes
+
+## Tracker map (optional)
+<!-- URL or id when mirroring -->
+
+## Decisions so far
+
+## Not yet specified
+
+## Out of scope
+
+## Handoff to Intent
+```
+
+**Gate:** `## Handoff to Intent` must be non-empty (clear destination + remaining human decisions) before `01 Grill`. Closing a tracker map alone is not sufficient. Grill must be able to produce `intent.md` from this file without re-deriving from chat.
 
 ## 6.1 Intent
 
@@ -662,6 +771,58 @@ Do not store full agent transcripts merely to satisfy provenance.
 
 # 15. Pre-built agent contracts
 
+## 15.0 00 Explore Agent
+
+Purpose:
+
+```text
+When the destination is foggy, chart decisions (and run research/prototypes)
+until What/Why can be owned — then hand off into Intent / 01 Grill.
+```
+
+Must:
+
+```text
+treat Explore as decision work, not implementation
+keep a durable map (explore-map artifact and/or tracker map)
+separate human decisions from research facts
+prepare Community Skills declared for Explore via Skill Preparation
+expand grilling questions before resolving Explore decisions (Grilling Expansion)
+stop and hand off when the destination is clear
+```
+
+Must not:
+
+```text
+silently start Implement to "figure it out"
+vendor skill bodies instead of pinned prepare
+pretend fog is cleared while material decisions remain open
+reimplement a full community wayfinder stack when a pinned skill suffices
+```
+
+Bind (via Skill Manifest), do not copy by default:
+
+```text
+wayfinder / research / prototype / grilling (and related)
+discovery: skills.sh as a starting index
+```
+
+Output:
+
+```text
+work/<work-id>/explore-map.md (and/or tracker map pointer)
+handoff notes sufficient for 01 Grill
+```
+
+Gate:
+
+```text
+DESTINATION_CLEAR → eligible for Intent / 01 Grill
+STILL_FOGGY → continue Explore (or escalate to human)
+```
+
+---
+
 ## 15.1 01 Grill Agent
 
 Purpose:
@@ -674,11 +835,13 @@ Must:
 
 ```text
 ask questions
+expand each decision question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
 expose assumptions
 distinguish What from Why
 identify non-goals
 identify unresolved decisions
 stop when human judgment is required
+never treat “all ok” as valid if the frontier was never expanded
 ```
 
 Must not:
@@ -687,6 +850,8 @@ Must not:
 invent business decisions
 jump into implementation prematurely
 pretend unresolved ambiguity is resolved
+auto-approve recommended answers without explicit human confirmation
+resolve on letter choices the human has not had expanded enough to refuse with understanding
 ```
 
 Output:
@@ -957,7 +1122,7 @@ Human approval remains mandatory where delegation policy requires it.
 File:
 
 ```text
-engineering/policies/delegation.md
+part-engineering/policies/delegation.md
 ```
 
 The policy must define five things for each relevant task category:
@@ -1018,7 +1183,7 @@ rewrite accepted specification to unblock implementation
 File:
 
 ```text
-engineering/policies/risk.md
+part-engineering/policies/risk.md
 ```
 
 Risk classification must consider:
@@ -1059,7 +1224,7 @@ Line count is not an adequate risk metric.
 File:
 
 ```text
-engineering/policies/verification.md
+part-engineering/policies/verification.md
 ```
 
 The policy should map classes of claims to appropriate evidence.
@@ -1129,7 +1294,7 @@ The root `AGENTS.md` should instruct agents to assemble task context in approxim
 
 ```text
 1. root repository instructions
-2. engineering/policies/delegation.md
+2. part-engineering/policies/delegation.md
 3. risk/verification policy as relevant
 4. task intent
 5. accepted specification
@@ -1150,46 +1315,78 @@ The objective is **relevant context with explicit provenance**.
 File:
 
 ```text
-engineering/skills/manifest.yaml
+part-engineering/skills/manifest.yaml
 ```
 
 Purpose:
 
 ```text
-explicitly declare the engineering methods the project relies on
+explicitly declare Community Skills the project relies on as versioned dependencies
+(like a package lockfile — source + pin + role — not vendored skill trees)
 ```
 
-Example:
+Discovery starting point:
+
+```text
+https://www.skills.sh/
+```
+
+### Schema (v1)
 
 ```yaml
 skills:
-  grilling:
-    source: external-or-local-reference
-    revision: pinned-revision
-    role: intent-clarification
-
-  specification:
-    source: openspec-or-project-reference
-    revision: pinned-revision
-    role: specification
-
-  review:
-    source: community-or-project-reference
-    revision: pinned-revision
-    role: code-review
+  wayfinder:
+    source: mattpocock/skills          # owner/repo or full git URL
+    revision: "v1.2.3"               # tag, branch, or 40-char SHA — required; never latest
+    skill: wayfinder                 # CLI --skill; required when source repo has many skills
+    role: explore-map                # kit semantics (explore-map, intent-clarification, …)
+    required: true                   # optional; prepare fails closed when true
 ```
 
-Do not require all external skills to be vendored.
+Pin maps to the skills CLI as `source#revision` (`#` is the revision fragment; do not use `@` for versions).
 
-Do require critical external skills to have a visible, reviewable revision reference.
+Dual lock:
+
+```text
+part-engineering/skills/manifest.yaml  → authoritative human-reviewed pins
+skills-lock.json (repo root)      → CLI install record; commit it
+.agents/skills/                   → prepared bodies; gitignore by default; regenerate via prepare
+```
+
+**Cloud:** project agents must run `prepare-skills.sh` before roles that need Community Skills (do not rely on global installs). Optional documented escape: `--vendor` / `--copy` with committed `.agents/skills/` for environments that cannot prepare at session start — not the default.
+
+### Skill Preparation
+
+Provide:
+
+```text
+part-engineering/skills/prepare-skills.sh
+```
+
+Behavior:
+
+```text
+1. read manifest.yaml
+2. fail if revision missing or equals latest
+3. for each entry: npx skills add "${source}#${revision}" --skill "${skill}" --agent cursor --yes
+4. verify .agents/skills/<skill>/SKILL.md exists
+5. print summary; exit non-zero on required failures
+```
+
+Agents must be instructed (via `AGENTS.md` / stage contracts) to run preparation before roles that need Community Skills.
+
+Do not vendor Community Skill bodies into the product repo by default.
 
 Avoid:
 
 ```text
 latest
+skills update
 ```
 
-for critical engineering methods.
+for critical engineering methods (bump pins deliberately in the manifest instead).
+
+Kit Protocol Files (`part-engineering/agents/*.md`, policies, templates, `part-engineering/guide/`, `part-engineering/spec/`) are **shipped by the kit**. Community Skills are **prepared from pins**.
 
 ---
 
@@ -1198,7 +1395,7 @@ for critical engineering methods.
 Path:
 
 ```text
-engineering/decisions/
+part-engineering/decisions/
 ```
 
 Use simple ADR-style documents.
@@ -1459,6 +1656,7 @@ For a task `cancel-order`:
 
 ```text
 work/cancel-order/
+├── explore-map.md       # only when Explore ran
 ├── intent.md
 ├── spec-challenge.md
 ├── spec-change.md      # only when needed
@@ -1489,6 +1687,27 @@ agent/cancel-order
 ---
 
 # 31. Minimal complete example
+
+## 31.1 Foggy / R&D first (Explore)
+
+For a large unclear effort `payments-v2`:
+
+```text
+Human
+  → foggy destination
+
+00 Explore
+  → work/payments-v2/explore-map.md
+  → research + grilling tickets
+  → DESTINATION_CLEAR handoff
+
+01 Grill
+  → work/payments-v2/intent.md
+
+… then continue as in 31.2
+```
+
+## 31.2 Clear intent (skip Explore)
 
 For `cancel-order`:
 
@@ -1549,6 +1768,8 @@ Instead:
   → affected implementation
   → verification
 ```
+
+If the problem is not a local semantic fix but the destination itself is wrong, return to `00 Explore`.
 
 ---
 
@@ -1620,19 +1841,24 @@ This demonstrates the separation between evidence and authority.
 
 # 34. Root `AGENTS.md` contract
 
-The root file should remain short and operational.
+The root file should remain short and operational (about ≤30 lines of checklist).
 
 It should instruct every agent that:
 
 ```text
 This repository uses the AI Engineering Starter Kit.
 
-Before independent work:
+If the destination is foggy:
+- run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
+- prepare Community Skills from part-engineering/skills/manifest.yaml (do not vendor by default).
+
+Before independent Engineering Pipeline work:
 - require a clean working tree;
 - use a dedicated branch;
 - identify work-id;
 - identify accepted specification;
-- read relevant policies.
+- read relevant policies;
+- prepare pinned skills needed for the role.
 
 During work:
 - stay within assigned scope;
@@ -1648,6 +1874,75 @@ Before claiming completion:
 ```
 
 Do not copy the entire guide into `AGENTS.md`.
+
+---
+
+# 34a. Thin Cursor Binding
+
+Cursor-only adapter layer. Protocol under `part-engineering/` remains source of truth.
+
+**Must ship so Cursor honors the kit:**
+
+```text
+AGENTS.md                              # ≤~30 lines; prepare; Explore name caveat
+.cursor/rules/*.mdc                    # bootstrap: point at protocol — do not duplicate policy text
+.cursor/hooks.json                     # beforeShellExecution → wrappers
+.cursor/hooks/*.sh                     # thin wrappers calling scripts/check-*.sh
+.cursor/skills/ or commands/           # generated projections of 00–10 (see sync)
+.agents/skills/                        # prepared Community Skills (gitignore bodies)
+```
+
+**sync-cursor-binding.sh** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `part-engineering/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT.
+
+**Rules:** rules *point*; protocol *owns* text. Logic for Git guardrails lives in `scripts/`; `.cursor/hooks` are mandatory entrypoints. Anything Cursor must honor must exist under `.cursor/` even if a portable source also lives under `part-engineering/` or `.agents/`.
+
+Do not treat protocol files alone as auto-loaded Cursor stages. Defer Cursor Plugins packaging for v1.
+
+---
+
+# 34b. Optional install-into-existing
+
+Provide:
+
+```text
+scripts/install-kit.sh <target-repo>
+```
+
+**Primary distribution** remains: clone/copy this template repo.
+
+**Overlay (default) copies:**
+
+```text
+part-engineering/     # protocol + guide/ + spec/ modules
+scripts/              # including prepare-skills + sync-cursor-binding
+.cursor/              # complete Cursor-honored projection
+AGENTS.md             # merge/append unless --force
+skills-lock.json      # if present
+```
+
+**Never touches by default:** consumer `docs/`, application `src/`, unrelated product specs.
+
+**Does not copy** `.agents/skills/` bodies; runs `prepare-skills.sh` + `sync-cursor-binding.sh` after overlay unless `--skip-prepare`.
+
+**Flags:** `--dry-run`, `--force` (overwrite kit-owned paths), `--skip-prepare`. Refuse if target is not a git repo. No interactive prompts on the agent path.
+
+---
+
+# 34c. Kit upgrade and consumer overrides
+
+Provide:
+
+```text
+scripts/upgrade-kit.sh --version <tag-or-sha>
+```
+
+The kit repository **dogfoods** its own `part-engineering/` and Cursor Binding.
+
+**Kit-owned** (safe to refresh on upgrade): stock stage contracts, templates, guide/spec modules, stock scripts, generated `.cursor` projections.
+
+**Consumer-owned** (never clobber by default): `part-engineering/skills/manifest.yaml`, policies (or local policy tree), local `AGENTS.md` sections, `.cursor/rules/local/`, `part-engineering/agents/*.local.md` (per-stage overlays merged at sync time).
+
+Upgrade pulls an **explicit kit version/tag** (not blind `main`), refreshes kit-owned files, then runs prepare + sync unless `--skip-prepare`. Community Skill updates remain separate deliberate manifest pin bumps.
 
 ---
 
@@ -1689,10 +1984,11 @@ Build:
 ```text
 layout
 AGENTS.md
-templates
+templates (including explore-map)
 policies
-agent instruction files
+agent instruction files (00 Explore + 01–10)
 spec lifecycle conventions
+skills manifest + prepare-skills instruction/script
 ```
 
 ## Phase 2 — Safety and traceability
@@ -1705,6 +2001,7 @@ start-work
 workstream check
 verification script
 result recording
+Skill Preparation wired for Cursor (skills CLI / documented commands)
 ```
 
 ## Phase 3 — Workflow quality
@@ -1725,17 +2022,22 @@ Only after the repository protocol works reliably:
 
 ```text
 CI integration
-external skill installer/update tooling
+richer skill-update tooling beyond prepare-skills
 experiment store
-model-specific adapters
+additional runtime adapters beyond Cursor-first
 richer dashboards
 ```
+
+**v1 destination for this kit effort:** Phases **1–2** including Explore protocol (not Phase 3 completeness).
 
 ---
 
 # 37. Acceptance criteria for the starter kit itself
 
-The kit is complete when a developer can copy it into an ordinary software repository and execute a small task through:
+The kit is complete when a developer can copy it into an ordinary software repository and:
+
+1. Run **Explore (`00`)** on a foggy idea until handoff is clear (or skip when already clear), preparing pinned Community Skills by instruction.
+2. Execute a small task through:
 
 ```text
 Intent
@@ -1755,10 +2057,11 @@ without relying on the previous chat conversation as canonical state.
 The resulting repository/process must be able to answer:
 
 ```text
+Was Explore required? What destination did it hand off?
 What were we trying to do?
 Why?
 Which spec was accepted?
-Which policy/skill references applied?
+Which policy/skill pins applied?
 Which branch did the work use?
 Which commit implemented it?
 What review findings existed?
@@ -1793,24 +2096,29 @@ The implementation must preserve this mapping:
 
 | Guide concept | Starter-kit implementation |
 |---|---|
+| Explore / wayfinding / R&D on-ramp | `part-engineering/agents/00-explore.md`, `explore-map` template, Explore skills in manifest |
 | What / Why | `work/<work-id>/intent.md` |
-| Intent Grilling | `01-grill.md` |
-| OpenSpec / Specification | `02-spec.md`, `specs/` |
-| Specification Challenge | `03-spec-challenge.md` |
-| Specification Change | `04-spec-change.md` |
-| Planning | `05-plan.md` |
-| Delegated implementation | `06-implement.md` |
-| Structured review | `07-review.md` |
-| Delegated refactor | `08-refactor.md` |
-| Verification | `09-verify.md`, `scripts/verify.sh` |
-| Acceptance | `10-accept.md`, `acceptance.md` |
-| Delegation policy | `engineering/policies/delegation.md` |
-| Risk policy | `engineering/policies/risk.md` |
-| Verification policy | `engineering/policies/verification.md` |
-| Skill provenance | `engineering/skills/manifest.yaml` |
-| Decision memory | `engineering/decisions/` |
+| Intent Grilling | `part-engineering/agents/01-grill.md` |
+| OpenSpec / Specification | `part-engineering/agents/02-spec.md`, `specs/` |
+| Specification Challenge | `part-engineering/agents/03-spec-challenge.md` |
+| Specification Change | `part-engineering/agents/04-spec-change.md` |
+| Planning | `part-engineering/agents/05-plan.md` |
+| Delegated implementation | `part-engineering/agents/06-implement.md` |
+| Structured review | `part-engineering/agents/07-review.md` |
+| Delegated refactor | `part-engineering/agents/08-refactor.md` |
+| Verification | `part-engineering/agents/09-verify.md`, `scripts/verify.sh` |
+| Acceptance | `part-engineering/agents/10-accept.md`, `acceptance.md` |
+| Guide (modular) | `part-engineering/guide/` |
+| Build Spec (modular) | `part-engineering/spec/` |
+| Delegation policy | `part-engineering/policies/delegation.md` |
+| Risk policy | `part-engineering/policies/risk.md` |
+| Verification policy | `part-engineering/policies/verification.md` |
+| Skill provenance + preparation | `part-engineering/skills/manifest.yaml`, `prepare-skills.sh` |
+| Decision memory | `part-engineering/decisions/` |
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
 | Git hygiene | `check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh` |
+| Cursor Binding sync | `scripts/sync-cursor-binding.sh`, `.cursor/` |
+| Install overlay | `scripts/install-kit.sh` |
 | Result provenance | `record-result.sh`, result schema |
 | Escalation | policy + workflow gates |
 | Acceptance debt | evidence/acceptance state records |
@@ -1830,6 +2138,7 @@ The core implementation strategy is:
 
 ```text
 Human intent
+→ [Explore when foggy → clear destination]
 → explicit artifacts
 → bounded agent labor
 → structured handoffs
