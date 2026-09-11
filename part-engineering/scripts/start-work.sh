@@ -2,7 +2,7 @@
 # Create a dedicated work branch and workstream skeleton for <work-id>.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 if [[ $# -lt 1 || -z "${1:-}" ]]; then
@@ -12,7 +12,7 @@ fi
 WORK_ID="$1"
 BRANCH="agent/${WORK_ID}"
 
-"$ROOT/scripts/check-clean-worktree.sh"
+"$ROOT/part-engineering/scripts/check-clean-worktree.sh"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "start-work: not a git repository" >&2

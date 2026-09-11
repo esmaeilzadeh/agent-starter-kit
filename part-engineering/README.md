@@ -13,17 +13,20 @@ Root `AGENTS.md` is the short operational entrypoint. This tree holds the durabl
 | `agents/` | Stage contracts: `00-explore.md` … `10-accept.md` |
 | `policies/` | Delegation, risk, verification, and worktree/branch/commit policy |
 | `skills/` | Skill Manifest (`manifest.yaml`) + `prepare-skills.sh` |
+| `scripts/` | Kit guardrails (clean tree, start-work, verify, install, upgrade) |
+| `tests/` | Tests of the kit, not of the product |
+| `docs/` | Kit-author ADRs, demo, research |
 | `templates/` | Workstream templates (explore-map, intent, spec, plan, …) |
 | `decisions/` | Optional kit-level decision records |
 
-## Sibling roots (repo layout)
+## Sibling roots (the product)
 
 ```text
-part-engineering/   # this protocol tree
-specs/              # product / workstream specifications
-work/               # per-work-id artifacts
-scripts/            # deterministic guardrails (clean tree, start-work, verify, …)
-.agents/skills/     # prepared Community Skill bodies (gitignored; regenerate via prepare)
+part-engineering/   # this kit package
+AGENTS.md .cursor/  # thin Cursor adapter
+specs/ work/        # product engineering state
+docs/ scripts/ …    # product-owned (kit never overlays these names)
+.agents/skills/     # prepared Community Skill bodies (gitignored)
 ```
 
 ## Skills
@@ -35,7 +38,7 @@ Community Skills are pinned in `skills/manifest.yaml` and prepared into `.agents
 1. Read root `AGENTS.md`
 2. If foggy → `agents/00-explore.md` + `templates/explore-map.md`
 3. Else → pipeline from `agents/01-grill.md` onward with relevant `policies/`
-4. Facilitator demo (start→accept): [`docs/demo/end-to-end-plan.md`](../docs/demo/end-to-end-plan.md)
+4. Facilitator demo (start→accept): [`docs/demo/end-to-end-plan.md`](docs/demo/end-to-end-plan.md)
 
 ## Guide ↔ Spec map
 

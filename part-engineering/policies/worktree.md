@@ -6,7 +6,7 @@ Agents **must not** begin Explore, Grill, Plan, Implement, Review, Refactor, Ver
 
 Before any of that work:
 
-1. Run `scripts/check-clean-worktree.sh` (or equivalent `git status --porcelain` check).
+1. Run `part-engineering/scripts/check-clean-worktree.sh` (or equivalent `git status --porcelain` check).
 2. If the tree is dirty, **stop**. Do not stash, reset, or absorb changes silently.
 3. **Grill the human** on what to do with every uncommitted and untracked path. Present the file list and ask them to choose per item or batch, for example:
    - commit now (with an agreed message)
@@ -18,7 +18,7 @@ Before any of that work:
 
 ## One plan → one branch
 
-Every plan / workstream starts on its **own dedicated branch** (default: `agent/<work-id>` via `scripts/start-work.sh`). Do not implement a plan on `main`/`master` or on another workstream’s branch.
+Every plan / workstream starts on its **own dedicated branch** (default: `agent/<work-id>` via `part-engineering/scripts/start-work.sh`). Do not implement a plan on `main`/`master` or on another workstream’s branch.
 
 ## Commit at each meaningful step
 

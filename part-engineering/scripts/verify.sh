@@ -2,7 +2,7 @@
 # Discover and run configured checks; print commit SHA; emit JSON summary.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
@@ -17,8 +17,8 @@ if [[ -f .starter-kit/verify.conf ]]; then
 fi
 # Default discovery: kit tests + common project entrypoints if present
 if [[ ${#CHECKS[@]} -eq 0 ]]; then
-  for t in tests/test-*.sh; do
-    [[ -x "$t" ]] && CHECKS+=("$t")
+  for t in part-engineering/tests/test-*.sh tests/test-*.sh; do
+    [[ -e "$t" && -x "$t" ]] && CHECKS+=("$t")
   done
   if [[ -f package.json ]] && command -v npm >/dev/null 2>&1; then
     if grep -q '"test"' package.json; then CHECKS+=("npm test"); fi

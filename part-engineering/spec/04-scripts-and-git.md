@@ -77,7 +77,7 @@ This can be called by agent instructions before implementation/review/refactor.
 Provide:
 
 ```text
-scripts/verify.sh
+part-engineering/scripts/verify.sh
 ```
 
 It should:
@@ -102,7 +102,7 @@ Provide extension/configuration points for the consuming repository.
 Provide:
 
 ```text
-scripts/record-result.sh <result-file>
+part-engineering/scripts/record-result.sh <result-file>
 ```
 
 It should validate or inject:

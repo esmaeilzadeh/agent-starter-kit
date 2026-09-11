@@ -2,7 +2,7 @@
 # Overlay kit into an existing git repo. Never touches consumer docs/ by default.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TARGET=""
 DRY_RUN=0
 FORCE=0
@@ -48,7 +48,13 @@ copy_path() {
   if [[ -d "$src" ]]; then
     mkdir -p "$dest"
     # copy contents; skip consumer-owned manifest if exists unless --force
-    if [[ "$rel" == "part-engineering/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
+    if [[ "$rel" == "part-engineering" ]]; then
+      excl=(--exclude tests/)
+      if [[ -f "$dest/skills/manifest.yaml" && "$FORCE" -eq 0 ]]; then
+        excl+=(--exclude skills/manifest.yaml)
+      fi
+      rsync -a "${excl[@]}" "$src/" "$dest/"
+    elif [[ "$rel" == "part-engineering/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
       rsync -a --exclude manifest.yaml "$src/" "$dest/"
     else
       rsync -a "$src/" "$dest/"
@@ -65,15 +71,14 @@ copy_path() {
 # Paths to overlay
 for rel in \
   part-engineering \
-  scripts \
   .cursor \
   .gitignore \
   AGENTS.md \
   ai-agent-engineering-guide.md \
   ai-agent-starter-kit-spec.md
  do
-  # explicit: never copy docs/
-  [[ "$rel" == docs || "$rel" == docs/* ]] && continue
+  # never overlay product-generic names
+  [[ "$rel" == docs || "$rel" == scripts || "$rel" == tests ]] && continue
   copy_path "$rel"
 done
 
@@ -85,7 +90,7 @@ if [[ "$DRY_RUN" -eq 0 ]]; then
 fi
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
-  echo "install-kit: dry-run complete (docs/ excluded)"
+  echo "install-kit: dry-run complete (product docs/scripts/tests not overlaid)"
   exit 0
 fi
 
@@ -93,8 +98,8 @@ if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   if [[ -x "$TARGET/part-engineering/skills/prepare-skills.sh" ]]; then
     (cd "$TARGET" && SKIP_INSTALL="${SKIP_INSTALL:-0}" ./part-engineering/skills/prepare-skills.sh) || true
   fi
-  if [[ -x "$TARGET/scripts/sync-cursor-binding.sh" ]]; then
-    (cd "$TARGET" && ./scripts/sync-cursor-binding.sh)
+  if [[ -x "$TARGET/part-engineering/scripts/sync-cursor-binding.sh" ]]; then
+    (cd "$TARGET" && ./part-engineering/scripts/sync-cursor-binding.sh)
   fi
 fi
 

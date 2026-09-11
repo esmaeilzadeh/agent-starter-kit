@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Automated negative/positive paths for check-clean-worktree.sh
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SCRIPT="$ROOT/scripts/check-clean-worktree.sh"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+SCRIPT="$ROOT/part-engineering/scripts/check-clean-worktree.sh"
 TMP="$(mktemp -d)"
 cleanup() { rm -rf "$TMP"; }
 trap cleanup EXIT

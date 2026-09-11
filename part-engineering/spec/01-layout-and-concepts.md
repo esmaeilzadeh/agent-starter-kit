@@ -132,6 +132,17 @@ Create this structure:
 │   ├── skills/
 │   │   ├── manifest.yaml
 │   │   └── prepare-skills.sh
+│   ├── scripts/
+│   │   ├── check-clean-worktree.sh
+│   │   ├── start-work.sh
+│   │   ├── check-workstream.sh
+│   │   ├── verify.sh
+│   │   ├── record-result.sh
+│   │   ├── sync-cursor-binding.sh
+│   │   ├── install-kit.sh
+│   │   └── upgrade-kit.sh
+│   ├── tests/
+│   ├── docs/
 │   └── templates/
 │       ├── explore-map.md
 │       ├── intent.md
@@ -148,14 +159,6 @@ Create this structure:
 │   └── proposals/
 ├── work/
 │   └── README.md
-├── scripts/
-│   ├── check-clean-worktree.sh
-│   ├── start-work.sh
-│   ├── check-workstream.sh
-│   ├── verify.sh
-│   ├── record-result.sh
-│   ├── sync-cursor-binding.sh
-│   └── install-kit.sh
 ├── .cursor/
 │   ├── hooks.json
 │   ├── hooks/
@@ -164,6 +167,17 @@ Create this structure:
 ```
 
 Do not create directories for hypothetical functionality beyond this baseline.
+
+**Three layers (no generic-name collision):**
+
+```text
+part-engineering/     kit package (including kit scripts, kit tests, kit-author docs)
+AGENTS.md + .cursor/  thin Cursor adapter
+specs/ + work/        product engineering state (convention; created by start-work)
+all other root names  product (docs/, scripts/, tests/, src/, …)
+```
+
+`install-kit` / `upgrade-kit` overlay the kit package and adapter only. They never write product `docs/`, `scripts/`, `tests/`, or `src/`.
 
 The layout is intentionally repository-oriented rather than platform-oriented.
 

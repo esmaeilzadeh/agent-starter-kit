@@ -9,7 +9,9 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `part-engineering/agents/*.md` **except** `*.local.md`
 - `part-engineering/templates/`
 - Stock `part-engineering/policies/*.md` when the consumer has not replaced the policy tree
-- Stock `scripts/*.sh`
+- `part-engineering/scripts/*.sh`
+- `part-engineering/tests/`
+- `part-engineering/docs/` (kit-author ADRs, demo, research)
 - Generated `.cursor/` projections (skills/commands/hooks wrappers produced by sync)
 - Monolith stubs (`ai-agent-engineering-guide.md`, `ai-agent-starter-kit-spec.md`)
 
@@ -20,11 +22,13 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - Local sections of root `AGENTS.md`
 - `.cursor/rules/local/`
 - `part-engineering/agents/*.local.md` (per-stage overlays merged at sync time)
-- Product `docs/`, `src/`, and unrelated application specs
+- Product `docs/`, `scripts/`, `tests/`, `src/`
+- Product `specs/`, `work/` (engineering state)
 - Prepared `.agents/skills/` bodies (regenerated; gitignored)
 
 ## Related
 
+- ADR-0011 kit namespaced / no collision
 - ADR-0009 kit upgrade and overrides
-- `scripts/upgrade-kit.sh` (ticket 28)
-- `scripts/sync-cursor-binding.sh` merges `*.local.md` (ticket 29)
+- `part-engineering/scripts/upgrade-kit.sh`
+- `part-engineering/scripts/sync-cursor-binding.sh` merges `*.local.md`

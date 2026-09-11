@@ -2,7 +2,7 @@
 # Generate Cursor-honored projections from part-engineering/agents/*.md
 # Merges optional part-engineering/agents/<stage>.local.md overlays.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 OUT_SKILLS=".cursor/skills"
 OUT_CMDS=".cursor/commands"

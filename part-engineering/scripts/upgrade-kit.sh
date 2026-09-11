@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Refresh kit-owned files from an explicit kit version tag/sha.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 VERSION=""
 SKIP_PREPARE=0
 SOURCE_REPO="${KIT_SOURCE_REPO:-https://github.com/esmaeilzadeh/agent-starter-kit.git}"
@@ -36,7 +36,7 @@ for p in "${preserve[@]}"; do
 done
 
 # Refresh kit-owned trees
-for rel in part-engineering/guide part-engineering/spec part-engineering/agents part-engineering/templates scripts .cursor \
+for rel in part-engineering/guide part-engineering/spec part-engineering/agents part-engineering/templates part-engineering/scripts part-engineering/tests part-engineering/docs .cursor \
            ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md part-engineering/OWNED-PATHS.md part-engineering/MAPPING.md part-engineering/README.md; do
   if [[ -e "$TMP/kit/$rel" ]]; then
     mkdir -p "$ROOT/$(dirname "$rel")"
@@ -60,6 +60,6 @@ done < <(find "$ROOT/part-engineering/agents" -name '*.local.md' -print0 2>/dev/
 
 if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/part-engineering/skills/prepare-skills.sh" || true
-  "$ROOT/scripts/sync-cursor-binding.sh"
+  "$ROOT/part-engineering/scripts/sync-cursor-binding.sh"
 fi
 echo "upgrade-kit: refreshed kit-owned paths from $VERSION"
