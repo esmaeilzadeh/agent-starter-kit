@@ -14,7 +14,7 @@ Before any of that work:
    - discard (explicit human request only)
    - move to another branch / workstream
    - leave for a different work-id (then switch away without touching those files)
-4. Resume only after `check-clean-worktree` exits 0.
+4. Resume only after `./pek check-clean` exits 0.
 
 ## One plan → one branch
 

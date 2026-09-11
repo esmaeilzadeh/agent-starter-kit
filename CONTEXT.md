@@ -5,7 +5,7 @@ Portable repository protocol for delegating engineering labor to AI agents while
 ## Language
 
 **Starter Kit**:
-The portable repository protocol (agent instructions, policies, templates, scripts, modular docs/specs) that a developer copies into a software repo. It is not a multi-agent runtime product. The entire kit package lives under the branded root `part-engineering/` (including kit scripts, kit tests, and kit-author docs). Root adapter is `AGENTS.md` + `.cursor/` only.
+The portable repository protocol (agent instructions, policies, templates, scripts, modular docs/specs) that a developer copies into a software repo. It is not a multi-agent runtime product. The entire kit package lives under the branded root `part-engineering/` (including kit scripts, kit tests, and kit-author docs). Root adapter is `pek` + `AGENTS.md` + `.cursor/`. `pek` is the Part Engineering Kit dispatcher — the only root command; it is not a generic `scripts/` folder.
 _Avoid_: agent platform, orchestration framework, agent OS, generic `engineering/` as the kit root
 
 **Guide**:
@@ -49,7 +49,7 @@ The explicit engineering contract for a Workstream, with a lifecycle status (`PR
 _Avoid_: plan, acceptance criteria alone (those are parts of it)
 
 **Cursor Binding**:
-How the Starter Kit is expressed inside Cursor. Includes short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via sync — so Cursor can honor stages without hand-maintained subagent SoT. Portable protocol remains under `part-engineering/`; anything Cursor must honor also exists under `.cursor/`.
+How the Starter Kit is expressed inside Cursor. Includes root `pek`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./pek sync` — so Cursor can honor stages without hand-maintained subagent SoT. Portable protocol remains under `part-engineering/`; anything Cursor must honor also exists under `.cursor/`.
 _Avoid_: Cursor plugin (unless we later decide that is the distribution form), protocol-only “hope the model opens the file”, hand-maintained eleven Cursor agents as source of truth
 
 **Skill Manifest**:
@@ -69,7 +69,7 @@ Portable kit-owned instruction or policy that defines this Starter Kit’s workf
 _Avoid_: calling protocol files “skills” when they are kit contracts
 
 **Kit-owned path**:
-Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, guide/spec modules, stock scripts, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
+Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, guide/spec modules, stock scripts, root `pek`, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
 _Avoid_: editing stock `part-engineering/agents/0*.md` in place for local policy
 
 **Consumer-owned path**:
@@ -77,5 +77,5 @@ Files upgrade must not overwrite by default: skill manifest, policies (or local 
 _Avoid_: “customize by forking the whole tree”
 
 **Kit upgrade**:
-Deliberate bump to a kit version/tag via `upgrade-kit.sh`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.
+Deliberate bump to a kit version/tag via `./pek upgrade --version <tag>`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.
 _Avoid_: blind pull of kit `main`, `skills update` as kit upgrade

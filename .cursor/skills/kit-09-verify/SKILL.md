@@ -9,7 +9,7 @@ description: Kit protocol stage 09-verify. Generated from part-engineering/agent
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Evidence via `part-engineering/scripts/verify.sh` and `part-engineering/templates/verification.json`.
+Evidence via `./pek verify` and `part-engineering/templates/verification.json`.
 
 ## 15.9 09 Verify Agent
 

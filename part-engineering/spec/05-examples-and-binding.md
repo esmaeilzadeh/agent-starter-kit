@@ -167,12 +167,13 @@ If the destination is foggy:
 - prepare Community Skills from part-engineering/skills/manifest.yaml (do not vendor by default).
 
 Before independent Engineering Pipeline work:
-- require a clean working tree;
-- use a dedicated branch;
+- invoke kit operations via `./pek` (not a generic root scripts/ folder);
+- require a clean working tree (`./pek check-clean`);
+- use a dedicated branch (`./pek start-work`);
 - identify work-id;
 - identify accepted specification;
 - read relevant policies;
-- prepare pinned skills needed for the role.
+- prepare pinned skills needed for the role (`./pek prepare`).
 
 During work:
 - stay within assigned scope;
@@ -182,8 +183,8 @@ During work:
 - commit meaningful states.
 
 Before claiming completion:
-- run configured verification;
-- record exact commit SHA;
+- run configured verification (`./pek verify`);
+- record exact commit SHA (`./pek record-result`);
 - leave required structured artifacts.
 ```
 
@@ -198,15 +199,16 @@ Cursor-only adapter layer. Protocol under `part-engineering/` remains source of 
 **Must ship so Cursor honors the kit:**
 
 ```text
+pek                                    # Part Engineering Kit dispatcher (only root command)
 AGENTS.md                              # ≤~30 lines; prepare; Explore name caveat
 .cursor/rules/*.mdc                    # bootstrap: point at protocol — do not duplicate policy text
 .cursor/hooks.json                     # beforeShellExecution → wrappers
 .cursor/hooks/*.sh                     # thin wrappers calling part-engineering/scripts/check-*.sh
-.cursor/skills/ or commands/           # generated projections of 00–10 (see sync)
+.cursor/skills/ or commands/           # generated projections of 00–10 (see ./pek sync)
 .agents/skills/                        # prepared Community Skills (gitignore bodies)
 ```
 
-**sync-cursor-binding.sh** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `part-engineering/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT.
+**`./pek sync`** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `part-engineering/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT.
 
 **Rules:** rules *point*; protocol *owns* text. Logic for Git guardrails lives in `part-engineering/scripts/`; `.cursor/hooks` are mandatory entrypoints. Anything Cursor must honor must exist under `.cursor/` even if a portable source also lives under `part-engineering/` or `.agents/`.
 
@@ -236,7 +238,7 @@ skills-lock.json      # if present
 
 **Never touches by default:** consumer `docs/`, `scripts/`, `tests/`, application `src/`, unrelated product specs.
 
-**Does not copy** `.agents/skills/` bodies; runs `prepare-skills.sh` + `sync-cursor-binding.sh` after overlay unless `--skip-prepare`.
+**Does not copy** `.agents/skills/` bodies; runs `./pek prepare` + `./pek sync` after overlay unless `--skip-prepare`.
 
 **Flags:** `--dry-run`, `--force` (overwrite kit-owned paths), `--skip-prepare`. Refuse if target is not a git repo. No interactive prompts on the agent path.
 
@@ -252,7 +254,7 @@ Provide:
 
 The kit repository **dogfoods** its own `part-engineering/` and Cursor Binding.
 
-**Kit-owned** (safe to refresh on upgrade): stock stage contracts, templates, guide/spec modules, stock scripts, generated `.cursor` projections.
+**Kit-owned** (safe to refresh on upgrade): stock stage contracts, templates, guide/spec modules, stock scripts, root `pek`, generated `.cursor` projections.
 
 **Consumer-owned** (never clobber by default): `part-engineering/skills/manifest.yaml`, policies (or local policy tree), local `AGENTS.md` sections, `.cursor/rules/local/`, `part-engineering/agents/*.local.md` (per-stage overlays merged at sync time).
 

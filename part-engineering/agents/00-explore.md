@@ -2,7 +2,7 @@
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Canonical artifact: `work/<work-id>/explore-map.md` (from `part-engineering/templates/explore-map.md`). Prepare Explore skills via `part-engineering/skills/prepare-skills.sh`.
+Canonical artifact: `work/<work-id>/explore-map.md` (from `part-engineering/templates/explore-map.md`). Prepare Explore skills via `./pek prepare`.
 
 ## 15.0 00 Explore Agent
 

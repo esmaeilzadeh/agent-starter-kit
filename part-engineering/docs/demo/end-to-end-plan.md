@@ -18,7 +18,7 @@ This plan is the **script for the demo**. Execute it in Cursor against this repo
 | Agent codes on a dirty tree / random branch | Clean-tree gate + `agent/<work-id>` branch |
 | “Looks good” is the verification story | `./pek verify` + commit SHA provenance |
 | Spec silently mutates mid-flight | Spec Change interrupt or return to Explore |
-| Skills copied into the repo by hand | Pinned `manifest.yaml` + `prepare-skills.sh` |
+| Skills copied into the repo by hand | Pinned `manifest.yaml` + `./pek prepare` |
 
 After the demo you can answer: *What were we building? Which spec? Which branch? Which commit passed verify? Who accepted?*
 
@@ -104,7 +104,7 @@ Write `work/demo-kit-status/plan.md`:
 
 1. Add failing test `tests/test-kit-status.sh` (missing script → fail, or temp dir without kit → non-zero)
 2. Implement `scripts/kit-status.sh`
-3. Wire discovery so `part-engineering/scripts/verify.sh` picks up the new test
+3. Wire discovery so `./pek verify` picks up the new test
 4. Run verify; record result
 
 **Commit:** `Plan demo-kit-status implementation`.
@@ -210,7 +210,7 @@ Then continue from **A1 Grill** through **A9 Accept**.
 
 ## Demo checklist (facilitator)
 
-- [ ] Clean tree gate shown failing once (create a junk file → `check-clean-worktree` / `start-work` refuse → delete junk)
+- [ ] Clean tree gate shown failing once (create a junk file → `./pek check-clean` / `./pek start-work` refuse → delete junk)
 - [ ] Dedicated branch `agent/demo-kit-status` visible
 - [ ] Intent → Spec → Challenge → Plan artifacts on disk
 - [ ] At least two implementation commits (red then green), not one mega-commit
@@ -224,7 +224,7 @@ Then continue from **A1 Grill** through **A9 Accept**.
 
 - Phase 3 workflow-quality machinery
 - CI wiring
-- `install-kit.sh` into a second toy repo (nice encore if time: dry-run then apply on a temp git repo)
+- `./pek install` into a second toy repo (nice encore if time: dry-run then apply on a temp git repo)
 - Real payment/domain product features
 
 ---

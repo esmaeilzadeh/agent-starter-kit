@@ -35,7 +35,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 
 - **Explore (`00`)** when the destination is foggy — durable `work/<work-id>/explore-map.md`
 - **Engineering Pipeline (`01`–`10`)** — Grill → Spec → Challenge → Plan → Implement → Review → Refactor → Verify → Accept
-- **Pinned Community Skills** via `part-engineering/skills/manifest.yaml` + `prepare-skills.sh` ([skills.sh](https://www.skills.sh/))
+- **Pinned Community Skills** via `part-engineering/skills/manifest.yaml` + `./pek prepare` ([skills.sh](https://www.skills.sh/))
 - **Thin Cursor Binding** — rules *point* at protocol; generated projections under `.cursor/`
 - **Git guardrails** — `part-engineering/policies/worktree.md`
 

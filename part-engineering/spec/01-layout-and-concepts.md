@@ -126,7 +126,8 @@ Create this structure:
 │   ├── policies/
 │   │   ├── delegation.md
 │   │   ├── risk.md
-│   │   └── verification.md
+│   │   ├── verification.md
+│   │   └── worktree.md
 │   ├── decisions/
 │   │   └── README.md
 │   ├── skills/
@@ -220,7 +221,7 @@ Kit Protocol File:
 part-engineering/agents/00-explore.md — the stage contract for Explore.
 
 Skill Preparation:
-Agent runs prepare-skills.sh / skills CLI to install pinned revisions.
+Agent runs `./pek prepare` (skills CLI) to install pinned revisions.
 
 Explore Phase:
 Chart decisions until the destination is clear.
