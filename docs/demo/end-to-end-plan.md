@@ -4,6 +4,8 @@
 **Duration:** ~45–90 minutes for the happy path (Path A). Path B adds ~20 minutes for Explore.  
 **Demo feature:** `kit-status` — a tiny script that prints whether this repo’s kit layout is healthy. Small enough to finish in one sitting; real enough to exercise every stage artifact.
 
+Repo overview and doc index: root **[README.md](../../README.md)**.
+
 This plan is the **script for the demo**. Execute it in Cursor against this repository (or a clone). Protocol truth stays under `part-engineering/`; do not improvise stages from chat memory alone.
 
 ---
