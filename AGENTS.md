@@ -11,7 +11,7 @@ Before Engineering Pipeline work:
 - clean working tree
 - dedicated branch
 - identify `work-id` and accepted specification
-- read relevant policies under `part-engineering/policies/`
+- read relevant policies under `part-engineering/policies/` (`delegation.md`, `risk.md`, `verification.md`)
 - prepare pinned Community Skills via `part-engineering/skills/prepare-skills.sh` (do not vendor skill trees)
 
 During work: stay in assigned scope; do not silently change What/Why or acceptance criteria; escalate per policy; preserve workstream isolation; commit meaningful states.
