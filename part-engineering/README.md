@@ -1,24 +1,37 @@
 # part-engineering
 
-Portable AI Engineering Starter Kit protocol root (branded; not a generic `engineering/` folder).
+Portable protocol root for the AI Engineering Starter Kit. Branded on purpose — not a generic `engineering/` docs folder — so the kit stays recognizable inside consuming repos.
 
-## Layout (skeleton)
+Root `AGENTS.md` is the short operational entrypoint. This tree holds the durable contracts.
+
+## What’s here
+
+| Path | Role |
+| --- | --- |
+| `guide/` | Modular Guide (Division of Engineering Labor concepts) |
+| `spec/` | Modular Build Spec (implementation contract; name-stable with Guide) |
+| `agents/` | Stage contracts: `00-explore.md` … `10-accept.md` |
+| `policies/` | Delegation, risk, and verification policy |
+| `skills/` | Skill Manifest (`manifest.yaml`) + `prepare-skills.sh` |
+| `templates/` | Workstream templates (explore-map, intent, spec, plan, …) |
+| `decisions/` | Optional kit-level decision records |
+
+## Sibling roots (repo layout)
 
 ```text
-part-engineering/
-├── guide/          # modular Guide (kit-owned)
-├── spec/           # modular Build Spec (kit-owned)
-├── agents/         # stage contracts 00 Explore … 10 Accept
-├── policies/       # delegation, risk, verification
-├── decisions/      # kit-level decision records (optional)
-├── skills/         # Skill Manifest + prepare-skills.sh
-└── templates/      # explore-map, intent, spec, plan, …
-
-Also at repo root (siblings of this tree):
-├── specs/          # product/workstream specifications
-├── work/           # workstream artifacts (explore-map, intent, …)
-├── scripts/        # kit guardrail / install / sync scripts
-└── .agents/skills/ # prepared Community Skill bodies (gitignored)
+part-engineering/   # this protocol tree
+specs/              # product / workstream specifications
+work/               # per-work-id artifacts
+scripts/            # deterministic guardrails (clean tree, start-work, verify, …)
+.agents/skills/     # prepared Community Skill bodies (gitignored; regenerate via prepare)
 ```
 
-Prepared Community Skills are installed under `.agents/skills/` and are **not** vendored into git — regenerate via `part-engineering/skills/prepare-skills.sh` once that script exists.
+## Skills
+
+Community Skills are pinned in `skills/manifest.yaml` and prepared into `.agents/skills/` — not copied into the kit as a vendored tree. See the Build Spec skill-manifest section once `spec/` modules are split.
+
+## Start here
+
+1. Read root `AGENTS.md`
+2. If foggy → `agents/00-explore.md` + `templates/explore-map.md`
+3. Else → pipeline from `agents/01-grill.md` onward with relevant `policies/`
