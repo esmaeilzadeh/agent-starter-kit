@@ -1,0 +1,12 @@
+---
+description: Starter Kit bootstrap — assemble context from protocol, not chat
+alwaysApply: true
+---
+
+This repo uses the AI Engineering Starter Kit. Protocol source of truth is `part-engineering/`, not this rule text.
+
+Before labor: read root `AGENTS.md`, then relevant `part-engineering/policies/` and stage contracts under `part-engineering/agents/`. Prepare pinned skills via `part-engineering/skills/prepare-skills.sh` when the role needs Community Skills.
+
+**Worktree (hard):** never start on an unclean tree. If dirty, grill the human about uncommitted/untracked files — do not stash/reset silently. One plan per `agent/<work-id>` branch; commit each meaningful step; do not run overlapping related branches in parallel. See `part-engineering/policies/worktree.md`.
+
+Kit `00 Explore` is a protocol stage (explore-map artifact). It is not Cursor’s built-in Explore subagent.

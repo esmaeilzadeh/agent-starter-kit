@@ -1,0 +1,8 @@
+---
+description: Prefer workstream and spec artifacts for delegated work
+globs:
+  - work/**
+  - specs/**
+---
+
+Stay inside the active `work/<work-id>/` scope and the accepted specification. Do not silently change What/Why or acceptance criteria.

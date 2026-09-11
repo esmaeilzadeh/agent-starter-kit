@@ -1,0 +1,11 @@
+# Prepared Community Skills (regenerate via part-engineering/skills/prepare-skills.sh)
+.agents/skills/
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Local verification output
+verification-result.json
