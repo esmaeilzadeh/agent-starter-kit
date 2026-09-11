@@ -48,7 +48,13 @@ copy_path() {
   if [[ -d "$src" ]]; then
     mkdir -p "$dest"
     # copy contents; skip consumer-owned manifest if exists unless --force
-    if [[ "$rel" == "part-engineering/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
+    if [[ "$rel" == "part-engineering" ]]; then
+      excl=(--exclude tests/)
+      if [[ -f "$dest/skills/manifest.yaml" && "$FORCE" -eq 0 ]]; then
+        excl+=(--exclude skills/manifest.yaml)
+      fi
+      rsync -a "${excl[@]}" "$src/" "$dest/"
+    elif [[ "$rel" == "part-engineering/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
       rsync -a --exclude manifest.yaml "$src/" "$dest/"
     else
       rsync -a "$src/" "$dest/"

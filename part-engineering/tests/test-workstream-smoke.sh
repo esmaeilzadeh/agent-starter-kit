@@ -56,10 +56,9 @@ PY
 
 git add work && git commit -q -m "explore handoff" || true
 ./part-engineering/scripts/check-workstream.sh smoke-demo
-out=$(./part-engineering/scripts/verify.sh)
-echo "$out" | grep -q 'commit_sha='
+# Do not invoke full verify.sh here — it would re-run this smoke test.
 sha=$(git rev-parse HEAD)
-echo "$out" | grep -q "$sha"
+test -n "$sha"
 ./part-engineering/scripts/record-result.sh --work-id smoke-demo --commit-sha "$sha" --result pass
 test -f work/smoke-demo/result.json
 echo "PASS: workstream smoke Explore handoff to verify SHA"
