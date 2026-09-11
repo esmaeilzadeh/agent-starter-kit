@@ -35,3 +35,7 @@ Community Skills are pinned in `skills/manifest.yaml` and prepared into `.agents
 1. Read root `AGENTS.md`
 2. If foggy → `agents/00-explore.md` + `templates/explore-map.md`
 3. Else → pipeline from `agents/01-grill.md` onward with relevant `policies/`
+
+## Guide ↔ Spec map
+
+See [MAPPING.md](MAPPING.md) for Explore and pipeline stage mapping.
