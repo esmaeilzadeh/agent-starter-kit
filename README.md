@@ -57,16 +57,19 @@ Guide and Build Spec modules live under `part-engineering/guide/` and `part-engi
 
 ## Quick commands
 
+`./pek` is the only root command. It execs `part-engineering/scripts/` (and `prepare` → `skills/prepare-skills.sh`).
+
 | Command | Purpose |
 | --- | --- |
-| `part-engineering/scripts/check-clean-worktree.sh` | Refuse dirty trees |
-| `part-engineering/scripts/start-work.sh <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
-| `part-engineering/scripts/check-workstream.sh <work-id>` | Preconditions before implement |
-| `part-engineering/scripts/verify.sh` | Run checks; print commit SHA |
-| `part-engineering/scripts/record-result.sh …` | Provenance (requires `--commit-sha`) |
-| `part-engineering/scripts/sync-cursor-binding.sh` | Regenerate `.cursor` projections |
-| `part-engineering/scripts/install-kit.sh <repo>` | Overlay kit package + adapter only |
-| `part-engineering/skills/prepare-skills.sh` | Install pinned Community Skills |
+| `./pek check-clean` | Refuse dirty trees |
+| `./pek start-work <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
+| `./pek check-workstream <work-id>` | Preconditions before implement |
+| `./pek verify` | Run checks; print commit SHA |
+| `./pek record-result …` | Provenance (requires `--commit-sha`) |
+| `./pek sync` | Regenerate `.cursor` projections |
+| `./pek install <repo>` | Overlay kit package + adapter only |
+| `./pek upgrade --version <tag>` | Refresh kit-owned files |
+| `./pek prepare` | Install pinned Community Skills |
 
 ## Documentation index
 

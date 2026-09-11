@@ -16,7 +16,7 @@ This plan is the **script for the demo**. Execute it in Cursor against this repo
 | --- | --- |
 | Chat is the only memory of What/Why | Durable `intent.md` + accepted `specs/` |
 | Agent codes on a dirty tree / random branch | Clean-tree gate + `agent/<work-id>` branch |
-| “Looks good” is the verification story | `part-engineering/scripts/verify.sh` + commit SHA provenance |
+| “Looks good” is the verification story | `./pek verify` + commit SHA provenance |
 | Spec silently mutates mid-flight | Spec Change interrupt or return to Explore |
 | Skills copied into the repo by hand | Pinned `manifest.yaml` + `prepare-skills.sh` |
 
@@ -27,10 +27,10 @@ After the demo you can answer: *What were we building? Which spec? Which branch?
 ## Prerequisites
 
 1. Clone this repo; open in Cursor.
-2. Clean worktree: `./part-engineering/scripts/check-clean-worktree.sh`
+2. Clean worktree: `./pek check-clean`
 3. Read root `AGENTS.md` (≤1 minute).
-4. Optional but recommended: `./part-engineering/skills/prepare-skills.sh` (needs network / skills CLI). If offline, continue with kit protocol files only and note the gap.
-5. Sync Cursor projections: `./part-engineering/scripts/sync-cursor-binding.sh`
+4. Optional but recommended: `./pek prepare` (needs network / skills CLI). If offline, continue with kit protocol files only and note the gap.
+5. Sync Cursor projections: `./pek sync`
 
 **Human role in the demo:** own What/Why, answer grilling, accept the spec, accept the final result.  
 **Agent role:** run stages `00`–`10` per `part-engineering/agents/*.md`, commit each meaningful step, never silent-stash a dirty tree.
@@ -44,8 +44,8 @@ Skip Explore. Destination is already sharp: *ship a read-only kit status script*
 ### A0. Start the workstream
 
 ```bash
-./part-engineering/scripts/check-clean-worktree.sh
-./part-engineering/scripts/start-work.sh demo-kit-status
+./pek check-clean
+./pek start-work demo-kit-status
 ```
 
 Expect: branch `agent/demo-kit-status`, seeded files under `work/demo-kit-status/`.
@@ -112,7 +112,7 @@ Write `work/demo-kit-status/plan.md`:
 ### A5. Implement (`06`) — TDD slice
 
 Contract: `part-engineering/agents/06-implement.md`.  
-Preconditions: clean tree, on `agent/demo-kit-status`, CURRENT spec, plan present (`./part-engineering/scripts/check-workstream.sh demo-kit-status`).
+Preconditions: clean tree, on `agent/demo-kit-status`, CURRENT spec, plan present (`./pek check-workstream demo-kit-status`).
 
 1. **Red:** add `tests/test-kit-status.sh` → commit  
 2. **Green:** add `scripts/kit-status.sh` → commit  
@@ -134,8 +134,8 @@ Only clarity/structure inside the script/test. Stay inside acceptance criteria.
 ### A8. Verify (`09`)
 
 ```bash
-./part-engineering/scripts/verify.sh
-./part-engineering/scripts/record-result.sh --work-id demo-kit-status --commit-sha "$(git rev-parse HEAD)" --result pass
+./pek verify
+./pek record-result --work-id demo-kit-status --commit-sha "$(git rev-parse HEAD)" --result pass
 ```
 
 Fill `work/demo-kit-status/verification.json` (or rely on verify output + `result.json`).
@@ -177,14 +177,14 @@ Use when you want to demo **00 Explore** before Intent.
 ### B0. Start workstream
 
 ```bash
-./part-engineering/scripts/start-work.sh demo-kit-status
+./pek start-work demo-kit-status
 ```
 
 ### B1. Explore (`00`)
 
 Contract: `part-engineering/agents/00-explore.md` — **not** Cursor’s built-in Explore subagent.
 
-1. Prepare Explore skills if using Community Skills: `./part-engineering/skills/prepare-skills.sh`
+1. Prepare Explore skills if using Community Skills: `./pek prepare`
 2. Chart `work/demo-kit-status/explore-map.md` (template already seeded)
 3. Grill options: shell script vs doc-only checklist vs Cursor rule-only
 4. Decide: shell script status check (matches Path A)
@@ -214,7 +214,7 @@ Then continue from **A1 Grill** through **A9 Accept**.
 - [ ] Dedicated branch `agent/demo-kit-status` visible
 - [ ] Intent → Spec → Challenge → Plan artifacts on disk
 - [ ] At least two implementation commits (red then green), not one mega-commit
-- [ ] `verify.sh` prints commit SHA
+- [ ] `./pek verify` prints commit SHA
 - [ ] `acceptance.md` cites that SHA
 - [ ] Audience can open files and reconstruct the story without the chat
 
@@ -234,9 +234,9 @@ Then continue from **A1 Grill** through **A9 Accept**.
 ```bash
 TMP=$(mktemp -d)
 git init "$TMP" && git -C "$TMP" commit --allow-empty -m init
-./part-engineering/scripts/install-kit.sh --dry-run "$TMP"    # show docs/ exclusion story
-SKIP_INSTALL=1 ./part-engineering/scripts/install-kit.sh --skip-prepare "$TMP"
-ls "$TMP/part-engineering" "$TMP/AGENTS.md"
+./pek install --dry-run "$TMP"    # show docs/ exclusion story
+SKIP_INSTALL=1 ./pek install --skip-prepare "$TMP"
+ls "$TMP/part-engineering" "$TMP/AGENTS.md" "$TMP/pek"
 ```
 
 Shows overlay install without fighting a consumer’s `docs/`.

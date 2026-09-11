@@ -4,10 +4,21 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 PEK="$ROOT/pek"
 
 "$PEK" --help | grep -q 'Part Engineering Kit'
-"$PEK" check-clean
 set +e
 "$PEK" nosuchcmd >/dev/null 2>&1
 code=$?
 set -e
 [[ "$code" -ne 0 ]]
-echo "PASS: pek help, check-clean, unknown-command"
+
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+git init -q "$TMP"
+cd "$TMP"
+git config user.email t@e.com
+git config user.name t
+echo x > README.md
+git add README.md && git commit -q -m init
+# invoke pek by absolute path; check-clean uses cwd git
+"$PEK" check-clean
+
+echo "PASS: pek help, unknown-command, check-clean on clean temp repo"

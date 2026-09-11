@@ -159,6 +159,7 @@ Create this structure:
 │   └── proposals/
 ├── work/
 │   └── README.md
+├── pek
 ├── .cursor/
 │   ├── hooks.json
 │   ├── hooks/
@@ -172,7 +173,7 @@ Do not create directories for hypothetical functionality beyond this baseline.
 
 ```text
 part-engineering/     kit package (including kit scripts, kit tests, kit-author docs)
-AGENTS.md + .cursor/  thin Cursor adapter
+pek + AGENTS.md + .cursor/  thin adapter (`pek` dispatches kit scripts)
 specs/ + work/        product engineering state (convention; created by start-work)
 all other root names  product (docs/, scripts/, tests/, src/, …)
 ```

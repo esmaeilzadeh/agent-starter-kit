@@ -219,7 +219,7 @@ Do not treat protocol files alone as auto-loaded Cursor stages. Defer Cursor Plu
 Provide:
 
 ```text
-part-engineering/scripts/install-kit.sh <target-repo>
+./pek install <target-repo>
 ```
 
 **Primary distribution** remains: clone/copy this template repo.
@@ -230,6 +230,7 @@ part-engineering/scripts/install-kit.sh <target-repo>
 part-engineering/     # entire kit package (incl. kit scripts/tests/docs)
 .cursor/              # complete Cursor-honored projection
 AGENTS.md             # merge/append unless --force
+pek                   # Part Engineering Kit dispatcher
 skills-lock.json      # if present
 ```
 
@@ -246,7 +247,7 @@ skills-lock.json      # if present
 Provide:
 
 ```text
-part-engineering/scripts/upgrade-kit.sh --version <tag-or-sha>
+./pek upgrade --version <tag-or-sha>
 ```
 
 The kit repository **dogfoods** its own `part-engineering/` and Cursor Binding.
