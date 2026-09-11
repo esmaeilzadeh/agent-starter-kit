@@ -2,7 +2,7 @@
 # Overlay kit into an existing git repo. Never touches consumer docs/ by default.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TARGET=""
 DRY_RUN=0
 FORCE=0
@@ -65,15 +65,14 @@ copy_path() {
 # Paths to overlay
 for rel in \
   part-engineering \
-  scripts \
   .cursor \
   .gitignore \
   AGENTS.md \
   ai-agent-engineering-guide.md \
   ai-agent-starter-kit-spec.md
  do
-  # explicit: never copy docs/
-  [[ "$rel" == docs || "$rel" == docs/* ]] && continue
+  # never overlay product-generic names
+  [[ "$rel" == docs || "$rel" == scripts || "$rel" == tests ]] && continue
   copy_path "$rel"
 done
 
@@ -85,7 +84,7 @@ if [[ "$DRY_RUN" -eq 0 ]]; then
 fi
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
-  echo "install-kit: dry-run complete (docs/ excluded)"
+  echo "install-kit: dry-run complete (product docs/scripts/tests not overlaid)"
   exit 0
 fi
 
@@ -93,8 +92,8 @@ if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   if [[ -x "$TARGET/part-engineering/skills/prepare-skills.sh" ]]; then
     (cd "$TARGET" && SKIP_INSTALL="${SKIP_INSTALL:-0}" ./part-engineering/skills/prepare-skills.sh) || true
   fi
-  if [[ -x "$TARGET/scripts/sync-cursor-binding.sh" ]]; then
-    (cd "$TARGET" && ./scripts/sync-cursor-binding.sh)
+  if [[ -x "$TARGET/part-engineering/scripts/sync-cursor-binding.sh" ]]; then
+    (cd "$TARGET" && ./part-engineering/scripts/sync-cursor-binding.sh)
   fi
 fi
 

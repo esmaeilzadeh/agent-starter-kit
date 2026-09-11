@@ -2,7 +2,7 @@
 # Verify workstream preconditions before delegated implement/review/refactor.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 if [[ $# -lt 1 || -z "${1:-}" ]]; then
@@ -27,7 +27,7 @@ if [[ "$BRANCH" != "$EXPECTED" ]]; then
 fi
 
 if [[ "$ALLOW_DIRTY" -eq 0 ]]; then
-  "$ROOT/scripts/check-clean-worktree.sh"
+  "$ROOT/part-engineering/scripts/check-clean-worktree.sh"
 fi
 
 WS="work/${WORK_ID}"
