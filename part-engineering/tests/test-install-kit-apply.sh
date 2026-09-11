@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 git init -q "$TMP"
@@ -16,4 +16,5 @@ test -d "$TMP/part-engineering"
 test -f "$TMP/part-engineering/scripts/check-clean-worktree.sh"
 test -d "$TMP/.cursor"
 grep -q consumer "$TMP/docs/README.md"
-echo "PASS: install-kit apply leaves docs/ intact"
+test ! -e "$TMP/scripts/check-clean-worktree.sh"
+echo "PASS: install-kit apply leaves docs/ intact and does not create root scripts/"

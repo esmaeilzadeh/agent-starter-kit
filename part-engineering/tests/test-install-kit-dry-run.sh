@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 git init -q "$TMP"
@@ -12,7 +12,7 @@ echo consumer > docs/README.md
 echo init > README.md
 git add . && git commit -q -m init
 out="$("$ROOT/part-engineering/scripts/install-kit.sh" --dry-run "$TMP")"
-echo "$out" | grep -q 'docs/ excluded\|will not modify target docs'
+echo "$out" | grep -q 'docs/scripts/tests not overlaid\|will not modify target docs\|docs/ excluded'
 # ensure dry-run did not copy part-engineering yet
 if [[ -d "$TMP/part-engineering" ]]; then
   echo "FAIL: dry-run should not copy" >&2
