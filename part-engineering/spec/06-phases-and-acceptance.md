@@ -130,7 +130,7 @@ The negative-path test is mandatory:
 
 ```text
 Start with intentionally dirty working tree
-→ start-work.sh
+→ ./pek start-work
 → must refuse to proceed
 ```
 
@@ -160,21 +160,21 @@ The implementation must preserve this mapping:
 | Delegated implementation | `part-engineering/agents/06-implement.md` |
 | Structured review | `part-engineering/agents/07-review.md` |
 | Delegated refactor | `part-engineering/agents/08-refactor.md` |
-| Verification | `part-engineering/agents/09-verify.md`, `part-engineering/scripts/verify.sh` |
+| Verification | `part-engineering/agents/09-verify.md`, `./pek verify` |
 | Acceptance | `part-engineering/agents/10-accept.md`, `acceptance.md` |
 | Guide (modular) | `part-engineering/guide/` |
 | Build Spec (modular) | `part-engineering/spec/` |
 | Delegation policy | `part-engineering/policies/delegation.md` |
 | Risk policy | `part-engineering/policies/risk.md` |
 | Verification policy | `part-engineering/policies/verification.md` |
-| Skill provenance + preparation | `part-engineering/skills/manifest.yaml`, `prepare-skills.sh` |
+| Skill provenance + preparation | `part-engineering/skills/manifest.yaml`, `./pek prepare` |
 | Decision memory | `part-engineering/decisions/` |
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
-| Worktree / branch / commit discipline | `part-engineering/policies/worktree.md`, `part-engineering/scripts/check-clean-worktree.sh`, `part-engineering/scripts/start-work.sh` |
-| Git hygiene | `check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh` |
-| Cursor Binding sync | `part-engineering/scripts/sync-cursor-binding.sh`, `.cursor/` |
-| Install overlay | `part-engineering/scripts/install-kit.sh` |
-| Result provenance | `record-result.sh`, result schema |
+| Worktree / branch / commit discipline | `part-engineering/policies/worktree.md`, `./pek check-clean`, `./pek start-work` |
+| Git hygiene | `./pek check-clean`, `./pek start-work`, `./pek check-workstream` |
+| Cursor Binding sync | `./pek sync`, `.cursor/` |
+| Install overlay | `./pek install` |
+| Result provenance | `./pek record-result`, result schema |
 | Escalation | policy + workflow gates |
 | Acceptance debt | evidence/acceptance state records |
 | Engineering-system evolution | review/verification outputs → rule/skill/check improvements |

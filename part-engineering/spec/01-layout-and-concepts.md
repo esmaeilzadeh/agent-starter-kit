@@ -126,7 +126,8 @@ Create this structure:
 │   ├── policies/
 │   │   ├── delegation.md
 │   │   ├── risk.md
-│   │   └── verification.md
+│   │   ├── verification.md
+│   │   └── worktree.md
 │   ├── decisions/
 │   │   └── README.md
 │   ├── skills/
@@ -159,6 +160,7 @@ Create this structure:
 │   └── proposals/
 ├── work/
 │   └── README.md
+├── pek
 ├── .cursor/
 │   ├── hooks.json
 │   ├── hooks/
@@ -172,7 +174,7 @@ Do not create directories for hypothetical functionality beyond this baseline.
 
 ```text
 part-engineering/     kit package (including kit scripts, kit tests, kit-author docs)
-AGENTS.md + .cursor/  thin Cursor adapter
+pek + AGENTS.md + .cursor/  thin adapter (`pek` dispatches kit scripts)
 specs/ + work/        product engineering state (convention; created by start-work)
 all other root names  product (docs/, scripts/, tests/, src/, …)
 ```
@@ -219,7 +221,7 @@ Kit Protocol File:
 part-engineering/agents/00-explore.md — the stage contract for Explore.
 
 Skill Preparation:
-Agent runs prepare-skills.sh / skills CLI to install pinned revisions.
+Agent runs `./pek prepare` (skills CLI) to install pinned revisions.
 
 Explore Phase:
 Chart decisions until the destination is clear.

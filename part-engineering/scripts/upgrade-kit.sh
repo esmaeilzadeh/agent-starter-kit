@@ -37,7 +37,7 @@ done
 
 # Refresh kit-owned trees
 for rel in part-engineering/guide part-engineering/spec part-engineering/agents part-engineering/templates part-engineering/scripts part-engineering/tests part-engineering/docs .cursor \
-           ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md part-engineering/OWNED-PATHS.md part-engineering/MAPPING.md part-engineering/README.md; do
+           ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md part-engineering/OWNED-PATHS.md part-engineering/MAPPING.md part-engineering/README.md pek; do
   if [[ -e "$TMP/kit/$rel" ]]; then
     mkdir -p "$ROOT/$(dirname "$rel")"
     rm -rf "$ROOT/$rel"

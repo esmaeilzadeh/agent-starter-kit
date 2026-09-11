@@ -584,15 +584,17 @@ skills-lock.json (repo root)      → CLI install record; commit it
 .agents/skills/                   → prepared bodies; gitignore by default; regenerate via prepare
 ```
 
-**Cloud:** project agents must run `prepare-skills.sh` before roles that need Community Skills (do not rely on global installs). Optional documented escape: `--vendor` / `--copy` with committed `.agents/skills/` for environments that cannot prepare at session start — not the default.
+**Cloud:** project agents must run `./pek prepare` before roles that need Community Skills (do not rely on global installs). Optional documented escape: `--vendor` / `--copy` with committed `.agents/skills/` for environments that cannot prepare at session start — not the default.
 
 ### Skill Preparation
 
 Provide:
 
 ```text
-part-engineering/skills/prepare-skills.sh
+./pek prepare
 ```
+
+Implementation: `part-engineering/skills/prepare-skills.sh`.
 
 Behavior:
 

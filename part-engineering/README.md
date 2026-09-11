@@ -23,7 +23,7 @@ Root `AGENTS.md` is the short operational entrypoint. This tree holds the durabl
 
 ```text
 part-engineering/   # this kit package
-AGENTS.md .cursor/  # thin Cursor adapter
+pek AGENTS.md .cursor/  # thin adapter (pek = Part Engineering Kit CLI)
 specs/ work/        # product engineering state
 docs/ scripts/ …    # product-owned (kit never overlays these names)
 .agents/skills/     # prepared Community Skill bodies (gitignored)
@@ -36,9 +36,10 @@ Community Skills are pinned in `skills/manifest.yaml` and prepared into `.agents
 ## Start here
 
 1. Read root `AGENTS.md`
-2. If foggy → `agents/00-explore.md` + `templates/explore-map.md`
-3. Else → pipeline from `agents/01-grill.md` onward with relevant `policies/`
-4. Facilitator demo (start→accept): [`docs/demo/end-to-end-plan.md`](docs/demo/end-to-end-plan.md)
+2. Invoke kit operations via `./pek` (not a generic `scripts/` folder)
+3. If foggy → `agents/00-explore.md` + `templates/explore-map.md`
+4. Else → pipeline from `agents/01-grill.md` onward with relevant `policies/`
+5. Facilitator demo (start→accept): [`docs/demo/end-to-end-plan.md`](docs/demo/end-to-end-plan.md)
 
 ## Guide ↔ Spec map
 

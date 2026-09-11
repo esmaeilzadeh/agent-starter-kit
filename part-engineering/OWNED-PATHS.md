@@ -1,6 +1,6 @@
 # Kit-owned vs consumer-owned paths
 
-Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or annotated tags pointing at a release commit). `upgrade-kit.sh` refreshes from an explicit `--version <tag-or-sha>` — never blind `main`.
+Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or annotated tags pointing at a release commit). `./pek upgrade --version <tag-or-sha>` refreshes from an explicit version — never blind `main`.
 
 ## Kit-owned (safe to refresh on upgrade)
 
@@ -13,6 +13,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `part-engineering/tests/`
 - `part-engineering/docs/` (kit-author ADRs, demo, research)
 - Generated `.cursor/` projections (skills/commands/hooks wrappers produced by sync)
+- Root `pek` dispatcher
 - Monolith stubs (`ai-agent-engineering-guide.md`, `ai-agent-starter-kit-spec.md`)
 
 ## Consumer-owned (never clobber by default)
@@ -29,6 +30,6 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 ## Related
 
 - ADR-0011 kit namespaced / no collision
+- ADR-0012 root `pek` dispatcher
 - ADR-0009 kit upgrade and overrides
-- `part-engineering/scripts/upgrade-kit.sh`
-- `part-engineering/scripts/sync-cursor-binding.sh` merges `*.local.md`
+- `./pek upgrade` / `./pek sync` (scripts remain under `part-engineering/scripts/`)

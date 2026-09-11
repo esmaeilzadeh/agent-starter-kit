@@ -15,6 +15,7 @@ SKIP_INSTALL=1 "$ROOT/part-engineering/scripts/install-kit.sh" --skip-prepare "$
 test -d "$TMP/part-engineering"
 test -f "$TMP/part-engineering/scripts/check-clean-worktree.sh"
 test -d "$TMP/.cursor"
+test -x "$TMP/pek"
 grep -q consumer "$TMP/docs/README.md"
 test ! -e "$TMP/scripts/check-clean-worktree.sh"
 test ! -d "$TMP/part-engineering/tests"

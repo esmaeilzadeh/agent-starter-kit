@@ -14,10 +14,10 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 | 4 | Open **[CONTEXT.md](CONTEXT.md)** — domain vocabulary for this kit |
 
 ```bash
-./part-engineering/scripts/check-clean-worktree.sh
-./part-engineering/scripts/sync-cursor-binding.sh
+./pek check-clean
+./pek sync
 # optional (needs network / skills CLI):
-./part-engineering/skills/prepare-skills.sh
+./pek prepare
 ```
 
 ## How a product uses this kit
@@ -27,7 +27,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 | Layer | Paths |
 | --- | --- |
 | Kit package | `part-engineering/` (protocol, scripts, kit tests, kit-author docs) |
-| Adapter | `AGENTS.md`, `.cursor/` |
+| Adapter | `pek`, `AGENTS.md`, `.cursor/` |
 | Product state | `specs/`, `work/` (created by start-work) |
 | Product code/docs | everything else |
 
@@ -35,7 +35,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 
 - **Explore (`00`)** when the destination is foggy — durable `work/<work-id>/explore-map.md`
 - **Engineering Pipeline (`01`–`10`)** — Grill → Spec → Challenge → Plan → Implement → Review → Refactor → Verify → Accept
-- **Pinned Community Skills** via `part-engineering/skills/manifest.yaml` + `prepare-skills.sh` ([skills.sh](https://www.skills.sh/))
+- **Pinned Community Skills** via `part-engineering/skills/manifest.yaml` + `./pek prepare` ([skills.sh](https://www.skills.sh/))
 - **Thin Cursor Binding** — rules *point* at protocol; generated projections under `.cursor/`
 - **Git guardrails** — `part-engineering/policies/worktree.md`
 
@@ -44,6 +44,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 ```text
 README.md                 ← human entry
 AGENTS.md                 ← agent entry
+pek                       ← Part Engineering Kit command (not scripts/)
 CONTEXT.md                ← glossary
 part-engineering/         ← entire kit (guide, spec, agents, policies,
                             templates, skills, scripts, tests, docs)
@@ -56,16 +57,19 @@ Guide and Build Spec modules live under `part-engineering/guide/` and `part-engi
 
 ## Quick commands
 
+`./pek` is the only root command. It execs `part-engineering/scripts/` (and `prepare` → `skills/prepare-skills.sh`).
+
 | Command | Purpose |
 | --- | --- |
-| `part-engineering/scripts/check-clean-worktree.sh` | Refuse dirty trees |
-| `part-engineering/scripts/start-work.sh <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
-| `part-engineering/scripts/check-workstream.sh <work-id>` | Preconditions before implement |
-| `part-engineering/scripts/verify.sh` | Run checks; print commit SHA |
-| `part-engineering/scripts/record-result.sh …` | Provenance (requires `--commit-sha`) |
-| `part-engineering/scripts/sync-cursor-binding.sh` | Regenerate `.cursor` projections |
-| `part-engineering/scripts/install-kit.sh <repo>` | Overlay kit package + adapter only |
-| `part-engineering/skills/prepare-skills.sh` | Install pinned Community Skills |
+| `./pek check-clean` | Refuse dirty trees |
+| `./pek start-work <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
+| `./pek check-workstream <work-id>` | Preconditions before implement |
+| `./pek verify` | Run checks; print commit SHA |
+| `./pek record-result …` | Provenance (requires `--commit-sha`) |
+| `./pek sync` | Regenerate `.cursor` projections |
+| `./pek install <repo>` | Overlay kit package + adapter only |
+| `./pek upgrade --version <tag>` | Refresh kit-owned files |
+| `./pek prepare` | Install pinned Community Skills |
 
 ## Documentation index
 

@@ -1,5 +1,31 @@
 # Git Guardrails, Scripts, and Workstreams
 
+# 22.9 Root dispatcher (`pek`)
+
+Humans and agents invoke kit operations via a single root command named `pek` (Part Engineering Kit). Implementation stays under `part-engineering/scripts/` and `part-engineering/skills/prepare-skills.sh`. Do not introduce a generic root `scripts/` for kit commands.
+
+Provide:
+
+```text
+./pek <command> [args]
+```
+
+Mapped commands:
+
+```text
+./pek check-clean              → part-engineering/scripts/check-clean-worktree.sh
+./pek start-work <work-id>     → part-engineering/scripts/start-work.sh
+./pek check-workstream <id>    → part-engineering/scripts/check-workstream.sh
+./pek verify                   → part-engineering/scripts/verify.sh
+./pek record-result …          → part-engineering/scripts/record-result.sh
+./pek sync                     → part-engineering/scripts/sync-cursor-binding.sh
+./pek install <repo>           → part-engineering/scripts/install-kit.sh
+./pek upgrade --version <tag>  → part-engineering/scripts/upgrade-kit.sh
+./pek prepare                  → part-engineering/skills/prepare-skills.sh
+```
+
+Unknown command names that match an executable `part-engineering/scripts/<name>.sh` are exec'd. `install-kit` / `upgrade-kit` copy and refresh root `pek` as kit-owned adapter alongside `AGENTS.md` and `.cursor/`.
+
 # 23. Git guardrails
 
 
@@ -22,9 +48,9 @@ commit after each meaningful step — do not wait until the plan finishes
 do not run multiple related branches in parallel when they modify shared files
 ```
 
-`check-clean-worktree.sh` is the deterministic gate; agent grilling is required whenever it fails.
+`./pek check-clean` is the deterministic gate (`check-clean-worktree.sh`); agent grilling is required whenever it fails.
 
-## 23.1 `check-clean-worktree.sh`
+## 23.1 `./pek check-clean` (`check-clean-worktree.sh`)
 
 Behavior:
 
@@ -35,7 +61,7 @@ exit non-zero → working tree dirty
 
 It must not stash, reset, or absorb user changes.
 
-## 23.2 `start-work.sh <work-id>`
+## 23.2 `./pek start-work <work-id>` (`start-work.sh`)
 
 Behavior:
 
@@ -57,7 +83,7 @@ agent/<work-id>
 
 The script must refuse to silently proceed when unrelated local changes exist.
 
-## 23.3 `check-workstream.sh`
+## 23.3 `./pek check-workstream` (`check-workstream.sh`)
 
 Before delegated work, verify:
 
@@ -77,8 +103,10 @@ This can be called by agent instructions before implementation/review/refactor.
 Provide:
 
 ```text
-part-engineering/scripts/verify.sh
+./pek verify
 ```
+
+Implementation: `part-engineering/scripts/verify.sh`.
 
 It should:
 
@@ -102,8 +130,10 @@ Provide extension/configuration points for the consuming repository.
 Provide:
 
 ```text
-part-engineering/scripts/record-result.sh <result-file>
+./pek record-result …
 ```
+
+Implementation: `part-engineering/scripts/record-result.sh`. It accepts a result file or flags (`--work-id`, `--commit-sha`, `--result`).
 
 It should validate or inject:
 

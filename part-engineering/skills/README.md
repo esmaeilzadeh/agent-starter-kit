@@ -18,7 +18,7 @@ Pins map to the skills CLI as `source#revision`.
 
 - `manifest.yaml` — human-reviewed pins (this directory; **consumer-owned** on upgrade)
 - `skills-lock.json` (repo root) — CLI install record; commit it
-- `.agents/skills/` — prepared bodies; gitignored; regenerate via `prepare-skills.sh`
+- `.agents/skills/` — prepared bodies; gitignored; regenerate via `./pek prepare`
 
 ## Never
 
