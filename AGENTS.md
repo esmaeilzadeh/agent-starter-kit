@@ -14,3 +14,9 @@ Protocol lives under `part-engineering/` (Guide, Build Spec, stage contracts, po
 6. **Before pipeline work:** accepted spec, plan, read `part-engineering/policies/` (`delegation.md`, `risk.md`, `verification.md`, `worktree.md`).
 7. **During work:** stay in scope; do not silently change What/Why or acceptance criteria; escalate per policy; **commit after each meaningful step** (do not wait until the plan finishes).
 8. **Before claiming completion:** `scripts/verify.sh`; `scripts/record-result.sh --work-id … --commit-sha … --result …`; leave required artifacts.
+
+## Demo
+
+End-to-end facilitator script (clear intent + optional Explore): [`docs/demo/end-to-end-plan.md`](docs/demo/end-to-end-plan.md).
+
+Human-oriented overview and doc index: root [`README.md`](README.md).
