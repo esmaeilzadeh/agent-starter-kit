@@ -201,14 +201,14 @@ Cursor-only adapter layer. Protocol under `part-engineering/` remains source of 
 AGENTS.md                              # ≤~30 lines; prepare; Explore name caveat
 .cursor/rules/*.mdc                    # bootstrap: point at protocol — do not duplicate policy text
 .cursor/hooks.json                     # beforeShellExecution → wrappers
-.cursor/hooks/*.sh                     # thin wrappers calling scripts/check-*.sh
+.cursor/hooks/*.sh                     # thin wrappers calling part-engineering/scripts/check-*.sh
 .cursor/skills/ or commands/           # generated projections of 00–10 (see sync)
 .agents/skills/                        # prepared Community Skills (gitignore bodies)
 ```
 
 **sync-cursor-binding.sh** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `part-engineering/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT.
 
-**Rules:** rules *point*; protocol *owns* text. Logic for Git guardrails lives in `scripts/`; `.cursor/hooks` are mandatory entrypoints. Anything Cursor must honor must exist under `.cursor/` even if a portable source also lives under `part-engineering/` or `.agents/`.
+**Rules:** rules *point*; protocol *owns* text. Logic for Git guardrails lives in `part-engineering/scripts/`; `.cursor/hooks` are mandatory entrypoints. Anything Cursor must honor must exist under `.cursor/` even if a portable source also lives under `part-engineering/` or `.agents/`.
 
 Do not treat protocol files alone as auto-loaded Cursor stages. Defer Cursor Plugins packaging for v1.
 
@@ -219,7 +219,7 @@ Do not treat protocol files alone as auto-loaded Cursor stages. Defer Cursor Plu
 Provide:
 
 ```text
-scripts/install-kit.sh <target-repo>
+part-engineering/scripts/install-kit.sh <target-repo>
 ```
 
 **Primary distribution** remains: clone/copy this template repo.
@@ -227,14 +227,13 @@ scripts/install-kit.sh <target-repo>
 **Overlay (default) copies:**
 
 ```text
-part-engineering/     # protocol + guide/ + spec/ modules
-scripts/              # including prepare-skills + sync-cursor-binding
+part-engineering/     # entire kit package (incl. kit scripts/tests/docs)
 .cursor/              # complete Cursor-honored projection
 AGENTS.md             # merge/append unless --force
 skills-lock.json      # if present
 ```
 
-**Never touches by default:** consumer `docs/`, application `src/`, unrelated product specs.
+**Never touches by default:** consumer `docs/`, `scripts/`, `tests/`, application `src/`, unrelated product specs.
 
 **Does not copy** `.agents/skills/` bodies; runs `prepare-skills.sh` + `sync-cursor-binding.sh` after overlay unless `--skip-prepare`.
 
@@ -247,7 +246,7 @@ skills-lock.json      # if present
 Provide:
 
 ```text
-scripts/upgrade-kit.sh --version <tag-or-sha>
+part-engineering/scripts/upgrade-kit.sh --version <tag-or-sha>
 ```
 
 The kit repository **dogfoods** its own `part-engineering/` and Cursor Binding.

@@ -8,15 +8,15 @@ Protocol lives under `part-engineering/` (Guide, Build Spec, stage contracts, po
 
 1. **Foggy destination?** Run kit **00 Explore** (not Cursor’s built-in Explore subagent) until `work/<work-id>/explore-map.md` has a non-empty `Handoff to Intent`.
 2. **Prepare skills:** `part-engineering/skills/prepare-skills.sh` for pinned Community Skills (never vendor skill trees; never `revision: latest`).
-3. **Sync Cursor binding:** `scripts/sync-cursor-binding.sh` so `.cursor/skills` and `.cursor/commands` match protocol (+ `agents/*.local.md` overlays).
-4. **Clean worktree (hard gate):** never start labor on a dirty tree. Run `scripts/check-clean-worktree.sh`. If dirty, **grill the human** on each uncommitted/untracked path (commit / stash / discard / move) — do not stash or reset silently. See `part-engineering/policies/worktree.md`.
-5. **One plan → one branch:** start each plan/workstream with `scripts/start-work.sh <work-id>` on `agent/<work-id>`. Do not run multiple related branches that touch common files in parallel (serialize to avoid conflicts).
+3. **Sync Cursor binding:** `part-engineering/scripts/sync-cursor-binding.sh` so `.cursor/skills` and `.cursor/commands` match protocol (+ `agents/*.local.md` overlays).
+4. **Clean worktree (hard gate):** never start labor on a dirty tree. Run `part-engineering/scripts/check-clean-worktree.sh`. If dirty, **grill the human** on each uncommitted/untracked path (commit / stash / discard / move) — do not stash or reset silently. See `part-engineering/policies/worktree.md`.
+5. **One plan → one branch:** start each plan/workstream with `part-engineering/scripts/start-work.sh <work-id>` on `agent/<work-id>`. Do not run multiple related branches that touch common files in parallel (serialize to avoid conflicts).
 6. **Before pipeline work:** accepted spec, plan, read `part-engineering/policies/` (`delegation.md`, `risk.md`, `verification.md`, `worktree.md`).
 7. **During work:** stay in scope; do not silently change What/Why or acceptance criteria; escalate per policy; **commit after each meaningful step** (do not wait until the plan finishes).
-8. **Before claiming completion:** `scripts/verify.sh`; `scripts/record-result.sh --work-id … --commit-sha … --result …`; leave required artifacts.
+8. **Before claiming completion:** `part-engineering/scripts/verify.sh`; `part-engineering/scripts/record-result.sh --work-id … --commit-sha … --result …`; leave required artifacts.
 
 ## Demo
 
-End-to-end facilitator script (clear intent + optional Explore): [`docs/demo/end-to-end-plan.md`](docs/demo/end-to-end-plan.md).
+End-to-end facilitator script (clear intent + optional Explore): [`part-engineering/docs/demo/end-to-end-plan.md`](part-engineering/docs/demo/end-to-end-plan.md).
 
 Human-oriented overview and doc index: root [`README.md`](README.md).

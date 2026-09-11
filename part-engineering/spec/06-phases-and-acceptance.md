@@ -160,7 +160,7 @@ The implementation must preserve this mapping:
 | Delegated implementation | `part-engineering/agents/06-implement.md` |
 | Structured review | `part-engineering/agents/07-review.md` |
 | Delegated refactor | `part-engineering/agents/08-refactor.md` |
-| Verification | `part-engineering/agents/09-verify.md`, `scripts/verify.sh` |
+| Verification | `part-engineering/agents/09-verify.md`, `part-engineering/scripts/verify.sh` |
 | Acceptance | `part-engineering/agents/10-accept.md`, `acceptance.md` |
 | Guide (modular) | `part-engineering/guide/` |
 | Build Spec (modular) | `part-engineering/spec/` |
@@ -170,10 +170,10 @@ The implementation must preserve this mapping:
 | Skill provenance + preparation | `part-engineering/skills/manifest.yaml`, `prepare-skills.sh` |
 | Decision memory | `part-engineering/decisions/` |
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
-| Worktree / branch / commit discipline | `part-engineering/policies/worktree.md`, `scripts/check-clean-worktree.sh`, `scripts/start-work.sh` |
+| Worktree / branch / commit discipline | `part-engineering/policies/worktree.md`, `part-engineering/scripts/check-clean-worktree.sh`, `part-engineering/scripts/start-work.sh` |
 | Git hygiene | `check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh` |
-| Cursor Binding sync | `scripts/sync-cursor-binding.sh`, `.cursor/` |
-| Install overlay | `scripts/install-kit.sh` |
+| Cursor Binding sync | `part-engineering/scripts/sync-cursor-binding.sh`, `.cursor/` |
+| Install overlay | `part-engineering/scripts/install-kit.sh` |
 | Result provenance | `record-result.sh`, result schema |
 | Escalation | policy + workflow gates |
 | Acceptance debt | evidence/acceptance state records |

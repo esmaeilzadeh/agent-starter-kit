@@ -189,10 +189,10 @@ Project hooks in `.cursor/hooks.json` run in Cloud Agents once writable; support
 
 | Kit requirement | Portable layer | Cursor binding layer |
 | --- | --- | --- |
-| Clean worktree before work | `scripts/check-clean-worktree.sh` | Hook calls script on `beforeShellExecution` (e.g. matcher for `git commit`, `git checkout`, or kit `start-work.sh`) |
-| Refuse dirty `start-work` | `scripts/start-work.sh` | Same — hook denies or routes to script; script remains canonical exit codes |
-| Workstream preconditions | `scripts/check-workstream.sh` | `beforeShellExecution` matcher or `sessionStart` context injection listing active `work-id` |
-| Verification / result SHA | `scripts/verify.sh`, `record-result.sh` | Optional `afterShellExecution` audit; not a substitute for scripts |
+| Clean worktree before work | `part-engineering/scripts/check-clean-worktree.sh` | Hook calls script on `beforeShellExecution` (e.g. matcher for `git commit`, `git checkout`, or kit `start-work.sh`) |
+| Refuse dirty `start-work` | `part-engineering/scripts/start-work.sh` | Same — hook denies or routes to script; script remains canonical exit codes |
+| Workstream preconditions | `part-engineering/scripts/check-workstream.sh` | `beforeShellExecution` matcher or `sessionStart` context injection listing active `work-id` |
+| Verification / result SHA | `part-engineering/scripts/verify.sh`, `record-result.sh` | Optional `afterShellExecution` audit; not a substitute for scripts |
 
 Hooks **wrap** kit scripts; they should not reimplement Git logic in hook-only form (keeps Codex/CLI portability).
 
@@ -221,7 +221,7 @@ Commands are reusable prompts invoked with `/` in Agent chat; stored as markdown
 Plugin reference: command files support `.md`, `.mdc`, `.markdown`, `.txt` with optional frontmatter (`name`, `description`).  
 **Source:** [Plugins reference — Commands format](https://cursor.com/docs/reference/plugins)
 
-Commands are **steering** (prompt packaging). Prefer commands that say “read `part-engineering/agents/06-implement.md` and run `scripts/check-workstream.sh`” rather than duplicating protocol text.
+Commands are **steering** (prompt packaging). Prefer commands that say “read `part-engineering/agents/06-implement.md` and run `part-engineering/scripts/check-workstream.sh`” rather than duplicating protocol text.
 
 `/migrate-to-skills` can convert slash commands to skills with `disable-model-invocation: true`.  
 **Source:** [Agent Skills — Migrating rules and commands to skills](https://cursor.com/docs/skills)
@@ -260,7 +260,7 @@ Kit CONTEXT explicitly avoids assuming “Cursor plugin” as the distribution f
 | Templates | `part-engineering/templates/*` | Artifact schemas |
 | Skill pins | `part-engineering/skills/manifest.yaml` | Dependency lockfile, not skill bodies |
 | Skill prep script | `part-engineering/skills/prepare-skills.sh` | Portable install entry |
-| Deterministic guardrails | `scripts/check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh`, `verify.sh`, `record-result.sh` | Enforceable without Cursor |
+| Deterministic guardrails | `part-engineering/scripts/check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh`, `verify.sh`, `record-result.sh` | Enforceable without Cursor |
 | Work artifacts | `work/<work-id>/`, `specs/` | Canonical engineering state |
 | Root bootstrap | `AGENTS.md` (short) | Portable entry read by Cursor CLI and other agents; **points to** protocol files |
 
@@ -311,7 +311,7 @@ Kit CONTEXT explicitly avoids assuming “Cursor plugin” as the distribution f
 }
 ```
 
-Hook script invokes `scripts/check-clean-worktree.sh` or `scripts/check-workstream.sh` and maps exit codes to `{ "permission": "deny", ... }` per [Hooks — beforeShellExecution](https://cursor.com/docs/hooks).
+Hook script invokes `part-engineering/scripts/check-clean-worktree.sh` or `part-engineering/scripts/check-workstream.sh` and maps exit codes to `{ "permission": "deny", ... }` per [Hooks — beforeShellExecution](https://cursor.com/docs/hooks).
 
 ---
 

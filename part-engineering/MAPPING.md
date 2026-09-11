@@ -14,7 +14,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Delegated implementation | [02-workflow](guide/02-workflow.md) | [`part-engineering/agents/06-implement.md`](agents/06-implement.md) |
 | Structured review | [02-workflow](guide/02-workflow.md) | [`part-engineering/agents/07-review.md`](agents/07-review.md) |
 | Delegated refactor | [02-workflow](guide/02-workflow.md) | [`part-engineering/agents/08-refactor.md`](agents/08-refactor.md) |
-| Verification | [02-workflow](guide/02-workflow.md) | [`part-engineering/agents/09-verify.md`](agents/09-verify.md), [`scripts/verify.sh`](../scripts/verify.sh) |
+| Verification | [02-workflow](guide/02-workflow.md) | [`part-engineering/agents/09-verify.md`](agents/09-verify.md), [`part-engineering/scripts/verify.sh`](../part-engineering/scripts/verify.sh) |
 | Acceptance | [03-methods-governance](guide/03-methods-governance.md) | [`part-engineering/agents/10-accept.md`](agents/10-accept.md), `acceptance.md` |
 | Guide (modular) | [guide/README](guide/README.md) | [`part-engineering/guide/`](guide/) |
 | Build Spec (modular) | [spec/README](spec/README.md) | [`part-engineering/spec/`](spec/) |
@@ -25,12 +25,12 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Decision memory | [03-methods-governance](guide/03-methods-governance.md) | [`part-engineering/decisions/`](decisions/) |
 | Spec state | [guide/README](guide/README.md) | [`specs/current/`](../specs/current/), [`specs/proposals/`](../specs/proposals/), status field |
 | Git hygiene | [guide/README](guide/README.md) | `check-clean-worktree.sh`, `start-work.sh`, `check-workstream.sh` |
-| Cursor Binding sync | [guide/README](guide/README.md) | [`scripts/sync-cursor-binding.sh`](../scripts/sync-cursor-binding.sh), `.cursor/` |
-| Install overlay | [guide/README](guide/README.md) | [`scripts/install-kit.sh`](../scripts/install-kit.sh) |
+| Cursor Binding sync | [guide/README](guide/README.md) | [`part-engineering/scripts/sync-cursor-binding.sh`](../part-engineering/scripts/sync-cursor-binding.sh), `.cursor/` |
+| Install overlay | [guide/README](guide/README.md) | [`part-engineering/scripts/install-kit.sh`](../part-engineering/scripts/install-kit.sh) |
 | Result provenance | [03-methods-governance](guide/03-methods-governance.md) | `record-result.sh`, result schema |
 | Escalation | [guide/README](guide/README.md) | policy + workflow gates |
 | Acceptance debt | [03-methods-governance](guide/03-methods-governance.md) | evidence/acceptance state records |
 | Engineering-system evolution | [guide/README](guide/README.md) | review/verification outputs → rule/skill/check improvements |
 
 See also [spec/06-phases-and-acceptance.md](spec/06-phases-and-acceptance.md) §38.
-| Worktree / branch / commit discipline | [03-methods-governance](guide/03-methods-governance.md) | [`part-engineering/policies/worktree.md`](policies/worktree.md), [`scripts/check-clean-worktree.sh`](../scripts/check-clean-worktree.sh) |
+| Worktree / branch / commit discipline | [03-methods-governance](guide/03-methods-governance.md) | [`part-engineering/policies/worktree.md`](policies/worktree.md), [`part-engineering/scripts/check-clean-worktree.sh`](../part-engineering/scripts/check-clean-worktree.sh) |

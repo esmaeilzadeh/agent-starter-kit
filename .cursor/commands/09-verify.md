@@ -4,7 +4,7 @@
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Evidence via `scripts/verify.sh` and `part-engineering/templates/verification.json`.
+Evidence via `part-engineering/scripts/verify.sh` and `part-engineering/templates/verification.json`.
 
 ## 15.9 09 Verify Agent
 

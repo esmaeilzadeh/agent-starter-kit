@@ -5,7 +5,7 @@ Portable repository protocol for delegating engineering labor to AI agents while
 ## Language
 
 **Starter Kit**:
-The portable repository protocol (agent instructions, policies, templates, scripts, modular docs/specs) that a developer copies into a software repo. It is not a multi-agent runtime product. Kit-owned protocol docs and contracts live under the branded root `part-engineering/`.
+The portable repository protocol (agent instructions, policies, templates, scripts, modular docs/specs) that a developer copies into a software repo. It is not a multi-agent runtime product. The entire kit package lives under the branded root `part-engineering/` (including kit scripts, kit tests, and kit-author docs). Root adapter is `AGENTS.md` + `.cursor/` only.
 _Avoid_: agent platform, orchestration framework, agent OS, generic `engineering/` as the kit root
 
 **Guide**:
