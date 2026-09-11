@@ -18,3 +18,5 @@ Protocol lives under `part-engineering/` (Guide, Build Spec, stage contracts, po
 ## Demo
 
 End-to-end facilitator script (clear intent + optional Explore): [`docs/demo/end-to-end-plan.md`](docs/demo/end-to-end-plan.md).
+
+Human-oriented overview and doc index: root [`README.md`](README.md).
