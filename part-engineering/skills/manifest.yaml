@@ -1,0 +1,22 @@
+# Skill Manifest (v1) — authoritative human-reviewed pins.
+# Never set revision to "latest" for critical methods; bump pins deliberately.
+# Discovery starting point: https://www.skills.sh/
+skills:
+  wayfinder:
+    source: mattpocock/skills
+    revision: "v1.0.0"
+    skill: wayfinder
+    role: explore-map
+    required: true
+  research:
+    source: mattpocock/skills
+    revision: "v1.0.0"
+    skill: research
+    role: explore-research
+    required: false
+  grilling:
+    source: mattpocock/skills
+    revision: "v1.0.0"
+    skill: grilling
+    role: intent-clarification
+    required: true
