@@ -33,3 +33,9 @@ identify possible spec-change triggers
 Must not redefine the requirement.
 
 ---
+
+## Kit emphasis
+
+- Planning assumes a clean worktree and a dedicated `agent/<work-id>` branch (create via `scripts/start-work.sh` if not already on one).
+- The resulting plan must be executed with **one branch only** for that work-id; do not spawn parallel related branches that touch the same files.
+- Execution of the plan (Implement onward) must **commit after each meaningful step**, not only at the end — see `part-engineering/policies/worktree.md`.

@@ -40,10 +40,13 @@ perform forbidden high-risk actions
 continue through a mandatory escalation gate
 ```
 
-At meaningful milestones, create commits so that important engineering states are recoverable and attributable.
+At meaningful milestones, create commits so that important engineering states are recoverable and attributable. **Do not wait until the plan is finished** — commit after each meaningful step.
 
 ---
 
 ## Kit emphasis
 
 - Refuse to start unless: clean working tree, dedicated branch, accepted specification, and plan are present.
+- If the tree is dirty: stop and grill the human per `part-engineering/policies/worktree.md` (never silent stash/reset).
+- One plan → one `agent/<work-id>` branch; do not start a second related branch that would conflict on shared files while this one is active.
+- Commit after each meaningful step while executing the plan.

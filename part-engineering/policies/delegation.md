@@ -55,6 +55,9 @@ overwrite another workstream's uncommitted changes
 claim verification without running it
 promote observed behavior to canonical specification
 rewrite accepted specification to unblock implementation
+start labor on a dirty working tree without grilling the human
+run overlapping related branches that will conflict on shared files
+defer all commits until the entire plan is finished
 ```
 
 ---

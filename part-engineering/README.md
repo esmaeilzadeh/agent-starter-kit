@@ -11,7 +11,7 @@ Root `AGENTS.md` is the short operational entrypoint. This tree holds the durabl
 | `guide/` | Modular Guide (Division of Engineering Labor concepts) |
 | `spec/` | Modular Build Spec (implementation contract; name-stable with Guide) |
 | `agents/` | Stage contracts: `00-explore.md` … `10-accept.md` |
-| `policies/` | Delegation, risk, and verification policy |
+| `policies/` | Delegation, risk, verification, and worktree/branch/commit policy |
 | `skills/` | Skill Manifest (`manifest.yaml`) + `prepare-skills.sh` |
 | `templates/` | Workstream templates (explore-map, intent, spec, plan, …) |
 | `decisions/` | Optional kit-level decision records |
