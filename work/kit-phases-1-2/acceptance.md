@@ -29,4 +29,4 @@ Phases 1–2 accepted for merge review pending human PR approval.
 
 ## Accepted commit SHA
 
-(pending final tip after this acceptance commit — record via record-result)
+360f55347a964b97d78880d6d532682529efbe10
