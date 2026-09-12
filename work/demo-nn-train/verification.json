@@ -1,7 +1,7 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "demo-nn-train",
+  "commit_sha": "04a1db4fc46ba5cd3ab98735fae2e927176763fc",
+  "checks": [{"check": "./ask verify", "result": "pass"}],
+  "result": "pass",
+  "notes": "record-run tests + full verify; trainer/viewer need scripts/requirements-demo.txt"
 }
