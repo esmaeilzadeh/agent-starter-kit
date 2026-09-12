@@ -4,7 +4,7 @@ The default path (Explore → … → Accept) is how the kit guides engineering 
 
 **On the path:** prepare each stage document. Skip extra *approvals* after one “defaults are OK”; **Accept** is the second confirm. Missing spec/plan → prepare from those defaults, do not jump to code.
 
-**Off the path:** only when the human explicitly leaves (“just code”). Warn once and follow.
+**Off the path:** `/off-path` (or “just code”) in **this chat only**. New sessions start on-path. Do not persist a flag. Warn once and follow.
 
 **Still hard:** dirty tree, silent stash/reset, fake verify/accept, silent What/Why change.
 

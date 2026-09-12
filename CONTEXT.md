@@ -77,8 +77,8 @@ Files upgrade must not overwrite by default: skill manifest, policies (or local 
 _Avoid_: “customize by forking the whole tree”
 
 **Workflow guidance**:
-The kit path is the default. Artifacts are required to move forward; “skip” means skip extra approvals (one defaults-OK, then Accept), not skip documents. Off-path only when the human explicitly leaves — warn once and follow. Policy: `_ask/policies/workflow.md`.
-_Avoid_: locking Implement; vibe-coding while claiming to be on the kit; re-asking bless on every stage
+Every session starts on-path. Artifacts are required to move forward; “skip” means skip extra approvals (one defaults-OK, then Accept). `/off-path` is **this chat only** — warn once and follow; do not persist. Policy: `_ask/policies/workflow.md`.
+_Avoid_: locking Implement; a durable off-path git flag; re-asking bless on every stage
 
 **Kit upgrade**:
 Deliberate bump to a kit version/tag via `./ask upgrade --version <tag>`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.

@@ -16,9 +16,13 @@ If the human is using the kit:
 
 `./ask check-workstream <work-id>` is the machine check that the **default path is complete**. Exit non-zero means “incomplete,” not “forbidden.” On-path response: prepare what is missing.
 
-## Off the path (explicit leave)
+## Off the path (this session only)
 
-Leaving the kit (“skip the kit,” “just code,” vibe-only) is **not** a stage skip. Warn **once** (what will not exist, risk, how to rejoin) and follow. Do not nag. Note the deviation in `intent.md` or the next commit message.
+Every new Cursor session starts **on-path**. There is no durable off-path flag in git.
+
+`/off-path` (`.cursor/commands/off-path.md`, source `_ask/cursor-commands/off-path.md`) switches **only the current chat**. Warn once, then follow. Do not write `work/*/kit-path` or record off-path in `intent.md`.
+
+A new chat is on-path again. Saying “skip the kit” / “just code” in an on-path session has the same session-only effect (warn once, follow) without needing the slash command.
 
 ## Still hard (safety, not ceremony)
 
