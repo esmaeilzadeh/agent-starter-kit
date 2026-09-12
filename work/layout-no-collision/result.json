@@ -1,0 +1,6 @@
+{
+  "work_id": "layout-no-collision",
+  "commit_sha": "420a6d69c50a93fd782108d8ca0fdb43ee3d39b9",
+  "result": "pass",
+  "notes": "layout already on main; close-out verify green"
+}

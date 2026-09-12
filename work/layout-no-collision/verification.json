@@ -1,0 +1,7 @@
+{
+  "work_id": "layout-no-collision",
+  "commit_sha": "420a6d69c50a93fd782108d8ca0fdb43ee3d39b9",
+  "checks": [{"check": "./ask verify", "result": "pass"}],
+  "result": "pass",
+  "notes": "Layout already on main; close-out verify at 420a6d6"
+}
