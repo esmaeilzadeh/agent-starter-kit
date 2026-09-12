@@ -13,7 +13,7 @@ When the human asks a **new task**, the agent must **decide** — and say so —
 
 - This workstream **needs Explore**. The user invoked `/00-explore`, and the destination is foggy: kit texts already disagree (Guide/spec say skip 00 when clear; `workflow.md` + `00-explore.md` say do not skip the explore-map artifact).
 - Standing: never auto-approve recommendations; expand before resolve (ADR 0007).
-- Prepare: Community Skills pinned to `mattpocock/skills@v1.2.3` (`wayfinder`, `research`, `prototype`, `grilling`). `v1.0.0` lacked `wayfinder`/`research` (that tag had `decision-mapping`). Lock committed at `3422af2`.
+- Prepare: `grilling` @ v1.0.0 ok. Manifest pins `wayfinder` and `research` failed (`No matching skills` at `mattpocock/skills@v1.0.0`; upstream list has `decision-mapping` / `prototype` / `grilling`). Out of scope to re-pin unless this work later owns the manifest.
 - Kit `00 Explore` ≠ Cursor’s built-in Explore subagent.
 
 ## Tracker map (optional)
@@ -58,7 +58,7 @@ Human decisions still open:
 
 ## Out of scope
 
-- Pinning more Community Skills than the Explore bind list (wayfinder / research / prototype / grilling).
+- Re-pinning Community Skills (`wayfinder` → `decision-mapping`, etc.) unless a later plan step owns the manifest.
 - A new `./ask` subcommand to decide fog (agent judgment + written gate is enough unless Grill says otherwise).
 - Changing `01`–`10` skip-approvals meaning from ask-status.
 - Off-path / “just code” behavior (already session-only).
