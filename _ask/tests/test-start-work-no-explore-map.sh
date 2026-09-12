@@ -15,6 +15,7 @@ cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/start-work.s
 chmod +x _ask/scripts/*.sh
 cp "$ROOT/_ask/templates/"*.md "$ROOT/_ask/templates/"*.json _ask/templates/ 2>/dev/null || \
   cp "$ROOT/_ask/templates/"* _ask/templates/
+git add _ask && git commit -q -m kit
 ./_ask/scripts/start-work.sh demo
 if [[ -e work/demo/explore-map.md ]]; then
   echo "FAIL: start-work must not seed explore-map.md" >&2
