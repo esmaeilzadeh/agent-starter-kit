@@ -1,0 +1,6 @@
+{
+  "work_id": "commit-step-discipline",
+  "commit_sha": "75d417558b448fc7589c9b04056580a367b42ebe",
+  "result": "pass",
+  "notes": "policy already on main at 61ff5d8; close-out verify green"
+}
