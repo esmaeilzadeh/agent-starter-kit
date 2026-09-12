@@ -23,6 +23,10 @@ None. Canonical map is this file.
 - **Q2:** Tiny **real** dataset (option 2 / B) — not XOR-only, not ILP-scale.
 - **Q3:** New **`./ask record-run`** writing the ILP-shaped schema (option C). `record-result` stays for workstream Accept. Comparison to B is in this Explore turn.
 - **Q4:** Keep Grill→Accept Path A/B. Only the vehicle changes (train + record-run instead of `kit-status`).
+- **Q5:** Dataset = sklearn `make_moons` (all recs).
+- **Q6:** Framework = numpy + sklearn MLP (all recs).
+- **Q8:** `./ask record-run` refuses a dirty tree; `--commit-sha` must be `HEAD` (all recs).
+- **Config format (default):** YAML `results/<run-id>/config.yaml`.
 
 ## Research facts (not decisions)
 
@@ -54,11 +58,7 @@ Kit demo SHA-binds a **workstream**. ILP SHA-binds each **experiment run**. The 
 
 ## Not yet specified
 
-- Which tiny real dataset (moons vs small MNIST slice, etc.).
-- Framework (sklearn/numpy vs PyTorch).
-- Whether `record-run` refuses a dirty tree (recommended: yes — SHA must be HEAD).
-- YAML vs JSON for the per-run config file (default YAML).
-- Exact `record-run` flags and whether it appends `results/RUN_REGISTRY.md` itself.
+None. `record-run` flags and registry append are implementation defaults (spec).
 
 ## Out of scope (provisional)
 
@@ -68,10 +68,10 @@ Kit demo SHA-binds a **workstream**. ILP SHA-binds each **experiment run**. The 
 
 ## Handoff to Intent
 
-**Status: STILL_FOGGY** — core What/Why named; one grill frontier left (dataset, framework, config file, dirty-tree refuse).
+**Status: DESTINATION_CLEAR.**
 
-**Why:** Scores without path + SHA are not citable. The demo should show changing knobs *or* code, committing that change, running, and binding the metric to that commit.
+**Why:** Scores without path + SHA are not citable.
 
-**What (draft):** Replace `kit-status` as the Path A/B vehicle. Ship a tiny NN trainer. Each run lives under `results/<run-id>/` with `config.yaml`. Changing code and/or that config is a git commit; `./ask record-run` binds the metric to that SHA. `record-result` still closes the *workstream*.
+**What:** Replace `kit-status` as the Path A/B vehicle. Ship a moons + sklearn MLP trainer and a Streamlit run viewer. Each run is `results/<run-id>/config.yaml` plus any code change, committed, trained, then `./ask record-run` (ILP schema; dirty refuse; SHA = HEAD). `record-result` still closes the workstream.
 
-**Locked:** Q1 (code + hyperparams both SHA-bound), Q2 tiny real data, Q3 `record-run`, Q4 Path A/B, Q7 config-in-run-dir.
+**Locked:** Q1–Q8 as listed under Decisions so far. Pin `developing-with-streamlit` @ `streamlit/agent-skills#v1`.
