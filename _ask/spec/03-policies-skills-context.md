@@ -221,7 +221,7 @@ Purpose:
 Perform delegated implementation labor.
 ```
 
-Hard preconditions:
+Default preconditions (`./ask check-workstream`; guidance, not a lock):
 
 ```text
 clean working tree
@@ -230,6 +230,8 @@ accepted spec
 active plan
 no unrelated uncommitted changes
 ```
+
+Missing spec/plan means the default path is incomplete: on-path, prepare those artifacts from accepted defaults (`_ask/policies/workflow.md`). Clean working tree remains a hard safety gate.
 
 Default branch convention:
 

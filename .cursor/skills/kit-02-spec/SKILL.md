@@ -36,3 +36,7 @@ specs/proposals/<work-id>.md
 ```
 
 ---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Prepare the spec artifact (do not skip the document). After defaults-OK, mark it CURRENT unless the human asked to stop. Off-path only if they explicitly leave the kit.

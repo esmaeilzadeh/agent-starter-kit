@@ -3,6 +3,6 @@ description: Kit path is default guidance — warn on skip, do not lock
 alwaysApply: true
 ---
 
-**Workflow (guidance, not a lock):** Default is the kit path (Explore if foggy → Grill → Spec → Challenge → Plan → Implement → … → Accept). If the human skips or jumps ahead, **warn once** (what was skipped, risk, how to rejoin) and follow their way. Do not refuse Implement only because spec/plan are missing. Dirty tree, silent stash/reset, and fake verify/accept stay hard.
+**Workflow (guidance, not a lock):** On the kit path, **prepare each stage artifact** — do not skip documents. “Skip” means skip extra approvals: one “defaults OK” after Grill/Spec recs, then Accept. If spec/plan are missing and they are still on the path, prepare them from those defaults. Off-path only if they explicitly leave the kit — then warn once and follow. Dirty tree, silent stash/reset, and fake verify/accept stay hard.
 
 Canonical: `_ask/policies/workflow.md`.

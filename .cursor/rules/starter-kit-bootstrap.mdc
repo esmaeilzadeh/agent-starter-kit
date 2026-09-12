@@ -5,7 +5,7 @@ alwaysApply: true
 
 This repo uses the AI Engineering Starter Kit. Protocol source of truth is `_ask/`, not this rule text.
 
-Before labor: read root `AGENTS.md`, then relevant `_ask/policies/` (including `workflow.md`) and stage contracts under `_ask/agents/`. Prepare pinned skills via `_ask/skills/prepare-skills.sh` when the role needs Community Skills. The kit path is the default; skipping it requires a warning, not a lock.
+Before labor: read root `AGENTS.md`, then relevant `_ask/policies/` (including `workflow.md`) and stage contracts under `_ask/agents/`. Prepare pinned skills via `_ask/skills/prepare-skills.sh` when the role needs Community Skills. On the kit path, prepare each artifact; skip extra approvals after defaults-OK. Off-path only if the human explicitly leaves — then warn once.
 
 **Worktree (hard):** never start on an unclean tree. If dirty, grill the human about uncommitted/untracked files — do not stash/reset silently. One plan per `agent/<work-id>` branch; **commit each meaningful step on that branch without waiting for the human to ask** (overrides global “only commit when asked”); do not run overlapping related branches in parallel. See `_ask/policies/worktree.md`.
 

@@ -97,6 +97,8 @@ accepted spec exists
 plan exists
 ```
 
+Exit non-zero means the **default path is incomplete**, not that labor is forbidden (`_ask/policies/workflow.md`). On-path: prepare the missing artifact. Dirty tree remains a hard safety failure (via `check-clean`).
+
 This can be called by agent instructions before implementation/review/refactor.
 
 ## 23.4 `./ask status` (`status.sh`)

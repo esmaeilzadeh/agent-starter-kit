@@ -31,3 +31,7 @@ The verifier should inspect repository configuration and use project-specific co
 It must record the exact commit SHA.
 
 ---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Claiming verify without running checks or a commit SHA stays **hard**. Prepare verification evidence; Accept is the human close.

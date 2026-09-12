@@ -27,7 +27,7 @@ Do **not** add a new lock script. `./ask check-workstream` stays a **check** (ex
 
 4. **ADR** — short `0013-workflow-guidance-not-lock.md` (default path, warn+follow, what stays hard).
 
-5. **Optional helper (only if it stays thin):** `./ask next` or status `--next` printing recommended next stage + warnings for current `--work-id`. Skip if status output is enough.
+5. ~~Optional `./ask next`~~ — skipped (grill).
 
 6. **Verify + merge** — `./ask verify`; merge `agent/ask-status` to `main` when you accept.
 

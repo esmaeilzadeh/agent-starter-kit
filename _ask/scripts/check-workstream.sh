@@ -54,12 +54,14 @@ if [[ "$SPEC_OK" -eq 0 ]]; then
   done < <(find specs -type f -name '*.md' -print0 2>/dev/null || true)
 fi
 if [[ "$SPEC_OK" -eq 0 ]]; then
-  echo "check-workstream: no accepted specification found under specs/current/ (or Status CURRENT)" >&2
+  echo "check-workstream: default path incomplete — no accepted specification under specs/current/ (or Status CURRENT)." >&2
+  echo "check-workstream: guidance, not a lock. On-path: prepare the spec from accepted defaults, then re-run. Off-path only if the human explicitly left the kit." >&2
   exit 1
 fi
 
 if [[ ! -f "${WS}/plan.md" ]]; then
-  echo "check-workstream: missing plan ${WS}/plan.md" >&2
+  echo "check-workstream: default path incomplete — missing plan ${WS}/plan.md." >&2
+  echo "check-workstream: guidance, not a lock. On-path: prepare the plan from accepted defaults, then re-run." >&2
   exit 1
 fi
 
