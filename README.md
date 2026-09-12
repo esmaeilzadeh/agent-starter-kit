@@ -67,7 +67,8 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 | `./ask check-workstream <work-id>` | Preconditions before implement |
 | `./ask status` | Live `agent/*` + archived `work/*` on default (no checkout) |
 | `./ask verify` | Run checks; print commit SHA |
-| `./ask record-result …` | Provenance (requires `--commit-sha`) |
+| `./ask record-result …` | Workstream provenance (requires `--commit-sha`) |
+| `./ask record-run …` | Experiment provenance (SHA must be `HEAD`) |
 | `./ask sync` | Regenerate `.cursor` projections |
 | `./ask install <repo>` | Overlay kit package + adapter only |
 | `./ask upgrade --version <tag>` | Refresh kit-owned files |

@@ -18,7 +18,8 @@ Commands:
   check-workstream <id>    preconditions before implement
   status [--work-id id]    live agent/* + archived work/* on default
   verify                   run checks; print commit SHA
-  record-result …          provenance (requires --commit-sha)
+  record-result …          workstream provenance (requires --commit-sha)
+  record-run …             experiment provenance (SHA must be HEAD)
   sync                     regenerate .cursor projections
   install <repo>           overlay kit package + adapter
   upgrade --version <tag>  refresh kit-owned files
@@ -53,6 +54,9 @@ case "$cmd" in
     ;;
   record-result|record)
     exec "$SCRIPTS/record-result.sh" "$@"
+    ;;
+  record-run)
+    exec "$SCRIPTS/record-run.sh" "$@"
     ;;
   sync|sync-cursor-binding)
     exec "$SCRIPTS/sync-cursor-binding.sh" "$@"
