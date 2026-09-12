@@ -1,0 +1,7 @@
+{
+  "work_id": "pin-skills-v1.2.3",
+  "commit_sha": "c371f79df66b2f5d6d1b57c19005504cd3f21675",
+  "checks": [{"check": "./ask verify", "result": "pass"}],
+  "result": "pass",
+  "notes": "prepare ok at v1.2.3; verify green"
+}
