@@ -1,3 +1,7 @@
+---
+description: Leave the kit path for this chat only. New chats start on-path.
+---
+
 # /off-path — this session only
 
 This Cursor chat is **off the kit path** until it ends.

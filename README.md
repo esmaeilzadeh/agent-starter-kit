@@ -37,6 +37,7 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `_ask/` plu
 - **Engineering Pipeline (`01`–`10`)** — Grill → Spec → Challenge → Plan → Implement → Review → Refactor → Verify → Accept
 - **Pinned Community Skills** via `_ask/skills/manifest.yaml` + `./ask prepare` ([skills.sh](https://www.skills.sh/))
 - **Thin Cursor Binding** — rules *point* at protocol; generated projections under `.cursor/`
+- **`/off-path`** — Cursor command: leave the kit path for **this chat only**; a new chat starts on-path
 - **Git guardrails** — `_ask/policies/worktree.md`
 
 ## Repository map

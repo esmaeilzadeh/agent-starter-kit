@@ -208,7 +208,7 @@ AGENTS.md                              # ≤~30 lines; prepare; Explore name cav
 .agents/skills/                        # prepared Community Skills (gitignore bodies)
 ```
 
-**`./ask sync`** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `_ask/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT.
+**`./ask sync`** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `_ask/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT. Session-mode commands such as `/off-path` are copied from `_ask/cursor-commands/` into `.cursor/commands/` (not stage projections).
 
 **Rules:** rules *point*; protocol *owns* text. Logic for Git guardrails lives in `_ask/scripts/`; `.cursor/hooks` are mandatory entrypoints. Anything Cursor must honor must exist under `.cursor/` even if a portable source also lives under `_ask/` or `.agents/`.
 
