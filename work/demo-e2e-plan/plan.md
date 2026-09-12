@@ -2,28 +2,28 @@
 
 ## Specification
 
-This workstream delivers documentation only: `docs/demo/end-to-end-plan.md` (no product spec under `specs/current/` required).
+`specs/current/demo-e2e-plan.md`
 
 ## Approach
 
-Author a single facilitator guide covering prerequisites, Path A (Grill→Accept), Path B (Explore on-ramp), interrupts, checklist, and optional install-kit encore.
+The demo already shipped (later moved to `_ask/docs/demo/`). Close artifacts. Fix the one stale Path B line that still said `start-work` seeds `explore-map.md`.
 
 ## Work breakdown
 
-1. Write `docs/demo/end-to-end-plan.md`
-2. Record intent for this docs workstream
-3. Point `AGENTS.md` or `_ask/README.md` at the demo (light link)
-4. Verify clean tree / no broken links to kit paths
+1. ~~Write the facilitator demo and link it from AGENTS/README~~ — done on `main`.
+2. Fix Path B: create explore-map from the template; `start-work` does not seed it.
+3. Verify + Accept.
 
 ## Risks
 
-Demo feature name (`demo-kit-status`) might be confused with this docs work-id (`demo-e2e-plan`) — call out explicitly in the doc.
+Demo vehicle (`demo-kit-status`) can be confused with this work-id (`demo-e2e-plan`). The demo file already calls that out.
 
 ## Verification approach
 
-- Paths referenced in the demo exist in-repo
-- `scripts/check-clean-worktree.sh` still passes after commits
+- File exists at `_ask/docs/demo/end-to-end-plan.md`
+- Path B does not say the map is pre-seeded
+- `./ask verify`
 
 ## Out of scope for this plan
 
-Implementing `scripts/kit-status.sh` (separate workstream when someone runs the demo for real).
+Implementing `scripts/kit-status.sh`.
