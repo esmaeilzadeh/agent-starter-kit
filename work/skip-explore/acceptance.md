@@ -2,7 +2,7 @@
 
 ## Workstream
 
-`skip-explore` on `agent/skip-explore`
+`skip-explore`
 
 ## Specification
 
@@ -10,16 +10,16 @@
 
 ## Evidence
 
-`./ask verify` pass at `0be09a1`. `work/skip-explore/result.json` after record-result.
+`./ask verify` pass at `0be09a18c7bd9b1b5c2662163b73a9d6f8cb07b9`. Already on `main` via merge `22c37d0`.
 
 ## Residual risks
 
-Agents may still habit-write a stub map. Merge to main not done (needs explicit ask).
+Agents may still habit-write a stub explore-map on a real skip.
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED. Not auto-accepted.
+ACCEPTED. Human asked to close remaining recorded workstreams.
 
 ## Accepted commit SHA
 
-(pending human Accept)
+0be09a18c7bd9b1b5c2662163b73a9d6f8cb07b9
