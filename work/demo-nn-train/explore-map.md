@@ -18,7 +18,8 @@ None. Canonical map is this file.
 
 ## Decisions so far
 
-- **Q1 (scope + run model):** The demo ships a trainer you can actually run. Hyperparameters are **code** (committed config). You may also change trainer code. **Each experiment starts from a git commit** of that change; the recorded result is bound to that commit’s SHA. Not doc-only; not “point at the ILP repo.”
+- **Q1 (scope + run model):** The demo ships a trainer you can actually run. **Both** trainer-code edits **and** hyperparameter edits are part of the commit whose SHA the result binds. Not doc-only; not “point at the ILP repo.”
+- **Q7 (config location):** Hyperparams are a **config file in that run’s directory** (`results/<run-id>/config.yaml`, not a shared `configs/` tree). Create/edit it → commit (with any code change) → train → `record-run` against that SHA.
 - **Q2:** Tiny **real** dataset (option 2 / B) — not XOR-only, not ILP-scale.
 - **Q3:** New **`./ask record-run`** writing the ILP-shaped schema (option C). `record-result` stays for workstream Accept. Comparison to B is in this Explore turn.
 - **Q4:** Keep Grill→Accept Path A/B. Only the vehicle changes (train + record-run instead of `kit-status`).
@@ -55,8 +56,8 @@ Kit demo SHA-binds a **workstream**. ILP SHA-binds each **experiment run**. The 
 
 - Which tiny real dataset (moons vs small MNIST slice, etc.).
 - Framework (sklearn/numpy vs PyTorch).
-- Hyperparam file shape (YAML / JSON / Python module).
-- Whether `record-run` refuses a dirty tree (recommended: yes — SHA must be HEAD of the commit that started the run).
+- Whether `record-run` refuses a dirty tree (recommended: yes — SHA must be HEAD).
+- YAML vs JSON for the per-run config file (default YAML).
 - Exact `record-run` flags and whether it appends `results/RUN_REGISTRY.md` itself.
 
 ## Out of scope (provisional)
@@ -71,6 +72,6 @@ Kit demo SHA-binds a **workstream**. ILP SHA-binds each **experiment run**. The 
 
 **Why:** Scores without path + SHA are not citable. The demo should show changing knobs *or* code, committing that change, running, and binding the metric to that commit.
 
-**What (draft):** Replace `kit-status` as the Path A/B vehicle. Ship a tiny NN trainer in this repo. Hyperparams-as-code. Each run = commit → train → `./ask record-run` (ILP schema: manifest + summary + registry). `record-result` still closes the *workstream*.
+**What (draft):** Replace `kit-status` as the Path A/B vehicle. Ship a tiny NN trainer. Each run lives under `results/<run-id>/` with `config.yaml`. Changing code and/or that config is a git commit; `./ask record-run` binds the metric to that SHA. `record-result` still closes the *workstream*.
 
-**Locked:** Q1 run model, Q2 tiny real data, Q3 `record-run`, Q4 keep kit Path A/B.
+**Locked:** Q1 (code + hyperparams both SHA-bound), Q2 tiny real data, Q3 `record-run`, Q4 Path A/B, Q7 config-in-run-dir.
