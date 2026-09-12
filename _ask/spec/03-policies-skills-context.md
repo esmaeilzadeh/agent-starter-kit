@@ -247,7 +247,7 @@ perform forbidden high-risk actions
 continue through a mandatory escalation gate
 ```
 
-At meaningful milestones, create commits so that important engineering states are recoverable and attributable.
+At meaningful milestones, create commits so that important engineering states are recoverable and attributable. Do not wait until the plan finishes, and do not wait for the human to ask before committing on the dedicated `agent/<work-id>` branch (see worktree policy).
 
 ---
 

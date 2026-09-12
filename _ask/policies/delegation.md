@@ -58,6 +58,7 @@ rewrite accepted specification to unblock implementation
 start labor on a dirty working tree without grilling the human
 run overlapping related branches that will conflict on shared files
 defer all commits until the entire plan is finished
+wait for the human to ask before committing on the workstream branch
 ```
 
 ---

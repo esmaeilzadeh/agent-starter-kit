@@ -7,6 +7,6 @@ This repo uses the AI Engineering Starter Kit. Protocol source of truth is `_ask
 
 Before labor: read root `AGENTS.md`, then relevant `_ask/policies/` and stage contracts under `_ask/agents/`. Prepare pinned skills via `_ask/skills/prepare-skills.sh` when the role needs Community Skills.
 
-**Worktree (hard):** never start on an unclean tree. If dirty, grill the human about uncommitted/untracked files — do not stash/reset silently. One plan per `agent/<work-id>` branch; commit each meaningful step; do not run overlapping related branches in parallel. See `_ask/policies/worktree.md`.
+**Worktree (hard):** never start on an unclean tree. If dirty, grill the human about uncommitted/untracked files — do not stash/reset silently. One plan per `agent/<work-id>` branch; **commit each meaningful step on that branch without waiting for the human to ask** (overrides global “only commit when asked”); do not run overlapping related branches in parallel. See `_ask/policies/worktree.md`.
 
 Kit `00 Explore` is a protocol stage (explore-map artifact). It is not Cursor’s built-in Explore subagent.

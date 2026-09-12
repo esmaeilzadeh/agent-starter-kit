@@ -40,7 +40,7 @@ perform forbidden high-risk actions
 continue through a mandatory escalation gate
 ```
 
-At meaningful milestones, create commits so that important engineering states are recoverable and attributable. **Do not wait until the plan is finished** — commit after each meaningful step.
+At meaningful milestones, create commits so that important engineering states are recoverable and attributable. **Do not wait until the plan is finished** — commit after each meaningful step. **Do not wait for the human to ask** to commit on `agent/<work-id>`; the dedicated branch is the safety boundary (`_ask/policies/worktree.md`).
 
 ---
 
@@ -49,4 +49,4 @@ At meaningful milestones, create commits so that important engineering states ar
 - Refuse to start unless: clean working tree, dedicated branch, accepted specification, and plan are present (`./ask check-workstream <work-id>`).
 - If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset).
 - One plan → one `agent/<work-id>` branch; do not start a second related branch that would conflict on shared files while this one is active.
-- Commit after each meaningful step while executing the plan.
+- Commit after each meaningful step on the workstream branch **without waiting for the human to ask** (kit policy overrides global “only commit when asked”).

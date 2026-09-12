@@ -33,7 +33,7 @@ After the demo you can answer: *What were we building? Which spec? Which branch?
 5. Sync Cursor projections: `./ask sync`
 
 **Human role in the demo:** own What/Why, answer grilling, accept the spec, accept the final result.  
-**Agent role:** run stages `00`–`10` per `_ask/agents/*.md`, commit each meaningful step, never silent-stash a dirty tree.
+**Agent role:** run stages `00`–`10` per `_ask/agents/*.md`, commit each meaningful step on `agent/<work-id>` without waiting to be asked, never silent-stash a dirty tree.
 
 ---
 

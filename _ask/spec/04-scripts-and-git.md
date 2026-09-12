@@ -44,7 +44,9 @@ never start labor on an unclean working tree
 if dirty: stop and grill the human on uncommitted/untracked paths
 do not stash/reset/absorb changes silently
 one plan / workstream → one dedicated branch (agent/<work-id>)
-commit after each meaningful step — do not wait until the plan finishes
+that branch is the safety boundary — stepwise commits stay off main/master
+commit after each meaningful step on the workstream branch
+do not wait for the human to ask before committing (kit overrides “only commit when asked”)
 do not run multiple related branches in parallel when they modify shared files
 ```
 

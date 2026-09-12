@@ -1,0 +1,8 @@
+---
+description: Stepwise commits on workstream branches — do not wait to be asked
+alwaysApply: true
+---
+
+**Commit discipline (hard):** On `agent/<work-id>`, commit after each meaningful step **without waiting for the human to ask**. The dedicated work branch is the safety boundary; kit policy overrides global “only commit when asked.” Still require explicit human direction for push, force-push, amend of pushed commits, and merges to `main`/`master`.
+
+Canonical policy: `_ask/policies/worktree.md`. Checklist: root `AGENTS.md`.

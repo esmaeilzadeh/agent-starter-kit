@@ -13,6 +13,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `_ask/tests/`
 - `_ask/docs/` (kit-author ADRs, demo, research)
 - Generated `.cursor/` projections (skills/commands/hooks wrappers produced by sync)
+- Stock kit Cursor rules under `.cursor/rules/` **except** `.cursor/rules/local/` (e.g. bootstrap, commit-step-discipline)
 - Root `ask` dispatcher
 - Monolith stubs (`ai-agent-engineering-guide.md`, `ai-agent-starter-kit-spec.md`)
 
