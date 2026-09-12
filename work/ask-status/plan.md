@@ -2,52 +2,47 @@
 
 ## Specification
 
-No separate `specs/` file. Contract lives in kit protocol:
+Session-only `/off-path`. Contract:
 
-- `_ask/policies/workflow.md` — default path is guidance; skip = warn once + follow
-- `_ask/spec/04-scripts-and-git.md` §23.4 — `./ask status` + `code-without-plan` warning
-- Stage contracts under `_ask/agents/` must match (guidance, not refuse-for-missing-artifacts)
-- Safety refusals stay hard: dirty tree, silent stash/reset, fake verify/accept, silent What/Why change
+- Every new Cursor session starts **on-path**.
+- `/off-path` switches **this chat only**. No git flag, no `work/*/kit-path`, no intent flip.
+- Source of truth: `_ask/cursor-commands/off-path.md`. `./ask sync` copies it to `.cursor/commands/off-path.md`.
+- Policy: `_ask/policies/workflow.md`. Safety gates unchanged.
 
-**Already on this branch (do not redo):** policy file, AGENTS checklist item, Cursor `workflow-guidance.mdc`, Implement/Plan emphasis, delegation “never silently”, status warning + test, spec/MAPPING pointers.
+**Already on this branch (do not redo):** command file, sync copy + `test-sync-off-path-command.sh`, workflow/AGENTS/rule/CONTEXT/ADR-0013 wording.
 
 ## Approach
 
-Finish the first slice so the *whole kit* tells one story: agents default to the next stage and auto-continue at exit criteria; if the human jumps, warn once and proceed. Align leftover SoT that still reads like a lock (`check-workstream` as “refuse Implement”, spec § implement hard preconditions, Guide, demo, unused stage contracts).
-
-Do **not** add a new lock script. `./ask check-workstream` stays a **check** (exit non-zero = “default path incomplete”). Agents interpret that as warn+ask, not stop-the-human.
+Treat the command as a **session mode**, not a workstream state. Finish discoverability and kit-owned-path docs so install/upgrade/sync keep the file. Then verify and merge when you accept.
 
 ## Work breakdown
 
-1. **Align remaining stage contracts** (`00`–`04`, `07`–`10`) with one shared “Kit emphasis” stanza: default next-stage + auto-continue; on skip, warn once / follow; pointer to `workflow.md`. Keep stage-specific must/must-not. Sync Cursor projections.
+1. ~~SoT + sync + session-only rules + test~~ — done (`82d1cbd`).
 
-2. **Soften spec wording that still locks Implement** — `_ask/spec/03-policies-skills-context.md` “Hard preconditions” / “accepted spec + plan” → default preconditions; missing spec/plan is a warning path. `check-workstream` docs: check for the default path, not a padlock.
+2. **Discoverability** — add command front matter (`description`) so Cursor’s command palette finds `/off-path`. Mention it in root `README.md` (one row) and the demo human/agent roles. One sentence in `_ask/spec/05-examples-and-binding.md` next to other `.cursor/commands`.
 
-3. **Guide + demo + CONTEXT** — `_ask/guide/02-workflow.md`: default path, skip-with-warning, auto-continue at human gates only. Demo: one line that a jump is allowed if warned. `CONTEXT.md`: **Workflow guidance** term.
+3. **Owned paths** — list `_ask/cursor-commands/` as kit-owned in `OWNED-PATHS.md` / upgrade copy set if `upgrade-kit.sh` needs an explicit extra (sync already copies into `.cursor/`).
 
-4. **ADR** — short `0013-workflow-guidance-not-lock.md` (default path, warn+follow, what stays hard).
+4. **Guide pointer** — `_ask/guide/02-workflow.md` already has guidance-not-lock; add `/off-path` = this session only.
 
-5. ~~Optional `./ask next`~~ — skipped (grill).
-
-6. **Verify + merge** — `./ask verify`; merge `agent/ask-status` to `main` when you accept.
+5. **Verify + merge** — `./ask verify`; merge `agent/ask-status` when you accept.
 
 ## Risks
 
-- Agents still treat `check-workstream` non-zero as refuse (habit). Mitigation: explicit “not a lock” in the script’s stderr when spec/plan missing vs dirty-tree.
-- Warning spam. Mitigation: warn **once** per deviation; status flag is enough after that.
-- Scope creep into autoplay `/01`…`/10` as one unattended job. Out of scope — auto-continue is in-conversation, not a batch runner.
+- Humans expect `/off-path` to last across chats. Mitigation: command text + policy say new chat = on-path; do not add `/on-path` (new chat is enough).
+- Name clash with Cursor `/fast`. Mitigation: keep the name `/off-path`.
+- `./ask sync` on an old tree without `cursor-commands/` — loop already `[[ -f ]]` safe.
 
 ## Verification approach
 
-- Existing `_ask/tests/test-status.sh` (`code-without-plan`, merged ≠ live).
-- If `check-workstream` message is split: add a test that missing plan exits non-zero with “guidance” wording, not “forbidden”.
-- `./ask verify` on this branch.
-- Manual: `./ask status` shows `ask-status` live/planned, merged work archived.
+- `_ask/tests/test-sync-off-path-command.sh` (already).
+- After front matter: grep description in synced `.cursor/commands/off-path.md`.
+- `./ask verify`.
+- Manual: new Composer chat is on-path; `/off-path` warns once; another new chat is on-path again.
 
 ## Out of scope for this plan
 
-- Locking Implement or requiring slash commands per stage.
-- Committed `work/INDEX.md`.
-- Deleting leftover `agent/*` branches automatically.
-- External tracker.
-- Changing dirty-tree / verify-SHA hard gates.
+- Durable off-path flag in git.
+- `/on-path` command.
+- Redefining Cursor `/fast`.
+- Autoplays `/01`–`/10` as a batch job.
