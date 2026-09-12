@@ -20,10 +20,19 @@ EOF
 git add . && git commit -q -m init
 git branch -M main
 
-# live: seeded only
+# live: seeded only (stock explore-map handoff must not count as explored)
 git checkout -q -b agent/seeded
 mkdir -p work/seeded
 printf '# Plan\n\n## Approach\n\n' > work/seeded/plan.md
+cat > work/seeded/explore-map.md <<'EOF'
+# Explore Map: x
+
+## Handoff to Intent
+
+**Contract:** This section must be non-empty before `01 Grill`. Empty handoff → not eligible for the Engineering Pipeline.
+
+<!-- Required non-empty before entering 01 Grill. Summarize the destination. -->
+EOF
 git add work/seeded && git commit -q -m seeded
 git checkout -q main
 

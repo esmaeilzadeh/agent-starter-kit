@@ -79,11 +79,14 @@ def meaningful(text):
         line = raw.strip()
         if not line:
             continue
-        if line.startswith("<!--"):
+        if line.startswith("<!--") or line.startswith("-->"):
             continue
         if re.fullmatch(r"<[^>]+>", line):
             continue
         if re.fullmatch(r"[-*]\s*([.…]+|\.\.\.)?", line):
+            continue
+        # kit explore-map template boilerplate
+        if line.startswith("**Contract:**"):
             continue
         return True
     return False
