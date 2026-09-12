@@ -34,3 +34,5 @@ A new chat is on-path again. Saying “skip the kit” / “just code” in an o
 ## Status
 
 `./ask status` may flag `code-without-plan` on a **live** branch that changed files outside `work/<id>/` and `specs/` while stage is still `seeded` / `explored` / `intent`. Signal that labor left the path without artifacts — not a failure by itself.
+
+Parked later-tasks in `.later/` are not live and do not appear on this board.
