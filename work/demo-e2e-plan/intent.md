@@ -23,3 +23,5 @@ None.
 ## Human decisions
 
 Demo vehicle = `scripts/kit-status.sh` readiness check; dual path A/B documented.
+
+Explore skipped: destination already clear.

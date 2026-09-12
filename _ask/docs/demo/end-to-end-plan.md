@@ -185,7 +185,7 @@ Use when you want to demo **00 Explore** before Intent.
 Contract: `_ask/agents/00-explore.md` — **not** Cursor’s built-in Explore subagent.
 
 1. Prepare Explore skills if using Community Skills: `./ask prepare`
-2. Chart `work/demo-kit-status/explore-map.md` (template already seeded)
+2. Create `work/demo-kit-status/explore-map.md` from `_ask/templates/explore-map.md` (`start-work` does not seed it)
 3. Grill options: shell script vs doc-only checklist vs Cursor rule-only
 4. Decide: shell script status check (matches Path A)
 5. Fill **non-empty** `## Handoff to Intent`
