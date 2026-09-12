@@ -19,11 +19,11 @@ Treat the command as a **session mode**, not a workstream state. Finish discover
 
 1. ~~SoT + sync + session-only rules + test~~ — done (`82d1cbd`).
 
-2. **Discoverability** — add command front matter (`description`) so Cursor’s command palette finds `/off-path`. Mention it in root `README.md` (one row) and the demo human/agent roles. One sentence in `_ask/spec/05-examples-and-binding.md` next to other `.cursor/commands`.
+2. ~~**Discoverability**~~ — done (`e522d01`).
 
-3. **Owned paths** — list `_ask/cursor-commands/` as kit-owned in `OWNED-PATHS.md` / upgrade copy set if `upgrade-kit.sh` needs an explicit extra (sync already copies into `.cursor/`).
+3. ~~**Owned paths**~~ — done (`d21cdc2`).
 
-4. **Guide pointer** — `_ask/guide/02-workflow.md` already has guidance-not-lock; add `/off-path` = this session only.
+4. ~~**Guide pointer**~~ — done (`8b0993f`).
 
 5. **Verify + merge** — `./ask verify`; merge `agent/ask-status` when you accept.
 
