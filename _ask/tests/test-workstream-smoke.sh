@@ -31,6 +31,8 @@ SPEC
 git add specs && git commit -q -m "spec"
 
 ./_ask/scripts/start-work.sh smoke-demo
+# 00 creates the map (start-work does not seed it)
+cp _ask/templates/explore-map.md work/smoke-demo/explore-map.md
 # Fill handoff
 python3 - <<'PY'
 from pathlib import Path

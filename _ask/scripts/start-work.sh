@@ -47,7 +47,7 @@ copy_tpl() {
   fi
 }
 TPL="$ROOT/_ask/templates"
-copy_tpl "$TPL/explore-map.md" "$WS/explore-map.md"
+# explore-map.md is created only when 00 Explore runs (real skip leaves no map)
 copy_tpl "$TPL/intent.md" "$WS/intent.md"
 copy_tpl "$TPL/plan.md" "$WS/plan.md"
 copy_tpl "$TPL/review.md" "$WS/review.md"

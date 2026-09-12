@@ -50,3 +50,5 @@ work/<work-id>/intent.md
 Before resolving a grilling round (“all ok” / accept recommendations), each open question must be expanded (alternatives, tradeoffs, failure modes)—not only a one-line A/B/C. Never auto-approve recommendations.
 
 A confirmed “I approve these defaults are OK” (or “all recs” after an expanded frontier) is the **first on-path confirm**. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`.
+
+If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
