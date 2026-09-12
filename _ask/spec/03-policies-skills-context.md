@@ -571,7 +571,7 @@ skills:
   wayfinder:
     source: mattpocock/skills          # owner/repo or full git URL
     revision: "v1.2.3"               # tag, branch, or 40-char SHA — required; never latest
-    skill: wayfinder                 # CLI --skill; required when source repo has many skills
+    skill: wayfinder                 # CLI --skill; must exist at that revision
     role: explore-map                # kit semantics (explore-map, intent-clarification, …)
     required: true                   # optional; prepare fails closed when true
 ```

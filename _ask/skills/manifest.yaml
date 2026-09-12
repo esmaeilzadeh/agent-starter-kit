@@ -1,22 +1,31 @@
 # Skill Manifest (v1) — authoritative human-reviewed pins.
 # Never set revision to "latest" for critical methods; bump pins deliberately.
 # Discovery starting point: https://www.skills.sh/
+# CLI --skill names must exist at the pinned revision.
+# Latest mattpocock/skills tag as of this pin: v1.2.3
+# (v1.0.0 used decision-mapping and had no research skill.)
 skills:
   wayfinder:
     source: mattpocock/skills
-    revision: "v1.0.0"
+    revision: "v1.2.3"
     skill: wayfinder
     role: explore-map
     required: true
   research:
     source: mattpocock/skills
-    revision: "v1.0.0"
+    revision: "v1.2.3"
     skill: research
     role: explore-research
     required: false
+  prototype:
+    source: mattpocock/skills
+    revision: "v1.2.3"
+    skill: prototype
+    role: explore-prototype
+    required: false
   grilling:
     source: mattpocock/skills
-    revision: "v1.0.0"
+    revision: "v1.2.3"
     skill: grilling
     role: intent-clarification
     required: true
