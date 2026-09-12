@@ -1,7 +1,9 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "skip-explore",
+  "commit_sha": "0be09a18c7bd9b1b5c2662163b73a9d6f8cb07b9",
+  "checks": [
+    {"check": "./ask verify", "result": "pass"}
+  ],
+  "result": "pass",
+  "notes": "All discovered kit tests passed including start-work-no-explore-map and check-workstream-guidance."
 }
