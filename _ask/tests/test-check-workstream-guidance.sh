@@ -12,6 +12,7 @@ git add README.md && git commit -q -m init
 mkdir -p _ask/scripts work/demo
 cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/check-workstream.sh" _ask/scripts/
 chmod +x _ask/scripts/*.sh
+git add _ask work && git commit -q -m kit
 git checkout -q -b agent/demo
 # no spec
 set +e
