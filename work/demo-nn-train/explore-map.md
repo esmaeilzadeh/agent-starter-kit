@@ -18,7 +18,10 @@ None. Canonical map is this file.
 
 ## Decisions so far
 
-None from the human yet. Facts below are research, not decisions.
+- **Q1 (scope + run model):** The demo ships a trainer you can actually run. Hyperparameters are **code** (committed config). You may also change trainer code. **Each experiment starts from a git commit** of that change; the recorded result is bound to that commit’s SHA. Not doc-only; not “point at the ILP repo.”
+- **Q2:** Tiny **real** dataset (option 2 / B) — not XOR-only, not ILP-scale.
+- **Q3:** New **`./ask record-run`** writing the ILP-shaped schema (option C). `record-result` stays for workstream Accept. Comparison to B is in this Explore turn.
+- **Q4:** Keep Grill→Accept Path A/B. Only the vehicle changes (train + record-run instead of `kit-status`).
 
 ## Research facts (not decisions)
 
@@ -50,11 +53,11 @@ Kit demo SHA-binds a **workstream**. ILP SHA-binds each **experiment run**. The 
 
 ## Not yet specified
 
-- Demo-doc-only vs also shipping a tiny trainer in this repo.
-- Where the NN lives (this repo vs a sibling ML repo).
-- Provenance shape: extend `record-result`, copy ILP registry, or both.
-- How small the net/dataset must be (CPU minutes vs hours).
-- Whether Path A/B kit-pipeline shape stays.
+- Which tiny real dataset (moons vs small MNIST slice, etc.).
+- Framework (sklearn/numpy vs PyTorch).
+- Hyperparam file shape (YAML / JSON / Python module).
+- Whether `record-run` refuses a dirty tree (recommended: yes — SHA must be HEAD of the commit that started the run).
+- Exact `record-run` flags and whether it appends `results/RUN_REGISTRY.md` itself.
 
 ## Out of scope (provisional)
 
@@ -64,8 +67,10 @@ Kit demo SHA-binds a **workstream**. ILP SHA-binds each **experiment run**. The 
 
 ## Handoff to Intent
 
-**Status: STILL_FOGGY** — destination named, grill frontier open.
+**Status: STILL_FOGGY** — core What/Why named; one grill frontier left (dataset, framework, config file, dirty-tree refuse).
 
-**Owned so far:** Why = stop citing scores without a path + SHA. What (draft) = replace `kit-status` as the demo vehicle with a tiny NN experiment loop that records each run like ILP provenance.
+**Why:** Scores without path + SHA are not citable. The demo should show changing knobs *or* code, committing that change, running, and binding the metric to that commit.
 
-**Blocked on:** scope (doc vs code), home of the NN, provenance artifact shape, experiment size. See Explore grill round 1.
+**What (draft):** Replace `kit-status` as the Path A/B vehicle. Ship a tiny NN trainer in this repo. Hyperparams-as-code. Each run = commit → train → `./ask record-run` (ILP schema: manifest + summary + registry). `record-result` still closes the *workstream*.
+
+**Locked:** Q1 run model, Q2 tiny real data, Q3 `record-run`, Q4 keep kit Path A/B.
