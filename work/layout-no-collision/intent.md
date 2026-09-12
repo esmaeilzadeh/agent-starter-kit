@@ -23,3 +23,5 @@ None — Q1=A, Q2=A locked.
 ## Human decisions
 
 Three layers: kit package / thin adapter / product state.
+
+Explore skipped: destination already clear.
