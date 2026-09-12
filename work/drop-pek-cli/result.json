@@ -1,0 +1,6 @@
+{
+  "work_id": "drop-pek-cli",
+  "commit_sha": "0fc29016bdc6a995ffa86b5f08fbce0ac553ddf4",
+  "result": "pass",
+  "notes": "pek-cli dir removed; archive clears after merge"
+}
