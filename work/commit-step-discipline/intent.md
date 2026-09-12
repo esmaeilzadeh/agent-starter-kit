@@ -15,3 +15,5 @@ Changing `start-work` branching defaults. Auto-committing via hooks. Touching `m
 ## Human decisions
 
 Kit protocol overrides any global “only commit when asked” habit while this policy is in force.
+
+Explore skipped: destination already clear.
