@@ -1,7 +1,21 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "ask-status",
+  "commit_sha": "00fbcfe456008aecb6dd024187530d1808ebfd4c",
+  "checks": [
+    {"check": "_ask/tests/test-ask.sh", "result": "pass"},
+    {"check": "_ask/tests/test-check-clean-worktree.sh", "result": "pass"},
+    {"check": "_ask/tests/test-check-workstream-guidance.sh", "result": "pass"},
+    {"check": "_ask/tests/test-install-kit-apply.sh", "result": "pass"},
+    {"check": "_ask/tests/test-install-kit-dry-run.sh", "result": "pass"},
+    {"check": "_ask/tests/test-later-inbox-gitignore.sh", "result": "pass"},
+    {"check": "_ask/tests/test-prepare-skills-refuses-latest.sh", "result": "pass"},
+    {"check": "_ask/tests/test-record-result-refuses-missing-sha.sh", "result": "pass"},
+    {"check": "_ask/tests/test-start-work-no-explore-map.sh", "result": "pass"},
+    {"check": "_ask/tests/test-start-work-refuses-dirty.sh", "result": "pass"},
+    {"check": "_ask/tests/test-status.sh", "result": "pass"},
+    {"check": "_ask/tests/test-sync-off-path-command.sh", "result": "pass"},
+    {"check": "_ask/tests/test-workstream-smoke.sh", "result": "pass"}
+  ],
+  "result": "pass",
+  "notes": "./ask verify at 00fbcfe; /off-path description front matter + docs + owned paths"
 }
