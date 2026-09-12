@@ -24,7 +24,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Skill provenance + preparation | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/skills/manifest.yaml`](skills/manifest.yaml), `./ask prepare` |
 | Decision memory | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/decisions/`](decisions/) |
 | Spec state | [guide/README](guide/README.md) | [`specs/current/`](../specs/current/), [`specs/proposals/`](../specs/proposals/), status field |
-| Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream` |
+| Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |
 | Cursor Binding sync | [guide/README](guide/README.md) | `./ask sync`, `.cursor/` |
 | Install overlay | [guide/README](guide/README.md) | `./ask install` |
 | Result provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-result`, result schema |

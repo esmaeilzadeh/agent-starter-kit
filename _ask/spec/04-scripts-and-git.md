@@ -16,6 +16,7 @@ Mapped commands:
 ./ask check-clean              → _ask/scripts/check-clean-worktree.sh
 ./ask start-work <work-id>     → _ask/scripts/start-work.sh
 ./ask check-workstream <id>    → _ask/scripts/check-workstream.sh
+./ask status [--work-id id]    → _ask/scripts/status.sh
 ./ask verify                   → _ask/scripts/verify.sh
 ./ask record-result …          → _ask/scripts/record-result.sh
 ./ask sync                     → _ask/scripts/sync-cursor-binding.sh
@@ -97,6 +98,21 @@ plan exists
 ```
 
 This can be called by agent instructions before implementation/review/refactor.
+
+## 23.4 `./ask status` (`status.sh`)
+
+Board of kit workstreams **without checking out** other branches:
+
+```text
+live = local refs/heads/agent/<work-id>
+archive = work/<work-id>/ on the default branch with no matching agent/* branch
+```
+
+`work/` is branch-local; do not treat the current checkout as the global inventory. Do not write a committed `work/INDEX.md`.
+
+It infers a furthest stage from filled artifacts on that ref (`seeded` … `explored` … `intent` … `planned` … `reviewed` … `recorded` … `accepted`). Flags: `--work-id`, `--json`.
+
+After Accept, merge the workstream branch so `main`/`master` becomes the archive.
 
 ---
 

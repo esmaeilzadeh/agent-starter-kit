@@ -3,3 +3,5 @@
 Per-workstream artifacts live under `work/<work-id>/` (explore-map, intent, plan, review, verification, acceptance, results).
 
 Create a workstream with `./ask start-work <work-id>`.
+
+These files are **branch-local**. List live plans with `./ask status` (reads `agent/*` refs; archived `work/*` on the default branch after merge). Do not treat a single checkout as the inventory.

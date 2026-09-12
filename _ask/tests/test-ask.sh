@@ -4,6 +4,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 ASK="$ROOT/ask"
 
 "$ASK" --help | grep -q 'Agent Starter Kit'
+"$ASK" --help | grep -q 'status'
 set +e
 "$ASK" nosuchcmd >/dev/null 2>&1
 code=$?

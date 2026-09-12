@@ -16,6 +16,7 @@ Commands:
   check-clean              refuse dirty worktree
   start-work <work-id>     branch agent/<work-id> + seed work/<work-id>/
   check-workstream <id>    preconditions before implement
+  status [--work-id id]    live agent/* + archived work/* on default
   verify                   run checks; print commit SHA
   record-result …          provenance (requires --commit-sha)
   sync                     regenerate .cursor projections
@@ -43,6 +44,9 @@ case "$cmd" in
     ;;
   check-workstream|check)
     exec "$SCRIPTS/check-workstream.sh" "$@"
+    ;;
+  status)
+    exec "$SCRIPTS/status.sh" "$@"
     ;;
   verify)
     exec "$SCRIPTS/verify.sh" "$@"
