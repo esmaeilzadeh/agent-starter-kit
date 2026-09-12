@@ -9,25 +9,25 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 | Step | Action |
 | --- | --- |
 | 1 | Read **[AGENTS.md](AGENTS.md)** — short operational checklist every agent must follow |
-| 2 | Skim **[part-engineering/README.md](part-engineering/README.md)** — where the kit lives |
-| 3 | Run the facilitator demo **[part-engineering/docs/demo/end-to-end-plan.md](part-engineering/docs/demo/end-to-end-plan.md)** |
+| 2 | Skim **[_ask/README.md](_ask/README.md)** — where the kit lives |
+| 3 | Run the facilitator demo **[_ask/docs/demo/end-to-end-plan.md](_ask/docs/demo/end-to-end-plan.md)** |
 | 4 | Open **[CONTEXT.md](CONTEXT.md)** — domain vocabulary for this kit |
 
 ```bash
-./pek check-clean
-./pek sync
+./ask check-clean
+./ask sync
 # optional (needs network / skills CLI):
-./pek prepare
+./ask prepare
 ```
 
 ## How a product uses this kit
 
-Clone or `install-kit` into **your** app repo. The kit occupies only `part-engineering/` plus a thin Cursor adapter. Your Nest (or other) `docs/`, `scripts/`, `tests/`, and `src/` stay yours.
+Clone or `install-kit` into **your** app repo. The kit occupies only `_ask/` plus a thin Cursor adapter. Your Nest (or other) `docs/`, `scripts/`, `tests/`, and `src/` stay yours.
 
 | Layer | Paths |
 | --- | --- |
-| Kit package | `part-engineering/` (protocol, scripts, kit tests, kit-author docs) |
-| Adapter | `pek`, `AGENTS.md`, `.cursor/` |
+| Kit package | `_ask/` (protocol, scripts, kit tests, kit-author docs) |
+| Adapter | `ask`, `AGENTS.md`, `.cursor/` |
 | Product state | `specs/`, `work/` (created by start-work) |
 | Product code/docs | everything else |
 
@@ -35,51 +35,51 @@ Clone or `install-kit` into **your** app repo. The kit occupies only `part-engin
 
 - **Explore (`00`)** when the destination is foggy — durable `work/<work-id>/explore-map.md`
 - **Engineering Pipeline (`01`–`10`)** — Grill → Spec → Challenge → Plan → Implement → Review → Refactor → Verify → Accept
-- **Pinned Community Skills** via `part-engineering/skills/manifest.yaml` + `./pek prepare` ([skills.sh](https://www.skills.sh/))
+- **Pinned Community Skills** via `_ask/skills/manifest.yaml` + `./ask prepare` ([skills.sh](https://www.skills.sh/))
 - **Thin Cursor Binding** — rules *point* at protocol; generated projections under `.cursor/`
-- **Git guardrails** — `part-engineering/policies/worktree.md`
+- **Git guardrails** — `_ask/policies/worktree.md`
 
 ## Repository map
 
 ```text
 README.md                 ← human entry
 AGENTS.md                 ← agent entry
-pek                       ← Part Engineering Kit command (not scripts/)
+ask                       ← Agent Starter Kit command (not scripts/)
 CONTEXT.md                ← glossary
-part-engineering/         ← entire kit (guide, spec, agents, policies,
+_ask/         ← entire kit (guide, spec, agents, policies,
                             templates, skills, scripts, tests, docs)
 specs/                    ← product / workstream specifications
 work/                     ← per-work-id artifacts
 .cursor/                  ← Cursor-honored projections
 ```
 
-Guide and Build Spec modules live under `part-engineering/guide/` and `part-engineering/spec/`. Root monolith filenames are stubs.
+Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root monolith filenames are stubs.
 
 ## Quick commands
 
-`./pek` is the only root command. It execs `part-engineering/scripts/` (and `prepare` → `skills/prepare-skills.sh`).
+`./ask` is the only root command. It execs `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`).
 
 | Command | Purpose |
 | --- | --- |
-| `./pek check-clean` | Refuse dirty trees |
-| `./pek start-work <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
-| `./pek check-workstream <work-id>` | Preconditions before implement |
-| `./pek verify` | Run checks; print commit SHA |
-| `./pek record-result …` | Provenance (requires `--commit-sha`) |
-| `./pek sync` | Regenerate `.cursor` projections |
-| `./pek install <repo>` | Overlay kit package + adapter only |
-| `./pek upgrade --version <tag>` | Refresh kit-owned files |
-| `./pek prepare` | Install pinned Community Skills |
+| `./ask check-clean` | Refuse dirty trees |
+| `./ask start-work <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
+| `./ask check-workstream <work-id>` | Preconditions before implement |
+| `./ask verify` | Run checks; print commit SHA |
+| `./ask record-result …` | Provenance (requires `--commit-sha`) |
+| `./ask sync` | Regenerate `.cursor` projections |
+| `./ask install <repo>` | Overlay kit package + adapter only |
+| `./ask upgrade --version <tag>` | Refresh kit-owned files |
+| `./ask prepare` | Install pinned Community Skills |
 
 ## Documentation index
 
-- **Demo:** [part-engineering/docs/demo/end-to-end-plan.md](part-engineering/docs/demo/end-to-end-plan.md)
-- **Guide:** [part-engineering/guide/README.md](part-engineering/guide/README.md)
-- **Build Spec:** [part-engineering/spec/README.md](part-engineering/spec/README.md)
-- **Guide ↔ Spec map:** [part-engineering/MAPPING.md](part-engineering/MAPPING.md)
-- **Owned paths / upgrades:** [part-engineering/OWNED-PATHS.md](part-engineering/OWNED-PATHS.md)
-- **ADRs:** [part-engineering/docs/adr/](part-engineering/docs/adr/)
-- **Issue tracker (this kit repo):** [part-engineering/docs/agents/issue-tracker.md](part-engineering/docs/agents/issue-tracker.md)
+- **Demo:** [_ask/docs/demo/end-to-end-plan.md](_ask/docs/demo/end-to-end-plan.md)
+- **Guide:** [_ask/guide/README.md](_ask/guide/README.md)
+- **Build Spec:** [_ask/spec/README.md](_ask/spec/README.md)
+- **Guide ↔ Spec map:** [_ask/MAPPING.md](_ask/MAPPING.md)
+- **Owned paths / upgrades:** [_ask/OWNED-PATHS.md](_ask/OWNED-PATHS.md)
+- **ADRs:** [_ask/docs/adr/](_ask/docs/adr/)
+- **Issue tracker (this kit repo):** [_ask/docs/agents/issue-tracker.md](_ask/docs/agents/issue-tracker.md)
 
 ## Design stance
 

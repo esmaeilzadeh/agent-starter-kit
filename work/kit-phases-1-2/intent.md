@@ -14,7 +14,7 @@ Phase 3 workflow-quality completeness; CI; non-Cursor runtime adapters; vendorin
 
 ## Known assumptions
 
-GitHub Issues tracker; skills CLI for prepare; `part-engineering/` branding.
+GitHub Issues tracker; skills CLI for prepare; `_ask/` branding.
 
 ## Open questions
 

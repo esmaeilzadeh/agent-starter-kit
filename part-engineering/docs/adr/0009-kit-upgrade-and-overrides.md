@@ -1,3 +1,0 @@
-# Kit dogfood, upgrade-kit, and consumer overrides
-
-The kit repo dogfoods its own `part-engineering/` + Cursor Binding. Consuming repos use overlay install plus `./pek upgrade` (`upgrade-kit.sh`) that refreshes **kit-owned** files from an explicit kit version/tag and never clobbers **consumer-owned** overrides: skill manifest, policies (or local), AGENTS local sections, `.cursor/rules/local/`, and `part-engineering/agents/*.local.md`. Community Skills track independently via manifest pins. Stock agents/templates/guide/spec/scripts/`pek` remain kit-owned so upgrades stay deliberate and mergeable.

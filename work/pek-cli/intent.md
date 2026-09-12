@@ -2,7 +2,7 @@
 
 ## What
 
-Single root command `pek` that execs kit scripts under `part-engineering/`.
+Single root command `pek` that execs kit scripts under `_ask/`.
 
 ## Why
 

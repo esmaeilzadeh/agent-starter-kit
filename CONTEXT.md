@@ -5,15 +5,15 @@ Portable repository protocol for delegating engineering labor to AI agents while
 ## Language
 
 **Starter Kit**:
-The portable repository protocol (agent instructions, policies, templates, scripts, modular docs/specs) that a developer copies into a software repo. It is not a multi-agent runtime product. The entire kit package lives under the branded root `part-engineering/` (including kit scripts, kit tests, and kit-author docs). Root adapter is `pek` + `AGENTS.md` + `.cursor/`. `pek` is the Part Engineering Kit dispatcher — the only root command; it is not a generic `scripts/` folder.
+The portable repository protocol (agent instructions, policies, templates, scripts, modular docs/specs) that a developer copies into a software repo. It is not a multi-agent runtime product. The entire kit package lives under the branded root `_ask/` (including kit scripts, kit tests, and kit-author docs). Root adapter is `ask` + `AGENTS.md` + `.cursor/`. `ask` is the Agent Starter Kit dispatcher — the only root command; it is not a generic `scripts/` folder.
 _Avoid_: agent platform, orchestration framework, agent OS, generic `engineering/` as the kit root
 
 **Guide**:
-The conceptual documentation of Division of Engineering Labor and engineering-system ownership. Shipped as multiple modular files under `part-engineering/guide/`, not one monolith and not under a consumer’s generic `docs/`.
+The conceptual documentation of Division of Engineering Labor and engineering-system ownership. Shipped as multiple modular files under `_ask/guide/`, not one monolith and not under a consumer’s generic `docs/`.
 _Avoid_: article (when referring to the shipped docs set), single guide file, root `docs/guide` as the shipped location
 
 **Build Spec**:
-The implementation contract for the Starter Kit. Shipped as multiple modular files under `part-engineering/spec/` that stay name-stable with the Guide.
+The implementation contract for the Starter Kit. Shipped as multiple modular files under `_ask/spec/` that stay name-stable with the Guide.
 _Avoid_: single spec file, implementation plan (that is a workstream Plan artifact), root `docs/spec` as the shipped location
 
 **Engineering Agent**:
@@ -49,11 +49,11 @@ The explicit engineering contract for a Workstream, with a lifecycle status (`PR
 _Avoid_: plan, acceptance criteria alone (those are parts of it)
 
 **Cursor Binding**:
-How the Starter Kit is expressed inside Cursor. Includes root `pek`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./pek sync` — so Cursor can honor stages without hand-maintained subagent SoT. Portable protocol remains under `part-engineering/`; anything Cursor must honor also exists under `.cursor/`.
+How the Starter Kit is expressed inside Cursor. Includes root `ask`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./ask sync` — so Cursor can honor stages without hand-maintained subagent SoT. Portable protocol remains under `_ask/`; anything Cursor must honor also exists under `.cursor/`.
 _Avoid_: Cursor plugin (unless we later decide that is the distribution form), protocol-only “hope the model opens the file”, hand-maintained eleven Cursor agents as source of truth
 
 **Skill Manifest**:
-`part-engineering/skills/manifest.yaml` — pinned, reviewable references to external engineering methods. Entries name source (community/main skill repo or package), revision, and role. The consuming repo does not copy skill bodies in by default.
+`_ask/skills/manifest.yaml` — pinned, reviewable references to external engineering methods. Entries name source (community/main skill repo or package), revision, and role. The consuming repo does not copy skill bodies in by default.
 _Avoid_: latest, vendored skill tree, implicit skill pack
 
 **Community Skill**:
@@ -65,17 +65,17 @@ The agent-driven (or script-driven) act of installing Community Skills declared 
 _Avoid_: “just clone skills into the repo”, silent unpinned install
 
 **Kit Protocol File**:
-Portable kit-owned instruction or policy that defines this Starter Kit’s workflow (e.g. `part-engineering/agents/01-grill.md`, policies, templates). Distinct from a Community Skill: the kit ships these; skills are dependencies.
+Portable kit-owned instruction or policy that defines this Starter Kit’s workflow (e.g. `_ask/agents/01-grill.md`, policies, templates). Distinct from a Community Skill: the kit ships these; skills are dependencies.
 _Avoid_: calling protocol files “skills” when they are kit contracts
 
 **Kit-owned path**:
-Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, guide/spec modules, stock scripts, root `pek`, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
-_Avoid_: editing stock `part-engineering/agents/0*.md` in place for local policy
+Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
+_Avoid_: editing stock `_ask/agents/0*.md` in place for local policy
 
 **Consumer-owned path**:
-Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, and `part-engineering/agents/*.local.md` stage overlays.
+Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, and `_ask/agents/*.local.md` stage overlays.
 _Avoid_: “customize by forking the whole tree”
 
 **Kit upgrade**:
-Deliberate bump to a kit version/tag via `./pek upgrade --version <tag>`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.
+Deliberate bump to a kit version/tag via `./ask upgrade --version <tag>`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.
 _Avoid_: blind pull of kit `main`, `skills update` as kit upgrade

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+git init -q "$TMP"
+cd "$TMP"
+git config user.email t@e.com
+git config user.name t
+mkdir -p docs
+echo consumer > docs/README.md
+echo init > README.md
+git add . && git commit -q -m init
+out="$("$ROOT/_ask/scripts/install-kit.sh" --dry-run "$TMP")"
+echo "$out" | grep -q 'docs/scripts/tests not overlaid\|will not modify target docs\|docs/ excluded'
+# ensure dry-run did not copy _ask yet
+if [[ -d "$TMP/_ask" ]]; then
+  echo "FAIL: dry-run should not copy" >&2
+  exit 1
+fi
+# docs untouched
+grep -q consumer docs/README.md
+echo "PASS: install-kit dry-run excludes consumer docs"

@@ -2,7 +2,7 @@
 
 ## Workstream
 
-kit-phases-1-2 (branch `work/01-scaffold-part-engineering`)
+kit-phases-1-2 (branch `work/01-scaffold-_ask`)
 
 ## Specification
 
@@ -10,7 +10,7 @@ kit-phases-1-2 (branch `work/01-scaffold-part-engineering`)
 
 ## Evidence
 
-- Modular Guide/Spec under `part-engineering/`
+- Modular Guide/Spec under `_ask/`
 - Stage contracts `00`–`10`, policies (incl. worktree), templates, skills manifest + prepare
 - Scripts: clean/start/check/verify/record/sync/install/upgrade
 - Cursor binding: hooks, rules, generated skills/commands

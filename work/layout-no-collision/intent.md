@@ -2,11 +2,11 @@
 
 ## What
 
-Move kit scripts, kit tests, and kit-author docs under `part-engineering/` so a Nest (or any) product can keep its own `docs/`, `scripts/`, and `tests/` without overlay collisions.
+Move kit scripts, kit tests, and kit-author docs under `_ask/` so a Nest (or any) product can keep its own `docs/`, `scripts/`, and `tests/` without overlay collisions.
 
 ## Why
 
-Root `scripts/` and this repo’s `docs/` contradicted the story “everything outside part-engineering is the running project.”
+Root `scripts/` and this repo’s `docs/` contradicted the story “everything outside _ask is the running project.”
 
 ## Non-goals
 

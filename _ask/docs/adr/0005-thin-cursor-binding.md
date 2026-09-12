@@ -1,0 +1,3 @@
+# Thin Cursor Binding with sync projection
+
+Cursor Binding ships `ask`, AGENTS.md, bootstrap rules that point (do not duplicate) at protocol, prepared Community Skills, and mandatory `.cursor/hooks` wrapping `_ask/scripts/check-*.sh`. Protocol files under `_ask/agents/` remain source of truth; `./ask sync` generates Cursor-honored projections under `.cursor/` so stages are discoverable without hand-maintaining eleven subagents. Everything Cursor must honor also lives under `.cursor/`, even if sources exist under `.agents` or `_ask/`. Disambiguate kit `00 Explore` from Cursor’s Explore subagent in AGENTS.md.

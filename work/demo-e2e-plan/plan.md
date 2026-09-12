@@ -12,7 +12,7 @@ Author a single facilitator guide covering prerequisites, Path A (Grill→Accept
 
 1. Write `docs/demo/end-to-end-plan.md`
 2. Record intent for this docs workstream
-3. Point `AGENTS.md` or `part-engineering/README.md` at the demo (light link)
+3. Point `AGENTS.md` or `_ask/README.md` at the demo (light link)
 4. Verify clean tree / no broken links to kit paths
 
 ## Risks
