@@ -11,7 +11,7 @@ Protocol lives under `_ask/` (Guide, Build Spec, stage contracts, policies, skil
 3. **Sync Cursor binding:** `./ask sync` so `.cursor/skills` and `.cursor/commands` match protocol (+ `agents/*.local.md` overlays).
 4. **Clean worktree (hard gate):** never start labor on a dirty tree. Run `./ask check-clean`. If dirty, **grill the human** on each uncommitted/untracked path (commit / stash / discard / move) — do not stash or reset silently. See `_ask/policies/worktree.md`.
 5. **One plan → one branch:** `./ask start-work <work-id>` (`agent/<work-id>`). Do not run multiple related branches that touch common files in parallel. List live/archived workstreams with `./ask status` (does not treat the current checkout as the board).
-6. **Before pipeline work:** accepted spec, plan, read `_ask/policies/` (`delegation.md`, `risk.md`, `verification.md`, `worktree.md`).
+6. **Default path (guidance, not a lock):** follow the kit stages. If the human skips ahead, **warn once** (what was skipped, risk, how to rejoin) and follow their way — see `_ask/policies/workflow.md`. Read `_ask/policies/` (`delegation.md`, `risk.md`, `verification.md`, `worktree.md`, `workflow.md`).
 7. **During work:** stay in scope; do not silently change What/Why or acceptance criteria; escalate per policy; **commit after each meaningful step on `agent/<work-id>` without waiting for the human to ask** (the work branch is the safety boundary — see `_ask/policies/worktree.md`). Do not defer commits until plan end.
 8. **Before claiming completion:** `./ask verify`; `./ask record-result --work-id … --commit-sha … --result …`; leave required artifacts.
 

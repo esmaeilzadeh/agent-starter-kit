@@ -19,6 +19,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Guide (modular) | [guide/README](guide/README.md) | [`_ask/guide/`](guide/) |
 | Build Spec (modular) | [spec/README](spec/README.md) | [`_ask/spec/`](spec/) |
 | Delegation policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/delegation.md`](policies/delegation.md) |
+| Workflow guidance (not a lock) | [02-workflow](guide/02-workflow.md) | [`_ask/policies/workflow.md`](policies/workflow.md), `./ask status` warnings |
 | Risk policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/risk.md`](policies/risk.md) |
 | Verification policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/verification.md`](policies/verification.md) |
 | Skill provenance + preparation | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/skills/manifest.yaml`](skills/manifest.yaml), `./ask prepare` |

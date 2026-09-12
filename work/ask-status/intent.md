@@ -14,5 +14,6 @@ Writing `work/INDEX.md`. External trackers. Checking out branches.
 
 ## Human decisions
 
-- Live inventory = local `refs/heads/agent/*`
-- Archive = `work/*` on default branch without a matching live branch
+- Live inventory = unmerged local `agent/*`
+- Archive = `work/*` on default with no unmerged `agent/*`
+- Kit path is the **default**, not a lock: humans may leave the path; the agent must **warn** (what was skipped, risk, how to rejoin) and then follow. Do not refuse Implement solely for missing spec/plan.

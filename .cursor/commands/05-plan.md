@@ -34,3 +34,4 @@ Must not redefine the requirement.
 - Planning assumes a clean worktree and a dedicated `agent/<work-id>` branch (create via `./ask start-work <work-id>` if not already on one).
 - The resulting plan must be executed with **one branch only** for that work-id; do not spawn parallel related branches that touch the same files.
 - Execution of the plan (Implement onward) must **commit after each meaningful step on `agent/<work-id>` without waiting for the human to ask** — the work branch is the safety boundary; see `_ask/policies/worktree.md`.
+- The kit path is default **guidance** (`_ask/policies/workflow.md`): if the human skips Plan, warn and follow; do not lock.

@@ -50,6 +50,22 @@ Ship a status command.
 EOF
 git add work/has-intent && git commit -q -m intent
 git checkout -q main
+
+# live: intent + code outside work/ → warning, not a lock
+git checkout -q -b agent/jumped
+mkdir -p work/jumped
+cat > work/jumped/intent.md <<'EOF'
+# Intent: jump
+
+## What
+
+Skip the plan.
+
+## Why
+EOF
+echo impl > app.c
+git add work/jumped app.c && git commit -q -m jump
+git checkout -q main
 # leftover agent/* after merge must not stay “live”
 git checkout -q -b agent/merged-leftover
 mkdir -p work/merged-leftover
@@ -73,6 +89,8 @@ echo "$out" | grep -qE 'live +has-intent +intent'
 echo "$out" | grep -qE 'archived +done-one +accepted'
 echo "$out" | grep -qE 'archived +merged-leftover'
 echo "$out" | grep -qvE 'live +merged-leftover' || { echo "FAIL: merged leftover still live" >&2; exit 1; }
+echo "$out" | grep -qE 'live +jumped +intent'
+echo "$out" | grep jumped | grep -q 'code-without-plan'
 
 filt="$("$STATUS" --work-id has-intent)"
 echo "$filt" | grep -q has-intent

@@ -159,6 +159,28 @@ def is_ancestor(commit, onto):
     )
     return r.returncode == 0
 
+def warnings_for(wid, ref, default, st, life):
+    if life != "live":
+        return []
+    if st not in ("seeded", "explored", "intent"):
+        return []
+    mb = subprocess.run(
+        ["git", "merge-base", default, ref],
+        capture_output=True, text=True,
+    )
+    if mb.returncode != 0:
+        return []
+    names = git("diff", "--name-only", mb.stdout.strip(), ref).splitlines()
+    prefix = f"work/{wid}/"
+    for path in names:
+        p = path.strip()
+        if not p:
+            continue
+        if p.startswith(prefix) or p.startswith("specs/"):
+            continue
+        return ["code-without-plan"]
+    return []
+
 want = os.environ.get("ASK_STATUS_WORK_ID") or ""
 as_json = os.environ.get("ASK_STATUS_JSON") == "1"
 
@@ -188,13 +210,15 @@ for wid, ref in live_refs:
     if want and wid != want:
         continue
     art = artifacts(ref, wid)
+    st = stage(art)
     rows.append({
         "work_id": wid,
         "life": "live",
         "branch": ref,
         "tip": tip(ref),
-        "stage": stage(art),
+        "stage": st,
         "artifacts": art,
+        "warnings": warnings_for(wid, ref, default, st, "live"),
     })
 for wid in archive_ids:
     if want and wid != want:
@@ -207,6 +231,7 @@ for wid in archive_ids:
         "tip": tip(default),
         "stage": stage(art),
         "artifacts": art,
+        "warnings": [],
     })
 
 if as_json:
@@ -221,7 +246,7 @@ if not rows:
     sys.exit(0)
 
 print(f"status: default={default}")
-print(f"{'LIFE':<10} {'WORK-ID':<28} {'STAGE':<14} {'BRANCH':<28} {'TIP':<10} ARTIFACTS")
+print(f"{'LIFE':<10} {'WORK-ID':<28} {'STAGE':<14} {'BRANCH':<28} {'TIP':<10} {'WARN':<20} ARTIFACTS")
 for row in rows:
     art = row["artifacts"]
     flags = []
@@ -238,5 +263,6 @@ for row in rows:
     if art["accepted"]:
         flags.append("accept")
     mark = ",".join(flags) if flags else "-"
-    print(f"{row['life']:<10} {row['work_id']:<28} {row['stage']:<14} {row['branch']:<28} {row['tip']:<10} {mark}")
+    warn = ",".join(row.get("warnings") or []) or "-"
+    print(f"{row['life']:<10} {row['work_id']:<28} {row['stage']:<14} {row['branch']:<28} {row['tip']:<10} {warn:<20} {mark}")
 PY

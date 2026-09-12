@@ -59,6 +59,8 @@ start labor on a dirty working tree without grilling the human
 run overlapping related branches that will conflict on shared files
 defer all commits until the entire plan is finished
 wait for the human to ask before committing on the workstream branch
+skip kit stages silently (warn and follow if the human chooses their own way)
+refuse Implement solely because spec/plan are missing (guidance, not a lock)
 ```
 
 ---

@@ -113,6 +113,8 @@ archive = work/<work-id>/ on the default branch with no unmerged agent/<work-id>
 
 It infers a furthest stage from filled artifacts on that ref (`seeded` … `explored` … `intent` … `planned` … `reviewed` … `recorded` … `accepted`). Flags: `--work-id`, `--json`.
 
+Live rows may include a **warning** `code-without-plan` when the branch changed files outside `work/<id>/` and `specs/` before a plan exists. That is guidance (`_ask/policies/workflow.md`), not a failure.
+
 After Accept, merge the workstream branch so `main`/`master` becomes the archive.
 
 ---
