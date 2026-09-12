@@ -2,19 +2,20 @@
 
 ## Destination
 
-When the human asks a **new task**, the agent must **decide** — and say so — whether:
+When the human asks a **new task**, the agent must **find out** whether:
 
 - **00 is required** (destination foggy → run Explore until What/Why can be owned), or
 - **00 is a real skip** (destination already sharp enough for Intent → jump to `01 Grill`, do not pretend Explore ran).
 
-“Real skip” is the thing to make precise. It is **not** the ask-status meaning of skip (skip extra *approvals*, still write later artifacts). It is a **stage omit**: Explore did not run.
+“Real skip” is a **stage omit**: Explore did not run. It is not the ask-status meaning of skip (skip extra *approvals*, still write later artifacts).
 
 ## Notes
 
-- This workstream **needs Explore**. The user invoked `/00-explore`, and the destination is foggy: kit texts already disagree (Guide/spec say skip 00 when clear; `workflow.md` + `00-explore.md` say do not skip the explore-map artifact).
+- This workstream needed Explore (`/00-explore` + dest not ownable).
 - Standing: never auto-approve recommendations; expand before resolve (ADR 0007).
-- Prepare: `grilling` @ v1.0.0 ok. Manifest pins `wayfinder` and `research` failed (`No matching skills` at `mattpocock/skills@v1.0.0`; upstream list has `decision-mapping` / `prototype` / `grilling`). Out of scope to re-pin unless this work later owns the manifest.
 - Kit `00 Explore` ≠ Cursor’s built-in Explore subagent.
+- Mid-session discoveries (skill pin, later-inbox) are **other jobs**. Parked under local `.later/`; not this workstream. Human later said finish those jobs in this session **after** this work, each on its own `agent/<id>`.
+- One session normally = one job. This chat is an explicit exception for the parked jobs, run **sequentially**, not on this branch.
 
 ## Tracker map (optional)
 
@@ -22,55 +23,44 @@ Not used. This file is canonical.
 
 ## Decisions so far
 
-Research facts (not human decisions):
+Research facts:
 
-- **Guide already allows omit:** `_ask/guide/02-workflow.md` — Explore is optional when the destination is already clear; “Skip Explore only when the human already has a destination sharp enough for Intent → Grill.”
-- **Spec already allows omit:** `_ask/spec/01-layout-and-concepts.md` §5.1 — “Skip `00` when the human already has a destination sharp enough for Intent → Grill.” Example 31.2 is “Clear intent (skip Explore)” and goes straight to `01 Grill`. Artifact model: `explore-map.md` exists **only when Explore ran** (`_ask/spec/02-artifacts.md` §6.0, `_ask/spec/04-scripts-and-git.md` §30).
-- **AGENTS.md already asks the question** (“Foggy destination? Run 00…”) but does not tell the agent to **announce a skip** and jump to 01. Demo Path A: “Skip Explore. Destination is already sharp.”
-- **Contradiction from ask-status:** `_ask/policies/workflow.md` “Artifacts are not optional” / “Skip = skip extra approvals, not documents” plus `_ask/agents/00-explore.md` kit emphasis: “prepare the explore-map (do not skip the artifact).” That leaked the *pipeline* skip-meaning onto the *optional on-ramp*.
-- **`./ask start-work` always seeds** `work/<id>/explore-map.md` from the template, so a skipped Explore still has a stock file. `./ask status` already ignores stock explore-map boilerplate when inferring handoff.
-- **Return path exists:** if fog comes back at destination scale, return to 00 rather than forcing Spec Change to do wayfinding.
+- Guide/spec already allow omitting 00 when Intent is ownable. `explore-map.md` exists **only when Explore ran**.
+- ask-status leaked “don’t skip documents” onto 00 (`workflow.md`, `00-explore.md` kit emphasis).
+- `start-work` seeds a stock `explore-map.md`. Status ignores stock boilerplate for handoff.
+- Return to 00 if fog invalidates the destination.
 
-Human decisions (this grill):
+Human decisions (grill + “continue till end” owns remaining recs):
 
-- **Q2 (partial):** Who calls foggy vs clear — **B: agent proposes, human confirms** (stated). Tension with Q3 free-chat “route by agent decision” is still open.
-- **Q3 (partial):** Explicit `/00-explore` or “00-explore” → **start 00 immediately**; do not ask whether Explore is really needed. Free on-path chat → route to 00 or 01 from the agent’s fog call (confirm-vs-proceed still open). `/01-grill` when foggy is still open.
-
-Working call for **this** task (applies the gate we are designing):
-
-| Signal | This task |
-| --- | --- |
-| Slash command | `/00-explore` → run 00 even if we might have skipped |
-| Can we own What/Why without inventing? | No — “real skip” vs stub map vs always-write-map is open; who decides fog is open |
-| R&D / wayfinding? | Yes — reconcile Guide/spec omit with workflow “don’t skip the artifact” |
-| **Call** | **Need 00** (this map). Not eligible for 01 until the grill frontier below is settled. |
+- **Q2 = B:** Free on-path chat: agent proposes foggy vs clear; human confirms before 00 or 01 starts.
+- **Q3 slash:** Explicit `/00-explore` or “00-explore” → start 00 immediately; do not ask whether Explore is really needed.
+- **Q7 = A:** Free chat = announce and **wait** (fits Q2-B). Only `/00-explore` skips the confirm.
+- **Q8 = A:** `/01-grill` does **not** skip a foggy dest. Fog wins; run 00 or stop.
+- **Q1 = A:** Real skip = omit 00. No explore-map labor. Record in `intent.md`: “Explore skipped: destination already clear.”
+- **Q4 = A:** `01`–`10` still “skip extra approvals, not documents.” 00 is the optional on-ramp exception.
+- **Q5 = A:** `start-work` stops seeding `explore-map.md`. 00 creates the file when Explore runs.
+- **Q6 = A:** Gate lives in `AGENTS.md` item 1 + `workflow.md` + `_ask/agents/00-explore.md`. No new policy file.
 
 ## Not yet specified
 
-Human decisions still open:
-
-1. **Meaning of real skip** — omit vs stub map vs always write a map.
-2. **Free-chat confirm** — Q2-B says wait; Q3 “route by agent decision” may mean proceed. Must resolve.
-3. **`/01-grill` when dest is foggy** — still run 00, or honor the command?
-4. **Carve-out** — 00 optional on-ramp vs same “don’t skip documents” as 01–10.
-5. **Seeded `explore-map.md`** — blocked on (1).
-6. **Where the gate lives** — AGENTS + workflow + 00 vs AGENTS only vs new policy file.
+None for this destination. Pin bump and later-inbox are other work-ids.
 
 ## Out of scope
 
-- Re-pinning Community Skills (`wayfinder` → `decision-mapping`, etc.) unless a later plan step owns the manifest.
-- A new `./ask` subcommand to decide fog (agent judgment + written gate is enough unless Grill says otherwise).
-- Changing `01`–`10` skip-approvals meaning from ask-status.
-- Off-path / “just code” behavior (already session-only).
-- Autoplaying `/01`–`/10` as a batch.
+- Pinning Community Skills (parked: `.later/pin-mattpocock-skills-v1.2.3.md`).
+- Later-inbox as kit product (parked: `.later/later-inbox-mechanism.md`).
+- A new `./ask fog` command.
+- Changing `01`–`10` skip-approvals meaning.
+- Off-path / “just code” (already session-only).
+- Autoplays `/01`–`/10` as a batch.
+- Two live `agent/*` branches in parallel for these jobs.
 
 ## Handoff to Intent
 
-**STILL_FOGGY.** Do not enter `01 Grill` until the frontier in this map is resolved.
+**DESTINATION_CLEAR.**
 
-Owned enough to say:
+**What:** A written Explore gate. At new-task start (on-path): if the human invoked `/00-explore`, run 00 with no second-guess. Otherwise the agent announces foggy vs clear and waits for confirm, then either runs 00 (creates `explore-map.md`) or real-skips to 01 (no map; `intent.md` notes the skip). `/01-grill` does not override fog.
 
-- **Why this work exists:** agents must **find out** at new-task start whether 00 is required or a **real skip**, then either Explore or jump to 01. Today the kit *says* skip-when-clear in the Guide/spec and *says* don’t-skip-the-map in workflow/00 emphasis. Agents follow the louder checklist and run 00 (or skip documents) inconsistently.
-- **This session’s call:** need 00 (invoked + destination not ownable yet).
+**Why:** Agents must find out whether 00 is needed. Guide/spec already allow omit; workflow/00 text forbade skipping the map. That contradiction made Explore ceremony or silent skips.
 
-Blocked on human answers to **Not yet specified** (grill round below). After those land, handoff can name What/Why: a written Explore gate, real skip = omit 00, pipeline skip-approvals unchanged.
+**Pointers:** Human decisions above. Implement by aligning AGENTS.md, workflow.md, 00-explore.md, and `start-work` seeding — not a new policy file.
