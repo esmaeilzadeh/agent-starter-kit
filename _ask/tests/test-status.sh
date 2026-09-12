@@ -50,12 +50,29 @@ Ship a status command.
 EOF
 git add work/has-intent && git commit -q -m intent
 git checkout -q main
+# leftover agent/* after merge must not stay “live”
+git checkout -q -b agent/merged-leftover
+mkdir -p work/merged-leftover
+cat > work/merged-leftover/intent.md <<'EOF'
+# Intent: leftover
+
+## What
+
+Already merged.
+
+## Why
+EOF
+git add work/merged-leftover && git commit -q -m leftover
+git checkout -q main
+git merge -q --ff-only agent/merged-leftover
 
 out="$("$STATUS")"
 echo "$out" | grep -q 'default=main'
 echo "$out" | grep -qE 'live +seeded +seeded'
 echo "$out" | grep -qE 'live +has-intent +intent'
 echo "$out" | grep -qE 'archived +done-one +accepted'
+echo "$out" | grep -qE 'archived +merged-leftover'
+echo "$out" | grep -qvE 'live +merged-leftover' || { echo "FAIL: merged leftover still live" >&2; exit 1; }
 
 filt="$("$STATUS" --work-id has-intent)"
 echo "$filt" | grep -q has-intent

@@ -46,7 +46,7 @@ Unrelated workstreams that touch disjoint paths may proceed in parallel when the
 
 `work/<work-id>/` is committed on `agent/<work-id>`, so artifact state is **branch-local**. Do not use the current working tree as the global board.
 
-- **Live:** `./ask status` reads local `refs/heads/agent/*` (no checkout).
-- **Archive:** after Accept, merge the branch; `work/*` on `main`/`master` without a matching `agent/*` branch is archived.
+- **Live:** `./ask status` reads local `agent/*` that are **not** fully merged into the default branch (no checkout).
+- **Archive:** `work/*` on `main`/`master` once that work-id has no unmerged `agent/*` (leftover merged branches do not stay live).
 
 Do not write a committed `work/INDEX.md` — it would split the same way.

@@ -152,10 +152,17 @@ def stage(art):
 def tip(ref):
     return git("rev-parse", "--short", ref).strip()
 
+def is_ancestor(commit, onto):
+    r = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, onto],
+        capture_output=True, text=True,
+    )
+    return r.returncode == 0
+
 want = os.environ.get("ASK_STATUS_WORK_ID") or ""
 as_json = os.environ.get("ASK_STATUS_JSON") == "1"
 
-live_refs = []
+agent_refs = []
 for line in git("for-each-ref", "--format=%(refname:short)", "refs/heads/agent").splitlines():
     name = line.strip()
     if not name.startswith("agent/"):
@@ -163,13 +170,14 @@ for line in git("for-each-ref", "--format=%(refname:short)", "refs/heads/agent")
     wid = name[len("agent/") :]
     if not wid:
         continue
-    live_refs.append((wid, name))
+    agent_refs.append((wid, name))
 
 default = default_branch()
+live_refs = [(wid, name) for wid, name in agent_refs if not is_ancestor(name, default)]
+live_ids = {w for w, _ in live_refs}
 archive_ids = []
 ls = subprocess.run(["git", "ls-tree", "-d", "--name-only", f"{default}:work"], capture_output=True, text=True)
 if ls.returncode == 0:
-    live_ids = {w for w, _ in live_refs}
     for name in ls.stdout.splitlines():
         wid = name.strip()
         if wid and wid not in live_ids:

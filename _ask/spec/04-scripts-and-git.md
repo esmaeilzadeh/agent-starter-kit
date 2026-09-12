@@ -104,8 +104,9 @@ This can be called by agent instructions before implementation/review/refactor.
 Board of kit workstreams **without checking out** other branches:
 
 ```text
-live = local refs/heads/agent/<work-id>
-archive = work/<work-id>/ on the default branch with no matching agent/* branch
+live = local refs/heads/agent/<work-id> that are not fully merged into the default branch
+archive = work/<work-id>/ on the default branch with no unmerged agent/<work-id>
+(keeping a leftover agent/* after merge does not keep the workstream “live”)
 ```
 
 `work/` is branch-local; do not treat the current checkout as the global inventory. Do not write a committed `work/INDEX.md`.
