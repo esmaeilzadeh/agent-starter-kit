@@ -31,6 +31,11 @@ Research facts (not human decisions):
 - **`./ask start-work` always seeds** `work/<id>/explore-map.md` from the template, so a skipped Explore still has a stock file. `./ask status` already ignores stock explore-map boilerplate when inferring handoff.
 - **Return path exists:** if fog comes back at destination scale, return to 00 rather than forcing Spec Change to do wayfinding.
 
+Human decisions (this grill):
+
+- **Q2 (partial):** Who calls foggy vs clear — **B: agent proposes, human confirms** (stated). Tension with Q3 free-chat “route by agent decision” is still open.
+- **Q3 (partial):** Explicit `/00-explore` or “00-explore” → **start 00 immediately**; do not ask whether Explore is really needed. Free on-path chat → route to 00 or 01 from the agent’s fog call (confirm-vs-proceed still open). `/01-grill` when foggy is still open.
+
 Working call for **this** task (applies the gate we are designing):
 
 | Signal | This task |
@@ -42,14 +47,14 @@ Working call for **this** task (applies the gate we are designing):
 
 ## Not yet specified
 
-Human decisions (grill this Explore; do not resolve on unexpanded letters):
+Human decisions still open:
 
-1. **Meaning of real skip** — omit 00 and `explore-map` labor vs write a stub map that only says “skipped” vs always fill a map (status-quo leak).
-2. **Who calls foggy vs clear** — agent decides and announces; agent proposes and waits; or only slash commands decide.
-3. **Fog test** — operational criteria the agent must use (and what `/00-explore` / `/01-grill` do to that call).
-4. **Where the gate lives** — AGENTS.md only vs workflow + 00 contract vs a new policy file.
-5. **Seeded `explore-map.md`** — stop seeding on `start-work`, leave stock file on skip, or delete/ignore on skip.
-6. **Carve-out** — confirm that “skip = extra approvals, not documents” still applies to `01`–`10`, and that 00 is the exception (omit the stage when not foggy).
+1. **Meaning of real skip** — omit vs stub map vs always write a map.
+2. **Free-chat confirm** — Q2-B says wait; Q3 “route by agent decision” may mean proceed. Must resolve.
+3. **`/01-grill` when dest is foggy** — still run 00, or honor the command?
+4. **Carve-out** — 00 optional on-ramp vs same “don’t skip documents” as 01–10.
+5. **Seeded `explore-map.md`** — blocked on (1).
+6. **Where the gate lives** — AGENTS + workflow + 00 vs AGENTS only vs new policy file.
 
 ## Out of scope
 
