@@ -10,16 +10,16 @@
 
 ## Evidence
 
-`./ask prepare` ok; `./ask verify` pass at `c371f79`.
+`./ask prepare` ok; `./ask verify` pass at `c371f79df66b2f5d6d1b57c19005504cd3f21675`. Already on `main` via merge `b6afee6`.
 
 ## Residual risks
 
-Tag move. Merge not done.
+Upstream tag move could invalidate the pin. Manifest still names an explicit version, not `latest`.
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED.
+ACCEPTED. Human asked to close remaining recorded workstreams.
 
 ## Accepted commit SHA
 
-(pending)
+c371f79df66b2f5d6d1b57c19005504cd3f21675
