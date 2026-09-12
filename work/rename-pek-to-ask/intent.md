@@ -18,3 +18,5 @@ Changing script behavior under `_ask/scripts/` beyond path renames.
 
 - CLI: `ask` (Agent Starter Kit)
 - Package root: `_ask/`
+
+Explore skipped: destination already clear.
