@@ -8,4 +8,5 @@ mkdir -p "$TMP/.cursor/commands"
 (cd "$TMP" && ./_ask/scripts/sync-cursor-binding.sh >/dev/null)
 test -f "$TMP/.cursor/commands/off-path.md"
 grep -q 'this session only' "$TMP/.cursor/commands/off-path.md"
+grep -qE '^description:' "$TMP/.cursor/commands/off-path.md"
 echo "PASS: sync copies /off-path as a session-only command"
