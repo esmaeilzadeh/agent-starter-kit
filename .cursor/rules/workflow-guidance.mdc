@@ -3,6 +3,6 @@ description: Kit path is default guidance — warn on skip, do not lock
 alwaysApply: true
 ---
 
-**Workflow (guidance, not a lock):** Every session starts **on-path**: prepare each stage artifact; one “defaults OK” then Accept. `/off-path` (or an explicit “just code”) is **this chat only** — warn once and follow; do not persist a flag. New chat = on-path again. Dirty tree, silent stash/reset, and fake verify/accept stay hard.
+**Workflow (guidance, not a lock):** Every session starts **on-path**: prepare each pipeline artifact; one “defaults OK” then Accept. **00** is optional when the dest is already clear (real skip). `/00-explore` starts Explore with no second-guess. Free chat: announce 00 vs 01 and wait. `/off-path` (or an explicit “just code”) is **this chat only** — warn once and follow; do not persist a flag. New chat = on-path again. Dirty tree, silent stash/reset, and fake verify/accept stay hard.
 
 Canonical: `_ask/policies/workflow.md`.

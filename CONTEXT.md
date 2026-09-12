@@ -25,7 +25,7 @@ The first-class kit stage for foggy or R&D work: chart a shared map of decisions
 _Avoid_: stuffing R&D into Implement, treating chat exploration as canonical state
 
 **Explore Map**:
-The durable Explore artifact at `work/<work-id>/explore-map.md`. Canonical for consumers; may point at an optional tracker map. Must contain a non-empty `Handoff to Intent` before `01 Grill`.
+The durable Explore artifact at `work/<work-id>/explore-map.md`, **only when 00 ran**. Canonical for consumers; may point at an optional tracker map. Must contain a non-empty `Handoff to Intent` before `01 Grill`. A real skip of 00 leaves no map.
 _Avoid_: chat as the map, tracker-only Explore without the workstream file
 
 **Grilling Expansion**:

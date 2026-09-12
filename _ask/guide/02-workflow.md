@@ -74,7 +74,7 @@ new implementation
 
 The workflow is therefore a **controlled feedback loop**, not just a sequence of prompts.
 
-**Guidance, not a lock.** On the path, every next stage still needs the previous **artifact** — skipping documents is meaningless. What you may skip is extra *approvals*: after one explicit “these defaults are OK,” later artifacts are prepared without a per-file bless. **Accept** is the second confirm. Leaving the kit (“just code”) is not a stage skip: warn once and follow. Policy: `_ask/policies/workflow.md`.
+**Guidance, not a lock.** On the Engineering Pipeline, every next stage still needs the previous **artifact** — skipping documents is meaningless. What you may skip is extra *approvals*: after one explicit “these defaults are OK,” later artifacts are prepared without a per-file bless. **Accept** is the second confirm. **00** may be omitted when the destination is already clear (real skip; no explore-map). Leaving the kit (“just code”) is not a stage skip: warn once and follow. Policy: `_ask/policies/workflow.md`.
 
 ---
 

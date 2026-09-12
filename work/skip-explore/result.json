@@ -1,0 +1,6 @@
+{
+  "work_id": "skip-explore",
+  "commit_sha": "0be09a18c7bd9b1b5c2662163b73a9d6f8cb07b9",
+  "result": "pass",
+  "notes": "verify green; human Accept still required"
+}
