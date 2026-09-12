@@ -1,0 +1,7 @@
+{
+  "work_id": "later-inbox",
+  "commit_sha": "08d0e1f6450f3439b1a78fa866305467a5a7da4a",
+  "checks": [{"check": "./ask verify", "result": "pass"}],
+  "result": "pass",
+  "notes": "later-inbox gitignore test + full verify"
+}
