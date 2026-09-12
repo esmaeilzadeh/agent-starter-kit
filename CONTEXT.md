@@ -76,6 +76,10 @@ _Avoid_: editing stock `_ask/agents/0*.md` in place for local policy
 Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, and `_ask/agents/*.local.md` stage overlays.
 _Avoid_: “customize by forking the whole tree”
 
+**Workflow guidance**:
+Every session starts on-path. Artifacts are required to move forward; “skip” means skip extra approvals (one defaults-OK, then Accept). `/off-path` is **this chat only** — warn once and follow; do not persist. Policy: `_ask/policies/workflow.md`.
+_Avoid_: locking Implement; a durable off-path git flag; re-asking bless on every stage
+
 **Kit upgrade**:
 Deliberate bump to a kit version/tag via `./ask upgrade --version <tag>`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.
 _Avoid_: blind pull of kit `main`, `skills update` as kit upgrade

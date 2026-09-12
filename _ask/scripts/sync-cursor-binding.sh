@@ -43,4 +43,10 @@ for src in _ask/agents/[0-9][0-9]-*.md; do
   } > "${OUT_CMDS}/${base}.md"
 done
 
+# Session-mode commands (not stage projections)
+for src in _ask/cursor-commands/*.md; do
+  [[ -f "$src" ]] || continue
+  cp "$src" "${OUT_CMDS}/$(basename "$src")"
+done
+
 echo "sync-cursor-binding: generated projections under ${OUT_SKILLS} and ${OUT_CMDS}"

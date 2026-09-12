@@ -34,3 +34,7 @@ A finding may not be marked FIXED without the relevant verification being rerun.
 If the finding implies a spec change, call the Spec Change workflow.
 
 ---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Stay on the path: fix or escalate; do not silently drop findings. Off-path only if they explicitly leave the kit.

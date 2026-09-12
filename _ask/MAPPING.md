@@ -19,12 +19,13 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Guide (modular) | [guide/README](guide/README.md) | [`_ask/guide/`](guide/) |
 | Build Spec (modular) | [spec/README](spec/README.md) | [`_ask/spec/`](spec/) |
 | Delegation policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/delegation.md`](policies/delegation.md) |
+| Workflow guidance (not a lock) | [02-workflow](guide/02-workflow.md) | [`_ask/policies/workflow.md`](policies/workflow.md), `./ask status` warnings |
 | Risk policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/risk.md`](policies/risk.md) |
 | Verification policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/verification.md`](policies/verification.md) |
 | Skill provenance + preparation | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/skills/manifest.yaml`](skills/manifest.yaml), `./ask prepare` |
 | Decision memory | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/decisions/`](decisions/) |
 | Spec state | [guide/README](guide/README.md) | [`specs/current/`](../specs/current/), [`specs/proposals/`](../specs/proposals/), status field |
-| Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream` |
+| Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |
 | Cursor Binding sync | [guide/README](guide/README.md) | `./ask sync`, `.cursor/` |
 | Install overlay | [guide/README](guide/README.md) | `./ask install` |
 | Result provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-result`, result schema |

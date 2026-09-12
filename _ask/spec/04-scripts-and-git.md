@@ -16,6 +16,7 @@ Mapped commands:
 ./ask check-clean              → _ask/scripts/check-clean-worktree.sh
 ./ask start-work <work-id>     → _ask/scripts/start-work.sh
 ./ask check-workstream <id>    → _ask/scripts/check-workstream.sh
+./ask status [--work-id id]    → _ask/scripts/status.sh
 ./ask verify                   → _ask/scripts/verify.sh
 ./ask record-result …          → _ask/scripts/record-result.sh
 ./ask sync                     → _ask/scripts/sync-cursor-binding.sh
@@ -96,7 +97,27 @@ accepted spec exists
 plan exists
 ```
 
+Exit non-zero means the **default path is incomplete**, not that labor is forbidden (`_ask/policies/workflow.md`). On-path: prepare the missing artifact. Dirty tree remains a hard safety failure (via `check-clean`).
+
 This can be called by agent instructions before implementation/review/refactor.
+
+## 23.4 `./ask status` (`status.sh`)
+
+Board of kit workstreams **without checking out** other branches:
+
+```text
+live = local refs/heads/agent/<work-id> that are not fully merged into the default branch
+archive = work/<work-id>/ on the default branch with no unmerged agent/<work-id>
+(keeping a leftover agent/* after merge does not keep the workstream “live”)
+```
+
+`work/` is branch-local; do not treat the current checkout as the global inventory. Do not write a committed `work/INDEX.md`.
+
+It infers a furthest stage from filled artifacts on that ref (`seeded` … `explored` … `intent` … `planned` … `reviewed` … `recorded` … `accepted`). Flags: `--work-id`, `--json`.
+
+Live rows may include a **warning** `code-without-plan` when the branch changed files outside `work/<id>/` and `specs/` before a plan exists. That is guidance (`_ask/policies/workflow.md`), not a failure.
+
+After Accept, merge the workstream branch so `main`/`master` becomes the archive.
 
 ---
 

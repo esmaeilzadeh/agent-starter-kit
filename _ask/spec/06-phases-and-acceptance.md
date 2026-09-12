@@ -171,7 +171,8 @@ The implementation must preserve this mapping:
 | Decision memory | `_ask/decisions/` |
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
 | Worktree / branch / commit discipline | `_ask/policies/worktree.md`, `./ask check-clean`, `./ask start-work` |
-| Git hygiene | `./ask check-clean`, `./ask start-work`, `./ask check-workstream` |
+| Workflow guidance (not a lock) | `_ask/policies/workflow.md`, `./ask status` warnings |
+| Git hygiene | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |
 | Cursor Binding sync | `./ask sync`, `.cursor/` |
 | Install overlay | `./ask install` |
 | Result provenance | `./ask record-result`, result schema |

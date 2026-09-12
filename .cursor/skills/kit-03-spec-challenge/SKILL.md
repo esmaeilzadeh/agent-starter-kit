@@ -44,3 +44,7 @@ ESCALATE → human decision required
 ```
 
 ---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Prepare `spec-challenge.md`. After defaults-OK, do not re-ask a bless unless the challenge **escalates**. Off-path only if they explicitly leave the kit.

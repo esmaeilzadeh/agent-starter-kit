@@ -27,3 +27,7 @@ The agent must explain the outcome and cite evidence.
 Human approval remains mandatory where delegation policy requires it.
 
 ---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. **Accept is the second on-path confirm** (after defaults-OK). Do not auto-close the workstream without it unless delegation says AUTO_ACCEPT_ELIGIBLE **and** policy allows.

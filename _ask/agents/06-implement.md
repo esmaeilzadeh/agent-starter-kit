@@ -12,13 +12,13 @@ Purpose:
 Perform delegated implementation labor.
 ```
 
-Hard preconditions:
+Default preconditions (`./ask check-workstream`; **guidance**, not a lock — `_ask/policies/workflow.md`):
 
 ```text
-clean working tree
+clean working tree          ← still hard (safety)
 dedicated branch
-accepted spec
-active plan
+accepted spec               ← on-path: prepare from defaults if missing
+active plan                 ← on-path: prepare from defaults if missing
 no unrelated uncommitted changes
 ```
 
@@ -44,7 +44,7 @@ At meaningful milestones, create commits so that important engineering states ar
 
 ## Kit emphasis
 
-- Refuse to start unless: clean working tree, dedicated branch, accepted specification, and plan are present (`./ask check-workstream <work-id>`).
-- If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset).
+- **Default:** run `./ask check-workstream <work-id>` before implementing. If it fails for missing spec/plan and they are still on the kit path, **prepare** those artifacts from accepted defaults (confirm “defaults OK” once if not already), then continue — do not implement on empty paper. Off-path (“just code”) only if they explicitly left: warn once and follow.
+- If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset). That refusal is safety, not workflow theater.
 - One plan → one `agent/<work-id>` branch; do not start a second related branch that would conflict on shared files while this one is active.
 - Commit after each meaningful step on the workstream branch **without waiting for the human to ask** (kit policy overrides global “only commit when asked”).

@@ -51,3 +51,4 @@ change business semantics without the required authority
 ## Kit emphasis
 
 - Forbidden: silent rewrite of the canonical accepted specification.
+- Kit path: `_ask/policies/workflow.md` — a spec change is a new decision, not covered by an older defaults-OK. Prepare the change artifact and get a confirm.

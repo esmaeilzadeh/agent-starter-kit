@@ -48,3 +48,5 @@ work/<work-id>/intent.md
 ## Grilling Expansion
 
 Before resolving a grilling round (“all ok” / accept recommendations), each open question must be expanded (alternatives, tradeoffs, failure modes)—not only a one-line A/B/C. Never auto-approve recommendations.
+
+A confirmed “I approve these defaults are OK” (or “all recs” after an expanded frontier) is the **first on-path confirm**. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`.

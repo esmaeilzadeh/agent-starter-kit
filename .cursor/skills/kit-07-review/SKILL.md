@@ -26,3 +26,7 @@ It should prefer evidence and concrete locations over generic criticism.
 A review agent is not the sole acceptance mechanism.
 
 ---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Prepare `review.md`. After defaults-OK, do not require a separate bless of the review file; Accept is the second confirm. Off-path only if they explicitly leave the kit.

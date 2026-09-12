@@ -41,3 +41,12 @@ Do **not** run multiple related workstreams or branches **in parallel** when the
 Serialize such work: finish or park one branch (merged, closed, or explicitly set aside with a clean handoff) before starting the next that touches the same surfaces.
 
 Unrelated workstreams that touch disjoint paths may proceed in parallel when the human explicitly accepts that split.
+
+## Inventory (not the checkout)
+
+`work/<work-id>/` is committed on `agent/<work-id>`, so artifact state is **branch-local**. Do not use the current working tree as the global board.
+
+- **Live:** `./ask status` reads local `agent/*` that are **not** fully merged into the default branch (no checkout).
+- **Archive:** `work/*` on `main`/`master` once that work-id has no unmerged `agent/*` (leftover merged branches do not stay live).
+
+Do not write a committed `work/INDEX.md` — it would split the same way.

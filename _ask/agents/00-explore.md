@@ -62,3 +62,4 @@ STILL_FOGGY → continue Explore (or escalate to human)
 - Non-empty `## Handoff to Intent` on the explore-map is required before `01 Grill`.
 - Run Skill Preparation for Explore-bound Community Skills before labor.
 - Never start Explore on a dirty worktree; if dirty, grill the human per `_ask/policies/worktree.md`.
+- Kit path: `_ask/policies/workflow.md` — prepare the explore-map (do not skip the artifact). After destination is clear, continue to Grill. Off-path only if the human explicitly leaves the kit.
