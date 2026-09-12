@@ -10,16 +10,16 @@
 
 ## Evidence
 
-`./ask verify` pass at `08d0e1f`.
+`./ask verify` pass at `08d0e1f6450f3439b1a78fa866305467a5a7da4a`. Review: Pass. Already on `main` via merge `913b455`.
 
 ## Residual risks
 
-Three live branches (skip-explore, pin-skills-v1.2.3, later-inbox) all fork `main`. Merge order will need care. Not merged.
+`.git add -A` could still try to add cards; gitignore should stop it.
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED.
+ACCEPTED. Human asked to close remaining recorded workstreams.
 
 ## Accepted commit SHA
 
-(pending)
+08d0e1f6450f3439b1a78fa866305467a5a7da4a
