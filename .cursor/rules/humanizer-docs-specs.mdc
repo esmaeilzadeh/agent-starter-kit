@@ -1,0 +1,10 @@
+---
+description: Use humanizer when writing docs or specs
+alwaysApply: true
+---
+
+**Docs and specs:** When writing or editing documentation or specifications, read the prepared `humanizer` skill and follow it in embedded mode before finishing. Prepare it with `./ask prepare` if `.agents/skills/humanizer/SKILL.md` is missing. Keep every supported claim; do not invent facts. Leave code, commands, paths, YAML metadata, and link targets unchanged.
+
+Pin: `blader/humanizer` @ `v3.0.0` in `_ask/skills/manifest.yaml`. Do not copy the pattern list into kit files.
+
+Canonical: `.agents/skills/humanizer/SKILL.md`. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.

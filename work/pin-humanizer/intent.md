@@ -8,7 +8,7 @@ Explore skipped: destination already clear.
 
 ## Why
 
-Kit docs and specs should not ship with default-model writing tells. The later job of rewriting the kit’s own Guide and Build Spec stays parked; this work only wires the method so later writing uses it.
+Kit docs and specs were shipping with default-model writing tells. This work wires the method. Rewriting the kit’s own Guide and Build Spec stays parked.
 
 ## Non-goals
 

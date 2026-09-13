@@ -41,3 +41,5 @@ ESCALATE → human decision required
 ## Kit path
 
 See `_ask/policies/workflow.md`. Prepare `spec-challenge.md`. After defaults-OK, do not re-ask a bless unless the challenge **escalates**. Off-path only if they explicitly leave the kit.
+
+When the challenge writes prose, read the prepared `humanizer` skill and follow it in embedded mode (`.agents/skills/humanizer/SKILL.md`; `./ask prepare` if missing). ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.

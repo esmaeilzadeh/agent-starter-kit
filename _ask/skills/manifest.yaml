@@ -34,3 +34,9 @@ skills:
     skill: developing-with-streamlit
     role: streamlit-ui
     required: false
+  humanizer:
+    source: blader/humanizer
+    revision: "v3.0.0"
+    skill: humanizer
+    role: docs-voice
+    required: true

@@ -9,7 +9,7 @@
 | `source` | yes | `owner/repo` or git URL (skills.sh / GitHub) |
 | `revision` | yes | tag, branch, or SHA — **never `latest`** for critical methods |
 | `skill` | yes when repo has many | CLI `--skill` name |
-| `role` | yes | kit semantics (`explore-map`, `intent-clarification`, …) |
+| `role` | yes | kit semantics (`explore-map`, `intent-clarification`, `docs-voice`, …) |
 | `required` | no | prepare fails closed when true |
 
 Pins map to the skills CLI as `source#revision`.
@@ -26,3 +26,5 @@ Pins map to the skills CLI as `source#revision`.
 - blind `skills update` for critical engineering methods
 
 Bump pins deliberately in the manifest instead.
+
+Stock docs-voice pin: `humanizer` from `blader/humanizer` (see ADR 0017).
