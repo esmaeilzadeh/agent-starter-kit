@@ -7,8 +7,7 @@ A **human-run setup wizard** that (1) can attach this kit to an already-built gi
 ## Notes
 
 - Seed: `.later/user-mcp-jira-and-memory.md` (human expanded: multi-tracker + wizard + existing repo).
-- Skills: wayfinder (file map; no tracker mirror this session), research, grilling. Wizard skill is the likely implementation method later — not used to build yet.
-- Local-markdown map is canonical (`explore-map.md`). No GitHub wayfinder issue created.
+- Skills: wayfinder (file map), research, grilling.
 - Facts: `work/user-mcp-tools/explore/facts-mcp-and-install.md`.
 
 ## Tracker map (optional)
@@ -17,45 +16,35 @@ None. This file is the Grill handoff.
 
 ## Decisions so far
 
-Stated by the human this session (still confirm in Grill if they conflict):
+Human confirmed Explore Q1–Q4 (2026-09-13):
 
-- Tracker is **chosen by the user**, not hardcoded to Jira.
-- Options: **GitLab, GitHub, Jira, none**.
-- Shape is a **wizard**: choose tracker ↔ URL (prefill per tracker) ↔ API key.
-- `none` skips URL/key stages; the remaining action is to **re-ask** (go back and pick a tracker).
-- Each tracker uses **that tracker’s proper tooling** (not Jira MCP for GitHub/GitLab).
-- Memory MCP tools are installed via **prepare / install script**, not hand-copied.
-- Must offer using the kit in an **already-built repo** (document or wrap what already exists).
+- **Product split (Q1-C):** Kit ships the wizard and MCP stubs. Tokens and binaries stay on the machine.
+- **Commands (Q2-C):** `./ask install` stays non-interactive (agent-safe). A separate human-only setup command may invoke install. Do not add `--interactive` to install.
+- **Secrets and context (Q3-A + template):** Tokens only via env / global MCP (`${env:...}`). Per-repo current issue in a gitignored context file. Committed: tracker *type* + public URL only. **Also commit a template example for `.ask.env`** (live `.ask.env` gitignored; example has empty/placeholder keys, never live tokens).
+- **Memory (Q4-B):** Optional menu of memory MCP servers; skip allowed. Default on this machine: `codebase-memory-mcp`.
+- Tracker chosen by the user: GitLab, GitHub, Jira, none. `none` skips URL/key; remaining action is re-ask.
+- Each tracker uses that tracker’s proper tooling.
+- Existing-repo path uses today’s `./ask install` overlay.
 
-Facts (not decisions) — see explore research note:
-
-- `./ask install <repo>` already overlays into an existing git repo and is **non-interactive** (agent-safe). Do not break that.
-- Cursor MCP: global `~/.cursor/mcp.json`, project `.cursor/mcp.json`; use `${env:NAME}` for secrets.
-- This machine already has global `codebase-memory-mcp` and `mcp-atlassian`.
-- Official GitHub MCP (hosted or Docker + PAT). Official GitLab MCP (`/api/v4/mcp`, OAuth). Jira via `mcp-atlassian` (URL + token).
+Facts (not decisions): see `explore/facts-mcp-and-install.md`.
 
 ## Not yet specified
 
-- Kit product on `main` vs user-local-only scripts (original card said “not kit product unless Grill says so”).
-- Command split: new `./ask setup` vs `--interactive` on install vs two commands (recommended split below).
-- Where tokens and “current epic/story” live (global MCP vs gitignored per-repo context).
-- Memory MCP menu: one default vs optional list vs skip-like `none`.
-- Prefill values (Jira `https://jira.partcorp.ir/` was a card default only).
-- Whether GitLab uses official OAuth MCP (no PAT in file) vs a PAT-based community server.
+- Prefill URLs (Jira card default was `https://jira.partcorp.ir/`).
+- GitLab: official OAuth MCP vs PAT-based server.
+- Human command name (`./ask setup` vs another).
+- Exact example filename (`.ask.env.example` vs committed empty `.ask.env`).
 
 ## Out of scope
 
 - Storing live tokens in git, cards, or chat examples.
 - Replacing `./ask install`’s non-interactive agent contract with a blocking wizard.
-- Building a multi-agent runtime or a status board for `.later/`.
 - Implementing in this Explore session.
 
 ## Handoff to Intent
 
-**STILL_FOGGY.** Destination is named; What/Why cannot be owned until the first Grill round below is answered (product vs local, wizard vs install split, secret/context storage).
+**STILL_FOGGY** on prefills, GitLab auth, and setup command name. Product split, install/setup split, `.ask.env` template, and memory menu are owned.
 
-Draft Why: humans must configure tracker + memory MCP per machine and per repo without leaking tokens, and must be able to drop the kit onto a repo that already has product code.
+Draft Why: humans must configure tracker + memory MCP without leaking tokens, and must be able to drop the kit onto a repo that already has product code.
 
-Draft What (unapproved): ship a human-only setup wizard; keep `./ask install` as the existing-repo overlay; bind GitHub / GitLab / Jira / none with official-or-documented tooling; write MCP config that interpolates env secrets; optionally write gitignored current-issue context.
-
-Next: answer Explore grilling Q1–Q4. Then rewrite this Handoff as DESTINATION_CLEAR or keep exploring.
+Draft What: kit ships a human-only setup wizard plus `.ask.env` example; `./ask install` remains the existing-repo overlay; bind GitHub / GitLab / Jira / none; MCP config interpolates env from `.ask.env`; gitignored current-issue context; optional memory MCP (default `codebase-memory-mcp`).
