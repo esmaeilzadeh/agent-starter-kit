@@ -24,6 +24,7 @@ Mapped commands:
 ./ask install <repo>           → _ask/scripts/install-kit.sh
 ./ask upgrade --version <tag>  → _ask/scripts/upgrade-kit.sh
 ./ask prepare                  → _ask/skills/prepare-skills.sh
+./ask setup                    → _ask/scripts/setup.sh   # human-only; refuse without a TTY
 ```
 
 Unknown command names that match an executable `_ask/scripts/<name>.sh` are exec'd. `install-kit` / `upgrade-kit` copy and refresh root `ask` as kit-owned adapter alongside `AGENTS.md` and `.cursor/`.

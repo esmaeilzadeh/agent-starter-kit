@@ -24,6 +24,7 @@ Commands:
   install <repo>           overlay kit package + adapter
   upgrade --version <tag>  refresh kit-owned files
   prepare                  prepare pinned Community Skills
+  setup                    human-only tracker + MCP wizard (TTY required)
 
 Unknown command names that match a file in _ask/scripts/<name>.sh are exec'd.
 EOF
@@ -69,6 +70,9 @@ case "$cmd" in
     ;;
   prepare|prepare-skills)
     exec "$SKILLS/prepare-skills.sh" "$@"
+    ;;
+  setup)
+    exec "$SCRIPTS/setup.sh" "$@"
     ;;
   *)
     if [[ -x "$SCRIPTS/${cmd}.sh" ]]; then

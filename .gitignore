@@ -13,3 +13,7 @@ verification-result.json
 # Later-work inbox: cards are local; README is kit-owned
 .later/*
 !.later/README.md
+
+# Setup wizard secrets and current-issue context
+.ask.env
+.ask/tracker-context.md

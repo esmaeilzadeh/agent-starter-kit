@@ -5,6 +5,7 @@ ASK="$ROOT/ask"
 
 "$ASK" --help | grep -q 'Agent Starter Kit'
 "$ASK" --help | grep -q 'status'
+"$ASK" --help | grep -q 'setup'
 set +e
 "$ASK" nosuchcmd >/dev/null 2>&1
 code=$?

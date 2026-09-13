@@ -73,6 +73,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 | `./ask install <repo>` | Overlay kit package + adapter only |
 | `./ask upgrade --version <tag>` | Refresh kit-owned files |
 | `./ask prepare` | Install pinned Community Skills |
+| `./ask setup` | **Human-only** tracker + MCP wizard (TTY required; agents must not run it) |
 
 ## Documentation index
 

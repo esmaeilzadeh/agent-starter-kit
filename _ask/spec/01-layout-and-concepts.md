@@ -144,7 +144,8 @@ Create this structure:
 │   │   ├── record-run.sh
 │   │   ├── sync-cursor-binding.sh
 │   │   ├── install-kit.sh
-│   │   └── upgrade-kit.sh
+│   │   ├── upgrade-kit.sh
+│   │   └── setup.sh
 │   ├── cursor-commands/
 │   │   └── off-path.md
 │   ├── tests/
@@ -167,6 +168,9 @@ Create this structure:
 ├── work/
 │   └── README.md
 ├── .later/
+│   └── README.md
+├── .ask.env.example
+├── .ask/
 │   └── README.md
 ├── ask
 ├── .cursor/

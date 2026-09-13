@@ -16,7 +16,7 @@ Protocol lives under `_ask/` (Guide, Build Spec, stage contracts, policies, skil
 7. **During work:** stay in scope; do not silently change What/Why or acceptance criteria; escalate per policy; **commit after each meaningful step on `agent/<work-id>` without waiting for the human to ask** (the work branch is the safety boundary — see `_ask/policies/worktree.md`). Do not defer commits until plan end.
 8. **Before claiming completion:** `./ask verify`; `./ask record-result --work-id … --commit-sha … --result …`; leave required artifacts.
 
-`ask` is the Agent Starter Kit dispatcher. Implementation stays under `_ask/scripts/`.
+`ask` is the Agent Starter Kit dispatcher. Implementation stays under `_ask/scripts/`. **Do not run `./ask setup`** — that wizard is human-only (needs a TTY).
 
 ## Demo
 
