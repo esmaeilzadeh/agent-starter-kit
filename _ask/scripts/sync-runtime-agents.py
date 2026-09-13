@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-import re
 import sys
 from pathlib import Path
 
@@ -216,7 +215,7 @@ def slug_from_role_or_pool(token: str, stage: str, risk: str, defaults: dict, ru
         if not slug:
             raise SystemExit(f"runtime missing pool {token}")
         return str(slug)
-    if token == "review" or stage == "07-review":
+    if token == "review":
         pool = (defaults.get("review_pool") or {}).get(risk, "cheap")
         slug = pools.get(pool)
         if not slug:
