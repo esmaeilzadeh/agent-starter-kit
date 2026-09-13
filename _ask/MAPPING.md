@@ -25,6 +25,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Risk policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/risk.md`](policies/risk.md) |
 | Verification policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/verification.md`](policies/verification.md) |
 | Skill provenance + preparation | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/skills/manifest.yaml`](skills/manifest.yaml), `./ask prepare` |
+| Humanizer on docs and specs | [03-methods-governance](guide/03-methods-governance.md) | manifest `humanizer` pin, [`.cursor/rules/humanizer-docs-specs.mdc`](../.cursor/rules/humanizer-docs-specs.mdc), ADR 0017 |
 | Decision memory | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/decisions/`](decisions/) |
 | Spec state | [guide/README](guide/README.md) | [`specs/current/`](../specs/current/), [`specs/proposals/`](../specs/proposals/), status field |
 | Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |

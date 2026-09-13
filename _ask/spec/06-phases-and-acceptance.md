@@ -168,6 +168,7 @@ The implementation must preserve this mapping:
 | Risk policy | `_ask/policies/risk.md` |
 | Verification policy | `_ask/policies/verification.md` |
 | Skill provenance + preparation | `_ask/skills/manifest.yaml`, `./ask prepare` |
+| Humanizer on docs and specs | `_ask/skills/manifest.yaml` (`humanizer`), `.cursor/rules/humanizer-docs-specs.mdc`, ADR 0017 |
 | Load-bearing grilling + skill-before-grill | `_ask/agents/01-grill.md`, ADR 0016 |
 | Human-only tracker/MCP setup | `./ask setup`, `.ask.env.example` |
 | Decision memory | `_ask/decisions/` |

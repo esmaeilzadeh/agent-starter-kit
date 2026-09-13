@@ -638,6 +638,8 @@ for critical engineering methods (bump pins deliberately in the manifest instead
 
 Kit Protocol Files (`_ask/agents/*.md`, policies, templates, `_ask/guide/`, `_ask/spec/`) are **shipped by the kit**. Community Skills are **prepared from pins**.
 
+Stock docs-voice pin: `humanizer` from `blader/humanizer` (explicit revision in the manifest; never `latest`). When writing or editing documentation or specifications, agents apply the prepared skill in embedded mode. Thin pointer: `.cursor/rules/humanizer-docs-specs.mdc` and Spec-stage contracts. ADR 0017.
+
 ---
 
 # 22. Decision memory
