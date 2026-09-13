@@ -7,7 +7,7 @@ Protocol lives under `_ask/` (Guide, Build Spec, stage contracts, policies, skil
 ## Checklist
 
 1. **Explore gate (on-path new task):** Decide foggy vs clear and **say so**. `/00-explore` (or explicit “00-explore”) → start kit **00 Explore** immediately (not Cursor’s built-in Explore subagent); do not ask whether Explore is needed. Free chat → announce 00 vs 01 and **wait for confirm**. `/01-grill` does not skip 00 when the dest is foggy. **Real skip** (dest already ownable): omit 00; do not write `explore-map.md`; put `Explore skipped: destination already clear.` in `intent.md`. If 00 runs: create `work/<work-id>/explore-map.md` if missing; Handoff must be non-empty before 01.
-2. **Prepare skills:** `./ask prepare` (never vendor skill trees; never `revision: latest`).
+2. **Prepare skills:** `./ask prepare` (never vendor skill trees; never `revision: latest`). Before Grill/Explore decision questions: propose extra related skills that would change What/Why, **ask before preparing them**, and pin accepted ones in `_ask/skills/manifest.yaml` for later work in this repo.
 3. **Sync Cursor binding:** `./ask sync` so `.cursor/skills` and `.cursor/commands` match protocol (+ `agents/*.local.md` overlays).
 4. **Clean worktree (hard gate):** never start labor on a dirty tree. Run `./ask check-clean`. If dirty, **grill the human** on each uncommitted/untracked path (commit / stash / discard / move) — do not stash or reset silently. See `_ask/policies/worktree.md`.
 5. **One plan → one branch:** `./ask start-work <work-id>` (`agent/<work-id>`). Do not run multiple related branches that touch common files in parallel. List live/archived workstreams with `./ask status` (does not treat the current checkout as the board).

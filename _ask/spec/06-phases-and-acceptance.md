@@ -168,6 +168,8 @@ The implementation must preserve this mapping:
 | Risk policy | `_ask/policies/risk.md` |
 | Verification policy | `_ask/policies/verification.md` |
 | Skill provenance + preparation | `_ask/skills/manifest.yaml`, `./ask prepare` |
+| Load-bearing grilling + skill-before-grill | `_ask/agents/01-grill.md`, ADR 0016 |
+| Human-only tracker/MCP setup | `./ask setup`, `.ask.env.example` |
 | Decision memory | `_ask/decisions/` |
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
 | Worktree / branch / commit discipline | `_ask/policies/worktree.md`, `./ask check-clean`, `./ask start-work` |

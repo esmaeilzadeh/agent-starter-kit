@@ -18,7 +18,8 @@ treat Explore as decision work, not implementation
 keep a durable map (explore-map artifact and/or tracker map)
 separate human decisions from research facts
 prepare Community Skills declared for Explore via Skill Preparation
-expand grilling questions before resolving Explore decisions (Grilling Expansion)
+before Explore decision grilling: propose extra related skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+expand only load-bearing Explore decisions (Grilling Expansion: two-block + assume-list)
 stop and hand off when the destination is clear
 ```
 
@@ -65,14 +66,16 @@ Turn ambiguous human intent into an explicit Intent Artifact.
 Must:
 
 ```text
-ask questions
-expand each decision question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
-expose assumptions
+before the first numbered question: propose related extra Community Skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+ask only load-bearing questions
+expand each numbered question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
+state a short “I’ll assume…” list; “defaults OK” covers it
+do not ask facts already in the repo
 distinguish What from Why
 identify non-goals
 identify unresolved decisions
 stop when human judgment is required
-never treat “all ok” as valid if the frontier was never expanded
+never treat “all ok” as valid if a load-bearing question was never expanded
 ```
 
 Must not:
@@ -90,6 +93,16 @@ Output:
 ```text
 work/<work-id>/intent.md
 ```
+
+### Grilling Expansion
+
+**Skill-before-grill:** Before the first numbered question, search for related Community Skills (skills.sh / find-skills / `.agents/skills`). Propose at most three, and only if a skill would change What/Why. **Ask before preparing any extra skill.** Do not auto-download. For each accepted skill: add/update `_ask/skills/manifest.yaml` with an explicit `revision` (never `latest`), then `./ask prepare`. That pin stays for later work in this repo. Skip the propose step when no extra domain skill would change What/Why. Already-pinned required manifest skills still prepare as today.
+
+**Frontier filter:** Number a question only if it is hard to reverse, is What/Why/non-goal, the recommendation might be wrong, or it blocks other decisions. Do not ask trivia with an obvious repo default. Do not ask facts from files, ADRs, or `CONTEXT.md`. Cap depth at destination, constraints, non-goals.
+
+**Two blocks:** (1) expanded load-bearing questions; (2) short “I’ll assume…”. “Defaults OK” / “all recs” covers the assume-list. Only numbered questions need alternatives/tradeoffs/failure modes. Never auto-approve a real decision. Never treat “all ok” as valid if a **load-bearing** question was never expanded.
+
+ADR 0007 applies to numbered questions only. ADR 0016 records this rule.
 
 ---
 
@@ -563,6 +576,8 @@ Discovery starting point:
 ```text
 https://www.skills.sh/
 ```
+
+Grill/Explore may propose **extra** related skills (ask first). Accepted extras become manifest pins in this file so later sessions in the same repo prepare and use them. Never `revision: latest`.
 
 ### Schema (v1)
 

@@ -29,6 +29,24 @@ Mapped commands:
 
 Unknown command names that match an executable `_ask/scripts/<name>.sh` are exec'd. `install-kit` / `upgrade-kit` copy and refresh root `ask` as kit-owned adapter alongside `AGENTS.md` and `.cursor/`.
 
+## 22.10 Human-only setup (`./ask setup`)
+
+Implementation: `_ask/scripts/setup.sh`. **Agents must not run it.** Refuse when stdin or stdout is not a TTY (except `--help`). `./ask install` stays non-interactive; setup may call install when the human gives another repo path.
+
+Tracker menu: `gitlab` | `github` | `jira` | `none`. `none` skips URL/key; the next action is go back and choose again.
+
+Prefills (all editable): Jira `https://jira.partcorp.ir/` (labeled default, can clear); GitHub `https://github.com/` or `git remote`; GitLab `https://gitlab.com/`.
+
+Binds that tracker’s proper tooling:
+
+- GitLab: official MCP `https://<host>/api/v4/mcp` + browser OAuth. URL only.
+- GitHub: official hosted MCP + `GITHUB_TOKEN` via `${env:GITHUB_TOKEN}`.
+- Jira: `mcp-atlassian` + `JIRA_URL` / `JIRA_PERSONAL_TOKEN` via env.
+
+Writes gitignored `.ask.env` from committed `.ask.env.example` (placeholders only). Writes gitignored `.ask/tracker-context.md` (current epic/story). Writes `.ask/tracker.md` (type + public URL; safe to commit). Merges MCP stubs into `~/.cursor/mcp.json` using `${env:...}` only — never write token values into that file.
+
+Memory menu: `codebase-memory-mcp` (default `${userHome}/.local/bin/codebase-memory-mcp`), skip, or custom command.
+
 # 23. Git guardrails
 
 

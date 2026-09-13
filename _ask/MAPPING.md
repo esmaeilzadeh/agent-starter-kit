@@ -6,7 +6,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | --- | --- | --- |
 | Explore / wayfinding / R&D on-ramp | [02-workflow](guide/02-workflow.md) | [`_ask/agents/00-explore.md`](agents/00-explore.md), `explore-map` template, Explore skills in manifest |
 | What / Why | [02-workflow](guide/02-workflow.md) | [`work/<work-id>/intent.md`](../work/<work-id>/intent.md) |
-| Intent Grilling | [02-workflow](guide/02-workflow.md) | [`_ask/agents/01-grill.md`](agents/01-grill.md) |
+| Intent Grilling | [02-workflow](guide/02-workflow.md) | [`_ask/agents/01-grill.md`](agents/01-grill.md), ADR 0016 (load-bearing + ask-before-prepare) |
 | OpenSpec / Specification | [02-workflow](guide/02-workflow.md) | [`_ask/agents/02-spec.md`](agents/02-spec.md), `specs/` |
 | Specification Challenge | [02-workflow](guide/02-workflow.md) | [`_ask/agents/03-spec-challenge.md`](agents/03-spec-challenge.md) |
 | Specification Change | [02-workflow](guide/02-workflow.md) | [`_ask/agents/04-spec-change.md`](agents/04-spec-change.md) |
@@ -30,6 +30,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |
 | Cursor Binding sync | [guide/README](guide/README.md) | `./ask sync`, `.cursor/` |
 | Install overlay | [guide/README](guide/README.md) | `./ask install` |
+| Human-only tracker/MCP setup | [guide/README](guide/README.md) | `./ask setup`, `.ask.env.example` |
 | Result provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-result`, result schema |
 | Experiment run provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-run`, `results/<run-id>/` |
 | Escalation | [guide/README](guide/README.md) | policy + workflow gates |

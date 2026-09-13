@@ -175,7 +175,9 @@ Before independent Engineering Pipeline work:
 - identify work-id;
 - identify accepted specification;
 - read relevant policies;
-- prepare pinned skills needed for the role (`./ask prepare`).
+- prepare pinned skills needed for the role (`./ask prepare`);
+- before Grill/Explore decision questions: propose extra related skills that would change What/Why, ask before preparing them, pin accepted ones in the repo manifest;
+- do not run `./ask setup` (human-only; needs a TTY).
 
 During work:
 - stay within assigned scope;
@@ -238,6 +240,8 @@ _ask/     # entire kit package (incl. kit scripts/tests/docs)
 AGENTS.md             # merge/append unless --force
 ask                   # Agent Starter Kit dispatcher
 skills-lock.json      # if present
+.ask.env.example      # placeholder env; never live tokens
+.ask/README.md        # tracker.md vs tracker-context.md
 ```
 
 **Never touches by default:** consumer `docs/`, `scripts/`, `tests/`, application `src/`, unrelated product specs.

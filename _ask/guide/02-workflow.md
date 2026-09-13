@@ -130,7 +130,7 @@ The output must become an **Intent Artifact**.
 
 ### Grilling Expansion (before resolution)
 
-A grilling round is not ready to close on “all recommended” / “all ok” until each open question has been **expanded**: alternatives, tradeoffs, and failure modes are visible—not only a one-line A/B/C. If the human asks to expand (or stakes are high), re-issue that frontier with tables or concrete scenarios before accepting an answer. Never auto-approve recommendations. This rule is part of the starter kit’s `01 Grill` contract (and Explore decision grilling), not only meta process.
+A grilling round is not ready to close on “all recommended” / “all ok” until each **load-bearing** numbered question has been **expanded**: alternatives, tradeoffs, and failure modes are visible—not only a one-line A/B/C. Obvious defaults go in an “I’ll assume…” list; “defaults OK” covers that list. If the human asks to expand (or stakes are high), re-issue that question expanded before accepting an answer. Never auto-approve a real decision. Before the first numbered question, propose related extra Community Skills that would change What/Why, **ask before preparing them**, and pin accepted skills in the repo manifest. This rule is part of the starter kit’s `01 Grill` contract (and Explore decision grilling). See ADR 0016.
 
 The important innovation is that Grilling should not necessarily happen only once.
 
