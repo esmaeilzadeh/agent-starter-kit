@@ -1,7 +1,7 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "stage-model-subagents",
+  "commit_sha": "deea6c5c321170306af61867b2078e698fc3418b",
+  "checks": ["_ask/tests/test-*.sh via ./ask verify"],
+  "result": "pass",
+  "notes": "verify 2026-09-13; includes test-sync-runtime-agents and test-bindings-consumer-overlay"
 }
