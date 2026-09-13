@@ -172,10 +172,13 @@ The implementation must preserve this mapping:
 | Spec state | `specs/current/`, `specs/proposals/`, status field |
 | Worktree / branch / commit discipline | `_ask/policies/worktree.md`, `./ask check-clean`, `./ask start-work` |
 | Workflow guidance (not a lock) | `_ask/policies/workflow.md`, `./ask status` warnings |
+| Session-only off-path | `_ask/cursor-commands/off-path.md`, `./ask sync` |
+| Later inbox | `.later/`, `_ask/templates/later-work.md` |
 | Git hygiene | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |
 | Cursor Binding sync | `./ask sync`, `.cursor/` |
 | Install overlay | `./ask install` |
 | Result provenance | `./ask record-result`, result schema |
+| Experiment run provenance | `./ask record-run`, `results/<run-id>/` |
 | Escalation | policy + workflow gates |
 | Acceptance debt | evidence/acceptance state records |
 | Engineering-system evolution | review/verification outputs → rule/skill/check improvements |

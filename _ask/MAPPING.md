@@ -20,6 +20,8 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Build Spec (modular) | [spec/README](spec/README.md) | [`_ask/spec/`](spec/) |
 | Delegation policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/delegation.md`](policies/delegation.md) |
 | Workflow guidance (not a lock) | [02-workflow](guide/02-workflow.md) | [`_ask/policies/workflow.md`](policies/workflow.md), `./ask status` warnings |
+| Session-only off-path | [02-workflow](guide/02-workflow.md) | [`_ask/cursor-commands/off-path.md`](cursor-commands/off-path.md), `./ask sync` |
+| Later inbox | [02-workflow](guide/02-workflow.md) | `.later/`, [`_ask/templates/later-work.md`](templates/later-work.md) |
 | Risk policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/risk.md`](policies/risk.md) |
 | Verification policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/verification.md`](policies/verification.md) |
 | Skill provenance + preparation | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/skills/manifest.yaml`](skills/manifest.yaml), `./ask prepare` |
@@ -29,6 +31,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Cursor Binding sync | [guide/README](guide/README.md) | `./ask sync`, `.cursor/` |
 | Install overlay | [guide/README](guide/README.md) | `./ask install` |
 | Result provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-result`, result schema |
+| Experiment run provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-run`, `results/<run-id>/` |
 | Escalation | [guide/README](guide/README.md) | policy + workflow gates |
 | Acceptance debt | [03-methods-governance](guide/03-methods-governance.md) | evidence/acceptance state records |
 | Engineering-system evolution | [guide/README](guide/README.md) | review/verification outputs → rule/skill/check improvements |

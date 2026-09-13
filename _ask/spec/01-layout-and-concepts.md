@@ -127,7 +127,8 @@ Create this structure:
 │   │   ├── delegation.md
 │   │   ├── risk.md
 │   │   ├── verification.md
-│   │   └── worktree.md
+│   │   ├── worktree.md
+│   │   └── workflow.md
 │   ├── decisions/
 │   │   └── README.md
 │   ├── skills/
@@ -137,11 +138,15 @@ Create this structure:
 │   │   ├── check-clean-worktree.sh
 │   │   ├── start-work.sh
 │   │   ├── check-workstream.sh
+│   │   ├── status.sh
 │   │   ├── verify.sh
 │   │   ├── record-result.sh
+│   │   ├── record-run.sh
 │   │   ├── sync-cursor-binding.sh
 │   │   ├── install-kit.sh
 │   │   └── upgrade-kit.sh
+│   ├── cursor-commands/
+│   │   └── off-path.md
 │   ├── tests/
 │   ├── docs/
 │   └── templates/
@@ -154,17 +159,21 @@ Create this structure:
 │       ├── review.md
 │       ├── verification.json
 │       ├── acceptance.md
-│       └── experiment-result.json
+│       ├── experiment-result.json
+│       └── later-work.md
 ├── specs/
 │   ├── current/
 │   └── proposals/
 ├── work/
 │   └── README.md
+├── .later/
+│   └── README.md
 ├── ask
 ├── .cursor/
 │   ├── hooks.json
 │   ├── hooks/
-│   └── rules/
+│   ├── rules/
+│   └── commands/
 └── .gitignore
 ```
 
@@ -302,6 +311,25 @@ claim the destination is clear while material decisions remain open
 ```
 
 Skip `00` when the human already has a destination sharp enough for Intent → Grill.
+
+### Fog test
+
+**Foggy** if any of: What/Why cannot be written without inventing; several plausible destinations; R&D / wayfinding required; the destination itself is in conflict.
+
+**Clear** if the human already stated a concrete What/Why sufficient for Intent (bugfix, well-bounded add, demo Path A).
+
+### Routing
+
+| Entry | Behavior |
+| --- | --- |
+| `/00-explore` or explicit “00-explore” | Start 00 immediately. Do not ask whether Explore is needed. Create `work/<id>/explore-map.md` from the template if missing. |
+| Free on-path new task | Agent announces foggy vs clear (short rationale). **Wait for confirm.** Then 00 or real skip to 01. |
+| `/01-grill` while foggy | Do not skip 00. Run 00 or stop and say the dest is foggy. |
+| Real skip | Omit 00. Do not create or fill `explore-map.md`. `intent.md` contains `Explore skipped: destination already clear.` |
+
+If 00 **runs**, `explore-map.md` is required and `## Handoff to Intent` must be non-empty before 01. If 00 is **omitted**, there is no explore-map — that is not “on-path with a missing artifact.” `./ask start-work` must not copy `explore-map.md`; Explore creates it when 00 runs.
+
+`01`–`10` still require their artifacts; skip there means extra approvals only. Do not persist a skip-explore flag beyond the one-line skip record when skipped.
 
 ## 5.2 Engineering Pipeline (`01`–`10`)
 
