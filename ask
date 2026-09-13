@@ -11,28 +11,197 @@ usage() {
 ask — Agent Starter Kit (not a generic scripts/ folder)
 
 Usage: ./ask <command> [args]
+       ./ask [-h|--help|help]
+
+Same help: no command, -h, --help, or help.
+In a repo that already has the kit, `askit` prints this same text (it wraps ./ask).
 
 Commands:
-  check-clean              refuse dirty worktree
-  start-work <work-id>     branch agent/<work-id> + seed work/<work-id>/
-  check-workstream <id>    preconditions before implement
-  status [--work-id id]    live agent/* + archived work/* on default
-  verify                   run checks; print commit SHA
-  record-result …          workstream provenance (requires --commit-sha)
-  record-run …             experiment provenance (SHA must be HEAD)
-  sync                     regenerate .cursor projections
-  install <repo>           overlay kit package + adapter
-  upgrade --version <tag>  refresh kit-owned files
-  prepare                  prepare pinned Community Skills
-  setup                    human-only tracker + MCP wizard (TTY required)
+  check-clean
+      Refuse if the worktree is dirty. No flags.
 
-Unknown command names that match a file in _ask/scripts/<name>.sh are exec'd.
+  start-work <work-id>
+      Create branch agent/<work-id> and seed work/<work-id>/.
+      <work-id>   required slug
+
+  check-workstream <work-id> [--allow-dirty]
+      Preconditions before implement (branch, spec, plan).
+      --allow-dirty   skip the clean-tree check
+
+  status [--work-id <id>] [--json]
+      Live agent/* plus archived work/* on the default branch (no checkout).
+      --work-id <id>   one workstream
+      --json           machine-readable rows
+
+  verify
+      Run repo checks; print commit SHA. No flags.
+      Env: VERIFY_OUT_DIR, VERIFY_JSON
+
+  record-result --work-id <id> --commit-sha <sha> --result <text> [--notes <text>]
+      Workstream provenance. Refuses if --commit-sha is missing.
+
+  record-run --run-id <id> --commit-sha <sha> --metric <value> [--notes <text>] [--out <dir>]
+      Experiment provenance. --commit-sha must be HEAD. Tree must be clean.
+      --out <dir>   default results/<run-id>; needs <dir>/config.yaml
+
+  sync
+      Regenerate .cursor/skills and .cursor/commands from _ask/agents/. No flags.
+
+  install [--dry-run] [--force] [--skip-prepare] <target-repo>
+      Overlay kit package + adapter onto another git repo.
+      --dry-run         print paths; copy nothing
+      --force           overwrite existing kit-owned files
+      --skip-prepare    skip ./ask prepare and ./ask sync in the target
+      <target-repo>     required path; must already be a git repo
+      Does not touch that repo's docs/, scripts/, tests/, or src/.
+
+  upgrade --version <tag-or-sha> [--skip-prepare] [--source <git-url>]
+      Refresh kit-owned files from an explicit version (never blind main).
+      --version <tag-or-sha>   required
+      --skip-prepare           skip prepare + sync after refresh
+      --source <git-url>       override clone URL (or env KIT_SOURCE_REPO)
+
+  prepare
+      Install pinned Community Skills from _ask/skills/manifest.yaml. No flags.
+      Env: SKIP_INSTALL=1   validate pins only
+
+  setup
+      Human-only tracker + MCP wizard. Needs a TTY. Agents must not run this.
+      --help   usage without a TTY
+
+  completion bash|zsh
+      Print a tab-completion snippet. `askit` installs this automatically;
+      you do not need to eval it. Still available for debugging.
+
+Unknown names that match _ask/scripts/<name>.sh are exec'd.
 EOF
 }
+
+print_completion_snippet() {
+  local shell="$1"
+  local lib
+  lib="$(sed -e '/^#!/d' -e '/^set -euo pipefail$/d' -e '/^if \[\[ "\${BASH_SOURCE/,${d}' "$SCRIPTS/ask-complete.sh")"
+  case "$shell" in
+    bash)
+      printf '%s\n' "$lib"
+      cat <<'EOF'
+_ask_kit_candidates() {
+  local cword="$1"
+  shift
+  local out=""
+  if command -v askit >/dev/null 2>&1; then
+    out="$(command askit --complete "$cword" "$@" 2>/dev/null)" || out=""
+  fi
+  if [[ -z "$out" ]]; then
+    local ask="$1"
+    if [[ -x "$ask" ]]; then
+      out="$("$ask" --complete "$cword" "$@" 2>/dev/null)" || out=""
+    fi
+  fi
+  if [[ -z "$out" ]] && declare -F ask_print_completions >/dev/null; then
+    out="$(ask_print_completions "$cword" "$@" 2>/dev/null)" || out=""
+  fi
+  printf '%s' "$out"
+}
+_ask_kit_complete() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local out line word
+  local -a cands=()
+  local want_path=0
+  out="$(_ask_kit_candidates "$COMP_CWORD" "${COMP_WORDS[@]}")"
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    word="${line%%	*}"
+    if [[ "$word" == __PATH__ ]]; then
+      want_path=1
+      continue
+    fi
+    cands+=("$word")
+  done <<< "$out"
+  if [[ ${#cands[@]} -gt 0 ]]; then
+    compopt +o default 2>/dev/null || true
+    compopt -o nosort 2>/dev/null || true
+    local IFS=$' \t\n'
+    COMPREPLY=($(compgen -W "${cands[*]}" -- "$cur"))
+  else
+    COMPREPLY=()
+  fi
+  if [[ "$want_path" -eq 1 ]]; then
+    compopt -o default 2>/dev/null || true
+    compopt -o filenames 2>/dev/null || true
+  fi
+}
+complete -o nosort -F _ask_kit_complete ask
+complete -o nosort -F _ask_kit_complete ./ask
+complete -o nosort -F _ask_kit_complete askit
+EOF
+      ;;
+    zsh)
+      printf '%s\n' "$lib"
+      cat <<'EOF'
+#compdef ask askit ./ask
+_ask_kit_complete() {
+  local ask="${words[1]}"
+  local out line word desc
+  local -a pairs
+  local want_path=0
+  out=""
+  if (( $+commands[askit] )); then
+    out="$(askit --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  fi
+  if [[ -z "$out" && -x "$ask" ]]; then
+    out="$("$ask" --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  fi
+  if [[ -z "$out" ]] && typeset -f ask_print_completions >/dev/null; then
+    out="$(ask_print_completions $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  fi
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    word="${line%%	*}"
+    desc="${line#*	}"
+    [[ "$word" == "$line" ]] && desc=""
+    if [[ "$word" == __PATH__ ]]; then
+      want_path=1
+      continue
+    fi
+    if [[ -n "$desc" ]]; then
+      pairs+=("${word}:${desc}")
+    else
+      pairs+=("$word")
+    fi
+  done <<< "$out"
+  if [[ ${#pairs[@]} -gt 0 ]]; then
+    _describe -V 'ask' pairs
+  fi
+  if [[ "$want_path" -eq 1 ]]; then
+    _files
+  fi
+}
+compdef _ask_kit_complete ask askit ./ask
+EOF
+      ;;
+    *)
+      echo "ask: completion supports bash or zsh" >&2
+      exit 2
+      ;;
+  esac
+}
+
+# shellcheck source=scripts/ask-complete.sh
+source "$SCRIPTS/ask-complete.sh"
 
 cmd="${1:-}"
 if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
   usage
+  exit 0
+fi
+if [[ "$cmd" == "--complete" ]]; then
+  shift
+  ask_print_completions "$@"
+  exit 0
+fi
+if [[ "$cmd" == "completion" ]]; then
+  print_completion_snippet "${2:-}"
   exit 0
 fi
 shift

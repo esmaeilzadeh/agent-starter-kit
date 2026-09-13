@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+# askit — installer and daily command for the Agent Starter Kit.
+#   curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash
+#   askit self-install   # same, when you already have this file
+# First run in an app repo (no ./ask): overlay the kit, then setup.
+# Later runs: same as ./ask.
+set -euo pipefail
+
+ASKIT_CURL='curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash'
+
+askit_self_install_usage() {
+  cat <<EOF
+askit self-install — put this command on PATH
+
+Usage:
+  $ASKIT_CURL
+  askit self-install [--source <git-url-or-path>] [--ref <branch-or-tag>] [--prefix <dir>] [--here]
+
+  --source   kit git URL or local clone (default: GitHub main repo)
+  --ref      branch or tag to check out (default: main)
+  --prefix   install prefix; askit goes in <prefix>/bin (default: ~/.local)
+  --here     also overlay the kit into the current git repo
+
+Then in an app repo:
+  askit setup
+EOF
+}
+
+askit_self_install() {
+  local SOURCE="${KIT_SOURCE_REPO:-https://github.com/esmaeilzadeh/agent-starter-kit.git}"
+  local REF="${KIT_REF:-main}"
+  local PREFIX="${ASKIT_PREFIX:-$HOME/.local}"
+  local HERE=0
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --source) SOURCE="$2"; shift 2 ;;
+      --ref) REF="$2"; shift 2 ;;
+      --prefix) PREFIX="$2"; shift 2 ;;
+      --here) HERE=1; shift ;;
+      -h|--help)
+        askit_self_install_usage
+        return 0
+        ;;
+      *)
+        echo "askit: unknown self-install arg $1 (try --help)" >&2
+        return 2
+        ;;
+    esac
+  done
+
+  if [[ -z "${HOME:-}" ]]; then
+    echo "askit: HOME is not set" >&2
+    return 1
+  fi
+
+  local CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit"
+  local BIN="$PREFIX/bin"
+
+  echo "askit: kit $SOURCE @ $REF"
+  echo "askit: cache $CACHE"
+
+  mkdir -p "$(dirname "$CACHE")" "$BIN"
+
+  if [[ -d "$CACHE/.git" ]]; then
+    git -C "$CACHE" remote set-url origin "$SOURCE" 2>/dev/null || git -C "$CACHE" remote add origin "$SOURCE"
+    git -C "$CACHE" fetch --depth 1 origin "$REF"
+    git -C "$CACHE" checkout -f --detach FETCH_HEAD
+  else
+    rm -rf "$CACHE"
+    if ! git clone --depth 1 --branch "$REF" "$SOURCE" "$CACHE" 2>/dev/null; then
+      git clone "$SOURCE" "$CACHE"
+      git -C "$CACHE" checkout "$REF"
+    fi
+  fi
+
+  if [[ ! -x "$CACHE/askit" ]]; then
+    echo "askit: $CACHE/askit missing after clone" >&2
+    return 1
+  fi
+
+  ln -sfn "$CACHE/askit" "$BIN/askit"
+  echo "askit: $BIN/askit -> $CACHE/askit"
+
+  ASKIT_SKIP_COMPLETION_INSTALL="${ASKIT_SKIP_COMPLETION_INSTALL:-}" \
+    ASKIT_DIR="$CACHE" "$CACHE/_ask/scripts/install-user-completion.sh" >/dev/null 2>&1 || true
+
+  if [[ "$HERE" -eq 1 ]]; then
+    if [[ ! -d .git ]]; then
+      echo "askit: --here needs a git repo in the current directory" >&2
+      return 1
+    fi
+    "$CACHE/ask" install --skip-prepare "$(pwd)"
+  fi
+
+  case ":$PATH:" in
+    *":$BIN:"*) ;;
+    *)
+      echo "askit: $BIN is not on PATH. Add this to your shell rc:"
+      echo "  export PATH=\"$BIN:\$PATH\""
+      ;;
+  esac
+
+  echo "askit: done. In an app repo: askit setup"
+}
+
+# Piped to bash (curl | bash): this file *is* the installer.
+_askit0="${0##*/}"
+if [[ "$_askit0" == "bash" || "$_askit0" == "sh" || "$_askit0" == "-bash" || "$_askit0" == "-sh" ]]; then
+  askit_self_install "$@"
+  exit
+fi
+
+if [[ "${1:-}" == "self-install" ]]; then
+  shift
+  askit_self_install "$@"
+  exit
+fi
+
+askit_home() {
+  local s="${BASH_SOURCE[0]}"
+  while [[ -L "$s" ]]; do
+    local t
+    t="$(readlink "$s")"
+    if [[ "$t" == /* ]]; then
+      s="$t"
+    else
+      s="$(cd "$(dirname "$s")" && pwd)/$t"
+    fi
+  done
+  cd "$(dirname "$s")" && pwd
+}
+
+ASKIT_DIR="$(askit_home)"
+
+find_ask() {
+  local dir="$PWD"
+  while true; do
+    if [[ -x "$dir/ask" ]]; then
+      printf '%s\n' "$dir/ask"
+      return 0
+    fi
+    [[ "$dir" == / ]] && break
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+COMPLETE_LIB="$ASKIT_DIR/_ask/scripts/ask-complete.sh"
+if [[ -f "$COMPLETE_LIB" ]]; then
+  # shellcheck source=scripts/ask-complete.sh
+  source "$COMPLETE_LIB"
+fi
+
+cmd="${1:-}"
+if [[ "$cmd" != "--complete" ]]; then
+  ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/install-user-completion.sh" >/dev/null 2>&1 || true
+fi
+
+if [[ "$cmd" == "--complete" ]]; then
+  shift
+  if declare -F ask_print_completions >/dev/null; then
+    ask_print_completions "$@"
+  fi
+  exit 0
+fi
+
+if [[ "$cmd" == "completion" ]]; then
+  if [[ -x "$ASKIT_DIR/ask" ]]; then
+    exec "$ASKIT_DIR/ask" completion "${2:-}"
+  fi
+  echo "askit: completion snippet needs the kit checkout next to this script" >&2
+  exit 2
+fi
+
+usage_bootstrap() {
+  cat <<EOF
+askit — Agent Starter Kit (PATH command; not a generic \`ask\`)
+
+Usage: askit <command> [args]
+       askit [-h|--help|help]
+       askit self-install
+
+Install askit once:
+  $ASKIT_CURL
+
+Then in an app git repo (no ./ask yet): askit setup
+That overlays the kit here, then runs the tracker/MCP wizard.
+After that, askit is ./ask.
+
+EOF
+  if [[ -x "$ASKIT_DIR/ask" ]]; then
+    "$ASKIT_DIR/ask" --help
+  fi
+}
+
+if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
+  if ask_bin="$(find_ask)"; then
+    exec "$ask_bin" "$@"
+  fi
+  usage_bootstrap
+  exit 0
+fi
+
+if ask_bin="$(find_ask)"; then
+  exec "$ask_bin" "$@"
+fi
+
+# First run in this repo.
+ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/askit-bootstrap.sh"
+
+if [[ -x "$(pwd)/ask" ]]; then
+  exec "$(pwd)/ask" "$@"
+fi
+exit 1

@@ -22,7 +22,22 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 
 ## How a product uses this kit
 
-Clone or `install-kit` into **your** app repo. The kit occupies only `_ask/` plus a thin Cursor adapter. Your Nest (or other) `docs/`, `scripts/`, `tests/`, and `src/` stay yours.
+Put `askit` on your PATH (once per machine):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash
+```
+
+Then in **your** app repo:
+
+```bash
+cd /path/to/your/app
+askit setup
+```
+
+That overlays `_ask/` plus a thin Cursor adapter. It does not touch `docs/`, `scripts/`, `tests/`, or `src/`. Later, `askit` is the same as `./ask`.
+
+You can still overlay from a kit clone: `./ask install /path/to/your/app`.
 
 | Layer | Paths |
 | --- | --- |
@@ -58,7 +73,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 
 ## Quick commands
 
-`./ask` is the only root command. It execs `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`).
+`askit` is the PATH installer and daily command. In a repo that already has the kit, `./ask` is the same dispatcher. Both exec `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Tab completion: run `askit` once (installs a `~/.bashrc` / `~/.zshrc` hook and bash-completion files). No `eval`. `sta<Tab>` matches both `start-work` and `status`; type `start<Tab>` for `start-work`.
 
 | Command | Purpose |
 | --- | --- |
@@ -74,6 +89,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 | `./ask upgrade --version <tag>` | Refresh kit-owned files |
 | `./ask prepare` | Install pinned Community Skills |
 | `./ask setup` | **Human-only** tracker + MCP wizard (TTY required; agents must not run it) |
+| `./ask completion bash\|zsh` | Print tab-completion snippet (debug; `askit` installs this) |
 
 ## Documentation index
 
