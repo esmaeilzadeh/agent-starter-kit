@@ -18,7 +18,7 @@
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED
+ACCEPTED. Human asked to merge and push.
 
 ## Accepted commit SHA
 
