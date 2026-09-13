@@ -1,0 +1,9 @@
+{
+  "work_id": "promote-kit-specs",
+  "commit_sha": "8d0c957445e259d8acfce1e62a3f44bd0576d02c",
+  "checks": [
+    {"check": "./ask verify", "result": "pass"}
+  ],
+  "result": "pass",
+  "notes": "All kit tests passed after Build Spec inserts."
+}

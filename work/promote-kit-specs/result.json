@@ -1,0 +1,6 @@
+{
+  "work_id": "promote-kit-specs",
+  "commit_sha": "8d0c957445e259d8acfce1e62a3f44bd0576d02c",
+  "result": "pass",
+  "notes": "Build Spec now owns later-inbox, skip-explore, status/off-path, record-run"
+}
