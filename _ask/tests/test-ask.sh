@@ -12,10 +12,27 @@ ASK="$ROOT/ask"
 "$ASK" --help | grep -q 'completion'
 "$ASK" -h | grep -q 'install'
 "$ASK" | grep -q 'Usage:'
-"$ASK" --complete 1 ./ask st | grep -q start-work
-"$ASK" --complete 2 ./ask install -- | grep -q -- '--dry-run'
-"$ASK" completion bash | grep -q '_ask_kit_complete'
-"$ASK" completion zsh | grep -q 'compdef'
+out="$("$ASK" --complete 1 ./ask st)"
+printf '%s\n' "$out" | grep -q start-work
+out="$("$ASK" --complete 2 ./ask install)"
+printf '%s\n' "$out" | grep -q -- '--dry-run'
+printf '%s\n' "$out" | grep -q -- '--force'
+printf '%s\n' "$out" | grep -q -- '--skip-prepare'
+out="$("$ASK" --complete 2 ./ask record-result)"
+printf '%s\n' "$out" | grep -q -- '--work-id'
+printf '%s\n' "$out" | grep -q -- '--commit-sha'
+out="$("$ASK" --complete 2 ./ask start-work)"
+printf '%s\n' "$out" | grep -q -- '--help'
+out="$("$ASK" --complete 2 ./ask upgrade)"
+printf '%s\n' "$out" | grep -q -- '--version'
+out="$("$ASK" completion bash)"
+printf '%s\n' "$out" | grep -q '_ask_kit_complete'
+out="$("$ASK" completion zsh)"
+printf '%s\n' "$out" | grep -q 'compdef'
+for sub in check-clean start-work check-workstream status verify record-result record-run sync install upgrade prepare setup completion; do
+  out="$("$ASK" --complete 2 ./ask "$sub")"
+  printf '%s\n' "$out" | grep -q . 
+done
 set +e
 "$ASK" nosuchcmd >/dev/null 2>&1
 code=$?

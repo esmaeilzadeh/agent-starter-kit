@@ -86,18 +86,35 @@ print_completion_snippet() {
 _ask_kit_complete() {
   local ask="${COMP_WORDS[0]}"
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local out
-  out="$("$ask" --complete "$COMP_CWORD" "${COMP_WORDS[@]}" 2>/dev/null)" || out=""
+  local out line word
   local -a cands=()
+  local want_path=0
+  out="$("$ask" --complete "$COMP_CWORD" "${COMP_WORDS[@]}" 2>/dev/null)" || out=""
   while IFS= read -r line; do
-    [[ -n "$line" ]] && cands+=("$line")
+    [[ -z "$line" ]] && continue
+    word="${line%%	*}"
+    if [[ "$word" == __PATH__ ]]; then
+      want_path=1
+      continue
+    fi
+    cands+=("$word")
   done <<< "$out"
-  local IFS=$' \t\n'
-  COMPREPLY=($(compgen -W "${cands[*]}" -- "$cur"))
+  if [[ ${#cands[@]} -gt 0 ]]; then
+    compopt +o default 2>/dev/null || true
+    compopt -o nosort 2>/dev/null || true
+    local IFS=$' \t\n'
+    COMPREPLY=($(compgen -W "${cands[*]}" -- "$cur"))
+  else
+    COMPREPLY=()
+  fi
+  if [[ "$want_path" -eq 1 ]]; then
+    compopt -o default 2>/dev/null || true
+    compopt -o filenames 2>/dev/null || true
+  fi
 }
-complete -o default -F _ask_kit_complete ask
-complete -o default -F _ask_kit_complete ./ask
-complete -o default -F _ask_kit_complete askit
+complete -o nosort -F _ask_kit_complete ask
+complete -o nosort -F _ask_kit_complete ./ask
+complete -o nosort -F _ask_kit_complete askit
 EOF
       ;;
     zsh)
@@ -105,11 +122,31 @@ EOF
 #compdef ask askit ./ask
 _ask_kit_complete() {
   local ask="${words[1]}"
-  local -a cands
-  local out
+  local out line word desc
+  local -a pairs
+  local want_path=0
   out="$("$ask" --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
-  cands=(${(f)out})
-  compadd -a cands
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    word="${line%%	*}"
+    desc="${line#*	}"
+    [[ "$word" == "$line" ]] && desc=""
+    if [[ "$word" == __PATH__ ]]; then
+      want_path=1
+      continue
+    fi
+    if [[ -n "$desc" ]]; then
+      pairs+=("${word}:${desc}")
+    else
+      pairs+=("$word")
+    fi
+  done <<< "$out"
+  if [[ ${#pairs[@]} -gt 0 ]]; then
+    _describe -V 'ask' pairs
+  fi
+  if [[ "$want_path" -eq 1 ]]; then
+    _files
+  fi
 }
 compdef _ask_kit_complete ask askit ./ask
 EOF
