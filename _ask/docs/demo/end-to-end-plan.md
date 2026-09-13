@@ -6,7 +6,7 @@
 
 Repo overview and doc index: root **[README.md](../../../README.md)**.
 
-This plan is the **script for the demo**. Execute it in Cursor against this repository (or a clone). Protocol truth stays under `_ask/`; do not improvise stages from chat memory alone.
+This plan is the script for the demo. Execute it in Cursor against this repository (or a clone). Protocol truth stays under `_ask/`; do not improvise stages from chat memory alone.
 
 ---
 
@@ -99,14 +99,14 @@ Do **not** train on a dirty tree. `record-run` will refuse.
 `./ask record-result --work-id demo-moons-run --commit-sha "$(git rev-parse HEAD)" --result pass` closes the **workstream**.  
 Each **experiment** is already in `results/RUN_REGISTRY.md`.
 
-### A10. Punchline
+### A10. Show the registry
 
 ```bash
 column -t -s '|' results/RUN_REGISTRY.md || cat results/RUN_REGISTRY.md
 streamlit run scripts/view_runs.py
 ```
 
-Two rows, two SHAs. Narrate: *the registry, not the chat, is the scoreboard.*
+Two rows, two SHAs. The registry is the scoreboard, not the chat.
 
 ---
 

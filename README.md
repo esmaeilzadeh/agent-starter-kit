@@ -2,7 +2,7 @@
 
 Portable repository protocol for delegating engineering labor to AI agents while keeping **human ownership** of intent, policy, and acceptance. Cursor is the first-class runtime binding; the protocol stays copyable into ordinary software repos.
 
-This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage contracts + small scripts + pinned Community Skills.
+The kit is Guide + Build Spec + stage contracts + small scripts + pinned Community Skills. It is not a multi-agent runtime product.
 
 ## Start here
 
@@ -89,4 +89,4 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 
 Human keeps **Judgment** and **Authority**. Agents supply **Labor** and **Capability** under explicit **Policy**. Evidence comes from verification and Git history.
 
-Phases **1–2** of the Build Spec are what this repository ships.
+This repository ships Phases **1–2** of the Build Spec.
