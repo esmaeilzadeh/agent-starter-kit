@@ -4,37 +4,40 @@ Explore skipped: destination already clear.
 
 ## What
 
-Tighten kit grilling (`01 Grill`, Explore decision grilling, and ADR 0007) so numbered questions are only load-bearing; each round has an expanded-decisions block and a short “I’ll assume…” list; “defaults OK” covers the assume-list; facts are not asked; depth stops at destination, constraints, and non-goals. Never auto-approve a real decision.
+Tighten kit grilling (`01 Grill`, Explore decision grilling, and ADR 0007) so:
 
-**Also:** before grilling starts, the agent must try to surface problem-space that would otherwise stay hidden — by finding related Community Skills and **asking the human before preparing/downloading any of them**, then grilling with those skills in context.
+1. Numbered questions are only load-bearing.
+2. Each round has an expanded-decisions block and a short “I’ll assume…” list. “Defaults OK” covers the assume-list.
+3. Facts are not asked. Depth stops at destination, constraints, and non-goals.
+4. Never auto-approve a real decision.
+5. Before the first numbered question: search for related Community Skills that would change What/Why. Propose a short list. **Ask before preparing any extra skill.** Prepare only accepted ones. **Pin each accepted skill in `_ask/skills/manifest.yaml`** (explicit revision, never `latest`) so later work in this repo prepares and uses it.
+
+Skip the propose step when no extra domain skill would change What/Why (well-bounded kit/repo change).
 
 ## Why
 
-Two failure modes:
-
-1. Grilling treats “nothing left silently assumed” as “ask everything,” then ADR 0007 expands every item. Tax on obvious defaults.
-2. The griller cannot see the real problem space (missing domain method), so questions look shallow or wrong even when few.
+Grilling either asks everything obvious, or misses the real problem space because the griller lacks the domain method. Skills that matter should stick to the repo, not vanish after one chat.
 
 ## Non-goals
 
 - Auto-approving real decisions
 - Auto-downloading skills without asking
-- Deleting the grilling primitive
-- Growing the tree into implementation trivia
-- Forking the pinned `mattpocock/skills` grilling tree (Q1-A)
-- A later-inbox or tracker change
+- Forking the pinned `mattpocock/skills` grilling tree
+- Replacing `./ask prepare` for already-pinned required skills
+- Implementation trivia
 
 ## Known assumptions
 
-- Card `.later/grilling-skip-trivia.md` plus this session’s “hidden from the griller” note.
-- Applies to Explore decision grilling as well as `01 Grill`.
-- Kit contracts only (01-grill, spec §15.1, ADR 0007 / successor). Community grilling pin stays; kit wins on kit stages.
-- `./ask prepare` for **already pinned, required** manifest skills stays as today (not a surprise download). The ask-first rule is for **additional** related skills proposed at Grill time.
+- Kit contracts only (01-grill, 00-explore, spec §15.1, ADR). Community grilling pin stays; kit wins on kit stages.
+- Applies to Explore decision grilling and `01 Grill`.
+- Required manifest pins still prepare without a per-session ask.
 
 ## Open questions
 
-- How the agent finds and proposes related skills, and when a proposal is required vs skipped.
+None.
 
 ## Human decisions
 
-- Q1-A: kit files only; do not overlay/fork the pinned grilling skill.
+- Q1-A: kit files only.
+- Q2-A + persist: ask, then pin accepted skills in the repo manifest for later requests.
+- Defaults OK 2026-09-13.
