@@ -1,0 +1,9 @@
+{
+  "work_id": "grilling-skip-trivia",
+  "commit_sha": "504565878b1cf513f6b00fe04de426404ca38050",
+  "checks": [
+    {"check": "./ask verify", "result": "pass"}
+  ],
+  "result": "pass",
+  "notes": "Includes test-grilling-skip-trivia-contracts.sh"
+}
