@@ -6,6 +6,11 @@ ASK="$ROOT/ask"
 "$ASK" --help | grep -q 'Agent Starter Kit'
 "$ASK" --help | grep -q 'status'
 "$ASK" --help | grep -q 'setup'
+"$ASK" --help | grep -q -- '--dry-run'
+"$ASK" --help | grep -q -- '--commit-sha'
+"$ASK" --help | grep -q -- '--work-id'
+"$ASK" -h | grep -q 'install'
+"$ASK" | grep -q 'Usage:'
 set +e
 "$ASK" nosuchcmd >/dev/null 2>&1
 code=$?
