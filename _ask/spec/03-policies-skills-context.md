@@ -65,14 +65,16 @@ Turn ambiguous human intent into an explicit Intent Artifact.
 Must:
 
 ```text
-ask questions
-expand each decision question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
-expose assumptions
+before the first numbered question: propose related extra Community Skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+ask only load-bearing questions
+expand each numbered question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
+state a short “I’ll assume…” list; “defaults OK” covers it
+do not ask facts already in the repo
 distinguish What from Why
 identify non-goals
 identify unresolved decisions
 stop when human judgment is required
-never treat “all ok” as valid if the frontier was never expanded
+never treat “all ok” as valid if a load-bearing question was never expanded
 ```
 
 Must not:

@@ -15,14 +15,16 @@ Turn ambiguous human intent into an explicit Intent Artifact.
 Must:
 
 ```text
-ask questions
-expand each decision question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
-expose assumptions
+before the first numbered question: propose related extra Community Skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+ask only load-bearing questions (hard to reverse, What/Why/non-goal, recommendation might be wrong, or blocks other decisions)
+expand each numbered question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
+state a short “I’ll assume…” list; “defaults OK” covers it
+do not ask facts already in the repo
 distinguish What from Why
 identify non-goals
 identify unresolved decisions
 stop when human judgment is required
-never treat “all ok” as valid if the frontier was never expanded
+never treat “all ok” as valid if a load-bearing question was never expanded
 ```
 
 Must not:
@@ -45,8 +47,12 @@ work/<work-id>/intent.md
 
 ## Grilling Expansion
 
-Before resolving a grilling round (“all ok” / accept recommendations), each open question must be expanded (alternatives, tradeoffs, failure modes)—not only a one-line A/B/C. Never auto-approve recommendations.
+**Skill-before-grill:** Before the first numbered question, search for related Community Skills (skills.sh / find-skills / `.agents/skills`). Propose at most three, and only if a skill would change What/Why. **Ask before preparing any extra skill.** Do not auto-download. For each accepted skill: add/update `_ask/skills/manifest.yaml` with an explicit `revision` (never `latest`), then `./ask prepare`. That pin stays for later work in this repo. Skip the propose step when no extra domain skill would change What/Why. Already-pinned required manifest skills still prepare as today.
 
-A confirmed “I approve these defaults are OK” (or “all recs” after an expanded frontier) is the **first on-path confirm**. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`.
+**Frontier filter:** Number a question only if it is hard to reverse, is What/Why/non-goal, the recommendation might be wrong, or it blocks other decisions. Do not ask trivia with an obvious repo default. Do not ask facts from files, ADRs, or `CONTEXT.md`. Cap depth at destination, constraints, non-goals.
+
+**Two blocks:** (1) expanded load-bearing questions; (2) short “I’ll assume…”. “Defaults OK” / “all recs” covers the assume-list. Only numbered questions need alternatives/tradeoffs/failure modes. Never auto-approve a real decision. Never treat “all ok” as valid if a **load-bearing** question was never expanded.
+
+A confirmed “I approve these defaults are OK” (or “all recs” after an expanded load-bearing frontier) is the **first on-path confirm**. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`. ADR: `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.

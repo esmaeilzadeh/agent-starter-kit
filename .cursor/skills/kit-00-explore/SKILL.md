@@ -27,7 +27,8 @@ treat Explore as decision work, not implementation
 keep a durable map (explore-map artifact and/or tracker map)
 separate human decisions from research facts
 prepare Community Skills declared for Explore via Skill Preparation
-expand grilling questions before resolving Explore decisions (Grilling Expansion)
+before Explore decision grilling: propose extra related skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+expand only load-bearing Explore decisions (Grilling Expansion: two-block + assume-list)
 stop and hand off when the destination is clear
 ```
 
@@ -67,6 +68,7 @@ STILL_FOGGY → continue Explore (or escalate to human)
 
 - Do **not** stuff R&D / destination discovery into `06 Implement`.
 - Non-empty `## Handoff to Intent` on the explore-map is required before `01 Grill`.
-- Run Skill Preparation for Explore-bound Community Skills before labor.
+- Run Skill Preparation for Explore-bound Community Skills before labor. Extra related skills: ask first, then pin in `_ask/skills/manifest.yaml` (never `latest`).
+- Explore decision grilling uses the same filter as `01 Grill` (load-bearing numbered Qs + “I’ll assume…”). See `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 - Never start Explore on a dirty worktree; if dirty, grill the human per `_ask/policies/worktree.md`.
 - Kit path: `_ask/policies/workflow.md`. **If 00 runs**, create `work/<work-id>/explore-map.md` from `_ask/templates/explore-map.md` when missing, and do not skip that artifact. **If 00 is a real skip** (dest already ownable, and the human did not invoke `/00-explore`), do not create the map; record the skip in `intent.md` and go to 01 after confirm. `/00-explore` always runs this stage — do not ask whether Explore is needed. Off-path only if the human explicitly leaves the kit.
