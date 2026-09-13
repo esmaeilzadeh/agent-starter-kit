@@ -26,4 +26,19 @@ printf '%s\n' "$out" | grep -q 'no ./ask yet'
 out="$("$ASKIT" --complete 1 askit)"
 printf '%s\n' "$out" | grep -q setup
 
+# Other-branch ./ask without --complete must not swallow askit's catalog.
+cat > "$TMP/ask" <<'OLD'
+#!/bin/sh
+echo "old ask" >&2
+exit 2
+OLD
+chmod +x "$TMP/ask"
+out="$("$ASKIT" --complete 1 ./ask sta)"
+printf '%s\n' "$out" | grep -q start-work
+printf '%s\n' "$out" | grep -q status
+
+# sta is a prefix of both start-work and status (Tab will list both).
+out="$("$ASKIT" --complete 1 ./ask start)"
+printf '%s\n' "$out" | grep -q start-work
+
 echo "PASS: askit wraps ./ask and completes without a local kit"

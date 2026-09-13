@@ -50,4 +50,17 @@ git add README.md && git commit -q -m init
 # invoke ask by absolute path; check-clean uses cwd git
 "$ASK" check-clean
 
+# Simulate Tab after "./ask start" (unique) and "./ask sta" (start-work + status).
+# shellcheck disable=SC2034
+eval "$("$ASK" completion bash)"
+COMP_WORDS=(./ask start)
+COMP_CWORD=1
+_ask_kit_complete
+printf '%s\n' "${COMPREPLY[@]}" | grep -q start-work
+COMP_WORDS=(./ask sta)
+COMP_CWORD=1
+_ask_kit_complete
+printf '%s\n' "${COMPREPLY[@]}" | grep -q start-work
+printf '%s\n' "${COMPREPLY[@]}" | grep -q status
+
 echo "PASS: ask help, unknown-command, check-clean on clean temp repo"

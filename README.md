@@ -58,7 +58,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 
 ## Quick commands
 
-`./ask` is the only root command. It execs `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Tab completion: `eval "$(./ask completion bash)"` or `eval "$(./ask completion zsh)"` (same on `askit`).
+`./ask` is the only root command. It execs `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Tab completion: `eval "$(./ask completion bash)"` or `eval "$(./ask completion zsh)"` (same on `askit`). Reload that line after switching branches. `sta<Tab>` matches both `start-work` and `status`; type `start<Tab>` for `start-work`.
 
 | Command | Purpose |
 | --- | --- |

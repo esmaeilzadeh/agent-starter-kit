@@ -80,16 +80,36 @@ EOF
 
 print_completion_snippet() {
   local shell="$1"
+  local lib
+  lib="$(sed -e '/^#!/d' -e '/^set -euo pipefail$/d' -e '/^if \[\[ "\${BASH_SOURCE/,${d}' "$SCRIPTS/ask-complete.sh")"
   case "$shell" in
     bash)
+      printf '%s\n' "$lib"
       cat <<'EOF'
+_ask_kit_candidates() {
+  local cword="$1"
+  shift
+  local out=""
+  if command -v askit >/dev/null 2>&1; then
+    out="$(command askit --complete "$cword" "$@" 2>/dev/null)" || out=""
+  fi
+  if [[ -z "$out" ]]; then
+    local ask="$1"
+    if [[ -x "$ask" ]]; then
+      out="$("$ask" --complete "$cword" "$@" 2>/dev/null)" || out=""
+    fi
+  fi
+  if [[ -z "$out" ]] && declare -F ask_print_completions >/dev/null; then
+    out="$(ask_print_completions "$cword" "$@" 2>/dev/null)" || out=""
+  fi
+  printf '%s' "$out"
+}
 _ask_kit_complete() {
-  local ask="${COMP_WORDS[0]}"
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local out line word
   local -a cands=()
   local want_path=0
-  out="$("$ask" --complete "$COMP_CWORD" "${COMP_WORDS[@]}" 2>/dev/null)" || out=""
+  out="$(_ask_kit_candidates "$COMP_CWORD" "${COMP_WORDS[@]}")"
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
     word="${line%%	*}"
@@ -118,6 +138,7 @@ complete -o nosort -F _ask_kit_complete askit
 EOF
       ;;
     zsh)
+      printf '%s\n' "$lib"
       cat <<'EOF'
 #compdef ask askit ./ask
 _ask_kit_complete() {
@@ -125,7 +146,16 @@ _ask_kit_complete() {
   local out line word desc
   local -a pairs
   local want_path=0
-  out="$("$ask" --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  out=""
+  if (( $+commands[askit] )); then
+    out="$(askit --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  fi
+  if [[ -z "$out" && -x "$ask" ]]; then
+    out="$("$ask" --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  fi
+  if [[ -z "$out" ]] && typeset -f ask_print_completions >/dev/null; then
+    out="$(ask_print_completions $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  fi
   while IFS= read -r line; do
     [[ -z "$line" ]] && continue
     word="${line%%	*}"

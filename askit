@@ -18,16 +18,30 @@ find_ask() {
   return 1
 }
 
-ask_bin="$(find_ask || true)"
+COMPLETE_LIB="$ASKIT_DIR/_ask/scripts/ask-complete.sh"
 
-if [[ -n "$ask_bin" ]]; then
-  exec "$ask_bin" "$@"
+# --complete must use this kit's catalog. Do not exec a local ./ask from
+# another branch that does not implement --complete (Tab would do nothing).
+if [[ -f "$COMPLETE_LIB" ]]; then
+  # shellcheck source=scripts/ask-complete.sh
+  source "$COMPLETE_LIB"
 fi
 
-# Kit not in this repo yet. Help and completion still work from this script.
-COMPLETE_LIB="$ASKIT_DIR/_ask/scripts/ask-complete.sh"
-if [[ ! -f "$COMPLETE_LIB" ]]; then
-  COMPLETE_LIB="$(cd "$(dirname "$0")" && pwd)/_ask/scripts/ask-complete.sh"
+cmd="${1:-}"
+if [[ "$cmd" == "--complete" ]]; then
+  shift
+  if declare -F ask_print_completions >/dev/null; then
+    ask_print_completions "$@"
+  fi
+  exit 0
+fi
+
+if [[ "$cmd" == "completion" ]]; then
+  if [[ -x "$ASKIT_DIR/ask" ]]; then
+    exec "$ASKIT_DIR/ask" completion "${2:-}"
+  fi
+  echo "askit: eval \"\$(askit completion bash)\" from a kit checkout that has ./ask" >&2
+  exit 2
 fi
 
 usage_bootstrap() {
@@ -43,41 +57,24 @@ then install the kit into this git repo. After that, askit is ./ask.
 EOF
   if [[ -x "$ASKIT_DIR/ask" ]]; then
     "$ASKIT_DIR/ask" --help
-  elif [[ -f "$COMPLETE_LIB" ]]; then
+  else
     echo "Commands (same as ./ask once installed):"
     echo "  check-clean start-work check-workstream status verify"
     echo "  record-result record-run sync install upgrade prepare setup"
     echo "  completion bash|zsh"
-    echo
-    echo "Flags: askit --help after install, or see ./ask --help in a kit clone."
   fi
 }
 
-cmd="${1:-}"
 if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
+  if ask_bin="$(find_ask)"; then
+    exec "$ask_bin" "$@"
+  fi
   usage_bootstrap
   exit 0
 fi
 
-if [[ -f "$COMPLETE_LIB" ]]; then
-  # shellcheck source=scripts/ask-complete.sh
-  source "$COMPLETE_LIB"
-fi
-
-if [[ "$cmd" == "--complete" ]]; then
-  shift
-  if declare -F ask_print_completions >/dev/null; then
-    ask_print_completions "$@"
-  fi
-  exit 0
-fi
-
-if [[ "$cmd" == "completion" ]]; then
-  if [[ -x "$ASKIT_DIR/ask" ]]; then
-    exec "$ASKIT_DIR/ask" completion "${2:-}"
-  fi
-  echo "askit: clone the kit or run first-run install, then: eval \"\$(askit completion bash)\"" >&2
-  exit 2
+if ask_bin="$(find_ask)"; then
+  exec "$ask_bin" "$@"
 fi
 
 echo "askit: no ./ask in this repo. First-run setup → install is not implemented on this branch yet." >&2
