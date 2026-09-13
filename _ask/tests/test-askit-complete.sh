@@ -26,6 +26,7 @@ out="$("$ASKIT" --help)"
 printf '%s\n' "$out" | grep -q 'no ./ask yet'
 out="$("$ASKIT" --complete 1 askit)"
 printf '%s\n' "$out" | grep -q setup
+printf '%s\n' "$out" | grep -q self-install
 
 # Other-branch ./ask without --complete must not swallow askit's catalog.
 cat > "$TMP/ask" <<'OLD'

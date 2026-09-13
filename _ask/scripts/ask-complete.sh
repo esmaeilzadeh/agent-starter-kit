@@ -21,7 +21,7 @@ ask_complete_commands() {
   ask_complete_emit install "overlay kit onto another git repo"
   ask_complete_emit upgrade "refresh kit-owned files from a version"
   ask_complete_emit prepare "install pinned Community Skills"
-  ask_complete_emit setup "human-only tracker + MCP wizard"
+  ask_complete_emit setup "first run: overlay kit here, then tracker/MCP wizard"
   ask_complete_emit help "this help text"
   ask_complete_emit completion "print bash|zsh tab-completion snippet"
   ask_complete_emit -h "help"
@@ -104,6 +104,14 @@ ask_complete_flags_for() {
     setup)
       ask_complete_emit --help "usage without a TTY"
       ;;
+    self-install)
+      ask_complete_emit --source "<git-url-or-path>"
+      ask_complete_emit --ref "<branch-or-tag>"
+      ask_complete_emit --prefix "<dir>  default ~/.local"
+      ask_complete_emit --here "also overlay the kit into cwd"
+      ask_complete_emit -h "help"
+      ask_complete_emit --help "help"
+      ;;
     completion)
       ask_complete_emit bash "eval this in bash"
       ask_complete_emit zsh "eval this in zsh"
@@ -122,6 +130,7 @@ ask_complete_value_flags() {
     status|record-result) printf '%s\n' --work-id --commit-sha --result --notes ;;
     record-run) printf '%s\n' --run-id --commit-sha --metric --notes --out ;;
     upgrade) printf '%s\n' --version --source ;;
+    self-install) printf '%s\n' --source --ref --prefix ;;
   esac
 }
 
@@ -145,6 +154,9 @@ ask_print_completions() {
 
   if [[ "$cword" -le 1 ]]; then
     ask_complete_commands
+    if [[ "${words[0]:-}" == *askit ]]; then
+      ask_complete_emit self-install "put askit on PATH (same as curl | bash)"
+    fi
     return 0
   fi
 
