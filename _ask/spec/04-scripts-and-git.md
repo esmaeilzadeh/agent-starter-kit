@@ -19,6 +19,7 @@ Mapped commands:
 ./ask status [--work-id id]    → _ask/scripts/status.sh
 ./ask verify                   → _ask/scripts/verify.sh
 ./ask record-result …          → _ask/scripts/record-result.sh
+./ask record-run …             → _ask/scripts/record-run.sh
 ./ask sync                     → _ask/scripts/sync-cursor-binding.sh
 ./ask install <repo>           → _ask/scripts/install-kit.sh
 ./ask upgrade --version <tag>  → _ask/scripts/upgrade-kit.sh
@@ -119,6 +120,18 @@ Live rows may include a **warning** `code-without-plan` when the branch changed 
 
 After Accept, merge the workstream branch so `main`/`master` becomes the archive.
 
+`.later/` cards are not live and do not appear on this board. No status subcommand or tracker sync for the later inbox.
+
+## 23.5 Session-only `/off-path`
+
+Every new Cursor session starts **on-path**. `/off-path` switches **this chat only**. Warn once, then follow.
+
+Do not write `work/*/kit-path`, flip intent, or add a repo flag. There is no `/on-path` command and no durable off-path flag.
+
+Source: `_ask/cursor-commands/off-path.md`. `./ask sync` copies it to `.cursor/commands/off-path.md`. Install/upgrade treat `_ask/cursor-commands/` as kit-owned.
+
+On-path, artifacts stay required on `01`–`10`. Skip means skip extra *approvals* (one defaults-OK, then Accept). Missing artifacts while still on-path: prepare from defaults, confirm once, continue. Policy: `_ask/policies/workflow.md`.
+
 ---
 
 # 24. Verification script
@@ -176,6 +189,22 @@ A result such as:
 ```
 
 is not valid without an identifiable code state.
+
+## 25.1 Experiment run recording (`./ask record-run`)
+
+Workstream Accept stays on `record-result`. Experiment / eval runs use a separate command:
+
+```text
+./ask record-run --run-id <id> --commit-sha <sha> --metric <value>
+```
+
+Implementation: `_ask/scripts/record-run.sh`. Optional: `--notes`, `--out` (default `results/<run-id>`).
+
+Refuses: missing SHA; dirty tree; SHA ≠ `HEAD`; missing `config.yaml` in the run dir.
+
+Writes: `run_manifest.json` (`eval-run-meta/v1`), `summary.json` (metric + `run_meta`), and a row in `results/RUN_REGISTRY.md` citing path + SHA + metric.
+
+Product trainers or viewers (for example a demo MLP) are not kit protocol. They may call `record-run`; they do not replace it.
 
 ---
 
@@ -343,5 +372,19 @@ Branch:
 ```text
 agent/cancel-order
 ```
+
+## 30.1 Mid-work later inbox
+
+When a new job appears during a running workstream, park it — do not start a second live `agent/*` in the same session unless the human explicitly sequences another job.
+
+```text
+.later/<slug>.md          # gitignored card (not live)
+.later/README.md          # committed; explains the inbox
+_ask/templates/later-work.md
+```
+
+`.gitignore` ignores `.later/*` except `README.md`. Cards are not committed on the active job’s branch. Start later in a new session with `./ask start-work <new-work-id>`. `./ask status` is unchanged (live = unmerged `agent/*` only). No later-inbox subcommand and no issue-tracker sync in v1.
+
+`AGENTS.md` and `work/README.md` tell agents to park here.
 
 ---

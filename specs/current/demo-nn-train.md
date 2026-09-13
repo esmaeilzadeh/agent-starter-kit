@@ -20,14 +20,9 @@ PyTorch, MNIST, ILP/Popper, durable off-path, CI farm.
 
 ### `./ask record-run`
 
-Required: `--run-id`, `--commit-sha`, `--metric`.
-Optional: `--notes`, `--out` (default `results/<run-id>`).
+Kit command. Canonical contract: `_ask/spec/04-scripts-and-git.md` §22.9 and §25.1.
 
-Refuses: missing SHA; dirty tree; SHA ≠ `HEAD`; missing `config.yaml` in the run dir.
-
-Writes: `run_manifest.json` (`eval-run-meta/v1`), `summary.json` (metric + `run_meta`), appends `results/RUN_REGISTRY.md`.
-
-`./ask record-result` is unchanged (workstream Accept).
+This demo uses that command. It does not redefine it.
 
 ### Trainer and viewer
 

@@ -6,25 +6,13 @@ CURRENT
 
 ## Goal
 
-Agents can add a parked later-task during a running workstream without a new live `agent/*` and without committing the card on the active job’s branch.
+Promoted into the Build Spec. Kit contract lives there; this file is the workstream record.
 
-## Non-goals
+## Canonical contract
 
-Status board for `.later/`. New `./ask` subcommand. Issue-tracker sync.
-
-## Behavior
-
-- Cards live under `.later/<slug>.md` (gitignored).
-- `.later/README.md` is committed and explains: not live; start later with `./ask start-work`; copy `_ask/templates/later-work.md`.
-- Mid-work: write a card, stay on the current job. Do not `start-work` the new id in the same session unless the human explicitly sequences another job.
-- `./ask status` unchanged (live = unmerged `agent/*` only).
-
-## Acceptance criteria
-
-- `.gitignore` ignores `.later/*` except `README.md`.
-- Template `_ask/templates/later-work.md` exists.
-- `AGENTS.md` and `work/README.md` tell agents to park here.
-- `./ask verify` passes.
+- Layout: `_ask/spec/01-layout-and-concepts.md` §3 (`.later/`, `later-work.md`)
+- Behavior: `_ask/spec/04-scripts-and-git.md` §30.1 Mid-work later inbox
+- Mapping: `_ask/spec/06-phases-and-acceptance.md` §38
 
 ## Source intent
 

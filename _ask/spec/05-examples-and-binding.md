@@ -165,6 +165,8 @@ This repository uses the AI Engineering Starter Kit.
 If the destination is foggy:
 - run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
 - prepare Community Skills from _ask/skills/manifest.yaml (do not vendor by default).
+If the destination is already clear: omit 00; do not write explore-map.md; record the skip in intent.md.
+Free on-path chat: announce 00 vs 01 and wait for confirm. `/00-explore` starts Explore immediately.
 
 Before independent Engineering Pipeline work:
 - invoke kit operations via `./ask` (not a generic root scripts/ folder);
@@ -180,7 +182,8 @@ During work:
 - do not silently change What/Why or acceptance criteria;
 - follow escalation policy;
 - preserve workstream isolation;
-- commit meaningful states.
+- commit meaningful states;
+- park mid-work discoveries in `.later/<slug>.md` (not a second live `agent/*`).
 
 Before claiming completion:
 - run configured verification (`./ask verify`);
@@ -205,6 +208,7 @@ AGENTS.md                              # ≤~30 lines; prepare; Explore name cav
 .cursor/hooks.json                     # beforeShellExecution → wrappers
 .cursor/hooks/*.sh                     # thin wrappers calling _ask/scripts/check-*.sh
 .cursor/skills/ or commands/           # generated projections of 00–10 (see ./ask sync)
+_ask/cursor-commands/                  # session-mode sources (e.g. /off-path); sync copies into .cursor/commands/
 .agents/skills/                        # prepared Community Skills (gitignore bodies)
 ```
 
