@@ -13,7 +13,7 @@ printf '%s\n' "$out" | grep -q start-work
 out="$("$ASKIT" completion bash)"
 printf '%s\n' "$out" | grep -q askit
 
-# No ./ask: still complete from the bundled lib (run from a temp dir, PATH to askit).
+# Git repo without the kit: no command catalog. Completion is self-install only.
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 git init -q "$TMP"
@@ -22,13 +22,17 @@ git config user.email t@e.com
 git config user.name t
 echo x > README.md
 git add README.md && git commit -q -m init
-out="$("$ASKIT" --help)"
-printf '%s\n' "$out" | grep -q 'no ./ask yet'
+out="$("$ASKIT" --help 2>&1 || true)"
+printf '%s\n' "$out" | grep -q 'not ask-based'
+! printf '%s\n' "$out" | grep -q 'no ./ask yet'
+! printf '%s\n' "$out" | grep -q start-work
 out="$("$ASKIT" --complete 1 askit)"
-printf '%s\n' "$out" | grep -q setup
 printf '%s\n' "$out" | grep -q self-install
+! printf '%s\n' "$out" | grep -q setup
+! printf '%s\n' "$out" | grep -q start-work
 
-# Other-branch ./ask without --complete must not swallow askit's catalog.
+# Ask-based repo with a broken ./ask: --complete still uses the bundled catalog.
+mkdir -p "$TMP/_ask"
 cat > "$TMP/ask" <<'OLD'
 #!/bin/sh
 echo "old ask" >&2
@@ -43,4 +47,4 @@ printf '%s\n' "$out" | grep -q status
 out="$("$ASKIT" --complete 1 ./ask start)"
 printf '%s\n' "$out" | grep -q start-work
 
-echo "PASS: askit wraps ./ask and completes without a local kit"
+echo "PASS: askit wraps ./ask; completion is gated until the repo is ask-based"
