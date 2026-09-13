@@ -4,9 +4,9 @@ Explore skipped: destination already clear.
 
 ## What
 
-(Proposed — Grill not closed.)
+(Grill in progress.)
 
-Give each kit stage a model preference. Ship Cursor defaults (Composer for high-token labor, Grok for first-party judgment, Claude or GPT for Challenge and Review). Let a human override per workstream and globally via env. For stages that must disagree with the parent (at least Review), generate a runtime subagent with that model pin. Do not switch the parent chat picker.
+Give each kit stage a model preference. Ship defaults (Composer for high-token labor, Grok for first-party judgment, Claude or GPT for Challenge and Review when diversity is worth the Other Models pool). Override per workstream and globally via env. Generate runtime subagents from a portable binding map. Do not switch the parent chat picker.
 
 ## Why
 
@@ -14,26 +14,25 @@ Same-chat 01–10 on one model is correlated review. The Guide already wants a d
 
 ## Non-goals
 
-(Proposed — Grill not closed.)
-
 - Parent-chat model switch
 - Cursor slugs inside `_ask/agents/*.md`
-- A custom multi-agent runtime or eleven hand-maintained subagents as source of truth
-- Promising hard enforcement the runtime cannot deliver
+- Promising a spawn the runtime cannot force
+- Hand-maintained eleven Cursor/Claude/Codex agent files as source of truth (generated copies are in scope)
 
 ## Known assumptions
 
-- Adapter generates pins from a portable map
 - Fast variants and Fable stay out of shipped defaults
 - `09 Verify` stays script-first
+- Preference precedence (Q2): per-work file → process / `.ask.env` → committed consumer map → kit defaults
 
 ## Open questions
 
-- Which stages spawn as subagents in this work (Review only vs Review + Challenge vs all 00–10)
-- Committed map vs gitignored env vs both; precedence
-- Instruction-only spawn vs provenance vs check-workstream fail
-- Cursor adapter only vs Claude/Codex files in the same work
+- Q1: generate/require spawn for which stages (HITL vs labor; see Grill round 2)
+- Q3 remainder: cheap-task Review so simple work does not burn Other Models by default
+- Q4 layout: `.agent` vs `_ask/` vs existing `.agents/skills/`; confirm “folder per runtime” not “folder per LLM”
 
 ## Human decisions
 
-(none yet)
+- **Q2:** Committed portable map (roles, not Cursor slugs) + env slug overrides + per-work file. Precedence: work → env → committed map → kit defaults.
+- **Q3 (partial):** Warn is not enough. Before a diversity-stage spawn, confirm and let the human pick from available models. Same-family pick: warn once, then proceed if they confirm.
+- **Q4 (partial):** Support Cursor, Claude Code, and Codex in this work. Canonical binding SoT in an `.agent` (or similar) folder; generate each runtime’s tree (`.cursor`, `.claude`, `.codex`) from that SoT. Exact path vs `_ask/` still open.
