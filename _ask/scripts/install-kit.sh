@@ -53,6 +53,9 @@ copy_path() {
       if [[ -f "$dest/skills/manifest.yaml" && "$FORCE" -eq 0 ]]; then
         excl+=(--exclude skills/manifest.yaml)
       fi
+      if [[ -f "$dest/bindings/models.yaml" && "$FORCE" -eq 0 ]]; then
+        excl+=(--exclude bindings/models.yaml)
+      fi
       rsync -a "${excl[@]}" "$src/" "$dest/"
     elif [[ "$rel" == "_ask/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
       rsync -a --exclude manifest.yaml "$src/" "$dest/"

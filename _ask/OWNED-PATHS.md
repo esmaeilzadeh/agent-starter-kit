@@ -13,7 +13,9 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `_ask/tests/`
 - `_ask/docs/` (kit-author ADRs, demo, research)
 - `_ask/cursor-commands/` (session-mode Cursor commands; `./ask sync` copies into `.cursor/commands/`)
-- Generated `.cursor/` projections (skills/commands/hooks wrappers produced by sync)
+- `_ask/bindings/` **except** consumer `models.yaml` (portable defaults, runtime slug tables, templates)
+- Generated `.cursor/` projections (skills/commands/hooks wrappers and `.cursor/agents` produced by sync)
+- Generated `.claude/agents/` and `.codex/agents/` (from `./ask sync`)
 - Stock kit Cursor rules under `.cursor/rules/` **except** `.cursor/rules/local/` (e.g. bootstrap, commit-step-discipline)
 - Root `ask` dispatcher
 - Monolith stubs (`ai-agent-engineering-guide.md`, `ai-agent-starter-kit-spec.md`)
@@ -25,6 +27,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - Local sections of root `AGENTS.md`
 - `.cursor/rules/local/`
 - `_ask/agents/*.local.md` (per-stage overlays merged at sync time)
+- `_ask/bindings/models.yaml` (optional consumer model overlay)
 - Product `docs/`, `scripts/`, `tests/`, `src/`
 - Product `specs/`, `work/` (engineering state)
 - Prepared `.agents/skills/` bodies (regenerated; gitignored)

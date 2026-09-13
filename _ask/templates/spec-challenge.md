@@ -1,5 +1,9 @@
 # Specification Challenge
 
+## Model
+
+<!-- model / runtime / parent_model -->
+
 ## Specification
 
 ## Ambiguities

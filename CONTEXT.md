@@ -52,6 +52,10 @@ _Avoid_: plan, acceptance criteria alone (those are parts of it)
 How the Starter Kit is expressed inside Cursor. Includes root `ask`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./ask sync` — so Cursor can honor stages without hand-maintained subagent SoT. Portable protocol remains under `_ask/`; anything Cursor must honor also exists under `.cursor/`.
 _Avoid_: Cursor plugin (unless we later decide that is the distribution form), protocol-only “hope the model opens the file”, hand-maintained eleven Cursor agents as source of truth
 
+**Bindings**:
+`_ask/bindings/` — portable stage roles and Review pools (`models.defaults.yaml`) plus per-runtime slug tables (`runtimes/cursor.yaml`, `claude.yaml`, `codex.yaml`). `./ask sync` writes `.cursor/agents`, `.claude/agents`, and `.codex/agents`. No vendor slug is canonical across runtimes.
+_Avoid_: one global default model id; slugs in `_ask/agents/*.md`; a new `.agent/` root next to `.agents/skills/`
+
 **Skill Manifest**:
 `_ask/skills/manifest.yaml` — pinned, reviewable references to external engineering methods. Entries name source (community/main skill repo or package), revision, and role. The consuming repo does not copy skill bodies in by default.
 _Avoid_: latest, vendored skill tree, implicit skill pack
@@ -73,7 +77,7 @@ Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, 
 _Avoid_: editing stock `_ask/agents/0*.md` in place for local policy
 
 **Consumer-owned path**:
-Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, and `_ask/agents/*.local.md` stage overlays.
+Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, `_ask/agents/*.local.md` stage overlays, and optional `_ask/bindings/models.yaml`.
 _Avoid_: “customize by forking the whole tree”
 
 **Workflow guidance**:

@@ -1,5 +1,9 @@
 # Specification Challenge
 
+## Model
+
+(not recorded yet — challenge ran in parent before emitters existed)
+
 ## Specification
 
 `specs/proposals/stage-model-subagents.md`

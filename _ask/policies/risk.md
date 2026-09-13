@@ -33,6 +33,8 @@ CRITICAL / IRREVERSIBLE
   human authority mandatory
 ```
 
+Review’s default **pool** (`cheap` vs `diverse`) follows this class. Slugs for those pools are per runtime in `_ask/bindings/runtimes/`. Unset risk is LOW.
+
 Projects should customize this according to their domain.
 
 Line count is not an adequate risk metric.

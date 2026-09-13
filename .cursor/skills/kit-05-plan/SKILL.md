@@ -40,3 +40,7 @@ Must not redefine the requirement.
 - The resulting plan must be executed with **one branch only** for that work-id; do not spawn parallel related branches that touch the same files.
 - Execution of the plan (Implement onward) must **commit after each meaningful step on `agent/<work-id>` without waiting for the human to ask** — the work branch is the safety boundary; see `_ask/policies/worktree.md`.
 - After a defaults-OK confirm, **prepare** this plan without a second bless (`_ask/policies/workflow.md`). Do not skip the `plan.md` artifact while staying on the kit path.
+
+## Model spawn (optional)
+
+When this stage’s resolved model differs from the parent, or an explicit override is set, you may spawn the generated Plan subagent. The child drafts the plan. The parent presents it, talks to the human if needed, and writes `plan.md`.

@@ -27,6 +27,7 @@ git clone --depth 1 --branch "$VERSION" "$SOURCE_REPO" "$TMP/kit" 2>/dev/null \
 # Consumer-owned paths to preserve
 preserve=(
   _ask/skills/manifest.yaml
+  _ask/bindings/models.yaml
 )
 for p in "${preserve[@]}"; do
   if [[ -f "$ROOT/$p" ]]; then
@@ -36,7 +37,7 @@ for p in "${preserve[@]}"; do
 done
 
 # Refresh kit-owned trees
-for rel in _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts _ask/tests _ask/docs _ask/cursor-commands .cursor \
+for rel in _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts _ask/tests _ask/docs _ask/cursor-commands _ask/bindings .cursor \
            ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md _ask/OWNED-PATHS.md _ask/MAPPING.md _ask/README.md ask; do
   if [[ -e "$TMP/kit/$rel" ]]; then
     mkdir -p "$ROOT/$(dirname "$rel")"

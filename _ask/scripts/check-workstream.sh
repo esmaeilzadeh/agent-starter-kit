@@ -65,5 +65,12 @@ if [[ ! -f "${WS}/plan.md" ]]; then
   exit 1
 fi
 
+if [[ -f "${WS}/review.md" ]] && ! grep -qiE '^## Model' "${WS}/review.md"; then
+  echo "check-workstream: warning — ${WS}/review.md has no ## Model record" >&2
+fi
+if [[ -f "${WS}/spec-challenge.md" ]] && ! grep -qiE '^## Model' "${WS}/spec-challenge.md"; then
+  echo "check-workstream: warning — ${WS}/spec-challenge.md has no ## Model record" >&2
+fi
+
 echo "check-workstream: ok work-id=${WORK_ID} branch=${BRANCH}"
 exit 0
