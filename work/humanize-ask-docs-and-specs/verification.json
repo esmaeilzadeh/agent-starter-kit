@@ -1,7 +1,7 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "humanize-ask-docs-and-specs",
+  "commit_sha": "ad7b64fa8e768ecd13462d7e30795304716c0a17",
+  "checks": [{"check": "./ask verify", "result": "pass"}],
+  "result": "pass",
+  "notes": "humanizer pass on Guide, _ask/docs, README pages; spec modules untouched"
 }
