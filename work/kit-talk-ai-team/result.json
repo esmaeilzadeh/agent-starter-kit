@@ -1,0 +1,6 @@
+{
+  "work_id": "kit-talk-ai-team",
+  "commit_sha": "99c79e1343f0bef06fcdad46f1aa1dc3805d4f0e",
+  "result": "fail",
+  "notes": "Talk shipped. ./ask verify failed on test-ask.sh when askit is on PATH (pre-existing isolation). Deck checks passed."
+}
