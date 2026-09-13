@@ -2,28 +2,28 @@
 
 ## Specification
 
-`specs/current/stage-model-subagents.md`
+`specs/current/stage-model-subagents.md` (includes accepted spec-change A)
 
 ## Approach
 
-Keep `_ask/agents/*.md` as protocol (spawn rules, no slugs). Add `_ask/bindings/` as the map and emitter input. Extend `./ask sync` to write `.cursor/agents`, `.claude/agents`, and `.codex/agents` from resolved roles plus the shipped runtime slug tables.
+Keep `_ask/agents/*.md` as protocol (spawn rules, no slugs). `_ask/bindings/models.defaults.yaml` is roles and Review pools only. Each `_ask/bindings/runtimes/<id>.yaml` holds that vendor’s slugs, picker, and families. `./ask sync` resolves per runtime and writes `.cursor/agents`, `.claude/agents`, and `.codex/agents`.
 
 ## Work breakdown
 
-1. Add `_ask/bindings/models.defaults.yaml` (roles, Cursor defaults, family prefixes, Review risk defaults).
-2. Add `_ask/bindings/runtimes/{cursor,claude,codex}.models.yaml` picker lists and role→slug maps.
-3. Document consumer overlay `_ask/bindings/models.yaml` and `work/<id>/models.yaml` / `ASK_MODEL_*`.
-4. Extend `sync-cursor-binding.sh` (or a sibling called from `./ask sync`) to emit the three agent trees from templates under `_ask/bindings/templates/`.
-5. Update stage contracts `01`, `03`, `05`, `07` (optional vs required spawn, return-to-parent, picker, provenance fields).
+1. Add `_ask/bindings/models.defaults.yaml` (stage→role, Review risk→pool). No vendor slugs.
+2. Add `_ask/bindings/runtimes/{cursor,claude,codex}.yaml` (role→slug, pool→slug, picker, families, pool notes).
+3. Document consumer overlay `_ask/bindings/models.yaml` and `work/<id>/models.yaml` / `ASK_MODEL_*` / `ASK_MODEL_*_<RUNTIME>`.
+4. Extend `sync-cursor-binding.sh` (or a sibling called from `./ask sync`) to emit the three agent trees from `_ask/bindings/templates/`.
+5. Update stage contracts `01`, `03`, `05`, `07` (optional vs required spawn, return-to-parent, picker, provenance).
 6. Update `OWNED-PATHS.md`, `CONTEXT.md`, `.ask.env.example`, review/challenge templates.
-7. Kit test: sync writes Review `model:`; `07-review.md` has no Cursor slugs; consumer `models.yaml` is not clobbered by a dry upgrade check if one exists.
+7. Kit test: Cursor Review `model:` comes from `runtimes/cursor.yaml`; `07-review.md` and `models.defaults.yaml` have no vendor slugs; consumer `models.yaml` is not clobbered on upgrade.
 8. `./ask verify`.
 
 ## Risks
 
-- Runtime slug lists go stale (accept; bump with defaults).
+- Runtime slug lists go stale (accept; bump that runtime file).
 - Parent model unknown (spec: optional spawn only on explicit override).
-- Codex TOML vs Cursor/Claude markdown (three emitters, one map).
+- Codex TOML vs Cursor/Claude markdown (three emitters, one portable map).
 - `./ask sync` already regenerates `.cursor/skills` and commands; agent emit must be additive.
 
 ## Verification approach

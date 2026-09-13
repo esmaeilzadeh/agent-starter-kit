@@ -53,9 +53,4 @@ None in product repos; spec is not implemented.
 
 ## Decision
 
-**Needed:** confirm this change, and A vs B:
-
-- **A (recommended):** kit ships per-runtime default slugs (Cursor: Grok/Composer/…; Claude: Sonnet/Opus/…; Codex: whatever that file says). Out of the box works on each vendor. Those slugs are adapter data, not protocol.
-- **B:** kit ships roles and pools only. Sync fails or leaves `model:` empty until the consumer fills that runtime’s overlay.
-
-Reply `A` or `B` (or edit the proposal). Current spec stays until you confirm.
+Accepted 2026-09-13. **A:** kit ships per-runtime default slugs. Those ids are adapter data, not protocol. Canonical layer is roles + Review pools only.
