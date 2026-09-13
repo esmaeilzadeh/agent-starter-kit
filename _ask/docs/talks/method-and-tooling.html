@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Engineering Starter Kit: method and tooling</title>
+<style>
+  :root {
+    --bg: #12141a;
+    --panel: #1a1d25;
+    --fg: #efe8d8;
+    --muted: #9b9588;
+    --line: #2c313c;
+    --accent: #c9863a;
+    --good: #8aa56a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+    font-size: 22px;
+    line-height: 1.4;
+  }
+  #deck { height: 100%; }
+  .slide {
+    display: none;
+    height: 100%;
+    padding: 7vh 8vw 10vh;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.7rem;
+  }
+  .slide.on { display: flex; }
+  .slide.title-slide { justify-content: flex-end; padding-bottom: 16vh; }
+  h1, h2 {
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0 0 0.4rem;
+  }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); }
+  h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); max-width: 22ch; }
+  p, li { max-width: 42rem; }
+  p { margin: 0.2rem 0; }
+  .lede { font-size: 1.25rem; color: var(--muted); max-width: 34rem; }
+  .kicker {
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+  ul, ol { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+  li { margin: 0.35rem 0; }
+  code, .mono {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+    font-size: 0.86em;
+  }
+  pre {
+    margin: 0.5rem 0 0;
+    padding: 0.9rem 1.1rem;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    overflow: auto;
+    max-width: 48rem;
+  }
+  table {
+    border-collapse: collapse;
+    margin-top: 0.6rem;
+    font-size: 0.92rem;
+    max-width: 52rem;
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.45rem 0.85rem 0.45rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  th { color: var(--muted); font-weight: 600; font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  .quote {
+    font-size: 1.35rem;
+    max-width: 28rem;
+    margin: 0.4rem 0;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 52rem;
+  }
+  .cols ul { margin-top: 0.2rem; }
+  footer#bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.55rem 1.2rem;
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: linear-gradient(transparent, rgba(18,20,26,0.92));
+  }
+  #notes {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    bottom: 2.4rem;
+    width: min(28rem, 42vw);
+    max-height: 40vh;
+    overflow: auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.85rem;
+    color: var(--fg);
+    z-index: 2;
+  }
+  #notes.on { display: block; }
+  #notes .t { color: var(--accent); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  #help {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 3;
+    align-items: center;
+    justify-content: center;
+  }
+  #help.on { display: flex; }
+  #help .box {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    max-width: 28rem;
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    font-size: 0.95rem;
+  }
+  .notes { display: none; }
+  @media print {
+    body { background: #fff; color: #111; height: auto; font-size: 16px; }
+    .slide { display: flex; height: auto; min-height: 100vh; page-break-after: always; }
+    footer#bar, #notes, #help { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="deck">
+
+<section class="slide title-slide" data-t="0:00-0:03">
+  <div class="kicker">90 minutes · AI team</div>
+  <h1>AI Engineering Starter Kit</h1>
+  <p class="lede">How we divide engineering labor, and which commands actually do that work.</p>
+  <aside class="notes">Open with the room: who has already run <code>./ask</code>, who has only used chat. Say this hour is method first, then the command surface. The moons demo is one pointer at the end, not the lab.</aside>
+</section>
+
+<section class="slide" data-t="0:03-0:06">
+  <div class="kicker">Agenda</div>
+  <h2>How the hour is split</h2>
+  <table>
+    <tr><th>Block</th><th>Minutes</th><th></th></tr>
+    <tr><td>Method</td><td>~45</td><td>Labor, ownership, Explore, pipeline, evidence</td></tr>
+    <tr><td>Tooling</td><td>~30</td><td><code>./ask</code>, workstreams, skills, Cursor binding</td></tr>
+    <tr><td>Demo</td><td>~5</td><td>Where the facilitator script lives, and what it proves</td></tr>
+    <tr><td>Discussion</td><td>~10</td><td>What we would try on a real product repo</td></tr>
+  </table>
+  <aside class="notes">Protect the tooling block. Teams often spend the whole slot on philosophy and still leave <code>setup</code> / <code>install</code> / <code>prepare</code> mixed up.</aside>
+</section>
+
+<section class="slide" data-t="0:06-0:09">
+  <div class="kicker">What this is</div>
+  <h2>A protocol you copy into a software repo</h2>
+  <p>Portable repository protocol for delegating engineering labor to AI agents while the human keeps ownership of intent, policy, and acceptance.</p>
+  <p>Cursor is the first-class runtime binding. The protocol stays copyable into ordinary software repos.</p>
+  <p>The kit is Guide + Build Spec + stage contracts + small scripts + pinned Community Skills. It is not a multi-agent runtime product.</p>
+  <aside class="notes">Correct the category if someone says "agent platform." We ship documents, contracts, and a thin dispatcher. Phases 1-2 of the Build Spec are what this repository ships.</aside>
+</section>
+
+<section class="slide" data-t="0:09-0:13">
+  <div class="kicker">The problem</div>
+  <h2>The Guide's central question</h2>
+  <p class="quote">Which engineering labor should be delegated, which judgment should remain human, what authority does each actor have, what evidence is required, and how can the resulting work remain traceable?</p>
+  <aside class="notes">Read the quote once. Then: a conventional developer already does understand → clarify → design → plan → implement → review → test → accept. Agents can take slices of that. The kit exists so those slices stay named.</aside>
+</section>
+
+<section class="slide" data-t="0:13-0:18">
+  <div class="kicker">Division of labor</div>
+  <h2>Engineering labor is several classes of work</h2>
+  <ul>
+    <li>Execution: write code, edit files, run commands</li>
+    <li>Cognitive: compare alternatives, build a plan</li>
+    <li>Judgment: decide what is appropriate under uncertainty</li>
+    <li>Verification: check a claim against evidence</li>
+    <li>Coordination: pass structured outputs and keep state</li>
+    <li>Governance: who may decide or act, and when to escalate</li>
+  </ul>
+  <p>AI can perform some amount of all of these. The practical question is where delegation stays trustworthy and economically sensible.</p>
+  <aside class="notes">Do not rush this list. Ask the room which class they already hand to an agent, and which they still do themselves after the agent finishes.</aside>
+</section>
+
+<section class="slide" data-t="0:18-0:23">
+  <div class="kicker">Do not collapse these</div>
+  <h2>Five questions that stay separate</h2>
+  <table>
+    <tr><th>Word</th><th>Asks</th></tr>
+    <tr><td>Labor</td><td>Who performs the work?</td></tr>
+    <tr><td>Judgment</td><td>Who decides what is correct, appropriate, or preferable?</td></tr>
+    <tr><td>Capability</td><td>What can this actor technically do?</td></tr>
+    <tr><td>Authority</td><td>What is this actor permitted to decide or enact?</td></tr>
+    <tr><td>Accountability</td><td>Who is responsible for the consequences?</td></tr>
+  </table>
+  <aside class="notes">Capability is the one people mix with authority. An agent that <em>can</em> run a production migration still may not be allowed to.</aside>
+</section>
+
+<section class="slide" data-t="0:23-0:26">
+  <div class="kicker">Example</div>
+  <h2>A database migration</h2>
+  <pre>Labor          → AI prepares migration
+Judgment       → AI analyzes expected impact
+Capability     → tool can execute migration
+Authority      → human approval required for production
+Accountability → human/team</pre>
+  <p>Delegating labor does not automatically delegate ownership.</p>
+  <aside class="notes">Stay on the last sentence. If the room has a recent prod scare, use that instead of inventing one.</aside>
+</section>
+
+<section class="slide" data-t="0:26-0:30">
+  <div class="kicker">Ownership</div>
+  <h2>Own the system that turns intent into accepted software</h2>
+  <p>As implementation labor moves to agents, code-level ownership can shrink. Engineering ownership does not have to disappear with it.</p>
+  <p>You remain responsible for the composition and validity of What/Why, constraints, acceptance criteria, architecture boundaries, delegation policy, escalation rules, evidence policy, reusable methods, decision memory, and provenance.</p>
+  <p>You can reuse a grilling skill or a spec method without having authored it. You still own the decision to rely on it here, and the consequences.</p>
+  <aside class="notes">PostgreSQL analogy from the Guide: you use it without claiming you built it. Skills are weaker than that, because they are not deterministic engines. Treat them as methodology dependencies.</aside>
+</section>
+
+<section class="slide" data-t="0:30-0:33">
+  <div class="kicker">Role</div>
+  <h2>This is still an engineering job</h2>
+  <div class="cols">
+    <div>
+      <p>A Product Owner may primarily own What, Why, and business priority.</p>
+    </div>
+    <div>
+      <p>An engineering-system owner also governs technical constraints, architecture, acceptance evidence, verification policy, delegation boundaries, escalation, method composition, decision memory, and provenance of results.</p>
+    </div>
+  </div>
+  <p>You can know less about a given diff and more about the system that produced and accepted it. That changes the level of ownership. It does not automatically make the role superior.</p>
+  <aside class="notes">If someone hears "I just write tickets now," stop and reread this slide. The kit is built against that failure mode.</aside>
+</section>
+
+<section class="slide" data-t="0:33-0:37">
+  <div class="kicker">Workflow</div>
+  <h2>Explore when the destination is foggy</h2>
+  <p><code>00 Explore</code> charts decisions, research, and cheap prototypes until What/Why can be owned. It produces decisions and clarity. It does not produce accepted product software by itself.</p>
+  <p>Skip Explore when the destination is already sharp enough for Intent. That is a real skip: no <code>explore-map.md</code>.</p>
+  <p>Do not stuff R&amp;D into Implement.</p>
+  <aside class="notes">Free chat in this repo: announce 00 vs 01 and wait. <code>/00-explore</code> starts Explore with no second-guess. A foggy "keep track of experiments" seed is Path B in the demo plan; we will only point at that later.</aside>
+</section>
+
+<section class="slide" data-t="0:37-0:42">
+  <div class="kicker">Workflow</div>
+  <h2>The Engineering Pipeline is 01-10</h2>
+  <pre>01 Grill → 02 Spec → 03 Spec Challenge
+       04 Spec Change (interrupt)
+05 Plan → 06 Implement → 07 Review → 08 Refactor
+09 Verify → 10 Accept</pre>
+  <p>Each next stage stands on the previous artifact. After one "defaults OK," you skip extra blessings, not the documents. Accept is the second confirm.</p>
+  <p><code>/off-path</code> (or "just code") leaves the path for this chat only. A new chat starts on-path.</p>
+  <aside class="notes">Guidance, not a lock. Still hard: dirty tree, silent stash/reset, fake verify/accept, silent What/Why change. If review finds the spec semantically wrong, run Spec Change. If the destination itself was wrong, return to Explore.</aside>
+</section>
+
+<section class="slide" data-t="0:42-0:46">
+  <div class="kicker">Grill and spec</div>
+  <h2>Grill reduces ambiguity. Challenge asks if the spec is the right problem.</h2>
+  <p>A Grill agent that only restates "make cancellation fast" has not done the job. Alternatives, tradeoffs, and failure modes have to be visible before "all ok."</p>
+  <p>A specification challenge asks whether the spec is a faithful representation of the intended problem. Coherent is not the same as correct.</p>
+  <p>An implementation problem may generate a spec-change proposal. The implementer must not silently edit the accepted spec to make the code easier.</p>
+  <aside class="notes">Load-bearing questions only. Trivia and facts already in the repo stay out. Skill-before-grill: propose extra Community Skills that would change What/Why, ask before preparing them, pin accepted ones.</aside>
+</section>
+
+<section class="slide" data-t="0:46-0:49">
+  <div class="kicker">Evidence</div>
+  <h2>Verification is claim-dependent</h2>
+  <p>Do not make the implementing agent the sole judge of its own correctness. For important claims, prefer evidence whose failure mode differs from the agent that wrote the code.</p>
+  <p>A type check, a behavioral test, an architectural check, a benchmark, and a formal proof answer different claims. None of them is universally stronger.</p>
+  <p>Acceptance can be delegated as labor. Ultimate authority need not be. The gap between lots of autonomous changes and few strong evidence packages is acceptance debt.</p>
+  <aside class="notes">Three agents are not three independent reviewers if they share the same context and failure modes. Mention that only if the room starts treating "a second model said LGTM" as verify.</aside>
+</section>
+
+<section class="slide" data-t="0:49-0:52">
+  <div class="kicker">Provenance</div>
+  <h2>Store engineering state, not every token</h2>
+  <p>Durable state: intent and spec, policy and skill versions, the code commit, the verification result, the acceptance decision.</p>
+  <p>Every material experiment or benchmark should identify the exact commit that produced it.</p>
+  <p>Git invariants: start from a clean tree; one plan per <code>agent/&lt;work-id&gt;</code> branch; do not pile a new task on another task's uncommitted work; commit meaningful states; record result → exact commit.</p>
+  <aside class="notes">This is the bridge into tooling. The scripts exist to make these invariants cheap to obey. Raw prompt dumps do not belong in git by default.</aside>
+</section>
+
+<section class="slide" data-t="0:52-0:54">
+  <div class="kicker">Operating rule</div>
+  <h2>Delegate the bounded work. Keep the consequential calls.</h2>
+  <p class="quote">Delegate labor aggressively where the work is bounded, reversible, and verifiable; preserve human judgment and authority where intent, trade-offs, risk, or irreversible consequences dominate; and move critical constraints from probabilistic instructions into deterministic enforcement whenever practical.</p>
+  <p>Repeated failures should change the system (a check, a rule, a better spec template), not only the next prompt.</p>
+  <aside class="notes">Hierarchy from the Guide: better prompt → structured procedure → deterministic check → architectural constraint. Pause. Then switch to tooling.</aside>
+</section>
+
+<section class="slide" data-t="0:54-0:57">
+  <div class="kicker">Tooling</div>
+  <h2>What lands in a product repo</h2>
+  <pre>Kit package     _ask/     protocol, scripts, kit tests, kit-author docs
+Adapter         ask, AGENTS.md, .cursor/
+Product state   specs/, work/
+Your app        docs/, scripts/, tests/, src/ stay yours</pre>
+  <p><code>./ask</code> is the only root command. It execs <code>_ask/scripts/</code>. Agents must not run <code>./ask setup</code>.</p>
+  <aside class="notes">Clone or <code>./ask install</code> into <em>your</em> app repo. Upgrade refreshes kit-owned paths from an explicit version. Consumer-owned: skill manifest, policies, local overlays.</aside>
+</section>
+
+<section class="slide" data-t="0:57-1:07">
+  <div class="kicker">The confusing three</div>
+  <h2>Three verbs, three objects</h2>
+  <table>
+    <tr><th>Command</th><th>Object</th><th>Who</th></tr>
+    <tr>
+      <td><code>./ask install &lt;repo&gt;</code></td>
+      <td>Kit files: <code>_ask/</code>, <code>ask</code>, <code>AGENTS.md</code>, <code>.cursor/</code></td>
+      <td>Agent or human. Target must already be a git repo. Leaves that repo's <code>docs/</code>, <code>scripts/</code>, <code>tests/</code>, <code>src/</code> alone.</td>
+    </tr>
+    <tr>
+      <td><code>./ask prepare</code></td>
+      <td>Pinned Community Skills from <code>_ask/skills/manifest.yaml</code></td>
+      <td>Agent or human. Refuses <code>revision: latest</code>. Bodies land in <code>.agents/skills/</code> (gitignored).</td>
+    </tr>
+    <tr>
+      <td><code>./ask setup</code></td>
+      <td>Your tracker + Cursor MCP stubs</td>
+      <td>You, on a TTY. Writes gitignored <code>.ask.env</code>. Agents must not run it.</td>
+    </tr>
+  </table>
+  <p><code>./ask sync</code> is a fourth verb: regenerate <code>.cursor/skills</code> and <code>.cursor/commands</code> from <code>_ask/agents/</code>. It does not copy the kit and it does not fetch skills.</p>
+  <aside class="notes">Stay here. Quiz the room: "I cloned this repo. Do I install?" No. "I want grilling on disk." Prepare. "I want Jira in Cursor." You run setup. <code>askit</code> on PATH: in a git repo without <code>./ask</code>, confirm, then overlay (<code>install</code>). Later runs wrap local <code>./ask</code>. <code>askit setup</code> is the wizard after the repo already has the kit.</aside>
+</section>
+
+<section class="slide" data-t="1:07-1:10">
+  <div class="kicker">Sequences</div>
+  <h2>Which list you are on</h2>
+  <div class="cols">
+    <div>
+      <p>Repo already has the kit (this one, or after overlay):</p>
+      <ol>
+        <li><code>./ask prepare</code></li>
+        <li><code>./ask sync</code></li>
+        <li>Work. Skip <code>install</code>. Skip <code>setup</code> unless you want the wizard.</li>
+      </ol>
+    </div>
+    <div>
+      <p>Adding the kit to a different app repo:</p>
+      <ol>
+        <li><code>./ask install ../my-app</code> or <code>askit</code> first run</li>
+        <li>In that repo: <code>prepare</code>, then <code>sync</code></li>
+        <li>You run <code>setup</code> only for tracker/MCP</li>
+      </ol>
+    </div>
+  </div>
+  <aside class="notes">Demo prerequisites follow the first list. The demo encore is a dry-run <code>install</code> into a temp repo. Do not <code>install</code> this repo onto itself.</aside>
+</section>
+
+<section class="slide" data-t="1:10-1:13">
+  <div class="kicker">Workstreams</div>
+  <h2>One plan, one branch, commits as you go</h2>
+  <p><code>./ask start-work &lt;work-id&gt;</code> creates <code>agent/&lt;work-id&gt;</code> and seeds <code>work/&lt;work-id&gt;/</code>. It refuses a dirty tree. It does not seed <code>explore-map.md</code>.</p>
+  <p>On that branch, commit each meaningful step. Do not wait to be asked. Push, force-push, amend of pushed commits, and merge to <code>main</code> still need a human.</p>
+  <p><code>./ask status</code> lists live <code>agent/*</code> and archived <code>work/*</code> on the default branch. The current checkout is not the board.</p>
+  <aside class="notes">Serialize related branches that would edit the same files. Mid-work discovery goes in <code>.later/&lt;slug&gt;.md</code> (gitignored card), not a second live workstream in the same session.</aside>
+</section>
+
+<section class="slide" data-t="1:13-1:16">
+  <div class="kicker">Command map</div>
+  <h2>What you will type after the kit is in</h2>
+  <table>
+    <tr><th>Command</th><th>Job</th></tr>
+    <tr><td><code>./ask check-clean</code></td><td>Refuse if the tree is dirty</td></tr>
+    <tr><td><code>./ask start-work</code></td><td>Branch + seed artifacts</td></tr>
+    <tr><td><code>./ask check-workstream</code></td><td>Preconditions before implement</td></tr>
+    <tr><td><code>./ask verify</code></td><td>Run checks; print commit SHA</td></tr>
+    <tr><td><code>./ask record-result</code></td><td>Workstream provenance (needs <code>--commit-sha</code>)</td></tr>
+    <tr><td><code>./ask record-run</code></td><td>Experiment provenance; SHA must be HEAD; tree must be clean</td></tr>
+    <tr><td><code>./ask upgrade --version</code></td><td>Refresh kit-owned files from an explicit tag or SHA</td></tr>
+  </table>
+  <aside class="notes">Help text is <code>./ask</code> with no args, <code>-h</code>, or <code>help</code>. Same text from <code>askit</code> once a repo already has the kit.</aside>
+</section>
+
+<section class="slide" data-t="1:16-1:19">
+  <div class="kicker">Skills and Cursor</div>
+  <h2>Pins, prepare, thin binding</h2>
+  <p>Community Skills are declared in <code>_ask/skills/manifest.yaml</code> with an explicit revision. Discovery can start at skills.sh. The project owns the pin.</p>
+  <p>Capability is not authority. A rule is not enforcement. A skill is not a guarantee. Move critical constraints into hooks, scripts, and CI when you can.</p>
+  <p>Cursor rules point at protocol. <code>./ask sync</code> writes <code>.cursor/skills</code> and <code>.cursor/commands</code> from <code>_ask/agents/</code>. Do not treat generated projections as the source of truth.</p>
+  <aside class="notes">Required pins in this repo today include wayfinder, grilling, and humanizer. <code>developing-with-streamlit</code> is optional. Never vendor skill trees; never <code>revision: latest</code>.</aside>
+</section>
+
+<section class="slide" data-t="1:19-1:23">
+  <div class="kicker">Demo</div>
+  <h2>A facilitator script exists if you want the lab later</h2>
+  <p>Script: <code>_ask/docs/demo/end-to-end-plan.md</code>. About 45-90 minutes for Path A. Vehicle: SHA-bound moons MLP runs.</p>
+  <p>What it proves: durable intent and spec; clean tree + <code>agent/&lt;work-id&gt;</code>; <code>./ask record-run</code> so each metric cites path + git SHA; spec changes go through Spec Change; skills come from a pin + <code>prepare</code>.</p>
+  <p>After that lab you should be able to answer: which experiment, which metric, which SHA, which artifact path, who accepted the workstream. The registry is the scoreboard.</p>
+  <aside class="notes">Do not run training here. If someone wants the lab, schedule Path A. Mention Path B only as the foggy-seed variant. Interrupts to name: dirty tree, weakening acceptance criteria, spec semantically wrong, overlapping branches.</aside>
+</section>
+
+<section class="slide" data-t="1:23-1:26">
+  <div class="kicker">This week</div>
+  <h2>A conservative first pass</h2>
+  <p>Read root <code>AGENTS.md</code>. Run <code>./ask prepare</code> and <code>./ask sync</code> in a repo that already has the kit.</p>
+  <p>One workstream: clean tree, dedicated branch, grill What/Why, write the artifacts, commit as you go, <code>./ask verify</code>, record the result against HEAD, accept with a SHA.</p>
+  <p>The kit does not assume one model is enough, that several agents are independent reviewers, that a long rule file is formal governance, or that AI may silently redefine requirements.</p>
+  <aside class="notes">Close on the practical sequence from Guide §35 if you have time. Then open the floor: where would this break on our current repos?</aside>
+</section>
+
+<section class="slide title-slide" data-t="1:26-1:30">
+  <div class="kicker">Discussion</div>
+  <h1>Where would you spend human judgment first?</h1>
+  <p class="lede">Intent, irreversible changes, and evidence policy are the usual starting points. A silent spec rewrite from last month is a concrete one.</p>
+  <aside class="notes">Prompts if the room is quiet: which command would you have run last week that was actually a different object? Who owns Accept on your team? What would you pin in the manifest first?</aside>
+</section>
+
+</div>
+
+<div id="notes"><div class="t">Notes</div><div id="notes-body"></div></div>
+<div id="help">
+  <div class="box">
+    <p><b>Keys</b></p>
+    <p>→ · Space · PageDown: next</p>
+    <p>← · PageUp: previous</p>
+    <p>Home / End: first / last</p>
+    <p>n: speaker notes</p>
+    <p>? or h: this help</p>
+    <p>Click the page to advance.</p>
+  </div>
+</div>
+<footer id="bar">
+  <span>AI Engineering Starter Kit</span>
+  <span id="pos"></span>
+</footer>
+<script>
+(function () {
+  var slides = [].slice.call(document.querySelectorAll(".slide"));
+  var notesEl = document.getElementById("notes");
+  var notesBody = document.getElementById("notes-body");
+  var help = document.getElementById("help");
+  var pos = document.getElementById("pos");
+  var i = 0;
+
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, j) { s.classList.toggle("on", j === i); });
+    var s = slides[i];
+    var note = s.querySelector(".notes");
+    var t = s.getAttribute("data-t") || "";
+    notesBody.innerHTML = (t ? "<p class='t'>" + t + "</p>" : "") + (note ? note.innerHTML : "");
+    pos.textContent = (i + 1) + " / " + slides.length;
+    if (history.replaceState) history.replaceState(null, "", "#" + (i + 1));
+  }
+
+  function fromHash() {
+    var n = parseInt((location.hash || "#1").slice(1), 10);
+    show(isNaN(n) ? 0 : n - 1);
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); show(i + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); show(i - 1); }
+    else if (e.key === "Home") { e.preventDefault(); show(0); }
+    else if (e.key === "End") { e.preventDefault(); show(slides.length - 1); }
+    else if (e.key === "n" || e.key === "N") { notesEl.classList.toggle("on"); }
+    else if (e.key === "?" || e.key === "h" || e.key === "H") { help.classList.toggle("on"); }
+    else if (e.key === "Escape") { help.classList.remove("on"); }
+  });
+  document.getElementById("deck").addEventListener("click", function (e) {
+    if (e.target.closest("a")) return;
+    show(i + 1);
+  });
+  help.addEventListener("click", function () { help.classList.remove("on"); });
+  window.addEventListener("hashchange", fromHash);
+  fromHash();
+})();
+</script>
+</body>
+</html>
