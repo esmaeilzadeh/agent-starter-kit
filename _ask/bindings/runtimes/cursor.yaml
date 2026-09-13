@@ -3,17 +3,19 @@
 
 runtime: cursor
 notes: >
-  First-party pool is Grok and Composer. Third-party picks draw the Other Models
-  allowance. Fast variants cost more for latency, not better judgment.
+  First-party pool is Grok and Composer (cheap). Third-party picks draw the
+  Other Models allowance. kimi-k3 is a mid-cost diverse-family default: cheaper
+  than Opus or Sol, still costly. Fast variants cost more for latency, not
+  better judgment.
 
 roles:
   thinking: grok-4.6
   typing: composer-2.5
-  adversarial: claude-sonnet-5
+  adversarial: kimi-k3
 
 pools:
   cheap: grok-4.6
-  diverse: claude-sonnet-5
+  diverse: kimi-k3
 
 families:
   - grok
@@ -22,11 +24,13 @@ families:
   - gpt
   - gemini
   - muse
+  - kimi
 
 picker:
   - grok-4.6
   - grok-4.5
   - composer-2.5
+  - kimi-k3
   - claude-sonnet-5
   - claude-opus-5
   - gpt-5.6-terra
