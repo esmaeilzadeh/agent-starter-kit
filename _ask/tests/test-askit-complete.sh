@@ -3,6 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 ASKIT="$ROOT/askit"
 chmod +x "$ASKIT"
+export ASKIT_SKIP_COMPLETION_INSTALL=1
 
 # From the kit repo, askit finds ./ask and wraps it.
 out="$("$ASKIT" --help)"

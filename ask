@@ -70,9 +70,8 @@ Commands:
       --help   usage without a TTY
 
   completion bash|zsh
-      Print a tab-completion snippet for this command. Eval it from your shell rc:
-      eval "$(./ask completion bash)"
-      eval "$(./ask completion zsh)"
+      Print a tab-completion snippet. `askit` installs this automatically;
+      you do not need to eval it. Still available for debugging.
 
 Unknown names that match _ask/scripts/<name>.sh are exec'd.
 EOF
