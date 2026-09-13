@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# First-run: overlay this kit into cwd, then setup (TTY). Sourced or exec'd from askit.
-# Env: ASKIT_KIT_ROOT  ASKIT_SKIP_SETUP=1  ASKIT_INSTALL_FLAGS (default --skip-prepare)
+# Overlay the kit into the current git repo. askit calls this only after confirm.
+# Env: ASKIT_KIT_ROOT  ASKIT_INSTALL_FLAGS (default --skip-prepare)
 set -euo pipefail
 
-if [[ ! -d .git ]]; then
-  echo "askit: current directory is not a git repo" >&2
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "askit: ask is not applicable in a non-git folder" >&2
   exit 1
 fi
 
-TARGET="$(pwd)"
+TARGET="$(git rev-parse --show-toplevel)"
 KIT="${ASKIT_KIT_ROOT:-}"
 if [[ -z "$KIT" && -x "${ASKIT_DIR:-}/ask" && -x "${ASKIT_DIR:-}/_ask/scripts/install-kit.sh" ]]; then
   KIT="$ASKIT_DIR"
@@ -25,12 +25,7 @@ fi
 # shellcheck disable=SC2086
 "$KIT/ask" install ${ASKIT_INSTALL_FLAGS:---skip-prepare} "$TARGET"
 
-if [[ -z "${ASKIT_SKIP_SETUP:-}" && -t 0 && -t 1 && -x "$TARGET/ask" ]]; then
-  echo "askit: overlay done. Starting setup."
-  exec "$TARGET/ask" setup
-fi
-
-if [[ ! -x "$TARGET/ask" ]]; then
-  echo "askit: overlay did not produce ./ask" >&2
+if [[ ! -x "$TARGET/ask" || ! -d "$TARGET/_ask" ]]; then
+  echo "askit: overlay did not produce ./ask and _ask/" >&2
   exit 1
 fi

@@ -15,8 +15,8 @@ Writes gitignored .ask.env and .ask/tracker-context.md.
 Writes .ask/tracker.md (type + public URL; safe to commit).
 Merges MCP stubs into ~/.cursor/mcp.json using ${env:...} only.
 
-To overlay this kit onto another git repo first, the wizard can call
-./ask install <path> (still non-interactive).
+This repo must already be ask-based (_ask/ and ./ask). Adding the kit
+is askit's confirm-to-add step, not this wizard.
 EOF
   exit 0
 fi
@@ -284,20 +284,9 @@ EOF
   fi
 }
 
-TOTAL_STAGES=6
+TOTAL_STAGES=4
 
 banner "Ask setup (human-only)"
-
-stage "Already-built repo"
-say "This clone already has the kit. ./ask install overlays the kit onto another git repo"
-say "without touching that repo's docs/, scripts/, tests/, or src/."
-say "Leave the path empty to configure this repo only."
-ask ASK_INSTALL_TARGET "Path to another git repo to overlay (Enter skips):"
-if [[ -n "${ASK_INSTALL_TARGET:-}" ]]; then
-  if confirm "Run ./ask install on that path?"; then
-    "$ASK_ROOT/ask" install "$ASK_INSTALL_TARGET"
-  fi
-fi
 
 ASK_TRACKER=""
 while true; do

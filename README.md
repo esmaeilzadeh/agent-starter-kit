@@ -28,14 +28,16 @@ Put `askit` on your PATH (once per machine):
 curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash
 ```
 
-Then in **your** app repo:
+Then in **your** app git repo:
 
 ```bash
 cd /path/to/your/app
-askit setup
+askit
 ```
 
-That overlays `_ask/` plus a thin Cursor adapter. It does not touch `docs/`, `scripts/`, `tests/`, or `src/`. Later, `askit` is the same as `./ask`.
+If the folder is not a git repo, askit refuses. If it is git but not ask-based (no `_ask/` and `./ask`), it asks whether to add ask capability — it does not overlay silently, and it does not list kit commands until you confirm. After that, `askit` is the same as `./ask`. `askit setup` is the tracker/MCP wizard on an already ask-based repo.
+
+The overlay does not touch `docs/`, `scripts/`, `tests/`, or `src/`.
 
 You can still overlay from a kit clone: `./ask install /path/to/your/app`.
 

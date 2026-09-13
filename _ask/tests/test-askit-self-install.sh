@@ -18,10 +18,13 @@ bash -s -- --source "$ROOT" --ref "$REF" --prefix "$HOME/.local" <"$ROOT/askit"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$HOME" "$TMP"' EXIT
 cd "$TMP"
-out="$("$ROOT/askit" --help)"
-printf '%s\n' "$out" | grep -q '/askit | bash'
-printf '%s\n' "$out" | grep -q self-install
-! printf '%s\n' "$out" | grep -q install-askit
+set +e
+out="$("$ROOT/askit" --help 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]]
+printf '%s\n' "$out" | grep -qi 'non-git'
+! printf '%s\n' "$out" | grep -q start-work
 
 out="$("$ROOT/askit" self-install --help)"
 printf '%s\n' "$out" | grep -q self-install

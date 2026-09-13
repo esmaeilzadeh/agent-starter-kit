@@ -2,8 +2,8 @@
 # askit — installer and daily command for the Agent Starter Kit.
 #   curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash
 #   askit self-install   # same, when you already have this file
-# First run in an app repo (no ./ask): overlay the kit, then setup.
-# Later runs: same as ./ask.
+# In an ask-based git repo (_ask/ + ./ask): same as ./ask.
+# Otherwise: refuse non-git folders; ask before adding the kit. No silent overlay.
 set -euo pipefail
 
 ASKIT_CURL='curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash'
@@ -21,8 +21,10 @@ Usage:
   --prefix   install prefix; askit goes in <prefix>/bin (default: ~/.local)
   --here     also overlay the kit into the current git repo
 
-Then in an app repo:
-  askit setup
+Then in an app git repo:
+  askit
+  # confirm to add ask, then use askit like ./ask
+  askit setup   # tracker/MCP wizard (after the repo is ask-based)
 EOF
 }
 
@@ -86,11 +88,28 @@ askit_self_install() {
     ASKIT_DIR="$CACHE" "$CACHE/_ask/scripts/install-user-completion.sh" >/dev/null 2>&1 || true
 
   if [[ "$HERE" -eq 1 ]]; then
-    if [[ ! -d .git ]]; then
-      echo "askit: --here needs a git repo in the current directory" >&2
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      echo "askit: --here is not applicable in a non-git folder" >&2
       return 1
     fi
-    "$CACHE/ask" install --skip-prepare "$(pwd)"
+    if [[ "${ASKIT_ADD_ASK:-}" != "1" ]]; then
+      if [[ ! -t 0 || ! -t 1 ]]; then
+        echo "askit: --here would add ask capability. Re-run in a terminal and confirm." >&2
+        return 1
+      fi
+      echo "askit: --here adds ask capability to $(git rev-parse --show-toplevel)."
+      printf "Add ask capability to this repo? [y/N] "
+      local here_ans=""
+      read -r here_ans || true
+      case "$here_ans" in
+        y|Y|yes|YES) ;;
+        *)
+          echo "askit: not adding ask."
+          return 1
+          ;;
+      esac
+    fi
+    "$CACHE/ask" install --skip-prepare "$(git rev-parse --show-toplevel)"
   fi
 
   case ":$PATH:" in
@@ -101,7 +120,7 @@ askit_self_install() {
       ;;
   esac
 
-  echo "askit: done. In an app repo: askit setup"
+  echo "askit: done. In an app git repo, run askit and confirm to add the kit."
 }
 
 # Piped to bash (curl | bash): this file *is* the installer.
@@ -133,17 +152,39 @@ askit_home() {
 
 ASKIT_DIR="$(askit_home)"
 
-find_ask() {
-  local dir="$PWD"
-  while true; do
-    if [[ -x "$dir/ask" ]]; then
-      printf '%s\n' "$dir/ask"
-      return 0
-    fi
-    [[ "$dir" == / ]] && break
-    dir="$(dirname "$dir")"
-  done
-  return 1
+askit_git_root() {
+  git rev-parse --show-toplevel 2>/dev/null
+}
+
+askit_is_ask_repo() {
+  local root="$1"
+  [[ -n "$root" && -d "$root/_ask" && -x "$root/ask" ]]
+}
+
+askit_confirm_add() {
+  if [[ "${ASKIT_ADD_ASK:-}" == "1" ]]; then
+    return 0
+  fi
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    echo "askit: this git repo is not ask-based (need _ask/ and ./ask)." >&2
+    echo "askit: re-run in a terminal and confirm to add ask capability." >&2
+    return 1
+  fi
+  echo "askit: this git repo is not ask-based (need _ask/ and ./ask)."
+  printf "Add ask capability to this repo? [y/N] "
+  local ans=""
+  read -r ans || true
+  case "$ans" in
+    y|Y|yes|YES) return 0 ;;
+    *)
+      echo "askit: not adding ask."
+      return 1
+      ;;
+  esac
+}
+
+askit_add_kit() {
+  ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/askit-bootstrap.sh"
 }
 
 COMPLETE_LIB="$ASKIT_DIR/_ask/scripts/ask-complete.sh"
@@ -157,10 +198,22 @@ if [[ "$cmd" != "--complete" ]]; then
   ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/install-user-completion.sh" >/dev/null 2>&1 || true
 fi
 
+git_root="$(askit_git_root || true)"
+ask_repo=0
+if askit_is_ask_repo "$git_root"; then
+  ask_repo=1
+fi
+
 if [[ "$cmd" == "--complete" ]]; then
   shift
-  if declare -F ask_print_completions >/dev/null; then
-    ask_print_completions "$@"
+  if [[ "$ask_repo" -eq 1 ]]; then
+    if declare -F ask_print_completions >/dev/null; then
+      ask_print_completions "$@"
+    fi
+  else
+    if declare -F ask_complete_emit >/dev/null; then
+      ask_complete_emit self-install "put askit on PATH (same as curl | bash)"
+    fi
   fi
   exit 0
 fi
@@ -173,43 +226,37 @@ if [[ "$cmd" == "completion" ]]; then
   exit 2
 fi
 
-usage_bootstrap() {
-  cat <<EOF
-askit — Agent Starter Kit (PATH command; not a generic \`ask\`)
-
-Usage: askit <command> [args]
-       askit [-h|--help|help]
-       askit self-install
-
-Install askit once:
-  $ASKIT_CURL
-
-Then in an app git repo (no ./ask yet): askit setup
-That overlays the kit here, then runs the tracker/MCP wizard.
-After that, askit is ./ask.
-
-EOF
-  if [[ -x "$ASKIT_DIR/ask" ]]; then
-    "$ASKIT_DIR/ask" --help
-  fi
-}
-
-if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
-  if ask_bin="$(find_ask)"; then
-    exec "$ask_bin" "$@"
-  fi
-  usage_bootstrap
-  exit 0
+if [[ -z "$git_root" ]]; then
+  echo "askit: ask is not applicable in a non-git folder." >&2
+  exit 1
 fi
 
-if ask_bin="$(find_ask)"; then
-  exec "$ask_bin" "$@"
+if [[ "$ask_repo" -eq 1 ]]; then
+  exec "$git_root/ask" "$@"
 fi
 
-# First run in this repo.
-ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/askit-bootstrap.sh"
-
-if [[ -x "$(pwd)/ask" ]]; then
-  exec "$(pwd)/ask" "$@"
+# Git repo, but not ask-based: never dump kit commands; never overlay silently.
+if [[ "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
+  echo "askit: this git repo is not ask-based (need _ask/ and ./ask)." >&2
+  echo "askit: run askit here and confirm to add ask capability." >&2
+  exit 1
 fi
-exit 1
+
+if ! askit_confirm_add; then
+  exit 2
+fi
+
+askit_add_kit
+git_root="$(askit_git_root)"
+if [[ ! -x "$git_root/ask" ]]; then
+  echo "askit: overlay did not produce ./ask" >&2
+  exit 1
+fi
+
+if [[ -z "$cmd" ]]; then
+  exec "$git_root/ask" --help
+fi
+if [[ "$cmd" == "setup" && -z "${ASKIT_SKIP_SETUP:-}" ]]; then
+  exec "$git_root/ask" setup
+fi
+exec "$git_root/ask" "$@"
