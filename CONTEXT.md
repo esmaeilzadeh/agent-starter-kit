@@ -72,6 +72,14 @@ _Avoid_: “just clone skills into the repo”, silent unpinned install
 Portable kit-owned instruction or policy that defines this Starter Kit’s workflow (e.g. `_ask/agents/01-grill.md`, policies, templates). Distinct from a Community Skill: the kit ships these; skills are dependencies.
 _Avoid_: calling protocol files “skills” when they are kit contracts
 
+**Machine-first document**:
+A Markdown file an agent executes or treats as a contract (`specs/`, `_ask/spec/`, `_ask/agents/`, policies, templates, `AGENTS.md`, `CONTEXT.md`, `work/` artifacts, ADRs, and the default for any `.md` outside the human-facing set). Written with `writing-for-agents`. Does not go through `humanizer`.
+_Avoid_: running humanizer on a spec or stage contract
+
+**Human-facing document**:
+Root `README.md`, `_ask/guide/`, and `_ask/docs/demo/` only. Written with `humanizer`.
+_Avoid_: treating all `.md` as human-facing
+
 **Kit-owned path**:
 Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
 _Avoid_: editing stock `_ask/agents/0*.md` in place for local policy

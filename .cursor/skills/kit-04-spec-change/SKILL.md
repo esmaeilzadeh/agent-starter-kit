@@ -52,4 +52,4 @@ change business semantics without the required authority
 
 - Forbidden: silent rewrite of the canonical accepted specification.
 - Kit path: `_ask/policies/workflow.md` — a spec change is a new decision, not covered by an older defaults-OK. Prepare the change artifact and get a confirm.
-- Before finishing the change artifact, read the prepared `humanizer` skill and follow it in embedded mode (`.agents/skills/humanizer/SKILL.md`; `./ask prepare` if missing). ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
+- Before finishing the change artifact, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the change artifact. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
