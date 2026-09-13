@@ -69,13 +69,73 @@ Commands:
       Human-only tracker + MCP wizard. Needs a TTY. Agents must not run this.
       --help   usage without a TTY
 
+  completion bash|zsh
+      Print a tab-completion snippet for this command. Eval it from your shell rc:
+      eval "$(./ask completion bash)"
+      eval "$(./ask completion zsh)"
+
 Unknown names that match _ask/scripts/<name>.sh are exec'd.
 EOF
 }
 
+print_completion_snippet() {
+  local shell="$1"
+  case "$shell" in
+    bash)
+      cat <<'EOF'
+_ask_kit_complete() {
+  local ask="${COMP_WORDS[0]}"
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local out
+  out="$("$ask" --complete "$COMP_CWORD" "${COMP_WORDS[@]}" 2>/dev/null)" || out=""
+  local -a cands=()
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && cands+=("$line")
+  done <<< "$out"
+  local IFS=$' \t\n'
+  COMPREPLY=($(compgen -W "${cands[*]}" -- "$cur"))
+}
+complete -o default -F _ask_kit_complete ask
+complete -o default -F _ask_kit_complete ./ask
+complete -o default -F _ask_kit_complete askit
+EOF
+      ;;
+    zsh)
+      cat <<'EOF'
+#compdef ask askit ./ask
+_ask_kit_complete() {
+  local ask="${words[1]}"
+  local -a cands
+  local out
+  out="$("$ask" --complete $((CURRENT - 1)) ${words[@]} 2>/dev/null)" || out=""
+  cands=(${(f)out})
+  compadd -a cands
+}
+compdef _ask_kit_complete ask askit ./ask
+EOF
+      ;;
+    *)
+      echo "ask: completion supports bash or zsh" >&2
+      exit 2
+      ;;
+  esac
+}
+
+# shellcheck source=scripts/ask-complete.sh
+source "$SCRIPTS/ask-complete.sh"
+
 cmd="${1:-}"
 if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
   usage
+  exit 0
+fi
+if [[ "$cmd" == "--complete" ]]; then
+  shift
+  ask_print_completions "$@"
+  exit 0
+fi
+if [[ "$cmd" == "completion" ]]; then
+  print_completion_snippet "${2:-}"
   exit 0
 fi
 shift

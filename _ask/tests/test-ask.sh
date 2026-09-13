@@ -9,8 +9,13 @@ ASK="$ROOT/ask"
 "$ASK" --help | grep -q -- '--dry-run'
 "$ASK" --help | grep -q -- '--commit-sha'
 "$ASK" --help | grep -q -- '--work-id'
+"$ASK" --help | grep -q 'completion'
 "$ASK" -h | grep -q 'install'
 "$ASK" | grep -q 'Usage:'
+"$ASK" --complete 1 ./ask st | grep -q start-work
+"$ASK" --complete 2 ./ask install -- | grep -q -- '--dry-run'
+"$ASK" completion bash | grep -q '_ask_kit_complete'
+"$ASK" completion zsh | grep -q 'compdef'
 set +e
 "$ASK" nosuchcmd >/dev/null 2>&1
 code=$?

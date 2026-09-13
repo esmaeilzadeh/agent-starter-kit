@@ -58,7 +58,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 
 ## Quick commands
 
-`./ask` is the only root command. It execs `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags.
+`./ask` is the only root command. It execs `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Tab completion: `eval "$(./ask completion bash)"` or `eval "$(./ask completion zsh)"` (same on `askit`).
 
 | Command | Purpose |
 | --- | --- |
@@ -74,6 +74,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 | `./ask upgrade --version <tag>` | Refresh kit-owned files |
 | `./ask prepare` | Install pinned Community Skills |
 | `./ask setup` | **Human-only** tracker + MCP wizard (TTY required; agents must not run it) |
+| `./ask completion bash\|zsh` | Print tab-completion snippet to eval |
 
 ## Documentation index
 

@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# askit — global / PATH entry for the Agent Starter Kit.
+# Wraps ./ask when the kit is in this repo. Same help and completion as ./ask.
+set -euo pipefail
+
+ASKIT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+find_ask() {
+  local dir="$PWD"
+  while true; do
+    if [[ -x "$dir/ask" ]]; then
+      printf '%s\n' "$dir/ask"
+      return 0
+    fi
+    [[ "$dir" == / ]] && break
+    dir="$(dirname "$dir")"
+  done
+  return 1
+}
+
+ask_bin="$(find_ask || true)"
+
+if [[ -n "$ask_bin" ]]; then
+  exec "$ask_bin" "$@"
+fi
+
+# Kit not in this repo yet. Help and completion still work from this script.
+COMPLETE_LIB="$ASKIT_DIR/_ask/scripts/ask-complete.sh"
+if [[ ! -f "$COMPLETE_LIB" ]]; then
+  COMPLETE_LIB="$(cd "$(dirname "$0")" && pwd)/_ask/scripts/ask-complete.sh"
+fi
+
+usage_bootstrap() {
+  cat <<'EOF'
+askit — Agent Starter Kit (PATH command; not a generic `ask`)
+
+Usage: askit <command> [args]
+       askit [-h|--help|help]
+
+This directory has no ./ask yet. A later first-run (not help) will run setup,
+then install the kit into this git repo. After that, askit is ./ask.
+
+EOF
+  if [[ -x "$ASKIT_DIR/ask" ]]; then
+    "$ASKIT_DIR/ask" --help
+  elif [[ -f "$COMPLETE_LIB" ]]; then
+    echo "Commands (same as ./ask once installed):"
+    echo "  check-clean start-work check-workstream status verify"
+    echo "  record-result record-run sync install upgrade prepare setup"
+    echo "  completion bash|zsh"
+    echo
+    echo "Flags: askit --help after install, or see ./ask --help in a kit clone."
+  fi
+}
+
+cmd="${1:-}"
+if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
+  usage_bootstrap
+  exit 0
+fi
+
+if [[ -f "$COMPLETE_LIB" ]]; then
+  # shellcheck source=scripts/ask-complete.sh
+  source "$COMPLETE_LIB"
+fi
+
+if [[ "$cmd" == "--complete" ]]; then
+  shift
+  if declare -F ask_print_completions >/dev/null; then
+    ask_print_completions "$@"
+  fi
+  exit 0
+fi
+
+if [[ "$cmd" == "completion" ]]; then
+  if [[ -x "$ASKIT_DIR/ask" ]]; then
+    exec "$ASKIT_DIR/ask" completion "${2:-}"
+  fi
+  echo "askit: clone the kit or run first-run install, then: eval \"\$(askit completion bash)\"" >&2
+  exit 2
+fi
+
+echo "askit: no ./ask in this repo. First-run setup → install is not implemented on this branch yet." >&2
+echo "askit: run askit --help, or overlay from a kit clone: ./ask install \"\$PWD\"" >&2
+exit 2
