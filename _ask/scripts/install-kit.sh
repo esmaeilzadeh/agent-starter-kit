@@ -76,7 +76,9 @@ for rel in \
   AGENTS.md \
   ask \
   ai-agent-engineering-guide.md \
-  ai-agent-starter-kit-spec.md
+  ai-agent-starter-kit-spec.md \
+  .ask.env.example \
+  .ask/README.md
  do
   # never overlay product-generic names
   [[ "$rel" == docs || "$rel" == scripts || "$rel" == tests ]] && continue
@@ -87,6 +89,9 @@ done
 if [[ "$DRY_RUN" -eq 0 ]]; then
   if ! grep -q '.agents/skills/' "$TARGET/.gitignore" 2>/dev/null; then
     echo -e '\n# Prepared Community Skills\n.agents/skills/' >> "$TARGET/.gitignore"
+  fi
+  if ! grep -q '^\.ask\.env$' "$TARGET/.gitignore" 2>/dev/null; then
+    echo -e '\n# Setup wizard secrets\n.ask.env\n.ask/tracker-context.md' >> "$TARGET/.gitignore"
   fi
 fi
 
