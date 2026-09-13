@@ -1,0 +1,29 @@
+# Adapter data for Claude Code. Refresh when Anthropic's catalog or prices change.
+
+runtime: claude
+notes: >
+  Aliases (haiku, sonnet, opus, fable) follow Claude Code's model picker.
+  CLAUDE_CODE_SUBAGENT_MODEL overrides every child's frontmatter model if set.
+
+roles:
+  thinking: sonnet
+  typing: sonnet
+  adversarial: opus
+
+pools:
+  cheap: sonnet
+  diverse: opus
+
+families:
+  - haiku
+  - sonnet
+  - opus
+  - fable
+  - claude
+
+picker:
+  - haiku
+  - sonnet
+  - opus
+  - fable
+  - inherit

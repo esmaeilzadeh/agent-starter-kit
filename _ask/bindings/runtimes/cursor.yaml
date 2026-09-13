@@ -1,0 +1,35 @@
+# Adapter data for Cursor. Refresh when Cursor's catalog or prices change.
+# Not protocol. Not a fact about Claude Code or Codex.
+
+runtime: cursor
+notes: >
+  First-party pool is Grok and Composer. Third-party picks draw the Other Models
+  allowance. Fast variants cost more for latency, not better judgment.
+
+roles:
+  thinking: grok-4.6
+  typing: composer-2.5
+  adversarial: claude-sonnet-5
+
+pools:
+  cheap: grok-4.6
+  diverse: claude-sonnet-5
+
+families:
+  - grok
+  - composer
+  - claude
+  - gpt
+  - gemini
+  - muse
+
+picker:
+  - grok-4.6
+  - grok-4.5
+  - composer-2.5
+  - claude-sonnet-5
+  - claude-opus-5
+  - gpt-5.6-terra
+  - gpt-5.6-sol
+  - gpt-5.6-luna
+  - muse-spark-1.3
