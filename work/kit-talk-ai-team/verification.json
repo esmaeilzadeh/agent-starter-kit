@@ -1,0 +1,17 @@
+{
+  "work_id": "kit-talk-ai-team",
+  "commit_sha": "8b7238dea556382e57fe1339db76fb0f3079469b",
+  "checks": [
+    {
+      "check": "./ask verify",
+      "result": "fail",
+      "notes": "test-ask.sh exits 1 when askit is on PATH: completion in the temp non-ask repo is served by askit (self-install only). Same script PASSes if PATH has no askit. Unrelated to the talk files."
+    },
+    {
+      "check": "deck: 24 slides, 1 demo kicker, no CDN, three verbs, docs index link",
+      "result": "pass"
+    }
+  ],
+  "result": "fail",
+  "notes": "Talk shipped at 8b7238d. Do not treat this workstream as verify-pass until test-ask is isolated from PATH askit or ./ask verify is green on this machine."
+}
