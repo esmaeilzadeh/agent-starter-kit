@@ -18,7 +18,7 @@ Community grilling skill text is unchanged; kit contracts override it on kit sta
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED
+ACCEPTED. Human asked accept / merge / push.
 
 ## Accepted commit SHA
 
