@@ -1,7 +1,7 @@
 {
   "work_id": "stage-model-subagents",
-  "commit_sha": "deea6c5c321170306af61867b2078e698fc3418b",
+  "commit_sha": "0fdca09aa181047004af63f3fca93702c5d809fc",
   "checks": ["_ask/tests/test-*.sh via ./ask verify"],
   "result": "pass",
-  "notes": "verify 2026-09-13; includes test-sync-runtime-agents and test-bindings-consumer-overlay"
+  "notes": "Includes HIGH→kimi-k3 and Review role-override cases."
 }
