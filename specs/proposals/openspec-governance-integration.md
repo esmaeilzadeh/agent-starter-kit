@@ -4,4 +4,4 @@
 
 PROPOSAL
 
-Canonical change: `openspec/changes/openspec-governance-integration/`
+Canonical change: `openspec/changes/archive/2026-09-14-openspec-governance-integration/`

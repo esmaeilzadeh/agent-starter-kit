@@ -252,6 +252,8 @@ def apply_checkout_cli(wid, art):
     head = git("rev-parse", "--abbrev-ref", "HEAD").strip()
     if head != f"agent/{wid}":
         return art
+    if art.get("accepted") and not Path(f"openspec/changes/{wid}/.openspec.yaml").is_file():
+        return art
     cli = Path("_ask/scripts/openspec_cli.py")
     pin = Path("_ask/openspec-pin.yaml")
     if not cli.is_file() or not pin.is_file():

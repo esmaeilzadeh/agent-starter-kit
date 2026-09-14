@@ -6,8 +6,8 @@
 
 ## Specification
 
-Canonical: `openspec/changes/openspec-governance-integration/`.
-Kit pointer: `specs/current/openspec-governance-integration.md`.
+Canonical: `openspec/changes/archive/2026-09-14-openspec-governance-integration/`.
+Applied specs: `openspec/specs/kit-openspec-engine/spec.md`.
 
 ## Evidence
 
@@ -37,4 +37,4 @@ ACCEPTED. Human confirmed 2026-09-14. Machinery plus recorded baseline.
 
 ## Accepted commit SHA
 
-6805eaa (full: will fill after rev-parse)
+6805eaaecfbfb4c054971c388d683e56b2373ae3

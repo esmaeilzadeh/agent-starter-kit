@@ -2,5 +2,5 @@
 
 Non-normative pointer. Canonical design and tasks:
 
-- `openspec/changes/openspec-governance-integration/design.md`
-- `openspec/changes/openspec-governance-integration/tasks.md`
+- `openspec/changes/archive/2026-09-14-openspec-governance-integration/design.md`
+- `openspec/changes/archive/2026-09-14-openspec-governance-integration/tasks.md`

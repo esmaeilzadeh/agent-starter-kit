@@ -72,6 +72,35 @@ if grep -q 'openspec instructions' <<<"$out"; then
   exit 1
 fi
 
+# Post-Accept archive on current checkout: do not invoke missing active change
+git checkout -q -b agent/os-done
+mkdir -p work/os-done openspec/changes/archive/2026-09-14-os-done
+cat > work/os-done/intent.md <<'EOF'
+# Intent
+
+Engine: openspec
+
+## What
+
+done
+EOF
+cat > work/os-done/acceptance.md <<'EOF'
+# Acceptance
+
+## Accepted commit SHA
+
+abcdef1234567
+EOF
+printf 'schema: spec-driven\n' > openspec/changes/archive/2026-09-14-os-done/.openspec.yaml
+git add work openspec && git commit -q -m os-done
+out="$("$STATUS" --json --work-id os-done)"
+echo "$out" | python3 -c '
+import json,sys
+doc=json.load(sys.stdin)
+row=doc["workstreams"][0]
+assert row["stage"]=="accepted"
+'
+
 # Other live ref: openspec-archive without Accept SHA → status fails
 git checkout -q main
 git checkout -q -b agent/os-bad
