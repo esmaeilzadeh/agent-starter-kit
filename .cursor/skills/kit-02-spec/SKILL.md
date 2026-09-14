@@ -35,6 +35,8 @@ Output:
 specs/proposals/<work-id>.md
 ```
 
+For a marked OpenSpec pilot (`Engine: openspec` in intent), write the matching OpenSpec proposal and behavioral delta under `openspec/changes/<work-id>/`. Kit `specs/` files for that id are pointers (Status + one link; no Goal / Behavior / Acceptance criteria).
+
 ---
 
 ## Kit path

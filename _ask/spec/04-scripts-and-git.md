@@ -17,7 +17,8 @@ Mapped commands:
 ./ask start-work <work-id>     → _ask/scripts/start-work.sh
 ./ask check-workstream <id>    → _ask/scripts/check-workstream.sh
 ./ask status [--work-id id] [--json] [--later-only] [--work-only]  → _ask/scripts/status.sh
-./ask verify                   → _ask/scripts/verify.sh
+./ask verify [--work-id id]       → _ask/scripts/verify.sh
+./ask openspec-archive <id>       → _ask/scripts/openspec-archive.sh
 ./ask record-result …          → _ask/scripts/record-result.sh
 ./ask record-run …             → _ask/scripts/record-run.sh
 ./ask sync                     → _ask/scripts/sync-cursor-binding.sh
@@ -119,6 +120,8 @@ plan exists
 
 Exit non-zero means the **default path is incomplete**, not that labor is forbidden (`_ask/policies/workflow.md`). On-path: prepare the missing artifact. Dirty tree remains a hard safety failure (via `check-clean`).
 
+A workstream is an OpenSpec pilot when `work/<id>/intent.md` matches `^Engine:\s*openspec\s*$`. For that marker, `check-workstream` requires a matching OpenSpec change and targeted `validate <id> --strict` / `status --change <id>` via `_ask/scripts/openspec_cli.py`. Non-pilots keep the spec-and-plan checks above. `--all` is not a gate input.
+
 This can be called by agent instructions before implementation/review/refactor.
 
 ## 23.4 `./ask status` (`status.sh`)
@@ -135,7 +138,7 @@ archive = work/<work-id>/ on the default branch with no unmerged agent/<work-id>
 
 It infers a furthest stage from filled artifacts on that ref (`seeded` … `explored` … `intent` … `planned` … `reviewed` … `recorded` … `accepted`). Flags: `--work-id`, `--json`, `--later-only`, `--work-only`.
 
-Live rows may include a **warning** `code-without-plan` when the branch changed files outside `work/<id>/` and `specs/` before a plan exists. That is guidance (`_ask/policies/workflow.md`), not a failure.
+Live rows may include a **warning** `code-without-plan` when the branch changed files outside `work/<id>/` and `specs/` before a plan exists. That is guidance (`_ask/policies/workflow.md`), not a failure. For a marked OpenSpec pilot, `openspec/changes/<id>/` (and repo-level `openspec/config.yaml` / `openspec/specs/`) count as recognized prefixes. Meaningful OpenSpec `design.md` or `tasks.md` counts as planned even when kit `plan.md` is a pointer. Current-checkout pilots read targeted OpenSpec CLI state (`status --change <id>`); other live refs use `git show`. Do not check out another branch. Surfaced CLI `nextSteps` are relabeled to kit commands.
 
 After Accept, merge the workstream branch so `main`/`master` becomes the archive.
 
@@ -158,7 +161,7 @@ On-path, artifacts stay required on `01`–`10`. Skip means skip extra *approval
 Provide:
 
 ```text
-./ask verify
+./ask verify [--work-id <id>]
 ```
 
 Implementation: `_ask/scripts/verify.sh`.
@@ -166,17 +169,25 @@ Implementation: `_ask/scripts/verify.sh`.
 It should:
 
 ```text
+refuse a dirty tree
 detect project/package manager where possible
 read project-specific configuration
 run configured mandatory checks
 fail on mandatory failures
 print exact commit SHA
 emit machine-readable verification output
+with --work-id: write work/<id>/verification.json; marked pilots also run targeted strict OpenSpec validation
 ```
 
 Do not hard-code NestJS, Node, Python, Rust, or any other specific technology into the core.
 
 Provide extension/configuration points for the consuming repository.
+
+## 24.1 `./ask openspec-archive <work-id>` (`openspec-archive.sh`)
+
+Kit-mediated OpenSpec archive. Refuses unless `work/<id>/acceptance.md` contains an accepted commit SHA. Then runs the pinned `openspec archive`. Direct CLI archive remains possible; `check-workstream` / `status` / `verify` detect archive without Accept SHA and fail.
+
+`status` `life: archived` is a different word (work-id on the default branch, no unmerged `agent/*`).
 
 ---
 

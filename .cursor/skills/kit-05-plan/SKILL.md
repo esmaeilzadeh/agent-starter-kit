@@ -11,6 +11,8 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Output: `work/<work-id>/plan.md` (template `_ask/templates/plan.md`).
 
+For a marked OpenSpec pilot, OpenSpec `design.md` and `tasks.md` are the plan. Kit `plan.md` is a non-normative pointer to those files.
+
 ## 15.5 05 Plan Agent
 
 Purpose:

@@ -16,11 +16,11 @@
 - [x] 3.1 `check-workstream` marked-pilot path (marker, targeted validate/status, pointers, skip_specs, archive lookup)
 - [x] 3.2 `status` checkout-scoped CLI, stage, `code-without-plan`, nextSteps strip
 - [x] 3.3 `verify --work-id` dirty refuse and `work/<id>/verification.json`
-- [ ] 3.4 `./ask openspec-archive` refuse without Accept SHA; detect direct archive
+- [x] 3.4 `./ask openspec-archive` refuse without Accept SHA; detect direct archive
 
 ## 4. Ownership and contracts
 
-- [ ] 4.1 `_ask/OWNED-PATHS.md` lists `openspec/` consumer-owned
-- [ ] 4.2 ADR-0018 for the 1.13.0 dependency and top-level path
-- [ ] 4.3 `ask` help, completion, Build Spec, stage contracts
-- [ ] 4.4 Existing install and smoke tests still pass
+- [x] 4.1 `_ask/OWNED-PATHS.md` lists `openspec/` consumer-owned
+- [x] 4.2 ADR-0018 for the 1.13.0 dependency and top-level path
+- [x] 4.3 `ask` help, completion, Build Spec, stage contracts
+- [x] 4.4 Existing install and smoke tests still pass

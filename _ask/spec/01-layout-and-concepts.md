@@ -134,12 +134,15 @@ Create this structure:
 │   ├── skills/
 │   │   ├── manifest.yaml
 │   │   └── prepare-skills.sh
+│   ├── openspec-pin.yaml
 │   ├── scripts/
 │   │   ├── check-clean-worktree.sh
 │   │   ├── start-work.sh
 │   │   ├── check-workstream.sh
 │   │   ├── status.sh
 │   │   ├── verify.sh
+│   │   ├── openspec_cli.py
+│   │   ├── openspec-archive.sh
 │   │   ├── record-result.sh
 │   │   ├── record-run.sh
 │   │   ├── sync-cursor-binding.sh

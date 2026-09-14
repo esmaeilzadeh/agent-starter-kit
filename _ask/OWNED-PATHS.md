@@ -9,7 +9,8 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `_ask/agents/*.md` **except** `*.local.md`
 - `_ask/templates/`
 - Stock `_ask/policies/*.md` when the consumer has not replaced the policy tree
-- `_ask/scripts/*.sh`
+- `_ask/scripts/*.sh` and `_ask/scripts/*.py`
+- `_ask/openspec-pin.yaml`
 - `_ask/tests/`
 - `_ask/docs/` (kit-author ADRs, demo, research)
 - `_ask/cursor-commands/` (session-mode Cursor commands; `./ask sync` copies into `.cursor/commands/`)
@@ -29,7 +30,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `_ask/agents/*.local.md` (per-stage overlays merged at sync time)
 - `_ask/bindings/models.yaml` (optional consumer model overlay)
 - Product `docs/`, `scripts/`, `tests/`, `src/`
-- Product `specs/`, `work/` (engineering state)
+- Product `specs/`, `work/`, `openspec/` (engineering state)
 - Prepared `.agents/skills/` bodies (regenerated; gitignored)
 
 ## Related
@@ -37,4 +38,5 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - ADR-0011 kit namespaced / no collision
 - ADR-0012 root `ask` dispatcher
 - ADR-0009 kit upgrade and overrides
+- ADR-0018 OpenSpec pin and consumer-owned `openspec/`
 - `./ask upgrade` / `./ask sync` (scripts remain under `_ask/scripts/`)

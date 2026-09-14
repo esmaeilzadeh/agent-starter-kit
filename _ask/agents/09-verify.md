@@ -2,7 +2,9 @@
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Evidence via `./ask verify` and `_ask/templates/verification.json`.
+Evidence via `./ask verify [--work-id <id>]` and `_ask/templates/verification.json`.
+
+`--work-id` writes `work/<id>/verification.json`, refuses a dirty tree, and records the commit SHA. Marked OpenSpec pilots also run targeted strict validation.
 
 ## 15.9 09 Verify Agent
 
