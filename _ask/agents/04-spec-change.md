@@ -46,3 +46,4 @@ change business semantics without the required authority
 - Forbidden: silent rewrite of the canonical accepted specification.
 - Kit path: `_ask/policies/workflow.md` — a spec change is a new decision, not covered by an older defaults-OK. Prepare the change artifact and get a confirm.
 - Before finishing the change artifact, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the change artifact. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
+- Marked OpenSpec pilot (`Engine: openspec` in intent): change semantics through the active `openspec/changes/<work-id>/`. If that change is already openspec-archived, create a new active directory with the same work-id; leave the archived copy under `openspec/changes/archive/`; record the new change in intent.

@@ -60,7 +60,9 @@ JSON
 export STUB_VALIDATE_JSON="$PAYLOADS/valid.json"
 export STUB_VALIDATE_EXIT=0
 printf 'Engine: openspec\n' > work/demo/intent.md
-git add work _ask && git commit -q -m pilot
+mkdir -p openspec/changes/demo
+printf 'schema: spec-driven\n' > openspec/changes/demo/.openspec.yaml
+git add work _ask openspec && git commit -q -m pilot
 : > "$STUB_LOG"
 ./_ask/scripts/verify.sh --work-id demo >/tmp/vf-out.txt
 grep -q 'validate demo --strict --json' "$STUB_LOG"
@@ -81,5 +83,18 @@ set +e
 code=$?
 set -e
 [[ "$code" -ne 0 ]]
+
+# archive without Accept SHA — preflight fails
+git add -A && git commit -q -m 'after invalid' || true
+mkdir -p openspec/changes/archive/2026-09-14-demo
+mv openspec/changes/demo/.openspec.yaml openspec/changes/archive/2026-09-14-demo/
+rm -rf openspec/changes/demo
+git add -A && git commit -q -m 'direct archive'
+set +e
+./_ask/scripts/verify.sh --work-id demo >/tmp/vf-out.txt 2>/tmp/vf-err.txt
+code=$?
+set -e
+[[ "$code" -ne 0 ]]
+grep -q 'no Accept SHA' /tmp/vf-err.txt
 
 echo "PASS: verify refuses dirty, writes work/<id>/verification.json, pilots run targeted validate"

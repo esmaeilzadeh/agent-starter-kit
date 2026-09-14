@@ -71,17 +71,32 @@ overall=0
 if [[ -n "$WORK_ID" && -f "work/${WORK_ID}/intent.md" ]] \
   && grep -qE '^Engine:[[:space:]]*openspec[[:space:]]*$' "work/${WORK_ID}/intent.md"; then
   CLI="$ROOT/_ask/scripts/openspec_cli.py"
-  echo "verify: running: openspec validate ${WORK_ID} --strict"
+  echo "verify: running: openspec preflight ${WORK_ID}"
   set +e
-  python3 "$CLI" --root "$ROOT" validate "$WORK_ID" >/tmp/ask-verify-os.json 2>/tmp/ask-verify-os.err
-  os_code=$?
+  pre_json="$(python3 "$CLI" --root "$ROOT" preflight "$WORK_ID" 2>/tmp/ask-verify-os.err)"
+  pre_code=$?
   set -e
-  if [[ "$os_code" -eq 0 ]]; then
-    results+=("{\"check\":\"openspec validate --strict\",\"result\":\"pass\"}")
-  else
+  if [[ "$pre_code" -ne 0 ]]; then
     cat /tmp/ask-verify-os.err >&2 || true
-    results+=("{\"check\":\"openspec validate --strict\",\"result\":\"fail\",\"code\":${os_code}}")
+    results+=("{\"check\":\"openspec preflight\",\"result\":\"fail\",\"code\":${pre_code}}")
     overall=1
+  else
+    results+=("{\"check\":\"openspec preflight\",\"result\":\"pass\"}")
+    run_gate="$(python3 -c 'import json,sys; print("1" if json.loads(sys.stdin.read()).get("run_gate") else "0")' <<<"$pre_json")"
+    if [[ "$run_gate" -eq 1 ]]; then
+      echo "verify: running: openspec validate ${WORK_ID} --strict"
+      set +e
+      python3 "$CLI" --root "$ROOT" validate "$WORK_ID" >/tmp/ask-verify-os.json 2>/tmp/ask-verify-os.err
+      os_code=$?
+      set -e
+      if [[ "$os_code" -eq 0 ]]; then
+        results+=("{\"check\":\"openspec validate --strict\",\"result\":\"pass\"}")
+      else
+        cat /tmp/ask-verify-os.err >&2 || true
+        results+=("{\"check\":\"openspec validate --strict\",\"result\":\"fail\",\"code\":${os_code}}")
+        overall=1
+      fi
+    fi
   fi
 fi
 

@@ -72,4 +72,27 @@ if grep -q 'openspec instructions' <<<"$out"; then
   exit 1
 fi
 
+# Other live ref: openspec-archive without Accept SHA → status fails
+git checkout -q main
+git checkout -q -b agent/os-bad
+mkdir -p work/os-bad openspec/changes/archive/2026-09-14-os-bad
+cat > work/os-bad/intent.md <<'EOF'
+# Intent
+
+Engine: openspec
+
+## What
+
+bad
+EOF
+printf 'schema: spec-driven\n' > openspec/changes/archive/2026-09-14-os-bad/.openspec.yaml
+git add work openspec && git commit -q -m os-bad
+git checkout -q main
+set +e
+"$STATUS" >/tmp/st-out.txt 2>/tmp/st-err.txt
+st=$?
+set -e
+[[ "$st" -ne 0 ]]
+grep -q 'no Accept SHA' /tmp/st-err.txt
+
 echo "PASS: status current-checkout OpenSpec CLI, planned, nextSteps stripped"

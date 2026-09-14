@@ -364,14 +364,11 @@ for wid, ref in live_refs:
     st = stage(art)
     warns = warnings_for(wid, ref, default, st, "live")
     if archived_without_accept(ref, wid, art):
-        head = git("rev-parse", "--abbrev-ref", "HEAD").strip()
-        if head == f"agent/{wid}":
-            print(
-                f"status: openspec-archived change {wid} has no Accept SHA",
-                file=sys.stderr,
-            )
-            sys.exit(1)
-        warns = list(warns) + ["openspec-archive-without-accept"]
+        print(
+            f"status: openspec-archived change {wid} has no Accept SHA",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     rows.append({
         "work_id": wid,
         "life": "live",

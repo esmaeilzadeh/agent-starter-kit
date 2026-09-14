@@ -170,6 +170,10 @@ Create this structure:
 │   └── proposals/
 ├── work/
 │   └── README.md
+├── openspec/
+│   ├── config.yaml
+│   ├── specs/
+│   └── changes/
 ├── .later/
 │   └── README.md
 ├── .ask.env.example
@@ -191,7 +195,7 @@ Do not create directories for hypothetical functionality beyond this baseline.
 ```text
 _ask/     kit package (including kit scripts, kit tests, kit-author docs)
 ask + AGENTS.md + .cursor/  thin adapter (`ask` dispatches kit scripts)
-specs/ + work/        product engineering state (convention; created by start-work)
+specs/ + work/ + openspec/   product engineering state (convention; start-work / OpenSpec)
 all other root names  product (docs/, scripts/, tests/, src/, …)
 ```
 
