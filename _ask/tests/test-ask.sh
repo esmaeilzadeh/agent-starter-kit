@@ -33,6 +33,21 @@ for sub in check-clean start-work check-workstream status verify record-result r
   out="$("$ASK" --complete 2 ./ask "$sub")"
   printf '%s\n' "$out" | grep -q . 
 done
+
+# Simulate Tab after "./ask start" (unique) and "./ask sta" (start-work + status).
+# Must run in the kit repo so ./ask completion is not replaced by askit self-install.
+# shellcheck disable=SC2034
+eval "$("$ASK" completion bash)"
+COMP_WORDS=(./ask start)
+COMP_CWORD=1
+_ask_kit_complete
+printf '%s\n' "${COMPREPLY[@]}" | grep -q start-work
+COMP_WORDS=(./ask sta)
+COMP_CWORD=1
+_ask_kit_complete
+printf '%s\n' "${COMPREPLY[@]}" | grep -q start-work
+printf '%s\n' "${COMPREPLY[@]}" | grep -q status
+
 set +e
 "$ASK" nosuchcmd >/dev/null 2>&1
 code=$?
@@ -49,18 +64,5 @@ echo x > README.md
 git add README.md && git commit -q -m init
 # invoke ask by absolute path; check-clean uses cwd git
 "$ASK" check-clean
-
-# Simulate Tab after "./ask start" (unique) and "./ask sta" (start-work + status).
-# shellcheck disable=SC2034
-eval "$("$ASK" completion bash)"
-COMP_WORDS=(./ask start)
-COMP_CWORD=1
-_ask_kit_complete
-printf '%s\n' "${COMPREPLY[@]}" | grep -q start-work
-COMP_WORDS=(./ask sta)
-COMP_CWORD=1
-_ask_kit_complete
-printf '%s\n' "${COMPREPLY[@]}" | grep -q start-work
-printf '%s\n' "${COMPREPLY[@]}" | grep -q status
 
 echo "PASS: ask help, unknown-command, check-clean on clean temp repo"
