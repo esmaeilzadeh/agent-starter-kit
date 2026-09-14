@@ -241,4 +241,69 @@ comp="$("$ROOT/ask" --complete 2 ./ask status)"
 echo "$comp" | grep -q -- '--later-only'
 echo "$comp" | grep -q -- '--work-only'
 
+# OpenSpec pilot on another ref: git show (no checkout, no CLI)
+git checkout -q -b agent/os-pilot
+mkdir -p work/os-pilot openspec/changes/os-pilot
+cat > work/os-pilot/intent.md <<'EOF'
+# Intent: os-pilot
+
+Engine: openspec
+
+## What
+
+Pilot plan lives in OpenSpec.
+
+## Why
+EOF
+printf '# Plan\n\nCanonical: openspec/changes/os-pilot/tasks.md\n' > work/os-pilot/plan.md
+cat > openspec/changes/os-pilot/tasks.md <<'EOF'
+## 1. Work
+
+- [ ] 1.1 Do the work
+EOF
+git add work/os-pilot openspec && git commit -q -m os-pilot
+git checkout -q main
+
+git checkout -q -b agent/os-intent
+mkdir -p work/os-intent openspec/changes/os-intent
+cat > work/os-intent/intent.md <<'EOF'
+# Intent: os-intent
+
+Engine: openspec
+
+## What
+
+Intent only plus OpenSpec dir.
+
+## Why
+EOF
+printf 'schema: spec-driven\n' > openspec/changes/os-intent/.openspec.yaml
+git add work/os-intent openspec && git commit -q -m os-intent
+git checkout -q main
+
+git checkout -q -b agent/os-jump
+mkdir -p work/os-jump openspec/changes/os-jump
+cat > work/os-jump/intent.md <<'EOF'
+# Intent: os-jump
+
+Engine: openspec
+
+## What
+
+OpenSpec plus app.c.
+
+## Why
+EOF
+printf 'schema: spec-driven\n' > openspec/changes/os-jump/.openspec.yaml
+echo impl > app-os.c
+git add work/os-jump openspec app-os.c && git commit -q -m os-jump
+git checkout -q main
+
+out="$("$STATUS")"
+echo "$out" | grep -qE 'live +os-pilot +planned'
+echo "$out" | grep os-pilot | grep -qv 'code-without-plan' || { echo "FAIL: os-pilot warned" >&2; exit 1; }
+echo "$out" | grep -qE 'live +os-intent +intent'
+echo "$out" | grep os-intent | grep -qv 'code-without-plan' || { echo "FAIL: os-intent warned for openspec/" >&2; exit 1; }
+echo "$out" | grep os-jump | grep -q 'code-without-plan'
+
 echo "PASS: status lists live agent/* and archived work/* without checkout; later inbox on checkout"

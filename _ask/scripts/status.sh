@@ -61,6 +61,7 @@ export ASK_STATUS_WORK_ONLY="$WORK_ONLY"
 
 python3 - <<'PY'
 import json, os, re, stat, subprocess, sys
+from pathlib import Path
 
 def git(*args, check=True):
     r = subprocess.run(["git", *args], capture_output=True, text=True)
@@ -139,6 +140,9 @@ def artifacts(ref, work_id):
         "intent": meaningful(section_after(intent or "", "What")),
         "plan": meaningful(section_after(plan or "", "Approach"))
             or meaningful(section_after(plan or "", "Work breakdown")),
+        "openspec_plan": meaningful(blob(ref, f"openspec/changes/{work_id}/design.md"))
+            or meaningful(blob(ref, f"openspec/changes/{work_id}/tasks.md")),
+        "pilot": bool(re.search(r"^Engine:\s*openspec\s*$", intent or "", re.M)),
         "review": meaningful(section_after(review or "", "Review verdict"))
             or meaningful(section_after(review or "", "Findings")),
         "result": False,
@@ -170,7 +174,7 @@ def stage(art):
         return "recorded"
     if art["review"]:
         return "reviewed"
-    if art["plan"]:
+    if art["plan"] or art.get("openspec_plan"):
         return "planned"
     if art["intent"]:
         return "intent"
@@ -199,16 +203,86 @@ def warnings_for(wid, ref, default, st, life):
     )
     if mb.returncode != 0:
         return []
+    intent = blob(ref, f"work/{wid}/intent.md")
+    pilot = bool(re.search(r"^Engine:\s*openspec\s*$", intent or "", re.M))
     names = git("diff", "--name-only", mb.stdout.strip(), ref).splitlines()
     prefix = f"work/{wid}/"
+    os_change = f"openspec/changes/{wid}/"
+    os_archive_re = re.compile(rf"^openspec/changes/archive/\d{{4}}-\d{{2}}-\d{{2}}-{re.escape(wid)}(?:/|$)")
     for path in names:
         p = path.strip()
         if not p:
             continue
         if p.startswith(prefix) or p.startswith("specs/"):
             continue
+        if pilot and (
+            p.startswith(os_change)
+            or os_archive_re.match(p)
+            or p in (
+                "openspec/config.yaml",
+                "openspec/specs/.gitkeep",
+                "openspec/changes/archive/.gitkeep",
+            )
+            or p.startswith("openspec/specs/")
+        ):
+            continue
         return ["code-without-plan"]
     return []
+
+def archived_without_accept(ref, wid, art):
+    if not art.get("pilot") or art.get("accepted"):
+        return False
+    if blob(ref, f"openspec/changes/{wid}/.openspec.yaml") is not None:
+        return False
+    r = subprocess.run(
+        ["git", "ls-tree", "--name-only", f"{ref}:openspec/changes/archive"],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        return False
+    pat = re.compile(rf"^\d{{4}}-\d{{2}}-\d{{2}}-{re.escape(wid)}$")
+    for name in r.stdout.splitlines():
+        if pat.match(name.strip()):
+            return True
+    return False
+
+def apply_checkout_cli(wid, art):
+    if not art.get("pilot"):
+        return art
+    head = git("rev-parse", "--abbrev-ref", "HEAD").strip()
+    if head != f"agent/{wid}":
+        return art
+    cli = Path("_ask/scripts/openspec_cli.py")
+    pin = Path("_ask/openspec-pin.yaml")
+    if not cli.is_file() or not pin.is_file():
+        print(
+            f"status: marked OpenSpec pilot {wid} on current checkout but pin/helper missing",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    r = subprocess.run(
+        [sys.executable, str(cli), "status", wid],
+        capture_output=True, text=True,
+    )
+    if r.returncode != 0:
+        sys.stderr.write(r.stderr or r.stdout or "status: OpenSpec CLI failed\n")
+        sys.exit(1)
+    try:
+        doc = json.loads(r.stdout)
+    except json.JSONDecodeError:
+        print("status: OpenSpec CLI returned invalid JSON", file=sys.stderr)
+        sys.exit(1)
+    if "nextSteps" in doc:
+        doc["nextSteps"] = [
+            "Use kit stage commands (./ask). OpenSpec CLI is an internal engine."
+        ]
+    if doc.get("isPlanningComplete") is True:
+        art["openspec_plan"] = True
+    art["openspec_status"] = {
+        "isPlanningComplete": doc.get("isPlanningComplete"),
+        "isComplete": doc.get("isComplete"),
+    }
+    return art
 
 def later_cards():
     later_dir = ".later"
@@ -286,7 +360,18 @@ for wid, ref in live_refs:
     if want and wid != want:
         continue
     art = artifacts(ref, wid)
+    art = apply_checkout_cli(wid, art)
     st = stage(art)
+    warns = warnings_for(wid, ref, default, st, "live")
+    if archived_without_accept(ref, wid, art):
+        head = git("rev-parse", "--abbrev-ref", "HEAD").strip()
+        if head == f"agent/{wid}":
+            print(
+                f"status: openspec-archived change {wid} has no Accept SHA",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        warns = list(warns) + ["openspec-archive-without-accept"]
     rows.append({
         "work_id": wid,
         "life": "live",
@@ -294,7 +379,7 @@ for wid, ref in live_refs:
         "tip": tip(ref),
         "stage": st,
         "artifacts": art,
-        "warnings": warnings_for(wid, ref, default, st, "live"),
+        "warnings": warns,
     })
 for wid in archive_ids:
     if want and wid != want:
@@ -351,6 +436,8 @@ for row in rows:
         flags.append("intent")
     if art["plan"]:
         flags.append("plan")
+    if art.get("openspec_plan"):
+        flags.append("openspec")
     if art["review"]:
         flags.append("review")
     if art["result"]:
