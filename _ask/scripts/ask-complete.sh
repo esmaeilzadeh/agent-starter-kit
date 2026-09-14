@@ -14,7 +14,7 @@ ask_complete_commands() {
   ask_complete_emit start-work "branch agent/<work-id> + seed work/<work-id>/"
   ask_complete_emit check-workstream "preconditions before implement"
   ask_complete_emit status "live/archived workstreams + later inbox"
-  ask_complete_emit verify "run checks; print commit SHA"
+  ask_complete_emit verify "run checks; print commit SHA; optional --work-id"
   ask_complete_emit record-result "workstream provenance"
   ask_complete_emit record-run "experiment provenance (SHA must be HEAD)"
   ask_complete_emit sync "regenerate .cursor projections"
@@ -67,6 +67,7 @@ ask_complete_flags_for() {
       ask_complete_emit --help "help"
       ;;
     verify)
+      ask_complete_emit --work-id "<id>  write work/<id>/verification.json"
       ask_complete_emit -h "help"
       ask_complete_emit --help "help"
       ;;
@@ -130,6 +131,7 @@ ask_complete_flags_for() {
 ask_complete_value_flags() {
   case "$(ask_complete_canon "$1")" in
     status|record-result) printf '%s\n' --work-id --commit-sha --result --notes ;;
+    verify) printf '%s\n' --work-id ;;
     record-run) printf '%s\n' --run-id --commit-sha --metric --notes --out ;;
     upgrade) printf '%s\n' --version --source ;;
     self-install) printf '%s\n' --source --ref --prefix ;;

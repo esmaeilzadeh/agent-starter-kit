@@ -36,9 +36,10 @@ Commands:
       --later-only     parked .later/ cards only
       --work-only      workstreams only
 
-  verify
-      Run repo checks; print commit SHA. No flags.
-      Env: VERIFY_OUT_DIR, VERIFY_JSON
+  verify [--work-id <id>]
+      Run repo checks; print commit SHA. Refuses a dirty tree.
+      --work-id <id>   write work/<id>/verification.json (pilots: OpenSpec too)
+      Env: VERIFY_OUT_DIR, VERIFY_JSON  (when --work-id is omitted)
 
   record-result --work-id <id> --commit-sha <sha> --result <text> [--notes <text>]
       Workstream provenance. Refuses if --commit-sha is missing.
