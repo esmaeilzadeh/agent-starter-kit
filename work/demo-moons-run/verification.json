@@ -1,7 +1,140 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
+  "work_id": "demo-moons-run",
+  "commit_sha": "f97f5a96f30fa98b15fa8d3bd2684fcb02ddf2f0",
+  "checks": [
+    {
+      "check": "openspec preflight",
+      "result": "pass"
+    },
+    {
+      "check": "openspec validate --strict",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-askit-complete.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-askit-first-run.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-askit-self-install.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-ask.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-bindings-consumer-overlay.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-check-clean-worktree.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-check-workstream-guidance.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-check-workstream-openspec.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-humanizer-docs-specs.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-install-kit-apply.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-install-kit-dry-run.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-install-user-completion.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-later-inbox-gitignore.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-openspec-archive.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-openspec-cli.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-record-run-refuses-dirty.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-record-run-writes-manifest.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-setup-env-gitignore.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-setup-human-only.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-start-work-no-explore-map.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-start-work-refuses-dirty.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-status-openspec.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-status.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-sync-off-path-command.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-sync-runtime-agents.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-verify-work-id.sh",
+      "result": "pass"
+    },
+    {
+      "check": "_ask/tests/test-workstream-smoke.sh",
+      "result": "pass"
+    }
+  ],
+  "result": "pass",
   "notes": ""
 }
