@@ -27,6 +27,8 @@ for raw in text.splitlines():
     if not m or m.group(1) != key:
         continue
     val = m.group(2).strip().strip('"').strip("'")
+    if not val or val[0] in "[{|>&*!" or val.lower() in ("null", "~", "true", "false"):
+        raise SystemExit(1)
     print(val)
     raise SystemExit(0)
 raise SystemExit(1)
@@ -45,12 +47,12 @@ revision="$(pin_field revision)"
 rev_code=$?
 set -e
 if [[ "$pkg_code" -ne 0 || "$rev_code" -ne 0 || -z "${package:-}" || -z "${revision:-}" ]]; then
-  warn "pin missing non-empty package or revision"
+  warn "pin missing non-empty scalar package or revision (${package:-unset}@${revision:-unset})"
   exit 2
 fi
 rev_lc="$(printf '%s' "$revision" | tr '[:upper:]' '[:lower:]')"
 if [[ "$rev_lc" == "latest" ]]; then
-  warn "pin revision must not be latest"
+  warn "pin revision must not be latest (${package}@${revision})"
   exit 2
 fi
 

@@ -44,6 +44,7 @@ code=$?
 set -e
 [[ "$code" -eq 2 ]]
 grep -qi 'latest' "$TMP/err.txt"
+grep -q '@fission-ai/openspec' "$TMP/err.txt"
 
 # empty package
 cat > "$TMP/pin.yaml" <<'YAML'
@@ -55,6 +56,29 @@ run_helper
 code=$?
 set -e
 [[ "$code" -eq 2 ]]
+
+# empty revision
+cat > "$TMP/pin.yaml" <<'YAML'
+package: "@fission-ai/openspec"
+revision: ""
+YAML
+set +e
+run_helper
+code=$?
+set -e
+[[ "$code" -eq 2 ]]
+
+# non-scalar revision
+cat > "$TMP/pin.yaml" <<'YAML'
+package: "@fission-ai/openspec"
+revision: []
+YAML
+set +e
+run_helper
+code=$?
+set -e
+[[ "$code" -eq 2 ]]
+grep -q '@fission-ai/openspec' "$TMP/err.txt"
 
 # missing npm
 write_pin 1.13.0
@@ -126,6 +150,22 @@ grep -q -- '--force' "$log"
 grep -q '@fission-ai/openspec@1.13.0' "$log"
 "$HOME/.local/bin/openspec" --version | grep -qx 1.13.0
 
+# conflicting symlink
+ln -sfn "$TMP/old-openspec" "$HOME/.local/bin/openspec"
+cat > "$TMP/old-openspec" <<'BIN'
+#!/usr/bin/env bash
+echo 9.9.9
+BIN
+chmod +x "$TMP/old-openspec"
+: > "$log"
+set +e
+PATH="$TMP:$empty:$BASE_PATH" run_helper
+code=$?
+set -e
+[[ "$code" -eq 0 ]]
+"$HOME/.local/bin/openspec" --version | grep -qx 1.13.0
+[[ ! -L "$HOME/.local/bin/openspec" ]]
+
 # mismatch after install
 cat > "$TMP/npm" <<EOF
 #!/usr/bin/env bash
@@ -161,8 +201,9 @@ rm -f "$HOME/.local"
 mkdir -p "$HOME/.local/bin"
 
 # timeout kill
-cat > "$TMP/npm" <<'EOF'
+cat > "$TMP/npm" <<EOF
 #!/usr/bin/env bash
+echo \$\$ > "$TMP/npm.pid"
 sleep 30
 exit 0
 EOF
@@ -175,6 +216,12 @@ code=$?
 set -e
 [[ "$code" -eq 1 ]]
 grep -qi 'timed out' "$TMP/err.txt"
+[[ -f "$TMP/npm.pid" ]]
+npm_pid="$(cat "$TMP/npm.pid")"
+if kill -0 "$npm_pid" 2>/dev/null; then
+  echo "FAIL: npm pid $npm_pid still running after timeout" >&2
+  exit 1
+fi
 
 # setup.sh wires the helper
 grep -q 'ensure-openspec.sh' "$ROOT/_ask/scripts/setup.sh"

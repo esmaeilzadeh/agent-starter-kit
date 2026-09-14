@@ -437,7 +437,7 @@ set -e
 if [[ "$os_code" -eq 0 ]]; then
   note "OpenSpec CLI matches the pin at \$HOME/.local/bin/openspec"
 else
-  warn "OpenSpec CLI not installed (exit ${os_code}). Marked-pilot gates still fail closed."
+  warn "OpenSpec CLI not installed (exit ${os_code}; pin in _ask/openspec-pin.yaml). Marked-pilot gates still fail closed."
 fi
 
 note "Restart Cursor (or toggle MCP servers) so new stubs load."
