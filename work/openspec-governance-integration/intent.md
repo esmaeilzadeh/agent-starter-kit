@@ -2,6 +2,8 @@
 
 Risk: HIGH
 
+Engine: openspec
+
 ## What
 
 Integrate a pinned OpenSpec CLI behind the existing kit command surface for the
@@ -32,8 +34,9 @@ and acceptance model.
 - Treating OpenSpec validation or archive as semantic review, deterministic
   verification, or human acceptance.
 - Migrating every historical kit specification before the pilot.
-- Designing a custom OpenSpec schema before the standard workflow is evaluated.
-- Implementing stages 03 through 10 during the current session.
+- Designing a custom OpenSpec schema before the later evaluation workstream
+  decides.
+- Blocking this workstream's Accept on two or three future evaluation pilots.
 
 ## Known assumptions
 
@@ -50,15 +53,16 @@ and acceptance model.
 - The kit continues to own intent, worktree and commit policy, risk and
   delegation policy, independent Review and finding disposition, project
   verification, commit-linked results, and Accept.
-- OpenSpec archive occurs only at an explicitly defined point relative to kit
-  Accept.
+- Kit-mediated openspec-archive occurs after kit Accept; direct CLI archive is
+  detected after the fact.
+- This work-id is a marked dogfood pilot. Kit `plan.md` and `specs/` copies
+  become pointers after cutover.
 
 ## Open questions
 
-- Which exact existing specifications does each pilot change require?
 - Which OpenSpec release should be pinned when implementation begins?
-- Does pilot evidence justify a custom schema that co-locates kit governance
-  artifacts with the OpenSpec change?
+- Name the later evaluation workstream and its two or three representative
+  changes when that workstream starts.
 
 ## Human decisions
 
@@ -67,4 +71,8 @@ and acceptance model.
 - Approve the proposed OpenSpec/kit responsibility split and pilot.
 - Copy only specifications needed by pilot changes; do not migrate all existing
   specifications.
-- Stop this session after 02 Spec.
+- Stopped after 02 Spec in the first session; resumed 03+ on 2026-09-14.
+- Spec Challenge ESCALATE. Spec Change confirmed: intent marker, pointer
+  duplicates, this work-id is a pilot, checkout-scoped status CLI,
+  kit-mediated openspec-archive plus detection, Accept on machinery plus
+  baseline with evaluation later.
