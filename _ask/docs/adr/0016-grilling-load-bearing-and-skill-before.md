@@ -1,6 +1,6 @@
 # Grilling is load-bearing questions plus ask-before-prepare skills
 
-Kit grilling (`01 Grill`, Explore decision grilling) was reading ADR 0007 as “expand every frontier item” and the Community grilling skill as “nothing left silently assumed.” That produced long rounds of obvious questions and still missed problem-space the griller could not see without a domain skill.
+Kit grilling (`01 Grill`, Explore decision grilling) was reading ADR 0007 as “expand every frontier item” and the Community grilling skill as “nothing left silently assumed.” That produced long rounds of obvious questions. It still missed problem-space the griller could not see without a domain skill.
 
 ## Decision
 

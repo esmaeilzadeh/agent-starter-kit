@@ -1,6 +1,6 @@
 # Kit documentation
 
-Kit-author docs live here so product repos can keep their own root `docs/`.
+Kit-author docs live here. Product repos keep their own root `docs/`.
 
 Human entry for a clone of this kit: root [README.md](../../README.md).  
 Agent entry: [AGENTS.md](../../AGENTS.md).

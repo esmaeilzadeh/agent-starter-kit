@@ -1,6 +1,6 @@
 # _ask
 
-Portable protocol root for the AI Engineering Starter Kit. Branded on purpose — not a generic `engineering/` docs folder — so the kit stays recognizable inside consuming repos.
+Portable protocol root for the AI Engineering Starter Kit. The folder name is branded so the kit stays recognizable inside consuming repos.
 
 Root `AGENTS.md` is the short operational entrypoint. This tree holds the durable contracts.
 
@@ -31,7 +31,7 @@ docs/ scripts/ …    # product-owned (kit never overlays these names)
 
 ## Skills
 
-Community Skills are pinned in `skills/manifest.yaml` and prepared into `.agents/skills/` — not copied into the kit as a vendored tree. See the Build Spec skill-manifest section once `spec/` modules are split.
+Community Skills are pinned in `skills/manifest.yaml` and prepared into `.agents/skills/`. They are not copied into the kit as a vendored tree. See the Build Spec skill-manifest section.
 
 ## Start here
 

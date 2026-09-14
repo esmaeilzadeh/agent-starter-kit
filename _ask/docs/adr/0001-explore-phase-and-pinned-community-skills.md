@@ -1,6 +1,6 @@
 # Explore is first-class; Community Skills are pinned dependencies
 
-The Starter Kit includes an Explore Phase (`00`) before the Engineering Pipeline (`01`–`10`) so foggy / R&D work is not stuffed into Implement. Explore binds wayfinder/research/prototype (and related) methods as versioned Community Skills discovered via skills.sh and prepared by agent instruction — not vendored skill trees. `01`–`10` keep their Guide names; Explore is `00` rather than renumbering the pipeline.
+The Starter Kit includes an Explore Phase (`00`) before the Engineering Pipeline (`01`–`10`) so foggy / R&D work is not stuffed into Implement. Explore binds wayfinder/research/prototype (and related) methods as versioned Community Skills discovered via skills.sh and prepared by agent instruction. Those skill trees are not vendored. `01`–`10` keep their Guide names; Explore is `00` rather than renumbering the pipeline.
 
 ## Considered Options
 

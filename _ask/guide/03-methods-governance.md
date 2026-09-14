@@ -16,7 +16,7 @@ They do not make arbitrary engineering policy formally true merely because the p
 
 Lean is an example of moving a particular class of claims from probabilistic model judgment to a formal verification kernel. This can be extremely valuable when requirements can be expressed formally and the cost is justified.
 
-Leanstral is therefore an important example of:
+Leanstral is an example of:
 
 ```text
 LLM-generated work
@@ -29,8 +29,6 @@ It is not a general replacement for ordinary application-code review.
 
 Prolog can be particularly natural for executable policies and rule-based reasoning. It can serve as a policy/authorization layer or symbolic reasoning engine.
 
-But:
-
 > Prolog execution is not automatically formal proof of arbitrary software correctness.
 
 For ordinary application development, Prolog is better viewed as a specialized tool for the parts of the problem that naturally fit logic programming.
@@ -39,7 +37,7 @@ For ordinary application development, Prolog is better viewed as a specialized t
 
 Mature skills from community or organizational repositories should be reused rather than reinvented unnecessarily.
 
-But they should be treated as dependencies:
+Treat them as dependencies:
 
 ```text
 source
@@ -64,7 +62,7 @@ A reusable method for performing a class of work.
 Examples:
 
 ```text
-g rill requirements
+grill requirements
 review code
 refactor safely
 write integration tests
@@ -99,7 +97,7 @@ Can run migration.
 Can deploy.
 ```
 
-The important chain is:
+The chain is:
 
 ```text
 Capability ≠ Authority
@@ -112,8 +110,6 @@ A prompt that says:
 > "Never violate dependency direction"
 
 is not equivalent to a deterministic architectural checker.
-
-The practical rule is:
 
 > **Move critical constraints out of LLM instructions and into machine-enforced mechanisms whenever practical.**
 
@@ -238,7 +234,7 @@ The objective is not simply to remove humans from every loop.
 
 Human attention is itself a scarce engineering resource.
 
-The goal is to spend it where it has high marginal value.
+Spend it where it has high marginal value.
 
 Examples of good delegation candidates:
 
@@ -260,8 +256,6 @@ changing acceptance criteria
 accepting conflicting evidence
 changing delegation policy
 ```
-
-Therefore:
 
 > **Optimize the allocation of human attention, not merely the reduction of human labor.**
 
@@ -293,11 +287,9 @@ HUMAN_APPROVAL_REQUIRED
 REJECT
 ```
 
-But the Accept Agent is not automatically the final authority.
+The Accept Agent is not automatically the final authority.
 
 The delegation policy determines whether the human must approve.
-
-The deeper principle is:
 
 > **Acceptance can be delegated as labor; ultimate authority need not be.**
 
@@ -338,7 +330,7 @@ Acceptance debt
 
 A correct rule is useless if the relevant agent never receives it.
 
-Therefore the workflow needs disciplined context assembly.
+The workflow needs disciplined context assembly.
 
 A useful order is:
 
@@ -354,8 +346,6 @@ repository instructions
 ```
 
 Do not solve this by putting everything into one enormous prompt.
-
-The question is:
 
 > **What context is necessary for this specific decision, and where did that context come from?**
 
@@ -456,8 +446,6 @@ For example:
 
 Raw prompt tokens, complete context dumps, every tool call, and retry logs normally do not belong in Git. They may be retained separately if a project has a specific audit, debugging, security, or operational need.
 
-The correct objective is:
-
 > **Enough provenance to reconstruct which engineering state produced a result.**
 
 ---
@@ -476,8 +464,6 @@ Recommended invariants:
 5. Record result → exact commit.
 6. Preserve spec → change → review → verification → acceptance lineage.
 ```
-
-The objective is not a beautiful Git history for its own sake.
 
 The objective is **isolation, reproducibility, and coordination of delegated labor**.
 

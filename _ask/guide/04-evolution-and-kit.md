@@ -67,8 +67,6 @@ better prompt
 → architectural/tooling constraint
 ```
 
-This leads to a fundamental property of the engineering system:
-
 > **Failures in delegated labor become inputs into improvements of the system that delegates the labor.**
 
 That is the difference between an AI workflow and an engineering system.
@@ -101,7 +99,7 @@ This creates another level of division of labor:
 
 This is why the starter kit uses a Skill Manifest rather than requiring every Community Skill to be copied into the repository. Agents prepare pinned skills by instruction (open skills ecosystem / [skills.sh](https://www.skills.sh/) as a discovery starting point).
 
-However, critical methodology dependencies should be pinned to a known revision rather than following a moving `latest` source.
+Critical methodology dependencies should be pinned to a known revision rather than following a moving `latest` source.
 
 ---
 
@@ -185,7 +183,6 @@ Git conventions
 Skill Manifest + Skill Preparation (pinned Community Skills; skills.sh as discovery index)
 Verification hooks
 Provenance records
-```
 Git guardrails
 Verification scripts
 Result provenance
