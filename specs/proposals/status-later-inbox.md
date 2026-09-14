@@ -17,6 +17,7 @@ CURRENT
 - `--work-id` matching a later slug
 - Committing cards; `.later/*` gitignore (except `README.md`) stays
 - Changing how live/archived workstreams are inferred from git refs
+- Recursing into `.later/` subdirectories
 
 ## Behavior
 
@@ -24,23 +25,31 @@ Workstream rows stay as today: live = unmerged local `refs/heads/agent/<work-id>
 
 Later rows come from the current checkout only.
 
+Git repository check runs before the later scan. Non-git: `status: not a git repository` on stderr, exit 2, including `--later-only` and `--json`.
+
 ### Later scan
 
-Read `.later/*.md` in the repo root working tree. Skip `README.md`. Ignore non-`.md` files and subdirectories. Missing `.later/` is an empty inbox.
+If `.later` is missing, is a file, or cannot be listed, the scan is empty (do not abort the workstream table).
 
-For each remaining file, in filename sort order:
+List immediate children of `.later/` (no recursion, skip names that start with `.`). Keep regular files whose basename ends in `.md` and is not exactly `README.md` (case-sensitive). Skip non-regular files (FIFO, device, directory).
+
+Sort remaining names bytewise (UTF-8 bytes, `LC_ALL=C` order).
+
+For each remaining file:
 
 | Field | Source |
 | --- | --- |
 | `slug` | basename without `.md` |
-| `title` | first Markdown ATX heading (`# `) in the file, trimmed; empty string if none |
-| `path` | `.later/<filename>` |
+| `title` | first line in the file that matches `^# ` at column 0; `title` is the rest of that line, trimmed; `""` if none. `##` / `###` do not count. Unreadable file: `title` `""`. Decode with UTF-8, replace errors; strip CR. |
+| `path` | POSIX repo-relative `.later/<filename>` with `/` (including on Windows) |
 
 A card whose slug matches a live or archived work-id still appears. Later rows have no stage, branch, tip, warnings, or artifacts.
 
 ### Default (no inventory flags)
 
-Print the workstream table first (today's columns). If the later scan is non-empty, print a blank line, then a later block:
+Print the workstream table first (today’s columns) when there is at least one workstream row.
+
+If the later scan is non-empty, print a blank line, then:
 
 ```text
 later:
@@ -48,23 +57,27 @@ SLUG                         TITLE
 <slug>                       <title>
 ```
 
-If the later scan is empty, print nothing extra: the workstream table (or the existing "no workstreams" message) is the whole output.
+Slug column width is 28 (same as `WORK-ID`). One output line per card. Do not truncate slug or title; the title may make the line longer than the header.
 
-`--work-id <id>` filters workstreams as today and omits the later block.
+If the later scan is empty, print nothing extra.
+
+If there are zero workstream rows and the later scan is non-empty: print today’s empty-workstream one-liner (`status: no live agent/* branches; no archived work/* on <branch>`, or `status: no workstream '<id>' …` when `--work-id` would have applied), then a blank line, then the later block. `--work-id` still omits later (Q1-B), so that case stays today’s missing-workstream one-liner only.
+
+`--work-id <id>` filters workstreams as today and sets the later scan used for output to empty.
 
 ### `--work-only`
 
-Print workstreams only. Same as today's output, including `--work-id` and the empty-workstream messages.
+Print workstreams only. Same as today’s output, including `--work-id` and the empty-workstream messages.
 
 ### `--later-only`
 
-Print the later block only (header `later:` plus the slug/title table). If the scan is empty, print this line on stdout:
+Print the later block only: no `status: default=` line, no workstream empty one-liner, no `LIFE` / `WORK-ID` header.
+
+If the scan is empty, print this line on stdout and exit 0:
 
 ```text
 status: no later cards in .later/
 ```
-
-and exit 0. Do not print the workstream table.
 
 `--later-only` with `--work-id` is invalid (see Failure cases).
 
@@ -73,10 +86,10 @@ and exit 0. Do not print the workstream table.
 Top-level object always has:
 
 - `default_branch` (string, as today)
-- `workstreams` (array of today's workstream objects, unchanged fields)
+- `workstreams` (array of today’s workstream objects, unchanged fields)
 - `later` (array of `{ "slug", "title", "path" }`)
 
-`--work-only` (and `--work-id` without `--later-only`): `later` is `[]`.
+`--work-only` or `--work-id` (without `--later-only`): `later` is `[]` even when cards exist on disk.
 `--later-only`: `workstreams` is `[]`; `later` is the scan (possibly `[]`).
 Combined default: both arrays filled; `later` may be `[]`.
 
@@ -84,19 +97,21 @@ Empty later under `--later-only --json` still exits 0 and prints the object (`la
 
 ### Flags together
 
+Check combinations after parse, order-independent. Messages on stderr, prefix `status:`, exit 2.
+
 | Combination | Result |
 | --- | --- |
-| `--later-only` and `--work-only` | exit 2, unknown-arg style message naming both flags |
-| `--later-only` and `--work-id` | exit 2, message that `--work-id` does not apply to later |
+| `--later-only` and `--work-only` | `status: --later-only and --work-only are mutually exclusive` |
+| `--later-only` and `--work-id` (including `--work-id` with no value) | `status: --work-id does not apply to later` |
 | `--work-only` and `--work-id` | allowed |
 | `--json` with `--later-only` or `--work-only` | allowed |
-| unknown flag | exit 2, as today |
+| unknown flag | `status: unknown arg …` as today |
 
 ### Help and completion
 
 `./ask` usage for `status`, and `status.sh -h`/`--help`, list `--work-id`, `--json`, `--later-only`, `--work-only`.
 
-`ask-complete.sh` / `./ask --complete` offers `--later-only` and `--work-only` for `status` (and the `status` alias path). Already-used flags are omitted, same as today's flag completion. These flags take no value.
+`ask-complete.sh` / `./ask --complete` offers `--later-only` and `--work-only` for `status`. Already-used flags are omitted. These flags take no value. Completion may still offer illegal combinations; runtime rejects them.
 
 ### Docs that must match this contract
 
@@ -125,33 +140,38 @@ Implementation: `_ask/scripts/status.sh`. Completion: `_ask/scripts/ask-complete
 ## Invariants
 
 - Later cards are not live workstreams.
-- Default with an empty inbox matches today's human workstream output (modulo an additive JSON `later: []` key).
-- `--work-only` human output matches today's human output.
-- `--work-only --json` may add `"later": []` and must keep today's `workstreams` objects.
+- `--work-only` human output matches today’s human output.
+- `--work-only --json` and `--work-id --json` include `"later": []` and keep today’s `workstreams` objects.
+- Default with an empty later scan matches today’s human workstream output.
 
 ## Failure cases
 
-- `--later-only` with `--work-only`: exit 2.
-- `--later-only` with `--work-id`: exit 2.
+- `--later-only` with `--work-only`: exit 2 (message above).
+- `--later-only` with `--work-id`: exit 2 (message above).
 - Unknown argument: exit 2 (today).
-- Unreadable card file: still emit a row (`slug` from the filename, `title` empty). Do not abort the workstream table.
-- Non-git repo: same as today (`status: not a git repository`, exit 2).
+- Unreadable card file: row with empty title; do not abort the workstream table.
+- Unreadable `.later/` directory or `.later` is a file: empty later; do not abort the workstream table.
+- Non-git repo: `status: not a git repository`, exit 2.
 
 ## Acceptance criteria
 
 - `./ask status` in a repo with `.later/foo.md` (`# Title here`) prints a `later:` block whose row is slug `foo` and title `Title here`, after the workstream table.
-- The same command with only `.later/README.md` present prints no `later:` block.
+- `.later/README.md` plus `.later/foo.md` → one later row `foo` (README skipped).
+- Only `.later/README.md` → no `later:` block.
+- Zero workstream rows and `.later/park.md` → today’s empty-workstream one-liner, blank line, then the later block.
 - `./ask status --work-only` with later cards present prints no `later:` block.
-- `./ask status --later-only` prints the later block and no `LIFE`/`WORK-ID` workstream header.
+- `./ask status --later-only` prints the later block and no `LIFE`/`WORK-ID` header and no `status: default=`.
 - `./ask status --later-only` with no cards prints `status: no later cards in .later/` and exit 0.
-- `./ask status --later-only --work-only` exits 2.
-- `./ask status --later-only --work-id anything` exits 2.
-- `./ask status --work-id <live-id>` omits later even when cards exist.
-- `./ask status --json` includes `"later"` array; `--work-only --json` has `"later": []`; `--later-only --json` has `"workstreams": []`.
-- Workstream JSON objects keep today's fields.
+- `./ask status --later-only --work-only` exits 2; stderr contains both flag names.
+- `./ask status --later-only --work-id anything` exits 2; stderr contains `--work-id`.
+- `./ask status --work-id <live-id>` omits later even when cards exist (human and JSON `later: []`).
+- `./ask status --json` includes `"later"`; `--work-only --json` has `"later": []`; `--later-only --json` has `"workstreams": []`.
+- A card whose slug matches a live work-id still appears in later (default / `--later-only`).
+- Title: `#NoSpace` → empty title; first heading `## Why` then `# Real` → title `Real`; H1 on line 3 still used.
+- Workstream JSON objects keep today’s fields.
 - `./ask --complete` for `status` lists `--later-only` and `--work-only`.
-- `_ask/tests/test-status.sh` covers later listing, empty inbox, exclusive flags, `--work-id` omitting later, and JSON shapes.
-- Build Spec §23.4 / §30.1, ADR 0015, and `.later/README.md` describe the later block instead of saying status ignores later.
+- `_ask/tests/test-status.sh` covers the cases above that are machine-checkable in a temp git repo.
+- Build Spec §23.4 / §30.1, ADR 0015, `.later/README.md`, `workflow.md`, and `ask` status help describe the later block.
 
 ## Open questions
 
@@ -160,3 +180,7 @@ None.
 ## Source intent
 
 `work/status-later-inbox/intent.md`
+
+## Spec change
+
+`work/status-later-inbox/spec-change.md`
