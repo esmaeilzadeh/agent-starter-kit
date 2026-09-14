@@ -1,0 +1,6 @@
+{
+  "work_id": "demo-moons-run",
+  "commit_sha": "f97f5a96f30fa98b15fa8d3bd2684fcb02ddf2f0",
+  "result": "pass",
+  "notes": "openspec preflight + validate --strict; all _ask/tests/test-*.sh pass; two SHA-bound moons runs"
+}
