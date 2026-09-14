@@ -1,0 +1,6 @@
+{
+  "work_id": "kit-setup-openspec-cli",
+  "commit_sha": "296db0c94a995781bd78dae96f262cd599c41d02",
+  "result": "pass",
+  "notes": "All _ask/tests/test-*.sh. Helper covers pin, skip without Node, stub install, timeout reap. Non-TTY setup does not invoke npm."
+}
