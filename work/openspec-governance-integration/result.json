@@ -1,0 +1,6 @@
+{
+  "work_id": "openspec-governance-integration",
+  "commit_sha": "240364e027680178ad73592f2a7aecb0e490bacd",
+  "result": "pass",
+  "notes": "openspec preflight + validate --strict; all _ask/tests/test-*.sh pass"
+}
