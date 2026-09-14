@@ -1,0 +1,12 @@
+# Pin for the OpenSpec CLI used by kit gates. Never set revision to latest.
+# Measured 2026-09-14 against @fission-ai/openspec@1.13.0:
+#   init --tools none --no-animation --profile core
+#   validate <id> --strict --json  → items[].id / items[].valid
+#   status --change <id> --json    → isPlanningComplete, isComplete,
+#                                    artifacts[].status (ready|blocked|done),
+#                                    nextSteps, root, status[].severity
+#   config remains --scope global only; profile core; schema spec-driven
+package: "@fission-ai/openspec"
+revision: "1.13.0"
+schema: spec-driven
+profile: core
