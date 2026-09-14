@@ -196,6 +196,160 @@ def is_pilot(root: Path, work_id: str) -> bool:
     return bool(PILOT_LINE.search(intent.read_text()))
 
 
+HEADING = re.compile(r"^##\s+(.*)\s*$")
+
+
+def section_after(text: str, heading: str) -> str:
+    lines = text.splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        m = HEADING.match(line)
+        if m and m.group(1).strip().lower() == heading.lower():
+            start = i + 1
+            break
+    if start is None:
+        return ""
+    body = []
+    for line in lines[start:]:
+        if HEADING.match(line):
+            break
+        body.append(line)
+    return "\n".join(body)
+
+
+def meaningful(text: str) -> bool:
+    if not text:
+        return False
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("<!--") or line.startswith("-->"):
+            continue
+        if re.fullmatch(r"<[^>]+>", line):
+            continue
+        if re.fullmatch(r"[-*]\s*([.…]+|\.\.\.)?", line):
+            continue
+        if line.startswith("**Contract:**"):
+            continue
+        return True
+    return False
+
+
+def accept_sha(root: Path, work_id: str) -> str:
+    acc = root / "work" / work_id / "acceptance.md"
+    if not acc.is_file():
+        return ""
+    body = section_after(acc.read_text(), "Accepted commit SHA")
+    m = re.search(r"\b[0-9a-f]{7,40}\b", body or "", re.I)
+    return m.group(0) if m else ""
+
+
+def yaml_true(path: Path, key: str) -> bool:
+    if not path.is_file():
+        return False
+    pat = re.compile(rf"^{re.escape(key)}:\s*(true|yes|1)\s*$", re.I)
+    for raw in path.read_text().splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if pat.match(line):
+            return True
+    return False
+
+
+ARCHIVE_NAME = re.compile(r"^(\d{4}-\d{2}-\d{2})-(.+)$")
+
+
+def lookup_change(root: Path, work_id: str) -> dict:
+    changes = root / "openspec" / "changes"
+    active = changes / work_id
+    active_ok = active.is_dir() and not active.is_symlink()
+    archive_root = changes / "archive"
+    archives = []
+    if archive_root.is_dir():
+        for p in sorted(archive_root.iterdir()):
+            if not p.is_dir():
+                continue
+            m = ARCHIVE_NAME.match(p.name)
+            if m and m.group(2) == work_id:
+                archives.append(p)
+    if active_ok and archives:
+        # 04 Spec Change after archive: active wins; extras are not "more than one active"
+        return {"state": "active", "path": str(active), "archives": [str(a) for a in archives]}
+    if active_ok:
+        return {"state": "active", "path": str(active), "archives": []}
+    if len(archives) > 1:
+        return {"state": "ambiguous", "path": "", "archives": [str(a) for a in archives]}
+    if len(archives) == 1:
+        return {"state": "archived", "path": str(archives[0]), "archives": [str(archives[0])]}
+    return {"state": "missing", "path": "", "archives": []}
+
+
+def pointer_violations(root: Path, work_id: str) -> list[str]:
+    bad = []
+    plan = root / "work" / work_id / "plan.md"
+    if plan.is_file():
+        text = plan.read_text()
+        if meaningful(section_after(text, "Approach")) or meaningful(
+            section_after(text, "Work breakdown")
+        ):
+            bad.append(f"work/{work_id}/plan.md has meaningful plan content (pointer only)")
+    for rel in (f"specs/current/{work_id}.md", f"specs/proposals/{work_id}.md"):
+        path = root / rel
+        if not path.is_file():
+            continue
+        text = path.read_text()
+        for heading in ("Goal", "Behavior", "Acceptance criteria"):
+            if meaningful(section_after(text, heading)):
+                bad.append(f"{rel} has meaningful {heading} (pointer only)")
+    return bad
+
+
+def skip_specs_violation(root: Path, work_id: str, change_dir: Path) -> str | None:
+    meta = change_dir / ".openspec.yaml"
+    if not yaml_true(meta, "skip_specs"):
+        return None
+    proposal = change_dir / "proposal.md"
+    if not proposal.is_file():
+        return "skip_specs: true without a change proposal recording a reason"
+    text = proposal.read_text()
+    if not re.search(r"skip_specs", text, re.I):
+        return "skip_specs: true without a recorded reason in the change proposal"
+    if not meaningful(section_after(text, "Why")) and not meaningful(text):
+        return "skip_specs: true without a recorded reason in the change proposal"
+    return None
+
+
+def cmd_preflight(root: Path, work_id: str) -> dict:
+    if "/" in work_id or work_id in (".", "..") or not work_id:
+        die(f"invalid work-id {work_id!r}", 2)
+    found = lookup_change(root, work_id)
+    state = found["state"]
+    sha = accept_sha(root, work_id)
+    if state == "missing":
+        die(f"missing OpenSpec change for {work_id}")
+    if state == "ambiguous":
+        die(f"more than one OpenSpec archive match for {work_id}")
+    if state == "archived":
+        if not sha:
+            die(
+                f"openspec-archived change {work_id} has no Accept SHA "
+                f"(direct archive detected at {found['path']})"
+            )
+        # Valid Accept + archive: not a missing-change failure; skip active gate.
+        found["accept_sha"] = sha
+        found["run_gate"] = False
+        return found
+    change_dir = Path(found["path"])
+    for msg in pointer_violations(root, work_id):
+        die(msg)
+    skip_msg = skip_specs_violation(root, work_id, change_dir)
+    if skip_msg:
+        die(skip_msg)
+    found["accept_sha"] = sha
+    found["run_gate"] = True
+    return found
+
+
 def emit(doc: dict) -> None:
     json.dump(doc, sys.stdout, indent=2)
     sys.stdout.write("\n")
@@ -217,6 +371,8 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("work_id")
     sp = sub.add_parser("is-pilot")
     sp.add_argument("work_id")
+    sp = sub.add_parser("preflight")
+    sp.add_argument("work_id")
 
     args = p.parse_args(argv)
     root = repo_root(args.root)
@@ -228,6 +384,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.cmd == "is-pilot":
         raise SystemExit(0 if is_pilot(root, args.work_id) else 1)
+    if args.cmd == "preflight":
+        emit(cmd_preflight(root, args.work_id))
+        return 0
 
     bin_path = find_bin()
     assert_version(bin_path, pin)

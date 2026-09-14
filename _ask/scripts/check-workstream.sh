@@ -36,27 +36,44 @@ if [[ ! -d "$WS" ]]; then
   exit 1
 fi
 
-# Accepted spec: prefer specs/current/* or STATUS CURRENT in specs
-SPEC_OK=0
-if compgen -G "specs/current/*" > /dev/null; then
-  SPEC_OK=1
+PILOT=0
+if [[ -f "${WS}/intent.md" ]] && grep -qE '^Engine:[[:space:]]*openspec[[:space:]]*$' "${WS}/intent.md"; then
+  PILOT=1
 fi
-if [[ "$SPEC_OK" -eq 0 ]]; then
-  while IFS= read -r -d '' f; do
-    if grep -qiE '^## Status[[:space:]]*$' "$f" 2>/dev/null; then
-      # next non-empty line
-      st=$(awk 'BEGIN{s=0} /^## Status/{s=1;next} s && NF{print; exit}' "$f")
-      if echo "$st" | grep -qiE 'CURRENT|ACCEPTED'; then
-        SPEC_OK=1
-        break
+
+if [[ "$PILOT" -eq 1 ]]; then
+  CLI="$ROOT/_ask/scripts/openspec_cli.py"
+  if [[ ! -f "$CLI" ]]; then
+    echo "check-workstream: marked OpenSpec pilot but missing ${CLI}" >&2
+    exit 1
+  fi
+  pre_json="$(python3 "$CLI" --root "$ROOT" preflight "$WORK_ID")" || exit 1
+  run_gate="$(python3 -c 'import json,sys; print("1" if json.loads(sys.stdin.read()).get("run_gate") else "0")' <<<"$pre_json")"
+  if [[ "$run_gate" -eq 1 ]]; then
+    python3 "$CLI" --root "$ROOT" gate "$WORK_ID" >/dev/null || exit 1
+  fi
+else
+  # Accepted spec: prefer specs/current/* or STATUS CURRENT in specs
+  SPEC_OK=0
+  if compgen -G "specs/current/*" > /dev/null; then
+    SPEC_OK=1
+  fi
+  if [[ "$SPEC_OK" -eq 0 ]]; then
+    while IFS= read -r -d '' f; do
+      if grep -qiE '^## Status[[:space:]]*$' "$f" 2>/dev/null; then
+        st=$(awk 'BEGIN{s=0} /^## Status/{s=1;next} s && NF{print; exit}' "$f")
+        if echo "$st" | grep -qiE 'CURRENT|ACCEPTED'; then
+          SPEC_OK=1
+          break
+        fi
       fi
-    fi
-  done < <(find specs -type f -name '*.md' -print0 2>/dev/null || true)
-fi
-if [[ "$SPEC_OK" -eq 0 ]]; then
-  echo "check-workstream: default path incomplete — no accepted specification under specs/current/ (or Status CURRENT)." >&2
-  echo "check-workstream: guidance, not a lock. On-path: prepare the spec from accepted defaults, then re-run. Off-path only if the human explicitly left the kit." >&2
-  exit 1
+    done < <(find specs -type f -name '*.md' -print0 2>/dev/null || true)
+  fi
+  if [[ "$SPEC_OK" -eq 0 ]]; then
+    echo "check-workstream: default path incomplete — no accepted specification under specs/current/ (or Status CURRENT)." >&2
+    echo "check-workstream: guidance, not a lock. On-path: prepare the spec from accepted defaults, then re-run. Off-path only if the human explicitly left the kit." >&2
+    exit 1
+  fi
 fi
 
 if [[ ! -f "${WS}/plan.md" ]]; then
