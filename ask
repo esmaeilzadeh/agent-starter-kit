@@ -28,10 +28,13 @@ Commands:
       Preconditions before implement (branch, spec, plan).
       --allow-dirty   skip the clean-tree check
 
-  status [--work-id <id>] [--json]
+  status [--work-id <id>] [--json] [--later-only] [--work-only]
       Live agent/* plus archived work/* on the default branch (no checkout).
-      --work-id <id>   one workstream
+      Later cards from .later/*.md on this checkout (not live).
+      --work-id <id>   one workstream (hides later)
       --json           machine-readable rows
+      --later-only     parked .later/ cards only
+      --work-only      workstreams only
 
   verify
       Run repo checks; print commit SHA. No flags.
