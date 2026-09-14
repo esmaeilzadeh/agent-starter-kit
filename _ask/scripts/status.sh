@@ -10,16 +10,32 @@ cd "$(git rev-parse --show-toplevel)"
 
 WORK_ID=""
 JSON=0
+LATER_ONLY=0
+WORK_ONLY=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --work-id) WORK_ID="$2"; shift 2 ;;
+    --work-id)
+      if [[ "$LATER_ONLY" -eq 1 ]]; then
+        echo "status: --work-id does not apply to later" >&2
+        exit 2
+      fi
+      if [[ $# -lt 2 || "$2" == -* ]]; then
+        echo "status: --work-id requires an id" >&2
+        exit 2
+      fi
+      WORK_ID="$2"
+      shift 2
+      ;;
     --json) JSON=1; shift ;;
+    --later-only) LATER_ONLY=1; shift ;;
+    --work-only) WORK_ONLY=1; shift ;;
     -h|--help)
       cat <<'EOF'
-Usage: ./ask status [--work-id <id>] [--json]
+Usage: ./ask status [--work-id <id>] [--json] [--later-only] [--work-only]
 
 Live workstreams are inferred from local refs/heads/agent/* (no checkout).
 Archived workstreams are work/* on the default branch with no matching agent/* branch.
+Later cards are .later/*.md on this checkout (not live). --later-only / --work-only print one inventory.
 EOF
       exit 0
       ;;
@@ -27,11 +43,22 @@ EOF
   esac
 done
 
+if [[ "$LATER_ONLY" -eq 1 && "$WORK_ONLY" -eq 1 ]]; then
+  echo "status: --later-only and --work-only are mutually exclusive" >&2
+  exit 2
+fi
+if [[ "$LATER_ONLY" -eq 1 && -n "$WORK_ID" ]]; then
+  echo "status: --work-id does not apply to later" >&2
+  exit 2
+fi
+
 export ASK_STATUS_WORK_ID="$WORK_ID"
 export ASK_STATUS_JSON="$JSON"
+export ASK_STATUS_LATER_ONLY="$LATER_ONLY"
+export ASK_STATUS_WORK_ONLY="$WORK_ONLY"
 
 python3 - <<'PY'
-import json, os, re, subprocess, sys
+import json, os, re, stat, subprocess, sys
 
 def git(*args, check=True):
     r = subprocess.run(["git", *args], capture_output=True, text=True)
@@ -181,8 +208,55 @@ def warnings_for(wid, ref, default, st, life):
         return ["code-without-plan"]
     return []
 
+def later_cards():
+    later_dir = ".later"
+    if not os.path.isdir(later_dir):
+        return []
+    try:
+        names = os.listdir(later_dir)
+    except OSError:
+        return []
+    names = [n for n in names if not n.startswith(".")]
+    names.sort(key=lambda s: s.encode("utf-8"))
+    out = []
+    for name in names:
+        if name == "README.md":
+            continue
+        if not name.endswith(".md"):
+            continue
+        path = os.path.join(later_dir, name)
+        posix = f".later/{name}"
+        slug = name[:-3]
+        try:
+            st = os.lstat(path)
+        except OSError:
+            out.append({"slug": slug, "title": "", "path": posix})
+            continue
+        if not stat.S_ISREG(st.st_mode):
+            continue
+        title = ""
+        try:
+            with open(path, "r", encoding="utf-8", errors="replace", newline="") as fh:
+                for raw in fh:
+                    line = raw.replace("\r\n", "\n").replace("\r", "").rstrip("\n")
+                    if line.startswith("# "):
+                        title = line[2:].strip()
+                        break
+        except OSError:
+            title = ""
+        out.append({"slug": slug, "title": title, "path": posix})
+    return out
+
+def print_later_block(cards):
+    print("later:")
+    print(f"{'SLUG':<28} TITLE")
+    for c in cards:
+        print(f"{c['slug']:<28} {c['title']}")
+
 want = os.environ.get("ASK_STATUS_WORK_ID") or ""
 as_json = os.environ.get("ASK_STATUS_JSON") == "1"
+later_only = os.environ.get("ASK_STATUS_LATER_ONLY") == "1"
+work_only = os.environ.get("ASK_STATUS_WORK_ONLY") == "1"
 
 agent_refs = []
 for line in git("for-each-ref", "--format=%(refname:short)", "refs/heads/agent").splitlines():
@@ -234,8 +308,24 @@ for wid in archive_ids:
         "warnings": [],
     })
 
+cards = later_cards()
+if later_only:
+    later_out = cards
+elif work_only or want:
+    later_out = []
+else:
+    later_out = cards
+ws = [] if later_only else rows
+
 if as_json:
-    print(json.dumps({"default_branch": default, "workstreams": rows}, indent=2))
+    print(json.dumps({"default_branch": default, "workstreams": ws, "later": later_out}, indent=2))
+    sys.exit(0)
+
+if later_only:
+    if not later_out:
+        print("status: no later cards in .later/")
+        sys.exit(0)
+    print_later_block(later_out)
     sys.exit(0)
 
 if not rows:
@@ -243,6 +333,9 @@ if not rows:
         print(f"status: no workstream '{want}' (no agent/{want} and no archived work/{want} on {default})")
     else:
         print(f"status: no live agent/* branches; no archived work/* on {default}")
+    if later_out:
+        print()
+        print_later_block(later_out)
     sys.exit(0)
 
 print(f"status: default={default}")
@@ -265,4 +358,7 @@ for row in rows:
     mark = ",".join(flags) if flags else "-"
     warn = ",".join(row.get("warnings") or []) or "-"
     print(f"{row['life']:<10} {row['work_id']:<28} {row['stage']:<14} {row['branch']:<28} {row['tip']:<10} {warn:<20} {mark}")
+if later_out:
+    print()
+    print_later_block(later_out)
 PY
