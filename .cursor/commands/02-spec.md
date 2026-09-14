@@ -36,4 +36,4 @@ specs/proposals/<work-id>.md
 
 See `_ask/policies/workflow.md`. Prepare the spec artifact (do not skip the document). After defaults-OK, mark it CURRENT unless the human asked to stop. Off-path only if they explicitly leave the kit.
 
-Before finishing the specification, read the prepared `humanizer` skill and follow it in embedded mode (`.agents/skills/humanizer/SKILL.md`; `./ask prepare` if missing). ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
+Before finishing the specification, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the specification. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.

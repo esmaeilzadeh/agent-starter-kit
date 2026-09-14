@@ -1,6 +1,6 @@
 # Later work (local inbox)
 
-Not a live workstream. `./ask status` does not list these files.
+Not a live workstream. `./ask status` lists these cards as a later block (checkout `.later/*.md`, skip this README). `--later-only` prints only that block. `--work-only` prints only workstreams.
 
 When a second job appears **during** a running work:
 

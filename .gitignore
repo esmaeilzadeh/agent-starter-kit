@@ -9,6 +9,8 @@
 
 # Local verification output
 verification-result.json
+__pycache__/
+*.py[cod]
 
 # Later-work inbox: cards are local; README is kit-owned
 .later/*

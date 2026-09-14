@@ -49,4 +49,8 @@ for src in _ask/cursor-commands/*.md; do
   cp "$src" "${OUT_CMDS}/$(basename "$src")"
 done
 
+python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"
+
 echo "sync-cursor-binding: generated projections under ${OUT_SKILLS} and ${OUT_CMDS}"
+
+python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"

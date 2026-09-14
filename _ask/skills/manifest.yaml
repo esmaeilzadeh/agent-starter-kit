@@ -40,3 +40,9 @@ skills:
     skill: humanizer
     role: docs-voice
     required: true
+  writing-for-agents:
+    source: mattpocock/skills
+    revision: "v1.2.3"
+    skill: writing-for-agents
+    role: agent-docs
+    required: true

@@ -1,0 +1,6 @@
+{
+  "work_id": "status-later-inbox",
+  "commit_sha": "585f0770ce8f59b985953ce19d2967895fdf129b",
+  "result": "pass",
+  "notes": "verify pass; later inbox on status; spawn-path parked"
+}

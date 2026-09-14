@@ -1,0 +1,7 @@
+{
+  "work_id": "stage-model-subagents",
+  "commit_sha": "0fdca09aa181047004af63f3fca93702c5d809fc",
+  "checks": ["_ask/tests/test-*.sh via ./ask verify"],
+  "result": "pass",
+  "notes": "Includes HIGH→kimi-k3 and Review role-override cases."
+}

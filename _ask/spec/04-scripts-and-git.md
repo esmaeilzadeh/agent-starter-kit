@@ -16,7 +16,7 @@ Mapped commands:
 ./ask check-clean              → _ask/scripts/check-clean-worktree.sh
 ./ask start-work <work-id>     → _ask/scripts/start-work.sh
 ./ask check-workstream <id>    → _ask/scripts/check-workstream.sh
-./ask status [--work-id id]    → _ask/scripts/status.sh
+./ask status [--work-id id] [--json] [--later-only] [--work-only]  → _ask/scripts/status.sh
 ./ask verify                   → _ask/scripts/verify.sh
 ./ask record-result …          → _ask/scripts/record-result.sh
 ./ask record-run …             → _ask/scripts/record-run.sh
@@ -133,13 +133,13 @@ archive = work/<work-id>/ on the default branch with no unmerged agent/<work-id>
 
 `work/` is branch-local; do not treat the current checkout as the global inventory. Do not write a committed `work/INDEX.md`.
 
-It infers a furthest stage from filled artifacts on that ref (`seeded` … `explored` … `intent` … `planned` … `reviewed` … `recorded` … `accepted`). Flags: `--work-id`, `--json`.
+It infers a furthest stage from filled artifacts on that ref (`seeded` … `explored` … `intent` … `planned` … `reviewed` … `recorded` … `accepted`). Flags: `--work-id`, `--json`, `--later-only`, `--work-only`.
 
 Live rows may include a **warning** `code-without-plan` when the branch changed files outside `work/<id>/` and `specs/` before a plan exists. That is guidance (`_ask/policies/workflow.md`), not a failure.
 
 After Accept, merge the workstream branch so `main`/`master` becomes the archive.
 
-`.later/` cards are not live and do not appear on this board. No status subcommand or tracker sync for the later inbox.
+`.later/` cards are not live. Default `./ask status` prints them as a second block from the current checkout (skip `README.md`). `--later-only` / `--work-only` print one inventory. `--work-id` filters workstreams and omits later. No later-inbox subcommand and no issue-tracker sync.
 
 ## 23.5 Session-only `/off-path`
 
@@ -402,7 +402,7 @@ When a new job appears during a running workstream, park it — do not start a s
 _ask/templates/later-work.md
 ```
 
-`.gitignore` ignores `.later/*` except `README.md`. Cards are not committed on the active job’s branch. Start later in a new session with `./ask start-work <new-work-id>`. `./ask status` is unchanged (live = unmerged `agent/*` only). No later-inbox subcommand and no issue-tracker sync in v1.
+`.gitignore` ignores `.later/*` except `README.md`. Cards are not committed on the active job’s branch. Start later in a new session with `./ask start-work <new-work-id>`. `./ask status` lists parked cards as a later block from the checkout (`--later-only` / `--work-only`; `--work-id` omits later). No later-inbox subcommand and no issue-tracker sync.
 
 `AGENTS.md` and `work/README.md` tell agents to park here.
 

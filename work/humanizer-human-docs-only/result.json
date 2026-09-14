@@ -1,0 +1,6 @@
+{
+  "work_id": "humanizer-human-docs-only",
+  "commit_sha": "43e5262b5a76f0b960fd77d8fdd5715f201c4e40",
+  "result": "pass",
+  "notes": "prepare ok for writing-for-agents @ v1.2.3; verify green"
+}

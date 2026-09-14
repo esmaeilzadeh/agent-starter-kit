@@ -13,7 +13,7 @@ ask_complete_commands() {
   ask_complete_emit check-clean "refuse dirty worktree"
   ask_complete_emit start-work "branch agent/<work-id> + seed work/<work-id>/"
   ask_complete_emit check-workstream "preconditions before implement"
-  ask_complete_emit status "live agent/* + archived work/*"
+  ask_complete_emit status "live/archived workstreams + later inbox"
   ask_complete_emit verify "run checks; print commit SHA"
   ask_complete_emit record-result "workstream provenance"
   ask_complete_emit record-run "experiment provenance (SHA must be HEAD)"
@@ -61,6 +61,8 @@ ask_complete_flags_for() {
     status)
       ask_complete_emit --work-id "<id>  one workstream"
       ask_complete_emit --json "machine-readable rows"
+      ask_complete_emit --later-only "parked .later/ cards only"
+      ask_complete_emit --work-only "workstreams only"
       ask_complete_emit -h "help"
       ask_complete_emit --help "help"
       ;;

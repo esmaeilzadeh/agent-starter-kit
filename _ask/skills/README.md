@@ -27,4 +27,4 @@ Pins map to the skills CLI as `source#revision`.
 
 Bump pins deliberately in the manifest instead.
 
-Stock docs-voice pin: `humanizer` from `blader/humanizer` (see ADR 0017).
+Stock docs-voice pin: `humanizer` from `blader/humanizer` (human-facing set only). Stock agent-docs pin: `writing-for-agents` from `mattpocock/skills`. See ADR 0017.

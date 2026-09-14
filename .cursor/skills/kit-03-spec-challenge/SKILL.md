@@ -49,4 +49,8 @@ ESCALATE → human decision required
 
 See `_ask/policies/workflow.md`. Prepare `spec-challenge.md`. After defaults-OK, do not re-ask a bless unless the challenge **escalates**. Off-path only if they explicitly leave the kit.
 
-When the challenge writes prose, read the prepared `humanizer` skill and follow it in embedded mode (`.agents/skills/humanizer/SKILL.md`; `./ask prepare` if missing). ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
+When the challenge writes prose, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the challenge artifact. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
+
+## Model spawn (required)
+
+Spawn the generated Spec Challenge subagent for the current runtime. Present that runtime’s picker list from `_ask/bindings/runtimes/<runtime>.yaml` (default highlighted). The human confirms. If the pick is the same family as Spec on that runtime, warn once; continue after a second confirm. Record `model`, `runtime`, and `parent_model` (or Spec model) on `spec-challenge.md`. Do not author the challenge only in the parent context.

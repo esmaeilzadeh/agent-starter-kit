@@ -82,7 +82,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 | `./ask check-clean` | Refuse dirty trees |
 | `./ask start-work <work-id>` | Branch `agent/<work-id>` + seed `work/<work-id>/` |
 | `./ask check-workstream <work-id>` | Preconditions before implement |
-| `./ask status` | Live `agent/*` + archived `work/*` on default (no checkout) |
+| `./ask status` | Live `agent/*` + archived `work/*` on default (no checkout); later cards from `.later/` on this checkout |
 | `./ask verify` | Run checks; print commit SHA |
 | `./ask record-result …` | Workstream provenance (requires `--commit-sha`) |
 | `./ask record-run …` | Experiment provenance (SHA must be `HEAD`) |

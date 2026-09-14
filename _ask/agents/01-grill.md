@@ -56,3 +56,7 @@ work/<work-id>/intent.md
 A confirmed “I approve these defaults are OK” (or “all recs” after an expanded load-bearing frontier) is the **first on-path confirm**. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`. ADR: `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
+
+## Model spawn (optional)
+
+When this stage’s resolved model differs from the parent, or `work/<id>/models.yaml` / env sets an explicit override, you may spawn the generated Grill subagent for that runtime. The child expands questions and returns them. The parent asks the human and writes `intent.md`. The child must not close Grill.

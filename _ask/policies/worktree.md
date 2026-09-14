@@ -44,9 +44,10 @@ Unrelated workstreams that touch disjoint paths may proceed in parallel when the
 
 ## Inventory (not the checkout)
 
-`work/<work-id>/` is committed on `agent/<work-id>`, so artifact state is **branch-local**. Do not use the current working tree as the global board.
+`work/<work-id>/` is committed on `agent/<work-id>`, so artifact state is **branch-local**. Do not use the current working tree as the workstream inventory.
 
 - **Live:** `./ask status` reads local `agent/*` that are **not** fully merged into the default branch (no checkout).
 - **Archive:** `work/*` on `main`/`master` once that work-id has no unmerged `agent/*` (leftover merged branches do not stay live).
+- **Later:** parked `.later/*.md` on this checkout (not live).
 
 Do not write a committed `work/INDEX.md` — it would split the same way.
