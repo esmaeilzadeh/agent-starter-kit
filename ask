@@ -77,6 +77,8 @@ Commands:
 
   setup
       Human-only tracker + MCP wizard. Needs a TTY. Agents must not run this.
+      Also installs the pinned OpenSpec CLI under ~/.local; skips that install
+      when node/npm is missing (warning; tracker setup still runs).
       --help   usage without a TTY
 
   completion bash|zsh

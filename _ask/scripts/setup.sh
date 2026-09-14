@@ -14,6 +14,8 @@ Refuses when stdin or stdout is not a TTY (agents must not run this).
 Writes gitignored .ask.env and .ask/tracker-context.md.
 Writes .ask/tracker.md (type + public URL; safe to commit).
 Merges MCP stubs into ~/.cursor/mcp.json using ${env:...} only.
+Installs the pinned OpenSpec CLI under ~/.local when node and npm are
+on PATH; skips that install with a warning when they are missing.
 
 This repo must already be ask-based (_ask/ and ./ask). Adding the kit
 is askit's confirm-to-add step, not this wizard.
@@ -284,7 +286,7 @@ EOF
   fi
 }
 
-TOTAL_STAGES=4
+TOTAL_STAGES=5
 
 banner "Ask setup (human-only)"
 
@@ -423,6 +425,19 @@ if [[ -n "${ASK_EPIC:-}" || -n "${ASK_STORY:-}" ]]; then
 - **story:** ${ASK_STORY:-}
 EOF
   note "updated .ask/tracker-context.md"
+fi
+
+stage "OpenSpec CLI"
+say "Install the pinned OpenSpec CLI under ~/.local."
+say "Skipped with a warning if node or npm is missing. Tracker setup still finishes."
+set +e
+"$ASK_ROOT/_ask/scripts/ensure-openspec.sh"
+os_code=$?
+set -e
+if [[ "$os_code" -eq 0 ]]; then
+  note "OpenSpec CLI matches the pin at \$HOME/.local/bin/openspec"
+else
+  warn "OpenSpec CLI not installed (exit ${os_code}). Marked-pilot gates still fail closed."
 fi
 
 note "Restart Cursor (or toggle MCP servers) so new stubs load."

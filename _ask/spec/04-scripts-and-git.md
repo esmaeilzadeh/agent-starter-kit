@@ -48,6 +48,8 @@ Writes gitignored `.ask.env` from committed `.ask.env.example` (placeholders onl
 
 Memory menu: `codebase-memory-mcp` (default `${userHome}/.local/bin/codebase-memory-mcp`), skip, or custom command.
 
+After those stages, setup runs `_ask/scripts/ensure-openspec.sh`: install the pin in `_ask/openspec-pin.yaml` to `$HOME/.local` when `node` and `npm` are on `PATH`; skip with a warning when they are missing or the install fails. OpenSpec skip/warn does not itself fail setup. `./ask install` and `askit` overlay/self-install do not install OpenSpec.
+
 # 23. Git guardrails
 
 

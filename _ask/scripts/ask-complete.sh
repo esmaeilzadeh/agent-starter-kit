@@ -22,7 +22,7 @@ ask_complete_commands() {
   ask_complete_emit install "overlay kit onto another git repo"
   ask_complete_emit upgrade "refresh kit-owned files from a version"
   ask_complete_emit prepare "install pinned Community Skills"
-  ask_complete_emit setup "tracker/MCP wizard (repo must already be ask-based)"
+  ask_complete_emit setup "human-only tracker/MCP + pinned OpenSpec CLI"
   ask_complete_emit help "this help text"
   ask_complete_emit completion "print bash|zsh tab-completion snippet"
   ask_complete_emit -h "help"
