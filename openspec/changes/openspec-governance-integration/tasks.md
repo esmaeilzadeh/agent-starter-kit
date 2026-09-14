@@ -15,7 +15,7 @@
 
 - [x] 3.1 `check-workstream` marked-pilot path (marker, targeted validate/status, pointers, skip_specs, archive lookup)
 - [x] 3.2 `status` checkout-scoped CLI, stage, `code-without-plan`, nextSteps strip
-- [ ] 3.3 `verify --work-id` dirty refuse and `work/<id>/verification.json`
+- [x] 3.3 `verify --work-id` dirty refuse and `work/<id>/verification.json`
 - [ ] 3.4 `./ask openspec-archive` refuse without Accept SHA; detect direct archive
 
 ## 4. Ownership and contracts

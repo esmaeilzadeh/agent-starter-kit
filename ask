@@ -41,6 +41,10 @@ Commands:
       --work-id <id>   write work/<id>/verification.json (pilots: OpenSpec too)
       Env: VERIFY_OUT_DIR, VERIFY_JSON  (when --work-id is omitted)
 
+  openspec-archive <work-id>
+      Kit-mediated OpenSpec archive. Refuses without an Accept SHA in
+      work/<id>/acceptance.md.
+
   record-result --work-id <id> --commit-sha <sha> --result <text> [--notes <text>]
       Workstream provenance. Refuses if --commit-sha is missing.
 

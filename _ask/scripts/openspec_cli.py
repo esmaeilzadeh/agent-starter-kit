@@ -189,6 +189,13 @@ def cmd_status(bin_path: str, work_id: str, require_complete: bool) -> dict:
     return sanitize(doc)
 
 
+def cmd_archive(bin_path: str, work_id: str) -> dict:
+    doc, code = run_json(bin_path, ["archive", work_id, "-y"])
+    if code != 0:
+        die(f"openspec archive failed for {work_id} (exit {code})")
+    return sanitize(doc)
+
+
 def is_pilot(root: Path, work_id: str) -> bool:
     intent = root / "work" / work_id / "intent.md"
     if not intent.is_file():
@@ -369,6 +376,8 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("work_id")
     sp = sub.add_parser("gate")
     sp.add_argument("work_id")
+    sp = sub.add_parser("archive")
+    sp.add_argument("work_id")
     sp = sub.add_parser("is-pilot")
     sp.add_argument("work_id")
     sp = sub.add_parser("preflight")
@@ -403,6 +412,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "gate":
         emit(cmd_validate(bin_path, args.work_id))
         emit(cmd_status(bin_path, args.work_id, require_complete=True))
+        return 0
+    if args.cmd == "archive":
+        emit(cmd_archive(bin_path, args.work_id))
         return 0
     die(f"unknown command {args.cmd}", 2)
     return 2

@@ -15,6 +15,7 @@ ask_complete_commands() {
   ask_complete_emit check-workstream "preconditions before implement"
   ask_complete_emit status "live/archived workstreams + later inbox"
   ask_complete_emit verify "run checks; print commit SHA; optional --work-id"
+  ask_complete_emit openspec-archive "archive OpenSpec change after Accept SHA"
   ask_complete_emit record-result "workstream provenance"
   ask_complete_emit record-run "experiment provenance (SHA must be HEAD)"
   ask_complete_emit sync "regenerate .cursor projections"
@@ -68,6 +69,10 @@ ask_complete_flags_for() {
       ;;
     verify)
       ask_complete_emit --work-id "<id>  write work/<id>/verification.json"
+      ask_complete_emit -h "help"
+      ask_complete_emit --help "help"
+      ;;
+    openspec-archive)
       ask_complete_emit -h "help"
       ask_complete_emit --help "help"
       ;;

@@ -29,7 +29,7 @@ out="$("$ASK" completion bash)"
 printf '%s\n' "$out" | grep -q '_ask_kit_complete'
 out="$("$ASK" completion zsh)"
 printf '%s\n' "$out" | grep -q 'compdef'
-for sub in check-clean start-work check-workstream status verify record-result record-run sync install upgrade prepare setup completion; do
+for sub in check-clean start-work check-workstream status verify record-result record-run sync install upgrade prepare setup completion openspec-archive; do
   out="$("$ASK" --complete 2 ./ask "$sub")"
   printf '%s\n' "$out" | grep -q . 
 done
