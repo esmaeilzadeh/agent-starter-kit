@@ -37,4 +37,9 @@ No pseudo-TTY end-to-end of the wizard. Verification pending at review time.
 
 ## Review verdict
 
-BLOCK
+BLOCK at review time. 08 Refactor addressed pin non-scalars (exit 2), pin identity
+on warnings, empty revision / symlink / timeout-reap tests. Residual: no
+pseudo-TTY wizard e2e.
+
+Post-refactor: ACCEPT WITH RATIONALE
+
