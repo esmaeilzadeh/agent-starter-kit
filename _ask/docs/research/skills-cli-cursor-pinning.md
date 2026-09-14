@@ -21,7 +21,7 @@
 | **CLI project path for Cursor** | `.agents/skills/` (canonical project target) ([README](https://github.com/vercel-labs/skills/blob/main/README.md#supported-agents), [`src/agents.ts`](https://github.com/vercel-labs/skills/blob/main/src/agents.ts)) |
 | **Restore from lock** | `npx skills experimental_install` (experimental; reads `skills-lock.json`) ([`src/cli.ts`](https://github.com/vercel-labs/skills/blob/main/src/cli.ts), [`src/install.ts`](https://github.com/vercel-labs/skills/blob/main/src/install.ts)) |
 
-**Bottom line for the kit:** `prepare-skills.sh` can reliably translate `manifest.yaml` pins into non-interactive `npx skills add …#<revision> --skill <name> -a cursor -y` invocations and optionally reconcile/commit `skills-lock.json`. Humans still own manifest curation, pin selection, auth for private sources, security review, and deliberate upgrade policy (avoid `skills update` for pinned critical methods).
+**For the kit:** `prepare-skills.sh` can reliably translate `manifest.yaml` pins into non-interactive `npx skills add …#<revision> --skill <name> -a cursor -y` invocations and optionally reconcile/commit `skills-lock.json`. Humans still own manifest curation, pin selection, auth for private sources, security review, and deliberate upgrade policy (avoid `skills update` for pinned critical methods).
 
 ---
 

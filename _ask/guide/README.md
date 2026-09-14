@@ -1,5 +1,7 @@
 # Engineering with AI Agents (Guide)
-Modular files (coarse packs). The root monolith path is a stub pointing here.
+
+Modular files. The root monolith path is a stub that points here.
+
 | Module | Sections |
 | --- | --- |
 | [Ownership and Division of Labor](01-ownership-and-labor.md) | 0, 2, 3, 4 |

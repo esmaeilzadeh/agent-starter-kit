@@ -23,7 +23,7 @@ A **thin Cursor Binding** should use Cursor’s **Customize** component model as
 | **Defer v1** | Cursor Plugins (`.cursor-plugin/`) | Distribution packaging, not required for in-repo protocol |
 | **Out of binding** | Kit policies, agent contracts, templates, scripts, manifest | Stay as **Kit Protocol Files** |
 
-**Precedence takeaway:** Team Rules beat Project Rules beat User Rules; nested `AGENTS.md` beats parent `AGENTS.md` for files in that subtree. Hooks merge all sources with Enterprise → Team → Project → User priority. Rules and hooks are **steering + enforcement layers**; kit shell scripts remain the portable source of truth for Git hygiene.
+**Precedence:** Team Rules beat Project Rules beat User Rules; nested `AGENTS.md` beats parent `AGENTS.md` for files in that subtree. Hooks merge all sources with Enterprise → Team → Project → User priority. Rules and hooks are **steering + enforcement layers**; kit shell scripts remain the portable source of truth for Git hygiene.
 
 ---
 
@@ -34,7 +34,7 @@ A **thin Cursor Binding** should use Cursor’s **Customize** component model as
 Cursor documents six composable extension components managed from **Customize**: Plugins, Rules, Skills, Subagents, Hooks, and Commands. Plugins bundle these; each can also be added standalone.  
 **Source:** [Customize Cursor](https://cursor.com/docs/customize-cursor)
 
-This is the authoritative menu of Cursor-native surfaces relevant to a thin binding.
+This is the menu of Cursor-native surfaces relevant to a thin binding.
 
 ---
 

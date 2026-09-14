@@ -6,13 +6,13 @@
 >
 > Companion implementation contract: [`ai-agent-starter-kit-spec.md`](./ai-agent-starter-kit-spec.md)
 >
-> This guide and the starter kit are intentionally designed as a matched pair. The article explains the concepts, boundaries, and reasoning model. The starter kit turns those concepts into repository artifacts, pre-built agent roles, workflow gates, and Git/provenance conventions.
+> This guide and the starter kit are a matched pair. The article explains the concepts, boundaries, and reasoning model. The starter kit turns those concepts into repository artifacts, pre-built agent roles, workflow gates, and Git/provenance conventions.
 
 ---
 
 ## 1. The problem this guide solves
 
-AI makes it possible to delegate much more software-engineering labor than before. The obvious use case is asking an agent to write code. The more important opportunity is broader:
+AI makes it possible to delegate much more software-engineering labor than before. Asking an agent to write code is the obvious use. The wider move is:
 
 > **Treat software engineering as a collection of different kinds of labor and deliberately allocate each kind to the actor best suited to perform it.**
 
@@ -75,15 +75,15 @@ Human
 
 (`04 Spec Change` interrupts when semantics must change.)
 
-This is **Division of Engineering Labor**, not merely "AI-assisted coding."
+That split is **Division of Engineering Labor**. "AI-assisted coding" is only one slice of it.
 
-**Explore is first-class.** When the way from here to the destination is still foggy — greenfield product shape, large feature map, unresolved R&D — do not pretend Grill→Spec can invent the destination. Chart decisions (wayfinder-shaped), research facts, and cheap prototypes until the destination is clear; then enter the Engineering Pipeline (`01`–`10`). Explore produces **decisions and clarity**, not accepted product software by itself.
+**Explore is first-class.** When the way from here to the destination is still foggy (greenfield product shape, large feature map, unresolved R&D), do not pretend Grill→Spec can invent the destination. Chart decisions (wayfinder-shaped), research facts, and cheap prototypes until the destination is clear; then enter the Engineering Pipeline (`01`–`10`). Explore produces **decisions and clarity**, not accepted product software by itself.
 
-The central question therefore changes from:
+The question shifts from:
 
 > Should I let AI code?
 
-into:
+to:
 
 > **Which engineering labor should be delegated, which judgment should remain human, what authority does each actor have, what evidence is required, and how can the resulting work remain traceable?**
 
@@ -102,7 +102,7 @@ Engineering contains different classes of work. A useful decomposition is:
 - **Coordination labor** — passing structured outputs between activities and maintaining state.
 - **Governance labor** — defining who is allowed to decide or act, under what conditions, and when escalation is required.
 
-AI can perform some amount of all of these. The practical question is not whether it can perform them, but **where delegation remains trustworthy and economically sensible**.
+AI can perform some amount of all of these. The practical question is **where delegation remains trustworthy and economically sensible**.
 
 ## 2.2 Labor, Judgment, Capability, Authority, and Accountability are different
 
@@ -142,9 +142,7 @@ Authority      → human approval required for production
 Accountability → human/team
 ```
 
-The fact that an agent has the capability to do something does not mean it has the authority to do it.
-
-Likewise:
+Capability to do something is not authority to do it.
 
 > Delegating labor does not automatically delegate ownership.
 
@@ -152,7 +150,7 @@ Likewise:
 
 # 3. What is Engineering-System Ownership?
 
-When a developer delegates more implementation labor, conventional **code-level ownership** can decrease. That does not imply that engineering ownership has to disappear.
+When a developer delegates more implementation labor, conventional **code-level ownership** can decrease. Engineering ownership does not have to disappear with it.
 
 A different form of ownership becomes possible:
 
@@ -173,17 +171,17 @@ Decision memory
 Provenance
 ```
 
-This does not mean the developer must write all skills and rules personally.
+The developer does not have to write all skills and rules personally.
 
 A mature grilling workflow can be reused from a community repository. A specification methodology can be reused from OpenSpec. A review workflow can be reused from an engineering organization. The developer can own the **selection, composition, adaptation, applicability, and consequences** of those methods without owning their authorship.
 
-This is analogous to using PostgreSQL without claiming to have engineered PostgreSQL. The important difference is that AI skills are not deterministic software components, so their behavior still depends on the agent runtime. Therefore reusable skills must be treated as methodology dependencies, not as guaranteed execution engines.
+This is like using PostgreSQL without claiming to have engineered PostgreSQL. The difference is that AI skills are not deterministic software components, so their behavior still depends on the agent runtime. Reusable skills are methodology dependencies, not guaranteed execution engines.
 
 ---
 
 # 4. The developer is not becoming a Product Owner
 
-Engineering-system ownership is sometimes confused with becoming a Product Owner who simply describes requirements and lets AI deal with implementation.
+Engineering-system ownership is sometimes confused with becoming a Product Owner who describes requirements and lets AI deal with implementation.
 
 The distinction is technical.
 
@@ -211,6 +209,6 @@ provenance of engineering results
 
 The person can therefore know less about individual implementation details while knowing **more about the system that governs how implementation is produced and accepted**.
 
-That does not automatically make the role superior. It changes the level at which ownership operates.
+That changes the level at which ownership operates. It does not make the role automatically superior.
 
 ---

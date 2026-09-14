@@ -36,11 +36,11 @@ Verify (09)
 Accept (10)
 ```
 
-Explore binds community methods (for example wayfinder, research, prototype, grilling) via a versioned skill manifest and agent-driven skill preparation — it does not require reinventing those methods inside every product repo. Discovery indexes such as [skills.sh](https://www.skills.sh/) are a starting point for finding pins; the project owns the pin and the preparation instruction.
+Explore binds community methods (for example wayfinder, research, prototype, grilling) via a versioned skill manifest and agent-driven skill preparation. Each product repo does not have to reinvent those methods. Discovery indexes such as [skills.sh](https://www.skills.sh/) are a starting point for finding pins; the project owns the pin and the preparation instruction.
 
 Skip Explore only when the human already has a destination sharp enough for Intent → Grill. Do not stuff R&D into Implement.
 
-The important point is that the Engineering Pipeline is **not a rigid one-way path**. Discovery can send the work backward.
+Discovery can send the work backward. The Engineering Pipeline is a **controlled feedback loop**.
 
 For example:
 
@@ -56,7 +56,7 @@ Is the specification wrong?
 Spec-change proposal when semantics must change
 ```
 
-Likewise, analytics may discover new requirements after implementation has already begun:
+Analytics may discover new requirements after implementation has already begun:
 
 ```text
 Analytics
@@ -71,8 +71,6 @@ decision
    ↓
 new implementation
 ```
-
-The workflow is therefore a **controlled feedback loop**, not just a sequence of prompts.
 
 **Guidance, not a lock.** On the Engineering Pipeline, every next stage still needs the previous **artifact** — skipping documents is meaningless. What you may skip is extra *approvals*: after one explicit “these defaults are OK,” later artifacts are prepared without a per-file bless. **Accept** is the second confirm. **00** may be omitted when the destination is already clear (real skip; no explore-map). `/off-path` (or “just code”) is **this session only** — warn once and follow; a new chat starts on-path. Policy: `_ask/policies/workflow.md`.
 
@@ -101,7 +99,7 @@ Open questions
 Human decisions
 ```
 
-The original human request and the clarified intent should not be treated as identical. The purpose of Grilling is to expose ambiguity before it gets encoded into a specification.
+The original human request and the clarified intent should not be treated as identical. Grilling exists to expose ambiguity before it gets encoded into a specification.
 
 ---
 
@@ -132,7 +130,7 @@ The output must become an **Intent Artifact**.
 
 A grilling round is not ready to close on “all recommended” / “all ok” until each **load-bearing** numbered question has been **expanded**: alternatives, tradeoffs, and failure modes are visible—not only a one-line A/B/C. Obvious defaults go in an “I’ll assume…” list; “defaults OK” covers that list. If the human asks to expand (or stakes are high), re-issue that question expanded before accepting an answer. Never auto-approve a real decision. Before the first numbered question, propose related extra Community Skills that would change What/Why, **ask before preparing them**, and pin accepted skills in the repo manifest. This rule is part of the starter kit’s `01 Grill` contract (and Explore decision grilling). See ADR 0016.
 
-The important innovation is that Grilling should not necessarily happen only once.
+Grilling need not happen only once.
 
 There are at least three useful forms:
 
@@ -148,7 +146,7 @@ There are at least three useful forms:
 
 > Did implementation, testing, or analytics reveal that we misunderstood the problem?
 
-Therefore Grilling can recur throughout the lifecycle.
+Grilling can recur throughout the lifecycle.
 
 ---
 
@@ -171,7 +169,7 @@ Open questions
 Source intent
 ```
 
-The most important property is not the format. It is **semantic explicitness and traceability**.
+The format matters less than **semantic explicitness and traceability**.
 
 The specification says what the implementation is expected to realize. It should not silently mix hard requirements with mere implementation preferences.
 
@@ -193,7 +191,7 @@ The first belongs in the semantic contract. The second belongs in implementation
 
 # 9. Specification Validation: a specification can be perfectly coherent and still be wrong
 
-A major missing piece in naive agent workflows is specification validation.
+Naive agent workflows often skip specification validation.
 
 An implementation review asks:
 
@@ -227,7 +225,7 @@ or:
 ESCALATE → human decision required
 ```
 
-This is why a second Grilling stage is not redundant. It challenges the interpretation introduced by the first stages.
+A second Grilling stage is not redundant. It challenges the interpretation introduced by the first stages.
 
 ---
 
@@ -313,7 +311,7 @@ Analysis
 → Verification
 ```
 
-Therefore **specification drift is information**. It should be visible and classified, not hidden by continually rewriting the canonical spec.
+**Specification drift is information**. It should be visible and classified, not hidden by continually rewriting the canonical spec.
 
 ---
 
@@ -343,7 +341,7 @@ The plan must link to exactly one accepted specification version.
 
 Implementation is generally one of the easiest forms of engineering labor to delegate because the input can be bounded and the result can be tested.
 
-But the environment must be controlled.
+The environment must be controlled.
 
 The minimum Git invariant is:
 
@@ -359,7 +357,7 @@ commit
 
 Do not start a new delegated task on top of another task's undocumented uncommitted work.
 
-This is not merely Git hygiene. In an AI workforce it is **coordination and provenance infrastructure**.
+In an AI workforce this is **coordination and provenance infrastructure**.
 
 ---
 
@@ -392,8 +390,6 @@ Refactor Agent
 ```
 
 The developer does not necessarily need to read every finding.
-
-This is a key delegation principle:
 
 > **Reading review output is itself labor. Do not assume that every intermediate artifact must be manually consumed by a human.**
 
@@ -458,7 +454,7 @@ There is no universal evidence ladder where one method is always stronger than a
 
 A formal proof may be extremely strong for the exact property it proves and completely irrelevant to whether the property was the right business requirement.
 
-Likewise, a test can provide excellent evidence for an observed behavior without proving every possible input.
+A test can provide excellent evidence for an observed behavior without proving every possible input.
 
 The central rule is:
 
