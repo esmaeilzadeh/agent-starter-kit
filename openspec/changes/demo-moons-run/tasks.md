@@ -22,7 +22,7 @@
 
 ## 4. Close
 
-- [ ] 4.1 Viewer data: Python load of `scripts/view_runs.py` `_rows()` returns both run-ids with parsed configs
+- [x] 4.1 Viewer data: Python load of `scripts/view_runs.py` `_rows()` returns both run-ids with parsed configs
 - [ ] 4.2 `./ask verify --work-id demo-moons-run` pass, including OpenSpec preflight and `validate --strict`
 - [ ] 4.3 `./ask record-result --work-id demo-moons-run --commit-sha HEAD --result pass` then Accept SHA in `acceptance.md`
 - [ ] 4.4 After Accept SHA: `./ask openspec-archive demo-moons-run` moves the change under `openspec/changes/archive/`
