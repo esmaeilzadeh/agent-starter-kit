@@ -100,15 +100,13 @@ Empty later under `--later-only --json` still exits 0 and prints the object (`la
 
 ### Docs that must match this contract
 
-These currently say status does not list later. Update them in this work:
+Update these files so they describe the later block. Later cards stay not-live. No later-inbox subcommand. No tracker sync.
 
 - `_ask/spec/04-scripts-and-git.md` §23.4 and §30.1
 - `_ask/docs/adr/0015-later-inbox.md`
 - `.later/README.md`
-- `_ask/policies/workflow.md` (later is still not live; it does appear as the later block)
-- `ask` dispatcher `status` help line if it claims workstreams only
-
-Still no later-inbox subcommand and no tracker sync.
+- `_ask/policies/workflow.md`
+- `ask` dispatcher `status` help line
 
 ## Interfaces
 
