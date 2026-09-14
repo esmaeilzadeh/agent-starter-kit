@@ -160,6 +160,12 @@ doc=json.load(sys.stdin)
 assert doc["later"]==[]
 assert doc["workstreams"]
 '
+"$STATUS" --json | python3 -c '
+import json,sys
+doc=json.load(sys.stdin)
+assert {c["slug"] for c in doc["later"]} >= {"foo","bar","nospace","late"}
+assert doc["workstreams"]
+'
 
 set +e
 "$STATUS" --later-only --work-only >/tmp/status-ex-out 2>/tmp/status-ex-err
@@ -176,6 +182,24 @@ set -e
 [[ "$ex" -eq 2 ]]
 grep -q -- '--work-id' /tmp/status-id-err
 
+set +e
+"$STATUS" --work-id --later-only >/tmp/status-id2-out 2>/tmp/status-id2-err
+ex=$?
+set -e
+[[ "$ex" -eq 2 ]]
+grep -q -- '--work-id' /tmp/status-id2-err
+
+set +e
+"$STATUS" --later-only --work-id >/tmp/status-id3-out 2>/tmp/status-id3-err
+ex=$?
+set -e
+[[ "$ex" -eq 2 ]]
+grep -q -- '--work-id' /tmp/status-id3-err
+
+miss="$("$STATUS" --work-id does-not-exist)"
+echo "$miss" | grep -q "no workstream 'does-not-exist'"
+echo "$miss" | grep -qv '^later:' || { echo "FAIL: missing --work-id leaked later" >&2; exit 1; }
+
 # overlapping slug still listed
 printf '# Seeded park\n' > .later/seeded.md
 overlap="$("$STATUS" --later-only)"
@@ -187,6 +211,12 @@ empty_later="$("$STATUS")"
 echo "$empty_later" | grep -qv '^later:' || { echo "FAIL: README-only printed later" >&2; exit 1; }
 lo_empty="$("$STATUS" --later-only)"
 echo "$lo_empty" | grep -qx 'status: no later cards in .later/'
+"$STATUS" --later-only --json | python3 -c '
+import json,sys
+doc=json.load(sys.stdin)
+assert doc["workstreams"]==[]
+assert doc["later"]==[]
+'
 
 # zero workstreams + later card
 EMPTY="$(mktemp -d)"

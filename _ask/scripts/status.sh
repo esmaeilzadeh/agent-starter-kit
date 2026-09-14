@@ -9,22 +9,20 @@ fi
 cd "$(git rev-parse --show-toplevel)"
 
 WORK_ID=""
+WORK_ID_SET=0
 JSON=0
 LATER_ONLY=0
 WORK_ONLY=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --work-id)
-      if [[ "$LATER_ONLY" -eq 1 ]]; then
-        echo "status: --work-id does not apply to later" >&2
-        exit 2
-      fi
+      WORK_ID_SET=1
       if [[ $# -lt 2 || "$2" == -* ]]; then
-        echo "status: --work-id requires an id" >&2
-        exit 2
+        shift
+      else
+        WORK_ID="$2"
+        shift 2
       fi
-      WORK_ID="$2"
-      shift 2
       ;;
     --json) JSON=1; shift ;;
     --later-only) LATER_ONLY=1; shift ;;
@@ -47,8 +45,12 @@ if [[ "$LATER_ONLY" -eq 1 && "$WORK_ONLY" -eq 1 ]]; then
   echo "status: --later-only and --work-only are mutually exclusive" >&2
   exit 2
 fi
-if [[ "$LATER_ONLY" -eq 1 && -n "$WORK_ID" ]]; then
+if [[ "$LATER_ONLY" -eq 1 && "$WORK_ID_SET" -eq 1 ]]; then
   echo "status: --work-id does not apply to later" >&2
+  exit 2
+fi
+if [[ "$WORK_ID_SET" -eq 1 && -z "$WORK_ID" ]]; then
+  echo "status: --work-id requires an id" >&2
   exit 2
 fi
 
