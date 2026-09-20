@@ -113,6 +113,8 @@ Human decision: canonical stage contracts and binding tables move into `.agents/
 - The workflow must ask the human to define and confirm E2E behavior before implementation, then plan, implement, and verify it.
 - Test databases, files, queues, caches, and other mutable state must be isolated from development and production state.
 - Before Accept, the plan must include an independent context-engineering audit of these large changes and repair instruction/pointer failures that can cause skipped or compressed protocol steps.
+- Git-flow becomes the repository branching and release model. Protected `main` represents releasable state; `develop` is the integration and durable later-work coordination branch. Exact release/hotfix authority remains in the frontier.
+- Later-work cards are durable on `develop` and mirrored to tracker issues. The first published set is commit `759731f` on `origin/develop`.
 
 ## Not yet specified
 
@@ -155,6 +157,16 @@ Hard to reverse: verification schema, adapters, CI setup, local developer workfl
 
 ➡️ **A.** Isolation must be machine-checkable and cover every mutable state adapter, not only SQL transactions.
 
+❓ **Q11** - **Git-flow authority and release lifecycle**: Which actors may advance work through `develop`, `release/*`, `main`, and `hotfix/*`?
+
+- **A. Human-controlled releases:** `agent/<work-id>` starts from `develop` and returns by PR/approved merge. Agents may prepare `release/<version>` from `develop`, run verification, and assemble release evidence, but a human authorizes merge/tag/push to protected `main`. `hotfix/*` starts from `main`; after human-approved release it is merged back to both `main` and `develop`.
+- **B. Agent-controlled integration and releases:** agents merge verified work to `develop`, cut release branches, merge/tag `main`, and back-merge automatically.
+- **C. Git-flow names without release automation:** use `develop` and feature branches, but leave release/hotfix/tag behavior undocumented and manual.
+
+Hard to reverse: `start-work`, Accept authority, release provenance, protected-branch rules, versioning, and CI triggers all depend on this split.
+
+➡️ **A.** It preserves ASK’s human authority while allowing agents to prepare every reversible release artifact.
+
 ### I’ll assume (Defaults OK covers these)
 
 - The inner-loop **interface** is TaskGraph + `work/<id>/inner-loop/state.json`. Tests hit that interface, not stage-contract prose. Its code path follows the Q4 ownership boundary.
@@ -176,6 +188,7 @@ Hard to reverse: verification schema, adapters, CI setup, local developer workfl
 - CheckPlan schema, preset provenance, brownfield baseline semantics, and fail-on-empty behavior.
 - Detection precedence when TypeScript and Python manifests, monorepos, or multiple tools coexist.
 - Interactive provisioning transaction/rollback behavior after the human selects tools.
+- Version source, changelog generation, release evidence schema, and tag convention after Q11.
 - Optional in-memory database adapters are parked in `.later/in-memory-test-state-adapters.md`; they require contract parity with the production adapter.
 - OpenCode agent file format details.
 - Whether the kit repository’s own concrete verification config lists `_ask/tests/test-*.sh` directly or uses a named `ask-kit` preset.
