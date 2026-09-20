@@ -43,6 +43,7 @@ tasks:
       - .agents/ask/bindings/**
       - _ask/scripts/sync-runtime-agents.py
       - _ask/tests/test-sync-runtime-agents.sh
+      - .opencode/agents/**
     seam: .opencode/agents markdown agents match the Plan OpenCode pin
     exemption: null
     e2e: inherit
