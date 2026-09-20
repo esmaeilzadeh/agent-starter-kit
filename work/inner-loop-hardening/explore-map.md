@@ -13,12 +13,9 @@ Human authority, dirty-tree refusal, dedicated `agent/<work-id>` branch, evidenc
 ## Notes
 
 - Kit Explore, not Cursor’s built-in Explore subagent.
-- `codebase-design` is pinned (`mattpocock/skills` `v1.2.3`, role `inner-loop-seam-design`) and prepared. Vocabulary in this file: module, interface, seam, adapter, depth, leverage, locality.
-- Extra related skills that would change What/Why — ask before prepare; do not prepare unless accepted:
-  - `tdd` — would make RED→GREEN a kit inner-loop requirement rather than consumer checks.
-  - `diagnosing-bugs` — would make debugger a protocol stage rather than an inner-loop role adapter.
-  - `prototype` — would spike TaskGraph before Spec; changes Explore duration, not destination.
-- Default: do not prepare those three. `codebase-design` is enough for seam placement.
+- `codebase-design` is pinned (`mattpocock/skills` `v1.2.3`, role `inner-loop-seam-design`) and prepared. Vocabulary in this file: module, interface, depth, seam, adapter, leverage, locality.
+- `tdd` is pinned at the same revision, required, and prepared after the human made RED→GREEN mandatory for implementation.
+- `diagnosing-bugs` and `prototype` remain unprepared; neither is needed to resolve the current frontier.
 - Comparison sources (prior session, primary READMEs): [cc-sdd](https://github.com/gotalab/cc-sdd), [Learn Harness Engineering](https://github.com/walkinglabs/learn-harness-engineering), [OpenSpec](https://github.com/Fission-AI/OpenSpec), [Spec Kit](https://github.com/github/spec-kit).
 - This checkout is clean on `agent/inner-loop-hardening`. Intent/plan templates exist and are empty; do not fill them in Explore.
 
@@ -110,6 +107,12 @@ Human decision: canonical stage contracts and binding tables move into `.agents/
 - Task branches do not edit shared inner-loop state files. The coordinator owns state transitions and applies versioned compare-and-swap updates from structured task results.
 - Ready task commits are integrated in dependency order, then stable task ID. Unexpected conflicts stop and escalate; agents do not resolve them silently.
 - Verification starts from a language-neutral scaffolder. Project scaffold/init materializes a concrete verification set for detected TypeScript and/or Python. `.starter-kit/verify.conf` compatibility is out of scope.
+- The concrete `.agents/verification.yaml` is consumer-owned and committed. Scaffold creates it only when absent; future upgrades preserve it; explicit re-scaffold produces a reviewable candidate.
+- Missing verification tools use interactive provisioning: the human selects the stack before setup mutates product manifests, tool configuration, or lockfiles.
+- TDD is mandatory for behavior-changing implementation tasks.
+- The workflow must ask the human to define and confirm E2E behavior before implementation, then plan, implement, and verify it.
+- Test databases, files, queues, caches, and other mutable state must be isolated from development and production state.
+- Before Accept, the plan must include an independent context-engineering audit of these large changes and repair instruction/pointer failures that can cause skipped or compressed protocol steps.
 
 ## Not yet specified
 
@@ -121,34 +124,42 @@ See Notes. Default: no further prepare.
 
 ### Numbered questions
 
-❓ **Q6** - **Concrete verification artifact ownership**: Where does the generated project-specific verification set live, and what may install/upgrade/regeneration do to it?
+❓ **Q8** - **Mandatory TDD evidence and exemptions**: What exactly must a task prove before its implementation commit is eligible for integration?
 
-- **A. Consumer-owned committed config:** scaffold/init creates `.agents/verification.yaml` only when absent. It contains the concrete commands and mandatory/optional status selected for the detected project. Kit install/upgrade never overwrites it. An explicit re-scaffold command produces a candidate/diff and requires human confirmation before replacement.
-- **B. Kit-owned generated config:** install/upgrade regenerates the file from current presets. Consumers receive improvements automatically, but local choices and reproducibility can change during a kit upgrade.
-- **C. Uncommitted generated cache:** regenerate before every verify. This avoids migration files but makes evidence depend on detector and preset versions rather than only the verified commit.
-- **D. Commands embedded in language manifests:** rewrite `package.json`, `pyproject.toml`, or tool configs as the canonical verification plan. This couples ASK ownership to product tooling and cannot represent one cross-language check plan cleanly.
+- **A. Vertical RED→GREEN at a confirmed seam:** every behavior-changing task records the confirmed seam, failing test command and failure evidence, then passing command and evidence. Documentation-only, generated projection, and non-behavioral configuration tasks may claim a typed exemption with a reason that the reviewer checks.
+- **B. TDD only where tests already exist:** legacy modules without a test seam may implement first and add characterization tests afterward.
+- **C. No exemptions:** every task, including generated files and documentation, must produce a red test before modification.
 
-Hard to reverse: this file becomes part of evidence provenance and the install/upgrade ownership boundary.
+Hard to reverse: task-result schema, reviewer gate, legacy-code adoption, and implementation throughput all depend on the evidence rule.
 
-➡️ **A.** Verification policy is project intent, so the concrete set belongs to the consumer and should be reviewable at the verified SHA. Record the scaffolder/preset version in the file; keep presets kit-owned under the canonical `.agents/ask/` package.
+➡️ **A.** It makes TDD enforceable without manufacturing meaningless tests for artifacts that do not expose behavior.
 
-❓ **Q7** - **Scaffolder mutation boundary**: What may scaffold/init change after detecting TypeScript and/or Python?
+❓ **Q9** - **E2E contract gate**: Where does the required human definition and confirmation enter the workflow?
 
-- **A. Generate checks, do not install tools:** inspect manifests, lockfiles, scripts, and existing tool configs; select concrete commands from installed/declared tooling; write the verification artifact. If a required category has no unambiguous tool, scaffold fails with choices for the human. It does not add dependencies or rewrite product manifests.
-- **B. Install a recommended stack:** add missing linters, type checkers, test runners, scripts, and config automatically. This creates a turnkey set but changes product dependencies and conventions during kit installation.
-- **C. Best-effort generation:** emit checks only for tools already found and silently omit unresolved categories. This is easy to adopt but preserves the current pass-on-missing failure mode.
-- **D. Interactive init owns tool installation:** ask a human which stack to install, then mutate manifests and lockfiles. This is safer than **B**, but combines kit setup with product-tool migration and complicates non-interactive project scaffolding.
+- **A. Spec gate:** Grill/Spec asks whether E2E applies and gathers critical journeys, observable outcomes, environment, test data, and reset rules. The human confirms the E2E contract with the specification. Plan maps it to tooling and isolation; Implement builds it; Verify runs it. “Not applicable” requires an explicit reason.
+- **B. Plan gate:** the planning agent derives E2E scenarios from the accepted spec and asks for a separate confirmation before implementation.
+- **C. Verify gate:** implementation proceeds from unit/integration criteria; E2E is designed after the feature exists.
 
-Hard to reverse: dependency ownership, lockfile churn, setup automation, and what “detected language” guarantees.
+Hard to reverse: acceptance criteria, the defaults confirmation, plan structure, and what blocks implementation depend on this gate.
 
-➡️ **A.** Keep detection factual and configuration generation deterministic. Missing typecheck/lint/test coverage should be an explicit scaffold error or human choice, not an implicit dependency mutation or silent skip.
+➡️ **A.** E2E defines externally observable success, so it belongs in the accepted contract rather than being invented after design.
+
+❓ **Q10** - **Test-state isolation**: What invariant prevents tests from corrupting development or production databases and state?
+
+- **A. Declared isolated resources with a hard guard:** `.agents/verification.yaml` names test-only resource adapters and namespace strategy. Each run gets an ephemeral database/state namespace or disposable container. The runner refuses known development/production identifiers and destructive commands outside the test namespace. Cleanup is idempotent; leaked resources are recorded.
+- **B. Transaction rollback only:** tests use the configured database but wrap cases in transactions. This is fast but does not isolate migrations, queues, caches, files, external services, or code that opens another connection.
+- **C. Clone development state:** create a disposable copy of development data for each run. Realistic, but risks sensitive-data copying and accidental source mutation.
+- **D. Test convention only:** trust environment variables and test code to select safe resources.
+
+Hard to reverse: verification schema, adapters, CI setup, local developer workflow, and destructive-operation authority depend on the isolation invariant.
+
+➡️ **A.** Isolation must be machine-checkable and cover every mutable state adapter, not only SQL transactions.
 
 ### I’ll assume (Defaults OK covers these)
 
 - The inner-loop **interface** is TaskGraph + `work/<id>/inner-loop/state.json`. Tests hit that interface, not stage-contract prose. Its code path follows the Q4 ownership boundary.
 - Runtime **adapters** spawn implement / review / debug. They do not own scheduling.
 - 09 Verify (repo checks) and 10 Accept stay outer-loop. Inner-loop node “checks” are per-task evidence, not a substitute for `./ask verify`.
-- TDD is not a kit protocol requirement. Nodes may list tests as checks. Consumer TS/Python presets supply the tools.
 - Debugger is an inner-loop role adapter after bounded repeated failure, not a new 00–10 stage.
 - Codex remains generated TOML; “strengthen” means projection completeness, tests, and documented spawn limits — not a second Codex SoT.
 - OpenCode is a fourth generated runtime adapter, with format details established from primary documentation at implementation time.
@@ -157,13 +168,14 @@ Hard to reverse: dependency ownership, lockfile churn, setup automation, and wha
 - Ready-to-launch means this workstream implements after Grill→Spec→Plan on `agent/inner-loop-hardening` and push is a later human ask. Explore does not implement product code.
 - No languages beyond TypeScript and Python. No auto-merge to default branch.
 
-### Later frontier (blocked on Q6–Q7)
+### Later frontier (blocked on Q8–Q10)
 
 - Generator entrypoints, local-overlay location, and install/upgrade mechanics.
 - Exact TaskGraph fields, branch naming, evidence schema, retry count, cancellation, and resume after kill.
 - Failure handling when an integrated task invalidates a still-running task’s base.
-- CheckPlan schema, preset provenance, brownfield baseline semantics, and fail-on-empty behavior (after Q6–Q7).
-- Detection precedence when TypeScript and Python manifests, monorepos, or multiple tools coexist (after Q6–Q7).
+- CheckPlan schema, preset provenance, brownfield baseline semantics, and fail-on-empty behavior.
+- Detection precedence when TypeScript and Python manifests, monorepos, or multiple tools coexist.
+- Interactive provisioning transaction/rollback behavior after the human selects tools.
 - OpenCode agent file format details.
 - Whether the kit repository’s own concrete verification config lists `_ask/tests/test-*.sh` directly or uses a named `ask-kit` preset.
 - Acceptance test matrix across Cursor, Codex, and OpenCode (spawn may stay best-effort on Codex).
@@ -179,6 +191,6 @@ Hard to reverse: dependency ownership, lockfile churn, setup automation, and wha
 
 ## Handoff to Intent
 
-Pending Q6–Q7 and the later frontier. Destination is **STILL_FOGGY**. Do not enter `01 Grill` until those answers (or an explicit Defaults OK covering the recommendations and assume-list) are recorded here.
+Pending Q8–Q10 and the later frontier. Destination is **STILL_FOGGY**. Do not enter `01 Grill` until those answers (or an explicit Defaults OK covering the recommendations and assume-list) are recorded here.
 
 Gate: **STILL_FOGGY**

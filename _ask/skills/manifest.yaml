@@ -28,6 +28,12 @@ skills:
     skill: codebase-design
     role: inner-loop-seam-design
     required: false
+  tdd:
+    source: mattpocock/skills
+    revision: "v1.2.3"
+    skill: tdd
+    role: inner-loop-red-green
+    required: true
   grilling:
     source: mattpocock/skills
     revision: "v1.2.3"
