@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t7-verify-core",
+  "commit_shas": ["afa2f576c5cd36bb3c393d141efe7bc9f4daaee5"],
+  "tdd": {
+    "seam": "CheckPlan fail-closed; ask-kit preset; no language CLIs in dispatcher core",
+    "red": {
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "output": "FAIL: language CLIs still in verify core",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "output": "PASS: verify fail-closed; ask-kit named; no language CLIs in core",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": [".agents/ask/verification/", ".agents/verification.yaml", "_ask/scripts/verify.sh", "_ask/tests/test-verify-fail-closed.sh"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "ask-kit preset uses glob _ask/tests/test-*.sh (steering), not a file census. Isolation: no_production_datastore."
+}
