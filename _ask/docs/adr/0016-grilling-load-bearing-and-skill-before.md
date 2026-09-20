@@ -15,5 +15,5 @@ ADR 0007 still applies to **numbered** questions only.
 
 ## Consequences
 
-- `_ask/agents/01-grill.md`, `00-explore.md`, spec §15.1, and Guide grilling-expansion text follow this rule.
+- `.agents/ask/stages/01-grill.md`, `00-explore.md`, spec §15.1, and Guide grilling-expansion text follow this rule.
 - Extra skills become repo pins, not chat-only downloads.

@@ -7,7 +7,7 @@ The Community Skill [humanizer](https://www.skills.sh/blader/humanizer/humanizer
 - Pin `humanizer` from `blader/humanizer` at `v3.0.0` (`role: docs-voice`, `required: true`). Never `revision: latest`.
 - Pin `writing-for-agents` from `mattpocock/skills` at `v1.2.3` (`role: agent-docs`, `required: true`).
 - Humanizer apply-scope is fail-closed: root `README.md`, `_ask/guide/`, `_ask/docs/demo/` only. Stock rule: `.cursor/rules/humanizer-docs-specs.mdc` (glob-limited, not `alwaysApply`).
-- Specs and other machine-first Markdown use `writing-for-agents` in embedded mode. Stock rule: `.cursor/rules/writing-for-agents-machine-docs.mdc`. Spec-stage contracts: `_ask/agents/02-spec.md`, `03-spec-challenge.md`, `04-spec-change.md`. Those contracts do not apply humanizer.
+- Specs and other machine-first Markdown use `writing-for-agents` in embedded mode. Stock rule: `.cursor/rules/writing-for-agents-machine-docs.mdc`. Spec-stage contracts: `.agents/ask/stages/02-spec.md`, `03-spec-challenge.md`, `04-spec-change.md`. Those contracts do not apply humanizer.
 - Kit files stay thin pointers. Skill bodies stay in the prepared trees.
 - Keep claims. Do not invent facts. Leave code, commands, paths, YAML metadata, and link targets unchanged.
 - Rewriting existing kit prose is a later job.

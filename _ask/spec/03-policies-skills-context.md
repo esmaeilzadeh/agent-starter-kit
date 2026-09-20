@@ -636,7 +636,7 @@ skills update
 
 for critical engineering methods (bump pins deliberately in the manifest instead).
 
-Kit Protocol Files (`_ask/agents/*.md`, policies, templates, `_ask/guide/`, `_ask/spec/`) are **shipped by the kit**. Community Skills are **prepared from pins**.
+Kit Protocol Files (`.agents/ask/stages/*.md`, policies, templates, `_ask/guide/`, `_ask/spec/`) are **shipped by the kit**. `_ask/agents/*.md` are pointers. Community Skills are **prepared from pins**.
 
 Stock docs-voice pin: `humanizer` from `blader/humanizer` (explicit revision in the manifest; never `latest`). Apply it only to the human-facing set (root `README.md`, `_ask/guide/`, `_ask/docs/demo/`). Stock agent-docs pin: `writing-for-agents` from `mattpocock/skills`. Apply it to specs and other machine-first Markdown. Thin pointers: `.cursor/rules/humanizer-docs-specs.mdc`, `.cursor/rules/writing-for-agents-machine-docs.mdc`, Spec-stage contracts. ADR 0017.
 

@@ -25,6 +25,7 @@ Mapped commands:
 ./ask upgrade --version <tag>  → _ask/scripts/upgrade-kit.sh
 ./ask prepare                  → _ask/skills/prepare-skills.sh
 ./ask setup                    → _ask/scripts/setup.sh   # human-only; refuse without a TTY
+./ask inner-loop …             → _ask/scripts/inner_loop/  # validate|status|run|resume|cancel
 ```
 
 Unknown command names that match an executable `_ask/scripts/<name>.sh` are exec'd. `install-kit` / `upgrade-kit` copy and refresh root `ask` as kit-owned adapter alongside `AGENTS.md` and `.cursor/`.
@@ -69,9 +70,26 @@ that branch is the safety boundary — stepwise commits stay off main/master
 commit after each meaningful step on the workstream branch
 do not wait for the human to ask before committing (kit overrides “only commit when asked”)
 do not run multiple related branches in parallel when they modify shared files
+optional in-workstream task worktrees: one writer; fast-forward only
 ```
 
 `./ask check-clean` is the deterministic gate (`check-clean-worktree.sh`); agent grilling is required whenever it fails.
+
+## 23.0a Git-flow
+
+Canonical policy:
+
+```text
+_ask/policies/git-flow.md
+```
+
+```text
+develop is the integration branch
+./ask start-work creates agent/<work-id> from develop or fails closed
+protected main is releasable — human merge, tag, push
+optional agent/<work-id>/task/<id> — runner; fast-forward only onto coordinator
+later cards: commit .later/<slug>.md on develop and link a tracker issue
+```
 
 ## 23.1 `./ask check-clean` (`check-clean-worktree.sh`)
 
@@ -91,8 +109,8 @@ Behavior:
 ```text
 1. require clean working tree
 2. verify Git repository
-3. identify default/main branch
-4. create or switch to dedicated work branch
+3. require a local develop branch (fail closed if missing)
+4. create or switch to dedicated work branch from develop
 5. create work/<work-id>/ artifacts
 6. print current HEAD SHA
 7. print active branch
@@ -161,7 +179,7 @@ Provide:
 ./ask verify
 ```
 
-Implementation: `_ask/scripts/verify.sh`.
+Implementation: `_ask/scripts/verify.sh` (thin). CheckPlan lives in `.agents/ask/verification/`.
 
 It should:
 

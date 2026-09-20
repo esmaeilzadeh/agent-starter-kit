@@ -4,6 +4,7 @@
 
 **Scope:** Primary sources only — [cursor.com/docs](https://cursor.com/docs).  
 **Kit context:** [CONTEXT.md](../../CONTEXT.md) defines **Cursor Binding** as how the kit is expressed inside Cursor (skills, rules, `AGENTS.md`, hooks) *without becoming the protocol itself*. The kit remains a portable repository protocol; Cursor is the first-class runtime binding.
+**Path note (2026-09-20):** Stage-contract SoT is `.agents/ask/stages/` (ADR 0018). Paths below that name `_ask/agents/` are this research snapshot.
 
 ---
 
