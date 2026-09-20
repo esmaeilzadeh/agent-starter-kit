@@ -1,6 +1,6 @@
 {
   "work_id": "inner-loop-hardening",
-  "commit_sha": "64fee91889c560fe0e0605a3bad45a04a5556269",
+  "commit_sha": "2a5648b05f3dd314d7a7d176ea2ba6da8ab139a8",
   "checks": [
     {
       "id": "ask-kit",
@@ -11,5 +11,5 @@
     }
   ],
   "result": "pass",
-  "notes": "ask-kit pass at 67843e0; re-review APPROVED at 64fee91 (artifact-only). CE-01..CE-06 pass. Accept awaits human confirm."
+  "notes": "ask-kit pass at 2a5648b. Re-review APPROVED. CE-01..CE-06 pass. Accept awaits human confirm."
 }
