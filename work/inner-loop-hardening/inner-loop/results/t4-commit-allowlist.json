@@ -1,7 +1,7 @@
 {
   "schema": "ask-task-result/v1",
   "task_id": "t4-commit-allowlist",
-  "commit_shas": ["952ca8e03d7061dba8baa71418ba1167e7161797"],
+  "commit_shas": ["4d17baca30cb8ae3a4f020e82727941b36af875b"],
   "tdd": {
     "seam": "Git stage/commit reject outside expanded globs; extras vs glob_too_narrow",
     "red": {
