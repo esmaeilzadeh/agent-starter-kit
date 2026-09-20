@@ -42,6 +42,26 @@ Serialize such work: finish or park one branch (merged, closed, or explicitly se
 
 Unrelated workstreams that touch disjoint paths may proceed in parallel when the human explicitly accepts that split.
 
+## Inner-loop writers (in-workstream)
+
+Default checkout is the coordinator worktree `agent/<work-id>`.
+
+A Plan may add an optional task worktree/branch `agent/<work-id>/task/<id>`
+for an isolated writer. Branch roles: `_ask/policies/git-flow.md`.
+
+**One writer.** At most one task may have unintegrated commits. The runner
+starts the next ready task only after integrate.
+
+**Integrate.** Fast-forward only onto the coordinator: the task branch is a
+descendant of `coordinator_sha`. Cherry-pick and rebase onto the coordinator
+are forbidden.
+
+**Spawn.** Optional task worktree spawn is runner-owned and empty of
+uncommitted files. That spawn is not a human dirty-tree grill.
+
+Inner-loop task branches stay inside this workstream. Cross-workstream overlap
+stays under **No concurrent conflicting workstreams** above.
+
 ## Inventory (not the checkout)
 
 `work/<work-id>/` is committed on `agent/<work-id>`, so artifact state is **branch-local**. Do not use the current working tree as the workstream inventory.
