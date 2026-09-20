@@ -77,7 +77,7 @@ Two adapters already exist at the runtime seam (Cursor, Claude, Codex generated 
 - Spec §24 (`_ask/spec/04-scripts-and-git.md`): detect package manager, run configured mandatory checks, fail on mandatory failures, print SHA, emit machine-readable output; do not hard-code Nest/Node/Python/Rust into the *core*; provide consumer extension points. Current script hard-codes npm/pytest/cargo discovery in the core.
 - 09 contract lists type checks and lint; the script does not implement them.
 
-Human decision: replace the shell-overlay model with a language-neutral verification scaffolder and normalized CheckPlan / VerifyResult. After project scaffold/init, the consuming repository has a concrete verification set for its detected TypeScript and/or Python stack. Compatibility with `.starter-kit/verify.conf` is not required. Exact artifact ownership, regeneration, and tool-install behavior remain open.
+Human decision: replace the shell-overlay model with a language-neutral verification scaffolder and normalized CheckPlan / VerifyResult. After project scaffold/init, the consuming repository has a consumer-owned, committed verification set for its detected TypeScript and/or Python stack. Compatibility with `.starter-kit/verify.conf` is not required. Scaffold creates the file only when absent; explicit re-scaffold produces a reviewable candidate. Missing tools require human-selected interactive provisioning before product manifests, tool configuration, or lockfiles change.
 
 ### Bindings as implemented
 
@@ -113,61 +113,45 @@ Human decision: canonical stage contracts and binding tables move into `.agents/
 - The workflow must ask the human to define and confirm E2E behavior before implementation, then plan, implement, and verify it.
 - Test databases, files, queues, caches, and other mutable state must be isolated from development and production state.
 - Before Accept, the plan must include an independent context-engineering audit of these large changes and repair instruction/pointer failures that can cause skipped or compressed protocol steps.
-- Git-flow becomes the repository branching and release model. Protected `main` represents releasable state; `develop` is the integration and durable later-work coordination branch. Exact release/hotfix authority remains in the frontier.
-- Later-work cards are durable on `develop` and mirrored to tracker issues. The first published set is commit `759731f` on `origin/develop`.
+- Git-flow becomes the repository branching and release model. Protected `main` represents releasable state; `develop` is the integration and durable later-work coordination branch.
+- Later-work cards now live durably on `origin/develop` at commit `759731f` and are mirrored to GitHub issues.
+
+### Human decisions from the final frontier
+
+- **Q8=A — mandatory vertical RED→GREEN:** every behavior-changing task records a confirmed seam, failing command and evidence, then passing command and evidence. Documentation-only, generated-projection, and non-behavioral configuration tasks may use a typed exemption with a reviewer-checked reason.
+- **Q9=A — E2E contract at Grill/Spec:** determine applicability and gather critical journeys, observable outcomes, environment, test data, and reset rules during Grill/Spec; the human confirms that contract with the specification. Plan maps it to tooling and isolation, Implement builds it, and Verify runs it. “Not applicable” requires an explicit reason.
+- **Q10=A — machine-checkable test isolation:** unit tests use no database or an interface-level fake. Integration and E2E use ephemeral isolated instances of the production engine. Verification declares test-only adapters and namespace strategy, rejects known development/production identifiers, confines destructive commands to the test namespace, performs idempotent cleanup, and records leaks.
+- **Q11=A — human-controlled Git-flow:** `agent/<work-id>` starts from `develop` and returns through a PR or approved merge. Agents may prepare `release/<version>`, verification, and release evidence; a human authorizes protected `main` merge, tag, and push. `hotfix/*` starts from `main` and, after human-approved release, returns to both `main` and `develop`.
 
 ## Not yet specified
 
-Load-bearing frontier (Explore grilling, ADR 0016). Numbered questions only. Defaults OK covers the assume-list.
+### Recomputed design tree
 
-### Extra skills (before Qs)
+```text
+ASK outer governance and human authority
+├── Git-flow lifecycle
+│   ├── agent/* from and back to develop
+│   ├── agents prepare release/* artifacts and evidence
+│   └── humans authorize protected main merge, tag, push, and hotfix release
+├── deep inner-loop module for stages 06–08
+│   ├── TaskGraph + coordinator-owned resumable state
+│   ├── isolated worktree/branch for every writing task
+│   ├── dependency-order scheduling; parallel writers own disjoint paths
+│   ├── deterministic commit integration; conflicts stop and escalate
+│   ├── runtime adapters for implement, review, and bounded debug
+│   └── vertical RED→GREEN evidence or reviewed typed exemption
+├── language-neutral verification
+│   ├── consumer-owned committed CheckPlan for TypeScript and Python
+│   ├── human-selected provisioning when required tools are absent
+│   ├── E2E contract confirmed at Grill/Spec and carried through Verify
+│   └── machine-enforced isolated production-engine resources
+└── portable protocol source and generated runtime projections
+    ├── canonical .agents/ask/{stages,bindings,...}
+    ├── separate generated .agents/skills store
+    └── generated Cursor, Codex, and OpenCode adapters
+```
 
-See Notes. Default: no further prepare.
-
-### Numbered questions
-
-❓ **Q8** - **Mandatory TDD evidence and exemptions**: What exactly must a task prove before its implementation commit is eligible for integration?
-
-- **A. Vertical RED→GREEN at a confirmed seam:** every behavior-changing task records the confirmed seam, failing test command and failure evidence, then passing command and evidence. Documentation-only, generated projection, and non-behavioral configuration tasks may claim a typed exemption with a reason that the reviewer checks.
-- **B. TDD only where tests already exist:** legacy modules without a test seam may implement first and add characterization tests afterward.
-- **C. No exemptions:** every task, including generated files and documentation, must produce a red test before modification.
-
-Hard to reverse: task-result schema, reviewer gate, legacy-code adoption, and implementation throughput all depend on the evidence rule.
-
-➡️ **A.** It makes TDD enforceable without manufacturing meaningless tests for artifacts that do not expose behavior.
-
-❓ **Q9** - **E2E contract gate**: Where does the required human definition and confirmation enter the workflow?
-
-- **A. Spec gate:** Grill/Spec asks whether E2E applies and gathers critical journeys, observable outcomes, environment, test data, and reset rules. The human confirms the E2E contract with the specification. Plan maps it to tooling and isolation; Implement builds it; Verify runs it. “Not applicable” requires an explicit reason.
-- **B. Plan gate:** the planning agent derives E2E scenarios from the accepted spec and asks for a separate confirmation before implementation.
-- **C. Verify gate:** implementation proceeds from unit/integration criteria; E2E is designed after the feature exists.
-
-Hard to reverse: acceptance criteria, the defaults confirmation, plan structure, and what blocks implementation depend on this gate.
-
-➡️ **A.** E2E defines externally observable success, so it belongs in the accepted contract rather than being invented after design.
-
-❓ **Q10** - **Test-state isolation**: What invariant prevents tests from corrupting development or production databases and state?
-
-- **A. Declared isolated resources with a hard guard:** unit tests use no database or an interface-level fake; integration and E2E use an ephemeral isolated instance of the production database engine. `.agents/verification.yaml` names test-only resource adapters and namespace strategy. The runner refuses known development/production identifiers and destructive commands outside the test namespace. Cleanup is idempotent; leaked resources are recorded.
-- **B. Transaction rollback only:** tests use the configured database but wrap cases in transactions. This is fast but does not isolate migrations, queues, caches, files, external services, or code that opens another connection.
-- **C. Clone development state:** create a disposable copy of development data for each run. Realistic, but risks sensitive-data copying and accidental source mutation.
-- **D. Test convention only:** trust environment variables and test code to select safe resources.
-
-Hard to reverse: verification schema, adapters, CI setup, local developer workflow, and destructive-operation authority depend on the isolation invariant.
-
-➡️ **A.** Isolation must be machine-checkable and cover every mutable state adapter, not only SQL transactions.
-
-❓ **Q11** - **Git-flow authority and release lifecycle**: Which actors may advance work through `develop`, `release/*`, `main`, and `hotfix/*`?
-
-- **A. Human-controlled releases:** `agent/<work-id>` starts from `develop` and returns by PR/approved merge. Agents may prepare `release/<version>` from `develop`, run verification, and assemble release evidence, but a human authorizes merge/tag/push to protected `main`. `hotfix/*` starts from `main`; after human-approved release it is merged back to both `main` and `develop`.
-- **B. Agent-controlled integration and releases:** agents merge verified work to `develop`, cut release branches, merge/tag `main`, and back-merge automatically.
-- **C. Git-flow names without release automation:** use `develop` and feature branches, but leave release/hotfix/tag behavior undocumented and manual.
-
-Hard to reverse: `start-work`, Accept authority, release provenance, protected-branch rules, versioning, and CI triggers all depend on this split.
-
-➡️ **A.** It preserves ASK’s human authority while allowing agents to prepare every reversible release artifact.
-
-### I’ll assume (Defaults OK covers these)
+All load-bearing branches that affect What/Why or a hard-to-reverse architecture boundary are resolved. The following are Spec/Plan elaboration beneath those branches, not further Explore choices:
 
 - The inner-loop **interface** is TaskGraph + `work/<id>/inner-loop/state.json`. Tests hit that interface, not stage-contract prose. Its code path follows the Q4 ownership boundary.
 - Runtime **adapters** spawn implement / review / debug. They do not own scheduling.
@@ -179,17 +163,10 @@ Hard to reverse: `start-work`, Accept authority, release provenance, protected-b
 - Failure-convergence (Phase 3) is in scope only as bounded retry/debug inside the module, not a transcript database.
 - Ready-to-launch means this workstream implements after Grill→Spec→Plan on `agent/inner-loop-hardening` and push is a later human ask. Explore does not implement product code.
 - No languages beyond TypeScript and Python. No auto-merge to default branch.
-
-### Later frontier (blocked on Q8–Q10)
-
-- Generator entrypoints, local-overlay location, and install/upgrade mechanics.
-- Exact TaskGraph fields, branch naming, evidence schema, retry count, cancellation, and resume after kill.
-- Failure handling when an integrated task invalidates a still-running task’s base.
-- CheckPlan schema, preset provenance, brownfield baseline semantics, and fail-on-empty behavior.
-- Detection precedence when TypeScript and Python manifests, monorepos, or multiple tools coexist.
-- Interactive provisioning transaction/rollback behavior after the human selects tools.
-- Version source, changelog generation, release evidence schema, and tag convention after Q11.
-- Optional in-memory database adapters are parked in `.later/in-memory-test-state-adapters.md`; they require contract parity with the production adapter.
+- Spec/Plan must define generator entrypoints, local-overlay location, install/upgrade mechanics, exact TaskGraph and evidence fields, retry/cancellation/resume behavior, and stale-base invalidation.
+- Spec/Plan must define CheckPlan schema, preset provenance, brownfield baseline and fail-on-empty semantics, mixed-stack/monorepo detection precedence, and provisioning rollback.
+- Spec/Plan must define version source, changelog generation, release evidence schema, and tag convention within the accepted human-controlled Git-flow boundary.
+- Generic in-memory database adapters are parked in `.later/in-memory-test-state-adapters.md`; they require contract parity with the production adapter.
 - OpenCode agent file format details.
 - Whether the kit repository’s own concrete verification config lists `_ask/tests/test-*.sh` directly or uses a named `ask-kit` preset.
 - Acceptance test matrix across Cursor, Codex, and OpenCode (spawn may stay best-effort on Codex).
@@ -205,6 +182,8 @@ Hard to reverse: `start-work`, Accept authority, release provenance, protected-b
 
 ## Handoff to Intent
 
-Pending Q8–Q10 and the later frontier. Destination is **STILL_FOGGY**. Do not enter `01 Grill` until those answers (or an explicit Defaults OK covering the recommendations and assume-list) are recorded here.
+Own one workstream that preserves ASK as the human-governed outer protocol while adding a deep, resumable concurrent runner for stages 06–08; deterministic TypeScript/Python verification with confirmed E2E contracts and hard test-state isolation; and generated Cursor, Codex, and OpenCode projections from canonical `.agents/ask/` sources. The runner coordinates a TaskGraph, isolated writing worktrees, deterministic integration, bounded role adapters, and mandatory vertical RED→GREEN evidence with typed non-behavioral exemptions. Git-flow uses `develop` for agent integration and durable later work, while humans retain protected `main`, tag, push, release, hotfix, and final Accept authority.
 
-Gate: **STILL_FOGGY**
+Intent should preserve the decisions and constraints in this map, turn the resolved design tree into explicit acceptance boundaries, and leave the listed schema/tooling details to Spec and Plan. Durable later cards already exist on `origin/develop` at `759731f` and are mirrored to GitHub issues. Generic in-memory database adapters remain parked for later work.
+
+Gate: **DESTINATION_CLEAR**
