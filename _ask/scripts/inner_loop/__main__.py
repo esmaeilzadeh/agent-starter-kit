@@ -9,6 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
+from inner_loop.allowlist import classify_paths, outside_paths, staged_paths  # noqa: E402
 from inner_loop.graph import load_graph, validate_graph, _task_map  # noqa: E402
 from inner_loop.state import (  # noqa: E402
     CasConflict,
@@ -91,6 +92,18 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("work_id")
     sp.add_argument("task_id")
 
+    cp = sub.add_parser("check-paths", help="refuse paths outside globs")
+    cp.add_argument("--glob", action="append", dest="globs", required=True)
+    cp.add_argument("paths", nargs="*")
+
+    cl = sub.add_parser("classify-paths", help="extras vs glob_too_narrow")
+    cl.add_argument("--glob", action="append", dest="globs", required=True)
+    cl.add_argument("--required", default="")
+    cl.add_argument("paths", nargs="*")
+
+    ix = sub.add_parser("check-index", help="refuse staged paths outside globs")
+    ix.add_argument("--glob", action="append", dest="globs", required=True)
+
     for name in ("run", "resume", "cancel"):
         spn = sub.add_parser(name, help="later inner-loop task")
         spn.add_argument("work_id", nargs="?")
@@ -108,6 +121,25 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_cas_apply(root, args.work_id, args.observed)
         if args.cmd == "spawn-writer":
             return cmd_spawn(root, args.work_id, args.task_id)
+        if args.cmd == "check-paths":
+            bad = outside_paths(args.paths, args.globs)
+            if bad:
+                print("reject: " + " ".join(bad), file=sys.stderr)
+                return 1
+            print("ok")
+            return 0
+        if args.cmd == "classify-paths":
+            required = [x for x in args.required.split(",") if x]
+            print(classify_paths(args.paths, args.globs, required))
+            return 0
+        if args.cmd == "check-index":
+            names = staged_paths(root)
+            bad = outside_paths(names, args.globs)
+            if bad:
+                print("reject: " + " ".join(bad), file=sys.stderr)
+                return 1
+            print("ok")
+            return 0
         print(f"{args.cmd} not implemented in t3-runner-graph", file=sys.stderr)
         return 2
     except ProtocolViolation as e:

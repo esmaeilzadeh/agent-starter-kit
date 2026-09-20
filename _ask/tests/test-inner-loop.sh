@@ -105,4 +105,39 @@ printf '%s\n' "$out" | grep -qi 'second writer' || fail "second writer message: 
 # dispatcher
 "$ASK" inner-loop --help 2>&1 | grep -q validate
 
-echo "PASS: inner-loop graph validate, CAS, single-writer"
+# --- commit allowlist ---
+set +e
+out="$("${PY[@]}" check-paths --glob 'pkg/**' -- pkg/a.py 2>&1)"
+code=$?
+set -e
+[[ "$code" -eq 0 ]] || fail "in-glob path should pass: $out"
+
+set +e
+out="$("${PY[@]}" check-paths --glob 'pkg/**' -- README.md 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || fail "out-of-glob path should fail"
+printf '%s\n' "$out" | grep -q README.md || fail "rejected path named: $out"
+
+out="$("${PY[@]}" classify-paths --glob 'pkg/**' --required '' -- tmp/cache 2>&1)"
+printf '%s\n' "$out" | grep -q '^extras$' || fail "unrequired outside glob is extras: $out"
+
+out="$("${PY[@]}" classify-paths --glob 'pkg/**' --required 'lib/core.py' -- lib/core.py 2>&1)"
+printf '%s\n' "$out" | grep -q '^glob_too_narrow$' || fail "required outside glob: $out"
+
+REPO="$TMP/gitrepo"
+mkdir -p "$REPO/pkg"
+git init -q "$REPO"
+git -C "$REPO" config user.email t@e.com
+git -C "$REPO" config user.name t
+echo in > "$REPO/pkg/a.py"
+echo out > "$REPO/OUT.txt"
+git -C "$REPO" add pkg/a.py OUT.txt
+set +e
+out="$("${PY[@]}" --root "$REPO" check-index --glob 'pkg/**' 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || fail "staged OUT.txt should fail check-index"
+printf '%s\n' "$out" | grep -q OUT.txt || fail "check-index names OUT.txt: $out"
+
+echo "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist"
