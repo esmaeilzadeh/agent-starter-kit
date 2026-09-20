@@ -21,11 +21,12 @@ STAGES = [
     "10-accept",
 ]
 
-RUNTIMES = ("cursor", "claude", "codex")
+RUNTIMES = ("cursor", "claude", "codex", "opencode")
 OUT_DIRS = {
     "cursor": Path(".cursor/agents"),
     "claude": Path(".claude/agents"),
     "codex": Path(".codex/agents"),
+    "opencode": Path(".opencode/agents"),
 }
 
 
@@ -259,6 +260,7 @@ def main() -> int:
 
     md_tpl = (bind / "templates" / "agent.md.tpl").read_text(encoding="utf-8")
     toml_tpl = (bind / "templates" / "agent.toml.tpl").read_text(encoding="utf-8")
+    opencode_tpl = (bind / "templates" / "agent.opencode.md.tpl").read_text(encoding="utf-8")
 
     for runtime in RUNTIMES:
         cfg = load_yaml(bind / "runtimes" / f"{runtime}.yaml")
@@ -272,6 +274,7 @@ def main() -> int:
             name = f"kit-{stage}"
             desc = f"Kit protocol stage {stage} ({runtime})."
             readonly = "readonly: true\n" if stage == "07-review" else ""
+            permission_block = "permission:\n  edit: deny\n" if stage == "07-review" else ""
             if runtime == "codex":
                 text = render(
                     toml_tpl,
@@ -282,6 +285,16 @@ def main() -> int:
                     stage=stage,
                 )
                 dest = out_dir / f"{name}.toml"
+            elif runtime == "opencode":
+                text = render(
+                    opencode_tpl,
+                    description=desc,
+                    model=slug,
+                    permission_block=permission_block,
+                    runtime=runtime,
+                    stage=stage,
+                )
+                dest = out_dir / f"{name}.md"
             else:
                 text = render(
                     md_tpl,
