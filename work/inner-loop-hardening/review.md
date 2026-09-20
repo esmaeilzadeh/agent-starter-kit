@@ -92,15 +92,31 @@ Spec: Accept refuses if `work/<id>/context-audit.md` is missing or any checklist
 
 ## Residual risks
 
-- All 13 files under `work/inner-loop-hardening/inner-loop/results/` have `review.verdict: PENDING`. This outer 07 folds that: per-task boundary `git diff` vs `owned_paths` was not independently recorded as APPROVED. `owned_paths_touched` in those JSON files is inside each task’s globs as declared; extras were not re-diffed here. t12/t13 set `reviewer_ack: true` while verdict is PENDING.
-- Plan encoding: this workstream did not dogfood `./ask inner-loop run` (bootstrap). Later workstreams will hit F1 immediately.
-- `verification.yaml` has `e2e: not_applicable` with no reason string; the reason lives in the spec. 09 asks for plus reason.
+- All 13 files under `work/inner-loop-hardening/inner-loop/results/` have `review.verdict: PENDING`. This outer 07 folds that: per-task boundary `git diff` vs `owned_paths` was not independently recorded as APPROVED.
+- `verification.yaml` has `e2e: not_applicable` with no reason string; the reason lives in the spec.
 - Glob expand is custom `glob_to_re` (`_ask/scripts/inner_loop/graph.py`), not stdlib `fnmatch` as Plan encoding. Spec allows this encoding.
 - Codex/OpenCode live spawn remains best-effort (`ASK_LIVE_SPAWN`); file-shape is tested.
 - No `state.json` on this workstream; CAS/resume invariants for this graph were not exercised on the coordinator checkout.
 - Review inherit / Implement same family: independence is spawn-separation only, not a second model family.
-- `_ask/tests/test-workstream-smoke.sh` calls `start-work` in a temp repo with no `develop` (fails closed after t9). Outer `./ask verify` fails on that check until 08 seeds `develop` in the smoke fixture.
+- Later cards now tracked on this `agent/*` branch so check-clean passes; Git-flow still wants them durable on `develop` plus a tracker issue.
+- Wizard `--confirm` apply without `--preset` still requires a TTY; product agent labor must not run it.
 
 ## Review verdict
 
 REJECTED
+
+## 08 disposition
+
+Each finding FIX after `./ask verify` pass at `0c3386c`.
+
+| ID | Disposition | Evidence |
+| --- | --- | --- |
+| F1 | FIX | `_ask/scripts/inner_loop/driver.py`; `_ask/tests/test-inner-loop.sh` run/resume/cancel |
+| F2 | FIX | `integrate_ready` / `check_integrable` in driver.py |
+| F3 | FIX | workspace sections, `--wizard-preview`, `apply_with_rollback`; TS/Python presets |
+| F4 | FIX | `.agents/ask/verification/isolation.py`; fail-closed isolation leak test |
+| F5 | FIX | `.later/*.md` committable; ADR 0015; git-flow |
+| F6 | FIX | `.agents/ask/stages/10-accept.md` (prior 08 slice) |
+| F7 | FIX | `ask` usage() names `.agents/ask/` (prior 08 slice) |
+
+Outer 07 should re-read this table. Accept still needs a human confirm and a re-review spawn if policy requires independence from 08.
