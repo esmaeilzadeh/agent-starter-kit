@@ -74,6 +74,9 @@ Commands:
       Human-only tracker + MCP wizard. Needs a TTY. Agents must not run this.
       --help   usage without a TTY
 
+  inner-loop validate|status|run|resume|cancel [work-id]
+      TaskGraph runner for stages 06–08. One committing writer.
+
   completion bash|zsh
       Print a tab-completion snippet. `askit` installs this automatically;
       you do not need to eval it. Still available for debugging.
@@ -247,6 +250,9 @@ case "$cmd" in
     ;;
   setup)
     exec "$SCRIPTS/setup.sh" "$@"
+    ;;
+  inner-loop)
+    exec python3 "$SCRIPTS/inner_loop/__main__.py" "$@"
     ;;
   *)
     if [[ -x "$SCRIPTS/${cmd}.sh" ]]; then
