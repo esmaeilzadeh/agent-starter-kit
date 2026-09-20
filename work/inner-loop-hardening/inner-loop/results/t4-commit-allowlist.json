@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t4-commit-allowlist",
+  "commit_shas": ["952ca8e03d7061dba8baa71418ba1167e7161797"],
+  "tdd": {
+    "seam": "Git stage/commit reject outside expanded globs; extras vs glob_too_narrow",
+    "red": {
+      "command": "_ask/tests/test-inner-loop.sh",
+      "output": "invalid choice: 'check-paths'",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-inner-loop.sh",
+      "output": "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/scripts/inner_loop/", "_ask/tests/test-inner-loop.sh"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Filesystem is not reduced to owned_paths; only git stage/commit names are gated."
+}
