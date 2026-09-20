@@ -97,12 +97,18 @@ tasks:
   - id: t6-wire-stages
     depends_on:
       - t1-canonical-ask
+      - t2-opencode-projection
       - t5-retry-resume
     owned_paths:
-      - .agents/ask/stages/06-implement.md
-      - .agents/ask/stages/07-review.md
-      - .agents/ask/stages/08-refactor.md
-    seam: 06/07/08 call the inner-loop module; they do not inline a DAG
+      - .agents/ask/stages/**
+      - _ask/tests/test-stages-inner-loop.sh
+      - .cursor/skills/**
+      - .cursor/commands/**
+      - .cursor/agents/**
+      - .claude/agents/**
+      - .codex/agents/**
+      - .opencode/agents/**
+    seam: 06/07/08 call the inner-loop module; owned_paths are steering globs
     exemption: null
     e2e: inherit
     roles:
