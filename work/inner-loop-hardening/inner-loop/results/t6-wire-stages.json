@@ -1,7 +1,7 @@
 {
   "schema": "ask-task-result/v1",
   "task_id": "t6-wire-stages",
-  "commit_shas": ["db57bc6b6adb89b153f0f9540ae5e1a4f6248fb6"],
+  "commit_shas": ["fa1afaafac5596f52675ad4804134ef28243fb5e"],
   "tdd": {
     "seam": "06/07/08 call the inner-loop module; owned_paths are steering globs",
     "red": {
