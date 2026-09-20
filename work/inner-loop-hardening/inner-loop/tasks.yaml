@@ -1,0 +1,223 @@
+# TaskGraph for inner-loop-hardening. SoT for globs and depends_on.
+# Seams and done-when live in work/inner-loop-hardening/plan.md.
+schema: ask-inner-loop-tasks/v1
+work_id: inner-loop-hardening
+e2e: not_applicable
+seam_at: plan
+
+tasks:
+  - id: t1-canonical-ask
+    depends_on: []
+    owned_paths:
+      - .agents/ask/**
+      - _ask/agents/**
+      - _ask/bindings/**
+      - _ask/scripts/sync-cursor-binding.sh
+      - _ask/scripts/sync-runtime-agents.py
+      - _ask/OWNED-PATHS.md
+      - _ask/tests/test-sync-runtime-agents.sh
+      - _ask/tests/test-sync-off-path-command.sh
+    seam: ./ask sync reads .agents/ask/ and writes Cursor/Claude/Codex projections
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t2-opencode-projection
+    depends_on:
+      - t1-canonical-ask
+    owned_paths:
+      - .agents/ask/bindings/**
+      - _ask/scripts/sync-runtime-agents.py
+      - _ask/tests/test-sync-runtime-agents.sh
+    seam: .opencode/agents markdown agents match the Plan OpenCode pin
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t3-runner-graph
+    depends_on: []
+    owned_paths:
+      - _ask/scripts/inner_loop/**
+      - _ask/tests/test-inner-loop.sh
+      - ask
+    seam: load_graph validate_graph CAS state.json single-writer
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t4-commit-allowlist
+    depends_on:
+      - t3-runner-graph
+    owned_paths:
+      - _ask/scripts/inner_loop/**
+      - _ask/tests/test-inner-loop.sh
+    seam: Git stage/commit reject outside expanded globs; extras vs glob_too_narrow
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t5-retry-resume
+    depends_on:
+      - t4-commit-allowlist
+    owned_paths:
+      - _ask/scripts/inner_loop/**
+      - _ask/tests/test-inner-loop.sh
+    seam: 2+2 retry then blocked; FF integrate; resume abort to coordinator_sha
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t6-wire-stages
+    depends_on:
+      - t1-canonical-ask
+      - t5-retry-resume
+    owned_paths:
+      - .agents/ask/stages/06-implement.md
+      - .agents/ask/stages/07-review.md
+      - .agents/ask/stages/08-refactor.md
+    seam: 06/07/08 call the inner-loop module; they do not inline a DAG
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t7-verify-core
+    depends_on:
+      - t1-canonical-ask
+    owned_paths:
+      - .agents/ask/verification/**
+      - .agents/verification.yaml
+      - _ask/scripts/verify.sh
+      - _ask/tests/test-verify-fail-closed.sh
+    seam: CheckPlan fail-closed; ask-kit preset; no language CLIs in dispatcher core
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t8-scaffold-wizard
+    depends_on:
+      - t7-verify-core
+    owned_paths:
+      - _ask/scripts/verify_scaffold.py
+      - _ask/tests/fixtures/brownfield-mixed/**
+      - _ask/tests/test-verify-scaffold.sh
+      - _ask/tests/test-setup-human-only.sh
+    seam: scaffold yaml only if absent; human-only wizard; mixed-stack stops
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t9-git-flow
+    depends_on: []
+    owned_paths:
+      - _ask/scripts/start-work.sh
+      - _ask/tests/test-start-work-refuses-dirty.sh
+      - _ask/tests/test-start-work-no-explore-map.sh
+      - _ask/tests/test-start-work-from-develop.sh
+      - _ask/policies/git-flow.md
+      - _ask/templates/release-evidence.md
+      - CHANGELOG.md
+    seam: start-work from develop or fail closed; changelog and release-evidence templates
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t10-e2e-contracts
+    depends_on:
+      - t1-canonical-ask
+      - t6-wire-stages
+    owned_paths:
+      - _ask/templates/intent.md
+      - _ask/templates/spec.md
+      - _ask/templates/plan.md
+      - .agents/ask/stages/01-grill.md
+      - .agents/ask/stages/02-spec.md
+      - .agents/ask/stages/05-plan.md
+      - .agents/ask/stages/06-implement.md
+      - .agents/ask/stages/09-verify.md
+      - _ask/tests/test-e2e-contract-sections.sh
+    seam: Grill/Spec/Plan/06/09 require E2E or not_applicable plus reason
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t11-worktree-carveout
+    depends_on:
+      - t9-git-flow
+    owned_paths:
+      - _ask/policies/worktree.md
+    seam: in-workstream optional task worktrees; one writer; no cross-workstream overlap
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t12-kit-docs
+    depends_on:
+      - t6-wire-stages
+      - t7-verify-core
+      - t9-git-flow
+      - t11-worktree-carveout
+    owned_paths:
+      - _ask/docs/**
+      - _ask/spec/**
+      - _ask/guide/**
+      - _ask/MAPPING.md
+      - _ask/README.md
+      - CONTEXT.md
+      - AGENTS.md
+    seam: kit docs name .agents/ask/ as SoT and Git-flow as specified
+    exemption:
+      kind: documentation-only
+      reason: prose and pointers; no runtime behavior
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
+
+  - id: t13-context-audit
+    depends_on:
+      - t12-kit-docs
+    owned_paths:
+      - work/inner-loop-hardening/context-audit.md
+    seam: independent spawn closes CE-01..CE-06
+    exemption:
+      kind: documentation-only
+      reason: audit artifact; Accept gate reads the file
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}
