@@ -31,6 +31,12 @@ The agent must explain the outcome and cite evidence.
 
 Human approval remains mandatory where delegation policy requires it.
 
+## Context-engineering audit
+
+Refuse Accept when `work/<work-id>/context-audit.md` is missing or any
+checklist ID in that file is `open`. Closed IDs are `pass` or a Spec Change
+link. Record the audit path and SHA on `acceptance.md`.
+
 ---
 
 ## Kit path

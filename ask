@@ -48,9 +48,10 @@ Commands:
       --out <dir>   default results/<run-id>; needs <dir>/config.yaml
 
   sync
-      Regenerate .cursor/skills and .cursor/commands from _ask/agents/, and
-      stage agents under .cursor/agents, .claude/agents, .codex/agents from
-      _ask/bindings/. No flags.
+      Regenerate .cursor/skills and .cursor/commands from .agents/ask/stages,
+      and stage agents under .cursor/agents, .claude/agents, .codex/agents,
+      and .opencode/agents from .agents/ask/bindings/. Pointers remain at
+      _ask/agents and _ask/bindings. No flags.
 
   install [--dry-run] [--force] [--skip-prepare] <target-repo>
       Overlay kit package + adapter onto another git repo.
