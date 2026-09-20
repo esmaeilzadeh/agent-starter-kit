@@ -1,0 +1,6 @@
+schema: ask-checkplan/v1
+e2e: not_applicable
+no_production_datastore: true
+adapters: []
+presets:
+  - ask-kit
