@@ -35,3 +35,7 @@ It must record the exact commit SHA.
 ## Kit path
 
 See `_ask/policies/workflow.md`. Claiming verify without running checks or a commit SHA stays **hard**. Prepare verification evidence; Accept is the human close.
+
+## E2E
+
+Run confirmed E2E checks from `.agents/verification.yaml` unless `e2e: not_applicable` plus reason. Record the commit SHA.
