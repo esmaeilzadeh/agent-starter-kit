@@ -42,4 +42,29 @@ code=$?
 set -e
 [[ "$code" -ne 0 ]] || { echo "FAIL: empty checks passed: $out" >&2; exit 1; }
 
+# isolation: listed prod identifier in a check command fails
+mkdir -p "$TMP/.agents/ask/verification"
+cp -a "$ROOT/.agents/ask/verification/." "$TMP/.agents/ask/verification/"
+cat > "$TMP/.agents/verification.yaml" <<'YAML'
+schema: ask-checkplan/v1
+no_production_datastore: false
+adapters:
+  - test-db
+refuse_identifiers:
+  - prod-secret-host
+checks:
+  - id: t
+    tier: mandatory
+    command: echo prod-secret-host
+YAML
+set +e
+out="$(ASK_ROOT="$TMP" VERIFY_OUT_DIR="$TMP" "$ROOT/_ask/scripts/verify.sh" 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || { echo "FAIL: isolation leak passed: $out" >&2; exit 1; }
+printf '%s\n' "$out" | grep -qi 'isolation leak' || {
+  echo "FAIL: isolation leak message: $out" >&2
+  exit 1
+}
+
 echo "PASS: verify fail-closed; ask-kit named; no language CLIs in core"

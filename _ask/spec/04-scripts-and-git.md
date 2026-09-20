@@ -415,12 +415,12 @@ agent/cancel-order
 When a new job appears during a running workstream, park it — do not start a second live `agent/*` in the same session unless the human explicitly sequences another job.
 
 ```text
-.later/<slug>.md          # gitignored card (not live)
+.later/<slug>.md          # parked card; commit on develop + tracker issue
 .later/README.md          # committed; explains the inbox
 _ask/templates/later-work.md
 ```
 
-`.gitignore` ignores `.later/*` except `README.md`. Cards are not committed on the active job’s branch. Start later in a new session with `./ask start-work <new-work-id>`. `./ask status` lists parked cards as a later block from the checkout (`--later-only` / `--work-only`; `--work-id` omits later). No later-inbox subcommand and no issue-tracker sync.
+Cards are not live workstreams. Do not commit them on the active `agent/<work-id>` branch; commit on `develop` and link a tracker issue (`_ask/policies/git-flow.md`). Start later in a new session with `./ask start-work <new-work-id>`. `./ask status` lists parked cards as a later block from the checkout (`--later-only` / `--work-only`; `--work-id` omits later). No later-inbox subcommand.
 
 `AGENTS.md` and `work/README.md` tell agents to park here.
 

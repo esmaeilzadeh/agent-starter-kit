@@ -10,6 +10,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
+from verification.isolation import IsolationLeak, check_isolation  # noqa: E402
 from verification.plan import expand_plan, load_plan  # noqa: E402
 
 
@@ -35,6 +36,12 @@ def main() -> int:
     mandatory = [c for c in checks if c.get("tier", "mandatory") == "mandatory"]
     if not checks or not mandatory:
         print("verify: empty CheckPlan or zero mandatory checks", file=sys.stderr)
+        return 1
+
+    try:
+        check_isolation(root, plan, [c.get("command", "") for c in checks])
+    except IsolationLeak as e:
+        print(f"verify: {e}", file=sys.stderr)
         return 1
 
     results = []

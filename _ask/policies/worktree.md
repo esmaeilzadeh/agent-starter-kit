@@ -68,6 +68,6 @@ stays under **No concurrent conflicting workstreams** above.
 
 - **Live:** `./ask status` reads local `agent/*` that are **not** fully merged into the default branch (no checkout).
 - **Archive:** `work/*` on `main`/`master` once that work-id has no unmerged `agent/*` (leftover merged branches do not stay live).
-- **Later:** parked `.later/*.md` on this checkout (not live).
+- **Later:** parked `.later/*.md` committed on `develop` (not live).
 
 Do not write a committed `work/INDEX.md` — it would split the same way.

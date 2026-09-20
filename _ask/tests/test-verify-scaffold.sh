@@ -23,6 +23,31 @@ mkdir -p "$TMP"
 "${PY[@]}" --root "$TMP" --preset ask-kit
 [[ -f "$TMP/.agents/verification.yaml" ]] || fail "preset should write yaml"
 grep -q 'ask-kit' "$TMP/.agents/verification.yaml" || fail "preset contents"
+grep -q 'workspaces:' "$TMP/.agents/verification.yaml" || fail "named workspace sections"
+
+# wizard preview (no write)
+prev="$("${PY[@]}" --root "$TMP" --wizard-preview --preset ask-kit)"
+printf '%s\n' "$prev" | grep -q 'workspaces:' || fail "preview names workspaces"
+[[ -f "$TMP/.agents/verification.yaml" ]] || fail "preview must not delete yaml"
+
+# rollback restores previous yaml
+python3 - <<PY
+from pathlib import Path
+import sys
+sys.path.insert(0, "$ROOT/_ask/scripts")
+import verify_scaffold as vs
+dest = Path("$TMP/.agents/verification.yaml")
+old = dest.read_text()
+try:
+    vs.apply_with_rollback(dest, "schema: mutated\n", after_write=lambda: (_ for _ in ()).throw(RuntimeError("boom")))
+except RuntimeError:
+    pass
+else:
+    raise SystemExit("expected boom")
+if dest.read_text() != old:
+    raise SystemExit("rollback did not restore yaml")
+print("rollback ok")
+PY
 
 # second run does not overwrite
 echo 'schema: keep-me' > "$TMP/.agents/verification.yaml"
@@ -48,5 +73,18 @@ set -e
 [[ "$code" -ne 0 ]] || fail "mixed stack should stop: $out"
 printf '%s\n' "$out" | grep -qiE 'choice|eslint|biome' || fail "mixed message: $out"
 [[ ! -f "$OUT/.agents/verification.yaml" ]] || fail "mixed wrote yaml"
+
+# workspace-local biome vs root eslint stops
+WS="$TMP/ws"
+mkdir -p "$WS/packages/app"
+printf '%s\n' '{"workspaces":["packages/*"]}' > "$WS/package.json"
+printf '%s\n' '{"name":"app"}' > "$WS/packages/app/package.json"
+echo '{}' > "$WS/eslint.config.js"
+echo '{}' > "$WS/packages/app/biome.json"
+set +e
+out="$("${PY[@]}" --root "$WS" --preset ask-kit 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || fail "workspace lint disagreement should stop: $out"
 
 echo "PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops"

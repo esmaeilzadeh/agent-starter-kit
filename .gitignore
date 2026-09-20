@@ -12,9 +12,7 @@ verification-result.json
 __pycache__/
 *.py[cod]
 
-# Later-work inbox: cards are local; README is kit-owned
-.later/*
-!.later/README.md
+# Later-work inbox: cards commit on develop (Git-flow); README is kit-owned.
 
 # Setup wizard secrets and current-issue context
 .ask.env

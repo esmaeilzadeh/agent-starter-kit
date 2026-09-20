@@ -79,7 +79,7 @@ def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(prog="ask inner-loop")
+    p = argparse.ArgumentParser(prog="ask inner-loop", allow_abbrev=False)
     p.add_argument("--root", default=None)
     sub = p.add_subparsers(dest="cmd", required=True)
 
