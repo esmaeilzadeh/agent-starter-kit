@@ -67,3 +67,7 @@ If 00 was a **real skip**, this file must include `Explore skipped: destination 
 ## Model spawn (optional)
 
 When this stage’s resolved model differs from the parent, or `work/<id>/models.yaml` / env sets an explicit override, you may spawn the generated Grill subagent for that runtime. The child expands questions and returns them. The parent asks the human and writes `intent.md`. The child must not close Grill.
+
+## E2E
+
+Record whether E2E `applies` or `not_applicable` plus reason on `intent.md`. If it applies, gather journeys, observable outcomes, environment, test data, and reset. The human confirms that contract with the specification. Missing E2E with no reason refuses Plan/Implement.

@@ -9,7 +9,7 @@ That path is **guidance**. It must not feel like a lock, and it must not feel li
 If the human is using the kit:
 
 1. **Artifacts are not optional** on the Engineering Pipeline (`01`–`10`). Each next stage stands on the previous document (intent, spec, plan, …). Skipping those files is meaningless — there is nothing to move forward on.
-   **00 Explore is the exception:** it is an optional on-ramp. When the destination is already clear enough for Intent, **omit 00** (real skip). That is not “on-path with a missing explore-map.” When 00 *runs*, `explore-map.md` is required and Handoff must be non-empty before 01. See `AGENTS.md` item 1 and `_ask/agents/00-explore.md`.
+   **00 Explore is the exception:** it is an optional on-ramp. When the destination is already clear enough for Intent, **omit 00** (real skip). That is not “on-path with a missing explore-map.” When 00 *runs*, `explore-map.md` is required and Handoff must be non-empty before 01. See `AGENTS.md` item 1 and `.agents/ask/stages/00-explore.md`.
 2. **Prepare, then continue.** The agent writes the artifact for the current stage and proceeds to the next. Auto-continue in the same conversation after exit criteria; stop for human judgment at the confirms below (and escalation).
 3. **Skip = skip extra approvals, not documents.** After Grill recommendations, one explicit confirm — *“I approve these defaults are OK”* — covers later prepared artifacts (spec marked CURRENT unless they asked to stop, plan, review). Do not re-ask a bless on Plan / Review / Refactor.
 4. **Second confirm: Accept.** Close the workstream with `10 Accept` (evidence + commit SHA).

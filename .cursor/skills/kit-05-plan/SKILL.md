@@ -44,3 +44,7 @@ Must not redefine the requirement.
 ## Model spawn (optional)
 
 When this stage’s resolved model differs from the parent, or an explicit override is set, you may spawn the generated Plan subagent. The child drafts the plan. The parent presents it, talks to the human if needed, and writes `plan.md`.
+
+## E2E
+
+Map the spec’s E2E contract to tooling and isolation. `not_applicable` plus reason is valid. Missing E2E with no reason refuses this plan.

@@ -9,7 +9,7 @@ description: Kit protocol stage 09-verify. Generated from .agents/ask/stages/09-
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Evidence via `./ask verify` and `_ask/templates/verification.json`.
+Evidence via `./ask verify` (fail-closed CheckPlan) and `_ask/templates/verification.json`.
 
 ## 15.9 09 Verify Agent
 
@@ -19,21 +19,13 @@ Purpose:
 Produce evidence appropriate to the changed system and risk class.
 ```
 
-At minimum, discover and run the repository's existing checks as applicable:
+Run `./ask verify`. The committed CheckPlan is `.agents/verification.yaml`.
+Empty CheckPlan or zero mandatory checks fails closed. Logic lives in
+`.agents/ask/verification/`. Language CLIs live in presets, not in this
+contract and not in `_ask/scripts/verify.sh`.
 
-```text
-type checks
-lint
-unit tests
-integration/e2e tests
-build
-security checks
-configured project checks
-```
-
-Do not hard-code a universal Node/Nest command set.
-
-The verifier should inspect repository configuration and use project-specific commands.
+Do not overlay `./ask verify` with npm, pytest, cargo, or any other language
+CLI.
 
 It must record the exact commit SHA.
 
@@ -41,4 +33,11 @@ It must record the exact commit SHA.
 
 ## Kit path
 
-See `_ask/policies/workflow.md`. Claiming verify without running checks or a commit SHA stays **hard**. Prepare verification evidence; Accept is the human close.
+See `_ask/policies/workflow.md`. Claiming verify without running `./ask verify`
+or a commit SHA stays **hard**. Prepare verification evidence; Accept is the
+human close.
+
+## E2E
+
+Run confirmed E2E checks from `.agents/verification.yaml` unless
+`e2e: not_applicable` plus reason. Record the commit SHA.

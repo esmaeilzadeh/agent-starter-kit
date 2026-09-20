@@ -5,7 +5,7 @@ alwaysApply: true
 
 **Machine-first docs:** When writing or editing a specification or any other machine-first Markdown file, read the prepared `writing-for-agents` skill and follow it in embedded mode before finishing. Prepare it with `./ask prepare` if `.agents/skills/writing-for-agents/SKILL.md` is missing.
 
-Machine-first includes `specs/`, `_ask/spec/`, `_ask/agents/`, `_ask/policies/`, `_ask/templates/`, `AGENTS.md`, `CONTEXT.md`, `work/**/*.md`, `_ask/docs/adr/`, and generated `.cursor` projections of those sources. A `.md` file that is not root `README.md`, `_ask/guide/`, or `_ask/docs/demo/` is machine-first.
+Machine-first includes `specs/`, `_ask/spec/`, `.agents/ask/`, `_ask/agents/` (pointers), `_ask/policies/`, `_ask/templates/`, `AGENTS.md`, `CONTEXT.md`, `work/**/*.md`, `_ask/docs/adr/`, and generated `.cursor` projections of those sources. A `.md` file that is not root `README.md`, `_ask/guide/`, or `_ask/docs/demo/` is machine-first.
 
 Do not apply `humanizer` to machine-first files. Keep every supported claim; do not invent facts. Leave code, commands, paths, YAML metadata, and link targets unchanged.
 

@@ -63,3 +63,7 @@ At meaningful milestones, create commits so that important engineering states ar
 When that TaskGraph file exists, run `./ask inner-loop run` (or `resume`). Scheduling, retry, CAS, and evidence fold live in `_ask/scripts/inner_loop/`. This contract does not copy the DAG.
 
 One committing writer. Done when the current task is `integrated`, `blocked`, or `escalated`.
+
+## E2E
+
+Build the spec’s confirmed E2E journeys, or keep `not_applicable` plus reason. Missing E2E with no reason refuses Implement.
