@@ -199,3 +199,10 @@ unset. Grill before applying Spec Change to the proposal file.
 **Spec Change before Plan:** yes — round 1 encodings plus allowlist layers
 after this grill.
 
+## After Spec Change (2026-09-20)
+
+Human confirmed sequential writers, steering globs, commit-allowlist +
+`git diff` review, `extras` vs `glob_too_narrow`, 2+2 then `blocked`. Applied
+in `specs/proposals/inner-loop-hardening.md`. Challenge gate for those items:
+closed. Remaining: Plan encodings listed under Open questions.
+
