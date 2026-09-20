@@ -90,7 +90,7 @@ Human decision: replace the shell-overlay model with a language-neutral verifica
 - Codex adapter: TOML via `agent.toml.tpl`. `runtimes/codex.yaml` notes custom `agent_type` attach has failed on some Codex versions; spawn is best-effort. Review projection has no `readonly` equivalent (Cursor Review gets `readonly: true`).
 - `.agents/skills/` is currently a generated, gitignored Community Skill store. Moving canonical protocol into `.agents/` therefore requires explicit sibling namespaces and distinct ownership rules so install/upgrade cannot confuse kit-owned contracts with prepared or consumer-owned files.
 
-Human decision: canonical stage contracts and binding tables move into `.agents/`; backward compatibility with `_ask/agents/` and `_ask/bindings/` is not required. Cursor, Codex, and OpenCode remain generated runtime projections from that one source. The exact `.agents/` layout is open.
+Human decision: canonical stage contracts and binding tables move into `.agents/ask/{stages,bindings,...}`; `.agents/skills/` remains a separate generated Community Skill store. Backward compatibility with `_ask/agents/` and `_ask/bindings/` is not required because ASK has no deployed clients. This permission applies to the current kit shape only: after launch, upgrades must preserve consumer-owned state and configuration unless an explicit migration says otherwise. Cursor, Codex, and OpenCode remain generated runtime projections from the canonical namespaced source.
 
 ## Decisions so far
 
@@ -103,8 +103,12 @@ Human decision: canonical stage contracts and binding tables move into `.agents/
 - Do not build a custom model runtime (v1 “what not to build”).
 - Do not weaken dirty-tree, dedicated branch, SHA evidence, or human Accept.
 - Do not auto-deploy or merge to `main`/`master` from this workstream.
-- Canonical stage contracts and binding tables move into `.agents/`. No compatibility path for their old `_ask/` locations is required.
+- Canonical kit inputs use the namespaced `.agents/ask/{stages,bindings,...}` layout. `.agents/skills/` remains separate.
+- ASK has no deployed clients, so this workstream may break the current kit layout and interfaces without preserving their old shape. Future upgrades still need explicit ownership and lifecycle rules and may not overwrite consumer-owned state or configuration by default.
 - Every concurrent writing task gets its own Git worktree and branch. Read-only agents may share a checkout. Integration into `agent/<work-id>` must be deterministic.
+- Source-file tasks run according to the dependency DAG. Tasks that own overlapping source paths are serialized; a later task starts from the coordinator SHA after its prerequisites are integrated. Parallel-ready tasks must own disjoint source paths.
+- Task branches do not edit shared inner-loop state files. The coordinator owns state transitions and applies versioned compare-and-swap updates from structured task results.
+- Ready task commits are integrated in dependency order, then stable task ID. Unexpected conflicts stop and escalate; agents do not resolve them silently.
 - Verification starts from a language-neutral scaffolder. Project scaffold/init materializes a concrete verification set for detected TypeScript and/or Python. `.starter-kit/verify.conf` compatibility is out of scope.
 
 ## Not yet specified
@@ -116,27 +120,6 @@ Load-bearing frontier (Explore grilling, ADR 0016). Numbered questions only. Def
 See Notes. Default: no further prepare.
 
 ### Numbered questions
-
-❓ **Q4** - **Canonical `.agents/` layout**: How should kit-owned stage contracts and binding tables coexist with generated Community Skills and future consumer-owned agent configuration?
-
-- **A. Namespaced kit package:** `.agents/ask/stages/` and `.agents/ask/bindings/` are kit-owned canonical inputs; `.agents/skills/` remains generated and gitignored; consumer files use explicit paths outside `.agents/ask/`. Install/upgrade may replace `.agents/ask/` as one unit.
-- **B. Flat capability folders:** `.agents/stages/` and `.agents/bindings/` are kit-owned siblings of `.agents/skills/`. Paths are shorter, but ownership is distributed across the shared root and future agent tooling may claim more top-level names.
-- **C. Per-runtime canonical trees:** canonical contracts live beside `.cursor/`, `.codex/`, and `.opencode/` outputs. This removes one portable source and makes drift likely.
-
-Hard to reverse: every protocol pointer, generator input, install/upgrade ownership rule, local-overlay path, test, ADR, and runtime projection depends on these names.
-
-➡️ **A.** The `ask` namespace gives install/upgrade one replaceable boundary while preserving `.agents/skills/` as a separate generated store. Use `stages`, not `skills`, for 00–10 contracts so runtime discovery does not mistake protocol stages for Community Skills.
-
-❓ **Q5** - **Task integration and conflicts**: How should isolated task branches become the coordinator’s `agent/<work-id>` history?
-
-- **A. Ordered commit integration:** each writing task declares owned paths, starts from a recorded coordinator SHA, and produces one or more attributable commits. Parallel tasks with overlapping owned paths are refused or serialized. The coordinator integrates ready tasks by dependency order, then stable task ID, using cherry-pick. Any unexpected overlap, stale-base semantic conflict, or cherry-pick conflict stops integration and records an escalation; no model-authored auto-resolution.
-- **B. Deterministic patch application:** each task emits a patch bundle; the coordinator applies bundles in stable order. This is runtime-neutral but loses normal branch history and makes rename/binary/conflict behavior harder to reason about.
-- **C. Deterministic merge commits:** merge task branches in stable order and invoke a fixed conflict-resolution agent when needed. This preserves ancestry but “deterministic order” does not make semantic conflict resolution deterministic.
-- **D. Last-writer wins by task ID:** apply all task outputs in stable order and let later tasks overwrite. Reproducible, but unsafe.
-
-Hard to reverse: branch topology, resume state, evidence identity, conflict tests, debugger inputs, and commit discipline all depend on the integration unit.
-
-➡️ **A.** Git commits are already the kit’s provenance unit. Refusing overlapping parallel writers makes deterministic integration an enforceable property rather than a claim about an AI merge. A dependent task starts only after its prerequisites are integrated and receives the new coordinator SHA.
 
 ❓ **Q6** - **Concrete verification artifact ownership**: Where does the generated project-specific verification set live, and what may install/upgrade/regeneration do to it?
 
@@ -174,11 +157,11 @@ Hard to reverse: dependency ownership, lockfile churn, setup automation, and wha
 - Ready-to-launch means this workstream implements after Grill→Spec→Plan on `agent/inner-loop-hardening` and push is a later human ask. Explore does not implement product code.
 - No languages beyond TypeScript and Python. No auto-merge to default branch.
 
-### Later frontier (blocked on Q4–Q7)
+### Later frontier (blocked on Q6–Q7)
 
-- Generator entrypoints, local-overlay location, and install/upgrade migration mechanics (after Q4).
-- Exact TaskGraph fields, branch naming, evidence schema, retry count, cancellation, and resume after kill (after Q5).
-- Failure handling when an integrated task invalidates a still-running task’s base (after Q5).
+- Generator entrypoints, local-overlay location, and install/upgrade mechanics.
+- Exact TaskGraph fields, branch naming, evidence schema, retry count, cancellation, and resume after kill.
+- Failure handling when an integrated task invalidates a still-running task’s base.
 - CheckPlan schema, preset provenance, brownfield baseline semantics, and fail-on-empty behavior (after Q6–Q7).
 - Detection precedence when TypeScript and Python manifests, monorepos, or multiple tools coexist (after Q6–Q7).
 - OpenCode agent file format details.
@@ -196,6 +179,6 @@ Hard to reverse: dependency ownership, lockfile churn, setup automation, and wha
 
 ## Handoff to Intent
 
-Pending Q4–Q7. Destination is **STILL_FOGGY**. Do not enter `01 Grill` until those answers (or an explicit Defaults OK covering the recommendations and assume-list) are recorded here.
+Pending Q6–Q7 and the later frontier. Destination is **STILL_FOGGY**. Do not enter `01 Grill` until those answers (or an explicit Defaults OK covering the recommendations and assume-list) are recorded here.
 
 Gate: **STILL_FOGGY**
