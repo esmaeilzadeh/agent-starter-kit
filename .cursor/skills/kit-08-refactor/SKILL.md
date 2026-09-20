@@ -40,6 +40,12 @@ A finding may not be marked FIXED without the relevant verification being rerun.
 
 If the finding implies a spec change, call the Spec Change workflow.
 
+## Inner-loop
+
+Stay on the current task’s steering `owned_paths` globs. Invoke `./ask inner-loop` for this writer; do not start a second task.
+
+Done when each in-scope finding is FIX, ACCEPT WITH RATIONALE, or ESCALATE and required checks have been rerun.
+
 ---
 
 ## Kit path

@@ -29,3 +29,14 @@ See `_ask/policies/workflow.md`. Prepare `review.md`. After defaults-OK, do not 
 ## Model spawn (required)
 
 Spawn the generated Review subagent for the current runtime. Present that runtime’s picker list (default is the resolved `cheap` or `diverse` pool for workstream risk; unset risk is LOW → cheap). The human confirms. If the pick is the same family as Implement on that runtime, warn once; continue after a second confirm. Record `model`, `runtime`, and `parent_model` on `review.md`. Do not author the review only in the parent context. A review agent is still not the sole acceptance mechanism.
+
+## Inner-loop
+
+When `work/<work-id>/inner-loop/tasks.yaml` exists, review the **current** writer only (`./ask inner-loop status`).
+
+**Steering boundary:** run `git diff --name-only` and match those paths to the task’s `owned_paths` globs (seam/module patterns, not a file list). Verdict is `APPROVED` or `REJECTED`.
+
+- Outside glob and not required → extras; revert; one remediation.
+- Required path outside the glob → `glob_too_narrow`; blocked.
+
+Review commits nothing. Scratch writes are allowed. Done when the verdict and boundary are recorded on the TaskResult.
