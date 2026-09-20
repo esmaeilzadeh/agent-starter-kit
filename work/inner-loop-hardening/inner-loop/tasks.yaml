@@ -10,13 +10,24 @@ tasks:
     depends_on: []
     owned_paths:
       - .agents/ask/**
+      - .agents/ask.local/**
       - _ask/agents/**
       - _ask/bindings/**
       - _ask/scripts/sync-cursor-binding.sh
       - _ask/scripts/sync-runtime-agents.py
+      - _ask/scripts/install-kit.sh
+      - _ask/scripts/upgrade-kit.sh
       - _ask/OWNED-PATHS.md
       - _ask/tests/test-sync-runtime-agents.sh
       - _ask/tests/test-sync-off-path-command.sh
+      - _ask/tests/test-sync-canonical-ask.sh
+      - _ask/tests/test-humanizer-docs-specs.sh
+      - _ask/tests/test-grilling-skip-trivia-contracts.sh
+      - .cursor/skills/**
+      - .cursor/commands/**
+      - .cursor/agents/**
+      - .claude/agents/**
+      - .codex/agents/**
     seam: ./ask sync reads .agents/ask/ and writes Cursor/Claude/Codex projections
     exemption: null
     e2e: inherit
