@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t6-wire-stages",
+  "commit_shas": ["db57bc6b6adb89b153f0f9540ae5e1a4f6248fb6"],
+  "tdd": {
+    "seam": "06/07/08 call the inner-loop module; owned_paths are steering globs",
+    "red": {
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "output": "EXIT:1 (contracts lacked inner-loop/steering)",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "output": "PASS: 06/07/08 call inner-loop with steering owned_paths",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": [".agents/ask/stages/", "_ask/tests/test-stages-inner-loop.sh", ".cursor/", ".claude/agents/", ".codex/agents/", ".opencode/agents/"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "cc-sdd steering: patterns not file lists. Reviewer git diff --name-only vs globs."
+}
