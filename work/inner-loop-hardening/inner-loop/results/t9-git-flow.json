@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t9-git-flow",
+  "commit_shas": ["a577017f6e7395b443e0da61b13eb2c0ad34748c"],
+  "tdd": {
+    "seam": "start-work from develop or fail closed; changelog and release-evidence templates",
+    "red": {
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "output": "FAIL: missing develop should fail (branched from default instead)",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "output": "PASS: start-work from develop or fail closed",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/scripts/start-work.sh", "_ask/tests/test-start-work-from-develop.sh", "_ask/policies/git-flow.md", "CHANGELOG.md", "_ask/templates/release-evidence.md"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "No script merges/tags/pushes main."
+}
