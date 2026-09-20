@@ -8,7 +8,8 @@ explore-map What/Why stay unchanged.
 
 ## Proposed change
 
-Eight encodings for the challenge must-fix list. Plan-ok items stay Plan.
+Nine encodings for the challenge must-fix list plus integrate/harness. Plan-ok
+items stay Plan. Cherry-pick onto the coordinator is **removed**.
 
 ### 1. Dirty-tree vs inner-loop worktrees
 
@@ -17,10 +18,10 @@ Eight encodings for the challenge must-fix list. Plan-ok items stay Plan.
 - Task worktrees are runner-created from a recorded SHA. Spawn checks that
   worktree is empty of uncommitted files; that check is runner-owned, not a
   human `./ask check-clean` prompt.
-- Cherry-pick conflict or unexpected overlap: `git cherry-pick --abort` (or
-  equivalent) so the coordinator returns to the last successful
-  `coordinator_sha`. Task branches stay intact. Escalate. Outer 09/10 still
-  require a clean coordinator tree.
+- Failed integrate: abort the in-progress Git operation so the coordinator
+  returns to the last successful `coordinator_sha`. Task branches stay intact
+  (same commits, same parents). Escalate. Outer 09/10 still require a clean
+  coordinator tree.
 - `worktree.md` in this workstream: allow in-workstream
   `agent/<work-id>/task/<task-id>` worktrees. Cross-workstream parallel overlap
   stays forbidden.
@@ -29,13 +30,14 @@ Eight encodings for the challenge must-fix list. Plan-ok items stay Plan.
 
 On `resume()`:
 
-- If a cherry-pick is in progress (CHERRY_PICK_HEAD or equivalent), abort it
-  back to last recorded `coordinator_sha` when that SHA is an ancestor of
-  current HEAD; otherwise escalate (manual recovery).
-- CAS `revision` increments only after cherry-pick completes **and** HEAD
-  equals the new `coordinator_sha`.
+- If a merge (or FF) is in progress, abort it back to last recorded
+  `coordinator_sha` when that SHA is an ancestor of current HEAD; otherwise
+  escalate (manual recovery).
+- CAS `revision` increments only after integrate completes **and** HEAD equals
+  the new `coordinator_sha`.
 - Queued tasks whose `base_sha` is not the current `coordinator_sha` are
   requeued from the new SHA (same rule as cancelled running tasks).
+- The runner never cherry-picks or rebases task commits onto the coordinator.
 
 ### 3. OpenCode acceptance
 
@@ -79,7 +81,40 @@ rules in the spec. Stage templates still require an E2E section or
 `owned_paths` and neither is reachable from the other via `depends_on`. The
 runner does **not** insert edges. Plan must declare the order.
 
-### 7. Context-engineering audit done-state
+### 7. Integrate without replay; harness write-allowlist
+
+**Git operation (preserves branch semantics):**
+
+- Task branch is a descendant of `coordinator_sha` → **fast-forward**.
+- Concurrent tasks from the same base with disjoint owned paths → **merge**
+  (tree union). Both task branches keep their commits and parents.
+- Cherry-pick, rebase onto coordinator, or any rewrite of task SHAs is
+  forbidden.
+
+**No conflict handling.** A merge conflict is a harness/plan failure, not a
+recovery path. No mergetool, no marker editing, no agent resolve. Abort to last
+`coordinator_sha`, leave task branches, escalate.
+
+**Hard harness (not markdown-only):** the agent cannot make Git record files
+outside that task’s expanded `owned_paths`. Dual enforcement, both tested:
+
+1. **Filesystem:** the task worktree’s agent-writable set is exactly the
+   allowlist (plus harness-owned `.git/`). Writes outside the allowlist fail
+   before Git. Generated paths (`lock`, `.cursor/**`, `./ask sync` output) are
+   on the allowlist or unwritable.
+2. **Git:** stage and commit reject any path not in the allowlist. Integrate
+   preflight: each task diff ⊆ `owned_paths`; concurrent diffs have empty
+   name-only intersection. Then FF or merge. If Git still conflicts, that is a
+   harness bug: abort and escalate.
+
+Runner tests must demonstrate: write-outside-allowlist fails; commit-outside
+fails; two running writers have disjoint writable sets. Policy prose alone
+does not satisfy this item.
+
+Plan may choose the mechanism (sparse-checkout, hooks, mount, sandbox) if those
+tests pass.
+
+### 8. Context-engineering audit done-state
 
 Artifact: `work/<work-id>/context-audit.md` with stable checklist IDs covering
 instruction hierarchy, context pointers, grilling expansion, and stage
@@ -90,7 +125,7 @@ contracts this workstream changed.
 - Closed: every ID is `pass` or linked to a Spec Change. Accept refuses if the
   file is missing or any ID is `open`.
 
-### 8. Worktree policy in scope
+### 9. Worktree policy in scope
 
 Amending `_ask/policies/worktree.md` for the in-workstream task-branch carve-out
 is in this workstream’s What (constraint clarification, not a new runner).
@@ -100,18 +135,18 @@ changes live/archive meaning; if it does, include it in the same policy edit.
 ## Why the change is needed
 
 Challenge found the spec’s direction matches intent, but several gates are not
-falsifiable against today’s kit: dirty-tree vs cherry-pick, crash mid-integrate,
-OpenCode AC vs deferred format, TTY scaffold vs agent Verify, kit-repo E2E
-vacuity, overlap auto-edge vs reject, audit “open” with no artifact, and
-worktree policy that currently forbids the runner’s worktrees.
+falsifiable against today’s kit. Cherry-pick would rewrite task SHAs and break
+branch semantics. Markdown `owned_paths` without a filesystem/Git allowlist
+would make merge conflict “handling” a hidden disaster path.
 
 These encodings do not change Why or the outer ASK stages.
 
 ## Impacted artifacts
 
-- `specs/proposals/inner-loop-hardening.md` (Behavior, Failure cases, AC 2, 6,
-  9, 10, 12, Constraints)
-- Later, after Plan: `_ask/policies/worktree.md`, verify scripts, templates
+- `specs/proposals/inner-loop-hardening.md` (Behavior, Failure cases, AC 2, 3,
+  4, 6, 9, 10, 12, Constraints, Integration)
+- Later, after Plan: `_ask/policies/worktree.md`, verify scripts, templates,
+  inner-loop harness tests for the write-allowlist
 
 ## Impacted workstreams
 
@@ -125,7 +160,8 @@ encodings; Plan may start.
 
 ## Acceptance criteria for the change
 
-1. Spec text states coordinator vs task-worktree clean rules and abort-on-conflict.
+1. Spec text states coordinator vs task-worktree clean rules and abort of a
+   failed FF/merge (no cherry-pick).
 2. Spec text states resume abort + revision increment after successful integrate.
 3. AC 2 names file-shape + Plan-recorded OpenCode doc version; live spawn optional.
 4. Spec text states human-only provisioning wizard; agent Verify fail-closed.
@@ -133,7 +169,14 @@ encodings; Plan may start.
 6. Spec text states overlap-without-edge is `path_conflict`.
 7. Spec text names `context-audit.md`, independence, and closed-state IDs.
 8. Spec constraints include the `worktree.md` carve-out as in-scope.
+9. Spec forbids cherry-pick/rebase onto the coordinator; integrate is FF or
+   merge of disjoint trees; conflict aborts with no resolution path.
+10. Spec requires a tested filesystem + Git write-allowlist for `owned_paths`;
+    agent labor cannot commit paths outside it.
 
 ## Decision
 
-Awaiting human: accept all eight encodings, or reject/amend listed items.
+Awaiting human:
+
+1. Allowlist grill (round 2) — layers, glob granularity, roles, out-of-glob.
+2. Then accept or amend round-1 encodings plus the grill outcome.

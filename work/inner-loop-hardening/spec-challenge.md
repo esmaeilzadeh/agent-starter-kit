@@ -140,10 +140,62 @@ Alignment with Why (intent): the spec targets sequential chat-orchestrated 06–
 
 10. Debug adapter spawn limits wiring to runtime pools in `.agents/ask/bindings/`.
 
+## Allowlist re-challenge (round 2)
+
+Trigger: human rejected cherry-pick (branch semantics) and merge-conflict recovery;
+required a filesystem/Git harness so agents cannot record files outside
+`owned_paths`. That encoding is not yet safe.
+
+### Counterexamples
+
+1. **TDD writes that are not the product.** `pytest` / `ruff` / `tsc` write
+   caches, coverage, and tmp under the worktree. A write-allowlist equal to
+   `owned_paths` makes the first test run a harness failure. Those writes must
+   not be committable or integrable.
+
+2. **Test source vs test scratch.** A new test file is the RED evidence and
+   belongs in `owned_paths` (committed). A file the agent “tweaks for the test
+   without commit” is either scratch (must stay untracked) or a production edit
+   smuggled off the branch (breaks TDD and merge safety).
+
+3. **Plan-time file census.** If `owned_paths` is a per-file list, Plan spends
+   the workstream enumerating paths and still misses renames, generated files,
+   and `__init__.py`. Seam/module globs are the only scale that Plan can
+   declare; the harness expands them at spawn.
+
+4. **Mid-task discovery.** Implement finds the bug is in a file outside the
+   glob. Auto-expanding the allowlist reintroduces overlapping writers.
+   Silent extra commits are the merge disaster. The legal moves are: depend on
+   a task that owns that glob, or escalate.
+
+5. **Review/debug.** Spec allows read-only agents to share a checkout. Running
+   tests still writes scratch. A shared checkout plus scratch writes can dirty
+   a tree another role is reading. Review must not commit. Debug must use the
+   same commit allowlist as implement for that task.
+
+6. **Reads.** Import graphs and typecheck need the rest of the repo readable.
+   A sparse worktree that omits non-owned files will false-fail `tsc`/`pytest`
+   for reasons unrelated to merge safety.
+
+### Spec gap
+
+`owned_paths` is specified as writer globs and, in Spec Change §7, as both
+filesystem write-allowlist and Git commit-allowlist with no third set for
+uncommitted test output, no glob-vs-file rule, no mid-task discovery rule, and
+no per-role write rights.
+
+Until those are decided, §7 is under-constrained: it either blocks TDD or
+fails to prevent merge disaster.
+
 ## Challenge verdict
 
 **ESCALATE**
 
-The spec matches intent and explore-map on direction (deep runner, fail-closed verify, `.agents/ask/` SoT, Git-flow) and cites testable inner-loop operations. Several acceptance criteria and policies are not yet coherently falsifiable against this kit: dirty-tree rules (`check-clean-worktree.sh`, `worktree.md`) conflict with cherry-pick integration on the coordinator branch; crash mid-integrate is absent from failure cases while invariants require SHA/revision alignment; AC 2 (OpenCode shape “at implement time”) conflicts with deferred open questions and intent’s Plan-time format expectation; AC 9 interactive provisioning cannot complete in a typical agent Verify session without an explicit human-only boundary; AC 6/10 leave this repository’s E2E/isolation story implicit though templates must change. Resolve the must-fix items via Spec Change before Plan so acceptance tests and policy edits are stable.
+Round 1 gaps remain (dirty-tree, resume, OpenCode, provisioning, kit E2E,
+overlap edges, audit, worktree carve-out). Round 2: commit-allowlist vs
+write-allowlist vs scratch, glob granularity, and out-of-glob discovery are
+unset. Grill before applying Spec Change to the proposal file.
 
-**Spec Change before Plan:** yes — for items 1–8 under Must-fix above.
+**Spec Change before Plan:** yes — round 1 encodings plus allowlist layers
+after this grill.
+
