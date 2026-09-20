@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t8-scaffold-wizard",
+  "commit_shas": ["a37fb5ba3192768f53cf82e0b5569bc2bb621e1b"],
+  "tdd": {
+    "seam": "scaffold yaml only if absent; human-only wizard; mixed-stack stops",
+    "red": {
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "output": "python3: can't open file .../verify_scaffold.py",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "output": "PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/scripts/verify_scaffold.py", "_ask/tests/fixtures/brownfield-mixed/", "_ask/tests/test-verify-scaffold.sh", "_ask/tests/test-setup-human-only.sh"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Interactive path is TTY-only like ./ask setup. --re-scaffold writes .candidate only."
+}
