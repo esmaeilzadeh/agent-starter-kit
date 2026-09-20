@@ -1,6 +1,6 @@
 {
   "work_id": "inner-loop-hardening",
-  "commit_sha": "0c3386cb51326e302489fd6200017e39a0fcd2fa",
+  "commit_sha": "67843e08eba1301ce9495036539556d046522f96",
   "checks": [
     {
       "id": "ask-kit",
@@ -11,5 +11,5 @@
     }
   ],
   "result": "pass",
-  "notes": "08 closed 07 F1–F7. t1–t13 complete. context-audit CE-01..CE-06 pass. Accept waits on human confirm after a re-review of the 08 diffs."
+  "notes": "Re-review APPROVED (parent evidence; kit-07 spawn hit usage limit). F1–F7 closed. CE-01..CE-06 pass. Accept awaits human confirm."
 }
