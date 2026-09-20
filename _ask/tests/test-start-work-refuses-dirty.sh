@@ -9,6 +9,7 @@ git config user.email t@e.com
 git config user.name t
 echo base > README.md
 git add README.md && git commit -q -m init
+git branch develop
 # install kit scripts minimally
 mkdir -p _ask/scripts _ask/templates
 cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/start-work.sh" _ask/scripts/
