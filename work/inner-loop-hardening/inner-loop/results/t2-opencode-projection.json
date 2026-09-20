@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t2-opencode-projection",
+  "commit_shas": ["e19a18cbfd2e62f2e2cbf952bf9d40a2211e2457"],
+  "tdd": {
+    "seam": ".opencode/agents markdown agents match the Plan OpenCode pin",
+    "red": {
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "output": "EXIT:1 (missing .opencode/agents/kit-06-implement.md)",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "output": "PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": [".agents/ask/bindings/", "_ask/scripts/sync-runtime-agents.py", "_ask/tests/test-sync-runtime-agents.sh", ".opencode/agents/"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Docs pin https://opencode.ai/docs/agents 2026-09-20. Live spawn not required."
+}
