@@ -1,7 +1,7 @@
 {
   "schema": "ask-task-result/v1",
   "task_id": "t8-scaffold-wizard",
-  "commit_shas": ["a37fb5ba3192768f53cf82e0b5569bc2bb621e1b"],
+  "commit_shas": ["d636d9e56ced13967d80c82bec0bb50038d59c4e"],
   "tdd": {
     "seam": "scaffold yaml only if absent; human-only wizard; mixed-stack stops",
     "red": {
@@ -18,5 +18,5 @@
   "exemption": null,
   "owned_paths_touched": ["_ask/scripts/verify_scaffold.py", "_ask/tests/fixtures/brownfield-mixed/", "_ask/tests/test-verify-scaffold.sh", "_ask/tests/test-setup-human-only.sh"],
   "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
-  "notes": "Interactive path is TTY-only like ./ask setup. --re-scaffold writes .candidate only."
+  "notes": "Agents must not run the wizard without --preset. Fixture is a mixed eslint+biome TS workspace, not a live Nest app."
 }
