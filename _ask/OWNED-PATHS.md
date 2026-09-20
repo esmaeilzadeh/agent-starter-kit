@@ -4,18 +4,19 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 
 ## Kit-owned (safe to refresh on upgrade)
 
+- `.agents/ask/` (stages, bindings, verification presets)
+- `_ask/agents/*.md` pointers **except** `*.local.md`
 - `_ask/guide/` modules
 - `_ask/spec/` modules
-- `_ask/agents/*.md` **except** `*.local.md`
 - `_ask/templates/`
 - Stock `_ask/policies/*.md` when the consumer has not replaced the policy tree
 - `_ask/scripts/*.sh`
 - `_ask/tests/`
 - `_ask/docs/` (kit-author ADRs, demo, research)
 - `_ask/cursor-commands/` (session-mode Cursor commands; `./ask sync` copies into `.cursor/commands/`)
-- `_ask/bindings/` **except** consumer `models.yaml` (portable defaults, runtime slug tables, templates)
+- `_ask/bindings/` pointers **except** consumer `models.yaml`
 - Generated `.cursor/` projections (skills/commands/hooks wrappers and `.cursor/agents` produced by sync)
-- Generated `.claude/agents/` and `.codex/agents/` (from `./ask sync`)
+- Generated `.claude/agents/`, `.codex/agents/`, and `.opencode/agents/` (from `./ask sync`)
 - Stock kit Cursor rules under `.cursor/rules/` **except** `.cursor/rules/local/` (e.g. bootstrap, commit-step-discipline)
 - Root `ask` dispatcher
 - Monolith stubs (`ai-agent-engineering-guide.md`, `ai-agent-starter-kit-spec.md`)
@@ -26,8 +27,10 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - Policies when customized (or a local policy overlay tree)
 - Local sections of root `AGENTS.md`
 - `.cursor/rules/local/`
-- `_ask/agents/*.local.md` (per-stage overlays merged at sync time)
+- `.agents/ask.local/` (per-stage and binding overlays merged at sync time)
+- `_ask/agents/*.local.md` (legacy overlay path still merged if ask.local file is absent)
 - `_ask/bindings/models.yaml` (optional consumer model overlay)
+- `.agents/verification.yaml` (committed CheckPlan; scaffold/upgrade leave it)
 - Product `docs/`, `scripts/`, `tests/`, `src/`
 - Product `specs/`, `work/` (engineering state)
 - Prepared `.agents/skills/` bodies (regenerated; gitignored)

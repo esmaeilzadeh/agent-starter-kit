@@ -1,29 +1,3 @@
-# Kit Protocol: 07 Review
+Canonical stage contract: `.agents/ask/stages/07-review.md`
 
-Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
-
-Output: review artifact from `_ask/templates/review.md`.
-
-## 15.7 07 Review Agent
-
-Purpose:
-
-```text
-Independently inspect implementation against the accepted specification and project policy.
-```
-
-Must produce structured findings.
-
-It should prefer evidence and concrete locations over generic criticism.
-
-A review agent is not the sole acceptance mechanism.
-
----
-
-## Kit path
-
-See `_ask/policies/workflow.md`. Prepare `review.md`. After defaults-OK, do not require a separate bless of the review file; Accept is the second confirm. Off-path only if they explicitly leave the kit.
-
-## Model spawn (required)
-
-Spawn the generated Review subagent for the current runtime. Present that runtime’s picker list (default is the resolved `cheap` or `diverse` pool for workstream risk; unset risk is LOW → cheap). The human confirms. If the pick is the same family as Implement on that runtime, warn once; continue after a second confirm. Record `model`, `runtime`, and `parent_model` on `review.md`. Do not author the review only in the parent context. A review agent is still not the sole acceptance mechanism.
+Do not edit this pointer.

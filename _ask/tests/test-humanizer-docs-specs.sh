@@ -31,7 +31,7 @@ fi
 grep -q 'writing-for-agents' .cursor/rules/writing-for-agents-machine-docs.mdc
 grep -q 'embedded mode' .cursor/rules/writing-for-agents-machine-docs.mdc
 
-for f in _ask/agents/02-spec.md _ask/agents/03-spec-challenge.md _ask/agents/04-spec-change.md; do
+for f in .agents/ask/stages/02-spec.md .agents/ask/stages/03-spec-challenge.md .agents/ask/stages/04-spec-change.md; do
   grep -q 'writing-for-agents' "$f"
   if grep -q 'follow it in embedded mode' "$f" && grep -q 'humanizer/SKILL.md' "$f"; then
     echo "FAIL: $f still applies humanizer" >&2

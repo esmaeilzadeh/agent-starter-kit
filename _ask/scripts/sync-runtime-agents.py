@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit Cursor / Claude / Codex stage agents from _ask/bindings/."""
+"""Emit Cursor / Claude / Codex stage agents from .agents/ask/bindings (fallback _ask/bindings)."""
 from __future__ import annotations
 
 import os
@@ -234,12 +234,24 @@ def render(tpl: str, **kw: str) -> str:
     return out
 
 
+def bindings_dir(root: Path) -> Path:
+    ask_bind = root / ".agents" / "ask" / "bindings"
+    if (root / ".agents" / "ask" / "stages").is_dir() and ask_bind.is_dir():
+        return ask_bind
+    return root / "_ask" / "bindings"
+
+
 def main() -> int:
     root = Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2])
     os.chdir(root)
-    bind = root / "_ask" / "bindings"
+    bind = bindings_dir(root)
     defaults = load_yaml(bind / "models.defaults.yaml")
-    consumer = load_yaml(bind / "models.yaml")
+    consumer = load_yaml(root / "_ask" / "bindings" / "models.yaml")
+    local_bind = root / ".agents" / "ask.local" / "bindings"
+    if local_bind.is_dir():
+        extra = load_yaml(local_bind / "models.yaml")
+        if extra:
+            consumer = {**consumer, **extra}
     work = {}
     work_id = os.environ.get("ASK_WORK_ID")
     if work_id:

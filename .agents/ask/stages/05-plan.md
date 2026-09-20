@@ -1,0 +1,39 @@
+# Kit Protocol: 05 Plan
+
+Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
+
+Output: `work/<work-id>/plan.md` (template `_ask/templates/plan.md`).
+
+## 15.5 05 Plan Agent
+
+Purpose:
+
+```text
+Derive the implementation plan from an accepted specification.
+```
+
+Must:
+
+```text
+reference exactly one accepted spec
+identify affected components
+identify dependencies
+identify verification steps
+identify escalation points
+identify possible spec-change triggers
+```
+
+Must not redefine the requirement.
+
+---
+
+## Kit emphasis
+
+- Planning assumes a clean worktree and a dedicated `agent/<work-id>` branch (create via `./ask start-work <work-id>` if not already on one).
+- The resulting plan must be executed with **one branch only** for that work-id; do not spawn parallel related branches that touch the same files.
+- Execution of the plan (Implement onward) must **commit after each meaningful step on `agent/<work-id>` without waiting for the human to ask** — the work branch is the safety boundary; see `_ask/policies/worktree.md`.
+- After a defaults-OK confirm, **prepare** this plan without a second bless (`_ask/policies/workflow.md`). Do not skip the `plan.md` artifact while staying on the kit path.
+
+## Model spawn (optional)
+
+When this stage’s resolved model differs from the parent, or an explicit override is set, you may spawn the generated Plan subagent. The child drafts the plan. The parent presents it, talks to the human if needed, and writes `plan.md`.

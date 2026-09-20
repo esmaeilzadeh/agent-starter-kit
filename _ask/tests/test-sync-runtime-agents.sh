@@ -5,12 +5,12 @@ cd "$ROOT"
 
 # Portable defaults and protocol must not name vendor slugs.
 if grep -qiE 'grok|composer-|claude-|gpt-|sonnet|opus|haiku|fable|muse-' \
-  _ask/bindings/models.defaults.yaml; then
+  .agents/ask/bindings/models.defaults.yaml; then
   echo "FAIL: models.defaults.yaml contains a vendor slug" >&2
   exit 1
 fi
 if grep -qiE 'grok-|composer-|claude-sonnet|gpt-5|haiku|opus|fable' \
-  _ask/agents/07-review.md; then
+  .agents/ask/stages/07-review.md; then
   echo "FAIL: 07-review.md contains a vendor slug" >&2
   exit 1
 fi

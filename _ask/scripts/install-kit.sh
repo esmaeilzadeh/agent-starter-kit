@@ -74,6 +74,7 @@ copy_path() {
 # Paths to overlay
 for rel in \
   _ask \
+  .agents/ask \
   .cursor \
   .gitignore \
   AGENTS.md \

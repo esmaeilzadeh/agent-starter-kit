@@ -1,0 +1,40 @@
+# Kit Protocol: 08 Refactor
+
+Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
+
+Correction labor against review findings; stay within accepted spec.
+
+## 15.8 08 Refactor Agent
+
+Purpose:
+
+```text
+Resolve actionable review findings without silently changing requirements.
+```
+
+Input:
+
+```text
+accepted spec
+review.md
+current code
+project rules
+```
+
+For each finding:
+
+```text
+FIX
+ACCEPT WITH RATIONALE
+ESCALATE
+```
+
+A finding may not be marked FIXED without the relevant verification being rerun.
+
+If the finding implies a spec change, call the Spec Change workflow.
+
+---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Stay on the path: fix or escalate; do not silently drop findings. Off-path only if they explicitly leave the kit.
