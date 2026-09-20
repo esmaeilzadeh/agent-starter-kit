@@ -1,0 +1,14 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t13-context-audit",
+  "commit_shas": ["9f95ed9aa3445a310826cb6e00d6c6e49e2582ac"],
+  "tdd": null,
+  "exemption": {
+    "kind": "documentation-only",
+    "reason": "audit artifact; Accept gate reads the file",
+    "reviewer_ack": true
+  },
+  "owned_paths_touched": ["work/inner-loop-hardening/context-audit.md"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Independent generalPurpose spawn wrote the audit. Parent applied CE-04/CE-06 pointer repairs (e9adbcd); spawn re-closed all IDs as pass. No ID is open."
+}
