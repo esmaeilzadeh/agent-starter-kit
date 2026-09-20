@@ -146,7 +146,7 @@ Hard to reverse: acceptance criteria, the defaults confirmation, plan structure,
 
 ❓ **Q10** - **Test-state isolation**: What invariant prevents tests from corrupting development or production databases and state?
 
-- **A. Declared isolated resources with a hard guard:** `.agents/verification.yaml` names test-only resource adapters and namespace strategy. Each run gets an ephemeral database/state namespace or disposable container. The runner refuses known development/production identifiers and destructive commands outside the test namespace. Cleanup is idempotent; leaked resources are recorded.
+- **A. Declared isolated resources with a hard guard:** unit tests use no database or an interface-level fake; integration and E2E use an ephemeral isolated instance of the production database engine. `.agents/verification.yaml` names test-only resource adapters and namespace strategy. The runner refuses known development/production identifiers and destructive commands outside the test namespace. Cleanup is idempotent; leaked resources are recorded.
 - **B. Transaction rollback only:** tests use the configured database but wrap cases in transactions. This is fast but does not isolate migrations, queues, caches, files, external services, or code that opens another connection.
 - **C. Clone development state:** create a disposable copy of development data for each run. Realistic, but risks sensitive-data copying and accidental source mutation.
 - **D. Test convention only:** trust environment variables and test code to select safe resources.
@@ -176,6 +176,7 @@ Hard to reverse: verification schema, adapters, CI setup, local developer workfl
 - CheckPlan schema, preset provenance, brownfield baseline semantics, and fail-on-empty behavior.
 - Detection precedence when TypeScript and Python manifests, monorepos, or multiple tools coexist.
 - Interactive provisioning transaction/rollback behavior after the human selects tools.
+- Optional in-memory database adapters are parked in `.later/in-memory-test-state-adapters.md`; they require contract parity with the production adapter.
 - OpenCode agent file format details.
 - Whether the kit repository’s own concrete verification config lists `_ask/tests/test-*.sh` directly or uses a named `ask-kit` preset.
 - Acceptance test matrix across Cursor, Codex, and OpenCode (spawn may stay best-effort on Codex).
