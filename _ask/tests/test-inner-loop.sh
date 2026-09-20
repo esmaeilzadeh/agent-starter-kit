@@ -187,4 +187,91 @@ out="$("${PY[@]}" --root "$FF" resume-repair --coordinator-sha "$coord")"
 [[ "$out" == aborted ]] || fail "dirty resume abort: $out"
 [[ -z "$(git -C "$FF" status --porcelain)" ]] || fail "resume left dirty"
 
-echo "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume"
+# --- driver: run / resume from state.json / cancel / integrate TDD gate ---
+DRV="$TMP/drv"
+git init -q "$DRV"
+git -C "$DRV" config user.email t@e.com
+git -C "$DRV" config user.name t
+echo base > "$DRV/f"
+git -C "$DRV" add f
+git -C "$DRV" commit -q -m base
+mkdir -p "$DRV/work/drv/inner-loop/results"
+cat > "$DRV/work/drv/inner-loop/tasks.yaml" <<'YAML'
+schema: ask-inner-loop-tasks/v1
+work_id: drv
+tasks:
+  - id: t-a
+    depends_on: []
+    owned_paths: [a/**]
+  - id: t-b
+    depends_on: [t-a]
+    owned_paths: [b/**]
+YAML
+out="$("${PY[@]}" --root "$DRV" run drv)"
+printf '%s\n' "$out" | grep -q 'running=t-a' || fail "run starts first ready: $out"
+out="$("${PY[@]}" --root "$DRV" run drv)"
+printf '%s\n' "$out" | grep -q 'waiting=t-a' || fail "second run waits, no second writer: $out"
+
+# missing TDD
+cat > "$DRV/work/drv/inner-loop/results/t-a.json" <<'JSON'
+{"schema":"ask-task-result/v1","task_id":"t-a","tdd":null,"exemption":null}
+JSON
+set +e
+out="$("${PY[@]}" --root "$DRV" run drv 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || fail "missing TDD should not integrate: $out"
+printf '%s\n' "$out" | grep -qi 'tdd\|integrat' || fail "missing TDD message: $out"
+
+# exemption without reviewer_ack
+cat > "$DRV/work/drv/inner-loop/results/t-a.json" <<'JSON'
+{"schema":"ask-task-result/v1","task_id":"t-a","tdd":null,"exemption":{"kind":"documentation-only","reason":"x"}}
+JSON
+set +e
+out="$("${PY[@]}" --root "$DRV" run drv 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || fail "unchecked exemption should not integrate: $out"
+printf '%s\n' "$out" | grep -qi 'reviewer_ack\|exemption' || fail "exemption message: $out"
+
+# red then green
+cat > "$DRV/work/drv/inner-loop/results/t-a.json" <<'JSON'
+{"schema":"ask-task-result/v1","task_id":"t-a","tdd":{"seam":"a","red":{"command":"t","output":"FAIL","exit_code":1},"green":{"command":"t","output":"PASS","exit_code":0}},"exemption":null}
+JSON
+out="$("${PY[@]}" --root "$DRV" run drv)"
+printf '%s\n' "$out" | grep -q 'running=t-b' || fail "after TDD integrate, next ready: $out"
+st="$("${PY[@]}" --root "$DRV" status drv)"
+printf '%s\n' "$st" | grep -q 't-a	integrated' || fail "t-a integrated: $st"
+
+# exemption with reviewer_ack
+cat > "$DRV/work/drv/inner-loop/results/t-b.json" <<'JSON'
+{"schema":"ask-task-result/v1","task_id":"t-b","tdd":null,"exemption":{"kind":"documentation-only","reason":"x","reviewer_ack":true}}
+JSON
+out="$("${PY[@]}" --root "$DRV" run drv)"
+printf '%s\n' "$out" | grep -q 'quiescent' || fail "all integrated → quiescent: $out"
+
+# resume from state.json (dirty abort using coordinator_sha in state)
+echo dirty > "$DRV/f"
+out="$("${PY[@]}" --root "$DRV" resume drv)"
+printf '%s\n' "$out" | grep -Eq 'aborted|quiescent' || fail "resume from state.json: $out"
+[[ -z "$(git -C "$DRV" status --porcelain --untracked-files=no)" ]] || fail "resume left tracked dirty"
+grep -q base "$DRV/f" || fail "resume did not restore coordinator file"
+
+# cancel
+mkdir -p "$DRV/work/cnl/inner-loop"
+cat > "$DRV/work/cnl/inner-loop/tasks.yaml" <<'YAML'
+schema: ask-inner-loop-tasks/v1
+work_id: cnl
+tasks:
+  - id: x
+    depends_on: []
+    owned_paths: [x/**]
+YAML
+out="$("${PY[@]}" --root "$DRV" run cnl)"
+printf '%s\n' "$out" | grep -q 'running=x' || fail "cancel fixture run: $out"
+out="$("${PY[@]}" --root "$DRV" cancel cnl all)"
+printf '%s\n' "$out" | grep -qi cancelled || fail "cancel all: $out"
+st="$("${PY[@]}" --root "$DRV" status cnl)"
+printf '%s\n' "$st" | grep -q 'x	cancelled' || fail "x cancelled: $st"
+
+echo "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume, driver"

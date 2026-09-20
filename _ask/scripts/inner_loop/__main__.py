@@ -10,6 +10,12 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from inner_loop.allowlist import classify_paths, outside_paths, staged_paths  # noqa: E402
+from inner_loop.driver import (  # noqa: E402
+    NotIntegrable,
+    cancel,
+    resume_from_state,
+    run_until,
+)
 from inner_loop.graph import load_graph, validate_graph, _task_map  # noqa: E402
 from inner_loop.integrate import Escalate, Forbidden, integrate, resume  # noqa: E402
 from inner_loop.retry import next_action  # noqa: E402
@@ -119,9 +125,15 @@ def main(argv: list[str] | None = None) -> int:
     rs = sub.add_parser("resume-repair", help="abort dirty/in-progress to coordinator_sha")
     rs.add_argument("--coordinator-sha", required=True)
 
-    for name in ("run", "resume", "cancel"):
-        spn = sub.add_parser(name, help="later inner-loop task")
-        spn.add_argument("work_id", nargs="?")
+    rn = sub.add_parser("run", help="start next ready writer or integrate_ready")
+    rn.add_argument("work_id")
+
+    rm = sub.add_parser("resume", help="abort to state.json coordinator_sha, then run")
+    rm.add_argument("work_id")
+
+    cn = sub.add_parser("cancel", help="cancel task_id or all")
+    cn.add_argument("work_id")
+    cn.add_argument("target")
 
     args = p.parse_args(argv)
     root = repo_root(args.root)
@@ -169,6 +181,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "resume-repair":
             print(resume(root, args.coordinator_sha))
             return 0
+        if args.cmd == "run":
+            print(run_until(root, args.work_id))
+            return 0
+        if args.cmd == "resume":
+            print(resume_from_state(root, args.work_id))
+            return 0
+        if args.cmd == "cancel":
+            print(cancel(root, args.work_id, args.target))
+            return 0
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2
     except ProtocolViolation as e:
@@ -183,6 +204,15 @@ def main(argv: list[str] | None = None) -> int:
     except Escalate as e:
         print(e, file=sys.stderr)
         return 2
+    except SecondWriter as e:
+        print(e, file=sys.stderr)
+        return 2
+    except NotIntegrable as e:
+        print(e, file=sys.stderr)
+        return 2
+    except ValueError as e:
+        print(e, file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
