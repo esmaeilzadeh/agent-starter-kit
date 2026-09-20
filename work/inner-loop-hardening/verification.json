@@ -1,7 +1,15 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "inner-loop-hardening",
+  "commit_sha": "100ccccf5f988dd06094228f6bbcde766d30f98e",
+  "checks": [
+    {
+      "id": "ask-kit",
+      "tier": "mandatory",
+      "command": "./ask verify",
+      "status": "pass",
+      "exit_code": 0
+    }
+  ],
+  "result": "pass",
+  "notes": "Outer 07 is REJECTED (F1–F5 still open). 08 closed F6 (Accept audit refuse), F7 (dispatcher help SoT), and the Git-flow smoke fixture. t1–t13 graph complete. context-audit CE-01..CE-06 pass. Do not Accept until remaining 07 findings are closed or parked with Spec Change."
 }
