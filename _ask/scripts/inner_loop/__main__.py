@@ -11,6 +11,8 @@ sys.path.insert(0, str(HERE.parent))
 
 from inner_loop.allowlist import classify_paths, outside_paths, staged_paths  # noqa: E402
 from inner_loop.graph import load_graph, validate_graph, _task_map  # noqa: E402
+from inner_loop.integrate import Escalate, Forbidden, integrate, resume  # noqa: E402
+from inner_loop.retry import next_action  # noqa: E402
 from inner_loop.state import (  # noqa: E402
     CasConflict,
     ProtocolViolation,
@@ -104,6 +106,19 @@ def main(argv: list[str] | None = None) -> int:
     ix = sub.add_parser("check-index", help="refuse staged paths outside globs")
     ix.add_argument("--glob", action="append", dest="globs", required=True)
 
+    na = sub.add_parser("next-action", help="bounded retry dispatch")
+    na.add_argument("--review-round", type=int, required=True)
+    na.add_argument("--debug-round", type=int, required=True)
+    na.add_argument("--verdict", required=True)
+    na.add_argument("--boundary", default="ok")
+
+    ig = sub.add_parser("integrate", help="fast-forward only onto coordinator")
+    ig.add_argument("--task-ref", required=True)
+    ig.add_argument("--method", default="ff-only")
+
+    rs = sub.add_parser("resume-repair", help="abort dirty/in-progress to coordinator_sha")
+    rs.add_argument("--coordinator-sha", required=True)
+
     for name in ("run", "resume", "cancel"):
         spn = sub.add_parser(name, help="later inner-loop task")
         spn.add_argument("work_id", nargs="?")
@@ -140,7 +155,21 @@ def main(argv: list[str] | None = None) -> int:
                 return 1
             print("ok")
             return 0
-        print(f"{args.cmd} not implemented in t3-runner-graph", file=sys.stderr)
+        if args.cmd == "next-action":
+            print(
+                next_action(
+                    args.review_round, args.debug_round, args.verdict, args.boundary
+                )
+            )
+            return 0
+        if args.cmd == "integrate":
+            sha = integrate(root, args.task_ref, args.method)
+            print(sha)
+            return 0
+        if args.cmd == "resume-repair":
+            print(resume(root, args.coordinator_sha))
+            return 0
+        print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2
     except ProtocolViolation as e:
         print(e, file=sys.stderr)
@@ -148,7 +177,10 @@ def main(argv: list[str] | None = None) -> int:
     except CasConflict as e:
         print(e, file=sys.stderr)
         return 2
-    except SecondWriter as e:
+    except Forbidden as e:
+        print(e, file=sys.stderr)
+        return 2
+    except Escalate as e:
         print(e, file=sys.stderr)
         return 2
 

@@ -140,4 +140,51 @@ set -e
 [[ "$code" -ne 0 ]] || fail "staged OUT.txt should fail check-index"
 printf '%s\n' "$out" | grep -q OUT.txt || fail "check-index names OUT.txt: $out"
 
-echo "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist"
+# --- retry bounds ---
+out="$("${PY[@]}" next-action --review-round 0 --debug-round 0 --verdict REJECTED --boundary ok)"
+[[ "$out" == implement ]] || fail "reject 1 → implement: $out"
+out="$("${PY[@]}" next-action --review-round 1 --debug-round 0 --verdict REJECTED --boundary ok)"
+[[ "$out" == implement ]] || fail "reject 2 → implement: $out"
+out="$("${PY[@]}" next-action --review-round 2 --debug-round 0 --verdict REJECTED --boundary ok)"
+[[ "$out" == debug ]] || fail "reject 3 → debug: $out"
+out="$("${PY[@]}" next-action --review-round 2 --debug-round 1 --verdict REJECTED --boundary ok)"
+[[ "$out" == debug ]] || fail "debug 2 still debug: $out"
+out="$("${PY[@]}" next-action --review-round 2 --debug-round 2 --verdict REJECTED --boundary ok)"
+[[ "$out" == blocked ]] || fail "after 2 debug → blocked: $out"
+out="$("${PY[@]}" next-action --review-round 0 --debug-round 0 --verdict REJECTED --boundary glob_too_narrow)"
+[[ "$out" == blocked ]] || fail "glob_too_narrow → blocked no retry: $out"
+out="$("${PY[@]}" next-action --review-round 0 --debug-round 0 --verdict APPROVED --boundary ok)"
+[[ "$out" == integrate ]] || fail "approved → integrate: $out"
+
+# --- FF integrate; cherry-pick forbidden ---
+FF="$TMP/ff"
+git init -q "$FF"
+git -C "$FF" config user.email t@e.com
+git -C "$FF" config user.name t
+echo base > "$FF/f"
+git -C "$FF" add f
+git -C "$FF" commit -q -m base
+base=$(git -C "$FF" rev-parse HEAD)
+git -C "$FF" checkout -q -b task
+echo task > "$FF/f"
+git -C "$FF" add f
+git -C "$FF" commit -q -m task
+git -C "$FF" checkout -q master 2>/dev/null || git -C "$FF" checkout -q main
+sha="$("${PY[@]}" --root "$FF" integrate --task-ref task --method ff-only)"
+[[ "$sha" == "$(git -C "$FF" rev-parse HEAD)" ]] || fail "ff HEAD"
+[[ "$sha" != "$base" ]] || fail "ff advanced"
+set +e
+out="$("${PY[@]}" --root "$FF" integrate --task-ref task --method cherry-pick 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]] || fail "cherry-pick must be forbidden"
+printf '%s\n' "$out" | grep -qi forbidden || fail "forbidden message: $out"
+
+# --- resume abort to ancestor coordinator_sha ---
+echo dirty > "$FF/f"
+coord=$(git -C "$FF" rev-parse HEAD)
+out="$("${PY[@]}" --root "$FF" resume-repair --coordinator-sha "$coord")"
+[[ "$out" == aborted ]] || fail "dirty resume abort: $out"
+[[ -z "$(git -C "$FF" status --porcelain)" ]] || fail "resume left dirty"
+
+echo "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume"
