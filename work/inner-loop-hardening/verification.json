@@ -1,6 +1,6 @@
 {
   "work_id": "inner-loop-hardening",
-  "commit_sha": "67843e08eba1301ce9495036539556d046522f96",
+  "commit_sha": "64fee91889c560fe0e0605a3bad45a04a5556269",
   "checks": [
     {
       "id": "ask-kit",
@@ -11,5 +11,5 @@
     }
   ],
   "result": "pass",
-  "notes": "Re-review APPROVED (parent evidence; kit-07 spawn hit usage limit). F1–F7 closed. CE-01..CE-06 pass. Accept awaits human confirm."
+  "notes": "ask-kit pass at 67843e0; re-review APPROVED at 64fee91 (artifact-only). CE-01..CE-06 pass. Accept awaits human confirm."
 }
