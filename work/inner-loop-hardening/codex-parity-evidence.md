@@ -30,3 +30,11 @@ GREEN after migration: install/upgrade migrate ignore rules, preserve consumer
 skills/config/overlays and regenerate stages. Upgrade uses a local versioned
 Git fixture, including a repeat upgrade to check ignore-file idempotence.
 Generated projections are now committed alongside selective root ignore rules.
+
+## Outer Verify fixture correction
+
+First outer Verify at c9583d7 failed only the new parity test: inherited
+`ASK_ROOT` redirected runtime-agent generation out of the temporary fixture,
+so its Codex TOML was missing. The fixture now clears that inherited root.
+Reproduction `ASK_ROOT="$PWD" _ask/tests/test-codex-skill-parity.sh` passes;
+production behavior and acceptance criteria are unchanged.

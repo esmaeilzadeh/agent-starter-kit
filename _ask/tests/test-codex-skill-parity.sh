@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Public CLI contract: Codex and Cursor stages share sources and overlays.
 set -euo pipefail
+# Outer Verify exports ASK_ROOT; fixtures must resolve their own runtime root.
+unset ASK_ROOT
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
