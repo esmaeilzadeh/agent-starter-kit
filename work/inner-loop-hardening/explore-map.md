@@ -187,3 +187,30 @@ Own one workstream that preserves ASK as the human-governed outer protocol while
 Intent should preserve the decisions and constraints in this map, turn the resolved design tree into explicit acceptance boundaries, and leave the listed schema/tooling details to Spec and Plan. Durable later cards already exist on `origin/develop` at `759731f` and are mirrored to GitHub issues. Generic in-memory database adapters remain parked for later work.
 
 Gate: **DESTINATION_CLEAR**
+
+## Codex workflow parity addendum (2026-10-07)
+
+The human confirmed that Cursor/Codex parity means the same 00–10 behavior,
+gates, artifacts, overlays, and stage-specific agents through each runtime's
+native surfaces. Codex does not need to reproduce Cursor's literal
+`/00-explore` command spelling. It must expose the stages as repository-local
+`kit-*` skills that Codex can discover and invoke, while retaining generated
+project subagents under `.codex/agents/`.
+
+Official OpenAI documentation establishes the Codex surfaces:
+
+- repository skills are discovered under `.agents/skills/`;
+- project custom agents are loaded from `.codex/agents/`;
+- enabled skills appear in the slash-command list and can be invoked with `$`.
+
+Current gap: `./ask sync` generates Cursor stage skills and commands plus Codex
+custom-agent TOML, but it does not generate repository stage skills for Codex.
+The existing specification also permits best-effort Codex spawning. Closing
+the skill/discovery gap is required; promising runtime behavior that Codex
+itself does not support remains out of scope.
+
+This addendum changes a reviewed acceptance boundary. The next system must use
+04 Spec Change before implementation. Detailed continuation instructions are
+in `work/inner-loop-hardening/codex-parity-handoff.md`.
+
+Gate: **DESTINATION_CLEAR_FOR_SPEC_CHANGE**
