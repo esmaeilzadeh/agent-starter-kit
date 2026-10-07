@@ -41,9 +41,11 @@ ab8268e: CE-01..CE-06 pass, none open.
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED. Review and Refactor complete; eligible for the human
-Accept decision. No merge, push, tag or release authorized by this artifact.
+ACCEPTED by the human in chat on 2026-10-08: "approve".
+Approval covers the Codex parity continuation (t14) and its recorded limitations.
+Merge, push, tag and release remain separate human-authorized actions.
 
 ## Accepted commit SHA
 
-_(pending human Accept; proposed implementation SHA is ab8268e57db6fbb99577a427d660f56240889bb2)_
+`ab8268e57db6fbb99577a427d660f56240889bb2` (reviewed and verified implementation).
+Subsequent commits record review, verification and human acceptance evidence.
