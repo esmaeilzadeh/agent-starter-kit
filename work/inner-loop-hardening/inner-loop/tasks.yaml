@@ -249,6 +249,7 @@ tasks:
       - _ask/scripts/upgrade-kit.sh
       - _ask/skills/prepare-skills.sh
       - _ask/tests/test-codex-skill-parity.sh
+      - _ask/tests/fixtures/codex-parity/**
       - _ask/tests/test-sync-canonical-ask.sh
       - _ask/OWNED-PATHS.md
       - _ask/docs/codex-integration.md

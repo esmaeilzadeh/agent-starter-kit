@@ -202,3 +202,9 @@ and slash-command docs on the same date. Use that recorded interface with an
 explicit unverified live-discovery limitation, without inventing new fields.
 `SKIP_INSTALL=1 ./ask prepare` validates pins only; full network installation
 stalled and was terminated. Existing prepared writing/TDD skills were read.
+
+Review remediation R1 adds a target-version upgrader entrypoint (`--target`)
+for older installed consumers, plus a previous-upgrader fixture. R2 validates
+Git trackability after generation and fails with blocking rules preserved.
+These implement the approved migration and trackability criteria; no change
+to What/Why. Fixture ownership is included in t14 globs.
