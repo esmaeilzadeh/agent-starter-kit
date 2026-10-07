@@ -1,0 +1,57 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t14-codex-parity",
+  "commit_shas": [
+    "f1bb69e8d7efa20e3771305cb05a09e6f38dfc24",
+    "7aec9a864f1f75ee8885e7d5e15eebd39aff4c92",
+    "c9583d778f62b8b591569724eeba44656263b8b7",
+    "13cd0602727a43395f4d8d50d24322bf9560dedf",
+    "3ed49e34fcfc0a6782bf162cfb9b49a9c4e27eff"
+  ],
+  "tdd": {
+    "seam": "sync prepare install upgrade CLI flows and Git trackability",
+    "red": {
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "output": "AssertionError: Missing Codex skill: kit-00-explore",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "output": "All stage parity, ownership, namespace, install/upgrade and Git trackability checks PASS",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": [
+    ".agents/skills/kit-00-explore/SKILL.md",
+    ".agents/skills/kit-01-grill/SKILL.md",
+    ".agents/skills/kit-02-spec/SKILL.md",
+    ".agents/skills/kit-03-spec-challenge/SKILL.md",
+    ".agents/skills/kit-04-spec-change/SKILL.md",
+    ".agents/skills/kit-05-plan/SKILL.md",
+    ".agents/skills/kit-06-implement/SKILL.md",
+    ".agents/skills/kit-07-review/SKILL.md",
+    ".agents/skills/kit-08-refactor/SKILL.md",
+    ".agents/skills/kit-09-verify/SKILL.md",
+    ".agents/skills/kit-10-accept/SKILL.md",
+    ".gitignore",
+    "README.md",
+    "_ask/OWNED-PATHS.md",
+    "_ask/docs/codex-integration.md",
+    "_ask/scripts/install-kit.sh",
+    "_ask/scripts/sync-codex-skills.py",
+    "_ask/scripts/sync-cursor-binding.sh",
+    "_ask/scripts/upgrade-kit.sh",
+    "_ask/skills/prepare-skills.sh",
+    "_ask/tests/test-codex-skill-parity.sh",
+    "_ask/tests/test-sync-canonical-ask.sh",
+    "specs/current/inner-loop-hardening.md",
+    "work/inner-loop-hardening/codex-parity-evidence.md"
+  ],
+  "review": {
+    "verdict": "PENDING",
+    "remediation": null,
+    "boundary": "implementation within t14 globs; coordinator maintains evidence artifacts"
+  },
+  "notes": "Additional sequential RED/GREEN slices recorded in codex-parity-evidence.md. Not eligible for reviewed integration or Accept yet."
+}

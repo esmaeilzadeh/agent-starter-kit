@@ -136,3 +136,20 @@ Grep of `.agents/ask/stages/{06-implement,07-review,08-refactor}.md` for `TaskGr
 - `_ask/agents/00-explore.md` and `_ask/agents/09-verify.md` remain pointers to `.agents/ask/stages/`.
 
 **Finding:** Always-on bootstrap and machine-first rule name `.agents/ask/` as SoT; workflow Explore pointer names `.agents/ask/stages/00-explore.md`; leftover `_ask/agents/` paths are labeled pointers or ADR 0018 research snapshot.
+
+## Codex parity continuation audit (2026-10-07)
+
+Independent read-only agent `/root/codex_context_audit` audited
+`260ad4b..13cd060`, then rechecked `13cd060..3ed49e3`. The agent implemented
+none of these changes. Parent transcribes its report here.
+
+CE-01..CE-06 remain **pass**. All eleven Codex skills contain canonical stage
+contracts and byte-match their Cursor counterparts. Instruction hierarchy,
+inner-loop delegation, expanded Grill questions, fail-closed Verify, one-writer
+and dirty-tree gates, and audit refusal at Accept survive projection.
+Ownership checks precede mutation and preserve unrelated skills. The spec's
+upgrade paragraph now explicitly excludes reserved kit-* projections from
+preserved Community Skill bodies, resolving the audit's wording finding.
+Upgrade refreshes preparation code while preserving the consumer manifest.
+No new ownership or instruction-hierarchy issue found. This audit does not
+substitute for the model-confirmed stage 07 Review.
