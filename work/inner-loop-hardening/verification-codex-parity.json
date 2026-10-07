@@ -1,6 +1,6 @@
 {
   "schema": "ask-verify-result/v1",
-  "commit_sha": "3ed49e34fcfc0a6782bf162cfb9b49a9c4e27eff",
+  "commit_sha": "ab8268e57db6fbb99577a427d660f56240889bb2",
   "result": "pass",
   "checks": [
     {

@@ -70,3 +70,13 @@ ignored Codex skills`.
 GREEN: parity suite now passes install and upgrade rejection checks. Both
 flows call Git after generation; blocking rules are reported and retained.
 Generation success is no longer treated as evidence that skills are trackable.
+
+## Final evidence — 2026-10-08
+
+Verified commit: `ab8268e57db6fbb99577a427d660f56240889bb2`.
+`./ask sync` followed by `git diff --exit-code`: pass (no generated drift).
+`./ask verify`: pass, all 34 mandatory checks. Exact CheckPlan results saved in
+`verification-codex-parity.json`. GPT-6.1 Sol medium independent re-review:
+APPROVED, R1/R2 resolved, boundary ok. Independent context recheck: all six
+required IDs pass. Human Accept remains pending. Subsequent commits only
+record this evidence and acceptance preparation.

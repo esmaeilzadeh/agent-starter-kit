@@ -39,8 +39,20 @@ known blanket rule is migrated. Reviewer reproduced install exit 0 with
 Validate trackability using Git after generation. Preserve consumer rules;
 fail clearly with the blocking rule. Cover ancestor-ignore install/upgrade.
 
+## Remediation re-review (2026-10-08)
+
+Independent agent `/root/codex_parity_review`, GPT-6.1 Sol medium reasoning,
+re-reviewed commits 49227d1 and ab8268e and ran the targeted parity suite.
+
+- R1 resolved: target-checkout `--target` entrypoint performs first migration
+  with `--skip-prepare`. Regression fixture byte-matches the previous upgrader.
+- R2 resolved: install/upgrade check Git trackability, report blocking rules
+  and preserve unrelated consumer rules.
+- Boundary: ok, including the approved additional fixture glob.
+- No remaining findings. Reviewer modified no files; tree clean.
+
 ## Verdict
 
-REJECTED pending R1 and R2 fixes. Targeted parity suite passes but does not
-currently cover these reproductions. Live discovery and current official docs
-remain unverified as documented.
+APPROVED at `ab8268e57db6fbb99577a427d660f56240889bb2`.
+Outer Verify subsequently passed all 34 checks at this exact SHA.
+Live discovery and current official docs remain unverified as documented.

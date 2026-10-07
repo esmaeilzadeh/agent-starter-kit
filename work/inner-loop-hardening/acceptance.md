@@ -3,39 +3,47 @@
 ## Workstream
 
 `inner-loop-hardening` on `agent/inner-loop-hardening`.
+This decision covers the approved Codex parity continuation (t14). Earlier
+t1–t13 evidence remains in its historical artifacts.
 
 ## Specification
 
-`specs/current/inner-loop-hardening.md` (Status CURRENT).
+`specs/current/inner-loop-hardening.md`, including approved
+`spec-change-codex-parity-2026-10-07.md`.
 
 ## Evidence
 
-Prior t1–t13 evidence is retained in their artifacts. Codex parity continuation:
+Reviewed and verified implementation commit:
+`ab8268e57db6fbb99577a427d660f56240889bb2`.
 
-- Approved change: `spec-change-codex-parity-2026-10-07.md`.
-- Implementation SHA: `3ed49e34fcfc0a6782bf162cfb9b49a9c4e27eff`.
-- Verify: all 34 mandatory checks pass; `verification-codex-parity.json`.
-- RED/GREEN slices: `codex-parity-evidence.md`.
-- Independent context audit: `context-audit.md`, CE-01..CE-06 pass.
-- Stage 07 Review: PENDING model confirmation and independent review;
-  see `review-codex-parity.md`. Earlier review does not cover this continuation.
+- Eleven Codex stage skills, shared Cursor bodies/overlays and deterministic
+  sync. Generated skills committed; unrelated prepared skills preserved.
+- Independent GPT-6.1 Sol medium Review: APPROVED, R1/R2 resolved, boundary ok;
+  `review-codex-parity.md` and `refactor-codex-parity.md`.
+- `./ask verify`: all 34 mandatory checks pass at that SHA;
+  `verification-codex-parity.json`.
+- Sequential RED/GREEN and sync evidence: `codex-parity-evidence.md`.
+- Result recorded via `./ask record-result` against the verified SHA.
 
 ## Residual risks
 
 Full dependency installation and current official documentation retrieval were
 unavailable due network failures. Existing prepared skills were used; pin-only
 validation passed. Live Codex skill discovery and agent spawning unverified.
+First migration from an old installed kit uses the documented target-checkout
+`upgrade-kit.sh --target` entrypoint. Consumer ignore rules that hide generated
+skills cause migration to fail clearly and require an explicit rule adjustment.
 
 ## Context-engineering audit
 
-`work/inner-loop-hardening/context-audit.md`, including continuation recheck at
-3ed49e3: every required ID pass, none open.
+`work/inner-loop-hardening/context-audit.md`, independently rechecked at
+ab8268e: CE-01..CE-06 pass, none open.
 
 ## Acceptance decision
 
-REJECT eligibility for Accept until stage 07 Review and any resulting
-Refactor work are complete. Then request human Accept; no auto-close.
+HUMAN_APPROVAL_REQUIRED. Review and Refactor complete; eligible for the human
+Accept decision. No merge, push, tag or release authorized by this artifact.
 
 ## Accepted commit SHA
 
-_(pending Review, Refactor and human Accept)_
+_(pending human Accept; proposed implementation SHA is ab8268e57db6fbb99577a427d660f56240889bb2)_

@@ -45,3 +45,17 @@ None for this re-review.
 ## Review verdict
 
 APPROVED
+
+## Codex parity continuation — 2026-10-08
+
+Model: GPT-6.1 Sol, medium reasoning. Runtime: codex. Parent model: GPT-6,
+exact serving variant unavailable. User-confirmed override after same-family
+disclosure; fresh independent context `/root/codex_parity_review`.
+
+Scope: approved Codex parity continuation since 260ad4b. Initial review found
+R1 (old-consumer migration entrypoint) and R2 (Git trackability under ancestor
+ignore rules). Both fixed and independently re-reviewed. Verdict **APPROVED**
+at `ab8268e57db6fbb99577a427d660f56240889bb2`; boundary ok; no remaining
+findings. Detail: `review-codex-parity.md`. Outer Verify passes 34 checks at
+that SHA; `verification-codex-parity.json`. This approval covers t14 only and
+does not replace historical evidence for earlier workstream tasks.
