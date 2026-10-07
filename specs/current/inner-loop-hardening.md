@@ -54,7 +54,11 @@ Kit-owned protocol lives at:
 .agents/ask/verification/    # language-neutral core + TS/Python presets
 ```
 
-Prepared Community Skills remain at `.agents/skills/` (generated, gitignored).
+Prepared Community Skills remain at `.agents/skills/` (generated, gitignored),
+except reserved `kit-*` children: generated, committed ASK stage skills.
+The approved change `work/inner-loop-hardening/spec-change-codex-parity-2026-10-07.md`
+defines ownership, collision handling, migration and additional acceptance
+criteria, and is incorporated into this specification.
 
 `./ask sync` is the single generator. It reads `.agents/ask/` and writes:
 
@@ -62,7 +66,7 @@ Prepared Community Skills remain at `.agents/skills/` (generated, gitignored).
 | --- | --- |
 | Cursor | `.cursor/skills`, `.cursor/commands`, `.cursor/agents` |
 | Claude | `.claude/agents` |
-| Codex | `.codex/agents` (TOML; spawn may stay best-effort) |
+| Codex | `.agents/skills/kit-*`, `.codex/agents` (TOML; spawn may stay best-effort) |
 | OpenCode | `.opencode/agents` |
 
 Stage contracts call the inner-loop module; they do not inline a DAG.

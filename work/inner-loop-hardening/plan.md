@@ -184,3 +184,21 @@ Languages other than TypeScript and Python. Dogfooding `./ask inner-loop run`
 on this workstream. Live OpenCode/Codex spawn in default CI. Generic in-memory
 DB adapters (already parked in `.later/`). Human merge/tag/push of `main`.
 `./ask setup` / verify wizard in agent sessions.
+
+## Approved Codex parity continuation (2026-10-07)
+
+Source: approved `spec-change-codex-parity-2026-10-07.md`.
+Task t14-codex-parity runs after t13. Approved public seams: `./ask sync`,
+`./ask prepare`, install/upgrade CLI flows and Git trackability. Use sequential
+RED/GREEN slices for generation, ownership protection, ignore migration and
+preparation validation. Generate committed stage skills; update ownership and
+invocation docs. Preserve unrelated skills and overlays. Independent Review
+and context audit follow; then Refactor, outer Verify, record-result and Accept.
+
+Official docs refresh attempted 2026-10-07: web connection failed; direct HTTPS
+to https://developers.openai.com/codex/skills/ refused. Handoff records prior
+consultation of https://learn.chatgpt.com/docs/build-skills and related agent
+and slash-command docs on the same date. Use that recorded interface with an
+explicit unverified live-discovery limitation, without inventing new fields.
+`SKIP_INSTALL=1 ./ask prepare` validates pins only; full network installation
+stalled and was terminated. Existing prepared writing/TDD skills were read.

@@ -239,3 +239,26 @@ tasks:
       implement: {}
       review: {}
       debug: {}
+
+  - id: t14-codex-parity
+    depends_on: [t13-context-audit]
+    owned_paths:
+      - _ask/scripts/sync-cursor-binding.sh
+      - _ask/scripts/sync-codex-skills.py
+      - _ask/scripts/install-kit.sh
+      - _ask/scripts/upgrade-kit.sh
+      - _ask/skills/prepare-skills.sh
+      - _ask/tests/test-codex-skill-parity.sh
+      - _ask/tests/test-sync-canonical-ask.sh
+      - _ask/OWNED-PATHS.md
+      - _ask/docs/codex-integration.md
+      - .agents/skills/kit-*/**
+      - .gitignore
+      - README.md
+    seam: sync prepare install upgrade CLI flows and Git trackability
+    exemption: null
+    e2e: inherit
+    roles:
+      implement: {}
+      review: {}
+      debug: {}

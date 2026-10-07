@@ -86,6 +86,5 @@ CLI flows; this change introduces no product application journey.
 
 ## Decision
 
-PENDING human confirmation. Approval authorizes this ownership convention and
-acceptance criteria, followed by spec/plan updates and implementation. No
-implementation or accepted-spec modification is included in this proposal.
+APPROVED by the human in chat on 2026-10-07 ("yes"). Authorizes the ownership
+convention, acceptance criteria, spec/plan updates and implementation.

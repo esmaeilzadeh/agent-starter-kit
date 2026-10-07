@@ -118,3 +118,8 @@ The accepted What/Why is closed. Spec and Plan must resolve:
   `main` for releases.
 - Require an independent context-engineering audit before Accept.
 
+
+## Codex parity continuation (2026-10-07)
+
+Explore skipped: destination already clear.
+Approved change: `spec-change-codex-parity-2026-10-07.md`.
