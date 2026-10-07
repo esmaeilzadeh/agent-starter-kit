@@ -13,7 +13,8 @@ def update_ignore():
     lines = path.read_text().splitlines() if path.exists() else []
     legacy = {'.agents/skills/', '/.agents/skills/', '.agents/skills', '/.agents/skills'}
     rules = ['.agents/skills/*', '!.agents/skills/kit-*/']
-    lines = [line for line in lines if line.strip() not in legacy | set(rules)]
+    comment = '# Prepared skills; ASK kit-* projections are committed'
+    lines = [line for line in lines if line.strip() not in legacy | set(rules) | {comment}]
     path.write_text('\n'.join(lines).rstrip() + '\n\n# Prepared skills; ASK kit-* projections are committed\n' + '\n'.join(rules) + '\n')
 
 

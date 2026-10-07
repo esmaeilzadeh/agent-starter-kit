@@ -5,6 +5,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 ## Kit-owned (safe to refresh on upgrade)
 
 - `.agents/ask/` (stages, bindings, verification presets)
+- Generated `.agents/skills/kit-*/SKILL.md` (reserved ASK stage namespace)
 - `_ask/agents/*.md` pointers **except** `*.local.md`
 - `_ask/guide/` modules
 - `_ask/spec/` modules
@@ -33,7 +34,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - `.agents/verification.yaml` (committed CheckPlan; scaffold/upgrade leave it)
 - Product `docs/`, `scripts/`, `tests/`, `src/`
 - Product `specs/`, `work/` (engineering state)
-- Prepared `.agents/skills/` bodies (regenerated; gitignored)
+- Prepared `.agents/skills/` bodies outside reserved `kit-*` children (regenerated; gitignored)
 
 ## Related
 

@@ -1,5 +1,6 @@
 # Prepared Community Skills (regenerate via _ask/skills/prepare-skills.sh)
-.agents/skills/
+.agents/skills/*
+!.agents/skills/kit-*/
 
 # OS / editor
 .DS_Store

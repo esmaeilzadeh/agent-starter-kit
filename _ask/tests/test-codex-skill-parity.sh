@@ -85,3 +85,47 @@ test ! -e "$TMP/install-called"
 grep -q 'reserved' "$TMP/prepare.log"
 mv "$TMP/manifest.saved" "$TMP/_ask/skills/manifest.yaml"
 echo 'PASS: reserved preparation names rejected before any installer runs'
+
+# Install into a consumer with legacy ignore rules, then upgrade from a local
+# versioned source. Neither flow may copy or delete Community Skill bodies.
+CONSUMER="$TMP/consumer"
+mkdir -p "$CONSUMER/.agents/skills/community" "$CONSUMER/.agents/ask.local/stages"
+git init -q "$CONSUMER"
+printf '%s\n' '# consumer rules' 'consumer-private/' '.agents/skills/' > "$CONSUMER/.gitignore"
+printf '%s\n' 'consumer-skill-canary' > "$CONSUMER/.agents/skills/community/SKILL.md"
+printf '%s\n' 'consumer-overlay-canary' > "$CONSUMER/.agents/ask.local/stages/06-implement.md"
+printf '%s\n' 'consumer-verification-canary' > "$CONSUMER/.agents/verification.yaml"
+SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" "$CONSUMER" > "$TMP/install.log"
+assert_consumer() {
+  grep -q consumer-skill-canary "$CONSUMER/.agents/skills/community/SKILL.md"
+  grep -q consumer-overlay-canary "$CONSUMER/.agents/skills/kit-06-implement/SKILL.md"
+  grep -q consumer-verification-canary "$CONSUMER/.agents/verification.yaml"
+  grep -q '^consumer-private/$' "$CONSUMER/.gitignore"
+  if git -C "$CONSUMER" check-ignore -q .agents/skills/kit-06-implement/SKILL.md; then
+    echo 'FAIL: generated Codex skill remains ignored' >&2; exit 1
+  fi
+  git -C "$CONSUMER" check-ignore -q .agents/skills/community/SKILL.md
+  test "$(find "$CONSUMER/.agents/skills" -maxdepth 1 -type d -name 'kit-*' | wc -l)" -eq 11
+}
+assert_consumer
+cp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
+SKIP_INSTALL=1 "$CONSUMER/ask" sync >/dev/null
+cmp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
+
+SOURCE="$TMP/source"
+mkdir -p "$SOURCE/.agents"
+cp -a "$ROOT/_ask" "$SOURCE/_ask"
+cp -a "$ROOT/.agents/ask" "$SOURCE/.agents/ask"
+cp "$ROOT/ask" "$SOURCE/ask"
+git init -q "$SOURCE"
+git -C "$SOURCE" add .
+git -C "$SOURCE" -c user.name=fixture -c user.email=fixture@example.com commit -qm source
+git -C "$SOURCE" tag parity-fixture
+# Emulate an older consumer whose ignore file still uses the blanket rule.
+printf '%s\n' '# consumer rules' 'consumer-private/' '.agents/skills/' > "$CONSUMER/.gitignore"
+SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
+assert_consumer
+cp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
+SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
+cmp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
+echo 'PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages'

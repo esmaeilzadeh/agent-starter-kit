@@ -21,3 +21,12 @@ preparation had invoked the installer before rejecting the reserved destination.
 GREEN after full-manifest namespace preflight: all generation, cleanup,
 collision/symlink and preparation checks pass. The fake installer is an
 external boundary sentinel; no network dependency is required.
+
+## Slice 3: install/upgrade and Git ownership
+
+Command: `_ask/tests/test-codex-skill-parity.sh`.
+RED before ignore migration: `FAIL: generated Codex skill remains ignored`.
+GREEN after migration: install/upgrade migrate ignore rules, preserve consumer
+skills/config/overlays and regenerate stages. Upgrade uses a local versioned
+Git fixture, including a repeat upgrade to check ignore-file idempotence.
+Generated projections are now committed alongside selective root ignore rules.

@@ -62,6 +62,7 @@ done < <(find "$ROOT/_ask/agents" -name '*.local.md' -print0 2>/dev/null || true
 
 if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/_ask/skills/prepare-skills.sh" || true
-  "$ROOT/_ask/scripts/sync-cursor-binding.sh"
 fi
+python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
+"$ROOT/_ask/scripts/sync-cursor-binding.sh"
 echo "upgrade-kit: refreshed kit-owned paths from $VERSION"
