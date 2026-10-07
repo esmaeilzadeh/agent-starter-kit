@@ -38,3 +38,14 @@ First outer Verify at c9583d7 failed only the new parity test: inherited
 so its Codex TOML was missing. The fixture now clears that inherited root.
 Reproduction `ASK_ROOT="$PWD" _ask/tests/test-codex-skill-parity.sh` passes;
 production behavior and acceptance criteria are unchanged.
+
+## Slice 4: upgrading preparation code
+
+Outer Verify at 13cd060 passed all 34 checks. Subsequent targeted inspection
+found that upgrade's refresh list omitted `_ask/skills/`, so an older consumer
+would retain its old preparation script. Added a fixture replacing that script
+with an old implementation before upgrade.
+RED: `FAIL: upgrade did not refresh preparation namespace guard`.
+GREEN: parity test passes after refreshing `_ask/skills/` while restoring the
+consumer-owned manifest. Independent audit's wording clarification applied to
+the accepted spec's upgrade paragraph (Community Skill bodies exclude kit-*).

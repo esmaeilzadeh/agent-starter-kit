@@ -75,7 +75,8 @@ Consumer overlays live at `.agents/ask.local/{stages,bindings}/` (same relative
 paths as kit-owned files). `./ask sync` merges overlay after kit source.
 Upgrade replaces `.agents/ask/` as one kit-owned unit. It leaves
 `.agents/ask.local/`, `.agents/verification.yaml`, `.later/*.md` except
-README, product manifests, and `.agents/skills/` bodies untouched.
+README, product manifests, and Community Skill bodies outside reserved `kit-*`
+projections untouched.
 
 `_ask/` remains the dispatcher/scripts/tests/docs package. After this change,
 stage-contract and binding SoT is `.agents/ask/`, not `_ask/agents` or

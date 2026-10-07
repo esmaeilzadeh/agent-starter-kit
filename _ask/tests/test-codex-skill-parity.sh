@@ -125,8 +125,21 @@ git -C "$SOURCE" -c user.name=fixture -c user.email=fixture@example.com commit -
 git -C "$SOURCE" tag parity-fixture
 # Emulate an older consumer whose ignore file still uses the blanket rule.
 printf '%s\n' '# consumer rules' 'consumer-private/' '.agents/skills/' > "$CONSUMER/.gitignore"
+printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$CONSUMER/_ask/skills/prepare-skills.sh"
 SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
 assert_consumer
+cp "$CONSUMER/_ask/skills/manifest.yaml" "$TMP/consumer-manifest.saved"
+cat >> "$CONSUMER/_ask/skills/manifest.yaml" <<'YAML'
+  reserved-fixture:
+    source: example/skills
+    revision: v1.0.0
+    skill: kit-06-implement
+    required: true
+YAML
+if SKIP_INSTALL=1 "$CONSUMER/ask" prepare > "$TMP/upgraded-prepare.log" 2>&1; then
+  echo 'FAIL: upgrade did not refresh preparation namespace guard' >&2; exit 1
+fi
+mv "$TMP/consumer-manifest.saved" "$CONSUMER/_ask/skills/manifest.yaml"
 cp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
 SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
 cmp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
