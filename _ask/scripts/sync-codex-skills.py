@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Project ASK stages into Codex's repository skill directory."""
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -29,6 +30,24 @@ def main():
     if not stages.is_dir():
         stages = ROOT / '_ask/agents'
     names = {'kit-' + p.stem for p in stages.glob('[0-9][0-9]-*.md') if not p.stem.endswith('.local')}
+    if '--check-trackability' in sys.argv:
+        for name in sorted(names):
+            path = Path('.agents/skills') / name / 'SKILL.md'
+            if not (ROOT / path).is_file():
+                raise ValueError('missing generated skill: ' + str(path))
+            check = subprocess.run(
+                ['git', 'check-ignore', '--no-index', '-q', str(path)],
+                cwd=ROOT, capture_output=True, text=True,
+            )
+            if check.returncode == 0:
+                detail = subprocess.run(
+                    ['git', 'check-ignore', '--no-index', '-v', str(path)],
+                    cwd=ROOT, capture_output=True, text=True, check=True,
+                ).stdout.strip()
+                raise ValueError('generated skill not trackable; blocking rule: ' + detail)
+            if check.returncode != 1:
+                raise ValueError('cannot check Git trackability: ' + check.stderr.strip())
+        return
     # Validate every reserved child before any output is written or removed.
     owned = []
     for child in sorted(skills.glob('kit-*')):

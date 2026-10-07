@@ -147,3 +147,22 @@ cp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
 SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
 cmp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
 echo 'PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages'
+
+# Preserve unrelated ignore rules, but fail if Git says they hide ASK skills.
+BLOCKED="$TMP/blocked-consumer"
+mkdir -p "$BLOCKED"
+git init -q "$BLOCKED"
+printf '%s\n' '.agents/' '.agents/skills/' > "$BLOCKED/.gitignore"
+if "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$BLOCKED" > "$TMP/blocked-install.log" 2>&1; then
+  echo 'FAIL: install succeeded despite ignored Codex skills' >&2; exit 1
+fi
+grep -q 'not trackable' "$TMP/blocked-install.log"
+grep -q '\.agents/' "$TMP/blocked-install.log"
+grep -qx '\.agents/' "$BLOCKED/.gitignore"
+printf '%s\n' '.agents/' >> "$CONSUMER/.gitignore"
+if "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" --skip-prepare > "$TMP/blocked-upgrade.log" 2>&1; then
+  echo 'FAIL: upgrade succeeded despite ignored Codex skills' >&2; exit 1
+fi
+grep -q 'not trackable' "$TMP/blocked-upgrade.log"
+grep -qx '\.agents/' "$CONSUMER/.gitignore"
+echo 'PASS: install and upgrade fail clearly on blocking consumer ignore rules without deleting them'

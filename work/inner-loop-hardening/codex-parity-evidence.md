@@ -62,3 +62,11 @@ regenerates all eleven stage skills and preserves consumer state. The previous
 upgrader is retained as an isolated regression fixture. Documentation directs
 first migration through the target version's checkout, not the running old
 consumer upgrader.
+
+## Review R2: verify Git trackability
+
+RED: ancestor-ignore fixture failed with `FAIL: install succeeded despite
+ignored Codex skills`.
+GREEN: parity suite now passes install and upgrade rejection checks. Both
+flows call Git after generation; blocking rules are reported and retained.
+Generation success is no longer treated as evidence that skills are trackable.

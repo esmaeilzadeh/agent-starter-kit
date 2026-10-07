@@ -19,6 +19,11 @@ before invoking an installer. Install and upgrade migrate the kit's blanket
 ignore rule to selective rules and regenerate projections, including when
 `--skip-prepare` skips dependency installation.
 
+Install and upgrade ask Git whether generated skills can be tracked. If a
+consumer rule such as `.agents/` still blocks them, the command fails with the
+blocking rule's location. Adjust that consumer rule explicitly and retry;
+kit migration preserves unrelated ignore rules.
+
 Sync preserves unrelated skills. It cleans stale marked ASK stage directories,
 and refuses unmarked reserved directories, symlinks and unexpected extra
 contents in generated directories. Relocate a consumer skill out of the

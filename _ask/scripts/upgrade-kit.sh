@@ -71,4 +71,5 @@ if [[ "$SKIP_PREPARE" -eq 0 ]]; then
 fi
 python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
 "$ROOT/_ask/scripts/sync-cursor-binding.sh"
+python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check-trackability
 echo "upgrade-kit: refreshed kit-owned paths from $VERSION"

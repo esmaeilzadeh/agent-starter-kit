@@ -111,4 +111,6 @@ if [[ -x "$TARGET/_ask/scripts/sync-cursor-binding.sh" ]]; then
   (cd "$TARGET" && ./_ask/scripts/sync-cursor-binding.sh)
 fi
 
+python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --check-trackability
+
 echo "install-kit: applied to $TARGET"
