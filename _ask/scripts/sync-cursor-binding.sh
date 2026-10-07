@@ -6,6 +6,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 OUT_SKILLS=".cursor/skills"
 OUT_CMDS=".cursor/commands"
+python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check
 mkdir -p "$OUT_SKILLS" "$OUT_CMDS"
 
 if [[ -d .agents/ask/stages ]]; then
@@ -55,6 +56,7 @@ for src in _ask/cursor-commands/*.md; do
   cp "$src" "${OUT_CMDS}/$(basename "$src")"
 done
 
+python3 "$ROOT/_ask/scripts/sync-codex-skills.py"
 python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"
 
 echo "sync-cursor-binding: generated projections under ${OUT_SKILLS} and ${OUT_CMDS}"

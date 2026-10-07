@@ -9,6 +9,7 @@ mkdir -p "$TMP/_ask/scripts" "$TMP/_ask/agents" "$TMP/_ask/cursor-commands"
 mkdir -p "$TMP/.agents/ask/stages"
 cp "$ROOT/_ask/scripts/sync-cursor-binding.sh" "$TMP/_ask/scripts/"
 cp "$ROOT/_ask/scripts/sync-runtime-agents.py" "$TMP/_ask/scripts/"
+cp "$ROOT/_ask/scripts/sync-codex-skills.py" "$TMP/_ask/scripts/"
 cp -a "$ROOT/_ask/bindings" "$TMP/_ask/bindings"
 if [[ -d "$ROOT/.agents/ask/bindings" ]]; then
   mkdir -p "$TMP/.agents/ask/bindings"
