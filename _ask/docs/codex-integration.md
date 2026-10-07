@@ -25,6 +25,26 @@ contents in generated directories. Relocate a consumer skill out of the
 reserved namespace before retrying. Edit canonical stage files or overlays to
 change a generated stage skill.
 
+## Migrating a consumer installed before Codex stage skills
+
+Check out the desired kit tag or SHA in a separate directory. From that kit
+checkout, run its upgrader against the existing consumer repository:
+
+```bash
+bash _ask/scripts/upgrade-kit.sh --target /absolute/path/to/consumer \
+  --version '<tag-or-sha>' --source '<kit-git-url>' --skip-prepare
+```
+
+Use the same version for the checkout and `--version`. The target version's
+script runs the migration, preserving the consumer manifest, Community Skills,
+overlays and verification config. `--skip-prepare` skips dependency installation;
+projections and ignore migration still run. Omit it to prepare dependencies.
+
+An older installed `./ask upgrade` executes its old script, which may skip the
+new migration even after replacing kit files. Use the target-checkout entrypoint
+for this first migration. Subsequent upgrades can use the updated consumer's
+`./ask upgrade` normally.
+
 ## Validation and manual check
 
 `_ask/tests/test-codex-skill-parity.sh` checks all eleven stages, overlay parity,

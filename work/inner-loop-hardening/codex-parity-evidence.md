@@ -49,3 +49,16 @@ RED: `FAIL: upgrade did not refresh preparation namespace guard`.
 GREEN: parity test passes after refreshing `_ask/skills/` while restoring the
 consumer-owned manifest. Independent audit's wording clarification applied to
 the accepted spec's upgrade paragraph (Community Skill bodies exclude kit-*).
+
+## Review R1: target-version migration entrypoint
+
+RED: parity test invoking the target checkout's upgrader with `--target`
+against a consumer containing the actual 260ad4b upgrader exited 2 (unsupported
+argument). The consumer starts without generated kit skills and with legacy
+preparation code and blanket ignore rules.
+GREEN: parity suite passes with `upgrade-kit.sh --target <consumer>`;
+`--skip-prepare` still migrates ignores, refreshes the namespace guard,
+regenerates all eleven stage skills and preserves consumer state. The previous
+upgrader is retained as an isolated regression fixture. Documentation directs
+first migration through the target version's checkout, not the running old
+consumer upgrader.

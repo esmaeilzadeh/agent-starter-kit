@@ -123,10 +123,13 @@ git init -q "$SOURCE"
 git -C "$SOURCE" add .
 git -C "$SOURCE" -c user.name=fixture -c user.email=fixture@example.com commit -qm source
 git -C "$SOURCE" tag parity-fixture
-# Emulate an older consumer whose ignore file still uses the blanket rule.
+# Start with the actual previous upgrader; execute migration from the target
+# version so replacing the consumer's running old script is not relied upon.
 printf '%s\n' '# consumer rules' 'consumer-private/' '.agents/skills/' > "$CONSUMER/.gitignore"
 printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$CONSUMER/_ask/skills/prepare-skills.sh"
-SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
+cp "$ROOT/_ask/tests/fixtures/codex-parity/upgrade-kit-before-parity.sh" "$CONSUMER/_ask/scripts/upgrade-kit.sh"
+rm -rf "$CONSUMER/.agents/skills/kit-"*
+SKIP_INSTALL=1 bash "$SOURCE/_ask/scripts/upgrade-kit.sh" --target "$CONSUMER" --version parity-fixture --source "$SOURCE" --skip-prepare > "$TMP/upgrade.log" 2>&1
 assert_consumer
 cp "$CONSUMER/_ask/skills/manifest.yaml" "$TMP/consumer-manifest.saved"
 cat >> "$CONSUMER/_ask/skills/manifest.yaml" <<'YAML'
