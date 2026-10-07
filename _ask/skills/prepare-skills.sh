@@ -44,6 +44,13 @@ if not entries:
     print('prepare-skills: no skills entries found', file=sys.stderr)
     sys.exit(2)
 
+# Validate every destination before invoking an installer for any entry.
+for e in entries:
+    skill = e.get('skill') or e.get('id')
+    if skill.startswith('kit-'):
+        print(f"prepare-skills: reserved ASK skill namespace: {skill}", file=sys.stderr)
+        sys.exit(1)
+
 failed = False
 for e in entries:
     rev = e.get('revision', '')

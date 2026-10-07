@@ -12,3 +12,12 @@ Preparation: full network installation stalled; stopped. Pin-only
 `SKIP_INSTALL=1 ./ask prepare` passed. Existing prepared skills available.
 Official docs refresh: web connection failed; HTTPS connection refused.
 Live Codex discovery/invocation has not been tested.
+
+## Slice 2: ownership and preparation
+
+Command: `_ask/tests/test-codex-skill-parity.sh`.
+RED after adding manifest namespace test: exit 1 at `test ! -e install-called`;
+preparation had invoked the installer before rejecting the reserved destination.
+GREEN after full-manifest namespace preflight: all generation, cleanup,
+collision/symlink and preparation checks pass. The fake installer is an
+external boundary sentinel; no network dependency is required.
