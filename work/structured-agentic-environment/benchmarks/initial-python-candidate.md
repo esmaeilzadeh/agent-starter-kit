@@ -1,6 +1,6 @@
 # Initial validator candidate measurements
 
-The machine-readable detail is in `initial-python-candidate.json`. The recorded source is commit `eb80b7b1b92d05e505cd719886833c81368ec1f0`; the report also binds the validator and benchmark script by SHA-256.
+The machine-readable detail is in `initial-python-candidate.json`. The recorded source is commit `023e01637162734d76ddd2cd746253de7b4993e9`; the report also binds the validator and benchmark script by SHA-256. CLI timings include referenced-input snapshot hashing and a freshness reread; validation-only timings exclude them.
 
 ## Workloads and environment
 
@@ -13,14 +13,14 @@ The machine-readable detail is in `initial-python-candidate.json`. The recorded 
 
 | Workload | Full CLI p50 / p95 | Validation-only p50 | Peak RSS |
 | --- | ---: | ---: | ---: |
-| Pilot, 12 nodes | 69.6 / 78.5 ms | 6.1 ms | 11.4 MiB |
-| Valid, 100 nodes | 72.9 / 80.5 ms | 2.2 ms | 11.5 MiB |
-| Valid, 1,000 nodes | 104.5 / 111.1 ms | 22.8 ms | 13.7 MiB |
-| Valid, 10,000 nodes | 399.8 / 407.4 ms | 270.5 ms | 36.3 MiB |
-| Invalid link, 10,000 nodes | 399.8 / 425.6 ms | 284.2 ms | 36.3 MiB |
-| Cycle, 10,000 nodes | 411.4 / 424.5 ms | 274.6 ms | 37.5 MiB |
+| Pilot, 12 nodes | 84.4 / 89.1 ms | 4.6 ms | 14.8 MiB |
+| Valid, 100 nodes | 78.6 / 91.7 ms | 6.2 ms | 14.8 MiB |
+| Valid, 1,000 nodes | 111.6 / 118.5 ms | 23.5 ms | 17.1 MiB |
+| Valid, 10,000 nodes | 436.5 / 471.0 ms | 267.9 ms | 39.7 MiB |
+| Invalid link, 10,000 nodes | 437.6 / 461.1 ms | 260.3 ms | 39.6 MiB |
+| Cycle, 10,000 nodes | 438.8 / 473.7 ms | 263.4 ms | 40.8 MiB |
 
-At 10,000 nodes, warm stdlib JSON parsing was 32.3 ms p50; installed `orjson` parsing was 18.9 ms. The graph-validation pass dominates this candidate's time. These are local observations, not a promised latency or a comparison with a native validator. No latency budget has been agreed. `cc` is present, but no native JSON library, Rust, or Go toolchain was found in this environment. The complete pre/post action guard has not been implemented or measured.
+At 10,000 nodes, warm stdlib JSON parsing was 32.5 ms p50; installed `orjson` parsing was 18.5 ms. The graph-validation pass dominates this candidate's time. These are local observations, not a promised latency or a comparison with a native validator. No latency budget has been agreed. `cc` is present, but no native JSON library, Rust, or Go toolchain was found in this environment. The complete pre/post action guard has not been implemented or measured.
 
 ## Decision status
 

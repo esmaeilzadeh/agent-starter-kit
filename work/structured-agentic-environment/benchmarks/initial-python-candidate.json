@@ -28,397 +28,397 @@
       "components": {
         "diagnostic_count": 0,
         "file_read": {
-          "p50_ms": 0.078,
-          "p95_ms": 0.194
+          "p50_ms": 0.057,
+          "p95_ms": 0.186
         },
         "model_validation": {
-          "p50_ms": 6.115,
-          "p95_ms": 13.35
+          "p50_ms": 4.617,
+          "p95_ms": 10.737
         },
         "stdlib_parse": {
-          "p50_ms": 0.125,
-          "p95_ms": 0.283
+          "p50_ms": 0.095,
+          "p95_ms": 0.252
         }
       },
       "diagnostic_count": 0,
       "document_file_count": 6,
       "edge_count": 12,
-      "first_run_ms": 69.874,
+      "first_run_ms": 90.095,
       "kind": "actual-pilot",
       "node_count": 12,
       "parser_comparison": {
         "input_bytes": 4534,
         "orjson": {
-          "warm_p50_ms": 0.021,
-          "warm_p95_ms": 0.047
+          "warm_p50_ms": 0.02,
+          "warm_p95_ms": 0.048
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 0.052,
-          "warm_p95_ms": 0.098
+          "warm_p50_ms": 0.055,
+          "warm_p95_ms": 0.093
         }
       },
-      "peak_rss_kib": 11648,
-      "repeat_p50_ms": 69.621,
-      "repeat_p95_ms": 78.536,
+      "peak_rss_kib": 15104,
+      "repeat_p50_ms": 84.354,
+      "repeat_p95_ms": 89.053,
       "work_id": "structured-agentic-environment"
     },
     {
       "components": {
         "diagnostic_count": 0,
         "file_read": {
-          "p50_ms": 0.045,
-          "p95_ms": 0.072
+          "p50_ms": 0.135,
+          "p95_ms": 0.227
         },
         "model_validation": {
-          "p50_ms": 2.162,
-          "p95_ms": 2.979
+          "p50_ms": 6.217,
+          "p95_ms": 9.467
         },
         "stdlib_parse": {
-          "p50_ms": 0.307,
-          "p95_ms": 0.565
+          "p50_ms": 0.958,
+          "p95_ms": 1.926
         }
       },
       "diagnostic_count": 0,
       "document_file_count": 1,
       "edge_count": 197,
-      "first_run_ms": 74.473,
+      "first_run_ms": 90.804,
       "kind": "valid",
       "node_count": 100,
       "parser_comparison": {
         "input_bytes": 20896,
         "orjson": {
-          "warm_p50_ms": 0.143,
-          "warm_p95_ms": 0.161
+          "warm_p50_ms": 0.172,
+          "warm_p95_ms": 0.228
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 0.293,
-          "warm_p95_ms": 0.315
+          "warm_p50_ms": 0.413,
+          "warm_p95_ms": 0.758
         }
       },
-      "peak_rss_kib": 11776,
-      "repeat_p50_ms": 72.886,
-      "repeat_p95_ms": 80.49,
+      "peak_rss_kib": 15184,
+      "repeat_p50_ms": 78.571,
+      "repeat_p95_ms": 91.724,
       "work_id": "benchmark-100-valid"
     },
     {
       "components": {
         "diagnostic_count": 1,
         "file_read": {
-          "p50_ms": 0.045,
-          "p95_ms": 0.077
+          "p50_ms": 0.104,
+          "p95_ms": 0.254
         },
         "model_validation": {
-          "p50_ms": 2.184,
-          "p95_ms": 3.575
+          "p50_ms": 3.686,
+          "p95_ms": 9.506
         },
         "stdlib_parse": {
-          "p50_ms": 0.311,
-          "p95_ms": 0.349
+          "p50_ms": 0.529,
+          "p95_ms": 1.39
         }
       },
       "diagnostic_count": 1,
       "document_file_count": 1,
       "edge_count": 198,
-      "first_run_ms": 74.736,
+      "first_run_ms": 71.152,
       "kind": "missing-link",
       "node_count": 100,
       "parser_comparison": {
         "input_bytes": 20971,
         "orjson": {
-          "warm_p50_ms": 0.144,
-          "warm_p95_ms": 0.186
+          "warm_p50_ms": 0.205,
+          "warm_p95_ms": 0.231
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 0.295,
-          "warm_p95_ms": 0.332
+          "warm_p50_ms": 0.446,
+          "warm_p95_ms": 0.476
         }
       },
-      "peak_rss_kib": 11776,
-      "repeat_p50_ms": 74.251,
-      "repeat_p95_ms": 80.226,
+      "peak_rss_kib": 15188,
+      "repeat_p50_ms": 77.138,
+      "repeat_p95_ms": 83.519,
       "work_id": "benchmark-100-missing-link"
     },
     {
       "components": {
         "diagnostic_count": 1,
         "file_read": {
-          "p50_ms": 0.047,
-          "p95_ms": 0.282
+          "p50_ms": 0.116,
+          "p95_ms": 0.231
         },
         "model_validation": {
-          "p50_ms": 2.187,
-          "p95_ms": 10.089
+          "p50_ms": 5.194,
+          "p95_ms": 9.397
         },
         "stdlib_parse": {
-          "p50_ms": 0.308,
-          "p95_ms": 1.435
+          "p50_ms": 0.769,
+          "p95_ms": 1.392
         }
       },
       "diagnostic_count": 1,
       "document_file_count": 1,
       "edge_count": 198,
-      "first_run_ms": 71.701,
+      "first_run_ms": 80.638,
       "kind": "cycle",
       "node_count": 100,
       "parser_comparison": {
         "input_bytes": 20962,
         "orjson": {
-          "warm_p50_ms": 0.143,
-          "warm_p95_ms": 0.166
+          "warm_p50_ms": 0.145,
+          "warm_p95_ms": 0.158
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 0.295,
-          "warm_p95_ms": 0.331
+          "warm_p50_ms": 0.302,
+          "warm_p95_ms": 0.666
         }
       },
-      "peak_rss_kib": 11776,
-      "repeat_p50_ms": 72.752,
-      "repeat_p95_ms": 78.699,
+      "peak_rss_kib": 15192,
+      "repeat_p50_ms": 77.358,
+      "repeat_p95_ms": 83.543,
       "work_id": "benchmark-100-cycle"
     },
     {
       "components": {
         "diagnostic_count": 0,
         "file_read": {
-          "p50_ms": 0.116,
-          "p95_ms": 0.131
+          "p50_ms": 0.126,
+          "p95_ms": 0.378
         },
         "model_validation": {
-          "p50_ms": 22.751,
-          "p95_ms": 25.966
+          "p50_ms": 23.51,
+          "p95_ms": 59.993
         },
         "stdlib_parse": {
-          "p50_ms": 2.991,
-          "p95_ms": 7.876
+          "p50_ms": 3.196,
+          "p95_ms": 11.207
         }
       },
       "diagnostic_count": 0,
       "document_file_count": 1,
       "edge_count": 1997,
-      "first_run_ms": 104.5,
+      "first_run_ms": 108.074,
       "kind": "valid",
       "node_count": 1000,
       "parser_comparison": {
         "input_bytes": 210796,
         "orjson": {
-          "warm_p50_ms": 1.491,
-          "warm_p95_ms": 5.448
+          "warm_p50_ms": 1.514,
+          "warm_p95_ms": 5.409
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 2.861,
-          "warm_p95_ms": 2.948
+          "warm_p50_ms": 2.911,
+          "warm_p95_ms": 5.454
         }
       },
-      "peak_rss_kib": 14048,
-      "repeat_p50_ms": 104.472,
-      "repeat_p95_ms": 111.064,
+      "peak_rss_kib": 17536,
+      "repeat_p50_ms": 111.645,
+      "repeat_p95_ms": 118.527,
       "work_id": "benchmark-1000-valid"
     },
     {
       "components": {
         "diagnostic_count": 1,
         "file_read": {
-          "p50_ms": 0.116,
-          "p95_ms": 0.425
+          "p50_ms": 0.122,
+          "p95_ms": 0.366
         },
         "model_validation": {
-          "p50_ms": 22.681,
-          "p95_ms": 65.825
+          "p50_ms": 22.947,
+          "p95_ms": 59.524
         },
         "stdlib_parse": {
-          "p50_ms": 3.062,
-          "p95_ms": 7.77
+          "p50_ms": 3.071,
+          "p95_ms": 11.488
         }
       },
       "diagnostic_count": 1,
       "document_file_count": 1,
       "edge_count": 1998,
-      "first_run_ms": 103.144,
+      "first_run_ms": 116.034,
       "kind": "missing-link",
       "node_count": 1000,
       "parser_comparison": {
         "input_bytes": 210871,
         "orjson": {
-          "warm_p50_ms": 1.485,
-          "warm_p95_ms": 1.64
+          "warm_p50_ms": 1.515,
+          "warm_p95_ms": 1.711
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 2.947,
-          "warm_p95_ms": 6.977
+          "warm_p50_ms": 2.927,
+          "warm_p95_ms": 7.146
         }
       },
-      "peak_rss_kib": 14044,
-      "repeat_p50_ms": 101.159,
-      "repeat_p95_ms": 158.152,
+      "peak_rss_kib": 17536,
+      "repeat_p50_ms": 109.241,
+      "repeat_p95_ms": 115.736,
       "work_id": "benchmark-1000-missing-link"
     },
     {
       "components": {
         "diagnostic_count": 1,
         "file_read": {
-          "p50_ms": 0.12,
-          "p95_ms": 0.357
+          "p50_ms": 0.118,
+          "p95_ms": 0.406
         },
         "model_validation": {
-          "p50_ms": 22.878,
-          "p95_ms": 44.076
+          "p50_ms": 22.16,
+          "p95_ms": 36.248
         },
         "stdlib_parse": {
-          "p50_ms": 3.084,
-          "p95_ms": 8.954
+          "p50_ms": 3.099,
+          "p95_ms": 11.254
         }
       },
       "diagnostic_count": 1,
       "document_file_count": 1,
       "edge_count": 1998,
-      "first_run_ms": 106.703,
+      "first_run_ms": 102.532,
       "kind": "cycle",
       "node_count": 1000,
       "parser_comparison": {
         "input_bytes": 210862,
         "orjson": {
-          "warm_p50_ms": 1.472,
-          "warm_p95_ms": 1.516
+          "warm_p50_ms": 1.534,
+          "warm_p95_ms": 2.77
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 2.978,
-          "warm_p95_ms": 6.856
+          "warm_p50_ms": 2.903,
+          "warm_p95_ms": 6.626
         }
       },
-      "peak_rss_kib": 14172,
-      "repeat_p50_ms": 101.003,
-      "repeat_p95_ms": 110.683,
+      "peak_rss_kib": 17664,
+      "repeat_p50_ms": 111.03,
+      "repeat_p95_ms": 157.178,
       "work_id": "benchmark-1000-cycle"
     },
     {
       "components": {
         "diagnostic_count": 0,
         "file_read": {
-          "p50_ms": 0.608,
-          "p95_ms": 1.095
+          "p50_ms": 0.533,
+          "p95_ms": 1.099
         },
         "model_validation": {
-          "p50_ms": 270.469,
-          "p95_ms": 283.704
+          "p50_ms": 267.941,
+          "p95_ms": 290.169
         },
         "stdlib_parse": {
-          "p50_ms": 35.933,
-          "p95_ms": 41.308
+          "p50_ms": 34.725,
+          "p95_ms": 41.199
         }
       },
       "diagnostic_count": 0,
       "document_file_count": 1,
       "edge_count": 19997,
-      "first_run_ms": 395.657,
+      "first_run_ms": 452.461,
       "kind": "valid",
       "node_count": 10000,
       "parser_comparison": {
         "input_bytes": 2118796,
         "orjson": {
-          "warm_p50_ms": 18.89,
-          "warm_p95_ms": 22.421
+          "warm_p50_ms": 18.515,
+          "warm_p95_ms": 21.654
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 32.327,
-          "warm_p95_ms": 37.977
+          "warm_p50_ms": 32.518,
+          "warm_p95_ms": 42.557
         }
       },
-      "peak_rss_kib": 37160,
-      "repeat_p50_ms": 399.849,
-      "repeat_p95_ms": 407.442,
+      "peak_rss_kib": 40624,
+      "repeat_p50_ms": 436.505,
+      "repeat_p95_ms": 471.015,
       "work_id": "benchmark-10000-valid"
     },
     {
       "components": {
         "diagnostic_count": 1,
         "file_read": {
-          "p50_ms": 0.575,
-          "p95_ms": 0.638
+          "p50_ms": 0.539,
+          "p95_ms": 0.577
         },
         "model_validation": {
-          "p50_ms": 284.174,
-          "p95_ms": 343.271
+          "p50_ms": 260.254,
+          "p95_ms": 269.216
         },
         "stdlib_parse": {
-          "p50_ms": 34.875,
-          "p95_ms": 43.818
+          "p50_ms": 34.148,
+          "p95_ms": 40.84
         }
       },
       "diagnostic_count": 1,
       "document_file_count": 1,
       "edge_count": 19998,
-      "first_run_ms": 399.63,
+      "first_run_ms": 442.068,
       "kind": "missing-link",
       "node_count": 10000,
       "parser_comparison": {
         "input_bytes": 2118871,
         "orjson": {
-          "warm_p50_ms": 16.518,
-          "warm_p95_ms": 17.767
+          "warm_p50_ms": 16.377,
+          "warm_p95_ms": 17.145
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 31.633,
-          "warm_p95_ms": 39.975
+          "warm_p50_ms": 30.181,
+          "warm_p95_ms": 36.607
         }
       },
-      "peak_rss_kib": 37164,
-      "repeat_p50_ms": 399.835,
-      "repeat_p95_ms": 425.57,
+      "peak_rss_kib": 40544,
+      "repeat_p50_ms": 437.617,
+      "repeat_p95_ms": 461.1,
       "work_id": "benchmark-10000-missing-link"
     },
     {
       "components": {
         "diagnostic_count": 1,
         "file_read": {
-          "p50_ms": 0.549,
-          "p95_ms": 0.729
+          "p50_ms": 0.512,
+          "p95_ms": 0.84
         },
         "model_validation": {
-          "p50_ms": 274.569,
-          "p95_ms": 287.823
+          "p50_ms": 263.416,
+          "p95_ms": 294.198
         },
         "stdlib_parse": {
-          "p50_ms": 33.568,
-          "p95_ms": 40.344
+          "p50_ms": 33.011,
+          "p95_ms": 65.677
         }
       },
       "diagnostic_count": 1,
       "document_file_count": 1,
       "edge_count": 19998,
-      "first_run_ms": 403.145,
+      "first_run_ms": 435.214,
       "kind": "cycle",
       "node_count": 10000,
       "parser_comparison": {
         "input_bytes": 2118862,
         "orjson": {
-          "warm_p50_ms": 16.647,
-          "warm_p95_ms": 17.497
+          "warm_p50_ms": 16.575,
+          "warm_p95_ms": 17.324
         },
         "orjson_version": "3.11.7",
         "stdlib_json": {
-          "warm_p50_ms": 31.275,
-          "warm_p95_ms": 36.711
+          "warm_p50_ms": 30.502,
+          "warm_p95_ms": 37.041
         }
       },
-      "peak_rss_kib": 38360,
-      "repeat_p50_ms": 411.367,
-      "repeat_p95_ms": 424.537,
+      "peak_rss_kib": 41824,
+      "repeat_p50_ms": 438.806,
+      "repeat_p95_ms": 473.709,
       "work_id": "benchmark-10000-cycle"
     }
   ],
   "schema": "ask-engineering-benchmark/v1",
   "source": {
     "benchmark_sha256": "fd2822671c36c2b58ff50f03b5dd91c2c69e7cf8230e37ccce26d0dfc950a9ca",
-    "commit": "eb80b7b1b92d05e505cd719886833c81368ec1f0",
-    "validator_sha256": "0c1614f8e8a5d541ad47cdbf42c562c8500afee2f6afdbe6c12dfb41d26a8e34"
+    "commit": "023e01637162734d76ddd2cd746253de7b4993e9",
+    "validator_sha256": "e3e8d20ca7c56b59dc36a9fc7fbd91dbdf8dd418189e8f9efb752f420d59a0b4"
   }
 }
