@@ -1,0 +1,93 @@
+EFFFF
+======================================================================
+ERROR: test_E01_public_red_review_verify_record_accept_journey (__main__.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 42, in test_E01_public_red_review_verify_record_accept_journey
+    completion=json.loads((c.root/'work/w/traceability/completion.json').read_text())
+  File "/usr/lib/python3.10/pathlib.py", line 1134, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/usr/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpxn7ng7sa/work/w/traceability/completion.json'
+
+======================================================================
+FAIL: test_E02_omitted_e2e_names_missing_case_and_never_records_pass (__main__.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 49, in test_E02_omitted_e2e_names_missing_case_and_never_records_pass
+    c=self.consumer(omit_e2e=True);self.require_fail(c.command('verify'))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 12, in require_fail
+    def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 0 == 0 : verify: running: python3 -c 'import app'
+{
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "5a58b8f447e140a06d278e1df4e9d8afded604b1",
+  "result": "pass",
+  "checks": [
+    {
+      "id": "syntax",
+      "tier": "mandatory",
+      "command": "python3 -c 'import app'",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    }
+  ]
+}
+verify: commit_sha=5a58b8f447e140a06d278e1df4e9d8afded604b1
+
+
+======================================================================
+FAIL: test_I05_all_normal_entrypoints_reject_omitted_e2e (__main__.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 15, in test_I05_all_normal_entrypoints_reject_omitted_e2e
+    self.require_fail(c.command('verify'))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 12, in require_fail
+    def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 0 == 0 : verify: running: python3 -c 'import app'
+{
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "6e8e22226e97293a2c3725e05e271da55ece18df",
+  "result": "pass",
+  "checks": [
+    {
+      "id": "syntax",
+      "tier": "mandatory",
+      "command": "python3 -c 'import app'",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    }
+  ]
+}
+verify: commit_sha=6e8e22226e97293a2c3725e05e271da55ece18df
+
+
+======================================================================
+FAIL: test_I06_preflight_failure_replaces_old_pass (__main__.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 29, in test_I06_preflight_failure_replaces_old_pass
+    self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 12, in require_fail
+    def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 0 == 0 : record-result: wrote w @ 74d780f51607fafbb21d6929609228bc71e703eb -> work/w/result.json
+
+
+======================================================================
+FAIL: test_I07_complete_evidence_agrees_across_entrypoints (__main__.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 33, in test_I07_complete_evidence_agrees_across_entrypoints
+    self.require_pass(c.command('check-workstream','w','--acceptance'))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 11, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 2 != 0 : unknown arg: --acceptance
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 4.408s
+
+FAILED (failures=4, errors=1)

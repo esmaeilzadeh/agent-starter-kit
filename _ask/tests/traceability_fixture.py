@@ -13,7 +13,7 @@ from verification.traceability.evidence import accept_plan,inventory,load_accept
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
-    def __init__(self):
+    def __init__(self,omit_e2e=False,tasks=False):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         self.git('init','-q','-b','agent/w');self.git('config','user.email','test@example.com');self.git('config','user.name','Test')
         self.write('.gitignore','__pycache__/\nverification-result.json\nwork/w/traceability/\nwork/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n')
@@ -28,6 +28,10 @@ class Consumer:
         self.plan={'schema':'ask-test-plan/v1','work_id':'w','spec_digest':digest(self.spec),'obligations':[{'criterion_id':'C1','required_types':['unit','e2e']}],
                    'runners':[{'id':'r','adapter':'unittest','argv':['python3','-m','unittest','test_app']}],'task_scopes':[],
                    'tests':[{'id':name,'criterion_ids':['C1'],'type':kind,'change_kind':'new','scenario':{'given':'hello','when':'rendered '+kind,'then':['HELLO']},'expected_assertions':[{'criterion_id':'C1','checks':['Exact HELLO output']}],'runner_id':'r','case_id':'test_app.Cases.test_'+method,'source_paths':['test_app.py']} for name,kind,method in [('U','unit','unit'),('E','e2e','cli')]]}
+        if omit_e2e: self.plan['runners'][0]['argv'][-1]='test_app.Cases.test_unit'
+        if tasks:
+            self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n')
+            self.plan['task_scopes']=[{'task_id':'a','test_ids':['U','E']}]
         self.write('specs/current/w.json',self.spec);self.write('work/w/test-plan.json',self.plan)
         self.red_sha=self.commit('faulty implementation with behavior assertions')
         decision={'decision':'APPROVED','reviewer':'fixture-independent','spec_digest':digest(self.spec),'plan_digest':digest(self.plan)}
