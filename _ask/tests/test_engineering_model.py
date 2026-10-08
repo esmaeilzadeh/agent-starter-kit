@@ -7,20 +7,14 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from engineering_model.validation import validate
+from engineering_fixture import decision_model
 
 
 class ModelValidationTests(unittest.TestCase):
     def test_malformed_fields_and_lifecycle(self):
-        model = {
-            "schema": "ask-engineering-model/v1", "work_id": "pilot", "revision": 1,
-            "nodes": [
-                {"id": "purpose", "type": "intent", "title": "Purpose", "lifecycle": "active"},
-                {"id": "choice", "type": "decision", "title": "Choose", "lifecycle": "open",
-                 "options": [{"id": "one", "label": "Same"}, {"id": "two", "label": "Same"}],
-                 "history": []},
-            ],
-            "edges": [{"type": "contains", "source": "purpose", "target": "choice"}],
-        }
+        model = decision_model()
+        for option in model["nodes"][1]["options"]:
+            option["label"] = "Same"
         original = copy.deepcopy(model)
         with tempfile.TemporaryDirectory() as directory:
             errors = validate(model, directory, "pilot")
