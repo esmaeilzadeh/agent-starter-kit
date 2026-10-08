@@ -32,5 +32,13 @@
       "result": "pass"
     }
   ],
-  "limits": "These checks validate planning structure and syntax only; the proposed runtime gates and test inventory are not implemented or executed."
+  "limits": "These checks validate planning structure and syntax only; the proposed runtime gates and test inventory are not implemented or executed.",
+  "verified_planning_commit": "74cd8c5476823b39ff7980e3e07985203ff6e922",
+  "repository_verification": {
+    "result": "pass",
+    "check_count": 35,
+    "report": "work/harness-review/test-traceability/verification.json",
+    "console_log": "work/harness-review/test-traceability/verify.log",
+    "scope": "Existing repository suite; proposed traceability test inventory has not been implemented."
+  }
 }

@@ -13,6 +13,12 @@ The proposed traceability/completion gate is NOT IMPLEMENTED. The existing
 R1/R2 implementation and results below remain separate and unchanged. Resume
 from the JSON plan for any subsequently requested implementation.
 
+Planning commit 74cd8c5 passed all 35 existing repository verification checks.
+Planning syntax/reference checks are in test-traceability/plan-validation.json;
+full verification and logs are in test-traceability/verification.json and
+test-traceability/verify.log. The historical R1/R2 result is preserved at
+evidence/r1-r2-result.json; result.json now records the planning-only outcome.
+
 ## Current state
 
 R1/R2 are implemented and locally verified on agent/harness-review. Independent

@@ -1,6 +1,6 @@
 {
   "work_id": "harness-review",
-  "commit_sha": "4c13aec67d17228fad5b67074125cf939e2d4c7d",
-  "result": "pass",
-  "notes": "R1/R2 implemented; 35 mandatory checks including 29 reliability cases pass; independent review approved with same-family fallback; R3-R5 remain follow-ups."
+  "commit_sha": "74cd8c5476823b39ff7980e3e07985203ff6e922",
+  "result": "plan-validated",
+  "notes": "Planning only: JSON spec-to-test contracts, seven implementation tasks, eighteen planned BDD test scenarios and an illustrative Python sketch. JSON/reference/syntax checks and all 35 existing repository checks pass. The proposed traceability runtime feature and its test inventory are NOT implemented. Historical R1/R2 pass remains in evidence/r1-r2-result.json."
 }
