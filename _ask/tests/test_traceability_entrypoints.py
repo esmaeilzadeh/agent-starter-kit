@@ -34,12 +34,27 @@ class EntrypointTests(unittest.TestCase):
         report=json.loads((c.root/'verification-result.json').read_text());self.assertEqual(report['result'],'fail')
         self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
     def test_I07_complete_evidence_agrees_across_entrypoints(self):
-        c=self.consumer();self.require_pass(c.command('verify'))
+        c=self.consumer(tasks=True);self.require_pass(c.command('verify'))
         self.require_pass(c.command('traceability','check-completion','w'))
         self.require_pass(c.command('check-workstream','w','--acceptance'))
         self.require_pass(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass','--notes','Literal "$text" and quotes preserved'))
         result=json.loads((c.root/'work/w/result.json').read_text());self.assertEqual(result['result'],'pass')
         self.assertEqual(result['notes'],'Literal "$text" and quotes preserved')
+        self.require_pass(c.command('inner-loop','run','w'))
+        state=json.loads((c.root/'work/w/inner-loop/state.json').read_text())
+        history={}
+        for phase,report in [('red',c.red),('green',c.green)]:
+            execution=report['executions'][0]
+            history[phase]={'command':'python3 -m unittest test_app','exit_code':execution['exit_code'],'output':(c.root/execution['output_artifact']).read_text()}
+        c.write('work/w/inner-loop/results/a.json',{'schema':'ask-task-result/v2','work_id':'w','task_id':'a','base_sha':state['tasks']['a']['base_sha'],'candidate_sha':c.sha,'tdd':dict(history,seam='public render and separate CLI process'),'exemption':None})
+        c.write('work/w/inner-loop/evidence/review.md','Independent fixture reviewer approves exact task boundary.\n')
+        self.require_pass(c.command('inner-loop','record-review','w','a','--reviewer','fixture-reviewer','--evidence','work/w/inner-loop/evidence/review.md'))
+        self.require_pass(c.command('inner-loop','run','w'))
+        state=json.loads((c.root/'work/w/inner-loop/state.json').read_text())
+        self.assertEqual(state['tasks']['a']['status'],'integrated')
+        self.assertEqual(state['coordinator_sha'],c.sha)
+        self.assertEqual(c.git('rev-parse','HEAD'),c.sha)
+        self.require_pass(c.command('check-workstream','w','--acceptance'))
     def test_E01_public_red_review_verify_record_accept_journey(self):
         c=self.consumer()
         self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,'--phase','red'))

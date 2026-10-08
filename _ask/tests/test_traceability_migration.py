@@ -25,6 +25,10 @@ class MigrationTests(unittest.TestCase):
         with self.assertRaisesRegex(NotIntegrable,'migration_required'):verify_candidate(c.root,candidate)
         report=json.loads(next(c.root.glob('work/w/inner-loop/evidence/verify-*/integration.json')).read_text())
         self.assertIn('migration_required',report.get('error',''), 'Retained failed migration report must name missing capability')
+        c.write('.agents/ask/verification/traceability/__init__.py',"CAPABILITY = 'ask-traceability/v0'\n")
+        sha=c.commit('unsupported pinned capability version')
+        candidate=Candidate({}, {'work_id':'w','task_id':'a','base_sha':sha,'candidate_sha':sha},'result-digest')
+        with self.assertRaisesRegex(NotIntegrable,'migration_required'):verify_candidate(c.root,candidate)
     def test_I09_templates_and_stage_commands_share_contract_versions(self):
         from verification.traceability.coverage import validate_plan
         spec=json.loads((SOURCE/'_ask/templates/spec.json').read_text());plan=json.loads((SOURCE/'_ask/templates/test-plan.json').read_text())
