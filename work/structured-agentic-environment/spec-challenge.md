@@ -10,6 +10,13 @@ Reviewed source: `18c3c34c74e620b46588ff8d0b0e27089b40ecd3`.
 - Specification digest: `48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b`.
 - Test-plan digest: `18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58`.
 
+## Model record
+
+- Parent coordinator: Codex, `gpt-6.1-sol`, high effort.
+- Independent reviewer: Codex, `gpt-6-astra`, high effort.
+- Review mode: separate child context; same model family, with prior spec challenge context disclosed above.
+- Runtime identity is cooperative attribution, not authentication.
+
 ## Findings and corrections
 
 The initial review of `e3a088c` requested concrete corrections. Revision `18c3c34` addresses each:
