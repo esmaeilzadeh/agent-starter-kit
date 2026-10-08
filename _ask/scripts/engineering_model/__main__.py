@@ -8,7 +8,7 @@ import sys
 
 from .validation import SLUG
 from .admission import admit, load_published, validate_current
-from .actions import run_action
+from .actions import edit
 from .snapshot import decode
 
 
@@ -32,19 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     if not SLUG.fullmatch(args.work_id):
         parser.error("--work-id must be a lowercase hyphenated slug")
     if args.command == "edit":
-        def action(snapshot):
-            batch = decode(Path(args.batch).read_bytes())
-            files = batch.get("files") if isinstance(batch, dict) else None
-            if not isinstance(files, dict):
-                raise ValueError("batch requires a files map")
-            allowed = {f"specs/current/{args.work_id}.json", f"specs/current/{args.work_id}.md",
-                       f"work/{args.work_id}/test-plan.json"}
-            if not set(files) <= allowed:
-                raise ValueError("file batches may edit only the selected workstream's canonical documents")
-            return {path: text.encode("utf-8") if isinstance(text, str) else None if text is None
-                    else (_ for _ in ()).throw(ValueError("file payload must be text or null"))
-                    for path, text in files.items()}
-        result = run_action(root, args.work_id, args.expected, action)
+        result = edit(root, args.work_id, args.expected, lambda: decode(Path(args.batch).read_bytes()))
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0 if result["valid"] else 1
     if args.command == "validate":

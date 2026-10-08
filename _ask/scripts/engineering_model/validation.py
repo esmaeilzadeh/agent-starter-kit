@@ -13,7 +13,7 @@ from pathlib import Path, PureWindowsPath
 
 
 SCHEMA = "ask-engineering-model/v1"
-RULES_VERSION = "ask-engineering-validator-rules/v3"
+RULES_VERSION = "ask-engineering-validator-rules/v4"
 NODE_TYPES = {
     "intent", "requirement", "feature", "story", "scenario", "decision",
     "assumption", "task", "implementation", "test", "test_run", "risk",

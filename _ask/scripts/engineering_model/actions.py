@@ -14,6 +14,7 @@ import tempfile
 from .admission import (_durable_write, _publish, _state_directory, _sync_directory,
                         _writer, load_published, validate_current)
 from .snapshot import capture, is_current, read_input, safe_relative
+from .domain import apply_batch
 
 
 class Refused(ValueError):
@@ -201,3 +202,33 @@ def _result(base, candidate, diagnostics, steps):
             "diagnostics": diagnostics, "steps": steps,
             "input_snapshot": base.identity if base is not None else None,
             "snapshot": candidate.identity if candidate is not None else None}
+
+
+def edit(root, work_id, expected, proposal):
+    """Guard a semantic batch plus coordinated canonical document changes.
+
+    A callable proposal loader is opened only after pre-validation, so even
+    parsing/action invocation cannot precede admission.
+    """
+    def action(snapshot):
+        batch = proposal() if callable(proposal) else proposal
+        if not isinstance(batch, dict) or set(batch) - {"commands", "files"}:
+            raise Refused("EM002_ACTION", "batch supports only commands and files")
+        files, commands = batch.get("files", {}), batch.get("commands", [])
+        if not isinstance(files, dict) or (not files and not commands):
+            raise Refused("EM002_ACTION", "batch must contain semantic commands or document changes")
+        allowed = {f"specs/current/{work_id}.json", f"specs/current/{work_id}.md", f"work/{work_id}/test-plan.json"}
+        if not set(files) <= allowed:
+            raise Refused("EM002_ACTION", "file changes must target the selected workstream's canonical documents")
+        changes = {}
+        for path, text in files.items():
+            if text is not None and not isinstance(text, str):
+                raise Refused("EM002_ACTION", "file payload must be text or null", path)
+            changes[path] = text.encode("utf-8") if text is not None else None
+        result = apply_batch(snapshot.document, commands)
+        if not result["valid"]:
+            diagnostic = result["diagnostics"][0]
+            raise Refused(diagnostic["code"], diagnostic["message"], diagnostic["path"])
+        changes[snapshot.model_path] = json.dumps(result["model"], ensure_ascii=False, sort_keys=True, indent=2).encode() + b"\n"
+        return changes
+    return run_action(root, work_id, expected, action)

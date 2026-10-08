@@ -40,6 +40,29 @@ def _attribution(command):
     return command["actor"], command["rationale"]
 
 
+def _invalidate(document, roots, timestamp, actor, include_roots=False):
+    nodes = {node["id"]: node for node in document["nodes"]}
+    reverse = {}
+    for edge in document["edges"]:
+        if edge["type"] == "depends_on":
+            reverse.setdefault(edge["target"], set()).add(edge["source"])
+    pending = list(roots)
+    seen = set(roots)
+    affected = set(roots) if include_roots else set()
+    while pending:
+        for dependent in reverse.get(pending.pop(), ()):
+            affected.add(dependent)
+            if dependent not in seen:
+                seen.add(dependent)
+                pending.append(dependent)
+    for identity in sorted(affected):
+        node = nodes.get(identity)
+        if node and node["type"] == "decision" and node["lifecycle"] == "resolved":
+            _history(node, "invalidated", actor, "dependency changed: " + ", ".join(sorted(roots)), timestamp)
+            node.pop("resolution", None)
+            node["lifecycle"] = "open"
+
+
 def apply_batch(document, commands, *, timestamp=None):
     """Apply an isolated semantic proposal, with one revision for the whole batch."""
     candidate = deepcopy(document)
@@ -53,6 +76,35 @@ def apply_batch(document, commands, *, timestamp=None):
             if not isinstance(command, dict):
                 raise ValueError("command must be an object")
             op = command.get("op")
+            if op == "add_node":
+                node = command.get("node")
+                if set(command) != {"op", "node"} or not isinstance(node, dict) or not isinstance(node.get("id"), str):
+                    raise ValueError("add_node requires a node definition")
+                if node["id"] in nodes:
+                    raise ValueError("node ID already exists")
+                node = deepcopy(node)
+                candidate["nodes"].append(node)
+                nodes[node["id"]] = node
+                effects.append({"op": op, "id": node["id"]})
+                continue
+            if op in ("add_edge", "remove_edge"):
+                edge = command.get("edge")
+                if set(command) != {"op", "edge"} or not isinstance(edge, dict) or set(edge) != {"type", "source", "target"}:
+                    raise ValueError("edge command requires exactly type/source/target")
+                if not all(isinstance(v, str) for v in edge.values()):
+                    raise ValueError("edge fields must be strings")
+                if op == "add_edge":
+                    if edge in candidate["edges"]:
+                        raise ValueError("edge already exists")
+                    candidate["edges"].append(deepcopy(edge))
+                else:
+                    if edge not in candidate["edges"]:
+                        raise ValueError("edge does not exist")
+                    candidate["edges"].remove(edge)
+                if edge["type"] == "depends_on":
+                    _invalidate(candidate, {edge["source"]}, timestamp, "document-change", include_roots=True)
+                effects.append({"op": op, "id": edge["source"]})
+                continue
             identity = command.get("id")
             if not isinstance(identity, str) or identity not in nodes:
                 raise ValueError("command must select an existing node ID")
@@ -103,6 +155,7 @@ def apply_batch(document, commands, *, timestamp=None):
             else:
                 raise ValueError(f"unsupported command: {op}")
             effects.append({"op": op, "id": identity})
+            _invalidate(candidate, {identity}, timestamp, command.get("actor", "document-change"))
         candidate["revision"] += 1
         return {"valid": True, "model": candidate, "diagnostics": [], "effects": effects, "tasks": task_states(candidate)}
     except (ValueError, KeyError, TypeError) as exc:
