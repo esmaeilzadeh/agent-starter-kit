@@ -192,7 +192,8 @@ def validate(document: object, root: str | Path, work_id: str, *, reference_byte
         valid = kind in EDGE_TYPES
         if kind == "contains":
             valid = isinstance(source_type, str) and isinstance(target_type, str) and target_type in CONTAINS.get(source_type, set())
-            parent_edges[target].append(source)
+            if valid:
+                parent_edges[target].append(source)
             containment.append((source, target))
         elif kind == "depends_on":
             valid = isinstance(source_type, str) and isinstance(target_type, str) and target_type in DEPENDENCIES.get(source_type, set())
@@ -210,8 +211,8 @@ def validate(document: object, root: str | Path, work_id: str, *, reference_byte
 
     covered_tests = {source for kind, source, _target in seen_edges if kind == "covers"}
     for node_id, node in sorted(by_id.items()):
-        if node.get("type") == "test" and node.get("lifecycle") != "draft" and node_id not in covered_tests:
-            errors.append(_diagnostic("EM001_TEST_COVERAGE", id_paths[node_id], "active test must cover at least one scenario", node_id))
+        if node.get("type") == "test" and node_id not in covered_tests:
+            errors.append(_diagnostic("EM001_TEST_COVERAGE", id_paths[node_id], "test must cover at least one scenario", node_id))
 
     for node_id, node in sorted(by_id.items()):
         node_type = node.get("type")
