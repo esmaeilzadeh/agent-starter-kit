@@ -8,6 +8,25 @@ from engineering_fixture import model_command, referenced_model, write_json
 
 
 class DocumentGuardTests(unittest.TestCase):
+    def test_invalid_prestate_prevents_action(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, spec = referenced_model(root)
+            admitted = model_command(root, "admit", "--work-id", "pilot")
+            identity = json.loads(admitted.stdout)["snapshot"]["digest"]
+            model["nodes"] = []
+            write_json(root, "work/pilot/engineering-model.json", model)
+            before = (root / "work/pilot/engineering-model.json").read_bytes()
+            # A nonexistent proposal must never be opened in an invalid prestate.
+            blocked = model_command(root, "edit", "--work-id", "pilot", "--expected", identity,
+                                    "--batch", "must-not-be-read.json")
+            self.assertEqual(blocked.returncode, 1, "invalid prestate must produce an admission refusal")
+            result = json.loads(blocked.stdout)
+            self.assertIn("EM001_INTENT_COUNT", {e["code"] for e in result["diagnostics"]})
+            self.assertNotIn("EM002_ACTION", {e["code"] for e in result["diagnostics"]})
+            self.assertEqual(result["steps"], ["pre"])
+            self.assertEqual((root / "work/pilot/engineering-model.json").read_bytes(), before)
+
     def test_linked_spec_change_invalidates_admission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
