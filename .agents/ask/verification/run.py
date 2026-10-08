@@ -82,7 +82,9 @@ def main():
         if work_id:
             write_json(runtime/'work'/work_id/'traceability'/('static-'+sha+'.json'),receipt)
             completion=check_completion(root,work_id,sha,anchor,scope,task_id,receipt,runtime)
-            if completion['status']!='pass':raise Invalid('spec-to-test completion failed: '+json.dumps(completion))
+            if completion['status']!='pass':
+                summary={'errors':completion['errors'],'missing_evidence':completion['missing_evidence'],'report':f'work/{work_id}/traceability/completion.json'}
+                raise Invalid('spec-to-test completion failed: '+json.dumps(summary))
         doc['result']='pass'
     except (OSError,ValueError,KeyError,TypeError,RuntimeError) as exc:
         doc['error']=str(exc);print('verify: '+str(exc),file=sys.stderr)

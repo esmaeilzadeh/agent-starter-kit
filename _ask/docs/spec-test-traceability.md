@@ -94,7 +94,10 @@ the instrumented run. Opaque shell commands never supply case evidence.
 Each command reloads underlying contracts, coordinator records, sources and logs.
 Changing `completion.json` to pass cannot authorize completion. Task checks use
 accepted task scopes and cannot satisfy final workstream evidence. A failed
-preflight replaces stale completion/Verify results with a fresh failure.
+preflight replaces stale completion/Verify results with a fresh failure. Historical
+red attempts with collection failures or unsupported/unmapped cases remain retained
+and are listed as rejected attempts; they supply no TDD evidence. Later valid
+assertion red and final green can complete the same accepted case.
 Detached integration pins tooling and accepted contracts to the task's recorded
 coordinator base; missing runner capability is `migration_required`.
 The existing FF-only, state-lock, review and postexecution lineage checks remain.
