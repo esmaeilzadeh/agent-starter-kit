@@ -1,11 +1,11 @@
 {
   "schema": "ask-spec-change-proposal/v1",
   "id": "harness-review-test-traceability",
-  "status": "PLANNING_ONLY",
+  "status": "ACCEPTED_FOR_IMPLEMENTATION",
   "current_specification": "specs/current/harness-review.md",
   "proposed_specification": "specs/proposals/spec-test-traceability.json",
   "reason": "Configured checks are executed, but required spec-to-test completeness is not validated. The result recorder can accept pass without that evidence.",
-  "requested_scope": "Prepare the implementation plan only; no runtime gate is implemented in this turn.",
+  "requested_scope": "Implement the previously prepared JSON plan; preserve accepted R1/R2 claims.",
   "alternatives": [
     {
       "id": "review-only",
@@ -42,7 +42,8 @@
   "proposed_plan": "work/harness-review/test-traceability/plan.json",
   "decision": {
     "planning_authorized": true,
-    "implementation_started": false,
-    "accepted_spec_rewritten": false
+    "implementation_started": true,
+    "accepted_spec_rewritten": false,
+    "implementation_authority": "User request 2026-10-08"
   }
 }

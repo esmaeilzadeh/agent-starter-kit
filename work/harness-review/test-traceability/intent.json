@@ -1,0 +1,12 @@
+{
+  "what": "Implement spec-test traceability P01-P07",
+  "why": "Every testable accepted spec criterion has planned, meaningfully reviewed tests and executed evidence; missing links block normal completion.",
+  "explore": "Explore skipped: destination already clear.",
+  "seams": [
+    "validate_plan(spec, plan, accepted_task_graph)",
+    "run_tests at immutable Git revisions",
+    "evaluate_completion",
+    "public ask Verify/integration/acceptance/record-result"
+  ],
+  "authorization": "User requested following the existing implementation plan; its seams and tests are accepted."
+}

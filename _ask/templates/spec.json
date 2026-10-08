@@ -1,0 +1,17 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "example",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "INV-001",
+      "given": "An invitation expired before the current clock time and no account exists for it",
+      "when": "A user attempts to redeem the invitation",
+      "then": [
+        "Redemption is rejected as expired",
+        "No account is created"
+      ],
+      "verification_mode": "tests"
+    }
+  ]
+}
