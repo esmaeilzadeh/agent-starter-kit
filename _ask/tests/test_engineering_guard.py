@@ -5,9 +5,86 @@ import tempfile
 import unittest
 
 from engineering_fixture import model_command, referenced_model, write_json
+import copy
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from engineering_model.actions import run_action, edit
+from engineering_model.admission import admit, load_published
 
 
 class DocumentGuardTests(unittest.TestCase):
+    def test_successful_guard_order_and_identities(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            referenced_model(root)
+            before, errors = admit(root, "pilot")
+            self.assertEqual(errors, [])
+            batch = write_json(root, "proposal.json", {"commands": [{"op": "resolve_decision", "id": "choice",
+                "option_id": "one", "actor": "Developer", "rationale": "Measured fit"}],
+                "files": {"specs/current/pilot.md": "# Coordinated choice\n"}})
+            changed = model_command(root, "edit", "--work-id", "pilot", "--expected", before.identity["digest"], "--batch", str(batch))
+            self.assertEqual(changed.returncode, 0, changed.stderr)
+            receipt = json.loads(changed.stdout)
+            self.assertEqual(receipt["steps"], ["pre", "action", "post", "publication"])
+            self.assertEqual(receipt["input_snapshot"], before.identity)
+            after = load_published(root, "pilot")
+            self.assertEqual(receipt["snapshot"], after.identity)
+            self.assertNotEqual(before.identity["digest"], after.identity["digest"])
+            self.assertEqual(after.document["revision"], 2)
+            self.assertEqual(after.files["specs/current/pilot.md"], b"# Coordinated choice\n")
+            # The action receipt and one semantic revision do not hide a second
+            # full post-check. Recovery must validate its captured candidate,
+            # not recapture/validate a second independently read document set.
+            self.assertEqual(receipt["validation_counts"], {"pre": 1, "post": 1})
+
+    def test_cached_and_full_validation_agree(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, spec = referenced_model(root)
+            for mutation in (None, "duplicate", "missing", "restored"):
+                if mutation == "duplicate":
+                    broken = copy.deepcopy(model)
+                    broken["nodes"].append(copy.deepcopy(broken["nodes"][0]))
+                    write_json(root, "work/pilot/engineering-model.json", broken)
+                elif mutation == "missing":
+                    write_json(root, "work/pilot/engineering-model.json", model)
+                    (root / "specs/current/pilot.json").unlink()
+                elif mutation == "restored":
+                    write_json(root, "specs/current/pilot.json", spec)
+                ordinary = model_command(root, "validate", "--work-id", "pilot")
+                full = model_command(root, "validate", "--work-id", "pilot", "--full")
+                self.assertEqual(full.returncode, ordinary.returncode, full.stderr)
+                self.assertEqual(json.loads(full.stdout), json.loads(ordinary.stdout))
+
+    def test_external_changes_and_missed_events_fail_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, spec = referenced_model(root)
+            initial = model_command(root, "watch", "--work-id", "pilot", "--once")
+            self.assertEqual(initial.returncode, 0, initial.stderr)
+            identity = json.loads(initial.stdout)["snapshot"]["digest"]
+            spec["criteria"] = []
+            write_json(root, "specs/current/pilot.json", spec)
+            observed = model_command(root, "watch", "--work-id", "pilot", "--once")
+            self.assertEqual(observed.returncode, 1, observed.stderr)
+            self.assertFalse(json.loads(observed.stdout)["valid"])
+            # No observer runs for the next external save; read/action startup
+            # must still refresh, never reuse a cached good receipt.
+            _model, spec = referenced_model(root)
+            model_command(root, "admit", "--work-id", "pilot")
+            spec["criteria"] = []
+            write_json(root, "specs/current/pilot.json", spec)
+            shown = json.loads(model_command(root, "show", "--work-id", "pilot").stdout)
+            self.assertFalse(shown["editable"])
+            self.assertEqual(shown["snapshot"]["digest"], identity)
+            calls = []
+            result = run_action(root, "pilot", identity, lambda snapshot: calls.append(snapshot))
+            self.assertFalse(result["valid"])
+            self.assertEqual(calls, [])
+
     def test_invalid_candidate_preserves_stable_generation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
