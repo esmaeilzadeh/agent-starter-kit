@@ -57,7 +57,9 @@ def _publish(state, snapshot, root):
     generations = state / "generations"
     generations.mkdir(exist_ok=True)
     destination = generations / digest
-    if not destination.exists():
+    if destination.exists():
+        _load_generation(state, snapshot.work_id, digest)
+    else:
         staged = Path(tempfile.mkdtemp(prefix="unpublished-", dir=generations))
         blobs = staged / "blobs"
         blobs.mkdir()
@@ -94,6 +96,10 @@ def load_published(root, work_id):
     digest = pointer.get("generation") if isinstance(pointer, dict) else None
     if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
         raise ValueError("invalid published generation pointer")
+    return _load_generation(state, work_id, digest)
+
+
+def _load_generation(state, work_id, digest):
     generation = state / "generations" / digest
     manifest = json.loads((generation / "manifest.json").read_bytes())
     if manifest.get("schema") != "ask-engineering-generation/v1" or manifest.get("work_id") != work_id:
@@ -153,6 +159,6 @@ def admit(root, work_id, expected=None):
                 if not _publish(state, snapshot, root):
                     diagnostics = [{"code": "EM007_INPUT_CHANGED", "path": snapshot.model_path,
                                     "message": "inputs changed before publication"}]
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, KeyError, TypeError) as exc:
             diagnostics = [{"code": "EM007_PUBLICATION", "path": snapshot.model_path, "message": str(exc)}]
     return snapshot, diagnostics
