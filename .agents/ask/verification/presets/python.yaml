@@ -1,0 +1,14 @@
+id: python
+checks:
+  - id: typecheck
+    tier: mandatory
+    command: python3 -m mypy .
+  - id: lint
+    tier: mandatory
+    command: python3 -m ruff check .
+  - id: tests
+    tier: mandatory
+    command: python3 -m pytest
+  - id: e2e
+    tier: mandatory
+    command: python3 -m pytest -m e2e

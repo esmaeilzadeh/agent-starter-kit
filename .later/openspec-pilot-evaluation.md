@@ -8,16 +8,23 @@
 
 ## Why
 
-`openspec-governance-integration` accepts machinery plus a recorded baseline.
-The two-or-three-change comparison is a separate workstream.
+`openspec-governance-integration` Accepts on machinery plus a recorded
+baseline. The spec's two-or-three-change comparison (time, duplication,
+missed requirements, semantic-change handling, command-surface adherence,
+review/verification quality, merge conflicts, readability) is a separate
+workstream.
 
 ## Proposed What (unapproved)
 
 Run two or three serialized marked-pilot changes, compare against
-`work/openspec-governance-integration/baseline.md`, and record adopt, revise, or
-abandon.
+`work/openspec-governance-integration/baseline.md`, record adopt, revise, or
+abandon. Name the representative changes when that workstream starts. This
+dogfood work-id is not one of those evaluation changes unless that workstream
+says so.
 
 ## Note
 
-Do not start this workstream while `agent/openspec-governance-integration` is
-live and touching `openspec/` or shared gates.
+Durable repository card mirrored by the GitHub issue above. Do not start
+`agent/openspec-pilot-evaluation` while
+`agent/openspec-governance-integration` is live and touching `openspec/` or
+shared gates.

@@ -6,7 +6,7 @@
 
 Repo overview and doc index: root **[README.md](../../../README.md)**.
 
-This plan is the **script for the demo**. Execute it in Cursor against this repository (or a clone). Protocol truth stays under `_ask/`; do not improvise stages from chat memory alone.
+This plan is the **script for the demo**. Execute it in Cursor against this repository (or a clone). Protocol truth stays under `.agents/ask/` (stages, bindings, verification) plus `_ask/` (guide, spec, policies). Do not improvise stages from chat memory alone.
 
 ---
 
@@ -34,7 +34,7 @@ After the demo you can answer: *Which experiment? Which metric? Which git SHA? W
 6. Demo Python extras: `pip install -r scripts/requirements-demo.txt`
 
 **Human role in the demo:** own What/Why, answer grilling, confirm defaults OK (covers later prepared artifacts), accept the final result. `/off-path` (or “just code”) leaves the kit for **this chat only**.  
-**Agent role:** run stages `00`–`10` per `_ask/agents/*.md`, **prepare each artifact** (do not skip documents), commit each meaningful step on `agent/<work-id>` without waiting to be asked, never silent-stash a dirty tree. `/off-path` is this session only — warn once and follow; a new chat starts on-path.
+**Agent role:** run stages `00`–`10` per `.agents/ask/stages/*.md`, **prepare each artifact** (do not skip documents), commit each meaningful step on `agent/<work-id>` without waiting to be asked, never silent-stash a dirty tree. `/off-path` is this session only — warn once and follow; a new chat starts on-path.
 
 ---
 
@@ -51,7 +51,7 @@ Shipped vehicle (already in the kit): `scripts/train_moons.py`, `scripts/view_ru
 ./ask start-work demo-moons-run
 ```
 
-Expect: branch `agent/demo-moons-run`, seeded files under `work/demo-moons-run/`.
+Expect: branch `agent/demo-moons-run` from `develop` (Git-flow), seeded files under `work/demo-moons-run/`.
 
 ### A1. Grill → Intent (`01`)
 

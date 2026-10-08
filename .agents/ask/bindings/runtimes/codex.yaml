@@ -1,0 +1,23 @@
+# Adapter data for Codex. Refresh when OpenAI's catalog or prices change.
+
+runtime: codex
+notes: >
+  Custom agents are TOML under .codex/agents/. Slugs must match the Codex picker.
+  Some Codex versions have failed to attach custom agent_type; treat spawn as best-effort.
+
+roles:
+  thinking: gpt-5.4
+  typing: gpt-5.4-mini
+  adversarial: gpt-5.4
+
+pools:
+  cheap: gpt-5.4-mini
+  diverse: gpt-5.4
+
+families:
+  - gpt
+
+picker:
+  - gpt-5.4-mini
+  - gpt-5.4
+  - gpt-5.4-nano

@@ -9,13 +9,19 @@ SOURCE_REPO="${KIT_SOURCE_REPO:-https://github.com/esmaeilzadeh/agent-starter-ki
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) VERSION="$2"; shift 2 ;;
+    --target) ROOT="$(cd "$2" && pwd)"; shift 2 ;;
     --skip-prepare) SKIP_PREPARE=1; shift ;;
     --source) SOURCE_REPO="$2"; shift 2 ;;
-    *) echo "usage: upgrade-kit.sh --version <tag-or-sha> [--skip-prepare] [--source <git-url>]" >&2; exit 2 ;;
+    *) echo "usage: upgrade-kit.sh --version <tag-or-sha> [--target <consumer-repo>] [--skip-prepare] [--source <git-url>]" >&2; exit 2 ;;
   esac
 done
 if [[ -z "$VERSION" ]]; then
   echo "upgrade-kit: --version required (never blind main)" >&2
+  exit 2
+fi
+
+if [[ "$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null || true)" != "$ROOT" ]]; then
+  echo "upgrade-kit: target must be a Git repository root: $ROOT" >&2
   exit 2
 fi
 
@@ -28,6 +34,7 @@ git clone --depth 1 --branch "$VERSION" "$SOURCE_REPO" "$TMP/kit" 2>/dev/null \
 preserve=(
   _ask/skills/manifest.yaml
   _ask/bindings/models.yaml
+  .agents/verification.yaml
 )
 for p in "${preserve[@]}"; do
   if [[ -f "$ROOT/$p" ]]; then
@@ -37,7 +44,7 @@ for p in "${preserve[@]}"; do
 done
 
 # Refresh kit-owned trees
-for rel in _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts _ask/tests _ask/docs _ask/cursor-commands _ask/bindings .cursor \
+for rel in _ask/skills _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts _ask/tests _ask/docs _ask/cursor-commands _ask/bindings .agents/ask .cursor \
            ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md _ask/OWNED-PATHS.md _ask/MAPPING.md _ask/README.md ask; do
   if [[ -e "$TMP/kit/$rel" ]]; then
     mkdir -p "$ROOT/$(dirname "$rel")"
@@ -61,6 +68,8 @@ done < <(find "$ROOT/_ask/agents" -name '*.local.md' -print0 2>/dev/null || true
 
 if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/_ask/skills/prepare-skills.sh" || true
-  "$ROOT/_ask/scripts/sync-cursor-binding.sh"
 fi
+python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
+"$ROOT/_ask/scripts/sync-cursor-binding.sh"
+python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check-trackability
 echo "upgrade-kit: refreshed kit-owned paths from $VERSION"

@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t10-e2e-contracts",
+  "commit_shas": ["659dafb51cb494861093c00078f0301f7500b1af"],
+  "tdd": {
+    "seam": "Grill/Spec/Plan/06/09 require E2E or not_applicable plus reason",
+    "red": {
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "output": "FAIL: _ask/templates/intent.md missing E2E",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "output": "PASS: E2E applicability or not_applicable+reason required in Grill/Spec/Plan/06/09",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/templates/", ".agents/ask/stages/", "_ask/tests/test-e2e-contract-sections.sh"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "This kit remains e2e not_applicable via ask-kit."
+}

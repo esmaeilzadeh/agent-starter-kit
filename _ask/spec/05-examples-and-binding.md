@@ -162,6 +162,8 @@ It should instruct every agent that:
 ```text
 This repository uses the AI Engineering Starter Kit.
 
+Protocol SoT: `.agents/ask/` (stages, bindings, verification). `_ask/agents` are pointers.
+
 If the destination is foggy:
 - run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
 - prepare Community Skills from _ask/skills/manifest.yaml (do not vendor by default).
@@ -171,7 +173,7 @@ Free on-path chat: announce 00 vs 01 and wait for confirm. `/00-explore` starts 
 Before independent Engineering Pipeline work:
 - invoke kit operations via `./ask` (not a generic root scripts/ folder);
 - require a clean working tree (`./ask check-clean`);
-- use a dedicated branch (`./ask start-work`);
+- use a dedicated branch (`./ask start-work` from develop; Git-flow);
 - identify work-id;
 - identify accepted specification;
 - read relevant policies;
@@ -199,7 +201,7 @@ Do not copy the entire guide into `AGENTS.md`.
 
 # 34a. Thin Cursor Binding
 
-Cursor-only adapter layer. Protocol under `_ask/` remains source of truth.
+Cursor-only adapter layer. Stage/binding SoT is `.agents/ask/`. `_ask/` remains the dispatcher/scripts/docs package.
 
 **Must ship so Cursor honors the kit:**
 
@@ -214,7 +216,7 @@ _ask/cursor-commands/                  # session-mode sources (e.g. /off-path); 
 .agents/skills/                        # prepared Community Skills (gitignore bodies)
 ```
 
-**`./ask sync`** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `_ask/agents/*.md` (skill wrappers and/or slash commands; optional generated agents). Do not hand-maintain eleven Cursor subagents as a second SoT. Session-mode commands such as `/off-path` are copied from `_ask/cursor-commands/` into `.cursor/commands/` (not stage projections).
+**`./ask sync`** (or prepare step): generates/refreshes Cursor-honored projections under `.cursor/` from `.agents/ask/stages/` (skill wrappers and/or slash commands; optional generated agents). `_ask/agents/*.md` are pointers. Do not hand-maintain eleven Cursor subagents as a second SoT. Session-mode commands such as `/off-path` are copied from `_ask/cursor-commands/` into `.cursor/commands/` (not stage projections).
 
 **Rules:** rules *point*; protocol *owns* text. Logic for Git guardrails lives in `_ask/scripts/`; `.cursor/hooks` are mandatory entrypoints. Anything Cursor must honor must exist under `.cursor/` even if a portable source also lives under `_ask/` or `.agents/`.
 
@@ -236,6 +238,7 @@ Provide:
 
 ```text
 _ask/     # entire kit package (incl. kit scripts/tests/docs)
+.agents/ask/          # stage/binding/verification SoT
 .cursor/              # complete Cursor-honored projection
 AGENTS.md             # merge/append unless --force
 ask                   # Agent Starter Kit dispatcher
@@ -262,9 +265,9 @@ Provide:
 
 The kit repository **dogfoods** its own `_ask/` and Cursor Binding.
 
-**Kit-owned** (safe to refresh on upgrade): stock stage contracts, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections.
+**Kit-owned** (safe to refresh on upgrade): `.agents/ask/`, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections.
 
-**Consumer-owned** (never clobber by default): `_ask/skills/manifest.yaml`, policies (or local policy tree), local `AGENTS.md` sections, `.cursor/rules/local/`, `_ask/agents/*.local.md` (per-stage overlays merged at sync time).
+**Consumer-owned** (never clobber by default): `_ask/skills/manifest.yaml`, policies (or local policy tree), local `AGENTS.md` sections, `.cursor/rules/local/`, `.agents/ask.local/`, `_ask/agents/*.local.md` (legacy overlay merged at sync time).
 
 Upgrade pulls an **explicit kit version/tag** (not blind `main`), refreshes kit-owned files, then runs prepare + sync unless `--skip-prepare`. Community Skill updates remain separate deliberate manifest pin bumps.
 

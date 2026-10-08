@@ -4,18 +4,18 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 
 | Guide concept | Guide module | Kit implementation |
 | --- | --- | --- |
-| Explore / wayfinding / R&D on-ramp | [02-workflow](guide/02-workflow.md) | [`_ask/agents/00-explore.md`](agents/00-explore.md), `explore-map` template, Explore skills in manifest |
+| Explore / wayfinding / R&D on-ramp | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/00-explore.md`](../.agents/ask/stages/00-explore.md), `explore-map` template, Explore skills in manifest |
 | What / Why | [02-workflow](guide/02-workflow.md) | [`work/<work-id>/intent.md`](../work/<work-id>/intent.md) |
-| Intent Grilling | [02-workflow](guide/02-workflow.md) | [`_ask/agents/01-grill.md`](agents/01-grill.md), ADR 0016 (load-bearing + ask-before-prepare) |
-| OpenSpec / Specification | [02-workflow](guide/02-workflow.md) | [`_ask/agents/02-spec.md`](agents/02-spec.md), `specs/` |
-| Specification Challenge | [02-workflow](guide/02-workflow.md) | [`_ask/agents/03-spec-challenge.md`](agents/03-spec-challenge.md) |
-| Specification Change | [02-workflow](guide/02-workflow.md) | [`_ask/agents/04-spec-change.md`](agents/04-spec-change.md) |
-| Planning | [02-workflow](guide/02-workflow.md) | [`_ask/agents/05-plan.md`](agents/05-plan.md) |
-| Delegated implementation | [02-workflow](guide/02-workflow.md) | [`_ask/agents/06-implement.md`](agents/06-implement.md) |
-| Structured review | [02-workflow](guide/02-workflow.md) | [`_ask/agents/07-review.md`](agents/07-review.md) |
-| Delegated refactor | [02-workflow](guide/02-workflow.md) | [`_ask/agents/08-refactor.md`](agents/08-refactor.md) |
-| Verification | [02-workflow](guide/02-workflow.md) | [`_ask/agents/09-verify.md`](agents/09-verify.md), `./ask verify` |
-| Acceptance | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/agents/10-accept.md`](agents/10-accept.md), `acceptance.md` |
+| Intent Grilling | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/01-grill.md`](../.agents/ask/stages/01-grill.md), ADR 0016 (load-bearing + ask-before-prepare) |
+| OpenSpec / Specification | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/02-spec.md`](../.agents/ask/stages/02-spec.md), `specs/` |
+| Specification Challenge | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/03-spec-challenge.md`](../.agents/ask/stages/03-spec-challenge.md) |
+| Specification Change | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/04-spec-change.md`](../.agents/ask/stages/04-spec-change.md) |
+| Planning | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/05-plan.md`](../.agents/ask/stages/05-plan.md) |
+| Delegated implementation | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/06-implement.md`](../.agents/ask/stages/06-implement.md) |
+| Structured review | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/07-review.md`](../.agents/ask/stages/07-review.md) |
+| Delegated refactor | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/08-refactor.md`](../.agents/ask/stages/08-refactor.md) |
+| Verification | [02-workflow](guide/02-workflow.md) | [`.agents/ask/stages/09-verify.md`](../.agents/ask/stages/09-verify.md), `./ask verify` |
+| Acceptance | [03-methods-governance](guide/03-methods-governance.md) | [`.agents/ask/stages/10-accept.md`](../.agents/ask/stages/10-accept.md), `acceptance.md` |
 | Guide (modular) | [guide/README](guide/README.md) | [`_ask/guide/`](guide/) |
 | Build Spec (modular) | [spec/README](spec/README.md) | [`_ask/spec/`](spec/) |
 | Delegation policy | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/delegation.md`](policies/delegation.md) |
@@ -29,7 +29,7 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Decision memory | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/decisions/`](decisions/) |
 | Spec state | [guide/README](guide/README.md) | [`specs/current/`](../specs/current/), [`specs/proposals/`](../specs/proposals/), status field |
 | Git hygiene | [guide/README](guide/README.md) | `./ask check-clean`, `./ask start-work`, `./ask check-workstream`, `./ask status` |
-| Cursor Binding sync | [guide/README](guide/README.md) | `./ask sync`, `.cursor/` |
+| Cursor Binding sync | [guide/README](guide/README.md) | `./ask sync` (reads `.agents/ask/`), `.cursor/` |
 | Install overlay | [guide/README](guide/README.md) | `./ask install` |
 | Human-only tracker/MCP setup | [guide/README](guide/README.md) | `./ask setup`, `.ask.env.example` |
 | Result provenance | [03-methods-governance](guide/03-methods-governance.md) | `./ask record-result`, result schema |
@@ -38,5 +38,6 @@ Index from Guide concepts to kit implementation paths. Prefer modular files unde
 | Acceptance debt | [03-methods-governance](guide/03-methods-governance.md) | evidence/acceptance state records |
 | Engineering-system evolution | [guide/README](guide/README.md) | review/verification outputs → rule/skill/check improvements |
 | Worktree / branch / commit discipline | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/worktree.md`](policies/worktree.md), `./ask check-clean` |
+| Git-flow | [03-methods-governance](guide/03-methods-governance.md) | [`_ask/policies/git-flow.md`](policies/git-flow.md), `./ask start-work` from `develop` |
 
 See also [spec/06-phases-and-acceptance.md](spec/06-phases-and-acceptance.md) §38.

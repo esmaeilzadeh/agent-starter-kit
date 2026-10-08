@@ -1,0 +1,30 @@
+# Adapter data for OpenCode. Refresh when OpenCode's catalog changes.
+# File-shape is mandatory. Live spawn is best-effort unless ASK_LIVE_SPAWN=opencode.
+# Docs pin: https://opencode.ai/docs/agents retrieved 2026-09-20.
+
+runtime: opencode
+notes: >
+  Markdown agents under .opencode/agents/. Filename is the agent name.
+  Required frontmatter: description. Kit also emits mode: subagent and model.
+  Review/debug deny edits via permission.edit. Do not emit deprecated tools/maxSteps.
+
+roles:
+  thinking: grok-4.6
+  typing: composer-2.5
+  adversarial: kimi-k3
+
+pools:
+  cheap: grok-4.6
+  diverse: kimi-k3
+
+families:
+  - grok
+  - composer
+  - claude
+  - gpt
+  - kimi
+
+picker:
+  - grok-4.6
+  - composer-2.5
+  - kimi-k3

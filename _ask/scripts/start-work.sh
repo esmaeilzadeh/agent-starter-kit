@@ -19,22 +19,21 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 2
 fi
 
-# Prefer main, then master, then current default
-DEFAULT_BRANCH="$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || true)"
-if [[ -z "$DEFAULT_BRANCH" ]]; then
-  if git show-ref --verify --quiet refs/heads/main; then
-    DEFAULT_BRANCH=main
-  elif git show-ref --verify --quiet refs/heads/master; then
-    DEFAULT_BRANCH=master
-  else
-    DEFAULT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-  fi
+# Base new workstreams on develop. Fail closed if that branch is missing.
+if git show-ref --verify --quiet refs/heads/develop; then
+  BASE=develop
+elif git show-ref --verify --quiet refs/remotes/origin/develop; then
+  BASE=origin/develop
+else
+  echo "start-work: create a local 'develop' branch first (Git-flow integration branch)." >&2
+  echo "start-work: refusing to branch from main/master." >&2
+  exit 1
 fi
 
 if git show-ref --verify --quiet "refs/heads/${BRANCH}"; then
   git checkout -q "$BRANCH"
 else
-  git checkout -q -b "$BRANCH" "$DEFAULT_BRANCH"
+  git checkout -q -b "$BRANCH" "$BASE"
 fi
 
 WS="work/${WORK_ID}"

@@ -1,0 +1,5 @@
+id: ask-kit
+checks:
+  - id: kit-shell-tests
+    tier: mandatory
+    glob: _ask/tests/test-*.sh

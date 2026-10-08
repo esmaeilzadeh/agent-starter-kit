@@ -5,6 +5,9 @@ ASK="$ROOT/ask"
 
 "$ASK" --help | grep -q 'Agent Starter Kit'
 "$ASK" --help | grep -q 'status'
+"$ASK" --help | grep -q '.agents/ask/'
+grep -q 'context-audit.md' "$ROOT/.agents/ask/stages/10-accept.md"
+grep -q 'open' "$ROOT/.agents/ask/stages/10-accept.md"
 "$ASK" --help | grep -q 'setup'
 "$ASK" --help | grep -q -- '--dry-run'
 "$ASK" --help | grep -q -- '--commit-sha'

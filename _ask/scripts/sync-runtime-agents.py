@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit Cursor / Claude / Codex stage agents from _ask/bindings/."""
+"""Emit Cursor / Claude / Codex stage agents from .agents/ask/bindings (fallback _ask/bindings)."""
 from __future__ import annotations
 
 import os
@@ -21,11 +21,12 @@ STAGES = [
     "10-accept",
 ]
 
-RUNTIMES = ("cursor", "claude", "codex")
+RUNTIMES = ("cursor", "claude", "codex", "opencode")
 OUT_DIRS = {
     "cursor": Path(".cursor/agents"),
     "claude": Path(".claude/agents"),
     "codex": Path(".codex/agents"),
+    "opencode": Path(".opencode/agents"),
 }
 
 
@@ -234,12 +235,24 @@ def render(tpl: str, **kw: str) -> str:
     return out
 
 
+def bindings_dir(root: Path) -> Path:
+    ask_bind = root / ".agents" / "ask" / "bindings"
+    if (root / ".agents" / "ask" / "stages").is_dir() and ask_bind.is_dir():
+        return ask_bind
+    return root / "_ask" / "bindings"
+
+
 def main() -> int:
     root = Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2])
     os.chdir(root)
-    bind = root / "_ask" / "bindings"
+    bind = bindings_dir(root)
     defaults = load_yaml(bind / "models.defaults.yaml")
-    consumer = load_yaml(bind / "models.yaml")
+    consumer = load_yaml(root / "_ask" / "bindings" / "models.yaml")
+    local_bind = root / ".agents" / "ask.local" / "bindings"
+    if local_bind.is_dir():
+        extra = load_yaml(local_bind / "models.yaml")
+        if extra:
+            consumer = {**consumer, **extra}
     work = {}
     work_id = os.environ.get("ASK_WORK_ID")
     if work_id:
@@ -247,6 +260,7 @@ def main() -> int:
 
     md_tpl = (bind / "templates" / "agent.md.tpl").read_text(encoding="utf-8")
     toml_tpl = (bind / "templates" / "agent.toml.tpl").read_text(encoding="utf-8")
+    opencode_tpl = (bind / "templates" / "agent.opencode.md.tpl").read_text(encoding="utf-8")
 
     for runtime in RUNTIMES:
         cfg = load_yaml(bind / "runtimes" / f"{runtime}.yaml")
@@ -260,6 +274,7 @@ def main() -> int:
             name = f"kit-{stage}"
             desc = f"Kit protocol stage {stage} ({runtime})."
             readonly = "readonly: true\n" if stage == "07-review" else ""
+            permission_block = "permission:\n  edit: deny\n" if stage == "07-review" else ""
             if runtime == "codex":
                 text = render(
                     toml_tpl,
@@ -270,6 +285,16 @@ def main() -> int:
                     stage=stage,
                 )
                 dest = out_dir / f"{name}.toml"
+            elif runtime == "opencode":
+                text = render(
+                    opencode_tpl,
+                    description=desc,
+                    model=slug,
+                    permission_block=permission_block,
+                    runtime=runtime,
+                    stage=stage,
+                )
+                dest = out_dir / f"{name}.md"
             else:
                 text = render(
                     md_tpl,

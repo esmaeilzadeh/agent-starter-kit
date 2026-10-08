@@ -1,0 +1,14 @@
+id: typescript
+checks:
+  - id: typecheck
+    tier: mandatory
+    command: npx tsc --noEmit
+  - id: lint
+    tier: mandatory
+    command: npx eslint .
+  - id: tests
+    tier: mandatory
+    command: npx vitest run
+  - id: e2e
+    tier: mandatory
+    command: npx playwright test

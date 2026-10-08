@@ -16,6 +16,8 @@ SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP" >/dev/n
 cd "$TMP"
 # Need clean tree after install
 git add -A && git commit -q -m "install kit" || true
+git branch develop
+git checkout -q develop
 
 # Seed accepted spec + start work
 mkdir -p specs/current

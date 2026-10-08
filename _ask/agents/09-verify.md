@@ -1,37 +1,3 @@
-# Kit Protocol: 09 Verify
+Canonical stage contract: `.agents/ask/stages/09-verify.md`
 
-Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
-
-Evidence via `./ask verify` and `_ask/templates/verification.json`.
-
-## 15.9 09 Verify Agent
-
-Purpose:
-
-```text
-Produce evidence appropriate to the changed system and risk class.
-```
-
-At minimum, discover and run the repository's existing checks as applicable:
-
-```text
-type checks
-lint
-unit tests
-integration/e2e tests
-build
-security checks
-configured project checks
-```
-
-Do not hard-code a universal Node/Nest command set.
-
-The verifier should inspect repository configuration and use project-specific commands.
-
-It must record the exact commit SHA.
-
----
-
-## Kit path
-
-See `_ask/policies/workflow.md`. Claiming verify without running checks or a commit SHA stays **hard**. Prepare verification evidence; Accept is the human close.
+Do not edit this pointer.

@@ -1,0 +1,36 @@
+# Kit Protocol: 09 Verify
+
+Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
+
+Evidence via `./ask verify` (fail-closed CheckPlan) and `_ask/templates/verification.json`.
+
+## 15.9 09 Verify Agent
+
+Purpose:
+
+```text
+Produce evidence appropriate to the changed system and risk class.
+```
+
+Run `./ask verify`. The committed CheckPlan is `.agents/verification.yaml`.
+Empty CheckPlan or zero mandatory checks fails closed. Logic lives in
+`.agents/ask/verification/`. Language CLIs live in presets, not in this
+contract and not in `_ask/scripts/verify.sh`.
+
+Do not overlay `./ask verify` with npm, pytest, cargo, or any other language
+CLI.
+
+It must record the exact commit SHA.
+
+---
+
+## Kit path
+
+See `_ask/policies/workflow.md`. Claiming verify without running `./ask verify`
+or a commit SHA stays **hard**. Prepare verification evidence; Accept is the
+human close.
+
+## E2E
+
+Run confirmed E2E checks from `.agents/verification.yaml` unless
+`e2e: not_applicable` plus reason. Record the commit SHA.

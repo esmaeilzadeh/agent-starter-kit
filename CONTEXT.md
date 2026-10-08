@@ -49,12 +49,12 @@ The explicit engineering contract for a Workstream, with a lifecycle status (`PR
 _Avoid_: plan, acceptance criteria alone (those are parts of it)
 
 **Cursor Binding**:
-How the Starter Kit is expressed inside Cursor. Includes root `ask`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./ask sync` — so Cursor can honor stages without hand-maintained subagent SoT. Portable protocol remains under `_ask/`; anything Cursor must honor also exists under `.cursor/`.
+How the Starter Kit is expressed inside Cursor. Includes root `ask`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./ask sync` — so Cursor can honor stages without hand-maintained subagent SoT. Stage/binding SoT is `.agents/ask/`; `_ask/` remains the dispatcher/scripts/docs package. Anything Cursor must honor also exists under `.cursor/`.
 _Avoid_: Cursor plugin (unless we later decide that is the distribution form), protocol-only “hope the model opens the file”, hand-maintained eleven Cursor agents as source of truth
 
 **Bindings**:
-`_ask/bindings/` — portable stage roles and Review pools (`models.defaults.yaml`) plus per-runtime slug tables (`runtimes/cursor.yaml`, `claude.yaml`, `codex.yaml`). `./ask sync` writes `.cursor/agents`, `.claude/agents`, and `.codex/agents`. No vendor slug is canonical across runtimes.
-_Avoid_: one global default model id; slugs in `_ask/agents/*.md`; a new `.agent/` root next to `.agents/skills/`
+`.agents/ask/bindings/` — portable stage roles and Review pools (`models.defaults.yaml`) plus per-runtime slug tables (`runtimes/cursor.yaml`, `claude.yaml`, `codex.yaml`). `_ask/bindings/` are pointers. `./ask sync` writes `.cursor/agents`, `.claude/agents`, `.codex/agents`, and `.opencode/agents`. No vendor slug is canonical across runtimes.
+_Avoid_: one global default model id; slugs in stage contracts; a new `.agent/` root next to `.agents/skills/`
 
 **Skill Manifest**:
 `_ask/skills/manifest.yaml` — pinned, reviewable references to external engineering methods. Entries name source (community/main skill repo or package), revision, and role. The consuming repo does not copy skill bodies in by default.
@@ -69,11 +69,11 @@ The agent-driven (or script-driven) act of installing Community Skills declared 
 _Avoid_: “just clone skills into the repo”, silent unpinned install
 
 **Kit Protocol File**:
-Portable kit-owned instruction or policy that defines this Starter Kit’s workflow (e.g. `_ask/agents/01-grill.md`, policies, templates). Distinct from a Community Skill: the kit ships these; skills are dependencies.
+Portable kit-owned instruction or policy that defines this Starter Kit’s workflow (e.g. `.agents/ask/stages/01-grill.md`, policies, templates). Distinct from a Community Skill: the kit ships these; skills are dependencies. `_ask/agents/*.md` are pointers to those stages.
 _Avoid_: calling protocol files “skills” when they are kit contracts
 
 **Machine-first document**:
-A Markdown file an agent executes or treats as a contract (`specs/`, `_ask/spec/`, `_ask/agents/`, policies, templates, `AGENTS.md`, `CONTEXT.md`, `work/` artifacts, ADRs, and the default for any `.md` outside the human-facing set). Written with `writing-for-agents`. Does not go through `humanizer`.
+A Markdown file an agent executes or treats as a contract (`specs/`, `_ask/spec/`, `.agents/ask/`, policies, templates, `AGENTS.md`, `CONTEXT.md`, `work/` artifacts, ADRs, and the default for any `.md` outside the human-facing set). Written with `writing-for-agents`. Does not go through `humanizer`.
 _Avoid_: running humanizer on a spec or stage contract
 
 **Human-facing document**:
@@ -81,16 +81,20 @@ Root `README.md`, `_ask/guide/`, and `_ask/docs/demo/` only. Written with `human
 _Avoid_: treating all `.md` as human-facing
 
 **Kit-owned path**:
-Files the Starter Kit may refresh on upgrade (stock stage contracts, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
-_Avoid_: editing stock `_ask/agents/0*.md` in place for local policy
+Files the Starter Kit may refresh on upgrade (`.agents/ask/`, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections). Consumers should not edit these if they want clean upgrades.
+_Avoid_: editing stock `.agents/ask/stages/` in place for local policy
 
 **Consumer-owned path**:
-Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, `_ask/agents/*.local.md` stage overlays, and optional `_ask/bindings/models.yaml`.
+Files upgrade must not overwrite by default: skill manifest, policies (or local policy tree), AGENTS local sections, `.cursor/rules/local/`, `.agents/ask.local/`, `_ask/agents/*.local.md` (legacy overlay), and optional `_ask/bindings/models.yaml`.
 _Avoid_: “customize by forking the whole tree”
 
 **Workflow guidance**:
 Every session starts on-path. Artifacts are required to move forward; “skip” means skip extra approvals (one defaults-OK, then Accept). `/off-path` is **this chat only** — warn once and follow; do not persist. Policy: `_ask/policies/workflow.md`.
 _Avoid_: locking Implement; a durable off-path git flag; re-asking bless on every stage
+
+**Git-flow**:
+`develop` is the integration branch. `./ask start-work` creates `agent/<work-id>` from `develop` or fails closed. Protected `main` is releasable (human merge, tag, push). Policy: `_ask/policies/git-flow.md`. Optional in-workstream task branches: `_ask/policies/worktree.md`.
+_Avoid_: branching workstreams from `main`/`master`; agent merge/tag/push of `main`
 
 **Kit upgrade**:
 Deliberate bump to a kit version/tag via `./ask upgrade --version <tag>`, refreshing kit-owned paths only, then prepare + sync. Distinct from Community Skill pin bumps in the manifest.

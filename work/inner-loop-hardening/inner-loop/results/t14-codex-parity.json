@@ -1,0 +1,71 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t14-codex-parity",
+  "commit_shas": [
+    "f1bb69e8d7efa20e3771305cb05a09e6f38dfc24",
+    "7aec9a864f1f75ee8885e7d5e15eebd39aff4c92",
+    "c9583d778f62b8b591569724eeba44656263b8b7",
+    "13cd0602727a43395f4d8d50d24322bf9560dedf",
+    "3ed49e34fcfc0a6782bf162cfb9b49a9c4e27eff",
+    "fba374c4b74158cbd30e363321b04fa666340a3a",
+    "d603200770f79528e1dc3a6bcae7e61c29cbba1c",
+    "49227d17fa104fe065784ddd1d0879d977619df1",
+    "ab8268e57db6fbb99577a427d660f56240889bb2"
+  ],
+  "tdd": {
+    "seam": "sync prepare install upgrade CLI flows and Git trackability",
+    "red": {
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "output": "AssertionError: Missing Codex skill: kit-00-explore",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "output": "All stage parity, ownership, namespace, install/upgrade and Git trackability checks PASS",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": [
+    ".agents/skills/kit-00-explore/SKILL.md",
+    ".agents/skills/kit-01-grill/SKILL.md",
+    ".agents/skills/kit-02-spec/SKILL.md",
+    ".agents/skills/kit-03-spec-challenge/SKILL.md",
+    ".agents/skills/kit-04-spec-change/SKILL.md",
+    ".agents/skills/kit-05-plan/SKILL.md",
+    ".agents/skills/kit-06-implement/SKILL.md",
+    ".agents/skills/kit-07-review/SKILL.md",
+    ".agents/skills/kit-08-refactor/SKILL.md",
+    ".agents/skills/kit-09-verify/SKILL.md",
+    ".agents/skills/kit-10-accept/SKILL.md",
+    ".gitignore",
+    "README.md",
+    "_ask/OWNED-PATHS.md",
+    "_ask/docs/codex-integration.md",
+    "_ask/scripts/install-kit.sh",
+    "_ask/scripts/sync-codex-skills.py",
+    "_ask/scripts/sync-cursor-binding.sh",
+    "_ask/scripts/upgrade-kit.sh",
+    "_ask/skills/prepare-skills.sh",
+    "_ask/tests/fixtures/codex-parity/upgrade-kit-before-parity.sh",
+    "_ask/tests/test-codex-skill-parity.sh",
+    "_ask/tests/test-sync-canonical-ask.sh",
+    "specs/current/inner-loop-hardening.md",
+    "work/inner-loop-hardening/acceptance.md",
+    "work/inner-loop-hardening/codex-parity-evidence.md",
+    "work/inner-loop-hardening/context-audit.md",
+    "work/inner-loop-hardening/inner-loop/results/t14-codex-parity.json",
+    "work/inner-loop-hardening/inner-loop/tasks.yaml",
+    "work/inner-loop-hardening/plan.md",
+    "work/inner-loop-hardening/refactor-codex-parity.md",
+    "work/inner-loop-hardening/result.json",
+    "work/inner-loop-hardening/review-codex-parity.md",
+    "work/inner-loop-hardening/verification-codex-parity.json"
+  ],
+  "review": {
+    "verdict": "APPROVED",
+    "remediation": null,
+    "boundary": "ok; implementation within t14 globs, coordinator spec/work artifacts authorized"
+  },
+  "notes": "Independent GPT-6.1 Sol medium re-review approved at ab8268e57db6fbb99577a427d660f56240889bb2. All 34 outer verification checks pass. Independent context audit passes. Human Accept pending; see review-codex-parity.md and codex-parity-evidence.md."
+}

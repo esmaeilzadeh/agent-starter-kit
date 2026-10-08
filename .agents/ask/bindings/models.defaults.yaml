@@ -1,0 +1,21 @@
+# Portable stage map. Roles and Review pools only. No vendor slugs.
+# Slugs live in runtimes/<id>.yaml.
+
+stages:
+  00-explore: thinking
+  01-grill: thinking
+  02-spec: thinking
+  03-spec-challenge: adversarial
+  04-spec-change: thinking
+  05-plan: typing
+  06-implement: typing
+  07-review: review
+  08-refactor: typing
+  09-verify: typing
+  10-accept: thinking
+
+review_pool:
+  LOW: cheap
+  MEDIUM: cheap
+  HIGH: diverse
+  CRITICAL: diverse

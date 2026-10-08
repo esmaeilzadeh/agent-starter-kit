@@ -128,7 +128,8 @@ Create this structure:
 │   │   ├── risk.md
 │   │   ├── verification.md
 │   │   ├── worktree.md
-│   │   └── workflow.md
+│   │   ├── workflow.md
+│   │   └── git-flow.md
 │   ├── decisions/
 │   │   └── README.md
 │   ├── skills/
@@ -173,6 +174,11 @@ Create this structure:
 ├── .ask/
 │   └── README.md
 ├── ask
+├── .agents/
+│   └── ask/
+│       ├── stages/
+│       ├── bindings/
+│       └── verification/
 ├── .cursor/
 │   ├── hooks.json
 │   ├── hooks/
@@ -231,7 +237,8 @@ Community Skill:
 How to perform grilling or wayfinding (pinned from skills.sh / source repo).
 
 Kit Protocol File:
-_ask/agents/00-explore.md — the stage contract for Explore.
+.agents/ask/stages/00-explore.md — the stage contract for Explore.
+_ask/agents/00-explore.md is a pointer.
 
 Skill Preparation:
 Agent runs `./ask prepare` (skills CLI) to install pinned revisions.

@@ -1,0 +1,14 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t12-kit-docs",
+  "commit_shas": ["7e762a4491a9d9d9b18a78ef70d0fe8f9375b4c3"],
+  "tdd": null,
+  "exemption": {
+    "kind": "documentation-only",
+    "reason": "prose and pointers; no runtime behavior",
+    "reviewer_ack": true
+  },
+  "owned_paths_touched": ["AGENTS.md", "CONTEXT.md", "_ask/MAPPING.md", "_ask/README.md", "_ask/docs/", "_ask/spec/"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Root ask usage() still names _ask/agents for sync; that file is outside this glob. Install/upgrade scripts already copy .agents/ask/ (t1)."
+}

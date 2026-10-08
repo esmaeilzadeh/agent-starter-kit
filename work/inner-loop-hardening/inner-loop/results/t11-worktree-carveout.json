@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t11-worktree-carveout",
+  "commit_shas": ["57a6169c3159f7cce2c6b702aeb854ec8ad4f2bf"],
+  "tdd": {
+    "seam": "in-workstream optional task worktrees; one writer; no cross-workstream overlap",
+    "red": {
+      "command": "git show HEAD:_ask/policies/worktree.md | grep -qiF 'Inner-loop writers'",
+      "output": "FAIL: worktree.md missing inner-loop carve-out (optional task worktrees, one writer, FF-only integrate)",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "grep -qiF 'Inner-loop writers' _ask/policies/worktree.md && grep -qiF 'fast-forward only' _ask/policies/worktree.md && grep -qiF 'At most one task may have unintegrated commits' _ask/policies/worktree.md && grep -qiF '_ask/policies/git-flow.md' _ask/policies/worktree.md && grep -qiF 'No concurrent conflicting workstreams' _ask/policies/worktree.md",
+      "output": "PASS: worktree.md inner-loop carve-out matches spec Constraints",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/policies/worktree.md"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Glob is policy-only; evidence is grep of Constraints (optional task worktrees, one writer, FF-only integrate, git-flow pointer, cross-workstream overlap still forbidden)."
+}

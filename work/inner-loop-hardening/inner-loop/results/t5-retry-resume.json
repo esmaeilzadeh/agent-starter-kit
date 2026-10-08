@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t5-retry-resume",
+  "commit_shas": ["53394c73227629b8f6554b0e038c6c2ba0300557"],
+  "tdd": {
+    "seam": "2+2 retry then blocked; FF integrate; resume abort to coordinator_sha",
+    "red": {
+      "command": "_ask/tests/test-inner-loop.sh",
+      "output": "NameError: name 'load_graph' is not defined (import drop during CLI wiring)",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-inner-loop.sh",
+      "output": "PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/scripts/inner_loop/", "_ask/tests/test-inner-loop.sh"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "Cherry-pick/rebase onto coordinator remain forbidden. run/resume/cancel still stubbed as full driver until later wiring."
+}

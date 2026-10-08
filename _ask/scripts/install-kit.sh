@@ -74,6 +74,7 @@ copy_path() {
 # Paths to overlay
 for rel in \
   _ask \
+  .agents/ask \
   .cursor \
   .gitignore \
   AGENTS.md \
@@ -90,9 +91,7 @@ done
 
 # Ensure target gitignores prepared skills
 if [[ "$DRY_RUN" -eq 0 ]]; then
-  if ! grep -q '.agents/skills/' "$TARGET/.gitignore" 2>/dev/null; then
-    echo -e '\n# Prepared Community Skills\n.agents/skills/' >> "$TARGET/.gitignore"
-  fi
+  python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --update-ignore
   if ! grep -q '^\.ask\.env$' "$TARGET/.gitignore" 2>/dev/null; then
     echo -e '\n# Setup wizard secrets\n.ask.env\n.ask/tracker-context.md' >> "$TARGET/.gitignore"
   fi
@@ -107,9 +106,11 @@ if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   if [[ -x "$TARGET/_ask/skills/prepare-skills.sh" ]]; then
     (cd "$TARGET" && SKIP_INSTALL="${SKIP_INSTALL:-0}" ./_ask/skills/prepare-skills.sh) || true
   fi
-  if [[ -x "$TARGET/_ask/scripts/sync-cursor-binding.sh" ]]; then
-    (cd "$TARGET" && ./_ask/scripts/sync-cursor-binding.sh)
-  fi
 fi
+if [[ -x "$TARGET/_ask/scripts/sync-cursor-binding.sh" ]]; then
+  (cd "$TARGET" && ./_ask/scripts/sync-cursor-binding.sh)
+fi
+
+python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --check-trackability
 
 echo "install-kit: applied to $TARGET"

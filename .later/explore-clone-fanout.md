@@ -8,14 +8,12 @@
 
 ## Why
 
-`/00-explore` is a kit protocol stage. It does not clone this repo. Extra clones
-come from Cursor treating “explore” as its built-in Explore subagent, dual
-command+skill projection, repeated skill-source fetches, and background agents.
+`/00-explore` is a kit protocol stage. It does not clone this repo. Extra clones come from Cursor treating “explore” as its built-in Explore subagent (parallel isolated worktrees/cloud clones), dual command+skill projection, `./ask prepare` running `npx skills add` four times against the same `mattpocock/skills` pin, and wayfinder/research spawning background agents.
 
 ## Proposed What (unapproved)
 
-- Rename command/skill away from `explore` (for example `/00-chart`).
-- Tell 00 not to launch runtime Explore/background agents unless requested.
+- Rename command/skill away from `explore` (e.g. `/00-chart`).
+- Tell 00 not to launch runtime Explore / Task / background agents unless asked.
 - Fetch each pinned skill source once during `./ask prepare`.
 
 ## Note

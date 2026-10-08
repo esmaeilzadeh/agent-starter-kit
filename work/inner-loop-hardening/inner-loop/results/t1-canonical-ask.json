@@ -1,0 +1,26 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t1-canonical-ask",
+  "commit_shas": ["7d84fa2df42319bd3a3ff3d55bd2c9f997fb029c"],
+  "tdd": {
+    "seam": "./ask sync reads .agents/ask/ and writes Cursor/Claude/Codex projections",
+    "red": {
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "output": "EXIT:1",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "output": "PASS: sync prefers .agents/ask/stages over _ask/agents",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": [".agents/ask/", "_ask/agents/", "_ask/bindings/", "_ask/scripts/sync-cursor-binding.sh", "_ask/scripts/sync-runtime-agents.py", "_ask/scripts/install-kit.sh", "_ask/scripts/upgrade-kit.sh", "_ask/OWNED-PATHS.md", "_ask/tests/test-sync-canonical-ask.sh", ".cursor/", ".claude/agents/", ".codex/agents/"],
+  "review": {
+    "verdict": "PENDING",
+    "remediation": null,
+    "boundary": "ok"
+  },
+  "notes": "Also green: test-sync-runtime-agents, test-sync-off-path-command, test-humanizer-docs-specs, test-grilling-skip-trivia-contracts, test-install-kit-dry-run, test-install-kit-apply."
+}

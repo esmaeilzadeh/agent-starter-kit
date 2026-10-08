@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v1",
+  "task_id": "t3-runner-graph",
+  "commit_shas": ["1dea99d3c2965853835a74a44d3672e2e67daff2"],
+  "tdd": {
+    "seam": "load_graph validate_graph CAS state.json single-writer",
+    "red": {
+      "command": "_ask/tests/test-inner-loop.sh",
+      "output": "FAIL: cycle status in output: python3: can't open file .../inner_loop/__main__.py",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "_ask/tests/test-inner-loop.sh",
+      "output": "PASS: inner-loop graph validate, CAS, single-writer",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "owned_paths_touched": ["_ask/scripts/inner_loop/", "_ask/tests/test-inner-loop.sh", "ask"],
+  "review": {"verdict": "PENDING", "remediation": null, "boundary": "ok"},
+  "notes": "run/resume/cancel CLI verbs exist as stubs until t5."
+}

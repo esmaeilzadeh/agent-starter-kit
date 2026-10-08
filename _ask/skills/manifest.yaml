@@ -22,6 +22,18 @@ skills:
     skill: prototype
     role: explore-prototype
     required: false
+  codebase-design:
+    source: mattpocock/skills
+    revision: "v1.2.3"
+    skill: codebase-design
+    role: inner-loop-seam-design
+    required: false
+  tdd:
+    source: mattpocock/skills
+    revision: "v1.2.3"
+    skill: tdd
+    role: inner-loop-red-green
+    required: true
   grilling:
     source: mattpocock/skills
     revision: "v1.2.3"
