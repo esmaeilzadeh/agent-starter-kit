@@ -41,6 +41,17 @@ class ModelEditTests(unittest.TestCase):
         self.assertEqual(choice["resolution"], {"option_id": "two", "actor": "Developer",
                                               "rationale": "Measured fit", "timestamp": "2026-10-08T12:00:00Z"})
         self.assertEqual(resolved["model"]["revision"], 2)
+        build = next(task for task in resolved["tasks"] if task["id"] == "build")
+        self.assertEqual([blocker["id"] for blocker in build["blockers"]], ["assumption"])
+        confirmed = apply_batch(resolved["model"], [{"op": "revise_node", "id": "assumption",
+                                                   "changes": {"lifecycle": "confirmed"}}])
+        self.assertTrue(confirmed["valid"], confirmed)
+        self.assertEqual(next(task for task in confirmed["tasks"] if task["id"] == "build")["status"], "ready")
+        for state in ("rejected", "retired"):
+            blocked = apply_batch(confirmed["model"], [{"op": "revise_node", "id": "assumption",
+                                                       "changes": {"lifecycle": state}}])
+            self.assertTrue(blocked["valid"], blocked)
+            self.assertEqual(next(task for task in blocked["tasks"] if task["id"] == "build")["status"], "blocked")
         reopened = apply_batch(resolved["model"], [{"op": "reopen_decision", "id": "choice",
                                                    "actor": "Developer", "rationale": "New measurements"}],
                                timestamp="2026-10-08T12:01:00Z")
@@ -55,6 +66,20 @@ class ModelEditTests(unittest.TestCase):
         self.assertTrue(changed["valid"], changed)
         self.assertTrue(any(h.get("options", [{}])[0].get("label") == "First"
                             for h in next(n for n in changed["model"]["nodes"] if n["id"] == "choice")["history"]))
+        retired = apply_batch(resolved["model"], [{"op": "retire_decision", "id": "choice",
+                                                  "actor": "Developer", "rationale": "Superseded"}])
+        self.assertTrue(retired["valid"], retired)
+        self.assertIn("choice", [b["id"] for b in next(t for t in retired["tasks"] if t["id"] == "build")["blockers"]])
+        for state in ("planned", "active", "retired", "done"):
+            dependent = decision_model()
+            dependent["nodes"].extend([
+                {"id": "upstream", "type": "task", "title": "Upstream", "lifecycle": state},
+                {"id": "downstream", "type": "task", "title": "Downstream", "lifecycle": "planned"}])
+            dependent["edges"].append({"type": "depends_on", "source": "downstream", "target": "upstream"})
+            result = apply_batch(dependent, [{"op": "revise_node", "id": "downstream", "changes": {"title": "Updated"}}])
+            self.assertTrue(result["valid"], result)
+            expected = "ready" if state == "done" else "blocked"
+            self.assertEqual(next(t for t in result["tasks"] if t["id"] == "downstream")["status"], expected)
 
 
 class ModelValidationTests(unittest.TestCase):
