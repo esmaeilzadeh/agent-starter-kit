@@ -1,0 +1,56 @@
+{
+  "schema": "ask-completion/v1",
+  "status": "pass",
+  "scope": "workstream",
+  "task_id": null,
+  "candidate_sha": "31ad549f3fdfd9bbb49e3dfdb7f82745a2ead5de",
+  "input_digests": {
+    "spec": "e5f34886e6ce44278b434279786114a35f34a6c67e7029dc4732ff21806204e1",
+    "plan": "ef245791f826d9d9670e0a2cd646c5737d3853575350807718953b51b0f14a93",
+    "accepted": "e16bf8f06344594a46ee8a245f4282dc8c80c3bb287b318ac2f3f827ae65b440",
+    "review": "8cc49bc317415346e4dac0a1d54a98099b3d8bcd0778966d729008be3be8464e",
+    "executions": "fae7763a7ecb7911d74cb131bfb16408452255d3339ca9ce4927e13d3fb4a143"
+  },
+  "criterion_evidence": [
+    {
+      "criterion_id": "CM-001",
+      "verification_mode": "review",
+      "required_types": [],
+      "review": {
+        "id": "CM-001",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "The pinned Codex runtime binding contains thinking=Sol, typing=Luna, adversarial=Astra, cheap=Luna, diverse=Astra, and exactly the three requested picker models. All eleven generated Codex agents match the portable stage map and runtime assignments. The existing sync regression passed for default Implement=Luna, HIGH-risk Review=Astra, and ASK_MODEL_07_REVIEW=thinking resolving to Sol. The post-review commits did not alter those sources or outputs."
+      },
+      "tests": []
+    },
+    {
+      "criterion_id": "CM-002",
+      "verification_mode": "review",
+      "required_types": [],
+      "review": {
+        "id": "CM-002",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "The diff from the accepted contract base changes Codex bindings, generated Codex model fields, the existing regression assertions, and workstream artifacts; Claude, Cursor, and OpenCode definitions and generated outputs are unchanged. Portable stage roles, resolver logic, risk mapping, and reasoning settings are unchanged. The existing sync regression passed. The exact final candidate adds review/context/refactor/acceptance documentation only; it changes no implementation or test source."
+      },
+      "tests": []
+    },
+    {
+      "criterion_id": "CM-003",
+      "verification_mode": "review",
+      "required_types": [],
+      "review": {
+        "id": "CM-003",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "The routing guide assigns bounded work to Luna, documents Sol/Astra promotion through existing per-workstream overrides, retains the simple Challenge override, and distinguishes complexity from review risk. It introduces no classifier or performance claim. The final candidate's additional documentation does not change this guidance."
+      },
+      "tests": []
+    }
+  ],
+  "missing_evidence": [],
+  "errors": [],
+  "execution_artifacts": [],
+  "rejected_historical_attempts": []
+}

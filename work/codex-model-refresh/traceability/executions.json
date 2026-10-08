@@ -1,0 +1,12 @@
+[
+  {
+    "run_id": "3e9b8240ecee4accb8adf5a6a57c2c1c",
+    "digest": "de08ae2404a3261ec5158a905a2d4ed029879a5c2f95fa07818821bf26ef249a",
+    "phase": "final_green",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "31ad549f3fdfd9bbb49e3dfdb7f82745a2ead5de",
+    "spec_digest": "e5f34886e6ce44278b434279786114a35f34a6c67e7029dc4732ff21806204e1",
+    "plan_digest": "ef245791f826d9d9670e0a2cd646c5737d3853575350807718953b51b0f14a93"
+  }
+]

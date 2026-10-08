@@ -10,7 +10,9 @@
 
 ## Evidence
 
-Independent source review and sync regression are APPROVED at implementation commit `0f937ac`. Final candidate-bound review, CheckPlan result and exact tested SHA are recorded in `traceability/review-input.json`, `traceability/verification.json`, `traceability/completion.json` and `result.json`. Final verification is pending when this acceptance scaffold is prepared; consult those executed records before accepting.
+Independent source review and sync regression are APPROVED at implementation commit `0f937ac`. The reviewer rechecked the metadata-only final candidate `31ad549f3fdfd9bbb49e3dfdb7f82745a2ead5de`. `./ask verify` passed all 36 mandatory checks at that SHA, including the sync default/risk/override regression, 29 inner-loop reliability cases, and 18 traceability cases. `./ask check-workstream codex-model-refresh --acceptance` and `./ask record-result --result pass` also passed against that candidate.
+
+Exact candidate-bound review, CheckPlan results and completion data: `traceability/review-input.json`, `traceability/verification.json`, `traceability/completion.json`, `result.json`. Later commits archive these records and acceptance prose; they do not change which candidate was tested.
 
 ## Residual risks
 
@@ -18,12 +20,12 @@ Stage defaults cannot infer task complexity: explicit workstream overrides promo
 
 ## Context-engineering audit
 
-Path `work/codex-model-refresh/context-audit.md`. Independent CE-01 through CE-06 all pass; none open.
+Path `work/codex-model-refresh/context-audit.md`, committed at `67e6f408c16a892dd638903d4277123741ad0574`, formatting normalized at the verified candidate. Independent CE-01 through CE-06 all pass; none open.
 
 ## Acceptance decision
 
-HUMAN_APPROVAL_REQUIRED after final verification. No human acceptance, merge or push is fabricated. The broader Engineering Model/UI work remains sequenced after this task-model correction.
+HUMAN_APPROVAL_REQUIRED — verified and eligible. No human acceptance, merge or push is fabricated. The broader Engineering Model/UI work remains sequenced after this task-model correction.
 
 ## Accepted commit SHA
 
-Pending human acceptance. The exact verified candidate belongs to the executed `result.json`/`traceability/verification.json`, not an inferred current tip.
+Pending human acceptance of verified candidate `31ad549f3fdfd9bbb49e3dfdb7f82745a2ead5de`.
