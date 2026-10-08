@@ -150,6 +150,14 @@ class ModelValidationTests(unittest.TestCase):
             self.assertEqual([(error["path"], error["ids"]) for error in matches],
                              [("$.nodes[2]", ["work-item"])], errors)
 
+            # An illegal incoming edge cannot satisfy the required legal parent.
+            illegal_parent = copy.deepcopy(no_parent)
+            illegal_parent["edges"].append({"type": "contains", "source": "choice", "target": "work-item"})
+            errors = validate(illegal_parent, root, "pilot")
+            matches = [error for error in errors if error["code"] == "EM001_PARENT_COUNT"]
+            self.assertEqual([(error["path"], error["ids"]) for error in matches],
+                             [("$.nodes[2]", ["work-item"])], errors)
+
             multiple_parents = copy.deepcopy(base)
             multiple_parents["edges"].append({"type": "contains", "source": "purpose", "target": "work-item"})
             errors = validate(multiple_parents, root, "pilot")
