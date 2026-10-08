@@ -41,4 +41,6 @@ grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
 grep -q 'model = "gpt-6.1-sol"' .codex/agents/kit-07-review.toml
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
 
+python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
+
 echo "PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs"

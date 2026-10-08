@@ -16,6 +16,14 @@ pools:
   cheap: gpt-6-luna
   diverse: gpt-6-astra
 
+reasoning_effort:
+  models:
+    gpt-6.1-sol: medium
+    gpt-6-luna: medium
+    gpt-6-astra: high
+  stages:
+    09-verify: low
+
 families:
   - gpt
 
