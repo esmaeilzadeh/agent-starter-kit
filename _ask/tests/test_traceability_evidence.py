@@ -39,6 +39,20 @@ class EvidenceTests(unittest.TestCase):
         record=record_test_review(c.root,'w',c.sha,c.sha,'work/w/traceability/review-input.json','fixture-coordinator')
         result=evaluate_completion(c.contracts,record,[c.green],c.context())
         self.assertEqual(result['status'],'pass',result)
+        # A historical collection failure is not TDD evidence; later valid red/green still works.
+        bad=copy.deepcopy(self.c.red);bad['run_id']='rejected-historical-attempt'
+        bad['cases'].append(dict(bad['cases'][0],test_id=None,case_id='unknown.CollectionError',outcome='error'))
+        runtime=self.c.root/'work/w/traceability'
+        write_json(runtime/'runs'/bad['run_id']/'results.json',bad)
+        ledger=json.loads((runtime/'executions.json').read_text())
+        ledger.append({'run_id':bad['run_id'],'digest':digest(bad),'phase':'red','scope':'workstream','task_id':None,'candidate_sha':bad['candidate_sha'],'spec_digest':bad['spec_digest'],'plan_digest':bad['plan_digest']})
+        write_json(runtime/'executions.json',ledger)
+        # Restore the genuine red after the earlier invalid-red mutation in this test.
+        genuine=copy.deepcopy(self.c.red);self.persist(genuine)
+        process=self.c.command('verify')
+        self.assertEqual(process.returncode,0,process.stderr)
+        report=json.loads((runtime/'completion.json').read_text())
+        self.assertTrue(any(x['run_id']==bad['run_id'] for x in report['rejected_historical_attempts']))
     def test_U06_blanket_approval_missing_type_and_counterexample_are_rejected(self):
         self.passing()
         for mutate in [lambda r:r.update(criteria=[]),lambda r:r['criteria'][0].update(type_adequacy={}),lambda r:r['tests'][0].update(counterexample=''),lambda r:r['tests'][0].update(decision='REJECTED')]:
@@ -66,8 +80,7 @@ class EvidenceTests(unittest.TestCase):
         pin=copy.deepcopy(self.c.contracts['pin']);pin.update(contract_sha=contract_sha,plan_digest=digest(self.c.plan))
         pin['plan_review']['plan_digest']=pin['plan_digest'];pin['plan_review_digest']=digest(pin['plan_review'])
         self.c.write('work/w/traceability-accepted.json',pin);candidate=self.c.commit('candidate replaces authority document')
-        with self.subTest('coordinator authority'):
-            with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
+        with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
         # Unit task can pass while another task's E2E in the same runner still fails.
         c=Consumer(tasks='split',split_failure=True);self.addCleanup(c.close)
         from verification.traceability.adapters import run_tests
