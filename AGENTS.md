@@ -18,6 +18,10 @@ Protocol SoT for stages, bindings, and verification is `.agents/ask/`. `_ask/` h
 
 `ask` is the Agent Starter Kit dispatcher. Implementation stays under `_ask/scripts/`. **Do not run `./ask setup`** — that wizard is human-only (needs a TTY).
 
+## Progress feedback
+
+During active work, send a concise progress update at least every 60 seconds and after meaningful results or changes of direction. Name the specific task, the actual operation or check underway, the latest result, and the next step. A generic “Working” indicator is insufficient feedback. If work is blocked or awaiting input, report the blocker promptly.
+
 ## Demo
 
 End-to-end facilitator script (clear intent + optional Explore): [`_ask/docs/demo/end-to-end-plan.md`](_ask/docs/demo/end-to-end-plan.md).
