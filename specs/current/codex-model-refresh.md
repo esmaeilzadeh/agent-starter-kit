@@ -1,0 +1,55 @@
+# Specification: Current Codex task assignments
+
+## Status
+
+CURRENT — user requested the scoped configuration fix on 2026-10-08.
+
+## Goal
+
+All generated Codex stage agents use current, locally advertised models appropriate to their existing workload roles.
+
+## Behavior and interfaces
+
+Update `.agents/ask/bindings/runtimes/codex.yaml`:
+
+| Role or pool | Model | Reason |
+| --- | --- | --- |
+| thinking | `gpt-6.1-sol` | General exploration, specification and acceptance reasoning. |
+| adversarial | `gpt-6-astra` | Consequential specification challenge. |
+| typing | `gpt-6-luna` | Bounded plans, implementation, refactoring and verification from a clear contract. |
+| cheap | `gpt-6-luna` | Routine low/medium-risk independent review. |
+| diverse | `gpt-6-astra` | Stronger high-consequence review; distinct model, same GPT family. |
+
+Picker: `gpt-6.1-sol`, `gpt-6-astra`, `gpt-6-luna`. No retired GPT-5.4 models remain in active Codex bindings or generated agent files.
+
+`./ask sync` generates all eleven Codex agents from this source. Preserve existing model override resolution and risk behavior, and all other runtime definitions. Revision 3 adds explicit Codex effort generation as authorized in `work/codex-model-refresh/spec-change-effort.md`.
+
+The human clarified that suitability includes cost: simple tasks should use lower-budget models. Defaults therefore preserve a cheap execution tier. For a complex workstream, use the existing `work/<id>/models.yaml` overrides to promote planning/implementation/refactoring to Sol or particularly difficult reasoning to Astra. Complexity and risk are different: review still follows the existing risk pool unless explicitly overridden. No new automatic complexity classifier is introduced.
+
+## Acceptance criteria
+
+- CM-001: Codex role/pool/picker configuration contains the assignments above; generated defaults use them, including high-risk Review escalation to Astra.
+- CM-002: Existing explicit environment/consumer/work overrides and other runtime outputs remain compatible; the sync regression check passes after updating its old Codex expected default.
+- CM-003: Routing guidance distinguishes cheap scoped execution, general reasoning, difficult challenge/high-risk review, and explicit promotion for complex work through the existing workstream overlay.
+
+- CM-004: Generate explicit task-fit effort defaults (Luna/Sol medium, Astra high, Verify low), with independent environment/work/consumer effort overrides, explicit inheritance, unknown-model fallback and pre-write validation. The exact schema and precedence are in the approved change proposal.
+
+CM-001–003 retain independently approved review-only authority. CM-004 is new behavior, requiring actual assertion-red and final green for public-generator integration and end-to-end tests. Independent review and repository CheckPlan remain mandatory. No measured performance improvement is claimed.
+
+## Evidence and sources
+
+Official guidance fetched 2026-10-08: [Codex models](https://learn.chatgpt.com/docs/models), [model selection](https://developers.openai.com/api/docs/guides/model-selection). The former identifies GPT-6.1 Sol for complex coding, Astra for demanding work, Luna for scoped repeatable work, and retirement of GPT-5.4/mini on 2026-08-31. The exact workload assignments are engineering judgment, not a published per-kit-stage benchmark.
+
+Local catalog: `/home/mohamad/.codex/models_cache.json`, fetched `2026-10-08T14:45:45.512971151Z`, Codex CLI `0.161.0`; all three chosen models have list visibility. Credentials and unrelated catalog content are not copied into the repo.
+
+## Non-goals and failure cases
+
+No model API calls, global configuration changes, automatic complexity classifier, other-runtime upgrades, or historical artifact rewrites. Report unavailable models or stale loaded roles; do not silently claim a retired cached agent was upgraded during its run.
+
+## Source intent
+
+`work/codex-model-refresh/intent.md`
+
+## E2E
+
+Applies: existing sync shell check exercises generated files and override/risk behavior through public scripts, restoring default outputs afterward. No production data or external inference.

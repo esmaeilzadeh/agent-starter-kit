@@ -1,0 +1,98 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "codex-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "contract_digest": "ac63d77e6680617a8d1f3d68fddac7e477ccb5266d47ca1fefb17bf1238fa1da",
+  "review_digest": "9a176cd623fe7d342de4a79a4a2779e1e89141a92d7e087220c5357d372aea0b",
+  "review": {
+    "schema": "ask-test-review/v1",
+    "reviewer": "codex-luna-effort-review",
+    "spec_digest": "72a6f4b390de8d0d878f656a060b7b1190a35cf515a795d0ecb820e78b137cc9",
+    "plan_digest": "544a34755db606a6ed4c12db77c4f88860d078921c06bd10ae9bc0b0deba3259",
+    "candidate_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+    "source_digests": {
+      "_ask/scripts/sync-runtime-agents.py": "95df3f30b5dc4019f7b812aa33750f7d90c6d405ffa831b83246ae4d7772179b",
+      "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d"
+    },
+    "criteria": [
+      {
+        "id": "CM-001",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "The canonical Codex binding and all eleven generated Codex agent files carry the specified Sol/Luna/Astra role assignments and picker models; HIGH and CRITICAL Review resolve to Astra at high effort in the generator journey. This matches the current spec and the generated-output diff."
+      },
+      {
+        "id": "CM-002",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "The generator preserves model resolution paths and adds effort resolution independently. The five isolated public-generator tests cover the effort addition; the existing sync regression still checks other runtime/model behavior. The accepted red run establishes that these assertions failed at d12f70e before the implementation, and the candidate-bound final-green run passes."
+      },
+      {
+        "id": "CM-003",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "The routing guide maps bounded tasks to Luna, difficult reasoning to Sol/Astra through existing workstream overrides, and explicitly separates complexity from review risk. It describes effort precedence, inheritance and validation consistent with the implementation and introduces no automatic classifier or performance claim."
+      },
+      {
+        "id": "CM-004",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The four integration cases call the public generator in an isolated consumer and inspect its emitted assignments for risk, override precedence, inheritance/unknown-model fallback, and invalid-input preservation."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "CE-defaults exercises the public generator across all four runtimes and all eleven stages; it checks all Codex model/effort pairs and confirms non-Codex outputs omit effort. Together with the integration cases this covers each CM-004 behavior."
+          }
+        },
+        "assessment": "The canonical config defines medium effort for Sol/Luna, high for Astra, and a Verify-stage low override; HIGH/CRITICAL Review routes to Astra. Explicit runtime-specific then generic environment values precede workstream then consumer overlays, while explicit inherit and an unconfigured model without an override omit the field. All effort assignments are resolved before the output-write loop, so invalid values leave existing outputs unchanged."
+      }
+    ],
+    "tests": [
+      {
+        "id": "CE-defaults",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test asserts successful public generation, exactly eleven Codex files, each expected model and effort pair, eleven outputs for each other runtime, and no reasoning_effort field in those outputs. This covers CM-004 defaults and cross-runtime isolation.",
+        "counterexample": "A missing stage file, wrong default model, wrong effort (including Verify not low), or effort leaking into another runtime causes an assertion failure.",
+        "tdd_continuity_assessment": "The recorded red run at d12f70e reports this behavior assertion failed before production changes; the candidate-bound final-green record and independent isolated rerun pass. The test file is unchanged from the contract baseline, preserving the red assertion."
+      },
+      {
+        "id": "CE-risk",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test separately exercises HIGH and CRITICAL workstream risk, asserting Astra/high for Review and medium effort for bounded Implement. This checks escalation without accidental execution escalation.",
+        "counterexample": "If either risk level leaves Review on Luna, emits a non-high effort, or promotes Implement's effort, the assertions fail.",
+        "tdd_continuity_assessment": "This assertion is among the five failures in the accepted-base red run and passes in the candidate final-green record and isolated rerun. The test method is unchanged since the accepted base."
+      },
+      {
+        "id": "CE-overrides",
+        "decision": "APPROVED",
+        "assertion_assessment": "Conflicting consumer, workstream, generic environment and runtime-specific environment efforts are exercised successively with higher-priority sources removed. The test confirms effort precedence independently of the workstream's model override.",
+        "counterexample": "Runtime-specific must beat generic; after it is removed generic must beat workstream; after both are removed workstream must beat consumer; removing the workstream must expose consumer. The assertions would detect any swapped precedence or accidental coupling to model selection.",
+        "tdd_continuity_assessment": "The corresponding assertion failed in the accepted-base red run and passes in final-green evidence and the isolated rerun. The test method remained unchanged after the red run."
+      },
+      {
+        "id": "CE-inherit",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test establishes a known-model default, then explicitly requests inherit and selects an unknown model. It asserts inherit removes the effort field and unknown-model fallback also omits it while preserving the explicit model.",
+        "counterexample": "A stale model default leaking through inherit, or a known-model effort being attached to future-model, would fail the absence checks.",
+        "tdd_continuity_assessment": "The accepted-base red run records this assertion failing; candidate final-green evidence and isolated rerun pass. The test method is unchanged since the accepted base."
+      },
+      {
+        "id": "CE-invalid",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test snapshots generated outputs, invokes generation with an invalid effort and a conflicting model override, then requires failure, a useful diagnostic, and byte-for-byte unchanged prior outputs across all runtimes.",
+        "counterexample": "An invalid value accepted, a generic failure without the expected diagnostic, or even one output rewritten before validation fails the assertion.",
+        "tdd_continuity_assessment": "The accepted-base red run reports this assertion failed before implementation. The final-green record and isolated rerun pass, and the assertion has not changed since that red run."
+      }
+    ],
+    "base_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+    "inspected_sources": [
+      "_ask/scripts/sync-runtime-agents.py"
+    ],
+    "changed_cases": [],
+    "inventory_exclusions": {}
+  },
+  "candidate_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636"
+}

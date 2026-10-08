@@ -1,0 +1,66 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "codex-model-refresh",
+  "revision": 3,
+  "criteria": [
+    {
+      "id": "CM-001",
+      "given": "Retired Codex runtime role and pool pins",
+      "when": "Current official guidance and local advertised models are reviewed and sync runs",
+      "then": [
+        "Codex defaults use Sol for thinking, Luna for scoped typing/cheap review, and Astra for challenge/high-risk review; picker contains all three current models"
+      ],
+      "verification_mode": "review",
+      "reason": "Nonbehavioral model configuration; existing generation behavior is unchanged",
+      "review_decision": {
+        "decision": "APPROVED",
+        "reviewer": "codex-luna-challenge",
+        "recorded_by": "codex-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "CM-002",
+      "given": "Existing portable stage roles, other runtimes and override precedence",
+      "when": "Codex pins and the existing shell test expectation change",
+      "then": [
+        "Other runtime assignments and override semantics remain intact; existing sync regression check passes"
+      ],
+      "verification_mode": "review",
+      "reason": "Nonbehavioral configuration and expected-output update; repository CheckPlan still executes",
+      "review_decision": {
+        "decision": "APPROVED",
+        "reviewer": "codex-luna-challenge",
+        "recorded_by": "codex-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "CM-003",
+      "given": "Tasks differ in complexity and budget",
+      "when": "A developer selects a model for a bounded or complex workstream",
+      "then": [
+        "Guidance keeps simple execution on Luna and shows existing workstream overrides for complex Sol/Astra work without altering risk rules"
+      ],
+      "verification_mode": "review",
+      "reason": "Documentation of existing model override behavior; no new classifier or execution behavior",
+      "review_decision": {
+        "decision": "APPROVED",
+        "reviewer": "codex-luna-challenge",
+        "recorded_by": "codex-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "CM-004",
+      "given": "Current Codex task-fit defaults and optional effort overlays",
+      "when": "The runtime-agent generator resolves and emits all stage assignments",
+      "then": [
+        "Known models receive medium effort except Astra high and Verify low; HIGH/CRITICAL Review follows Astra high",
+        "Explicit ASK_EFFORT environment wins over workstream then consumer settings; explicit inherit and unknown-model fallback omit the effort field",
+        "Invalid effort values fail before any generated outputs change; other runtime outputs and model precedence are unchanged"
+      ],
+      "verification_mode": "tests"
+    }
+  ]
+}
