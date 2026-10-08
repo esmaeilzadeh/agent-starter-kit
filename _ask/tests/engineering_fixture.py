@@ -1,4 +1,27 @@
 """Isolated Engineering Model fixtures; never modify a checked-in pilot."""
+import json
+from pathlib import Path
+
+
+def write_json(root, relative, value):
+    path = Path(root) / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value), encoding="utf-8")
+    return path
+
+
+def referenced_model(root):
+    model = decision_model()
+    model["nodes"].append({"id": "requirement", "type": "requirement", "title": "Requirement",
+                           "lifecycle": "active", "reference": {"path": "specs/current/pilot.json", "id": "P-001"}})
+    model["edges"].append({"type": "contains", "source": "purpose", "target": "requirement"})
+    spec = {"schema": "ask-spec/v1", "work_id": "pilot", "revision": 1,
+            "criteria": [{"id": "P-001", "given": "Valid input", "when": "Validate", "then": ["Accept"],
+                          "verification_mode": "tests"}]}
+    write_json(root, "specs/current/pilot.json", spec)
+    (Path(root) / "specs/current/pilot.md").write_text("# Pilot specification\n", encoding="utf-8")
+    write_json(root, "work/pilot/engineering-model.json", model)
+    return model, spec
 
 
 def decision_model():
