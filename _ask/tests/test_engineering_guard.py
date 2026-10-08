@@ -38,6 +38,15 @@ class DocumentGuardTests(unittest.TestCase):
             self.assertFalse(projection["editable"])
             self.assertTrue(projection["last_validated"])
 
+            # A current workspace does not make altered generation bytes trusted.
+            _model, original_spec = referenced_model(root)
+            generation = root / "work/pilot/traceability/model-state/generations" / identity
+            blob = generation / "blobs" / receipt["snapshot"]["model"]["sha256"]
+            blob.write_bytes(b"{}")
+            corrupted = model_command(root, "show", "--work-id", "pilot")
+            self.assertEqual(corrupted.returncode, 1, "a corrupt stored generation must not be reused as valid")
+            self.assertFalse(json.loads(corrupted.stdout)["editable"])
+
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             model, spec = referenced_model(root)
