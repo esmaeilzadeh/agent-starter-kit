@@ -1,0 +1,13 @@
+E
+======================================================================
+ERROR: test_candidate_cannot_replace_the_verifier_checking_it (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_reliability.py", line 188, in test_candidate_cannot_replace_the_verifier_checking_it
+    self.assertEqual(report["runner_sha"], self.base)
+KeyError: 'runner_sha'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.371s
+
+FAILED (errors=1)

@@ -208,6 +208,8 @@ tasks:
     owned_paths: [b/**]
 YAML
 mkdir -p "$DRV/.agents" "$DRV/_ask/policies" "$DRV/work/drv/inner-loop/evidence"
+mkdir -p "$DRV/.agents/ask"
+cp -R "$ROOT/.agents/ask/verification" "$DRV/.agents/ask/"
 cat > "$DRV/.agents/verification.yaml" <<'YAML'
 schema: ask-checkplan/v1
 no_production_datastore: true
@@ -217,7 +219,7 @@ checks:
     command: 'true'
 YAML
 echo 'Coordinator delegates review to an identified reviewer.' > "$DRV/_ask/policies/delegation.md"
-printf '%s\n' 'work/*/inner-loop/state.*' 'work/*/inner-loop/results/' 'work/*/inner-loop/evidence/' > "$DRV/.gitignore"
+printf '%s\n' 'work/*/inner-loop/state.*' 'work/*/inner-loop/results/' 'work/*/inner-loop/evidence/' '__pycache__/' '*.py[cod]' > "$DRV/.gitignore"
 git -C "$DRV" add .
 git -C "$DRV" commit -q -m 'committed fixture CheckPlan and TaskGraph'
 bind_result() {

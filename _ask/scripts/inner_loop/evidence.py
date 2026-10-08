@@ -16,13 +16,10 @@ import tempfile
 
 from inner_loop.state import state_transaction
 
-KIT_ROOT = Path(__file__).resolve().parents[3]
-# Import the coordinator's implementation, not code from the candidate worktree.
-sys.path.insert(0, str(KIT_ROOT / '.agents' / 'ask'))
-from verification.plan import expand_plan, load_plan  # noqa: E402
-
 POLICY = '_ask/policies/delegation.md'
 EXEMPTIONS = {'documentation-only', 'generated-projections', 'non-behavioral-config'}
+RUNTIME_FILES = ('state.json', 'state.lock')
+RUNTIME_DIRS = ('results/', 'evidence/')
 
 
 class NotIntegrable(RuntimeError):
@@ -52,10 +49,17 @@ def source_changes(root: Path, work_id: str) -> list[str]:
         names.update(proc.stdout.split('\0'))
     prefix = f'work/{work_id}/inner-loop/'
     def operational(name):
-        return (name in {prefix + 'state.json', prefix + 'state.lock'}
-                or name.startswith((prefix + 'results/', prefix + 'evidence/'))
+        return (name in {prefix + f for f in RUNTIME_FILES}
+                or name.startswith(tuple(prefix + d for d in RUNTIME_DIRS))
                 or (name.startswith(prefix + '.state-') and name.endswith('.tmp')))
     return sorted(n for n in names if n and not operational(n))
+
+
+def runtime_exclusions(work_id: str) -> list[str]:
+    prefix = f'work/{work_id}/inner-loop/'
+    return ([f':(literal,exclude){prefix}{f}' for f in RUNTIME_FILES]
+            + [f':(glob,exclude){prefix}{d}**' for d in RUNTIME_DIRS]
+            + [f':(glob,exclude){prefix}.state-*.tmp'])
 
 
 @dataclass
@@ -167,18 +171,51 @@ def validate_review(root: Path, task: dict, candidate: Candidate) -> dict:
     return review
 
 
-def plan_identity(checkout: Path) -> tuple[str, list[dict]]:
-    plan = load_plan(checkout)
-    checks = expand_plan(checkout, plan)
+def snapshot_runner(root: Path, base_sha: str, destination: Path) -> tuple[Path, str]:
+    """Pin verifier and imports to the accepted coordinator base, even in-place."""
+    prefix = '.agents/ask/verification/'
+    paths = git(root, 'ls-tree', '-r', '--name-only', base_sha, '--', prefix).splitlines()
+    hashes = {}
+    for name in paths:
+        if not name.endswith('.py'):
+            continue
+        raw = subprocess.run(['git', 'show', f'{base_sha}:{name}'], cwd=root,
+                             check=True, capture_output=True).stdout
+        relative = Path(name).relative_to('.agents/ask')
+        path = destination / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+        hashes[str(relative)] = digest(raw)
+    runner = destination / 'verification/run.py'
+    if not runner.is_file():
+        raise NotIntegrable('recorded coordinator base has no verification runner')
+    return runner, digest(json.dumps(hashes, sort_keys=True).encode())
+
+
+def plan_identity(checkout: Path, runner: Path) -> tuple[str, list[dict]]:
+    # Resolve plans through pinned imports in a separate process. The current
+    # coordinator checkout may already contain candidate changes to those files.
+    code = '''
+import sys,json,hashlib
+from pathlib import Path
+sys.path.insert(0,sys.argv[1])
+from verification.plan import load_plan,expand_plan
+root=Path(sys.argv[2]);plan=load_plan(root);checks=expand_plan(root,plan)
+sources=[root/'.agents/verification.yaml']
+sources += [root/'.agents/ask/verification/presets'/f'{n}.yaml' for n in plan.get('presets') or []]
+data={'plan':plan,'expanded_checks':checks,
+      'sources':{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}}
+print(json.dumps({'digest':hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest(),'checks':checks}))
+'''
+    proc = subprocess.run([sys.executable, '-c', code, str(runner.parent.parent), str(checkout)],
+                          cwd=checkout, capture_output=True, text=True)
+    if proc.returncode:
+        raise NotIntegrable('candidate CheckPlan could not load: ' + proc.stderr.strip())
+    data = json.loads(proc.stdout)
+    checks = data['checks']
     if not checks or not any(c.get('tier', 'mandatory') == 'mandatory' for c in checks):
         raise NotIntegrable('empty CheckPlan or zero mandatory checks')
-    data = {'plan': plan, 'expanded_checks': checks}
-    # Include source bytes, including presets, alongside expanded command identity.
-    sources = [checkout / '.agents' / 'verification.yaml']
-    sources += [checkout / '.agents' / 'ask' / 'verification' / 'presets' / f'{name}.yaml'
-                for name in plan.get('presets') or []]
-    data['sources'] = {str(p.relative_to(checkout)): digest(p.read_bytes()) for p in sources}
-    return digest(json.dumps(data, sort_keys=True).encode()), checks
+    return data['digest'], checks
 
 
 def verify_candidate(root: Path, candidate: Candidate) -> dict:
@@ -192,15 +229,17 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                   log_path=str((out / 'output.log').relative_to(root)))
     try:
         with tempfile.TemporaryDirectory(prefix='ask-candidate-') as tmp:
+            runner, report['runner_digest'] = snapshot_runner(root, identity['base_sha'], Path(tmp) / 'trusted')
+            report['runner_sha'] = identity['base_sha']
             checkout = Path(tmp) / 'checkout'
             git(root, 'worktree', 'add', '--detach', str(checkout), identity['candidate_sha'])
             try:
                 report['tree_sha'] = git(checkout, 'rev-parse', 'HEAD^{tree}')
-                report['checkplan_digest'], expected = plan_identity(checkout)
+                report['checkplan_digest'], expected = plan_identity(checkout, runner)
                 env = dict(os.environ, ASK_ROOT=str(checkout), VERIFY_JSON=str(out / 'verification.json'),
                            VERIFY_OUT_DIR=str(out))
                 with (out / 'output.log').open('w') as log:
-                    proc = subprocess.run([sys.executable, str(KIT_ROOT / '.agents/ask/verification/run.py')],
+                    proc = subprocess.run([sys.executable, str(runner)],
                                           cwd=checkout, env=env, stdout=log, stderr=subprocess.STDOUT)
                 try:
                     executed = json.loads((out / 'verification.json').read_bytes())
@@ -219,7 +258,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                     raise NotIntegrable('required candidate verification failed or mismatched its CheckPlan')
                 if (git(checkout, 'rev-parse', 'HEAD') != identity['candidate_sha']
                         or git(checkout, 'status', '--porcelain')
-                        or plan_identity(checkout)[0] != report['checkplan_digest']):
+                        or plan_identity(checkout, runner)[0] != report['checkplan_digest']):
                     raise NotIntegrable('candidate source/CheckPlan changed during verification')
                 report['result'] = 'pass'
             finally:

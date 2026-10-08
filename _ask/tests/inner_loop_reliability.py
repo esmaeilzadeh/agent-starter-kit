@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import json
 import shlex
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -26,6 +27,9 @@ class IntegrationTests(unittest.TestCase):
         self.git("config", "user.name", "Test")
         self.write(".gitignore", "work/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n")
         self.write(".agents/verification.yaml", "schema: ask-checkplan/v1\nno_production_datastore: true\nchecks:\n  - id: required\n    tier: mandatory\n    command: 'true'\n")
+        source = Path(__file__).resolve().parents[2] / ".agents/ask/verification"
+        shutil.copytree(source, self.root / ".agents/ask/verification",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         self.write("_ask/policies/delegation.md", "Coordinator delegates review to an identified review agent.\n")
         self.write("work/w/inner-loop/tasks.yaml", "schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [src/**]\n  - id: b\n    depends_on: [a]\n    owned_paths: [src/**]\n")
         self.write("src/value", "base\n")
@@ -168,6 +172,20 @@ except NotIntegrable as exc:
         evidence = json.loads(reports[0].read_text())
         self.assertEqual(evidence["result"], "fail")
         self.assertEqual(evidence["checks"][0]["exit_code"], 7)
+
+    def test_candidate_cannot_replace_the_verifier_checking_it(self):
+        self.write(".agents/ask/verification/run.py", "raise SystemExit(0)\n")
+        self.write(".agents/ask/verification/plan.py", "raise RuntimeError('candidate import must not run')\n")
+        self.check("exit 9")
+        self.task_branch()
+        self.review()
+        with self.assertRaisesRegex(NotIntegrable, "verification failed"):
+            integrate_ready(self.root, "w", "a")
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.base)
+        reports = list(self.root.glob("work/w/inner-loop/evidence/verify-*/integration.json"))
+        report = json.loads(reports[0].read_text())
+        self.assertEqual(report["checks"][0]["exit_code"], 9)
+        self.assertEqual(report["runner_sha"], self.base)
 
     def test_empty_checkplan_does_not_integrate(self):
         self.check()
@@ -343,6 +361,46 @@ except CasConflict: print('conflict')
                 os.environ.pop("ASK_INNER_LOOP_ROLE", None)
             else:
                 os.environ["ASK_INNER_LOOP_ROLE"] = previous
+
+    def test_resume_source_repair_preserves_tracked_runtime_revision_and_review(self):
+        self.git("add", "-f", "work/w/inner-loop/state.json")
+        self.git("commit", "-qm", "track runtime snapshot")
+        self.candidate = self.git("rev-parse", "HEAD")
+        self.result["candidate_sha"] = self.candidate
+        self.submit()
+        self.review()
+        before = load_state(self.root, "w")
+        self.write("src/value", "dirty source")
+        try:
+            resume_from_state(self.root, "w")
+        except NotIntegrable:
+            pass  # Source repair invalidates the old in-place candidate.
+        after = load_state(self.root, "w")
+        self.assertEqual(after, before)
+        self.assertEqual(after["tasks"]["a"]["evidence"]["review"]["reviewer"], "independent-agent")
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.base)
+        self.assertEqual((self.root / "src/value").read_text(), "base\n")
+
+    def test_resume_merge_repair_preserves_tracked_runtime_state(self):
+        self.git("switch", "-qc", "other", self.base)
+        self.write("src/value", "other branch\n")
+        self.commit("conflicting branch")
+        self.git("switch", "-q", "agent/w")
+        self.git("add", "-f", "work/w/inner-loop/state.json")
+        self.git("commit", "-qm", "track runtime snapshot")
+        self.result["candidate_sha"] = self.git("rev-parse", "HEAD")
+        self.submit()
+        self.review()
+        before = load_state(self.root, "w")
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.git("merge", "other")
+        try:
+            resume_from_state(self.root, "w")
+        except NotIntegrable:
+            pass
+        self.assertEqual(load_state(self.root, "w"), before)
+        self.assertFalse((self.root / ".git/MERGE_HEAD").exists())
+        self.assertEqual((self.root / "src/value").read_text(), "base\n")
 
 
 class StateTests(unittest.TestCase):

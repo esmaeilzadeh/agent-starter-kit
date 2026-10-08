@@ -10,7 +10,7 @@ from pathlib import Path
 
 from inner_loop.evidence import (
     NotIntegrable, check_integrable, git, read_candidate, result_path,
-    source_changes, validate_review, verify_candidate,
+    runtime_exclusions, source_changes, validate_review, verify_candidate,
 )
 from inner_loop.graph import _task_map, load_graph, validate_graph
 from inner_loop.integrate import Escalate, resume as git_resume
@@ -161,7 +161,7 @@ def resume_from_state(root: Path, work_id: str) -> str:
             # Runtime result/state/evidence changes are expected. In particular,
             # do not reset a verified FF candidate back to its pre-task base.
             if source_changes(root, work_id) or in_progress:
-                aborted = git_resume(root, sha)
+                aborted = git_resume(root, sha, preserve_paths=runtime_exclusions(work_id))
     nxt = run_until(root, work_id)
     if aborted == "aborted":
         return f"aborted\n{nxt}"

@@ -69,14 +69,16 @@ No new human acknowledgment is required for each delegated exemption.
 
 ## Candidate execution and integration
 
-The coordinator runs its own CheckPlan runner against a clean detached worktree
-at the immutable candidate SHA. The committed candidate CheckPlan and expanded
+The coordinator snapshots its CheckPlan runner and Python imports from the recorded
+coordinator base commit, then runs them against a clean detached worktree at the
+immutable candidate SHA. Candidate changes to the verification implementation
+do not replace the gate checking that candidate. The committed candidate CheckPlan and expanded
 presets identify required commands. Worker-reported green codes and preexisting
 VerifyResult files are not consumed as executed verification.
 
 Outputs go into `inner-loop/evidence/verify-*/`: `output.log`,
 `verification.json` and `integration.json`. Evidence includes candidate/base,
-result digest, effective CheckPlan digest, tree SHA, commands, exit codes and
+result digest, effective CheckPlan digest, runner base/digest, tree SHA, commands, exit codes and
 paths. Failed checks, an empty mandatory plan, changed source or stale inputs
 leave the task unintegrated. The coordinator revalidates inputs after checks,
 then fast-forwards to the pinned candidate SHA and records the resulting SHA
@@ -104,4 +106,8 @@ Integration holds the same lock across verification, FF and state replacement.
 If interrupted after FF, retry/resume revalidates the exact candidate and folds
 its state; runtime-only dirt does not trigger a reset to the old base. A
 concurrent cancellation/update waits and may report a revision conflict.
-External/manual Git writers remain outside this advisory coordination model.
+Source/Git repair preserves runtime paths even when they are tracked: it clears
+operation metadata, moves the coordinator ref and restores source paths only.
+An in-place TaskResult invalidated by that repair is refused until resubmitted;
+its recorded review and state revision are retained. External/manual Git writers
+remain outside this advisory coordination model.
