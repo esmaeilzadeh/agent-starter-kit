@@ -13,7 +13,7 @@ from verification.traceability.evidence import accept_plan,inventory,load_accept
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
-    def __init__(self,omit_e2e=False,tasks=False):
+    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new"):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         self.git('init','-q','-b','agent/w');self.git('config','user.email','test@example.com');self.git('config','user.name','Test')
         self.write('.gitignore','__pycache__/\nverification-result.json\nwork/w/traceability/\nwork/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n')
@@ -23,11 +23,12 @@ class Consumer:
         self.write(POLICY,(SOURCE/POLICY).read_text())
         self.write('.agents/verification.yaml',"schema: ask-checkplan/v1\nno_production_datastore: true\nchecks:\n  - id: syntax\n    tier: mandatory\n    command: python3 -c 'import app'\n")
         self.write('app.py',"import sys\ndef render(value): return value\nif __name__=='__main__': print(render(sys.argv[1]))\n")
+        if not behavior_change:self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(render(sys.argv[1]))\n")
         self.write('test_app.py',"import subprocess,sys,unittest\nfrom app import render\nclass Cases(unittest.TestCase):\n def test_unit(self): self.assertEqual(render('hello'),'HELLO')\n def test_cli(self):\n  p=subprocess.run([sys.executable,'app.py','hello'],capture_output=True,text=True)\n  self.assertEqual(p.returncode,0)\n  self.assertEqual(p.stdout.strip(),'HELLO')\n")
         self.spec={'schema':'ask-spec/v1','work_id':'w','revision':1,'criteria':[{'id':'C1','given':'lowercase text','when':'rendered through domain or CLI','then':['uppercase text is returned'],'verification_mode':'tests'}]}
         self.plan={'schema':'ask-test-plan/v1','work_id':'w','spec_digest':digest(self.spec),'obligations':[{'criterion_id':'C1','required_types':['unit','e2e']}],
                    'runners':[{'id':'r','adapter':'unittest','argv':['python3','-m','unittest','test_app']}],'task_scopes':[],
-                   'tests':[{'id':name,'criterion_ids':['C1'],'type':kind,'change_kind':'new','scenario':{'given':'hello','when':'rendered '+kind,'then':['HELLO']},'expected_assertions':[{'criterion_id':'C1','checks':['Exact HELLO output']}],'runner_id':'r','case_id':'test_app.Cases.test_'+method,'source_paths':['test_app.py']} for name,kind,method in [('U','unit','unit'),('E','e2e','cli')]]}
+                   'tests':[{'id':name,'criterion_ids':['C1'],'type':kind,'change_kind':change_kind,'scenario':{'given':'hello','when':'rendered '+kind,'then':['HELLO']},'expected_assertions':[{'criterion_id':'C1','checks':['Exact HELLO output']}],'runner_id':'r','case_id':'test_app.Cases.test_'+method,'source_paths':['test_app.py']} for name,kind,method in [('U','unit','unit'),('E','e2e','cli')]]}
         if omit_e2e: self.plan['runners'][0]['argv'][-1]='test_app.Cases.test_unit'
         if tasks:
             self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n')
@@ -42,6 +43,7 @@ class Consumer:
         self.contracts=load_accepted(self.root,'w','HEAD')
         self.red=run_tests(self.root,self.contracts,self.red_sha,phase='red')
         self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(render(sys.argv[1]))\n")
+        if not behavior_change:self.write('test_app.py',(self.root/'test_app.py').read_text()+'\n# Explain unchanged uppercase assertion.\n')
         self.sha=self.commit('implement uppercase behavior');self.contracts=load_accepted(self.root,'w',self.sha,self.sha)
         self.review=self.make_review()
         self.write('work/w/traceability/review-input.json',self.review)
