@@ -1,4 +1,17 @@
-# Harness reliability: completed implementation
+# Harness reliability and test-traceability continuation
+
+## Latest request: planning only
+
+The user requested a clear plan for spec-rooted tests, independent test review
+and executed per-test completion evidence, preferring JSON metadata and Python.
+The proposal is specs/proposals/spec-test-traceability.json; the canonical plan
+is work/harness-review/test-traceability/plan.json. It sequences seven tasks and
+18 unit/integration/E2E scenarios. The adjacent contracts.example.json and
+coverage.example.py are illustrative, not executed feature evidence.
+
+The proposed traceability/completion gate is NOT IMPLEMENTED. The existing
+R1/R2 implementation and results below remain separate and unchanged. Resume
+from the JSON plan for any subsequently requested implementation.
 
 ## Current state
 

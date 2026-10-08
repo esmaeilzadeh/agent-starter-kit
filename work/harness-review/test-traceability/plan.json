@@ -1,0 +1,185 @@
+{
+  "schema": "ask-implementation-plan/v1",
+  "id": "spec-test-traceability",
+  "status": "PLANNED_NOT_IMPLEMENTED",
+  "specification": "specs/proposals/spec-test-traceability.json",
+  "branch": "agent/harness-review",
+  "baseline_commit": "c10b3e1",
+  "explore": "Explore skipped: destination already clear.",
+  "authorization": {
+    "current_deliverable": "Implementation plan and illustrative contracts/Python only",
+    "implementation_started": false,
+    "accepted_r1_r2_spec_changed": false
+  },
+  "outcome": "Normal completion requires complete spec-to-test mapping, independent semantic review, valid TDD evidence and successful execution of every required test at the final candidate revision.",
+  "decisions": [
+    {"id": "D01", "decision": "Use versioned JSON for criterion IDs, test obligations, reviews and per-case results. Markdown may explain intent but runtime never infers obligations from prose."},
+    {"id": "D02", "decision": "Put parsing, contract validation, evidence validation and completion policy in Python. Shell dispatchers remain thin wrappers; stage skills only point to contracts and commands."},
+    {"id": "D03", "decision": "Retain consumer-owned .agents/verification.yaml for existing static checks and presets. Workstream test-plan.json owns required behavior test selectors and runner metadata. Compose one execution schedule and deduplicate identical runs; an opaque static-check success never supplies per-case evidence."},
+    {"id": "D04", "decision": "Start with a standard-library unittest adapter that emits actual case outcomes. Test type is independent of runner: the E2E fixture must launch a separate application process and exercise its public interface. Require an explicit adapter for other frameworks; never infer success from exit code alone."},
+    {"id": "D05", "decision": "Require TDD for new or changed behavior cases. Existing regression cases need current execution, not fabricated historical red runs. Preserve existing authorized, attributable exemption policy."},
+    {"id": "D06", "decision": "Machine validation proves structural completeness and execution provenance. Independent review judges whether the selected test types, behavior scenarios and assertions adequately establish the spec."},
+    {"id": "D07", "decision": "Pin accepted spec/test-plan obligations to coordinator-controlled revisions. Task candidates cannot remove E2E obligations or narrow the accepted task scope. Changes to obligations require the existing spec-change process and a new reviewed contract revision."},
+    {"id": "D08", "decision": "One shared Python completion evaluator serves outer Verify, task integration, acceptance checks and record-result pass. Reports declare task or workstream scope; task success cannot satisfy final completion."},
+    {"id": "D09", "decision": "Preserve historical reports and R1/R2 evidence. Legacy unlinked evidence is readable history but cannot satisfy new required behavior evidence. A missing contract or unsupported pinned runner returns migration_required."}
+  ],
+  "contracts": [
+    {
+      "path": "specs/current/<work-id>.json",
+      "schema": "ask-spec/v1",
+      "fields": ["work_id", "revision", "criteria[].id", "criteria[].given", "criteria[].when", "criteria[].then", "criteria[].verification_mode"],
+      "rules": ["Canonical accepted criterion registry, created with Spec and finalized by Spec Challenge", "Stable unique IDs and nonempty observable Given/When/Then", "Non-testable criteria require a reason and attributable authorized review decision; they remain visible in completion"]
+    },
+    {
+      "path": "work/<work-id>/test-plan.json",
+      "schema": "ask-test-plan/v1",
+      "fields": ["work_id", "spec_digest", "obligations[].criterion_id", "obligations[].required_types", "tests[].id", "tests[].criterion_ids", "tests[].type", "tests[].change_kind", "tests[].scenario", "tests[].expected_assertions", "tests[].runner_id", "tests[].case_id", "tests[].source_paths", "runners[].adapter", "runners[].argv", "task_scopes"],
+      "rules": ["Created in Plan before implementation", "Every testable criterion has required test types explicitly chosen and independently reviewed", "Every required criterion/type has at least one planned case; one test may cover several criteria only with explicit assertions for each", "No orphan or duplicate tests/cases, unknown criteria or unassigned tasks", "New/changed behavior cases discovered during implementation are added through a reviewed plan amendment", "Task scopes are derived from the accepted task graph; callers cannot supply arbitrary coverage subsets"]
+    },
+    {
+      "path": "work/<work-id>/test-review.json",
+      "schema": "ask-test-review/v1",
+      "fields": ["reviewer", "recorded_by", "spec_digest", "plan_digest", "candidate_sha", "source_digests", "criteria[].id", "criteria[].coverage_decision", "criteria[].type_adequacy", "tests[].id", "tests[].assertion_assessment", "tests[].counterexample", "tests[].decision", "tests[].tdd_continuity_assessment"],
+      "rules": ["Coordinator records independent reviewer findings", "Each criterion and test has an explicit decision; blanket APPROVED is insufficient", "Review includes a plausible incorrect implementation that the assertion would catch", "Review checks required tests against the actual changed-test inventory, preventing an omitted test from disappearing from the plan", "A changed reviewed source, spec, plan or candidate invalidates the binding; renewed review may explicitly carry forward unchanged findings"]
+    },
+    {
+      "path": "work/<work-id>/test-results.json",
+      "schema": "ask-test-results/v1",
+      "fields": ["run_id", "scope", "task_id", "candidate_sha", "spec_digest", "plan_digest", "runner_identity", "executions[].argv", "executions[].exit_code", "executions[].collection_status", "cases[].test_id", "cases[].case_id", "cases[].phase", "cases[].source_sha", "cases[].source_digests", "cases[].outcome", "cases[].failure_kind", "cases[].output_artifact", "cases[].output_digest", "tdd_exemptions"],
+      "rules": ["Adapter records actual case identities and outcomes, not only process status", "Parameterized cases require explicit IDs or a pinned complete collected set; no unreviewed wildcard expansion", "Skip, expected failure, unexpected success, error, missing/duplicate case and zero collection cannot satisfy a required case", "Red must be a recognized behavior assertion failure on an immutable revision with captured output; import/setup failures do not count", "Final green must execute at the exact final candidate revision", "If test code changes between red and green, review assesses assertion continuity rather than requiring identical whole-file hashes", "Evidence paths and digests bind retained logs; preflight failures write a fresh failed report so an old passing report cannot survive"]
+    },
+    {
+      "path": "work/<work-id>/completion.json",
+      "schema": "ask-completion/v1",
+      "fields": ["status", "scope", "candidate_sha", "input_digests", "criterion_evidence", "missing_evidence", "errors", "execution_artifacts"],
+      "rules": ["Derived by the shared Python evaluator, never supplied by the worker as an assertion of success", "For each criterion show required types, planned cases, review decision, TDD status and final execution evidence", "Final success requires all obligations and configured mandatory static checks", "Record-result pass reloads and validates the coordinator-produced report and its underlying contracts/evidence; a bare pass flag cannot create success"]
+    }
+  ],
+  "python_design": {
+    "package": ".agents/ask/verification/traceability/",
+    "modules": {
+      "contracts.py": "Parse versioned JSON into typed structures; validate types, uniqueness, references and contract versions.",
+      "coverage.py": "Pure functions validate criterion/type obligations, changed-case inventory and accepted task scopes.",
+      "adapters.py": "Run argv with subprocess and shell=False in the existing isolated candidate environment; collect real case-level outcomes and retained logs.",
+      "unittest_runner.py": "Use unittest discovery and a custom TestResult to emit stable case IDs, assertion failures, errors and skips as JSON.",
+      "evidence.py": "Bind immutable revisions, source/input/output digests, review authority, TDD history and final execution.",
+      "completion.py": "Single evaluate_completion API returns a report with status and precise missing evidence; used by every completion entrypoint.",
+      "cli.py": "validate-plan, run, check-completion, record-result and check-acceptance commands; machine-readable errors plus concise human summaries."
+    },
+    "api": {
+      "validate_plan": "validate_plan(spec, plan, accepted_task_graph) -> list[Violation]",
+      "run_tests": "run_tests(accepted_contracts, candidate_sha, scope, task_id) -> ExecutionReport",
+      "evaluate_completion": "evaluate_completion(contracts, review, executions, trusted_context) -> CompletionReport"
+    },
+    "constraints": ["Standard library first; no new dependency required for the initial adapter", "Reuse R1/R2 pinned coordinator tooling, isolated worktree execution and process-safe state", "Validate exact clean candidate identity in outer Verify too", "No duplicated policy implementation in shell scripts or skills", "No claim of semantic proof or hostile-worker security"]
+  },
+  "tasks": [
+    {
+      "id": "P01", "depends_on": [],
+      "title": "Finalize criterion and evidence contracts",
+      "owns": ["specs/proposals/spec-test-traceability.json", "_ask/templates/spec.json", "_ask/templates/test-plan.json", "_ask/templates/test-review.json", "_ask/templates/test-results.json", "_ask/templates/completion.json"],
+      "requirements": ["TT-001", "TT-002", "TT-003", "TT-010"],
+      "work": ["Challenge required types, review-only authority and migration semantics against the existing workflow", "Create versioned schemas/templates with examples and explicit required fields", "Record a spec-change decision without rewriting the completed R1/R2 claim"],
+      "tests": ["U01", "U02"],
+      "exit": "Independent Spec Challenge resolves contract ambiguities; valid examples parse and malformed contracts fail with field-level errors.",
+      "commit": "Define spec-to-test JSON contracts"
+    },
+    {
+      "id": "P02", "depends_on": ["P01"],
+      "title": "Build pure Python plan and coverage validation test-first",
+      "owns": [".agents/ask/verification/traceability/contracts.py", ".agents/ask/verification/traceability/coverage.py", "_ask/tests/test_traceability_contracts.py"],
+      "requirements": ["TT-001", "TT-002", "TT-003", "TT-009"],
+      "work": ["Write and run failing criterion/type/ref/scope tests before production logic", "Implement strict JSON parsing and complete obligation mapping", "Emit precise criterion and test IDs for missing coverage"],
+      "tests": ["U01", "U02", "U03"],
+      "exit": "Unit-only coverage fails a unit-plus-E2E obligation; accepted task scope passes locally but cannot masquerade as final scope.",
+      "commit": "Validate complete spec test obligations in Python"
+    },
+    {
+      "id": "P03", "depends_on": ["P02"],
+      "title": "Collect executed per-case outcomes and TDD evidence",
+      "owns": [".agents/ask/verification/traceability/adapters.py", ".agents/ask/verification/traceability/unittest_runner.py", "_ask/tests/test_traceability_runner.py", "_ask/tests/fixtures/traceability/"],
+      "requirements": ["TT-005", "TT-006", "TT-007"],
+      "work": ["Write failing execution fixtures, then implement the unittest adapter", "Run argv without a shell through existing isolated execution and capture per-case IDs and digested logs", "Classify assertion failure versus import/setup error for red evidence", "Record final-candidate green separately from historical red", "Refuse required runners without a supported adapter"],
+      "tests": ["U04", "U05", "I01", "I02"],
+      "exit": "Zero collection, skips/errors and bogus red runs fail; genuine behavior red plus final-candidate green is represented accurately.",
+      "commit": "Collect per-case execution and TDD evidence"
+    },
+    {
+      "id": "P04", "depends_on": ["P03"],
+      "title": "Bind independent semantic review and derive completion",
+      "owns": [".agents/ask/verification/traceability/evidence.py", ".agents/ask/verification/traceability/completion.py", "_ask/scripts/inner_loop/evidence.py", "_ask/tests/test_traceability_evidence.py"],
+      "requirements": ["TT-004", "TT-006", "TT-007", "TT-009", "TT-011"],
+      "work": ["Record independent per-criterion/type and per-test assertion/counterexample review", "Check planned cases against newly added/changed behavior cases identified during review", "Pin accepted obligations to coordinator revisions and validate review/source/result digests", "Generate a per-criterion completion report with actionable omissions", "Apply existing exemption authority; never invent an exemption for missing evidence"],
+      "tests": ["U06", "U07", "I03", "I04"],
+      "exit": "Rejected, blanket or stale review fails; candidate edits removing E2E cannot reduce accepted obligations; task-scoped evidence fails final evaluation.",
+      "commit": "Gate completion on reviewed and executed spec evidence"
+    },
+    {
+      "id": "P05", "depends_on": ["P04"],
+      "title": "Route all normal completion entrypoints through the same gate",
+      "owns": [".agents/ask/verification/traceability/cli.py", ".agents/ask/verification/run.py", "_ask/scripts/inner_loop/driver.py", "_ask/scripts/check-workstream.sh", "_ask/scripts/record-result.sh", "_ask/tests/test_traceability_entrypoints.py"],
+      "requirements": ["TT-008", "TT-009", "TT-011"],
+      "work": ["Compose existing static CheckPlan and traceable behavior runs without duplicate execution", "Delegate metadata preflight, result recording and acceptance checks from thin dispatchers to Python", "Require exact clean candidate execution and fresh failed reports on preflight failure", "Forbid bare --result pass without valid complete coordinator evidence", "Retain state transaction, review provenance and FF-only integration invariants"],
+      "tests": ["I05", "I06", "I07", "E01", "E02"],
+      "exit": "The same omitted-E2E fixture is rejected by Verify, integration, acceptance check and result recording; a complete real fixture succeeds.",
+      "commit": "Enforce traceability across completion entrypoints"
+    },
+    {
+      "id": "P06", "depends_on": ["P05"],
+      "title": "Migrate workflow metadata and document Python commands",
+      "owns": [".agents/ask/stages/02-spec.md", ".agents/ask/stages/03-spec-challenge.md", ".agents/ask/stages/05-plan.md", ".agents/ask/stages/06-implement.md", ".agents/ask/stages/07-review.md", ".agents/ask/stages/09-verify.md", ".agents/ask/stages/10-accept.md", "_ask/docs/inner-loop-evidence.md", "_ask/tests/test_traceability_migration.py"],
+      "requirements": ["TT-001", "TT-002", "TT-004", "TT-010"],
+      "work": ["Make stages produce/consume the JSON contracts with short Python command pointers", "Keep prose overview and consumer YAML static checks compatible", "Provide an explicit metadata migration command that leaves historical evidence intact", "Mark missing metadata or old pinned-runner capability migration_required instead of silently bypassing", "Regenerate bindings using ./ask sync; do not hand-edit generated projections"],
+      "tests": ["I08", "I09"],
+      "exit": "Migrated fixtures work; legacy reports remain readable but cannot satisfy new obligations; stage pointers and generated bindings agree.",
+      "commit": "Migrate workflow to structured test evidence"
+    },
+    {
+      "id": "P07", "depends_on": ["P06"],
+      "title": "Review spec/test fit and publish executed acceptance evidence",
+      "owns": ["work/harness-review/test-traceability/implementation-review.json", "work/harness-review/test-traceability/executed-results.json", "work/harness-review/test-traceability/completion.json"],
+      "requirements": ["TT-001", "TT-002", "TT-003", "TT-004", "TT-005", "TT-006", "TT-007", "TT-008", "TT-009", "TT-010", "TT-011"],
+      "work": ["Independent review examines actual assertions and E2E journeys against every criterion", "Repair review findings and rerun affected tests", "Run all required unit/integration/E2E cases and the complete ./ask verify suite at the final source candidate", "Publish per-criterion results, actual commands, case IDs, logs, red/green identities and review bindings", "Record pass only through the validated completion path"],
+      "tests": ["U01", "U02", "U03", "U04", "U05", "U06", "U07", "I01", "I02", "I03", "I04", "I05", "I06", "I07", "I08", "I09", "E01", "E02"],
+      "exit": "All requirements have meaningful reviewed and executed evidence; full verification passes; original R1/R2 reliability cases still pass.",
+      "commit": "Record reviewed spec-to-test acceptance evidence"
+    }
+  ],
+  "test_inventory": [
+    {"id": "U01", "type": "unit", "criteria": ["TT-001", "TT-003"], "given": "Malformed JSON, duplicate IDs, unknown criteria or empty behavior outcomes", "when": "Contracts are loaded", "then": "Validation rejects the exact field and identifier"},
+    {"id": "U02", "type": "unit", "criteria": ["TT-002", "TT-003"], "given": "A criterion requires unit and E2E, or a new test lacks a spec link", "when": "Only unit is mapped or the orphan test is reviewed", "then": "Missing criterion/type coverage or orphan-test violation blocks the plan"},
+    {"id": "U03", "type": "unit", "criteria": ["TT-009"], "given": "An accepted task subset and a larger workstream plan", "when": "Task evidence is submitted as final or caller narrows the scope", "then": "Scope mismatch is rejected"},
+    {"id": "U04", "type": "unit", "criteria": ["TT-005"], "given": "Required case outcomes missing, duplicate, skipped, xfailed, errored or failed; or zero collection", "when": "Completion is evaluated", "then": "Each outcome blocks success despite a zero process exit"},
+    {"id": "U05", "type": "unit", "criteria": ["TT-006"], "given": "Behavior assertion red, setup/import red, changed assertions or an authorized exemption", "when": "TDD evidence is evaluated", "then": "Only recognized behavior red plus final green and continuity review, or a valid authorized exemption, satisfies policy"},
+    {"id": "U06", "type": "unit", "criteria": ["TT-004"], "given": "Blanket approval, rejected tautological assertion, missing type review or missing counterexample", "when": "Review bindings are evaluated", "then": "Incomplete or rejected semantic review blocks completion"},
+    {"id": "U07", "type": "unit", "criteria": ["TT-007", "TT-011"], "given": "A valid evidence set and one mutated commit, digest, log or run identity", "when": "Evidence is reevaluated", "then": "Stale or mismatched evidence fails with the affected criterion shown"},
+    {"id": "I01", "type": "integration", "criteria": ["TT-005"], "given": "Real unittest discovery with pass, fail, skip and collection-error fixtures", "when": "The Python adapter executes them", "then": "Actual identities and outcomes match runner behavior and logs; unknown adapters fail"},
+    {"id": "I02", "type": "integration", "criteria": ["TT-006", "TT-007"], "given": "An immutable faulty revision and its corrected candidate", "when": "The same behavior scenario runs red then final green", "then": "Both revisions and actual assertion outcomes are retained and accepted"},
+    {"id": "I03", "type": "integration", "criteria": ["TT-004", "TT-007"], "given": "A bound independent review and a subsequent test/spec/plan change", "when": "Completion or integration is attempted", "then": "Stale review fails until explicitly renewed"},
+    {"id": "I04", "type": "integration", "criteria": ["TT-007", "TT-009"], "given": "Coordinator-pinned unit-plus-E2E obligations", "when": "A candidate removes E2E or substitutes a smaller task report", "then": "Accepted obligations remain authoritative and final completion fails"},
+    {"id": "I05", "type": "integration", "criteria": ["TT-008"], "given": "A workstream missing required E2E evidence", "when": "Each normal completion entrypoint is invoked", "then": "Verify, integration, acceptance and record-result all refuse success"},
+    {"id": "I06", "type": "integration", "criteria": ["TT-005", "TT-008"], "given": "An old passing report followed by a dirty candidate or contract preflight failure", "when": "Verification runs again", "then": "A fresh failure replaces the old result and pass cannot be recorded"},
+    {"id": "I07", "type": "integration", "criteria": ["TT-008", "TT-011"], "given": "A complete reviewed contract and actual successful required runs", "when": "Normal completion entrypoints execute", "then": "They agree on success and emit the same criterion evidence relationships"},
+    {"id": "I08", "type": "integration", "criteria": ["TT-010"], "given": "Legacy reports, consumer YAML and a coordinator pinned before traceability capability", "when": "Migration or new completion is requested", "then": "Historical data survives, static checks remain configured and missing capability explicitly refuses new completion"},
+    {"id": "I09", "type": "integration", "criteria": ["TT-001", "TT-002", "TT-004", "TT-010"], "given": "Migrated canonical templates and stage metadata", "when": "A workstream is prepared and bindings are regenerated", "then": "Spec, Plan, Review and Verify consume matching JSON versions and Python commands"},
+    {"id": "E01", "type": "e2e", "criteria": ["TT-002", "TT-005", "TT-006", "TT-008", "TT-011"], "given": "A temporary consumer repository with a public CLI application and a real spec requiring unit plus E2E", "when": "The kit drives red, implementation, reviewed green and final completion using public ask commands", "then": "A separate application process exhibits the specified behavior and the final report links its passing E2E case and unit assertion to the criterion"},
+    {"id": "E02", "type": "e2e", "criteria": ["TT-002", "TT-008", "TT-011"], "given": "The same consumer flow with unit passing but required E2E omitted", "when": "Final Verify, result recording and acceptance are attempted", "then": "The public commands refuse success and name the missing E2E criterion/case"}
+  ],
+  "execution_rules": [
+    "Implement one dependency-ordered task at a time on the existing related work branch; commit each meaningful step.",
+    "For each new behavior case capture an executed failing assertion before production changes, then run green and refactor with reruns as needed.",
+    "Independent review is mandatory for semantic fit; machine links alone cannot establish adequate assertions or true E2E scope.",
+    "Do not publish planned/example outcomes as executed results.",
+    "If a proposed file seam differs in the actual code, keep the same ownership boundary and record the concrete path in the task result."
+  ],
+  "definition_of_done": [
+    "Every TT criterion maps to planned tests and independent review; every required case has actual final-candidate passing evidence.",
+    "New/changed behavior cases have valid red/green records or explicitly authorized policy exemptions.",
+    "Both positive and omitted-E2E public-command fixtures run; bypass and stale-evidence fixtures fail as intended.",
+    "All normal completion entrypoints share the Python gate and cannot record success from a task-only report or bare flag.",
+    "Full ./ask verify passes and its exact source SHA and logs are retained alongside the per-criterion completion report.",
+    "Historical R1/R2 evidence and consumer configuration are preserved; generated bindings match canonical stage instructions."
+  ],
+  "design_examples": ["work/harness-review/test-traceability/contracts.example.json", "work/harness-review/test-traceability/coverage.example.py"],
+  "verification_of_this_plan": "JSON parsing, requirement/task/test cross-reference checks, Python sketch syntax and existing repository verification validate this planning deliverable only. They do not establish that the proposed runtime feature exists."
+}
