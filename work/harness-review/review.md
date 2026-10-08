@@ -55,4 +55,23 @@ Other inspected mechanisms align with the spec: result/review hashes bind full i
 
 ## Review verdict
 
-REJECTED — F1 requires correction and targeted rerun before approval. Context-engineering pointer audit is separately recorded in `work/harness-review/context-audit.md`; passing pointer checks do not establish runtime recovery correctness.
+APPROVED at `4c13aec` after the independent re-review below. Initial review at `a7944f0` was REJECTED for F1; that finding and its reproduction remain above as the correction's basis. Context-engineering pointer audit is separately recorded in `work/harness-review/context-audit.md`.
+
+## Independent re-review — 4c13aec
+
+Reviewed the complete correction delta `a7944f0..4c13aec` on a clean checkout. The same independent reviewer performed this pass; model/runtime fallback and same-family limitations above still apply. No source/spec edits or commits were made by the reviewer.
+
+F1: FIXED, with executed regression evidence. The protected resume path clears in-progress operation metadata using `--quit`, moves HEAD using expected-old `update-ref`, then restores source/index paths with precise runtime exclusions. The operation no longer rewrites/removes state, results, evidence or the persistent lock file. The ordinary source-repair and actual merge-conflict regressions both assert the entire current state document remains equal, including revision and attributable review. Repair correctly refuses an in-place result whose candidate was invalidated by restoring the stored base.
+
+Also inspected the runner-provenance correction: verifier Python files are materialized from the recorded base commit; plan expansion and execution use that snapshot's imports. The candidate's committed CheckPlan/presets still supply required check definitions. Runner SHA/digest are added to evidence. This closes accidental self-verification when an in-place candidate modifies verification implementation files; it does not establish a security sandbox.
+
+Executed six focused public-operation tests at `4c13aec`; all passed (6 tests, 3.492 seconds):
+
+- `test_resume_source_repair_preserves_tracked_runtime_revision_and_review`
+- `test_resume_merge_repair_preserves_tracked_runtime_state`
+- `test_resume_preserves_candidate_after_ff_before_state_fold_interruption`
+- `test_candidate_cannot_replace_the_verifier_checking_it`
+- `test_successful_in_place_integration_records_executed_lineage`
+- `test_fast_forward_matches_verified_candidate`
+
+The candidate-replacement regression observed the pinned runner execute and report required check exit 9 even though the candidate replaced both runner and plan modules. Successful in-place/FF and interrupted-fold tests passed with the same new runner path. No additional concrete correctness issue was found in this delta. The parent is responsible for final full CheckPlan verification and recording its final SHA; this reviewer did not duplicate that suite. Git and state remain separate resources with the documented recovery boundary.
