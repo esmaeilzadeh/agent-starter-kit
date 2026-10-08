@@ -8,18 +8,14 @@ import json
 import subprocess
 from pathlib import Path
 
+from inner_loop.evidence import (
+    NotIntegrable, check_integrable, git, read_candidate, result_path,
+    source_changes, validate_review, verify_candidate,
+)
 from inner_loop.graph import _task_map, load_graph, validate_graph
 from inner_loop.integrate import Escalate, resume as git_resume
 from inner_loop.integrate import integrate as git_integrate
-from inner_loop.state import cas_apply, cas_init, load_state, spawn_writer
-
-
-class NotIntegrable(RuntimeError):
-    pass
-
-
-def result_path(root: Path, work_id: str, task_id: str) -> Path:
-    return root / "work" / work_id / "inner-loop" / "results" / f"{task_id}.json"
+from inner_loop.state import cas_apply, cas_init, load_state, spawn_writer, state_lock, state_transaction
 
 
 def git_sha(root: Path) -> str:
@@ -78,23 +74,6 @@ def ready_ids(graph: dict, doc: dict) -> list[str]:
     return ready
 
 
-def check_integrable(result: dict) -> None:
-    exemption = result.get("exemption")
-    tdd = result.get("tdd")
-    if exemption:
-        if not exemption.get("reviewer_ack"):
-            raise NotIntegrable("exemption without reviewer_ack")
-        return
-    if not tdd:
-        raise NotIntegrable("missing TDD evidence")
-    red = tdd.get("red") or {}
-    green = tdd.get("green") or {}
-    if int(red.get("exit_code", 0)) == 0:
-        raise NotIntegrable("red did not fail")
-    if int(green.get("exit_code", 1)) != 0:
-        raise NotIntegrable("green did not pass")
-
-
 def ensure_state(root: Path, work_id: str) -> dict:
     graph = load_graph(root, work_id)
     status = validate_graph(graph)
@@ -108,35 +87,36 @@ def ensure_state(root: Path, work_id: str) -> dict:
 
 
 def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str:
-    doc = load_state(root, work_id)
-    if task_id is None:
+    # Hold the same process lock as cancellation/spawn through Git and evidence
+    # side effects. A crash after FF leaves old valid state and is retryable.
+    with state_transaction(root, work_id) as doc:
         running = _running(doc)
         if len(running) != 1:
             raise Escalate("no running task to integrate")
-        task_id = running[0]
-    path = result_path(root, work_id, task_id)
-    if not path.is_file():
-        raise NotIntegrable(f"missing TaskResult {path}")
-    result = json.loads(path.read_text(encoding="utf-8"))
-    check_integrable(result)
-    branch = (doc.get("tasks") or {}).get(task_id, {}).get("task_branch") or ""
-    if branch:
-        sha = git_integrate(root, branch, "ff-only")
-    else:
-        sha = git_sha(root)
-    observed = int(doc["revision"])
-    rel = str(path)
-    try:
-        rel = str(path.relative_to(root))
-    except ValueError:
-        pass
-
-    def mut(d: dict) -> None:
-        d["tasks"][task_id]["status"] = "integrated"
-        d["tasks"][task_id]["result_path"] = rel
-        d["coordinator_sha"] = sha
-
-    cas_apply(root, work_id, observed, mut)
+        task_id = task_id or running[0]
+        candidate = read_candidate(root, work_id, task_id, doc)
+        check_integrable(candidate.result)
+        task = doc['tasks'][task_id]
+        review = validate_review(root, task, candidate)
+        if source_changes(root, work_id):
+            raise NotIntegrable('dirty coordinator source; commit or resolve changes before integration')
+        evidence = verify_candidate(root, candidate)
+        # Checks can take time: ref/result/review or coordinator source drift
+        # invalidates their applicability before any FF/state advancement.
+        current = read_candidate(root, work_id, task_id, doc)
+        if current != candidate or source_changes(root, work_id):
+            raise NotIntegrable('candidate/result/source changed during verification')
+        validate_review(root, task, current)
+        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only')
+        if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
+            raise Escalate('integrated HEAD/tree differs from verified candidate')
+        evidence['resulting_sha'] = sha
+        evidence['review'] = review
+        (root / evidence['record_path']).write_text(json.dumps(evidence, indent=2) + '\n')
+        task['status'] = 'integrated'
+        task['result_path'] = str(result_path(root, work_id, task_id).relative_to(root))
+        task['evidence']['verification'] = evidence
+        doc['coordinator_sha'] = sha
     return sha
 
 
@@ -170,11 +150,18 @@ def run_until(root: Path, work_id: str) -> str:
 
 
 def resume_from_state(root: Path, work_id: str) -> str:
-    doc = ensure_state(root, work_id)
-    sha = doc.get("coordinator_sha") or ""
+    ensure_state(root, work_id)
     aborted = ""
-    if sha and _is_git(root):
-        aborted = git_resume(root, sha)
+    with state_lock(root, work_id):
+        doc = load_state(root, work_id)
+        sha = doc.get("coordinator_sha") or ""
+        if sha and _is_git(root):
+            git_dir = Path(git(root, 'rev-parse', '--absolute-git-dir'))
+            in_progress = any((git_dir / n).exists() for n in ('MERGE_HEAD', 'CHERRY_PICK_HEAD'))
+            # Runtime result/state/evidence changes are expected. In particular,
+            # do not reset a verified FF candidate back to its pre-task base.
+            if source_changes(root, work_id) or in_progress:
+                aborted = git_resume(root, sha)
     nxt = run_until(root, work_id)
     if aborted == "aborted":
         return f"aborted\n{nxt}"

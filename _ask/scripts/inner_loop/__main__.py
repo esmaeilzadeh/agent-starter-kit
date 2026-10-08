@@ -10,6 +10,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from inner_loop.allowlist import classify_paths, outside_paths, staged_paths  # noqa: E402
+from inner_loop.evidence import record_review  # noqa: E402
 from inner_loop.driver import (  # noqa: E402
     NotIntegrable,
     cancel,
@@ -100,6 +101,15 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("work_id")
     sp.add_argument("task_id")
 
+    rv = sub.add_parser("record-review", help="coordinator records candidate-bound delegated review")
+    rv.add_argument("work_id")
+    rv.add_argument("task_id")
+    rv.add_argument("--reviewer", required=True)
+    rv.add_argument("--policy", default="_ask/policies/delegation.md")
+    rv.add_argument("--evidence", required=True)
+    rv.add_argument("--verdict", choices=["APPROVED", "REJECTED"], default="APPROVED")
+    rv.add_argument("--boundary", choices=["ok", "extras", "glob_too_narrow"], default="ok")
+
     cp = sub.add_parser("check-paths", help="refuse paths outside globs")
     cp.add_argument("--glob", action="append", dest="globs", required=True)
     cp.add_argument("paths", nargs="*")
@@ -148,6 +158,11 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_cas_apply(root, args.work_id, args.observed)
         if args.cmd == "spawn-writer":
             return cmd_spawn(root, args.work_id, args.task_id)
+        if args.cmd == "record-review":
+            review = record_review(root, args.work_id, args.task_id, args.reviewer, args.policy,
+                                   args.evidence, args.verdict, args.boundary)
+            print(f"review={review['verdict']} candidate={review['candidate_sha']}")
+            return 0
         if args.cmd == "check-paths":
             bad = outside_paths(args.paths, args.globs)
             if bad:
