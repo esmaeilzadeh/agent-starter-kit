@@ -14,6 +14,7 @@ import sys
 import tempfile
 
 from .actions import Refused
+from . import admission as publications
 from .admission import admit, load_published, validate_current
 from .validation import SLUG
 
@@ -73,13 +74,16 @@ def _canonical(snapshot):
             or Path(path).name in {'test-plan.json', 'tasks.yaml', 'engineering-model.json'}}
 
 
-def _checked(root, work_id, base, expected=None):
+def _checked(root, work_id, base, base_publication, expected=None):
     current, diagnostics = validate_current(root, work_id)
     _refuse(diagnostics)
     if expected is not None and current.identity['digest'] != expected:
         raise Refused('EM007_STALE_INPUT', 'expected workflow snapshot is no longer current')
     if _canonical(current) != _canonical(base):
-        raise Refused('EM007_INPUT_CHANGED', 'canonical definitions changed during workflow; use guarded document editing')
+        if not publications.guarded_publication_chain(
+                root, work_id, base.identity['digest'], current.identity['digest'],
+                base_publication=base_publication):
+            raise Refused('EM007_INPUT_CHANGED', 'canonical definitions changed during workflow without a verified guarded edit chain')
     return current
 
 
@@ -87,8 +91,9 @@ def _checked(root, work_id, base, expected=None):
 def workflow_admission(root, work_id, expected=None):
     """Yield captured admitted inputs; publish only a valid workflow result.
 
-    Nested calls validate at their own boundaries and share the outer canonical
-    base. Only the outermost call publishes its result. No document writer lock
+    Nested calls validate at their own boundaries and share the outer snapshot
+    and exact publication event. Canonical changes need a verified guarded edit
+    chain from that event. Only the outermost call publishes its result. No document writer lock
     survives entry/exit admission or is held while the action/subprocess runs.
     Unadopted work yields None and acquires no validated-state label.
     """
@@ -104,8 +109,8 @@ def workflow_admission(root, work_id, expected=None):
     active = _active.get()
     nested = key in active
     if nested:
-        base = active[key]
-        captured = _checked(root, work_id, base, expected)
+        base, base_publication = active[key]
+        captured = _checked(root, work_id, base, base_publication, expected)
     else:
         captured, diagnostics = admit(root, work_id, expected)
         _refuse(diagnostics)
@@ -113,15 +118,20 @@ def workflow_admission(root, work_id, expected=None):
         published = load_published(root, work_id)
         if published is None or published.identity != captured.identity:
             raise Refused('EM007_INPUT_CHANGED', 'admitted workflow generation is no longer published')
-    token = _active.set({**active, key: base})
+        base_publication = publications.publication_identity(root, work_id)
+        confirmed = load_published(root, work_id)
+        if (base_publication is None or confirmed is None or confirmed.identity != captured.identity
+                or publications.publication_identity(root, work_id) != base_publication):
+            raise Refused('EM007_INPUT_CHANGED', 'admitted workflow publication changed before action')
+    token = _active.set({**active, key: (base, base_publication)})
     try:
         try:
             yield captured
         except BaseException:
-            _checked(root, work_id, base)
+            _checked(root, work_id, base, base_publication)
             raise
         else:
-            current = _checked(root, work_id, base)
+            current = _checked(root, work_id, base, base_publication)
             if not nested:
                 published, diagnostics = admit(root, work_id, current.identity['digest'])
                 _refuse(diagnostics)

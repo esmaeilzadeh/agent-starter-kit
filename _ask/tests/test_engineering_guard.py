@@ -245,6 +245,38 @@ edit(root, 'pilot', os.environ['EXPECTED'], proposal)
             result = run_action(root, "pilot", identity, lambda snapshot: calls.append(snapshot))
             self.assertFalse(result["valid"])
             self.assertEqual(calls, [])
+            # Exercise the native subscription, not only one-shot startup.
+            from engineering_model.observer import updates
+            from queue import Queue
+            from threading import Event, Thread
+            referenced_model(root)
+            stop, events = Event(), Queue()
+            def observe():
+                try:
+                    for event in updates(root, "pilot", stop_event=stop):
+                        events.put(event)
+                except Exception as exc:
+                    events.put(exc)
+            worker = Thread(target=observe, daemon=True)
+            worker.start()
+            try:
+                first = events.get(timeout=10)
+                self.assertIsInstance(first, dict, first)
+                self.assertTrue(first["valid"], first)
+                spec["criteria"] = []
+                write_json(root, "specs/current/pilot.json", spec)
+                invalid = events.get(timeout=10)
+                self.assertIsInstance(invalid, dict, invalid)
+                self.assertFalse(invalid["valid"], invalid)
+                self.assertTrue(invalid["last_validated"], invalid)
+                referenced_model(root)
+                restored = events.get(timeout=10)
+                self.assertIsInstance(restored, dict, restored)
+                self.assertTrue(restored["valid"], restored)
+            finally:
+                stop.set()
+                worker.join(timeout=10)
+            self.assertFalse(worker.is_alive(), "native observer failed to stop")
 
     def test_invalid_candidate_preserves_stable_generation(self):
         with tempfile.TemporaryDirectory() as directory:
