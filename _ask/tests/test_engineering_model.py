@@ -11,9 +11,11 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask/verification"))
 from engineering_model.validation import validate
 from engineering_model.__main__ import main
 from engineering_fixture import decision_model, referenced_model, write_json, model_command
+from traceability.contracts import digest
 from concurrent.futures import ThreadPoolExecutor
 from engineering_model.domain import apply_batch
 
@@ -422,3 +424,48 @@ class ModelValidationTests(unittest.TestCase):
             malformed["nodes"][0]["title"] = " "
             errors = validate(malformed, directory, "pilot")
             self.assertTrue({"EM001_REVISION", "EM001_FIELD", "EM001_TITLE"}.issubset({e["code"] for e in errors}))
+
+
+class ProjectionTests(unittest.TestCase):
+    def test_json_markdown_same_ids_and_no_outcomes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, _spec = referenced_model(root)
+            model["nodes"].extend([
+                {"id": "scenario", "type": "scenario", "title": "Canonical flow", "lifecycle": "active",
+                 "reference": {"path": "specs/current/pilot.json", "id": "P-001"}},
+                {"id": "case", "type": "test", "title": "Canonical assertion", "lifecycle": "active",
+                 "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-1"}},
+            ])
+            model["edges"].extend([
+                {"type": "contains", "source": "requirement", "target": "scenario"},
+                {"type": "covers", "source": "case", "target": "scenario"},
+            ])
+            write_json(root, "work/pilot/engineering-model.json", model)
+            write_json(root, "work/pilot/test-plan.json", {
+                "schema": "ask-test-plan/v1", "work_id": "pilot",
+                "spec_digest": digest(_spec),
+                "obligations": [{"criterion_id": "P-001", "required_types": ["unit"]}],
+                "runners": [{"id": "fixture-runner", "adapter": "unittest",
+                             "argv": ["python3", "-m", "unittest", "test_engineering_model.ProjectionTests.test_json_markdown_same_ids_and_no_outcomes"]}],
+                "tests": [{"id": "CASE-1", "criterion_ids": ["P-001"], "type": "unit",
+                           "change_kind": "new", "scenario": {"given": "Input", "when": "Run", "then": ["Visible"]},
+                           "expected_assertions": [{"criterion_id": "P-001", "checks": ["Visible"]}],
+                           "runner_id": "fixture-runner", "case_id": "fixture.Case.test_it",
+                           "source_paths": ["_ask/tests/test_engineering_model.py"]}],
+                "task_scopes": [],
+            })
+            admitted = json.loads(model_command(root, "admit", "--work-id", "pilot").stdout)
+            self.assertTrue(admitted["valid"], admitted)
+            machine = model_command(root, "show", "--work-id", "pilot", "--format", "json")
+            self.assertEqual(machine.returncode, 0, machine.stderr)
+            data = json.loads(machine.stdout)
+            self.assertEqual(data["snapshot"]["digest"], admitted["snapshot"]["digest"])
+            expected_ids = {node["id"] for node in model["nodes"]}
+            self.assertEqual({node["id"] for node in data["model"]["nodes"]}, expected_ids)
+            markdown = model_command(root, "show", "--work-id", "pilot", "--format", "markdown")
+            self.assertEqual(markdown.returncode, 0, markdown.stderr)
+            self.assertTrue(all(f"`{identity}`" in markdown.stdout for identity in sorted(expected_ids)))
+            self.assertIn(admitted["snapshot"]["digest"], markdown.stdout)
+            self.assertNotIn("current_completion", data)
+            self.assertNotIn("current_completion", markdown.stdout)
