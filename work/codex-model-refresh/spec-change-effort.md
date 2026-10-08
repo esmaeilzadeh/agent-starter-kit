@@ -10,7 +10,7 @@ Add CM-004 for explicit Codex effort generation. The human asked “with which e
 
 ## Contract
 
-Runtime `reasoning_effort.models` maps known slugs to defaults: Luna medium, Sol medium, Astra high. `reasoning_effort.stages` overrides stage defaults (Verify low). A work/consumer `reasoning_effort` mapping uses the same stage/runtime shapes as model overlays. Precedence: runtime-specific `ASK_EFFORT_<STAGE>_CODEX`, generic `ASK_EFFORT_<STAGE>`, work overlay, consumer overlay, runtime stage default, resolved-model default, otherwise inherit. Literal `inherit` omits the TOML field. Allowed explicit values are low, medium, high, xhigh, max, ultra; availability remains model/account dependent. Invalid values fail before writing any runtime outputs. No capability is inferred for an unknown slug.
+Runtime `reasoning_effort.models` maps known slugs to defaults: Luna medium, Sol medium, Astra high. `reasoning_effort.stages` overrides stage defaults (Verify low). A work/consumer `reasoning_effort` mapping uses the same stage/runtime shapes as model overlays. Precedence: runtime-specific `ASK_EFFORT_<STAGE>_CODEX`, generic `ASK_EFFORT_<STAGE>`, work overlay, consumer overlay, runtime stage default, resolved-model default, otherwise inherit. Literal `inherit` omits the TOML field. Allowed explicit values are low, medium, high, xhigh, max; these are supported by all three locally advertised selected models. Availability remains model/account dependent. Invalid values fail before writing any runtime outputs. An unknown slug without an explicit effort override inherits, even for a stage with a configured default.
 
 ## Impact and alternatives
 

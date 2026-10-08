@@ -36,23 +36,35 @@ class CodexEffortTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         agents = list((self.root / ".codex/agents").glob("*.toml"))
         self.assertEqual(len(agents), 11)
-        self.assertIn('model = "gpt-6-luna"', self.agent("06-implement"))
-        self.assertIn('model_reasoning_effort = "medium"', self.agent("06-implement"))
-        self.assertIn('model_reasoning_effort = "medium"', self.agent("02-spec"))
-        self.assertIn('model_reasoning_effort = "high"', self.agent("03-spec-challenge"))
-        self.assertIn('model_reasoning_effort = "low"', self.agent("09-verify"))
+        expected = {
+            "00-explore": ("gpt-6.1-sol", "medium"),
+            "01-grill": ("gpt-6.1-sol", "medium"),
+            "02-spec": ("gpt-6.1-sol", "medium"),
+            "03-spec-challenge": ("gpt-6-astra", "high"),
+            "04-spec-change": ("gpt-6.1-sol", "medium"),
+            "05-plan": ("gpt-6-luna", "medium"),
+            "06-implement": ("gpt-6-luna", "medium"),
+            "07-review": ("gpt-6-luna", "medium"),
+            "08-refactor": ("gpt-6-luna", "medium"),
+            "09-verify": ("gpt-6-luna", "low"),
+            "10-accept": ("gpt-6.1-sol", "medium"),
+        }
+        for stage, (model, effort) in expected.items():
+            self.assertIn(f'model = "{model}"', self.agent(stage), stage)
+            self.assertIn(f'model_reasoning_effort = "{effort}"', self.agent(stage), stage)
         for runtime in (".cursor", ".claude", ".opencode"):
             outputs = list((self.root / runtime / "agents").glob("*.md"))
             self.assertEqual(len(outputs), 11)
             self.assertTrue(all("reasoning_effort" not in path.read_text() for path in outputs))
 
     def test_high_risk_review(self):
-        (self.root / "work/example/models.yaml").write_text("risk: HIGH\n")
-        result = self.generate(ASK_WORK_ID="example")
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('model = "gpt-6-astra"', self.agent("07-review"))
-        self.assertIn('model_reasoning_effort = "high"', self.agent("07-review"))
-        self.assertIn('model_reasoning_effort = "medium"', self.agent("06-implement"))
+        for risk in ("HIGH", "CRITICAL"):
+            (self.root / "work/example/models.yaml").write_text(f"risk: {risk}\n")
+            result = self.generate(ASK_WORK_ID="example")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('model = "gpt-6-astra"', self.agent("07-review"), risk)
+            self.assertIn('model_reasoning_effort = "high"', self.agent("07-review"), risk)
+            self.assertIn('model_reasoning_effort = "medium"', self.agent("06-implement"))
 
     def test_effort_precedence(self):
         (self.root / "_ask/bindings/models.yaml").write_text(

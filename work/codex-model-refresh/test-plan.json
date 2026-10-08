@@ -136,7 +136,7 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "Generated outputs exist and a work overlay has an invalid effort",
+          "given": "Generated outputs exist and an explicit effort override is invalid",
         "when": "Run the generator again",
         "then": [
           "Generation fails with a useful diagnostic and no output bytes change"
