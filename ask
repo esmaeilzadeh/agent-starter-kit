@@ -81,7 +81,7 @@ Commands:
   inner-loop validate|status|run|resume|cancel [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
 
-  model validate --work-id <work-id>
+  model {validate|admit|show} --work-id <work-id>
       Validate the Engineering Model and its canonical references.
 
   completion bash|zsh

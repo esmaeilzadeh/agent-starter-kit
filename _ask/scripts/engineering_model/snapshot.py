@@ -96,7 +96,10 @@ class Snapshot:
         return {"digest": hashlib.sha256(raw).hexdigest(), **identity}
 
     def diagnostics(self, root):
-        return validate(self.document, root, self.work_id, reference_bytes=self.files)
+        from .canonical import diagnostics
+        errors = validate(self.document, root, self.work_id, reference_bytes=self.files)
+        errors.extend(diagnostics(self))
+        return sorted(errors, key=lambda item: (item["path"], item["code"], item.get("ids", []), item["message"]))
 
 
 def capture(root, work_id, *, model_bytes=None):
@@ -141,6 +144,8 @@ def capture(root, work_id, *, model_bytes=None):
             linked_id = linked.get("work_id")
             if isinstance(linked_id, str) and SLUG.fullmatch(linked_id):
                 pending.add(f"specs/current/{linked_id}.json")
+                if linked.get("task_scopes"):
+                    pending.add(f"work/{linked_id}/inner-loop/tasks.yaml")
     return Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
 
 
