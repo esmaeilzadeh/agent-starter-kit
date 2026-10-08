@@ -19,6 +19,94 @@ from engineering_model.admission import admit, load_published
 
 
 class DocumentGuardTests(unittest.TestCase):
+    def test_atomic_node_edges_and_lifecycle_batch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            referenced_model(root)
+            base, errors = admit(root, "pilot")
+            self.assertEqual(errors, [])
+            result = edit(root, "pilot", base.identity["digest"], {"commands": [
+                {"op": "add_node", "node": {"id": "build", "type": "task", "title": "Build", "lifecycle": "planned"}},
+                {"op": "add_edge", "edge": {"type": "contains", "source": "purpose", "target": "build"}},
+                {"op": "add_edge", "edge": {"type": "depends_on", "source": "build", "target": "choice"}},
+            ]})
+            self.assertTrue(result["valid"], result)
+            snapshot = load_published(root, "pilot")
+            self.assertEqual(snapshot.document["revision"], 2)
+            self.assertEqual(snapshot.diagnostics(root), [])
+            old = snapshot.document
+            illegal = edit(root, "pilot", snapshot.identity["digest"], {"commands": [
+                {"op": "revise_node", "id": "build", "changes": {"id": "rename"}}]})
+            self.assertFalse(illegal["valid"])
+            self.assertEqual(load_published(root, "pilot").document, old)
+            # Lifecycle transitions are explicit, with a terminal retired state.
+            retired = edit(root, "pilot", snapshot.identity["digest"], {"commands": [
+                {"op": "revise_node", "id": "build", "changes": {"lifecycle": "retired"}}]})
+            self.assertTrue(retired["valid"], retired)
+            snapshot = load_published(root, "pilot")
+            resurrect = edit(root, "pilot", snapshot.identity["digest"], {"commands": [
+                {"op": "revise_node", "id": "build", "changes": {"lifecycle": "planned"}}]})
+            self.assertFalse(resurrect["valid"])
+            # Raw resolution/history fields cannot be smuggled through a generic
+            # node creation, even with otherwise well-formed lifecycle fields.
+            bad = edit(root, "pilot", snapshot.identity["digest"], {"commands": [
+                {"op": "add_node", "node": {"id": "new-choice", "type": "decision", "title": "Choice", "lifecycle": "open",
+                 "options": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}], "history": "bad"}}]})
+            self.assertFalse(bad["valid"])
+
+    def test_concurrent_multifile_publication_and_recovery(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            referenced_model(root)
+            base, _errors = admit(root, "pilot")
+            proposals = [{"commands": [{"op": "resolve_decision", "id": "choice", "option_id": option,
+                          "actor": "Developer", "rationale": "Coordinated batch"}],
+                          "files": {"specs/current/pilot.md": f"# Winner {option}\n"}} for option in ("one", "two")]
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                results = list(pool.map(lambda proposal: edit(root, "pilot", base.identity["digest"], proposal), proposals))
+            self.assertEqual(sum(result["valid"] for result in results), 1)
+            current = load_published(root, "pilot")
+            selected = next(n for n in current.document["nodes"] if n["id"] == "choice")["resolution"]["option_id"]
+            self.assertEqual(current.files["specs/current/pilot.md"], f"# Winner {selected}\n".encode())
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            referenced_model(root)
+            base, _errors = admit(root, "pilot")
+            # Kill the process after one real filesystem replacement. This is a
+            # system-boundary interruption, not a mock of guard collaborators.
+            script = """
+import json, os
+from pathlib import Path
+from engineering_model.actions import edit
+root = Path.cwd()
+replace = os.replace
+def interrupted(source, target):
+    replace(source, target)
+    if Path(target) == root / 'specs/current/pilot.md':
+        os._exit(86)
+os.replace = interrupted
+def proposal():
+    print('action-invoked', flush=True)
+    return {'commands': [{'op': 'resolve_decision', 'id': 'choice', 'option_id': 'one',
+                          'actor': 'Developer', 'rationale': 'Recovery test'}],
+            'files': {'specs/current/pilot.md': '# Complete recovered batch\\n'}}
+edit(root, 'pilot', os.environ['EXPECTED'], proposal)
+"""
+            environment = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / "scripts"), EXPECTED=base.identity["digest"])
+            crashed = subprocess.run([sys.executable, "-c", script], cwd=root, env=environment, capture_output=True, text=True)
+            self.assertEqual(crashed.returncode, 86, crashed.stderr)
+            self.assertEqual(crashed.stdout.count("action-invoked"), 1)
+            stable = load_published(root, "pilot")
+            self.assertEqual(stable.identity, base.identity)
+            self.assertEqual(stable.files["specs/current/pilot.md"], b"# Pilot specification\n")
+            recovered, errors = admit(root, "pilot")
+            self.assertEqual(errors, [], errors)
+            self.assertEqual(recovered.document["revision"], 2)
+            self.assertEqual(recovered.files["specs/current/pilot.md"], b"# Complete recovered batch\n")
+            self.assertEqual(load_published(root, "pilot").identity, recovered.identity)
+            self.assertFalse((root / "work/pilot/traceability/model-state/pending.json").exists())
+
     def test_public_mutators_cannot_bypass_admission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
