@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import sys
 
-from .validation import SLUG, validate
+from .validation import SLUG, snapshot_identity, validate
 
 
 def _unique_objects(pairs: list[tuple[str, object]]) -> dict:
@@ -43,17 +43,32 @@ def main(argv: list[str] | None = None) -> int:
     try:
         document = json.loads(raw, object_pairs_hook=_unique_objects)
         diagnostics = validate(document, root, args.work_id)
+        snapshot = snapshot_identity(document, root, args.work_id, raw)
     except (UnicodeError, ValueError) as exc:
         diagnostics = [{
             "code": "EM001_JSON",
             "path": str(path.relative_to(root)),
             "message": f"invalid JSON: {exc}",
         }]
+        snapshot = None
+    if snapshot is not None:
+        try:
+            current_raw = path.read_bytes()
+            current_snapshot = snapshot_identity(document, root, args.work_id, current_raw)
+        except OSError:
+            current_snapshot = None
+        if current_snapshot is None or current_snapshot["digest"] != snapshot["digest"]:
+            diagnostics.append({
+                "code": "EM007_INPUT_CHANGED",
+                "path": f"work/{args.work_id}/engineering-model.json",
+                "message": "model or referenced inputs changed while validation was running",
+            })
     result = {
         "schema": "ask-engineering-validation/v1",
         "work_id": args.work_id,
         "valid": not diagnostics,
         "diagnostics": diagnostics,
+        "snapshot": snapshot,
     }
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0 if not diagnostics else 1

@@ -6,6 +6,8 @@ one validator implementation.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from datetime import datetime, timezone
 from collections import defaultdict
@@ -13,6 +15,7 @@ from pathlib import Path, PureWindowsPath
 
 
 SCHEMA = "ask-engineering-model/v1"
+RULES_VERSION = "ask-engineering-validator-rules/v1"
 NODE_TYPES = {
     "intent", "requirement", "feature", "story", "scenario", "decision",
     "assumption", "task", "implementation", "test", "test_run", "risk",
@@ -226,6 +229,51 @@ def validate(document: object, root: str | Path, work_id: str) -> list[dict]:
     return errors
 
 
+def snapshot_identity(document: object, root: str | Path, work_id: str,
+                      model_bytes: bytes) -> dict:
+    """Bind the model and every referenced input to one content identity."""
+    repository = Path(root).resolve()
+    references: set[str] = set()
+    if isinstance(document, dict) and isinstance(document.get("nodes"), list):
+        for node in document["nodes"]:
+            reference = node.get("reference") if isinstance(node, dict) else None
+            raw_path = reference.get("path") if isinstance(reference, dict) else None
+            if isinstance(raw_path, str):
+                references.add(raw_path)
+    inputs = []
+    for relative in sorted(references):
+        logical = Path(relative)
+        if logical.is_absolute() or "\\" in relative or ".." in logical.parts:
+            inputs.append({"path": relative, "status": "unsafe"})
+            continue
+        try:
+            resolved = (repository / logical).resolve()
+        except (OSError, RuntimeError):
+            inputs.append({"path": relative, "status": "unresolvable"})
+            continue
+        if not resolved.is_relative_to(repository):
+            inputs.append({"path": relative, "status": "outside-repository"})
+            continue
+        try:
+            content = resolved.read_bytes()
+        except FileNotFoundError:
+            inputs.append({"path": relative, "status": "missing"})
+        except OSError:
+            inputs.append({"path": relative, "status": "unreadable"})
+        else:
+            inputs.append({"path": relative, "status": "present",
+                           "sha256": hashlib.sha256(content).hexdigest()})
+    model_path = f"work/{work_id}/engineering-model.json"
+    identity = {
+        "rules_version": RULES_VERSION,
+        "model": {"path": model_path, "sha256": hashlib.sha256(model_bytes).hexdigest()},
+        "inputs": inputs,
+    }
+    canonical = json.dumps(identity, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8")
+    return {"digest": hashlib.sha256(canonical).hexdigest(), **identity}
+
+
 def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
     errors: list[dict] = []
     options = node.get("options")
@@ -309,7 +357,11 @@ def _validate_reference(node: dict, node_path: str, node_id: str, node_type: str
         if not canonical_plan:
             errors.append(_diagnostic("EM001_CANONICAL_REFERENCE", f"{node_path}.reference.path", "test references must use a canonical workstream test plan", node_id))
     repository = Path(root).resolve()
-    resolved = (repository / raw_path).resolve()
+    try:
+        resolved = (repository / raw_path).resolve()
+    except (OSError, RuntimeError):
+        errors.append(_diagnostic("EM001_REFERENCE_PATH", f"{node_path}.reference.path", "reference path cannot be resolved safely", node_id))
+        return
     if not resolved.is_relative_to(repository):
         errors.append(_diagnostic("EM001_REFERENCE_PATH", f"{node_path}.reference.path", "reference path escapes the repository", node_id))
         return
