@@ -130,7 +130,7 @@ def recover_locked(root, work_id, state, *, validated=None):
             if not conflicts:
                 _clear_journal(state)
             raise Refused("EM007_RECOVERY_CONFLICT", "interrupted candidate is no longer valid/current")
-        if not _publish(state, candidate, root):
+        if not _publish(state, candidate, root, guarded_base=journal["base_digest"]):
             raise Refused("EM007_RECOVERY_CONFLICT", "inputs changed during recovery publication")
         _clear_journal(state)
     except (KeyError, TypeError, UnicodeError, ValueError) as exc:

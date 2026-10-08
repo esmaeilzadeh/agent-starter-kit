@@ -51,7 +51,69 @@ def _sync_directory(path):
         os.close(descriptor)
 
 
-def _publish(state, snapshot, root):
+def _is_digest(value):
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
+def _publication(state, identity):
+    if not _is_digest(identity):
+        raise ValueError("invalid publication identity")
+    raw = (state / "publications" / (identity + ".json")).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != identity:
+        raise ValueError("published provenance bytes have changed")
+    event = json.loads(raw)
+    if (event.get("schema") != "ask-engineering-publication/v1"
+            or event.get("kind") not in {"admission", "guarded-edit"}
+            or not _is_digest(event.get("result_digest"))
+            or (event.get("base_digest") is not None and not _is_digest(event["base_digest"]))
+            or (event.get("previous_publication") is not None and not _is_digest(event["previous_publication"]))):
+        raise ValueError("invalid publication provenance")
+    return event
+
+
+def _pointer(state):
+    try:
+        pointer = json.loads((state / "current.json").read_bytes())
+    except FileNotFoundError:
+        return None
+    if not isinstance(pointer, dict) or not _is_digest(pointer.get("generation")):
+        raise ValueError("invalid published generation pointer")
+    if "publication" in pointer:
+        event = _publication(state, pointer["publication"])
+        if event["result_digest"] != pointer["generation"]:
+            raise ValueError("publication does not identify selected generation")
+    return pointer
+
+
+def publication_identity(root, work_id):
+    """Verified cooperative provenance token; not authentication."""
+    pointer = _pointer(_state_directory(root, work_id))
+    return pointer.get("publication") if pointer is not None else None
+
+
+def guarded_publication_chain(root, work_id, base_digest, result_digest, *, base_publication):
+    """Prove all publications since a workflow boundary came from guarded edits.
+
+    The exact boundary token matters: comparing only endpoint digests would
+    overlook an unmanaged intermediate publication or an ABA change.
+    """
+    state = _state_directory(root, work_id)
+    pointer = _pointer(state)
+    if pointer is None or pointer["generation"] != result_digest or base_publication is None:
+        return False
+    selected, digest, seen = pointer.get("publication"), result_digest, set()
+    while selected != base_publication:
+        if selected is None or selected in seen:
+            return False
+        seen.add(selected)
+        event = _publication(state, selected)
+        if event["kind"] != "guarded-edit" or event["result_digest"] != digest:
+            return False
+        selected, digest = event["previous_publication"], event["base_digest"]
+    return digest == base_digest and _publication(state, selected)["result_digest"] == base_digest
+
+
+def _publish(state, snapshot, root, *, guarded_base=None):
     identity = snapshot.identity
     digest = identity["digest"]
     generations = state / "generations"
@@ -76,9 +138,29 @@ def _publish(state, snapshot, root):
     # Staging may take time. Recheck after it and immediately before publishing.
     if not is_current(snapshot, root):
         return False
+    previous = _pointer(state)
+    if previous is not None and previous["generation"] == digest and "publication" in previous:
+        return True
+    prior_digest = previous["generation"] if previous else None
+    event = {"schema": "ask-engineering-publication/v1",
+             "kind": "guarded-edit" if guarded_base is not None and guarded_base == prior_digest else "admission",
+             "base_digest": prior_digest, "result_digest": digest,
+             "previous_publication": previous.get("publication") if previous else None}
+    raw = json.dumps(event, sort_keys=True).encode()
+    publication = hashlib.sha256(raw).hexdigest()
+    publications = state / "publications"
+    publications.mkdir(exist_ok=True)
+    event_path = publications / (publication + ".json")
+    if event_path.exists():
+        _publication(state, publication)
+    else:
+        _durable_write(event_path, raw)
+        _sync_directory(publications)
+    if not is_current(snapshot, root):
+        return False
     descriptor, temporary = tempfile.mkstemp(prefix="pointer-", dir=state)
     with os.fdopen(descriptor, "wb") as stream:
-        stream.write(json.dumps({"generation": digest}, sort_keys=True).encode())
+        stream.write(json.dumps({"generation": digest, "publication": publication}, sort_keys=True).encode())
         stream.flush()
         os.fsync(stream.fileno())
     os.replace(temporary, state / "current.json")
@@ -89,14 +171,10 @@ def _publish(state, snapshot, root):
 def load_published(root, work_id):
     """Load and verify every byte from one pointer-selected generation."""
     state = _state_directory(root, work_id)
-    try:
-        pointer = json.loads((state / "current.json").read_bytes())
-    except FileNotFoundError:
+    pointer = _pointer(state)
+    if pointer is None:
         return None
-    digest = pointer.get("generation") if isinstance(pointer, dict) else None
-    if not isinstance(digest, str) or len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
-        raise ValueError("invalid published generation pointer")
-    return _load_generation(state, work_id, digest)
+    return _load_generation(state, work_id, pointer["generation"])
 
 
 def _load_generation(state, work_id, digest):
