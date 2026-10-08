@@ -39,6 +39,7 @@ class EntrypointTests(unittest.TestCase):
         self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,'--phase','red'))
         self.require_pass(c.command('traceability','record-review','w','--candidate-sha',c.sha,'--evidence','work/w/traceability/review-input.json','--recorded-by','fixture-coordinator'))
         self.require_pass(c.command('verify'))
+        self.assertTrue((c.root/'work/w/traceability/completion.json').exists(), 'Verify must produce criterion evidence')
         completion=json.loads((c.root/'work/w/traceability/completion.json').read_text())
         self.assertEqual(completion['status'],'pass');row=completion['criterion_evidence'][0]
         self.assertEqual({t['type'] for t in row['tests']},{'unit','e2e'})

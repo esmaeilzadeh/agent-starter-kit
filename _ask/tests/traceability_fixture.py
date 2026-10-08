@@ -32,6 +32,7 @@ class Consumer:
         if tasks:
             self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n')
             self.plan['task_scopes']=[{'task_id':'a','test_ids':['U','E']}]
+        self.write('work/w/plan.md','# Plan\nExecute explicit unit and separate-process CLI cases.\n')
         self.write('specs/current/w.json',self.spec);self.write('work/w/test-plan.json',self.plan)
         self.red_sha=self.commit('faulty implementation with behavior assertions')
         decision={'decision':'APPROVED','reviewer':'fixture-independent','spec_digest':digest(self.spec),'plan_digest':digest(self.plan)}

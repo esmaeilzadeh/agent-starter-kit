@@ -1,28 +1,24 @@
-EFFFF
+FFFFF
 ======================================================================
-ERROR: test_E01_public_red_review_verify_record_accept_journey (__main__.EntrypointTests)
+FAIL: test_E01_public_red_review_verify_record_accept_journey (__main__.EntrypointTests)
 ----------------------------------------------------------------------
 Traceback (most recent call last):
   File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 42, in test_E01_public_red_review_verify_record_accept_journey
-    completion=json.loads((c.root/'work/w/traceability/completion.json').read_text())
-  File "/usr/lib/python3.10/pathlib.py", line 1134, in read_text
-    with self.open(mode='r', encoding=encoding, errors=errors) as f:
-  File "/usr/lib/python3.10/pathlib.py", line 1119, in open
-    return self._accessor.open(self, mode, buffering, encoding, errors,
-FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpxn7ng7sa/work/w/traceability/completion.json'
+    self.assertTrue((c.root/'work/w/traceability/completion.json').exists(), 'Verify must produce criterion evidence')
+AssertionError: False is not true : Verify must produce criterion evidence
 
 ======================================================================
 FAIL: test_E02_omitted_e2e_names_missing_case_and_never_records_pass (__main__.EntrypointTests)
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 49, in test_E02_omitted_e2e_names_missing_case_and_never_records_pass
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 50, in test_E02_omitted_e2e_names_missing_case_and_never_records_pass
     c=self.consumer(omit_e2e=True);self.require_fail(c.command('verify'))
   File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 12, in require_fail
     def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
 AssertionError: 0 == 0 : verify: running: python3 -c 'import app'
 {
   "schema": "ask-verify-result/v1",
-  "commit_sha": "5a58b8f447e140a06d278e1df4e9d8afded604b1",
+  "commit_sha": "46b37050cf1cd3e14b5d6c4e69135fe5f0e47d65",
   "result": "pass",
   "checks": [
     {
@@ -35,7 +31,7 @@ AssertionError: 0 == 0 : verify: running: python3 -c 'import app'
     }
   ]
 }
-verify: commit_sha=5a58b8f447e140a06d278e1df4e9d8afded604b1
+verify: commit_sha=46b37050cf1cd3e14b5d6c4e69135fe5f0e47d65
 
 
 ======================================================================
@@ -49,7 +45,7 @@ Traceback (most recent call last):
 AssertionError: 0 == 0 : verify: running: python3 -c 'import app'
 {
   "schema": "ask-verify-result/v1",
-  "commit_sha": "6e8e22226e97293a2c3725e05e271da55ece18df",
+  "commit_sha": "b46028a412e1edeceb297cc5d0c5bbabfbc14a4b",
   "result": "pass",
   "checks": [
     {
@@ -62,7 +58,7 @@ AssertionError: 0 == 0 : verify: running: python3 -c 'import app'
     }
   ]
 }
-verify: commit_sha=6e8e22226e97293a2c3725e05e271da55ece18df
+verify: commit_sha=b46028a412e1edeceb297cc5d0c5bbabfbc14a4b
 
 
 ======================================================================
@@ -73,7 +69,7 @@ Traceback (most recent call last):
     self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
   File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_entrypoints.py", line 12, in require_fail
     def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
-AssertionError: 0 == 0 : record-result: wrote w @ 74d780f51607fafbb21d6929609228bc71e703eb -> work/w/result.json
+AssertionError: 0 == 0 : record-result: wrote w @ 1b8070001553d0bff4eb4609842bf12172bcb8c9 -> work/w/result.json
 
 
 ======================================================================
@@ -88,6 +84,6 @@ AssertionError: 2 != 0 : unknown arg: --acceptance
 
 
 ----------------------------------------------------------------------
-Ran 5 tests in 4.408s
+Ran 5 tests in 4.347s
 
-FAILED (failures=4, errors=1)
+FAILED (failures=5)
