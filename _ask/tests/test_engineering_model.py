@@ -14,6 +14,47 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from engineering_model.validation import validate
 from engineering_model.__main__ import main
 from engineering_fixture import decision_model, referenced_model, write_json
+from engineering_model.domain import apply_batch
+
+
+class ModelEditTests(unittest.TestCase):
+    def test_decision_history_and_dependency_propagation(self):
+        model = decision_model()
+        model["nodes"].extend([
+            {"id": "build", "type": "task", "title": "Build", "lifecycle": "planned"},
+            {"id": "assumption", "type": "assumption", "title": "Assumption", "lifecycle": "unverified"},
+        ])
+        model["edges"].extend([
+            {"type": "contains", "source": "purpose", "target": "build"},
+            {"type": "contains", "source": "purpose", "target": "assumption"},
+            {"type": "depends_on", "source": "build", "target": "choice"},
+            {"type": "depends_on", "source": "build", "target": "assumption"},
+        ])
+        original = copy.deepcopy(model)
+        resolved = apply_batch(model, [{"op": "resolve_decision", "id": "choice", "option_id": "two",
+                                        "actor": "Developer", "rationale": "Measured fit"}],
+                               timestamp="2026-10-08T12:00:00Z")
+        self.assertTrue(resolved["valid"], resolved)
+        self.assertEqual(model, original)
+        choice = next(n for n in resolved["model"]["nodes"] if n["id"] == "choice")
+        self.assertEqual(choice["lifecycle"], "resolved")
+        self.assertEqual(choice["resolution"], {"option_id": "two", "actor": "Developer",
+                                              "rationale": "Measured fit", "timestamp": "2026-10-08T12:00:00Z"})
+        self.assertEqual(resolved["model"]["revision"], 2)
+        reopened = apply_batch(resolved["model"], [{"op": "reopen_decision", "id": "choice",
+                                                   "actor": "Developer", "rationale": "New measurements"}],
+                               timestamp="2026-10-08T12:01:00Z")
+        self.assertTrue(reopened["valid"], reopened)
+        choice = next(n for n in reopened["model"]["nodes"] if n["id"] == "choice")
+        self.assertEqual(choice["lifecycle"], "open")
+        self.assertNotIn("resolution", choice)
+        self.assertTrue(any(h.get("resolution", {}).get("option_id") == "two" for h in choice["history"]))
+        changed = apply_batch(reopened["model"], [{"op": "revise_node", "id": "choice",
+                                                  "changes": {"options": [{"id": "one", "label": "First revised"},
+                                                                          {"id": "two", "label": "Second revised"}]}}])
+        self.assertTrue(changed["valid"], changed)
+        self.assertTrue(any(h.get("options", [{}])[0].get("label") == "First"
+                            for h in next(n for n in changed["model"]["nodes"] if n["id"] == "choice")["history"]))
 
 
 class ModelValidationTests(unittest.TestCase):
