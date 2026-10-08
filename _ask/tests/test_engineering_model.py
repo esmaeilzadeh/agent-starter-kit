@@ -13,11 +13,63 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from engineering_model.validation import validate
 from engineering_model.__main__ import main
-from engineering_fixture import decision_model, referenced_model, write_json
+from engineering_fixture import decision_model, referenced_model, write_json, model_command
+from concurrent.futures import ThreadPoolExecutor
 from engineering_model.domain import apply_batch
 
 
 class ModelEditTests(unittest.TestCase):
+    def test_invalid_and_stale_edits_preserve_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, _spec = referenced_model(root)
+            receipt = json.loads(model_command(root, "admit", "--work-id", "pilot").stdout)
+            identity = receipt["snapshot"]["digest"]
+            path = root / "work/pilot/engineering-model.json"
+            before = path.read_bytes()
+            resolved_node = {"id": "raw-choice", "type": "decision", "title": "Raw resolution", "lifecycle": "resolved",
+                             "options": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}],
+                             "resolution": {"option_id": "a", "actor": "Developer", "rationale": "Bypass",
+                                            "timestamp": "2026-10-08T12:00:00Z"}, "history": []}
+            invalid = [
+                {"op": "add_node", "node": resolved_node},
+                {"op": "revise_node", "id": "choice", "changes": {"id": "rename"}},
+                {"op": "revise_node", "id": "choice", "changes": {"type": "task"}},
+                {"op": "resolve_decision", "id": "choice", "option_id": "missing", "actor": "Developer", "rationale": "Reason"},
+                {"op": "resolve_decision", "id": "choice", "option_id": "one", "actor": " ", "rationale": "Reason"},
+            ]
+            for command in invalid:
+                batch = write_json(root, "proposal.json", {"commands": [command]})
+                refused = model_command(root, "edit", "--work-id", "pilot", "--expected", identity, "--batch", str(batch))
+                self.assertEqual(refused.returncode, 1, f"accepted invalid command: {command}")
+                self.assertTrue(json.loads(refused.stdout)["diagnostics"])
+                self.assertEqual(path.read_bytes(), before)
+            (root / "specs/current/pilot.md").write_text("# Concurrent amendment\n", encoding="utf-8")
+            batch = write_json(root, "proposal.json", {"commands": [{"op": "resolve_decision", "id": "choice",
+                                "option_id": "one", "actor": "Developer", "rationale": "Reason"}]})
+            refused = model_command(root, "edit", "--work-id", "pilot", "--expected", identity, "--batch", str(batch))
+            self.assertEqual(refused.returncode, 1, refused.stderr)
+            self.assertIn("EM007_STALE_INPUT", {e["code"] for e in json.loads(refused.stdout)["diagnostics"]})
+            self.assertEqual(path.read_bytes(), before)
+
+    def test_concurrent_compare_and_swap(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            referenced_model(root)
+            receipt = json.loads(model_command(root, "admit", "--work-id", "pilot").stdout)
+            identity = receipt["snapshot"]["digest"]
+            paths = [write_json(root, f"proposal-{option}.json", {"commands": [{"op": "resolve_decision", "id": "choice",
+                       "option_id": option, "actor": "Developer", "rationale": "Competing proposal"}]}) for option in ("one", "two")]
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                attempts = list(pool.map(lambda p: model_command(root, "edit", "--work-id", "pilot", "--expected", identity,
+                                                                  "--batch", str(p)), paths))
+            self.assertEqual(sorted(p.returncode for p in attempts), [0, 1])
+            loser = next(json.loads(p.stdout) for p in attempts if p.returncode)
+            self.assertIn("EM007_STALE_INPUT", {e["code"] for e in loser["diagnostics"]})
+            shown = json.loads(model_command(root, "show", "--work-id", "pilot").stdout)
+            self.assertEqual(shown["model"]["revision"], 2)
+            self.assertEqual(next(n for n in shown["model"]["nodes"] if n["id"] == "choice")["lifecycle"], "resolved")
+
     def test_revise_invalidates_transitive_decisions(self):
         model = decision_model()
         model = apply_batch(model, [{"op": "resolve_decision", "id": "choice", "option_id": "one",
