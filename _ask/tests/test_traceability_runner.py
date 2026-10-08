@@ -36,6 +36,7 @@ class RunnerTests(unittest.TestCase):
 
     def test_I02_red_and_green_retain_real_case_revision_and_log(self):
         red=self.run_at(self.red,'red')
+        self.assertTrue(red['cases'], 'Red must contain the executed behavior case')
         self.write("import unittest\nclass Cases(unittest.TestCase):\n def test_behavior(self): self.assertEqual(1, 1)\n def test_skip(self): self.skipTest('unavailable')\n def test_error(self): raise RuntimeError('setup')\n")
         green_sha=self.commit();green=self.run_at(green_sha)
         a=next(c for c in red['cases'] if c['test_id']=='behavior');b=next(c for c in green['cases'] if c['test_id']=='behavior')
