@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
+from engineering_model.workflow import branch_work_id, validate_candidate, workflow_admission
 
 
 class Forbidden(RuntimeError):
@@ -16,15 +17,26 @@ def _run(root: Path, args: list[str], check: bool = True) -> subprocess.Complete
     return subprocess.run(args, cwd=root, check=check, capture_output=True, text=True)
 
 
-def integrate(root: Path, task_ref: str, method: str = "ff-only") -> str:
+def integrate(root: Path, task_ref: str, method: str = "ff-only", *, work_id=None) -> str:
+    with workflow_admission(root, work_id or branch_work_id(root)):
+        return _integrate(root, task_ref, method, work_id or branch_work_id(root))
+
+
+def _integrate(root: Path, task_ref: str, method: str, work_id) -> str:
     if method != "ff-only":
         raise Forbidden(f"{method} onto coordinator is forbidden")
-    _run(root, ["git", "merge", "--ff-only", task_ref])
+    candidate = validate_candidate(root, work_id, task_ref)
+    _run(root, ["git", "merge", "--ff-only", candidate])
     sha = _run(root, ["git", "rev-parse", "HEAD"]).stdout.strip()
     return sha
 
 
-def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = None) -> str:
+def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = None, *, work_id=None) -> str:
+    with workflow_admission(root, work_id or branch_work_id(root)):
+        return _resume(root, coordinator_sha, preserve_paths, work_id or branch_work_id(root))
+
+
+def _resume(root: Path, coordinator_sha: str, preserve_paths, work_id) -> str:
     porcelain = _run(root, ["git", "status", "--porcelain"]).stdout
     git_dir = Path(_run(root, ["git", "rev-parse", "--git-dir"]).stdout.strip())
     if not git_dir.is_absolute():
@@ -35,6 +47,7 @@ def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = 
     anc = _run(root, ["git", "merge-base", "--is-ancestor", coordinator_sha, "HEAD"], check=False)
     if anc.returncode != 0:
         raise Escalate("cannot abort to coordinator_sha; not an ancestor of HEAD")
+    validate_candidate(root, work_id, coordinator_sha)
     if preserve_paths:
         # Abort protocol work without letting a global reset rewind/remove the
         # tracked runtime state currently protected by the coordinator lock.

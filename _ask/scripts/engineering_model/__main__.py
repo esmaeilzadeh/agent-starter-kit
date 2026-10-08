@@ -5,6 +5,7 @@ import argparse
 import json
 from pathlib import Path
 import sys
+import subprocess
 
 from .validation import SLUG
 from .admission import admit, load_published, validate_current
@@ -21,6 +22,8 @@ def main(argv: list[str] | None = None) -> int:
     admit_parser = commands.add_parser("admit", help="admit current documents to a validated generation (not workflow authorization)")
     admit_parser.add_argument("--work-id", required=True)
     admit_parser.add_argument("--expected", help="refuse if the complete input digest has changed")
+    admit_parser.add_argument("--action", help="label a cooperating implementation or review action")
+    admit_parser.add_argument("action_command", nargs=argparse.REMAINDER, help="action argv after -- (no shell)")
     show_parser = commands.add_parser("show", help="read a validated generation; invalid working inputs are noneditable")
     show_parser.add_argument("--work-id", required=True)
     edit_parser = commands.add_parser("edit", help="stage and validate a document change batch")
@@ -35,6 +38,26 @@ def main(argv: list[str] | None = None) -> int:
     root = Path.cwd().resolve()
     if not SLUG.fullmatch(args.work_id):
         parser.error("--work-id must be a lowercase hyphenated slug")
+    if args.command == "admit" and (args.action or args.action_command):
+        if not args.action or not args.action_command:
+            parser.error("--action requires an action command after --")
+        action_command = args.action_command
+        if action_command[0] == "--":
+            action_command = action_command[1:]
+        if not action_command:
+            parser.error("action command cannot be empty")
+        from .workflow import workflow_admission
+        try:
+            with workflow_admission(root, args.work_id, args.expected) as admitted:
+                if admitted is None:
+                    raise ValueError("action requires an adopted Engineering Model")
+                process = subprocess.run(action_command, cwd=root)
+            return process.returncode if process.returncode >= 0 else 1
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            diagnostics = getattr(exc, "diagnostics", [getattr(exc, "diagnostic", {
+                "code": "EM007_ACTION", "path": "$", "message": str(exc)})])
+            print(json.dumps({"valid": False, "diagnostics": diagnostics}), file=sys.stderr)
+            return 1
     if args.command == "watch":
         from .observer import updates
         try:

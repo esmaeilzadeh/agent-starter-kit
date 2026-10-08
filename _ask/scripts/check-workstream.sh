@@ -21,6 +21,17 @@ for arg in "$@"; do
   esac
 done
 
+# Document refusal must precede branch/cleanliness/completion-policy refusals.
+if [[ -f "$ROOT/_ask/scripts/engineering_model/workflow.py" ]]; then
+  PYTHONPATH="$ROOT/_ask/scripts${PYTHONPATH:+:$PYTHONPATH}" \
+    python3 -m engineering_model.workflow --root "$ROOT" --work-id "$WORK_ID"
+elif [[ -e "work/$WORK_ID/engineering-model.json" || -L "work/$WORK_ID/engineering-model.json" || \
+        -e "work/$WORK_ID/traceability/model-state/current.json" || -L "work/$WORK_ID/traceability/model-state/current.json" ]] || \
+     git cat-file -e "HEAD:work/$WORK_ID/engineering-model.json" 2>/dev/null; then
+  echo 'EM007_ADMISSION: adopted work requires the shared document workflow module' >&2
+  exit 1
+fi
+
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 EXPECTED="agent/${WORK_ID}"
 if [[ "$BRANCH" != "$EXPECTED" ]]; then
