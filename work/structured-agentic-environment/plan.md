@@ -49,11 +49,27 @@ Connect managed spec saves and workflow-action admission to the guard for the ad
 
 Exit: tests prove pre-check prevents action invocation; post-check prevents invalid publication; linked-spec-only changes invalidate results; concurrent/crashed multi-file changes never expose mixed state; observer/startup/freshness checks cannot reuse stale validation. Rebenchmark complete pre/post actions.
 
+Guarded entry points for the adopted pilot:
+
+| Entry point | Required integration |
+| --- | --- |
+| Proposed `./ask model edit` | Spec-file change batches, atomic node-plus-required-edge creation, graph/lifecycle changes and decision actions all share one pre/action/post/publication path. |
+| Proposed `./ask model admit` | Admit coordinator implementation/review actions from a validated snapshot; verify resulting state before publishing their document changes. This does not authorize otherwise forbidden actions. |
+| `./ask inner-loop run/resume` and integration | Check document admission around the adopted workstream's action execution and candidate publication; preserve existing single-writer/task/evidence rules. |
+| `./ask verify`, result-pass recording, acceptance check | Invoke the same document guard alongside existing checks, with no caller flag or direct command bypass. |
+| Proposed `./ask model watch/validate/show/ui` | Public observer and startup/read admission detect external changes and stale identities; readers use validated generations, not domain rules embedded in UI code. |
+
+Include a successful public guard journey asserting exact once-only pre/action/post/publication order and captured input/result identities. Also exercise every state-changing entry point directly against invalid/stale state. Read-only navigation is admission to validated data, not an extra semantic mutation. Raw filesystem writes remain untrusted working changes until admitted.
+
 ### 4. Add semantic work and evidence projections
 
 Add attributable decision resolution/reopening, semantic revisions, dependency invalidation/history, and derived task blockers/attention through the guard. Add controlled node/edge creation without raw consumer-side JSON editing.
 
+Create nodes and mandatory edges in one batch. Keep IDs/types stable; explicitly define allowed lifecycle transitions. Options edit only on an open decision, with prior choice/options retained in resolution history. Test rejected/retired assumptions and retired decisions as blocking prerequisites. Test upstream decision changes and newly added/removed dependencies reopening dependent resolutions transitively; no retired object silently unblocks work. Declared task lifecycle remains distinct from proved completion.
+
 Project identical IDs, references and snapshot identity into machine JSON and deterministic Markdown. Inspect canonical scenario Given/When/Then, mapped assertions/cases, implementation references and actual evidence provenance. Reuse existing traceability evaluation read-only. Missing local authority, missing/altered evidence and historical candidates remain explicit; no link or cached pass field grants current completion.
+
+Share the complete nonmutating evaluation path from the existing completion module, including static receipt/CheckPlan identity, runner identity and all log digests. Normal completion commands retain their current-candidate/source-cleanliness rules and report writing. Historical inspection binds checks to that candidate's revision. Tests tamper behavior and static logs/receipts and remove accepted authority; assert artifacts/refs stay unchanged during inspection. Do not call a report-writing operation from the projection or duplicate a partial evaluator.
 
 Create a bounded pilot using completed harness-review evidence plus a visibly labeled future-work decision, never an invented historical blocker.
 
@@ -66,6 +82,8 @@ Use a small native Streamlit workbench: work navigation, scenario/assertion/test
 Decision submission calls the shared guard and retains the state identity originally displayed, including referenced specs. Incomplete input or concurrent edits produce action feedback; the UI does not implement domain validation or repair. A valid choice persists, shows its task consequence and survives a new session.
 
 Exit: Streamlit integration plus a real two-session browser journey prove inspection, persisted decision→task consequence→reload, and stale-form rejection. Broken-document tests remain at document admission, not in UI business logic. No persistent preview server without asking.
+
+Include a valid referenced-spec amendment (with required linked-definition metadata updates) while model bytes and the selected open decision remain unchanged. Rerun must retain the originally displayed identity; submission rejects without writes, and explicit refresh then permits the valid choice. This distinguishes real input freshness protection from rejecting an already-resolved decision. Inspection covers both missing and historical evidence.
 
 ### 6. Independently review, verify and hand off
 

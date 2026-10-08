@@ -1,12 +1,13 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "structured-agentic-environment",
-  "spec_digest": "8e612c7703a6c986cbee353033ff7bf8cd6173f047f4dc10b00d881b5874b664",
+  "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
   "obligations": [
     {
       "criterion_id": "EM-001",
       "required_types": [
-        "unit"
+        "unit",
+        "integration"
       ]
     },
     {
@@ -146,7 +147,7 @@
       "criterion_ids": [
         "EM-001"
       ],
-      "type": "unit",
+      "type": "integration",
       "change_kind": "new",
       "scenario": {
         "given": "Escaping paths, symlink escape and unknown canonical ID",
@@ -178,17 +179,17 @@
       "type": "unit",
       "change_kind": "new",
       "scenario": {
-        "given": "Decision plus directly and transitively dependent tasks",
-        "when": "Resolve then reopen through shared interface",
+        "given": "An open decision with directly/transitively dependent tasks and other lifecycle variants",
+        "when": "Resolve/reopen decisions and revise prerequisite assumption/retirement states",
         "then": [
-          "Choice/actor/reason/history persist and derived blockers change"
+          "Choice/actor/reason/options history persist; only resolved decisions/confirmed assumptions/done tasks satisfy prerequisites, while rejected/retired dependencies block"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-002",
           "checks": [
-            "Choice/actor/reason/history persist and derived blockers change"
+            "Choice/actor/reason/options history persist; only resolved decisions/confirmed assumptions/done tasks satisfy prerequisites, while rejected/retired dependencies block"
           ]
         }
       ],
@@ -207,17 +208,17 @@
       "type": "unit",
       "change_kind": "new",
       "scenario": {
-        "given": "Resolved decisions transitively depend on a feature",
-        "when": "Revise feature semantics",
+        "given": "Resolved decision chains depend on a feature and upstream decision",
+        "when": "Revise feature or upstream decision, then add/remove dependencies",
         "then": [
-          "Both decisions reopen with invalidation history; task blocks"
+          "Affected resolved decisions reopen transitively with retained prior history; downstream work remains blocked until explicit valid resolution"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-002",
           "checks": [
-            "Both decisions reopen with invalidation history; task blocks"
+            "Affected resolved decisions reopen transitively with retained prior history; downstream work remains blocked until explicit valid resolution"
           ]
         }
       ],
@@ -294,17 +295,17 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "Disposable coordinator executes real red/green and records review",
-        "when": "Inspect, tamper cached pass and log, inspect again",
+        "given": "Disposable coordinator records real red/green, semantic review and static CheckPlan receipts",
+        "when": "Inspect, tamper behavior/static logs and receipts/runner identity, remove accepted authority, then inspect again",
         "then": [
-          "Actual assertions/outcomes and provenance shown, tampering rejected and no projection writes"
+          "The complete shared evaluator rejects tampering/missing authority and shows actual assertions/outcomes/provenance without changing artifacts or refs"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-003",
           "checks": [
-            "Actual assertions/outcomes and provenance shown, tampering rejected and no projection writes"
+            "The complete shared evaluator rejects tampering/missing authority and shows actual assertions/outcomes/provenance without changing artifacts or refs"
           ]
         }
       ],
@@ -424,17 +425,17 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "Valid local work with missing run evidence",
-        "when": "AppTest navigates scenario",
+        "given": "Valid snapshots reference missing and historical evidence",
+        "when": "AppTest navigates scenario and its actual evidence variants",
         "then": [
-          "Canonical assertion/case identity and missing evidence visible"
+          "Canonical assertion/case identity and explicit missing/historical provenance are visible without UI domain validation"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-005",
           "checks": [
-            "Canonical assertion/case identity and missing evidence visible"
+            "Canonical assertion/case identity and explicit missing/historical provenance are visible without UI domain validation"
           ]
         }
       ],
@@ -482,17 +483,17 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "Invalid form then another writer changes the displayed model",
-        "when": "Submit without rationale and with stale displayed digest",
+        "given": "An open decision/form and invalid user input, then a valid linked-spec amendment with unchanged model/decision",
+        "when": "Reject incomplete input; rerun and submit using old identity; explicitly refresh and resubmit",
         "then": [
-          "Both reject with useful errors and no overwrite"
+          "Incomplete and linked-spec-stale submissions reject without writes; explicit refresh allows the valid choice, not merely lifecycle rejection"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-006",
           "checks": [
-            "Both reject with useful errors and no overwrite"
+            "Incomplete and linked-spec-stale submissions reject without writes; explicit refresh allows the valid choice, not merely lifecycle rejection"
           ]
         }
       ],
@@ -512,23 +513,23 @@
       "type": "e2e",
       "change_kind": "new",
       "scenario": {
-        "given": "Temporary local server and two independent browser sessions",
-        "when": "Inspect evidence, resolve/reload decision, then submit other session's stale form",
+        "given": "Temporary local server, two browser sessions and valid referenced-spec amendment with unchanged model/open decision",
+        "when": "Inspect historical/missing evidence, change linked spec, rerun/submit stale session, refresh then resolve and reload",
         "then": [
-          "Real browser displays provenance, persists task consequence and rejects stale form"
+          "Actual browser shows assertions/provenance, refuses the spec-only stale identity without writes, then persists the refreshed choice and task consequence across reload"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-005",
           "checks": [
-            "Real browser displays provenance, persists task consequence and rejects stale form"
+            "Actual browser shows assertions/provenance, refuses the spec-only stale identity without writes, then persists the refreshed choice and task consequence across reload"
           ]
         },
         {
           "criterion_id": "EM-006",
           "checks": [
-            "Real browser displays provenance, persists task consequence and rejects stale form"
+            "Actual browser shows assertions/provenance, refuses the spec-only stale identity without writes, then persists the refreshed choice and task consequence across reload"
           ]
         }
       ],
@@ -634,17 +635,17 @@
       "type": "e2e",
       "change_kind": "new",
       "scenario": {
-        "given": "A validated repository and document-layer save observer",
-        "when": "Save specs externally, then miss an event and attempt an action/read",
+        "given": "A validated repository and public document save observer",
+        "when": "Use public watch/CLI entry points for external saves, then miss an event and attempt public admission/read",
         "then": [
-          "Each save triggers validation and entry freshness checks reject missed-event stale state without invoking the action"
+          "Each save triggers validation and public entry freshness rejects missed-event stale inputs without invoking the action"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-007",
           "checks": [
-            "Each save triggers validation and entry freshness checks reject missed-event stale state without invoking the action"
+            "Each save triggers validation and public entry freshness rejects missed-event stale inputs without invoking the action"
           ]
         }
       ],
@@ -721,22 +722,123 @@
       "type": "e2e",
       "change_kind": "new",
       "scenario": {
-        "given": "An existing repository with valid or broken definitions",
-        "when": "Run document admission before any consumer/action starts",
+        "given": "Existing valid or broken definitions without a validation identity",
+        "when": "Invoke public document launcher/CLI admission before consumers/actions start",
         "then": [
-          "Valid inputs acquire a current validated identity; invalid initial state stops admission without UI repair logic"
+          "Only valid inputs acquire current validated admission; broken initial state blocks launch/actions without UI repair rules"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-007",
           "checks": [
-            "Valid inputs acquire a current validated identity; invalid initial state stops admission without UI repair logic"
+            "Only valid inputs acquire current validated admission; broken initial state blocks launch/actions without UI repair rules"
           ]
         }
       ],
       "runner_id": "engineering-model",
       "case_id": "test_engineering_guard.DocumentGuardTests.test_bootstrap_admits_only_validated_state",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "ME-batch",
+      "criterion_ids": [
+        "EM-001",
+        "EM-002",
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A valid typed graph with mandatory parent/coverage edges",
+        "when": "Submit coordinated node/edge creation and lifecycle/options edits as one public change batch",
+        "then": [
+          "Valid batch publishes once without orphan intermediates; orphaned or forbidden lifecycle/options changes preserve the stable generation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Valid batch publishes once without orphan intermediates; orphaned or forbidden lifecycle/options changes preserve the stable generation"
+          ]
+        },
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Valid batch publishes once without orphan intermediates; orphaned or forbidden lifecycle/options changes preserve the stable generation"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Valid batch publishes once without orphan intermediates; orphaned or forbidden lifecycle/options changes preserve the stable generation"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_atomic_node_edges_and_lifecycle_batch",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-success",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A current validated document snapshot and valid public action",
+        "when": "Invoke one managed public edit/action journey",
+        "then": [
+          "Exactly one pre-validation, action, post-validation and publication occur in order, bound to captured base/result identities"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Exactly one pre-validation, action, post-validation and publication occur in order, bound to captured base/result identities"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_successful_guard_order_and_identities",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-entrypoints",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The enumerated model-edit, coordinator, inner-loop and verification/result/acceptance entry points",
+        "when": "Call each public state-changing entry point with invalid or stale document admission",
+        "then": [
+          "Each refuses before action invocation/publication through the shared guard without weakening existing completion or authority checks"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Each refuses before action invocation/publication through the shared guard without weakening existing completion or authority checks"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_public_mutators_cannot_bypass_admission",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py",
         "_ask/tests/engineering_fixture.py"
