@@ -66,7 +66,8 @@ class EvidenceTests(unittest.TestCase):
         pin=copy.deepcopy(self.c.contracts['pin']);pin.update(contract_sha=contract_sha,plan_digest=digest(self.c.plan))
         pin['plan_review']['plan_digest']=pin['plan_digest'];pin['plan_review_digest']=digest(pin['plan_review'])
         self.c.write('work/w/traceability-accepted.json',pin);candidate=self.c.commit('candidate replaces authority document')
-        with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
+        with self.subTest('coordinator authority'):
+            with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
         # Unit task can pass while another task's E2E in the same runner still fails.
         c=Consumer(tasks='split',split_failure=True);self.addCleanup(c.close)
         from verification.traceability.adapters import run_tests
