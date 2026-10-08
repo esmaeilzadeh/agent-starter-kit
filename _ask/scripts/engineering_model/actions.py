@@ -1,0 +1,203 @@
+"""Single-writer staged document actions and recoverable working-file projection.
+
+The generation pointer is the authority, not independent working-file renames.
+A durable journal permits forward recovery without executing an action twice.
+Conflicting external writes are preserved and block admission.
+"""
+import base64
+import hashlib
+import json
+import os
+from pathlib import Path
+import tempfile
+
+from .admission import (_durable_write, _publish, _state_directory, _sync_directory,
+                        _writer, load_published, validate_current)
+from .snapshot import capture, is_current, read_input, safe_relative
+
+
+class Refused(ValueError):
+    def __init__(self, code, message, path="$"):
+        super().__init__(message)
+        self.diagnostic = {"code": code, "message": message, "path": path}
+
+
+def _encoded(raw):
+    return base64.b64encode(raw).decode() if raw is not None else None
+
+
+def _decoded(value):
+    return base64.b64decode(value, validate=True) if value is not None else None
+
+
+def _signature(status, raw):
+    return {"status": status, "sha256": hashlib.sha256(raw).hexdigest() if raw is not None else None}
+
+
+def _write_target(root, relative, raw):
+    if not safe_relative(relative):
+        raise Refused("EM007_UNSAFE_CHANGE", "unsafe change path", relative)
+    path = root / relative
+    for parent in (path, *path.parents):
+        if parent == root:
+            break
+        if parent.is_symlink():
+            raise Refused("EM007_UNSAFE_CHANGE", "managed changes cannot replace symlink paths", relative)
+    if raw is None:
+        path.unlink(missing_ok=True)
+        if path.parent.exists():
+            _sync_directory(path.parent)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, staged = tempfile.mkstemp(prefix=".ask-document-", dir=path.parent)
+    with os.fdopen(descriptor, "wb") as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(staged, path)
+    _sync_directory(path.parent)
+
+
+def _clear_journal(state):
+    (state / "pending.json").unlink()
+    _sync_directory(state)
+
+
+def _observe(root, snapshot, changes, candidate):
+    observations = {path: _signature(snapshot.statuses[path], raw)
+                    for path, raw in snapshot.files.items() if path not in changes}
+    for path, raw in candidate.files.items():
+        if path not in changes:
+            observations[path] = _signature(candidate.statuses[path], raw)
+    return observations
+
+
+def _observations_current(root, observations):
+    return all(_signature(*read_input(root, path)) == signature
+               for path, signature in observations.items())
+
+
+def _rollback(root, journal):
+    """Restore only our known bytes; never overwrite a conflicting external save."""
+    conflicts = []
+    for path, record in journal["changes"].items():
+        status, current = read_input(root, path)
+        before, after = _decoded(record["before"]), _decoded(record["after"])
+        if current == after and status in ("present", "missing"):
+            _write_target(root, path, before)
+        elif current != before or status not in ("present", "missing"):
+            conflicts.append(path)
+    return conflicts
+
+
+def recover_locked(root, work_id, state):
+    """Resume a journal under the writer lock; no semantic action is re-invoked."""
+    path = state / "pending.json"
+    if not path.exists():
+        return
+    try:
+        journal = json.loads(path.read_bytes())
+        if journal.get("schema") != "ask-document-transaction/v1" or journal.get("work_id") != work_id:
+            raise ValueError("invalid document transaction journal")
+        published = load_published(root, work_id)
+        pointer = published.identity["digest"] if published is not None else None
+        if pointer == journal["result_digest"]:
+            _clear_journal(state)
+            return
+        if pointer != journal["base_generation"]:
+            raise Refused("EM007_RECOVERY_CONFLICT", "published generation changed during interrupted action")
+        if not _observations_current(root, journal["observations"]):
+            conflicts = _rollback(root, journal)
+            if not conflicts:
+                _clear_journal(state)
+            raise Refused("EM007_RECOVERY_CONFLICT", "external input changed during interrupted action")
+        for relative, record in journal["changes"].items():
+            status, raw = read_input(root, relative)
+            before, after = _decoded(record["before"]), _decoded(record["after"])
+            if status not in ("present", "missing") or raw not in (before, after):
+                raise Refused("EM007_RECOVERY_CONFLICT", "external save conflicts with interrupted action", relative)
+        for relative, record in journal["changes"].items():
+            _write_target(root, relative, _decoded(record["after"]))
+        candidate, errors = validate_current(root, work_id, allow_pending=True)
+        if errors or candidate.identity["digest"] != journal["result_digest"]:
+            conflicts = _rollback(root, journal)
+            if not conflicts:
+                _clear_journal(state)
+            raise Refused("EM007_RECOVERY_CONFLICT", "interrupted candidate is no longer valid/current")
+        if not _publish(state, candidate, root):
+            raise Refused("EM007_RECOVERY_CONFLICT", "inputs changed during recovery publication")
+        _clear_journal(state)
+    except (KeyError, TypeError, UnicodeError, ValueError) as exc:
+        if isinstance(exc, Refused):
+            raise
+        raise Refused("EM007_RECOVERY_CONFLICT", str(exc)) from exc
+
+
+def run_action(root, work_id, expected, action):
+    """Call action once on validated captured bytes; publish only its valid result.
+
+    action returns a map of repository-relative document paths to bytes (or None
+    for deletion). It must stage proposals, not mutate repository files itself.
+    """
+    root = Path(root).resolve()
+    steps, base, candidate = [], None, None
+    diagnostics = []
+    try:
+        state = _state_directory(root, work_id)
+        with _writer(state):
+            recover_locked(root, work_id, state)
+            steps.append("pre")
+            base, diagnostics = validate_current(root, work_id)
+            if diagnostics:
+                return _result(base, None, diagnostics, steps)
+            if base.identity["digest"] != expected:
+                raise Refused("EM007_STALE_INPUT", "displayed input snapshot is no longer current")
+            published = load_published(root, work_id)
+            generation = published.identity["digest"] if published is not None else None
+            steps.append("action")
+            changes = action(base)
+            if not isinstance(changes, dict) or not changes:
+                raise Refused("EM002_ACTION", "action must propose a nonempty document change batch")
+            originals = {}
+            for path, raw in changes.items():
+                if not safe_relative(path) or (raw is not None and not isinstance(raw, bytes)):
+                    raise Refused("EM002_ACTION", "changes require safe relative paths and byte payloads")
+                status, original = read_input(root, path)
+                if status not in ("present", "missing"):
+                    raise Refused("EM007_UNSAFE_CHANGE", "change target cannot be safely read", path)
+                originals[path] = original
+            steps.append("post")
+            candidate = capture(root, work_id, overrides=changes)
+            diagnostics = candidate.diagnostics(root)
+            if diagnostics:
+                return _result(base, candidate, diagnostics, steps)
+            if any(path not in base.files and path not in candidate.files for path in changes):
+                raise Refused("EM002_ACTION", "change is outside the definition/reference closure")
+            observations = _observe(root, base, changes, candidate)
+            if not is_current(base, root) or not _observations_current(root, observations):
+                raise Refused("EM007_INPUT_CHANGED", "inputs changed while the action was staged")
+            journal = {
+                "schema": "ask-document-transaction/v1", "work_id": work_id,
+                "base_generation": generation, "base_digest": base.identity["digest"],
+                "result_digest": candidate.identity["digest"], "observations": observations,
+                "changes": {path: {"before": _encoded(originals[path]), "after": _encoded(raw)}
+                            for path, raw in changes.items()},
+            }
+            _durable_write(state / "pending.json", json.dumps(journal, sort_keys=True).encode())
+            _sync_directory(state)
+            # Recovery applies the staged bytes, validates again, and moves the
+            # single publication pointer. It never calls action again.
+            recover_locked(root, work_id, state)
+            steps.append("publication")
+    except Refused as exc:
+        diagnostics = [exc.diagnostic]
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
+        diagnostics = [{"code": "EM002_ACTION", "path": "$", "message": str(exc)}]
+    return _result(base, candidate, diagnostics, steps)
+
+
+def _result(base, candidate, diagnostics, steps):
+    return {"schema": "ask-engineering-action/v1", "valid": not diagnostics,
+            "diagnostics": diagnostics, "steps": steps,
+            "input_snapshot": base.identity if base is not None else None,
+            "snapshot": candidate.identity if candidate is not None else None}

@@ -131,12 +131,15 @@ def _load_generation(state, work_id, digest):
     return snapshot
 
 
-def validate_current(root, work_id):
+def validate_current(root, work_id, *, allow_pending=False):
     """Capture, validate captured bytes, and refuse a changed dependency set."""
     snapshot = None
     try:
         snapshot = capture(root, work_id)
         diagnostics = snapshot.diagnostics(root)
+        if not allow_pending and (_state_directory(root, work_id) / "pending.json").exists():
+            diagnostics.append({"code": "EM007_PENDING_TRANSACTION", "path": snapshot.model_path,
+                                "message": "interrupted document action requires admission recovery"})
         if not is_current(snapshot, root):
             diagnostics.append({"code": "EM007_INPUT_CHANGED", "path": snapshot.model_path,
                                 "message": "model or referenced inputs changed during validation"})
@@ -148,17 +151,21 @@ def validate_current(root, work_id):
 
 def admit(root, work_id, expected=None):
     """Bootstrap/read admission; does not authorize or execute workflow actions."""
-    snapshot, diagnostics = validate_current(root, work_id)
-    if not diagnostics and expected is not None and snapshot.identity["digest"] != expected:
-        diagnostics = [{"code": "EM007_STALE_INPUT", "path": snapshot.model_path,
-                        "message": "expected snapshot is no longer current"}]
-    if not diagnostics:
-        try:
-            state = _state_directory(root, work_id)
-            with _writer(state):
+    snapshot, diagnostics = None, []
+    try:
+        state = _state_directory(root, work_id)
+        with _writer(state):
+            from .actions import recover_locked
+            recover_locked(Path(root).resolve(), work_id, state)
+            snapshot, diagnostics = validate_current(root, work_id)
+            if not diagnostics and expected is not None and snapshot.identity["digest"] != expected:
+                diagnostics = [{"code": "EM007_STALE_INPUT", "path": snapshot.model_path,
+                                "message": "expected snapshot is no longer current"}]
+            if not diagnostics:
                 if not _publish(state, snapshot, root):
                     diagnostics = [{"code": "EM007_INPUT_CHANGED", "path": snapshot.model_path,
                                     "message": "inputs changed before publication"}]
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            diagnostics = [{"code": "EM007_PUBLICATION", "path": snapshot.model_path, "message": str(exc)}]
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        diagnostics = [getattr(exc, "diagnostic", {"code": "EM007_PUBLICATION",
+                       "path": f"work/{work_id}/engineering-model.json", "message": str(exc)})]
     return snapshot, diagnostics

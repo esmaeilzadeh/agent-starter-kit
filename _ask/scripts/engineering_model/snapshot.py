@@ -102,14 +102,20 @@ class Snapshot:
         return sorted(errors, key=lambda item: (item["path"], item["code"], item.get("ids", []), item["message"]))
 
 
-def capture(root, work_id, *, model_bytes=None):
+def capture(root, work_id, *, model_bytes=None, overrides=None):
     """Read each dependency once; all subsequent validation uses these bytes."""
     if not isinstance(work_id, str) or not SLUG.fullmatch(work_id):
         raise ValueError("work_id must be a lowercase hyphenated slug")
     root = Path(root).resolve()
+    overrides = overrides or {}
+    def read(relative):
+        if relative in overrides:
+            value = overrides[relative]
+            return ("present", value) if value is not None else ("missing", None)
+        return read_input(root, relative)
     model_path = f"work/{work_id}/engineering-model.json"
     if model_bytes is None:
-        status, model_bytes = read_input(root, model_path)
+        status, model_bytes = read(model_path)
         if status != "present":
             raise OSError(f"cannot read {model_path}: {status}")
     document = decode(model_bytes)
@@ -121,7 +127,7 @@ def capture(root, work_id, *, model_bytes=None):
         pending.remove(relative)
         if relative in files:
             continue
-        status, raw = read_input(root, relative)
+        status, raw = read(relative)
         files[relative], statuses[relative] = raw, status
         if status != "present" or not relative.endswith(".json"):
             continue
