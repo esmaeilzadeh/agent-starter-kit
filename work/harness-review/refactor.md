@@ -21,6 +21,6 @@ before the change (evidence/runner-provenance-red.log).
 
 ## Executed validation
 
-All 29 reliability cases pass (evidence/resume-green.log). Independent re-review
-and final full CheckPlan verification remain pending at this checkpoint. The
+All 29 reliability cases pass (evidence/resume-green.log). Independent re-review is APPROVED at 4c13aec; all 35 mandatory full CheckPlan
+checks subsequently passed at that source commit (verification.json). The
 same-family model fallback limits remain; no broader security claim is made.
