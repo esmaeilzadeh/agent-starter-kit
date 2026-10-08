@@ -13,8 +13,8 @@
       "verification_mode": "review",
       "reason": "Nonbehavioral model configuration; existing generation behavior is unchanged",
       "review_decision": {
-        "decision": "PROPOSED",
-        "reviewer": "PENDING-INDEPENDENT-CHALLENGE",
+        "decision": "APPROVED",
+        "reviewer": "codex-luna-challenge",
         "recorded_by": "codex-coordinator",
         "policy": "_ask/policies/delegation.md"
       }
@@ -29,8 +29,8 @@
       "verification_mode": "review",
       "reason": "Nonbehavioral configuration and expected-output update; repository CheckPlan still executes",
       "review_decision": {
-        "decision": "PROPOSED",
-        "reviewer": "PENDING-INDEPENDENT-CHALLENGE",
+        "decision": "APPROVED",
+        "reviewer": "codex-luna-challenge",
         "recorded_by": "codex-coordinator",
         "policy": "_ask/policies/delegation.md"
       }
@@ -45,8 +45,8 @@
       "verification_mode": "review",
       "reason": "Documentation of existing model override behavior; no new classifier or execution behavior",
       "review_decision": {
-        "decision": "PROPOSED",
-        "reviewer": "PENDING-INDEPENDENT-CHALLENGE",
+        "decision": "APPROVED",
+        "reviewer": "codex-luna-challenge",
         "recorded_by": "codex-coordinator",
         "policy": "_ask/policies/delegation.md"
       }

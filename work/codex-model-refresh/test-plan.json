@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "codex-model-refresh",
-  "spec_digest": "88bd3d6864687322953d72e26e1cd058f7a7bda8c0d4dd509a225de0dfd19eec",
+  "spec_digest": "e5f34886e6ce44278b434279786114a35f34a6c67e7029dc4732ff21806204e1",
   "obligations": [],
   "tests": [],
   "runners": [],
