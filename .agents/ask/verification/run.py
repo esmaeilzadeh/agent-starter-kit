@@ -62,7 +62,7 @@ def main():
             command=check['command'];print(f'verify: running: {command}',flush=True)
             artifact=None
             if command in command_cache:code,artifact=command_cache[command]
-            elif tuple(shlex.split(command)) in cache and not any(c in command for c in '|;&<>$`\n'):
+            elif tuple(shlex.split(command)) in cache and command==shlex.join(shlex.split(command)):
                 code=cache[tuple(shlex.split(command))]
                 match=next(r for r in cases['executions'] if tuple(r['argv'])==tuple(shlex.split(command)))
                 artifact=match['output_artifact']

@@ -18,3 +18,7 @@ __pycache__/
 # Setup wizard secrets and current-issue context
 .ask.env
 .ask/tracker-context.md
+
+# Candidate-bound traceability outputs; archive reviewed evidence explicitly.
+work/*/traceability/
+work/*/inner-loop/state.lock

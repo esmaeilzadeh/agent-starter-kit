@@ -61,7 +61,7 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
         seen.add(identity)
     for rid,r in runners.items():
         argv=r.get('argv')
-        if (not string_list(argv) or len(argv)<4 or argv[1:3]!=['-m','unittest']
+        if (not isinstance(argv,list) or not argv or not all(text(x) for x in argv) or len(argv)<4 or argv[1:3]!=['-m','unittest']
             or r.get('adapter')!='unittest' or argv[0] not in {'python','python3'}):
             errors.append(Violation('unsupported_runner',field=rid))
     graph_ids=set(indexed((accepted_task_graph or {}).get('tasks',[]),'graph.tasks',errors))

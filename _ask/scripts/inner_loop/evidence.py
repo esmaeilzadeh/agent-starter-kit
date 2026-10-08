@@ -234,8 +234,18 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
         with tempfile.TemporaryDirectory(prefix='ask-candidate-') as tmp:
             runner, report['runner_digest'] = snapshot_runner(root, identity['base_sha'], Path(tmp) / 'trusted')
             report['runner_sha'] = identity['base_sha']
-            if not (runner.parent/'traceability/__init__.py').is_file():
-                raise NotIntegrable('migration_required: pinned runner has no traceability capability')
+            capability_file=runner.parent/'traceability/__init__.py'
+            import ast
+            capability=None
+            if capability_file.is_file():
+                try:
+                    for statement in ast.parse(capability_file.read_text()).body:
+                        if isinstance(statement,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='CAPABILITY' for t in statement.targets):
+                            capability=ast.literal_eval(statement.value)
+                except (SyntaxError,ValueError):
+                    capability=None
+            if capability!='ask-traceability/v1':
+                raise NotIntegrable('migration_required: pinned runner has no supported traceability capability')
             checkout = Path(tmp) / 'checkout'
             git(root, 'worktree', 'add', '--detach', str(checkout), identity['candidate_sha'])
             try:

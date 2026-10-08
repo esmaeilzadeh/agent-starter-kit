@@ -3,3 +3,6 @@ checks:
   - id: kit-shell-tests
     tier: mandatory
     glob: _ask/tests/test-*.sh
+  - id: traceability-cases
+    tier: mandatory
+    command: "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'"

@@ -1,5 +1,5 @@
 schema: ask-checkplan/v1
-e2e: not_applicable
+e2e: required
 no_production_datastore: true
 adapters: []
 presets:

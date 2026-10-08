@@ -25,7 +25,10 @@ continues to own static checks. The Python package
      --evidence work/<work-id>/traceability/plan-review.json
    ```
 
-4. Commit `traceability-accepted.json`. It pins the spec, plan, TaskGraph and
+4. Commit `traceability-accepted.json`. The coordinator operation also writes
+   `refs/ask/accepted-tests/<work-id>`, an authority commit outside the candidate
+   tree; a candidate source commit cannot advance it. Source-only transfers require
+   reviewed registration of that local ref before new completion. It pins the spec, plan, TaskGraph and
    delegation policy. A task candidate cannot change these obligations. Revise
    them through Spec Change, independent review and a new accepted pin before
    spawning a new task. `validate-plan <work-id> --revision <sha>` checks contracts.
@@ -49,7 +52,12 @@ Python interpreter; the result records both declared selectors and actual argv.
 A failed behavior assertion can supply red. Setup/import/runtime errors cannot.
 Existing unchanged regression tests need current execution; new or changed
 behavior requires red and final green. The independent reviewer examines actual
-assertion continuity whenever source changes between those revisions.
+assertion continuity whenever source changes between those revisions. A changed
+test may carry a typed `tdd_exemption` in its independent review decision only
+for documentation, generated projections or nonbehavioral configuration, with
+reason, reviewer acknowledgment and APPROVED decision. Changed behavior cannot
+use that exemption or a regression label; exemption and recognized red history
+are mutually exclusive. New behavior always needs executed red.
 
 After implementation, commit the candidate. Independent review writes
 `ask-test-review/v1` JSON bound to candidate, spec/plan/source digests, inventory
