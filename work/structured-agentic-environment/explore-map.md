@@ -4,11 +4,11 @@
 
 Make the handoff's product direction clear enough to own What/Why for a bounded next experiment in the starter kit. Establish which uncertainty that experiment resolves, its authority boundary, its representative workstream, and what evidence would justify continuing, revising, or abandoning it.
 
-This destination is provisional until the human answers **Choose the first proof**. The broader product thesis is a development environment organized around intent, behavior, decisions, work, implementation, and evidence, with the developer directing and challenging construction.
+The human chose **broader model first, then interactive UI**, and authorized continuing after the model/effort prerequisite. The broader product thesis is a development environment organized around intent, behavior, decisions, work, implementation, and evidence, with the developer directing and challenging construction.
 
 ## Notes
 
-- Stage: **00 Explore — STILL_FOGGY**. Implementation has not started. Seeded Intent/Plan/Review/Accept files are templates, not approvals or prepared downstream artifacts.
+- Stage: **00 Explore — READY FOR INTENT**. Earlier frontier sections below are the historical exploration, superseded by the explicit resolution and handoff at the end. No product implementation existed before this continuation.
 - Validation of initial map commit `7146f80`: map whitespace check passed; the source copy preserves original Markdown hard-break spaces, which the default whitespace check flags. A whole-change check allowing those line endings passed. `./ask verify` refused before running any checks with `migration_required: missing coordinator accepted-tests ref`; this Explore workstream does not yet have approved criteria or test obligations. This is not an implementation verification pass.
 - Original input: `/home/mohamad/Downloads/Handoff — Structured, Interactive Agentic Development Environment.md`; durable copy: [source handoff](source-handoff.md). Original SHA-256: `fbd82c2e7b1eddbffb4670616c104cc56b8ebe623ab20cf3429cf51a440674dd`. The copy adds only a final newline; its text is otherwise unchanged.
 - Work branch: `agent/structured-agentic-environment`. Initial base was `develop` at `ed6fa62`; after the human clarified that completed harness-review belongs on both branches and main is latest, local `develop` was fast-forwarded to local `main` at `4a1967a`. This work branch then incorporated that baseline. No push occurred.
@@ -24,7 +24,7 @@ No tracker mirror. Continue from this file and its decision sections.
 
 - **Run Explore** — the human explicitly invoked kit-00-explore with the handoff. Do not infer permission to implement the eventual environment.
 - **Use the completed harness baseline** — the human confirmed harness-review is done and should be applied on main and develop, with main latest. Local branch reconciliation is complete; runtime locks were preserved.
-- No experiment scope, architecture, schema, or product acceptance criteria have been approved yet.
+- **Broader model first, interactive UI second** — explicit human correction. First complete the model/effort prerequisite (verified at `6745afe`, merged into this work branch), then resume this sequence.
 
 ## Direction supplied by the handoff
 
@@ -114,6 +114,8 @@ Candidate boundaries for a first pilot, pending the scope decision: multi-host o
 
 ## Handoff to Intent
 
-**NOT READY — STILL_FOGGY.** The broad Why is meaningful human technical direction alongside accountable agent construction. The bounded What remains unresolved: choose the first proof, representative workstream, authority boundary, and observable success/failure before entering 01 Grill.
+**READY.** Owned What: add the missing broader Engineering Model and safe semantic mutation, then a local interactive work/evidence/decision view over that model. Owned Why: make technical direction inspectable and consequential while preserving accountable agent construction. The human explicitly selected option B first and the UI afterward, rather than the original option A recommendation.
 
-Continue with **Choose the first proof** above. Once its dependent decisions are resolved, replace this provisional handoff with the human-owned destination, non-goals, decisions and evidence pointers. A non-empty section is not itself evidence that the destination is clear.
+Reversible pilot defaults: one local repository/user, completed harness-review as the real evidence example, Git-revisioned JSON definitions, read-only reuse of current criterion/test/evidence authority, no gate replacement. Success requires invalid graph/edit rejection, attributable persisted decisions and derived task consequences, and scenario-to-assertion/evidence inspection through the same projection as agents. Failure includes duplicate authoritative criteria, stale evidence presented as current, session-only decisions, or edits bypassing validation. No measured usability advantage is claimed.
+
+Intent/spec will bound the first implemented slice; full IDE, production deployment, database/multi-host coordination and all-workstream migration remain out of scope. Existing domain-modeling skill proposal was not accepted and is not prepared or required.
