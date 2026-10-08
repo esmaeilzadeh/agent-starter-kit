@@ -14,22 +14,25 @@ Update `.agents/ask/bindings/runtimes/codex.yaml`:
 
 | Role or pool | Model | Reason |
 | --- | --- | --- |
-| thinking | `gpt-6-astra` | Ambiguous product/architecture decisions and acceptance judgment. |
+| thinking | `gpt-6.1-sol` | General exploration, specification and acceptance reasoning. |
 | adversarial | `gpt-6-astra` | Consequential specification challenge. |
-| typing | `gpt-6.1-sol` | Current recommended complex coding and sustained agentic work. |
-| cheap | `gpt-6.1-sol` | Capable routine independent implementation review. |
+| typing | `gpt-6-luna` | Bounded plans, implementation, refactoring and verification from a clear contract. |
+| cheap | `gpt-6-luna` | Routine low/medium-risk independent review. |
 | diverse | `gpt-6-astra` | Stronger high-consequence review; distinct model, same GPT family. |
 
 Picker: `gpt-6.1-sol`, `gpt-6-astra`, `gpt-6-luna`. No retired GPT-5.4 models remain in active Codex bindings or generated agent files.
 
 `./ask sync` generates all eleven Codex agents from this source. Preserve existing role/override resolution and risk behavior. Preserve all other runtime definitions and inherited reasoning settings.
 
+The human clarified that suitability includes cost: simple tasks should use lower-budget models. Defaults therefore preserve a cheap execution tier. For a complex workstream, use the existing `work/<id>/models.yaml` overrides to promote planning/implementation/refactoring to Sol or particularly difficult reasoning to Astra. Complexity and risk are different: review still follows the existing risk pool unless explicitly overridden. No new automatic complexity classifier is introduced.
+
 ## Acceptance criteria
 
 - CM-001: Codex role/pool/picker configuration contains the assignments above; generated defaults use them, including high-risk Review escalation to Astra.
 - CM-002: Existing explicit environment/consumer/work overrides and other runtime outputs remain compatible; the sync regression check passes after updating its old Codex expected default.
+- CM-003: Routing guidance distinguishes cheap scoped execution, general reasoning, difficult challenge/high-risk review, and explicit promotion for complex work through the existing workstream overlay.
 
-Both are review-only nonbehavioral configuration criteria. An independent reviewer must approve the exact contract and candidate; repository CheckPlan execution remains mandatory. No new behavior or claimed performance improvement is introduced.
+All are review-only nonbehavioral configuration/documentation criteria. An independent reviewer must approve the exact contract and candidate; repository CheckPlan execution remains mandatory. No new behavior or claimed performance improvement is introduced.
 
 ## Evidence and sources
 

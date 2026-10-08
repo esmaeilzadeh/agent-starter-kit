@@ -1,14 +1,14 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "codex-model-refresh",
-  "revision": 1,
+  "revision": 2,
   "criteria": [
     {
       "id": "CM-001",
       "given": "Retired Codex runtime role and pool pins",
       "when": "Current official guidance and local advertised models are reviewed and sync runs",
       "then": [
-        "Codex defaults and picker use the specified Astra/Sol/Luna models; high-risk review selects Astra"
+        "Codex defaults use Sol for thinking, Luna for scoped typing/cheap review, and Astra for challenge/high-risk review; picker contains all three current models"
       ],
       "verification_mode": "review",
       "reason": "Nonbehavioral model configuration; existing generation behavior is unchanged",
@@ -28,6 +28,22 @@
       ],
       "verification_mode": "review",
       "reason": "Nonbehavioral configuration and expected-output update; repository CheckPlan still executes",
+      "review_decision": {
+        "decision": "PROPOSED",
+        "reviewer": "PENDING-INDEPENDENT-CHALLENGE",
+        "recorded_by": "codex-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "CM-003",
+      "given": "Tasks differ in complexity and budget",
+      "when": "A developer selects a model for a bounded or complex workstream",
+      "then": [
+        "Guidance keeps simple execution on Luna and shows existing workstream overrides for complex Sol/Astra work without altering risk rules"
+      ],
+      "verification_mode": "review",
+      "reason": "Documentation of existing model override behavior; no new classifier or execution behavior",
       "review_decision": {
         "decision": "PROPOSED",
         "reviewer": "PENDING-INDEPENDENT-CHALLENGE",

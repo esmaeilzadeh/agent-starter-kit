@@ -6,7 +6,7 @@
 
 ## Approach
 
-Update only the Codex runtime role/pool/picker table. Keep the portable stage-to-role map unchanged. Adjust the existing sync test's Codex expectation and run `./ask sync` to regenerate agents.
+Update the Codex runtime role/pool/picker table and document existing per-workstream complexity overrides. Keep the portable stage-to-role map unchanged. Adjust the existing sync test's Codex expectation and run `./ask sync` to regenerate agents.
 
 ## Work breakdown
 
@@ -29,4 +29,3 @@ Engineering Model/UI implementation, global Codex settings, benchmarking, reason
 ## E2E
 
 Run the existing shell sync journey, which executes public scripts and restores default output. The structured completion contract uses independently approved review-only criteria for this nonbehavioral configuration change; existing repository checks still execute.
-
