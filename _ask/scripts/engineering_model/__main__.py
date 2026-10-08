@@ -26,6 +26,9 @@ def main(argv: list[str] | None = None) -> int:
     admit_parser.add_argument("action_command", nargs=argparse.REMAINDER, help="action argv after -- (no shell)")
     show_parser = commands.add_parser("show", help="read a validated generation; invalid working inputs are noneditable")
     show_parser.add_argument("--work-id", required=True)
+    show_parser.add_argument("--format", choices=("json", "markdown"), default="json")
+    show_parser.add_argument("--node", help="focus the projection on one stable node ID")
+    show_parser.add_argument("--candidate", help="inspect evidence for this candidate revision")
     edit_parser = commands.add_parser("edit", help="stage and validate a document change batch")
     edit_parser.add_argument("--work-id", required=True)
     edit_parser.add_argument("--expected", required=True, help="complete displayed input digest")
@@ -93,6 +96,21 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "show":
         result.update(model=captured.document if captured is not None else None,
                       editable=not diagnostics, last_validated=bool(diagnostics and captured is not None))
+        if captured is not None:
+            try:
+                from .projection import markdown as render_markdown, project
+                view = project(captured, root, node_id=args.node, candidate_sha=args.candidate)
+                result["schema"] = view["schema"]
+                result.update({key: value for key, value in view.items()
+                               if key not in {"schema", "work_id", "snapshot", "model"}})
+                if args.format == "markdown":
+                    print(render_markdown(view), end="")
+                    return 0 if not diagnostics else 1
+            except (ValueError, OSError, KeyError, TypeError) as exc:
+                result["diagnostics"].append({"code": "EM004_PROJECTION", "path": "$",
+                                              "message": str(exc)})
+                result["valid"] = False
+                result["editable"] = False
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0 if not diagnostics else 1
 

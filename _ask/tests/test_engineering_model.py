@@ -436,12 +436,18 @@ class ProjectionTests(unittest.TestCase):
                  "reference": {"path": "specs/current/pilot.json", "id": "P-001"}},
                 {"id": "case", "type": "test", "title": "Canonical assertion", "lifecycle": "active",
                  "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-1"}},
+                {"id": "validator-source", "type": "implementation", "title": "Validator source", "lifecycle": "active",
+                 "reference": {"path": "src/pilot.py", "symbol": "validate"}},
             ])
             model["edges"].extend([
                 {"type": "contains", "source": "requirement", "target": "scenario"},
                 {"type": "covers", "source": "case", "target": "scenario"},
+                {"type": "implements", "source": "validator-source", "target": "scenario"},
             ])
             write_json(root, "work/pilot/engineering-model.json", model)
+            source = root / "src/pilot.py"
+            source.parent.mkdir(parents=True)
+            source.write_text("def validate(): pass\n", encoding="utf-8")
             write_json(root, "work/pilot/test-plan.json", {
                 "schema": "ask-test-plan/v1", "work_id": "pilot",
                 "spec_digest": digest(_spec),
@@ -465,7 +471,14 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual({node["id"] for node in data["model"]["nodes"]}, expected_ids)
             markdown = model_command(root, "show", "--work-id", "pilot", "--format", "markdown")
             self.assertEqual(markdown.returncode, 0, markdown.stderr)
+            self.assertTrue(markdown.stdout.startswith("# Engineering Model: pilot"), markdown.stdout)
+            self.assertIn("`src/pilot.py::validate`", markdown.stdout)
             self.assertTrue(all(f"`{identity}`" in markdown.stdout for identity in sorted(expected_ids)))
             self.assertIn(admitted["snapshot"]["digest"], markdown.stdout)
             self.assertNotIn("current_completion", data)
             self.assertNotIn("current_completion", markdown.stdout)
+            invalid_focus = model_command(root, "show", "--work-id", "pilot", "--node", "missing-node")
+            self.assertEqual(invalid_focus.returncode, 1)
+            invalid_view = json.loads(invalid_focus.stdout)
+            self.assertFalse(invalid_view["valid"])
+            self.assertFalse(invalid_view["editable"])

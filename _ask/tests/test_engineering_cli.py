@@ -53,6 +53,7 @@ class CliJourneyTests(unittest.TestCase):
             shown = model_command(root, "show", "--work-id", "pilot", "--format", "json", "--node", "scenario")
             self.assertEqual(shown.returncode, 0, shown.stderr)
             view = json.loads(shown.stdout)
+            self.assertIn("given", view["scenarios"][0], view)
             self.assertEqual(view["scenarios"][0]["given"], "A valid input")
             self.assertEqual(view["scenarios"][0]["tests"][0]["id"], "CASE-1")
             self.assertFalse(view["scenarios"][0].get("current_completion", False))
