@@ -1,0 +1,35 @@
+EEE
+======================================================================
+ERROR: test_U01_rejects_malformed_contract_fields_and_duplicate_ids (__main__.ContractTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_contracts.py", line 24, in test_U01_rejects_malformed_contract_fields_and_duplicate_ids
+    self.assertEqual(self.validate(spec,plan),[])
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_contracts.py", line 19, in validate
+    from verification.traceability.coverage import validate_plan
+ModuleNotFoundError: No module named 'verification.traceability.coverage'
+
+======================================================================
+ERROR: test_U02_unit_does_not_cover_required_e2e_or_orphan_assertions (__main__.ContractTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_contracts.py", line 35, in test_U02_unit_does_not_cover_required_e2e_or_orphan_assertions
+    errors=self.validate(spec,plan)
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_contracts.py", line 19, in validate
+    from verification.traceability.coverage import validate_plan
+ModuleNotFoundError: No module named 'verification.traceability.coverage'
+
+======================================================================
+ERROR: test_U03_task_scopes_must_match_accepted_graph_and_cover_all_tests (__main__.ContractTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_contracts.py", line 42, in test_U03_task_scopes_must_match_accepted_graph_and_cover_all_tests
+    self.assertTrue(self.validate(spec,plan,{'tasks':[{'id':'a'}]}))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_contracts.py", line 19, in validate
+    from verification.traceability.coverage import validate_plan
+ModuleNotFoundError: No module named 'verification.traceability.coverage'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.005s
+
+FAILED (errors=3)
