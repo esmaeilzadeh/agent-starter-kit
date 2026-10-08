@@ -1,6 +1,6 @@
 # Specification: Engineering Model and local workbench
 
-Status: CURRENT. Human-selected sequence: broader model first, interactive UI second. Canonical observable criteria: adjacent JSON contract. Source intent: `work/structured-agentic-environment/intent.md`; source thesis: its `source-handoff.md`.
+Status: CURRENT planning contract, revision 2; implementation not started. Human-selected sequence: broader model first, interactive UI second. Canonical observable criteria: adjacent JSON contract. Source intent: `work/structured-agentic-environment/intent.md`; source thesis: its `source-handoff.md`. Human-directed clarification: `work/structured-agentic-environment/spec-change-validation-guard.md`. The present deliverable stops at a reviewed plan.
 
 ## Authority and scope
 
@@ -22,7 +22,23 @@ Decisions have at least two unique option IDs/labels. A resolution records optio
 
 One shared module provides load/validate, snapshot/project and mutate. Commands add_node, add_edge, resolve_decision, reopen_decision and revise_node cover this slice. Revisions of semantic title/description/reference retain stable IDs; editing a node reopens resolved decisions that transitively depend on it and records why. Dependencies propagate task blockers; resolution/reopening changes derived attention/task readiness, not existing execution or acceptance evidence. Planned/active tasks with unresolved decision/assumption or unfinished task prerequisites are blocked; the graph is acyclic.
 
-Every mutation requires the expected canonical model digest. Under an exclusive local lock, reload current bytes, compare digest, apply command to a copy, validate the whole candidate, then atomically replace and increment revision exactly once. Invalid command, invalid candidate, missing actor/rationale or stale digest leaves definition bytes unchanged. CLI and UI call this module, never edit the JSON directly. Changes remain visible uncommitted Git changes; the app neither commits nor spawns work.
+Every mutation goes through the document-state action guard below. Expected state identity includes the model and referenced specification/definition inputs, not just the model-file digest. Valid edits increment the model revision exactly once. Invalid commands, missing attribution or stale inputs do not publish. CLI and UI call this shared interface. Changes remain visible Git changes; the app neither commits nor spawns work.
+
+## Document-state action guard
+
+Before every state-changing engineering action, capture and validate the current definition/reference snapshot. Failure stops before the action is invoked. Stage the action's candidate edits without exposing them to consumers; validate the resulting complete state after the action. Recheck the base input identities, then publish one immutable validated snapshot/generation. Invalid results or concurrent changes prevent publication and preserve the last stable generation. Multi-file actions must not expose partially applied specifications; atomic replacement of individual files alone is not a multi-file transaction.
+
+The validation input set includes the Engineering Model, canonical specification definitions, linked criteria/test definitions and all relevant reference targets. A referenced specification edit/create/delete invalidates the current result even if the model file is unchanged. Bind validation identity to input paths/content, dependency discovery and validator rule version; timestamps alone are insufficient. Readers use bytes from the validated snapshot, not mutable files reread after validation. State-changing actions include semantic spec/model edits and workflow action admission; this guard adds no replacement test-completion or human-approval policy.
+
+Run validation after every specification save/change through the shared change path or document-layer change observer. Startup plus consumer/action entry freshness checks cover external writes and missed observer events. Unmanaged editor/tool changes cannot be made transactional by wishful enforcement: until validated they are untrusted working state and must not become actionable UI/agent input. The last stable snapshot may remain visible only explicitly labeled last-validated/not editable; current actions fail closed. Repair/import is an explicit draft operation, not automatic UI repair or ordinary work on a broken base.
+
+The validator is independently runnable and is the single implementation of graph/reference/lifecycle rules. UI code trusts its validated snapshot contract. User input/action conflicts and external evidence freshness remain separate runtime concerns. Initial import validates existing state before admitting it; there is no bootstrap shortcut treating an invalid initial document as stable.
+
+## Performance and implementation freedom
+
+Validator implementation is language-neutral. Reuse suitable existing fast tooling; a lower-level implementation is allowed. Select after a bounded benchmark of actual repository inputs plus deterministic 100/1,000/10,000-node graphs with recorded edge/file counts, invalid-link/cycle variants, cold/warm runs and the complete pre/post action path. Record hardware/tool versions, p50/p95 latency, peak memory and parse/I/O/graph/publication costs. Language labels alone are not evidence of speed. No numerical latency target or performance gain has been agreed or measured yet.
+
+Keep a stable machine interface and diagnostics regardless of implementation. Incremental/cached validation is permitted only when it agrees with full validation, invalidates on referenced input/rule changes and preserves global uniqueness/cardinality/cycle checks. No cache or alternative backend may skip the before/after guard. Full validation remains available for parity tests, startup and final verification. Implementation selection must retain the existing traceability test-driver contract or receive a reviewed binding amendment before implementation.
 
 ## Projections and evidence
 
@@ -32,7 +48,7 @@ The read-only evidence adapter reuses the existing traceability completion evalu
 
 ## Interactive UI
 
-Use a small native Streamlit workbench, dependency optional for core CLI/model use. Work selector, engineering object/scenario inspector, source/assertion/test/revision detail and attention/blocked-task reasons are primary. A decision form offers the model's alternatives, actor and rationale, then submits through the shared digest-bound mutation interface. Success survives reload/new session. Missing fields, invalid model and stale session are actionable errors. Pin the digest displayed when a form was loaded; a rerun must not silently accept a concurrently changed definition. Provide refresh/reload to inspect a conflict.
+Use a small native Streamlit workbench, dependency optional for core CLI/model use. Work selector, engineering object/scenario inspector, source/assertion/test/revision detail and attention/blocked-task reasons are primary. The document layer admits only validated snapshots; the UI does not parse/validate broken graphs, repair documents or duplicate link rules. A decision form offers the model's alternatives, actor and rationale, then submits through the shared guarded mutation interface. Success survives reload/new session. Incomplete user input and stale session produce action feedback. Pin the complete displayed state identity, including referenced specs, when a form loads; a rerun must not silently adopt concurrent inputs. Provide refresh/reload to inspect a conflict.
 
 The UI is a local technical direction surface, not points/badges or a generated document approval queue. Unresolved decisions and evidence failures cause attention items; resolving one shows its actual task consequences. No custom CSS, arbitrary source editing, production deployment or automatic execution.
 
@@ -42,9 +58,10 @@ The UI is a local technical direction surface, not points/badges or a generated 
 - EM-002: Shared semantic mutation persists attributable decisions, propagates blockers/invalidation and history, increments revisions; stale/invalid edits and concurrent stale writers preserve data.
 - EM-003: Read-only scenario/evidence inspection reuses current authorities, shows actual assertions/outcomes/provenance, differentiates historical/missing/invalid evidence, and cannot turn a link or tampered pass field into current completion.
 - EM-004: Public CLI validation, JSON/Markdown projections and decision-edit journey share the same model and digest; CLI errors are useful and nonmutating.
-- EM-005: UI navigates work/scenario to canonical assertion/test/evidence detail and exposes honest missing/historical states; malformed input yields useful errors without a traceback-only page.
+- EM-005: UI consumes a validated snapshot and navigates work/scenario to canonical assertion/test/evidence detail with honest missing/historical evidence states, without domain-validation/repair logic.
 - EM-006: UI attention/decision journey persists a reasoned choice and derived task change across reload; stale forms reject concurrent changes and invalid submissions do not write.
+- EM-007: The shared document layer enforces current-state validation before every state-changing action and result validation afterward, revalidates every spec change, invalidates referenced-input/cache identities, blocks invalid/stale admission and publishes only complete stable snapshots.
 
 ## E2E
 
-Applies. CLI journey in disposable fixtures, UI integration via Streamlit AppTest, real temporary browser E2E for work/scenario inspection and persisted decision→unblock→reload plus stale-form protection. Browser/server and data are test-owned, local, reset by teardown; never mutate the committed pilot from tests. Required test types and exact cases are in the independently challenged test plan. Full repository Verify and candidate-bound independent semantic review remain mandatory. These checks establish behavior, not comparative usability/productivity.
+Applies. Guard journey verifies pre-validation → action → post-validation → publication and failure isolation, including external/linked spec edits. CLI journey, UI integration via Streamlit AppTest and real temporary browser E2E cover scenario inspection, persisted decision→unblock→reload and stale-form protection. Broken-document cases belong to document admission/validator tests, not UI business logic. Browser/server and data are test-owned, local, reset by teardown; never mutate the committed pilot from tests. Required types/cases are in the independently challenged test plan. Full repository Verify and candidate-bound independent semantic review remain mandatory after implementation. Planning checks establish contract consistency only, not feature behavior or comparative usability/productivity.

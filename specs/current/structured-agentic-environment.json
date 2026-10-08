@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "structured-agentic-environment",
-  "revision": 1,
+  "revision": 2,
   "criteria": [
     {
       "id": "EM-001",
@@ -17,7 +17,7 @@
       "given": "A valid Engineering Model with decisions and dependent tasks",
       "when": "A digest-bound semantic edit or concurrent stale edit is submitted",
       "then": [
-        "Attributable history, revisions, blockers and transitive decision invalidation are persisted atomically; invalid and stale writers preserve definition bytes"
+        "Through a pre/post-validated action, attributable history, revisions, blockers and transitive decision invalidation persist; invalid/stale changes cannot publish or overwrite the last stable state"
       ],
       "verification_mode": "tests"
     },
@@ -41,10 +41,10 @@
     },
     {
       "id": "EM-005",
-      "given": "Valid or malformed workstream definitions and real evidence references",
+      "given": "A validated workstream snapshot and canonical evidence references",
       "when": "Interactive work/scenario inspection runs",
       "then": [
-        "Canonical assertions/tests/revisions and honest evidence states are visible; invalid definitions have actionable diagnostics"
+        "UI displays canonical assertions/tests/revisions and honest evidence states, consuming the shared validated snapshot without duplicating domain-validation or repair rules"
       ],
       "verification_mode": "tests"
     },
@@ -54,6 +54,17 @@
       "when": "The developer records a reasoned choice then reloads, or submits a stale/invalid form",
       "then": [
         "A valid choice persists and changes task attention; stale or invalid submissions reject without writes"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-007",
+      "given": "Current and candidate document states, referenced specifications, external saves and concurrent changes",
+      "when": "Any state-changing engineering action or specification change is admitted and published",
+      "then": [
+        "Validate the current stable state before invoking the action and the complete resulting state afterward; failures or stale identities prevent publication",
+        "Every spec change invalidates affected validation, including linked-spec-only edits; startup/action/read checks recover from missed external-save events",
+        "Readers consume one validated generation, with content/dependency/rule-bound identity; incremental/cache behavior agrees with full validation and no broken or mixed state is actionable"
       ],
       "verification_mode": "tests"
     }

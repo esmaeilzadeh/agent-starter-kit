@@ -4,6 +4,8 @@
 
 Build a broader, typed and independently validated Engineering Model for intent, requirements/features/stories/scenarios, decisions/assumptions/risks, tasks, implementation and test/evidence references. Add controlled, attributable semantic edits and deterministic machine/Markdown projections. Only after that foundation works, add an interactive local UI for work navigation, inspecting existing behavioral evidence and resolving meaningful decisions.
 
+The document-state validator owns requirement/link validity. Every state-changing action must start from validated stable state and validate its result before publication. Revalidate after every specification save, including referenced documents. The UI consumes only validated snapshots; it has no duplicate graph-validation or repair logic. Fast existing tools and lower-level languages are allowed; Python is not a requirement.
+
 ## Why
 
 The developer needs to inspect engineering claims, decide unresolved questions and see their consequences while agents consume the same definitions. Generated prose and a test link alone are not authority or proof of satisfied behavior.
@@ -23,6 +25,8 @@ No blocking What/Why decision remains for this bounded slice. Comparative usabil
 ## Human decisions
 
 Explore explicitly requested. Completed harness baseline belongs on main/develop; local develop was fast-forwarded to main. Human corrected the order to “Broader model first then interactive UI.” Human then required current models matched to each job and its budget, asked about effort, and said “ok continue and then continue the main plan.” This continuation uses that authorization; it does not authorize main/develop merges or pushes.
+
+Subsequent clarifications require clean UI input, pre/post action validation and freedom to choose fast tooling/native code. Latest request: “continue till you give me a plan.” Stop at the reviewed plan; do not resume feature implementation in this turn. Decision record: `spec-change-validation-guard.md`.
 
 ## E2E
 

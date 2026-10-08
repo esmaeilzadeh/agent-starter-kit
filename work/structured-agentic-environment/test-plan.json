@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "structured-agentic-environment",
-  "spec_digest": "ab7796ada4c377644c5034266f1dd60ff9c565dcf2a34c78d3e8a2c41cdd930c",
+  "spec_digest": "8e612c7703a6c986cbee353033ff7bf8cd6173f047f4dc10b00d881b5874b664",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -40,6 +40,13 @@
     },
     {
       "criterion_id": "EM-006",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-007",
       "required_types": [
         "integration",
         "e2e"
@@ -497,35 +504,6 @@
       ]
     },
     {
-      "id": "UI-invalid",
-      "criterion_ids": [
-        "EM-005"
-      ],
-      "type": "integration",
-      "change_kind": "new",
-      "scenario": {
-        "given": "Malformed Engineering Model JSON",
-        "when": "Open workbench",
-        "then": [
-          "Validation diagnostic visible without a traceback-only page"
-        ]
-      },
-      "expected_assertions": [
-        {
-          "criterion_id": "EM-005",
-          "checks": [
-            "Validation diagnostic visible without a traceback-only page"
-          ]
-        }
-      ],
-      "runner_id": "engineering-model",
-      "case_id": "test_engineering_ui.UiIntegrationTests.test_invalid_model_is_actionable",
-      "source_paths": [
-        "_ask/tests/test_engineering_ui.py",
-        "_ask/tests/engineering_fixture.py"
-      ]
-    },
-    {
       "id": "UI-browser",
       "criterion_ids": [
         "EM-005",
@@ -558,6 +536,209 @@
       "case_id": "test_engineering_browser.UiBrowserTests.test_inspect_decide_reload_and_stale_session",
       "source_paths": [
         "_ask/tests/test_engineering_browser.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-pre",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An invalid current graph or referenced specification",
+        "when": "Attempt a guarded action",
+        "then": [
+          "Pre-validation fails, the action marker is never invoked, no state or generation is published"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Pre-validation fails, the action marker is never invoked, no state or generation is published"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_invalid_prestate_prevents_action",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-post",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A valid stable multi-file snapshot",
+        "when": "Stage an action that breaks a linked reference",
+        "then": [
+          "Post-validation rejects it and all consumers retain the prior complete stable generation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Post-validation rejects it and all consumers retain the prior complete stable generation"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_invalid_candidate_preserves_stable_generation",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-refs",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A valid result bound to model and linked spec inputs",
+        "when": "Edit/create/delete a referenced spec without changing the model",
+        "then": [
+          "The old validation identity is rejected and refreshed validation covers the affected links"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "The old validation identity is rejected and refreshed validation covers the affected links"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_linked_spec_change_invalidates_admission",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-events",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A validated repository and document-layer save observer",
+        "when": "Save specs externally, then miss an event and attempt an action/read",
+        "then": [
+          "Each save triggers validation and entry freshness checks reject missed-event stale state without invoking the action"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Each save triggers validation and entry freshness checks reject missed-event stale state without invoking the action"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_external_changes_and_missed_events_fail_closed",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-parity",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Full validation and any implemented cache/index path",
+        "when": "Exercise new/deleted refs, duplicate IDs, cycles and rule-version changes",
+        "then": [
+          "Diagnostics/admission agree with full validation; no stale validation is reused"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Diagnostics/admission agree with full validation; no stale validation is reused"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_cached_and_full_validation_agree",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-publish",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "One complete stable generation and concurrent dependency changes",
+        "when": "Race or interrupt staged multi-file action publication",
+        "then": [
+          "Stale writers cannot publish; readers/recovery never observe a mixed or unvalidated actionable generation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Stale writers cannot publish; readers/recovery never observe a mixed or unvalidated actionable generation"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_concurrent_multifile_publication_and_recovery",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "DG-bootstrap",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An existing repository with valid or broken definitions",
+        "when": "Run document admission before any consumer/action starts",
+        "then": [
+          "Valid inputs acquire a current validated identity; invalid initial state stops admission without UI repair logic"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Valid inputs acquire a current validated identity; invalid initial state stops admission without UI repair logic"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_bootstrap_admits_only_validated_state",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py",
         "_ask/tests/engineering_fixture.py"
       ]
     }
