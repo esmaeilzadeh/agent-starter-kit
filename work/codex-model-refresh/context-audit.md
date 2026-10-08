@@ -1,7 +1,7 @@
 # Context-engineering audit
 
 Workstream: `codex-model-refresh`
-Reviewed candidate: `0f937ac90bfbdc49dcbfdfb36871202d4ba87b34`
+Reviewed candidate: `6745afeb6036836b905ee3c1f2eab449e54e2636` (effort extension; earlier model-only audit below retained).
 Scope: accepted specification, Codex runtime binding, generated agents, sync regression, and routing guidance.
 
 | ID | Check | Status | Evidence |
@@ -13,4 +13,4 @@ Scope: accepted specification, Codex runtime binding, generated agents, sync reg
 | CE-05 | Clean-worktree and one-workstream boundaries are respected | pass | Review began with a clean `agent/codex-model-refresh` worktree. No implementation or unrelated path was changed; the existing sync regression completed and restored generated defaults. No commit was made by the reviewer. |
 | CE-06 | Canonical bindings, generated projections, and verification pointers align | pass | Codex source pins and all eleven generated Codex model fields agree. The existing sync regression passes default, HIGH-risk, and explicit role-override checks. Other runtime sources and generated outputs have no delta. |
 
-Open IDs: none. This audit and review describe the pre-final candidate above. The runtime review-input record must be refreshed against the parent-provided final candidate SHA after these source artifacts are committed.
+Open IDs: none. Independent `codex-luna-effort-review` at the candidate above reconfirmed CE-01–06 pass: canonical protocol and pointers preserved, user budget/risk decisions retained, no stage-contract changes, source boundaries respected, and all generated effort fields align with canonical defaults and guidance. Candidate-bound review: `traceability/review-effort-input.json`. Historical audit rows above describe the prior model-only implementation; this paragraph records the explicit updated audit. This archival commit is not a new tested candidate.

@@ -1,16 +1,9 @@
 {
   "decision": "APPROVED",
-  "reviewer": "codex-luna-challenge",
-  "spec_digest": "e5f34886e6ce44278b434279786114a35f34a6c67e7029dc4732ff21806204e1",
-  "plan_digest": "ef245791f826d9d9670e0a2cd646c5737d3853575350807718953b51b0f14a93",
-  "assessment": {
-    "criteria": {
-      "CM-001": "APPROVED: exact role, pool and picker assignments are reviewable in runtime configuration; generated defaults and high-risk routing are observable through the planned sync journey.",
-      "CM-002": "APPROVED: generated output and source inspection can confirm the existing override precedence and unchanged other-runtime configuration; the existing sync regression check remains required.",
-      "CM-003": "APPROVED: documentation explicitly separates complexity from risk and uses the existing workstream override mechanism; no classifier or routing behavior is added."
-    },
-    "test_types": "All criteria are review-only nonbehavioral configuration/documentation. No unit, integration, or e2e obligations are required by this test plan; the existing sync regression check remains planned verification.",
-    "review_only_authority": "Each criterion includes a reason and an attributable APPROVED decision under _ask/policies/delegation.md. This approval is limited to the pinned contract digests.",
-    "migration_scope": "No migration is specified or needed: existing role/pool tokens, override precedence, risk mapping, and other runtime definitions remain in place."
-  }
+  "reviewer": "codex-luna-effort-challenge",
+  "spec_digest": "72a6f4b390de8d0d878f656a060b7b1190a35cf515a795d0ecb820e78b137cc9",
+  "plan_digest": "544a34755db606a6ed4c12db77c4f88860d078921c06bd10ae9bc0b0deba3259",
+  "assessment": "Independent Codex Luna/medium challenge at d12f70e approved all eleven stage assignments, HIGH and CRITICAL risk, five public-generator integration/e2e cases, existing CM001-003 authority and mandatory actual red-green. Initial assertion completeness findings resolved.",
+  "model": "gpt-6-luna",
+  "reasoning_effort": "medium"
 }

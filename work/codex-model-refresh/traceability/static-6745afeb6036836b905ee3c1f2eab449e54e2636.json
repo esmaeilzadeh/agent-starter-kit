@@ -1,7 +1,7 @@
 {
-  "schema": "ask-verify-result/v1",
-  "commit_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+  "candidate_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
   "result": "pass",
+  "checkplan_digest": "0c8c66b59c45ebacd0b78be0760c73ea44a00ce6e34ec03365fec1cbaf718013",
   "checks": [
     {
       "id": "kit-shell-tests:_ask/tests/test-ask.sh",
@@ -327,5 +327,7 @@
       "evidence": "work/codex-model-refresh/traceability/static-runs/ddbdb089292e4b3abaaf6e9d1e430282/35.log",
       "output_digest": "29f3da1e4ab926bd8f8a3d4e71b000671bb978c31a9f7384894acf199f32e6c3"
     }
-  ]
+  ],
+  "runner_digest": "955b3526aee7fc06b0339fba993b8ad19ef14e7ccf31ee237a9cde6c43178ec7",
+  "run_id": "ddbdb089292e4b3abaaf6e9d1e430282"
 }

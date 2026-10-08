@@ -8,5 +8,25 @@
     "candidate_sha": "31ad549f3fdfd9bbb49e3dfdb7f82745a2ead5de",
     "spec_digest": "e5f34886e6ce44278b434279786114a35f34a6c67e7029dc4732ff21806204e1",
     "plan_digest": "ef245791f826d9d9670e0a2cd646c5737d3853575350807718953b51b0f14a93"
+  },
+  {
+    "run_id": "b65606710fbb4400b59ddbc33b5736a1",
+    "digest": "20da9eae069b4efdea4124cf913543d54ac0c8d6cb94945fedd3d31315ff3f67",
+    "phase": "red",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+    "spec_digest": "72a6f4b390de8d0d878f656a060b7b1190a35cf515a795d0ecb820e78b137cc9",
+    "plan_digest": "544a34755db606a6ed4c12db77c4f88860d078921c06bd10ae9bc0b0deba3259"
+  },
+  {
+    "run_id": "da194e8d86d045d68e25555a2f64c5e8",
+    "digest": "97473a9966ab842d477d4804c8f9e77ac7de3938106f45ea5dc01620b43b7edb",
+    "phase": "final_green",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+    "spec_digest": "72a6f4b390de8d0d878f656a060b7b1190a35cf515a795d0ecb820e78b137cc9",
+    "plan_digest": "544a34755db606a6ed4c12db77c4f88860d078921c06bd10ae9bc0b0deba3259"
   }
 ]

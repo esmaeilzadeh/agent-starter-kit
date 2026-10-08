@@ -3,13 +3,13 @@
   "status": "pass",
   "scope": "workstream",
   "task_id": null,
-  "candidate_sha": "31ad549f3fdfd9bbb49e3dfdb7f82745a2ead5de",
+  "candidate_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
   "input_digests": {
-    "spec": "e5f34886e6ce44278b434279786114a35f34a6c67e7029dc4732ff21806204e1",
-    "plan": "ef245791f826d9d9670e0a2cd646c5737d3853575350807718953b51b0f14a93",
-    "accepted": "e16bf8f06344594a46ee8a245f4282dc8c80c3bb287b318ac2f3f827ae65b440",
-    "review": "8cc49bc317415346e4dac0a1d54a98099b3d8bcd0778966d729008be3be8464e",
-    "executions": "fae7763a7ecb7911d74cb131bfb16408452255d3339ca9ce4927e13d3fb4a143"
+    "spec": "72a6f4b390de8d0d878f656a060b7b1190a35cf515a795d0ecb820e78b137cc9",
+    "plan": "544a34755db606a6ed4c12db77c4f88860d078921c06bd10ae9bc0b0deba3259",
+    "accepted": "ac63d77e6680617a8d1f3d68fddac7e477ccb5266d47ca1fefb17bf1238fa1da",
+    "review": "56c2346aeaab30f604a0f55b793a523c105802a5557e045c49a82345e97b5067",
+    "executions": "d40771753c5b841bd0fb7086c1fd58353153cb7ad5b43544c13decf9ba21673b"
   },
   "criterion_evidence": [
     {
@@ -20,7 +20,7 @@
         "id": "CM-001",
         "coverage_decision": "APPROVED",
         "type_adequacy": {},
-        "assessment": "The pinned Codex runtime binding contains thinking=Sol, typing=Luna, adversarial=Astra, cheap=Luna, diverse=Astra, and exactly the three requested picker models. All eleven generated Codex agents match the portable stage map and runtime assignments. The existing sync regression passed for default Implement=Luna, HIGH-risk Review=Astra, and ASK_MODEL_07_REVIEW=thinking resolving to Sol. The post-review commits did not alter those sources or outputs."
+        "assessment": "The canonical Codex binding and all eleven generated Codex agent files carry the specified Sol/Luna/Astra role assignments and picker models; HIGH and CRITICAL Review resolve to Astra at high effort in the generator journey. This matches the current spec and the generated-output diff."
       },
       "tests": []
     },
@@ -32,7 +32,7 @@
         "id": "CM-002",
         "coverage_decision": "APPROVED",
         "type_adequacy": {},
-        "assessment": "The diff from the accepted contract base changes Codex bindings, generated Codex model fields, the existing regression assertions, and workstream artifacts; Claude, Cursor, and OpenCode definitions and generated outputs are unchanged. Portable stage roles, resolver logic, risk mapping, and reasoning settings are unchanged. The existing sync regression passed. The exact final candidate adds review/context/refactor/acceptance documentation only; it changes no implementation or test source."
+        "assessment": "The generator preserves model resolution paths and adds effort resolution independently. The five isolated public-generator tests cover the effort addition; the existing sync regression still checks other runtime/model behavior. The accepted red run establishes that these assertions failed at d12f70e before the implementation, and the candidate-bound final-green run passes."
       },
       "tests": []
     },
@@ -44,13 +44,241 @@
         "id": "CM-003",
         "coverage_decision": "APPROVED",
         "type_adequacy": {},
-        "assessment": "The routing guide assigns bounded work to Luna, documents Sol/Astra promotion through existing per-workstream overrides, retains the simple Challenge override, and distinguishes complexity from review risk. It introduces no classifier or performance claim. The final candidate's additional documentation does not change this guidance."
+        "assessment": "The routing guide maps bounded tasks to Luna, difficult reasoning to Sol/Astra through existing workstream overrides, and explicitly separates complexity from review risk. It describes effort precedence, inheritance and validation consistent with the implementation and introduces no automatic classifier or performance claim."
       },
       "tests": []
+    },
+    {
+      "criterion_id": "CM-004",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CM-004",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The four integration cases call the public generator in an isolated consumer and inspect its emitted assignments for risk, override precedence, inheritance/unknown-model fallback, and invalid-input preservation."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "CE-defaults exercises the public generator across all four runtimes and all eleven stages; it checks all Codex model/effort pairs and confirms non-Codex outputs omit effort. Together with the integration cases this covers each CM-004 behavior."
+          }
+        },
+        "assessment": "The canonical config defines medium effort for Sol/Luna, high for Astra, and a Verify-stage low override; HIGH/CRITICAL Review routes to Astra. Explicit runtime-specific then generic environment values precede workstream then consumer overlays, while explicit inherit and an unconfigured model without an override omit the field. All effort assignments are resolved before the output-write loop, so invalid values leave existing outputs unchanged."
+      },
+      "tests": [
+        {
+          "test_id": "CE-defaults",
+          "case_id": "test_codex_effort.CodexEffortTests.test_default_journey",
+          "type": "e2e",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "test_codex_effort.CodexEffortTests.test_default_journey",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CE-defaults",
+              "runner_id": "codex-effort",
+              "execution_id": "67981a92566544f1adb533c87770d410",
+              "phase": "red",
+              "source_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+              "source_digests": {
+                "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+                "_ask/scripts/sync-runtime-agents.py": "a3925a206328ce94bb4b62ce96fdb8515ce4b92cad134a9bc454ecd5daaa7f27"
+              },
+              "output_artifact": "work/codex-model-refresh/traceability/runs/b65606710fbb4400b59ddbc33b5736a1/67981a92566544f1adb533c87770d410.log",
+              "output_digest": "965f6083d2045d2b167d6eb531539841de53c6a0183109f3244d817228545251"
+            }
+          ],
+          "final_execution": {
+            "case_id": "test_codex_effort.CodexEffortTests.test_default_journey",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CE-defaults",
+            "runner_id": "codex-effort",
+            "execution_id": "071b9b3c029840d2b6e601d46c45c3f2",
+            "phase": "final_green",
+            "source_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+            "source_digests": {
+              "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+              "_ask/scripts/sync-runtime-agents.py": "95df3f30b5dc4019f7b812aa33750f7d90c6d405ffa831b83246ae4d7772179b"
+            },
+            "output_artifact": "work/codex-model-refresh/traceability/runs/da194e8d86d045d68e25555a2f64c5e8/071b9b3c029840d2b6e601d46c45c3f2.log",
+            "output_digest": "60afcb864392aabcea90689277c75b1d363800b17ac0b8270442f7786cc7063f"
+          }
+        },
+        {
+          "test_id": "CE-risk",
+          "case_id": "test_codex_effort.CodexEffortTests.test_high_risk_review",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "test_codex_effort.CodexEffortTests.test_high_risk_review",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CE-risk",
+              "runner_id": "codex-effort",
+              "execution_id": "67981a92566544f1adb533c87770d410",
+              "phase": "red",
+              "source_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+              "source_digests": {
+                "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+                "_ask/scripts/sync-runtime-agents.py": "a3925a206328ce94bb4b62ce96fdb8515ce4b92cad134a9bc454ecd5daaa7f27"
+              },
+              "output_artifact": "work/codex-model-refresh/traceability/runs/b65606710fbb4400b59ddbc33b5736a1/67981a92566544f1adb533c87770d410.log",
+              "output_digest": "965f6083d2045d2b167d6eb531539841de53c6a0183109f3244d817228545251"
+            }
+          ],
+          "final_execution": {
+            "case_id": "test_codex_effort.CodexEffortTests.test_high_risk_review",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CE-risk",
+            "runner_id": "codex-effort",
+            "execution_id": "071b9b3c029840d2b6e601d46c45c3f2",
+            "phase": "final_green",
+            "source_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+            "source_digests": {
+              "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+              "_ask/scripts/sync-runtime-agents.py": "95df3f30b5dc4019f7b812aa33750f7d90c6d405ffa831b83246ae4d7772179b"
+            },
+            "output_artifact": "work/codex-model-refresh/traceability/runs/da194e8d86d045d68e25555a2f64c5e8/071b9b3c029840d2b6e601d46c45c3f2.log",
+            "output_digest": "60afcb864392aabcea90689277c75b1d363800b17ac0b8270442f7786cc7063f"
+          }
+        },
+        {
+          "test_id": "CE-overrides",
+          "case_id": "test_codex_effort.CodexEffortTests.test_effort_precedence",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "test_codex_effort.CodexEffortTests.test_effort_precedence",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CE-overrides",
+              "runner_id": "codex-effort",
+              "execution_id": "67981a92566544f1adb533c87770d410",
+              "phase": "red",
+              "source_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+              "source_digests": {
+                "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+                "_ask/scripts/sync-runtime-agents.py": "a3925a206328ce94bb4b62ce96fdb8515ce4b92cad134a9bc454ecd5daaa7f27"
+              },
+              "output_artifact": "work/codex-model-refresh/traceability/runs/b65606710fbb4400b59ddbc33b5736a1/67981a92566544f1adb533c87770d410.log",
+              "output_digest": "965f6083d2045d2b167d6eb531539841de53c6a0183109f3244d817228545251"
+            }
+          ],
+          "final_execution": {
+            "case_id": "test_codex_effort.CodexEffortTests.test_effort_precedence",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CE-overrides",
+            "runner_id": "codex-effort",
+            "execution_id": "071b9b3c029840d2b6e601d46c45c3f2",
+            "phase": "final_green",
+            "source_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+            "source_digests": {
+              "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+              "_ask/scripts/sync-runtime-agents.py": "95df3f30b5dc4019f7b812aa33750f7d90c6d405ffa831b83246ae4d7772179b"
+            },
+            "output_artifact": "work/codex-model-refresh/traceability/runs/da194e8d86d045d68e25555a2f64c5e8/071b9b3c029840d2b6e601d46c45c3f2.log",
+            "output_digest": "60afcb864392aabcea90689277c75b1d363800b17ac0b8270442f7786cc7063f"
+          }
+        },
+        {
+          "test_id": "CE-inherit",
+          "case_id": "test_codex_effort.CodexEffortTests.test_inherit_and_unknown_model",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "test_codex_effort.CodexEffortTests.test_inherit_and_unknown_model",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CE-inherit",
+              "runner_id": "codex-effort",
+              "execution_id": "67981a92566544f1adb533c87770d410",
+              "phase": "red",
+              "source_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+              "source_digests": {
+                "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+                "_ask/scripts/sync-runtime-agents.py": "a3925a206328ce94bb4b62ce96fdb8515ce4b92cad134a9bc454ecd5daaa7f27"
+              },
+              "output_artifact": "work/codex-model-refresh/traceability/runs/b65606710fbb4400b59ddbc33b5736a1/67981a92566544f1adb533c87770d410.log",
+              "output_digest": "965f6083d2045d2b167d6eb531539841de53c6a0183109f3244d817228545251"
+            }
+          ],
+          "final_execution": {
+            "case_id": "test_codex_effort.CodexEffortTests.test_inherit_and_unknown_model",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CE-inherit",
+            "runner_id": "codex-effort",
+            "execution_id": "071b9b3c029840d2b6e601d46c45c3f2",
+            "phase": "final_green",
+            "source_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+            "source_digests": {
+              "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+              "_ask/scripts/sync-runtime-agents.py": "95df3f30b5dc4019f7b812aa33750f7d90c6d405ffa831b83246ae4d7772179b"
+            },
+            "output_artifact": "work/codex-model-refresh/traceability/runs/da194e8d86d045d68e25555a2f64c5e8/071b9b3c029840d2b6e601d46c45c3f2.log",
+            "output_digest": "60afcb864392aabcea90689277c75b1d363800b17ac0b8270442f7786cc7063f"
+          }
+        },
+        {
+          "test_id": "CE-invalid",
+          "case_id": "test_codex_effort.CodexEffortTests.test_invalid_effort_preserves_outputs",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "test_codex_effort.CodexEffortTests.test_invalid_effort_preserves_outputs",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CE-invalid",
+              "runner_id": "codex-effort",
+              "execution_id": "67981a92566544f1adb533c87770d410",
+              "phase": "red",
+              "source_sha": "d12f70ebf104af1e9d62d76308996e88d47e2577",
+              "source_digests": {
+                "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+                "_ask/scripts/sync-runtime-agents.py": "a3925a206328ce94bb4b62ce96fdb8515ce4b92cad134a9bc454ecd5daaa7f27"
+              },
+              "output_artifact": "work/codex-model-refresh/traceability/runs/b65606710fbb4400b59ddbc33b5736a1/67981a92566544f1adb533c87770d410.log",
+              "output_digest": "965f6083d2045d2b167d6eb531539841de53c6a0183109f3244d817228545251"
+            }
+          ],
+          "final_execution": {
+            "case_id": "test_codex_effort.CodexEffortTests.test_invalid_effort_preserves_outputs",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CE-invalid",
+            "runner_id": "codex-effort",
+            "execution_id": "071b9b3c029840d2b6e601d46c45c3f2",
+            "phase": "final_green",
+            "source_sha": "6745afeb6036836b905ee3c1f2eab449e54e2636",
+            "source_digests": {
+              "_ask/tests/test_codex_effort.py": "24b426c81015f8288ad125abd9c0960b7d8a5fccb3bb57edb1ca49ae3ce4d30d",
+              "_ask/scripts/sync-runtime-agents.py": "95df3f30b5dc4019f7b812aa33750f7d90c6d405ffa831b83246ae4d7772179b"
+            },
+            "output_artifact": "work/codex-model-refresh/traceability/runs/da194e8d86d045d68e25555a2f64c5e8/071b9b3c029840d2b6e601d46c45c3f2.log",
+            "output_digest": "60afcb864392aabcea90689277c75b1d363800b17ac0b8270442f7786cc7063f"
+          }
+        }
+      ]
     }
   ],
   "missing_evidence": [],
   "errors": [],
-  "execution_artifacts": [],
+  "execution_artifacts": [
+    "work/codex-model-refresh/traceability/runs/b65606710fbb4400b59ddbc33b5736a1/67981a92566544f1adb533c87770d410.log",
+    "work/codex-model-refresh/traceability/runs/da194e8d86d045d68e25555a2f64c5e8/071b9b3c029840d2b6e601d46c45c3f2.log"
+  ],
   "rejected_historical_attempts": []
 }
