@@ -482,3 +482,11 @@ class ProjectionTests(unittest.TestCase):
             invalid_view = json.loads(invalid_focus.stdout)
             self.assertFalse(invalid_view["valid"])
             self.assertFalse(invalid_view["editable"])
+            broken = copy.deepcopy(model)
+            broken["nodes"] = []
+            write_json(root, "work/pilot/engineering-model.json", broken)
+            historical_view = model_command(root, "show", "--work-id", "pilot", "--format", "markdown")
+            self.assertEqual(historical_view.returncode, 1)
+            self.assertIn("Last validated", historical_view.stdout)
+            self.assertIn("Noneditable", historical_view.stdout)
+            self.assertIn("EM001_INTENT_COUNT", historical_view.stdout)
