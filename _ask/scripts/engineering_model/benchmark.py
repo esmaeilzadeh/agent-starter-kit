@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.metadata
 import json
 import math
@@ -197,6 +198,12 @@ def run(work_id: str, repeats: int, output: Path) -> dict:
         "schema": "ask-engineering-benchmark/v1",
         "candidate": "Python validator with stdlib graph traversal",
         "implementation_status": "initial candidate; language/tool selection remains open",
+        "source": {
+            "commit": subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPOSITORY,
+                                      capture_output=True, text=True, check=True).stdout.strip(),
+            "validator_sha256": hashlib.sha256((REPOSITORY / "_ask/scripts/engineering_model/validation.py").read_bytes()).hexdigest(),
+            "benchmark_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        },
         "environment": {
             "python": sys.version.split()[0],
             "platform": platform.platform(),
