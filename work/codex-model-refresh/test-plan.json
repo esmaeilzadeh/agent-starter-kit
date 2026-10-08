@@ -1,0 +1,9 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "codex-model-refresh",
+  "spec_digest": "903dc5d640bc05960da6c87086a50c31290ca4bd4fe85909e4d507afea6941ba",
+  "obligations": [],
+  "tests": [],
+  "runners": [],
+  "task_scopes": []
+}

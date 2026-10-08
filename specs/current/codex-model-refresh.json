@@ -1,0 +1,39 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "codex-model-refresh",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "CM-001",
+      "given": "Retired Codex runtime role and pool pins",
+      "when": "Current official guidance and local advertised models are reviewed and sync runs",
+      "then": [
+        "Codex defaults and picker use the specified Astra/Sol/Luna models; high-risk review selects Astra"
+      ],
+      "verification_mode": "review",
+      "reason": "Nonbehavioral model configuration; existing generation behavior is unchanged",
+      "review_decision": {
+        "decision": "PROPOSED",
+        "reviewer": "PENDING-INDEPENDENT-CHALLENGE",
+        "recorded_by": "codex-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "CM-002",
+      "given": "Existing portable stage roles, other runtimes and override precedence",
+      "when": "Codex pins and the existing shell test expectation change",
+      "then": [
+        "Other runtime assignments and override semantics remain intact; existing sync regression check passes"
+      ],
+      "verification_mode": "review",
+      "reason": "Nonbehavioral configuration and expected-output update; repository CheckPlan still executes",
+      "review_decision": {
+        "decision": "PROPOSED",
+        "reviewer": "PENDING-INDEPENDENT-CHALLENGE",
+        "recorded_by": "codex-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    }
+  ]
+}
