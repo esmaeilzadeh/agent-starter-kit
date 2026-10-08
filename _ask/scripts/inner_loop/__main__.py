@@ -58,8 +58,8 @@ def cmd_status(root: Path, work_id: str) -> int:
 def cmd_cas_init(root: Path, work_id: str) -> int:
     graph = load_graph(root, work_id)
     ids = list(_task_map(graph))
-    cas_init(root, work_id, ids)
-    print("revision=0")
+    doc = cas_init(root, work_id, ids)
+    print(f"revision={doc['revision']}")
     return 0
 
 
