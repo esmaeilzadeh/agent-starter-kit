@@ -22,7 +22,7 @@ Update `.agents/ask/bindings/runtimes/codex.yaml`:
 
 Picker: `gpt-6.1-sol`, `gpt-6-astra`, `gpt-6-luna`. No retired GPT-5.4 models remain in active Codex bindings or generated agent files.
 
-`./ask sync` generates all eleven Codex agents from this source. Preserve existing role/override resolution and risk behavior. Preserve all other runtime definitions and inherited reasoning settings.
+`./ask sync` generates all eleven Codex agents from this source. Preserve existing model override resolution and risk behavior, and all other runtime definitions. Revision 3 adds explicit Codex effort generation as authorized in `work/codex-model-refresh/spec-change-effort.md`.
 
 The human clarified that suitability includes cost: simple tasks should use lower-budget models. Defaults therefore preserve a cheap execution tier. For a complex workstream, use the existing `work/<id>/models.yaml` overrides to promote planning/implementation/refactoring to Sol or particularly difficult reasoning to Astra. Complexity and risk are different: review still follows the existing risk pool unless explicitly overridden. No new automatic complexity classifier is introduced.
 
@@ -32,7 +32,9 @@ The human clarified that suitability includes cost: simple tasks should use lowe
 - CM-002: Existing explicit environment/consumer/work overrides and other runtime outputs remain compatible; the sync regression check passes after updating its old Codex expected default.
 - CM-003: Routing guidance distinguishes cheap scoped execution, general reasoning, difficult challenge/high-risk review, and explicit promotion for complex work through the existing workstream overlay.
 
-All are review-only nonbehavioral configuration/documentation criteria. An independent reviewer must approve the exact contract and candidate; repository CheckPlan execution remains mandatory. No new behavior or claimed performance improvement is introduced.
+- CM-004: Generate explicit task-fit effort defaults (Luna/Sol medium, Astra high, Verify low), with independent environment/work/consumer effort overrides, explicit inheritance, unknown-model fallback and pre-write validation. The exact schema and precedence are in the approved change proposal.
+
+CM-001–003 retain independently approved review-only authority. CM-004 is new behavior, requiring actual assertion-red and final green for public-generator integration and end-to-end tests. Independent review and repository CheckPlan remain mandatory. No measured performance improvement is claimed.
 
 ## Evidence and sources
 
@@ -42,7 +44,7 @@ Local catalog: `/home/mohamad/.codex/models_cache.json`, fetched `2026-10-08T14:
 
 ## Non-goals and failure cases
 
-No model API calls, global configuration changes, new routing mechanics, reasoning pins, other-runtime upgrades, or historical artifact rewrites. Report unavailable models or stale loaded roles; do not silently claim a retired cached agent was upgraded during its run.
+No model API calls, global configuration changes, automatic complexity classifier, other-runtime upgrades, or historical artifact rewrites. Report unavailable models or stale loaded roles; do not silently claim a retired cached agent was upgraded during its run.
 
 ## Source intent
 

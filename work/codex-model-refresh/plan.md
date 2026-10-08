@@ -24,7 +24,13 @@ Existing `_ask/tests/test-sync-runtime-agents.sh` exercises actual generation, r
 
 ## Out of scope for this plan
 
-Engineering Model/UI implementation, global Codex settings, benchmarking, reasoning-effort changes, other runtime model changes, pushes and merges.
+Engineering Model/UI implementation (resumed after this prerequisite), global Codex settings, benchmarking, other runtime model changes, pushes and merges to main/develop.
+
+## Authorized effort extension (revision 3)
+
+The human authorized the task-fit effort proposal on 2026-10-08. Independently challenge and pin the amended CM-004 contract. Commit five public-generator cases before production changes and record actual assertion red. Add optional effort resolution to Codex generation only, validating all assignments before output writes. Configure known-model defaults plus Verify low; document effort overlays and complex Sol/high promotion. Regenerate, commit, independently review, run full Verify, and archive exact-revision evidence. Then return to the existing main workstream branch.
+
+Tests cover the end-to-end default generation journey, risk escalation, complete override precedence, inheritance/unknown-model compatibility, and invalid-input non-mutation. All invoke the generator against isolated consumer directories; no test changes global Codex settings.
 
 ## E2E
 

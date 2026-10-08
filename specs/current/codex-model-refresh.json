@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "codex-model-refresh",
-  "revision": 2,
+  "revision": 3,
   "criteria": [
     {
       "id": "CM-001",
@@ -50,6 +50,17 @@
         "recorded_by": "codex-coordinator",
         "policy": "_ask/policies/delegation.md"
       }
+    },
+    {
+      "id": "CM-004",
+      "given": "Current Codex task-fit defaults and optional effort overlays",
+      "when": "The runtime-agent generator resolves and emits all stage assignments",
+      "then": [
+        "Known models receive medium effort except Astra high and Verify low; HIGH/CRITICAL Review follows Astra high",
+        "Explicit ASK_EFFORT environment wins over workstream then consumer settings; explicit inherit and unknown-model fallback omit the effort field",
+        "Invalid effort values fail before any generated outputs change; other runtime outputs and model precedence are unchanged"
+      ],
+      "verification_mode": "tests"
     }
   ]
 }
