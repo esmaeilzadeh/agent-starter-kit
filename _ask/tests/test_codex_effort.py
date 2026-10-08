@@ -76,6 +76,9 @@ class CodexEffortTests(unittest.TestCase):
         self.assertIn('model_reasoning_effort = "low"', self.agent("06-implement"))
 
     def test_inherit_and_unknown_model(self):
+        result = self.generate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('model_reasoning_effort = "medium"', self.agent("06-implement"))
         result = self.generate(ASK_EFFORT_06_IMPLEMENT="inherit",
                                ASK_MODEL_09_VERIFY_CODEX="future-model")
         self.assertEqual(result.returncode, 0, result.stderr)
