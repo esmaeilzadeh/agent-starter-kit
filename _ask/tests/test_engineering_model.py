@@ -18,6 +18,47 @@ from engineering_model.domain import apply_batch
 
 
 class ModelEditTests(unittest.TestCase):
+    def test_revise_invalidates_transitive_decisions(self):
+        model = decision_model()
+        model = apply_batch(model, [{"op": "resolve_decision", "id": "choice", "option_id": "one",
+                                     "actor": "Developer", "rationale": "Initial choice"}])["model"]
+        model["nodes"].extend([
+            {"id": "feature", "type": "feature", "title": "Feature", "lifecycle": "active"},
+            {"id": "assumption", "type": "assumption", "title": "Assumption", "lifecycle": "confirmed"},
+            {"id": "build", "type": "task", "title": "Build", "lifecycle": "planned"},
+        ])
+        for identity in ("second", "third"):
+            node = copy.deepcopy(model["nodes"][1])
+            node["id"], node["title"] = identity, identity
+            model["nodes"].append(node)
+        model["edges"].extend([
+            {"type": "contains", "source": "purpose", "target": "feature"},
+            {"type": "contains", "source": "purpose", "target": "build"},
+            {"type": "depends_on", "source": "second", "target": "feature"},
+            {"type": "depends_on", "source": "second", "target": "choice"},
+            {"type": "depends_on", "source": "third", "target": "second"},
+            {"type": "depends_on", "source": "build", "target": "third"},
+        ])
+        commands = [
+            {"op": "revise_node", "id": "feature", "changes": {"title": "Changed feature"}},
+            {"op": "reopen_decision", "id": "choice", "actor": "Developer", "rationale": "Changed inputs"},
+            {"op": "add_edge", "edge": {"type": "depends_on", "source": "second", "target": "assumption"}},
+        ]
+        for command in commands:
+            changed = apply_batch(model, [command], timestamp="2026-10-08T12:00:00Z")
+            self.assertTrue(changed["valid"], changed)
+            nodes = {n["id"]: n for n in changed["model"]["nodes"]}
+            for identity in ("second", "third"):
+                self.assertEqual(nodes[identity]["lifecycle"], "open", f"{command}: {identity}")
+                self.assertNotIn("resolution", nodes[identity])
+                self.assertTrue(any(h["event"] == "invalidated" and h["resolution"]["option_id"] == "one"
+                                    for h in nodes[identity]["history"]))
+            self.assertEqual(next(t for t in changed["tasks"] if t["id"] == "build")["status"], "blocked")
+        model["edges"].append({"type": "depends_on", "source": "second", "target": "assumption"})
+        removed = apply_batch(model, [{"op": "remove_edge", "edge": {"type": "depends_on", "source": "second", "target": "assumption"}}])
+        self.assertTrue(removed["valid"], removed)
+        self.assertEqual({n["id"]: n["lifecycle"] for n in removed["model"]["nodes"]}["third"], "open")
+
     def test_decision_history_and_dependency_propagation(self):
         model = decision_model()
         model["nodes"].extend([

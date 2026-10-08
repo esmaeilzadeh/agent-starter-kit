@@ -8,6 +8,25 @@ from engineering_fixture import model_command, referenced_model, write_json
 
 
 class DocumentGuardTests(unittest.TestCase):
+    def test_invalid_candidate_preserves_stable_generation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, _spec = referenced_model(root)
+            admitted = json.loads(model_command(root, "admit", "--work-id", "pilot").stdout)
+            identity = admitted["snapshot"]["digest"]
+            batch = write_json(root, "proposal.json", {"commands": [
+                {"op": "add_node", "node": {"id": "orphan", "type": "task", "title": "Orphan", "lifecycle": "planned"}}]})
+            before = {p: (root / p).read_bytes() for p in ("work/pilot/engineering-model.json", "specs/current/pilot.json", "specs/current/pilot.md")}
+            refused = model_command(root, "edit", "--work-id", "pilot", "--expected", identity, "--batch", str(batch))
+            self.assertEqual(refused.returncode, 1, refused.stderr)
+            result = json.loads(refused.stdout)
+            self.assertIn("EM001_PARENT_COUNT", {e["code"] for e in result["diagnostics"]})
+            self.assertEqual(result["steps"], ["pre", "action", "post"])
+            self.assertEqual({p: (root / p).read_bytes() for p in before}, before)
+            shown = json.loads(model_command(root, "show", "--work-id", "pilot").stdout)
+            self.assertEqual(shown["snapshot"]["digest"], identity)
+            self.assertEqual(shown["model"], model)
+
     def test_invalid_prestate_prevents_action(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
