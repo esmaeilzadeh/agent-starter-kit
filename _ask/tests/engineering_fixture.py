@@ -1,6 +1,16 @@
 """Isolated Engineering Model fixtures; never modify a checked-in pilot."""
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
+
+
+def model_command(root, *arguments):
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "scripts")
+    return subprocess.run([sys.executable, "-m", "engineering_model", *arguments],
+                          cwd=root, env=environment, capture_output=True, text=True)
 
 
 def write_json(root, relative, value):
