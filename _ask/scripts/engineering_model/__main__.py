@@ -6,7 +6,16 @@ import json
 from pathlib import Path
 import sys
 
-from .validation import validate
+from .validation import SLUG, validate
+
+
+def _unique_objects(pairs: list[tuple[str, object]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON object key: {key}")
+        result[key] = value
+    return result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -17,6 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     root = Path.cwd().resolve()
+    if not SLUG.fullmatch(args.work_id):
+        parser.error("--work-id must be a lowercase hyphenated slug")
     path = root / "work" / args.work_id / "engineering-model.json"
     try:
         raw = path.read_bytes()
@@ -25,14 +36,14 @@ def main(argv: list[str] | None = None) -> int:
             "schema": "ask-engineering-validation/v1",
             "work_id": args.work_id,
             "valid": False,
-            "diagnostics": [{"code": "EM001_MODEL_READ", "path": str(path), "message": str(exc)}],
+            "diagnostics": [{"code": "EM001_MODEL_READ", "path": f"work/{args.work_id}/engineering-model.json", "message": str(exc)}],
         }
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 1
     try:
-        document = json.loads(raw)
+        document = json.loads(raw, object_pairs_hook=_unique_objects)
         diagnostics = validate(document, root, args.work_id)
-    except (UnicodeError, json.JSONDecodeError) as exc:
+    except (UnicodeError, ValueError) as exc:
         diagnostics = [{
             "code": "EM001_JSON",
             "path": str(path.relative_to(root)),
