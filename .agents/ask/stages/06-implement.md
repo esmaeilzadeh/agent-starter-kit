@@ -62,3 +62,9 @@ Future submissions use candidate-bound `ask-task-result/v2`. After committing th
 ## E2E
 
 Build the spec’s confirmed E2E journeys, or keep `not_applicable` plus reason. Missing E2E with no reason refuses Implement.
+
+## Structured test evidence
+
+Capture actual failing behavior cases at immutable red revisions with `./ask traceability run`; commit the candidate and retain final green separately. Planned outcomes never count as execution.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

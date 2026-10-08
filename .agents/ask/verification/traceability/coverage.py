@@ -69,7 +69,7 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
     assigned=set()
     for task_id,s in scopes.items():
         ids=s.get('test_ids')
-        if not string_list(ids) or not set(ids)<=tests.keys(): errors.append(Violation('invalid_task_scope',field=task_id));continue
+        if not string_list(ids,nonempty=False) or not set(ids)<=tests.keys(): errors.append(Violation('invalid_task_scope',field=task_id));continue
         assigned.update(ids)
     if graph_ids and assigned!=set(tests): errors.append(Violation('unassigned_tests'))
     return errors

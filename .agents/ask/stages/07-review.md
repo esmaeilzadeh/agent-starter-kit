@@ -38,3 +38,9 @@ When `work/<work-id>/inner-loop/tasks.yaml` exists, review the **current** write
 - Required path outside the glob → `glob_too_narrow`; blocked.
 
 Review commits nothing. Scratch writes are allowed. Write an attributable review artifact for the exact candidate and report verdict/boundary to the coordinator. The coordinator uses `./ask inner-loop record-review` to bind that decision to the TaskResult and review bytes; see `_ask/docs/inner-loop-evidence.md`. A worker-supplied acknowledgment alone cannot authorize integration.
+
+## Structured test evidence
+
+Independently review every criterion/type and test assertion, counterexample, changed-test inventory and TDD continuity. The coordinator records the candidate-bound decision with `./ask traceability record-review`.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

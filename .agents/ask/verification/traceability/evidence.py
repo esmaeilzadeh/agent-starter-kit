@@ -20,7 +20,7 @@ def read_at(root,sha,path):
 
 def json_at(root,sha,path):
     try:return json.loads(read_at(root,sha,path))
-    except ValueError as exc:raise Invalid(f'invalid JSON {path}') from exc
+    except json.JSONDecodeError as exc:raise Invalid(f'invalid JSON {path}') from exc
 
 
 def contract_paths(work_id):

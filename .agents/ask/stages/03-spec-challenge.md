@@ -47,3 +47,9 @@ When the challenge writes prose, read the prepared `writing-for-agents` skill an
 ## Model spawn (required)
 
 Spawn the generated Spec Challenge subagent for the current runtime. Present that runtime’s picker list from `_ask/bindings/runtimes/<runtime>.yaml` (default highlighted). The human confirms. If the pick is the same family as Spec on that runtime, warn once; continue after a second confirm. Record `model`, `runtime`, and `parent_model` (or Spec model) on `spec-challenge.md`. Do not author the challenge only in the parent context.
+
+## Structured test evidence
+
+Challenge criterion observability, required test types, review-only authority and migration scope; record an independent decision for the exact contract digests.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

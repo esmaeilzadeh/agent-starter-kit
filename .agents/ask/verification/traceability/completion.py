@@ -96,7 +96,7 @@ def evaluate_completion(contracts, review, executions, trusted_context):
         obligations={o['criterion_id']:o['required_types'] for o in plan['obligations']}
         for criterion in spec['criteria']:
             cid=criterion['id'];tests=[t for t in selected if cid in t['criterion_ids']]
-            if scope=='task' and not tests:continue
+            if scope=='task' and not tests and criterion['verification_mode']=='tests':continue
             evidence=[]
             for test in tests:
                 tid=test['id'];green=finals.get(tid);red=reds.get(tid,[])

@@ -24,7 +24,7 @@ Commands:
       Create branch agent/<work-id> and seed work/<work-id>/.
       <work-id>   required slug
 
-  check-workstream <work-id> [--allow-dirty]
+  check-workstream <work-id> [--allow-dirty] [--acceptance]
       Preconditions before implement (branch, spec, plan).
       --allow-dirty   skip the clean-tree check
 
@@ -36,12 +36,15 @@ Commands:
       --later-only     parked .later/ cards only
       --work-only      workstreams only
 
+  traceability validate-plan|accept-plan|record-review|run|check-completion|migrate <work-id>
+      Structured spec-to-test contracts and evidence. Use --help for arguments.
+
   verify
       Run repo checks; print commit SHA. No flags.
       Env: VERIFY_OUT_DIR, VERIFY_JSON
 
   record-result --work-id <id> --commit-sha <sha> --result <text> [--notes <text>]
-      Workstream provenance. Refuses if --commit-sha is missing.
+      Workstream provenance. Pass requires validated final completion evidence.
 
   record-run --run-id <id> --commit-sha <sha> --metric <value> [--notes <text>] [--out <dir>]
       Experiment provenance. --commit-sha must be HEAD. Tree must be clean.

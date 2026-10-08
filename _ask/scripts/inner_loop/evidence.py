@@ -263,7 +263,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                         or executed.get('result') != 'pass' or identities(checks) != identities(expected)
                         or any(type(c.get('exit_code')) is not int or c['exit_code'] != 0
                                or c.get('status') != 'pass' for c in checks)):
-                    raise NotIntegrable('required candidate verification failed or mismatched its CheckPlan')
+                    raise NotIntegrable('required candidate verification failed or mismatched its CheckPlan: ' + str(executed.get('error', '')))
                 if (git(checkout, 'rev-parse', 'HEAD') != identity['candidate_sha']
                         or git(checkout, 'status', '--porcelain')
                         or plan_identity(checkout, runner)[0] != report['checkplan_digest']):
@@ -271,7 +271,11 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                 report['result'] = 'pass'
             finally:
                 git(root, 'worktree', 'remove', '--force', str(checkout))
+    except NotIntegrable as exc:
+        report['error'] = str(exc)
+        raise
     except (OSError, ValueError) as exc:
+        report['error'] = str(exc)
         raise NotIntegrable(f'candidate verification could not execute: {exc}') from exc
     finally:
         report_path = out / 'integration.json'

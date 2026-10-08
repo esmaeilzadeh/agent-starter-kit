@@ -14,6 +14,7 @@ ask_complete_commands() {
   ask_complete_emit start-work "branch agent/<work-id> + seed work/<work-id>/"
   ask_complete_emit check-workstream "preconditions before implement"
   ask_complete_emit status "live/archived workstreams + later inbox"
+  ask_complete_emit traceability "structured spec-to-test evidence"
   ask_complete_emit verify "run checks; print commit SHA"
   ask_complete_emit record-result "workstream provenance"
   ask_complete_emit record-run "experiment provenance (SHA must be HEAD)"
@@ -55,6 +56,7 @@ ask_complete_flags_for() {
       ;;
     check-workstream)
       ask_complete_emit --allow-dirty "skip the clean-tree check"
+      ask_complete_emit --acceptance "validate final spec-to-test evidence"
       ask_complete_emit -h "help"
       ask_complete_emit --help "help"
       ;;

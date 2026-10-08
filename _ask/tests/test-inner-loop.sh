@@ -220,8 +220,10 @@ checks:
 YAML
 echo 'Coordinator delegates review to an identified reviewer.' > "$DRV/_ask/policies/delegation.md"
 printf '%s\n' 'work/*/inner-loop/state.*' 'work/*/inner-loop/results/' 'work/*/inner-loop/evidence/' '__pycache__/' '*.py[cod]' > "$DRV/.gitignore"
+python3 "$ROOT/_ask/tests/traceability_support.py" seed "$DRV" drv
 git -C "$DRV" add .
 git -C "$DRV" commit -q -m 'committed fixture CheckPlan and TaskGraph'
+python3 "$ROOT/_ask/tests/traceability_support.py" accept "$DRV" drv
 bind_result() {
   python3 - "$DRV" "$1" <<'PY'
 import json,subprocess,sys
@@ -237,6 +239,7 @@ path.write_text(json.dumps(result))
 PY
 }
 record_review() {
+  python3 "$ROOT/_ask/tests/traceability_support.py" review "$DRV" drv
   echo 'APPROVED by fixture-reviewer' > "$DRV/work/drv/inner-loop/evidence/review-$1.md"
   "${PY[@]}" --root "$DRV" record-review drv "$1" --reviewer fixture-reviewer --evidence "work/drv/inner-loop/evidence/review-$1.md" >/dev/null
 }

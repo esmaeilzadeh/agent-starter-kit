@@ -41,3 +41,9 @@ Before finishing the specification, read the prepared `writing-for-agents` skill
 ## E2E
 
 Carry Grill’s E2E applicability into the spec: journeys (or `not_applicable` plus reason), environment, data, reset. Human confirms with this specification. Missing E2E with no reason refuses Plan/Implement.
+
+## Structured test evidence
+
+Create canonical JSON criterion metadata from `_ask/templates/spec.json` alongside the specification; keep stable observable criterion IDs.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

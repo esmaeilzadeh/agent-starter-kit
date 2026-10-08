@@ -15,6 +15,7 @@ import unittest
 from inner_loop.state import SecondWriter, cas_apply, cas_init, load_state
 from inner_loop.driver import NotIntegrable, integrate_ready, run_until, resume_from_state
 from inner_loop.evidence import record_review
+from traceability_support import seed as seed_traceability, accept as accept_traceability, review as review_traceability
 
 
 class IntegrationTests(unittest.TestCase):
@@ -33,7 +34,9 @@ class IntegrationTests(unittest.TestCase):
         self.write("_ask/policies/delegation.md", "Coordinator delegates review to an identified review agent.\n")
         self.write("work/w/inner-loop/tasks.yaml", "schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [src/**]\n  - id: b\n    depends_on: [a]\n    owned_paths: [src/**]\n")
         self.write("src/value", "base\n")
+        seed_traceability(self.root,"w")
         self.commit("base")
+        accept_traceability(self.root,"w")
         self.base = self.git("rev-parse", "HEAD")
         self.assertEqual(run_until(self.root, "w"), "running=a")
         self.write("src/value", "candidate\n")
@@ -65,6 +68,7 @@ class IntegrationTests(unittest.TestCase):
         return self.write("work/w/inner-loop/results/a.json", json.dumps(self.result))
 
     def review(self, **options):
+        review_traceability(self.root,"w",self.result["candidate_sha"])
         self.write("work/w/inner-loop/evidence/review.md", "Reviewer: independent-agent; APPROVED\n")
         return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
                              "work/w/inner-loop/evidence/review.md", **options)

@@ -35,3 +35,9 @@ link. Record the audit path and SHA on `acceptance.md`.
 ## Kit path
 
 See `_ask/policies/workflow.md`. **Accept is the second on-path confirm** (after defaults-OK). Do not auto-close the workstream without it unless delegation says AUTO_ACCEPT_ELIGIBLE **and** policy allows.
+
+## Structured test evidence
+
+Run `./ask check-workstream <work-id> --acceptance`; a task report or edited pass field cannot authorize workstream completion. Retain context-audit and semantic acceptance requirements.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

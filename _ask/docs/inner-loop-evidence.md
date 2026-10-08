@@ -111,3 +111,12 @@ operation metadata, moves the coordinator ref and restores source paths only.
 An in-place TaskResult invalidated by that repair is refused until resubmitted;
 its recorded review and state revision are retained. External/manual Git writers
 remain outside this advisory coordination model.
+
+## Structured spec-to-test gate
+
+Normal integration also validates the task subset of the accepted JSON spec/test
+plan through `_ask/docs/spec-test-traceability.md`. The pinned coordinator runner
+must support `ask-traceability/v1`; otherwise integration reports `migration_required`.
+Candidate-bound traceability records live under `work/<work-id>/traceability/`
+and are preserved with other runtime paths on recovery. Task success cannot
+substitute for final workstream completion. Existing R1/R2 history stays archived.
