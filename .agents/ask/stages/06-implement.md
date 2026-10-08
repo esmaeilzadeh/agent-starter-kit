@@ -57,6 +57,14 @@ When that TaskGraph file exists, run `./ask inner-loop run` (or `resume`). Sched
 
 One committing writer. Done when the current task is `integrated`, `blocked`, or `escalated`.
 
+Future submissions use candidate-bound `ask-task-result/v2`. After committing the candidate, emit its work/task/base/candidate identity and TDD history or typed exemption. Follow `_ask/docs/inner-loop-evidence.md` for the result format and coordinator-recorded review. Integration executes the candidate CheckPlan; worker-reported green fields alone cannot advance state.
+
 ## E2E
 
 Build the spec’s confirmed E2E journeys, or keep `not_applicable` plus reason. Missing E2E with no reason refuses Implement.
+
+## Structured test evidence
+
+Capture actual failing behavior cases at immutable red revisions with `./ask traceability run`; commit the candidate and retain final green separately. Planned outcomes never count as execution.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

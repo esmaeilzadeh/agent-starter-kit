@@ -36,3 +36,9 @@ human close.
 
 Run confirmed E2E checks from `.agents/verification.yaml` unless
 `e2e: not_applicable` plus reason. Record the commit SHA.
+
+## Structured test evidence
+
+`./ask verify` composes static checks and actual per-case execution through the shared Python completion gate; retain its candidate SHA and per-criterion completion report.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

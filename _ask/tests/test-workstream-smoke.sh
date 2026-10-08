@@ -63,6 +63,11 @@ git add work && git commit -q -m "explore handoff" || true
 # Do not invoke full verify.sh here — it would re-run this smoke test.
 sha=$(git rev-parse HEAD)
 test -n "$sha"
-./_ask/scripts/record-result.sh --work-id smoke-demo --commit-sha "$sha" --result pass
+# Handoff smoke does not execute behavior verification and cannot record pass.
+if ./_ask/scripts/record-result.sh --work-id smoke-demo --commit-sha "$sha" --result pass >/dev/null 2>&1; then
+  echo 'FAIL: bare handoff cannot record a verified pass' >&2
+  exit 1
+fi
+./_ask/scripts/record-result.sh --work-id smoke-demo --commit-sha "$sha" --result handoff-checked
 test -f work/smoke-demo/result.json
 echo "PASS: workstream smoke Explore handoff to verify SHA"

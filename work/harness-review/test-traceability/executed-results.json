@@ -1,0 +1,805 @@
+{
+  "schema": "ask-executed-traceability/v1",
+  "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+  "status": "pass",
+  "required_case_count": 18,
+  "mandatory_check_count": 36,
+  "criteria_count": 11,
+  "verification": {
+    "schema": "ask-verify-result/v1",
+    "commit_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+    "result": "pass",
+    "checks": [
+      {
+        "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-ask.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/0.log",
+        "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-askit-complete.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/1.log",
+        "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-askit-first-run.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/2.log",
+        "output_digest": "5c4e2ac5e8897d260071f3548781d02fe928a43a8d0e77e3ed87599f94500870"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-askit-self-install.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/3.log",
+        "output_digest": "054d32ad6fc2fef6b13dd07b747009e99e0a3318691b840e20469e5110e77a1f"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/4.log",
+        "output_digest": "74b39f1843891c737bf08e43977bfb241be54f7a89d9852bf739d64916e481d3"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-check-clean-worktree.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/5.log",
+        "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-check-workstream-guidance.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/6.log",
+        "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-codex-skill-parity.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/7.log",
+        "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-e2e-contract-sections.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/8.log",
+        "output_digest": "9e0a140a2bb2ccb62a7641c7f16fa63960eb733e7686646ab5047da51555516a"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/9.log",
+        "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-humanizer-docs-specs.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/10.log",
+        "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-inner-loop-reliability.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/11.log",
+        "output_digest": "a2aa9edaa73a092a8ce470b0682e5efb2384fec146565a26c2b0e7f5aaf96cc3"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-inner-loop.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/12.log",
+        "output_digest": "83b988f8bbb38e6b46d6c247a15a5e640ead5a8e0c22307cfea13e5b874383f8"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-install-kit-apply.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/13.log",
+        "output_digest": "479b6234060a5ffffc2e69308b5106c18d3cc5b92c7b3706966135f5fc79ae76"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-install-kit-dry-run.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/14.log",
+        "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-install-user-completion.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/15.log",
+        "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-later-inbox-gitignore.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/16.log",
+        "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/17.log",
+        "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/18.log",
+        "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/19.log",
+        "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/20.log",
+        "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-record-run-writes-manifest.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/21.log",
+        "output_digest": "96dc20d58559b049045595b37271b0001b4fd2c3f38fc9875f8520485d0ced11"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-setup-env-gitignore.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/22.log",
+        "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-setup-human-only.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/23.log",
+        "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-stages-inner-loop.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/24.log",
+        "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-start-work-from-develop.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/25.log",
+        "output_digest": "84d48439b8dabe1a4621c0db02cd067b7f3f8e7114cd7023ca42e6d1840e672d"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-start-work-no-explore-map.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/26.log",
+        "output_digest": "01ebe2fa84ac7dfa9503409fdf9d5677a414a28637446e22aa0421fa0e390059"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/27.log",
+        "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-status.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-status.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/28.log",
+        "output_digest": "2b725201c26ac19a1d5c92f3639a9fd83949377423a32bed93dfb6cf5ccd9cc5"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-sync-canonical-ask.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/29.log",
+        "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-sync-off-path-command.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/30.log",
+        "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-sync-runtime-agents.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/31.log",
+        "output_digest": "7f1c7c50bebbd3818153a85a213295ffdb738cfc91e17aff73f9ea05e95148be"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-verify-fail-closed.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/32.log",
+        "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-verify-scaffold.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/33.log",
+        "output_digest": "2a65f2ec57738a74ff91cf7aeed5ecbb8e1bc5e6eb1198f607a000799ad1e6bf"
+      },
+      {
+        "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+        "tier": "mandatory",
+        "command": "_ask/tests/test-workstream-smoke.sh",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/34.log",
+        "output_digest": "2a64a55f71c73e663d890c4f8cab9a657afcba8218d4cdcb1b30613cdbf90e14"
+      },
+      {
+        "id": "traceability-cases",
+        "tier": "mandatory",
+        "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+        "status": "pass",
+        "exit_code": 0,
+        "evidence": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      }
+    ]
+  },
+  "final_case_results": {
+    "schema": "ask-test-results/v1",
+    "run_id": "78400fd3dad44bd289ead8cbc148201a",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+    "spec_digest": "550b94d49178c4a19b6715597a0c920e285570cb321c543368f08fd826f93b9e",
+    "plan_digest": "c2dd338f44264159f356abbdf039e2036f2a33ce430bf86954f73b0300d0c988",
+    "runner_identity": {
+      "capability": "ask-traceability/v1",
+      "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+    },
+    "executions": [
+      {
+        "id": "4280690903c54b41ad7d8b488a91f731",
+        "runner_id": "traceability",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "_ask/tests",
+          "-p",
+          "test_traceability*.py"
+        ],
+        "adapter": "unittest",
+        "actual_argv": [
+          "/usr/bin/python3",
+          "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+          "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.json",
+          "null",
+          "discover",
+          "-s",
+          "_ask/tests",
+          "-p",
+          "test_traceability*.py"
+        ],
+        "interpreter": "/usr/bin/python3",
+        "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "exit_code": 0,
+        "collection_status": "ok",
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      }
+    ],
+    "cases": [
+      {
+        "case_id": "test_traceability_contracts.ContractTests.test_U01_rejects_malformed_contract_fields_and_duplicate_ids",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U01",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_contracts.py": "76324ccf7809ba9c4a0feea1362e4321b44ce7a972045cb5652e664225d99eca"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_contracts.ContractTests.test_U02_unit_does_not_cover_required_e2e_or_orphan_assertions",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U02",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_contracts.py": "76324ccf7809ba9c4a0feea1362e4321b44ce7a972045cb5652e664225d99eca"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_contracts.ContractTests.test_U03_task_scopes_must_match_accepted_graph_and_cover_all_tests",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U03",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_contracts.py": "76324ccf7809ba9c4a0feea1362e4321b44ce7a972045cb5652e664225d99eca"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_entrypoints.EntrypointTests.test_E01_public_red_review_verify_record_accept_journey",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "E01",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_entrypoints.py": "dd9ebd663c4906d5a412ccfa91ae7feb4bbbc7bebf4089c6ff38fee3721227c4",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_entrypoints.EntrypointTests.test_E02_omitted_e2e_names_missing_case_and_never_records_pass",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "E02",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_entrypoints.py": "dd9ebd663c4906d5a412ccfa91ae7feb4bbbc7bebf4089c6ff38fee3721227c4",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_entrypoints.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I05",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_entrypoints.py": "dd9ebd663c4906d5a412ccfa91ae7feb4bbbc7bebf4089c6ff38fee3721227c4",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_entrypoints.EntrypointTests.test_I06_preflight_failure_replaces_old_pass",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I06",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_entrypoints.py": "dd9ebd663c4906d5a412ccfa91ae7feb4bbbc7bebf4089c6ff38fee3721227c4",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_entrypoints.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I07",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_entrypoints.py": "dd9ebd663c4906d5a412ccfa91ae7feb4bbbc7bebf4089c6ff38fee3721227c4",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_evidence.EvidenceTests.test_I03_changed_candidate_invalidates_bound_semantic_review",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I03",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_evidence.py": "2c68f2e7fd684929fd4c2c3cd069fe66ed45d18f5829340040e2e8086c6a44b1",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_evidence.EvidenceTests.test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I04",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_evidence.py": "2c68f2e7fd684929fd4c2c3cd069fe66ed45d18f5829340040e2e8086c6a44b1",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_evidence.EvidenceTests.test_U04_every_required_outcome_collection_and_case_identity_matters",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U04",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_evidence.py": "2c68f2e7fd684929fd4c2c3cd069fe66ed45d18f5829340040e2e8086c6a44b1",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_evidence.EvidenceTests.test_U05_setup_failure_and_missing_red_never_satisfy_tdd",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U05",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_evidence.py": "2c68f2e7fd684929fd4c2c3cd069fe66ed45d18f5829340040e2e8086c6a44b1",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_evidence.EvidenceTests.test_U06_blanket_approval_missing_type_and_counterexample_are_rejected",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U06",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_evidence.py": "2c68f2e7fd684929fd4c2c3cd069fe66ed45d18f5829340040e2e8086c6a44b1",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_evidence.EvidenceTests.test_U07_mutated_log_source_run_identity_or_revision_is_rejected",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "U07",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_evidence.py": "2c68f2e7fd684929fd4c2c3cd069fe66ed45d18f5829340040e2e8086c6a44b1",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_migration.MigrationTests.test_I08_missing_contract_migration_preserves_history_and_config",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I08",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_migration.py": "67402229b4ca9cadf85b2ca9624a99f17a6c984f1d13453f0304c494f884ed63",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_migration.MigrationTests.test_I09_templates_and_stage_commands_share_contract_versions",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I09",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_migration.py": "67402229b4ca9cadf85b2ca9624a99f17a6c984f1d13453f0304c494f884ed63",
+          "_ask/tests/traceability_fixture.py": "fd4360d575b9859718ddb312bdbe252990878642db4cf2fe2746dd3ee89ce813"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_runner.RunnerTests.test_I01_actual_outcomes_and_collection_errors_are_not_exit_code_claims",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I01",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_runner.py": "8320cd3c4d81ddf616bd6e9b7b3ce539c4be8e63ad58bdb83df80db03b8febe4"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      },
+      {
+        "case_id": "test_traceability_runner.RunnerTests.test_I02_red_and_green_retain_real_case_revision_and_log",
+        "outcome": "passed",
+        "failure_kind": null,
+        "test_id": "I02",
+        "runner_id": "traceability",
+        "execution_id": "4280690903c54b41ad7d8b488a91f731",
+        "phase": "final_green",
+        "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+        "source_digests": {
+          "_ask/tests/test_traceability_runner.py": "8320cd3c4d81ddf616bd6e9b7b3ce539c4be8e63ad58bdb83df80db03b8febe4"
+        },
+        "output_artifact": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+        "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+      }
+    ]
+  },
+  "completion": "work/harness-review/test-traceability/completion.json",
+  "review": "work/harness-review/test-traceability/implementation-review.json",
+  "runtime_ledger": "work/harness-review/traceability/executions.json",
+  "historical_red_revisions": [
+    {
+      "revision": "d2da3254df3acd4318a7f2b689540fbd01eae889",
+      "run_id": "c151a633994f46bdadf6053c01bb87b0",
+      "recognized_assertion_red": [
+        "U01",
+        "U02",
+        "U03"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "run_id": "a498339d299b4a988ac7aa0d0f727922",
+      "recognized_assertion_red": [
+        "I01",
+        "I02"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "2e56d955ebb529a46f7058199d7ce443246b26c5",
+      "run_id": "14d8a8cbcfe9446e95f233c3783be8b2",
+      "recognized_assertion_red": [
+        "I03",
+        "I04",
+        "U04",
+        "U05",
+        "U06",
+        "U07"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "0c7474c2d15d79876d095cf8adc811ca8eb240c4",
+      "run_id": "60d8517617bc42e29ef88a3c1ad18c5c",
+      "recognized_assertion_red": [
+        "E01",
+        "E02",
+        "I05",
+        "I06",
+        "I07"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "08508da64918c7e5be605919fcf6d555defac0c4",
+      "run_id": "5e79f1d78a00499daf77c2465f8d3d6e",
+      "recognized_assertion_red": [
+        "I08",
+        "I09"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "58e3a22d3365ceb8a5978ef68ce04ffabe41783a",
+      "run_id": "cd9b91a9e16c43d1a541bf6293aae160",
+      "recognized_assertion_red": [
+        "U05",
+        "I08",
+        "I09"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "0c91d62e9dbaf7b5d8b2de62de40aa427755d1ec",
+      "run_id": "463d98e4a8f845a1b12dac36be43b3e1",
+      "recognized_assertion_red": [
+        "I05",
+        "I04",
+        "U05"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "e399b0d2df50d6c8753f287cb58a059f23dddbed",
+      "run_id": "c341c3025ec6447489947763eb6de78a",
+      "recognized_assertion_red": [
+        "I05",
+        "I06",
+        "I04",
+        "U05"
+      ],
+      "case_errors": []
+    },
+    {
+      "revision": "7c5cece62006bc852977d72a62e278ef1fead3d4",
+      "run_id": "4fa19c015ae840479760e81b6277cf3d",
+      "recognized_assertion_red": [
+        "I08"
+      ],
+      "case_errors": []
+    }
+  ],
+  "historical_correction_red": {
+    "revision": "4b0797e",
+    "run_id": "2e98ccb6e0214bb7b253fa3b00ee53ab",
+    "test_id": "U05"
+  },
+  "rejected_historical_attempts": [
+    {
+      "run_id": "463d98e4a8f845a1b12dac36be43b3e1",
+      "candidate_sha": "0c91d62e9dbaf7b5d8b2de62de40aa427755d1ec",
+      "reasons": [
+        "unknown, unsupported or duplicate historical cases"
+      ],
+      "report_digest": "5cb8a6a2759cf5991b94efc22f85755468dbadfd3053b0a1e0655f1d0443d531",
+      "retained_report": "work/harness-review/traceability/runs/463d98e4a8f845a1b12dac36be43b3e1/results.json"
+    },
+    {
+      "run_id": "c341c3025ec6447489947763eb6de78a",
+      "candidate_sha": "e399b0d2df50d6c8753f287cb58a059f23dddbed",
+      "reasons": [
+        "unknown, unsupported or duplicate historical cases"
+      ],
+      "report_digest": "3206a516eebf698ec31c2d91eef72b709667ca3f690e0f7e771486a7bfaa8a2b",
+      "retained_report": "work/harness-review/traceability/runs/c341c3025ec6447489947763eb6de78a/results.json"
+    },
+    {
+      "run_id": "4fa19c015ae840479760e81b6277cf3d",
+      "candidate_sha": "7c5cece62006bc852977d72a62e278ef1fead3d4",
+      "reasons": [
+        "unknown, unsupported or duplicate historical cases"
+      ],
+      "report_digest": "e56c6a88ff3d2f4eb1a297a889031b5f0b4a77b81b6d1a73b60f8e42ac206c32",
+      "retained_report": "work/harness-review/traceability/runs/4fa19c015ae840479760e81b6277cf3d/results.json"
+    }
+  ],
+  "original_r1_r2": "work/harness-review/evidence/r1-r2-result.json"
+}

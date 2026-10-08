@@ -1,5 +1,11 @@
 # Specification: Inner-loop hardening
 
+## Reliability continuation
+
+Future TaskResult and state-concurrency clauses are superseded by
+`specs/current/harness-review.md`. Archived v1 results remain historical;
+operating instructions are `_ask/docs/inner-loop-evidence.md`.
+
 ## Status
 
 CURRENT

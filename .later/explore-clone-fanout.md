@@ -13,8 +13,8 @@
 ## Proposed What (unapproved)
 
 - Rename command/skill away from `explore` (e.g. `/00-chart`).
-- Tell 00 not to launch Cursor Explore / Task / background agents unless asked.
-- Fetch `mattpocock/skills` once in `./ask prepare`.
+- Tell 00 not to launch runtime Explore / Task / background agents unless asked.
+- Fetch each pinned skill source once during `./ask prepare`.
 
 ## Note
 

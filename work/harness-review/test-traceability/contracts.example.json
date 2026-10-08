@@ -1,0 +1,78 @@
+{
+  "document_kind": "DESIGN_EXAMPLE_NOT_EXECUTED_EVIDENCE",
+  "placeholder_policy": "EXAMPLE_* values are illustrative and must never pass production provenance validation.",
+  "spec": {
+    "schema": "ask-spec/v1",
+    "work_id": "example-expired-invitation",
+    "revision": 1,
+    "criteria": [
+      {
+        "id": "INV-001",
+        "given": "An invitation expired before the current clock time and no account exists for it",
+        "when": "A user attempts to redeem the invitation",
+        "then": ["Redemption is rejected as expired", "No account is created"],
+        "verification_mode": "tests"
+      }
+    ]
+  },
+  "test_plan": {
+    "schema": "ask-test-plan/v1",
+    "work_id": "example-expired-invitation",
+    "spec_digest": "EXAMPLE_SPEC_DIGEST",
+    "obligations": [{"criterion_id": "INV-001", "required_types": ["unit", "e2e"]}],
+    "runners": [
+      {"id": "invitation-unit", "adapter": "unittest", "argv": ["python3", "-m", "unittest", "tests.test_invitation"]},
+      {"id": "invitation-e2e", "adapter": "unittest", "argv": ["python3", "-m", "unittest", "tests.test_invitation_cli"]}
+    ],
+    "tests": [
+      {
+        "id": "INV-U01",
+        "criterion_ids": ["INV-001"],
+        "type": "unit",
+        "change_kind": "new",
+        "scenario": {"given": "An expired invitation and a fixed clock", "when": "The redemption domain operation is called", "then": ["The expired result is returned", "The account repository receives no create call"]},
+        "expected_assertions": [{"criterion_id": "INV-001", "checks": ["Exact domain rejection reason", "No account creation"]}],
+        "runner_id": "invitation-unit",
+        "case_id": "tests.test_invitation.InvitationTests.test_expired_invitation_rejected_without_account",
+        "source_paths": ["tests/test_invitation.py"]
+      },
+      {
+        "id": "INV-E01",
+        "criterion_ids": ["INV-001"],
+        "type": "e2e",
+        "change_kind": "new",
+        "scenario": {"given": "A temporary initialized store containing an expired invitation", "when": "A separate invitation CLI process redeems it through its public command", "then": ["Process exits with the documented expired rejection code", "Public account listing confirms no account exists"]},
+        "expected_assertions": [{"criterion_id": "INV-001", "checks": ["Exit code and expired response", "Persisted account state queried through the public interface"]}],
+        "runner_id": "invitation-e2e",
+        "case_id": "tests.test_invitation_cli.InvitationCliTests.test_expired_invitation_rejected_without_account",
+        "source_paths": ["tests/test_invitation_cli.py"]
+      }
+    ],
+    "task_scopes": [{"task_id": "implement-expiry", "test_ids": ["INV-U01", "INV-E01"]}]
+  },
+  "review_shape": {
+    "schema": "ask-test-review/v1",
+    "reviewer": "EXAMPLE_INDEPENDENT_REVIEWER",
+    "recorded_by": "EXAMPLE_COORDINATOR",
+    "spec_digest": "EXAMPLE_SPEC_DIGEST",
+    "plan_digest": "EXAMPLE_PLAN_DIGEST",
+    "candidate_sha": "EXAMPLE_FINAL_CANDIDATE_SHA",
+    "source_digests": {"tests/test_invitation.py": "EXAMPLE_UNIT_DIGEST", "tests/test_invitation_cli.py": "EXAMPLE_E2E_DIGEST"},
+    "criteria": [{"id": "INV-001", "coverage_decision": "APPROVED", "type_adequacy": "Unit checks domain rules; E2E checks CLI wiring and persistent effects."}],
+    "tests": [
+      {"id": "INV-U01", "decision": "APPROVED", "assertion_assessment": "Asserts rejection reason and absence of repository creation.", "counterexample": "Returning expired after creating an account would fail the no-create assertion.", "tdd_continuity_assessment": "The red and green case retain both behavior assertions."},
+      {"id": "INV-E01", "decision": "APPROVED", "assertion_assessment": "Uses a separate process and checks persisted state through public commands.", "counterexample": "CLI ignores domain rejection and persists an account; response or account listing assertion fails.", "tdd_continuity_assessment": "The same externally observable contract is asserted in red and green."}
+    ]
+  },
+  "case_evidence_shape": {
+    "note": "Each planned case needs its own real records. These two records only illustrate the unit case fields.",
+    "records": [
+      {"test_id": "INV-U01", "case_id": "tests.test_invitation.InvitationTests.test_expired_invitation_rejected_without_account", "phase": "red", "source_sha": "EXAMPLE_FAULTY_REVISION_SHA", "source_digests": {"tests/test_invitation.py": "EXAMPLE_RED_TEST_DIGEST"}, "outcome": "failed", "failure_kind": "behavior_assertion", "output_artifact": "EXAMPLE_RED_LOG_PATH", "output_digest": "EXAMPLE_RED_LOG_DIGEST"},
+      {"test_id": "INV-U01", "case_id": "tests.test_invitation.InvitationTests.test_expired_invitation_rejected_without_account", "phase": "final_green", "source_sha": "EXAMPLE_FINAL_CANDIDATE_SHA", "source_digests": {"tests/test_invitation.py": "EXAMPLE_UNIT_DIGEST"}, "outcome": "passed", "failure_kind": null, "output_artifact": "EXAMPLE_GREEN_LOG_PATH", "output_digest": "EXAMPLE_GREEN_LOG_DIGEST"}
+    ]
+  },
+  "completion_examples": [
+    {"given": "Only INV-U01 passes", "expected_status": "fail", "expected_missing_evidence": [{"criterion_id": "INV-001", "required_type": "e2e", "test_id": "INV-E01"}]},
+    {"given": "Both cases have real passing final runs, valid red/green history and bound approved review", "expected_status": "pass", "condition": "All other contract and mandatory static checks also pass"}
+  ]
+}

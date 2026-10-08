@@ -1,0 +1,91 @@
+{
+  "schema": "ask-plan-results/v1",
+  "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+  "status": "IMPLEMENTED_VERIFIED",
+  "tasks": [
+    {
+      "id": "P01",
+      "status": "done",
+      "commit": "f650c58",
+      "evidence": [
+        "intent.json",
+        "spec-challenge.json"
+      ],
+      "outcome": "Accepted TT contract and user implementation authority; independent challenge clarified provenance without weakening criteria."
+    },
+    {
+      "id": "P02",
+      "status": "done",
+      "commit": "e2bf7d4",
+      "red": "d2da325",
+      "tests": [
+        "U01",
+        "U02",
+        "U03"
+      ],
+      "outcome": "Strict criteria/type/assertion/task graph validation."
+    },
+    {
+      "id": "P03",
+      "status": "done",
+      "commit": "4ec0c4e",
+      "red": "697f6bd",
+      "tests": [
+        "I01",
+        "I02"
+      ],
+      "outcome": "Actual per-case outcomes, immutable revisions, logs, digests and isolated worktrees.",
+      "concrete_fixture_paths": [
+        "_ask/tests/test_traceability_runner.py",
+        "_ask/tests/traceability_fixture.py"
+      ]
+    },
+    {
+      "id": "P04",
+      "status": "done",
+      "commit": "ca70ba6",
+      "red": "2e56d95",
+      "tests": [
+        "U04",
+        "U05",
+        "U06",
+        "U07",
+        "I03",
+        "I04"
+      ],
+      "outcome": "Independent review/changed inventory, narrowly authorized exemptions, coordinator authority ref, final candidate completion. Review corrections: bbbf037 and a4682b5."
+    },
+    {
+      "id": "P05",
+      "status": "done",
+      "commit": "24f4e62",
+      "red": "0c7474c",
+      "tests": [
+        "I05",
+        "I06",
+        "I07",
+        "E01",
+        "E02"
+      ],
+      "outcome": "Shared gate on Verify, integration, acceptance, result recording; positive and omitted-E2E consumer journeys; individual static check/log validation.",
+      "concrete_additional_module": ".agents/ask/verification/traceability/service.py"
+    },
+    {
+      "id": "P06",
+      "status": "done",
+      "commit": "d5494c0",
+      "red": "08508da",
+      "tests": [
+        "I08",
+        "I09"
+      ],
+      "outcome": "Explicit metadata/capability migration, preserved history/YAML, generated stage pointers and passing original reliability fixtures."
+    },
+    {
+      "id": "P07",
+      "status": "done",
+      "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+      "outcome": "All 11 criteria independently approved, all 18 actual cases pass, all 36 checks pass, gate-authorized result and acceptance checks pass."
+    }
+  ]
+}

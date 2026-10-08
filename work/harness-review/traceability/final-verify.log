@@ -1,0 +1,486 @@
+verify: running: _ask/tests/test-ask.sh
+check-clean-worktree: clean
+PASS: ask help, unknown-command, check-clean on clean temp repo
+verify: running: _ask/tests/test-askit-complete.sh
+PASS: askit wraps ./ask; completion is gated until the repo is ask-based
+verify: running: _ask/tests/test-askit-first-run.sh
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.6EeS4lQhat
+status: no live agent/* branches; no archived work/* on master
+PASS: first-run askit gates on git + confirm, then overlays
+verify: running: _ask/tests/test-askit-self-install.sh
+askit: kit /tmp/ask-static-t7oinyt4/candidate @ HEAD
+askit: cache /tmp/tmp.2BSYJnSWgz/.cache/askit/kit
+Cloning into '/tmp/tmp.2BSYJnSWgz/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/harness-review'.
+askit: /tmp/tmp.2BSYJnSWgz/.local/bin/askit -> /tmp/tmp.2BSYJnSWgz/.cache/askit/kit/askit
+askit: /tmp/tmp.2BSYJnSWgz/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.2BSYJnSWgz/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)
+verify: running: _ask/tests/test-bindings-consumer-overlay.sh
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.7eEuF9dZj9
+install-kit: skip existing .gitignore (use --force)
+install-kit: skip existing AGENTS.md (use --force)
+install-kit: skip existing ask (use --force)
+install-kit: skip existing ai-agent-engineering-guide.md (use --force)
+install-kit: skip existing ai-agent-starter-kit-spec.md (use --force)
+install-kit: skip existing .ask.env.example (use --force)
+install-kit: skip existing .ask/README.md (use --force)
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.7eEuF9dZj9
+PASS: install-kit does not clobber consumer bindings/models.yaml
+verify: running: _ask/tests/test-check-clean-worktree.sh
+PASS: check-clean-worktree dirty-tree negative + clean positive
+verify: running: _ask/tests/test-check-workstream-guidance.sh
+PASS: check-workstream missing spec is guidance wording, not a padlock
+verify: running: _ask/tests/test-codex-skill-parity.sh
+PASS: eleven Codex skills match Cursor stage bodies and overlays; sync is idempotent
+PASS: stale ASK skills cleaned; unrelated, unmarked and symlink skills protected
+PASS: reserved preparation names rejected before any installer runs
+PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages
+PASS: install and upgrade fail clearly on blocking consumer ignore rules without deleting them
+verify: running: _ask/tests/test-e2e-contract-sections.sh
+PASS: E2E applicability or not_applicable+reason required in Grill/Spec/Plan/06/09
+verify: running: _ask/tests/test-grilling-skip-trivia-contracts.sh
+PASS: grilling-skip-trivia contracts mention ask-before-prepare, assume-list, ADR 0016
+verify: running: _ask/tests/test-humanizer-docs-specs.sh
+PASS: humanizer human-facing scope, writing-for-agents on machine-first files, ADR 0017
+verify: running: _ask/tests/test-inner-loop-reliability.sh
+.............................
+----------------------------------------------------------------------
+Ran 29 tests in 20.573s
+
+OK
+verify: running: _ask/tests/test-inner-loop.sh
+revision=0
+running=t revision=2
+PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume, driver
+verify: running: _ask/tests/test-install-kit-apply.sh
+install-kit: note — will not modify target docs/ (consumer-owned)
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.3bpdspOgLr
+PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/
+verify: running: _ask/tests/test-install-kit-dry-run.sh
+PASS: install-kit dry-run excludes consumer docs
+verify: running: _ask/tests/test-install-user-completion.sh
+PASS: askit installs user completion files and a one-time rc hook
+verify: running: _ask/tests/test-later-inbox-gitignore.sh
+PASS: later-inbox cards are committable; README stays tracked
+verify: running: _ask/tests/test-prepare-skills-refuses-latest.sh
+PASS: prepare-skills refuses revision=latest
+verify: running: _ask/tests/test-record-result-refuses-missing-sha.sh
+PASS: record-result refuses missing commit SHA
+verify: running: _ask/tests/test-record-run-refuses-dirty.sh
+PASS: record-run refuses dirty tree
+verify: running: _ask/tests/test-record-run-refuses-missing-sha.sh
+PASS: record-run refuses missing commit SHA
+verify: running: _ask/tests/test-record-run-writes-manifest.sh
+check-clean-worktree: clean
+record-run: wrote demo @ 5dd5e2bedb9ecb255a3e3dcc1d0d2f4d6a4c3b3f -> results/demo
+PASS: record-run writes manifest and refuses SHA ≠ HEAD
+verify: running: _ask/tests/test-setup-env-gitignore.sh
+PASS: setup env example is placeholders; secrets paths are ignored
+verify: running: _ask/tests/test-setup-human-only.sh
+PASS: setup --help works; non-TTY setup refuses and does not write .ask.env; verify scaffold refuses non-TTY
+verify: running: _ask/tests/test-stages-inner-loop.sh
+PASS: 06/07/08 call inner-loop with steering owned_paths
+verify: running: _ask/tests/test-start-work-from-develop.sh
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=813dbca5cbac83387b2dcff270285c03884f10d4
+start-work: workstream=work/demo
+PASS: start-work from develop or fail closed
+verify: running: _ask/tests/test-start-work-no-explore-map.sh
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=b324986e6e34189799755a6bd424e9c62e7bbdb5
+start-work: workstream=work/demo
+PASS: start-work does not seed explore-map.md
+verify: running: _ask/tests/test-start-work-refuses-dirty.sh
+PASS: start-work refuses dirty tree without absorbing changes
+verify: running: _ask/tests/test-status.sh
+PASS: status lists live agent/* and archived work/* without checkout; later inbox on checkout
+verify: running: _ask/tests/test-sync-canonical-ask.sh
+PASS: sync prefers .agents/ask/stages over _ask/agents
+verify: running: _ask/tests/test-sync-off-path-command.sh
+PASS: sync copies /off-path as a session-only command
+verify: running: _ask/tests/test-sync-runtime-agents.sh
+PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs
+verify: running: _ask/tests/test-verify-fail-closed.sh
+PASS: verify fail-closed; ask-kit named; no language CLIs in core
+verify: running: _ask/tests/test-verify-scaffold.sh
+verify-scaffold: wrote /tmp/tmp.4EJpx0O7n3/.agents/verification.yaml
+rollback ok
+verify-scaffold: /tmp/tmp.4EJpx0O7n3/.agents/verification.yaml exists; left in place (use --re-scaffold for a candidate)
+verify-scaffold: wrote /tmp/tmp.4EJpx0O7n3/.agents/verification.yaml.candidate
+PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops
+verify: running: _ask/tests/test-workstream-smoke.sh
+check-clean-worktree: clean
+start-work: work-id=smoke-demo
+start-work: branch=agent/smoke-demo
+start-work: HEAD=93b39b2b5c65849b11b540e8de016e00d46a9273
+start-work: workstream=work/smoke-demo
+handoff ok
+check-clean-worktree: clean
+check-workstream: ok work-id=smoke-demo branch=agent/smoke-demo
+{
+  "work_id": "smoke-demo",
+  "commit_sha": "d84921b9fb39be8d1650c820e9e1c7541019ca51",
+  "result": "handoff-checked",
+  "notes": ""
+}
+PASS: workstream smoke Explore handoff to verify SHA
+verify: running: python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'
+{
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+  "result": "pass",
+  "checks": [
+    {
+      "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/0.log",
+      "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-complete.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/1.log",
+      "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-first-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/2.log",
+      "output_digest": "5c4e2ac5e8897d260071f3548781d02fe928a43a8d0e77e3ed87599f94500870"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-self-install.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/3.log",
+      "output_digest": "054d32ad6fc2fef6b13dd07b747009e99e0a3318691b840e20469e5110e77a1f"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/4.log",
+      "output_digest": "74b39f1843891c737bf08e43977bfb241be54f7a89d9852bf739d64916e481d3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-clean-worktree.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/5.log",
+      "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-guidance.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/6.log",
+      "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/7.log",
+      "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/8.log",
+      "output_digest": "9e0a140a2bb2ccb62a7641c7f16fa63960eb733e7686646ab5047da51555516a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/9.log",
+      "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-humanizer-docs-specs.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/10.log",
+      "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop-reliability.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/11.log",
+      "output_digest": "a2aa9edaa73a092a8ce470b0682e5efb2384fec146565a26c2b0e7f5aaf96cc3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/12.log",
+      "output_digest": "83b988f8bbb38e6b46d6c247a15a5e640ead5a8e0c22307cfea13e5b874383f8"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-apply.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/13.log",
+      "output_digest": "479b6234060a5ffffc2e69308b5106c18d3cc5b92c7b3706966135f5fc79ae76"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-dry-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/14.log",
+      "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-user-completion.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/15.log",
+      "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-later-inbox-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/16.log",
+      "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/17.log",
+      "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/18.log",
+      "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/19.log",
+      "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/20.log",
+      "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-writes-manifest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/21.log",
+      "output_digest": "96dc20d58559b049045595b37271b0001b4fd2c3f38fc9875f8520485d0ced11"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-env-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/22.log",
+      "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-human-only.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/23.log",
+      "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/24.log",
+      "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/25.log",
+      "output_digest": "84d48439b8dabe1a4621c0db02cd067b7f3f8e7114cd7023ca42e6d1840e672d"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-no-explore-map.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/26.log",
+      "output_digest": "01ebe2fa84ac7dfa9503409fdf9d5677a414a28637446e22aa0421fa0e390059"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/27.log",
+      "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-status.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-status.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/28.log",
+      "output_digest": "2b725201c26ac19a1d5c92f3639a9fd83949377423a32bed93dfb6cf5ccd9cc5"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/29.log",
+      "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-off-path-command.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/30.log",
+      "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/31.log",
+      "output_digest": "7f1c7c50bebbd3818153a85a213295ffdb738cfc91e17aff73f9ea05e95148be"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/32.log",
+      "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/33.log",
+      "output_digest": "2a65f2ec57738a74ff91cf7aeed5ecbb8e1bc5e6eb1198f607a000799ad1e6bf"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-workstream-smoke.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/static-runs/304f2791a7ad438b9aa28414f108368f/34.log",
+      "output_digest": "2a64a55f71c73e663d890c4f8cab9a657afcba8218d4cdcb1b30613cdbf90e14"
+    },
+    {
+      "id": "traceability-cases",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/harness-review/traceability/runs/78400fd3dad44bd289ead8cbc148201a/4280690903c54b41ad7d8b488a91f731.log",
+      "output_digest": "534caf361de670d8d8c87a4dd4bcd9057cbe1bba493758f1ac49913b3787a3d5"
+    }
+  ]
+}
+verify: commit_sha=a4682b5ed1a6f697411bc0c23b6dca4028f0d40f

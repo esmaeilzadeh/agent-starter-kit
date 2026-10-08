@@ -1,0 +1,13 @@
+{
+  "schema": "ask-completion/v1",
+  "status": "fail",
+  "scope": "workstream",
+  "candidate_sha": "EXAMPLE_SHA",
+  "input_digests": {},
+  "criterion_evidence": [],
+  "missing_evidence": [
+    "EXAMPLE_ONLY"
+  ],
+  "errors": [],
+  "execution_artifacts": []
+}

@@ -1,0 +1,13 @@
+F......
+======================================================================
+FAIL: test_other_candidate_report_is_rejected (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_reliability.py", line 64, in test_other_candidate_report_is_rejected
+    with self.assertRaisesRegex(NotIntegrable, "candidate"):
+AssertionError: NotIntegrable not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 3.280s
+
+FAILED (failures=1)

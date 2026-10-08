@@ -2,6 +2,7 @@
 
 - **Status:** parked (not live; no `agent/*`)
 - **Found during:** free chat (Linus / vibe-coding comparison; Cursor + Claude Code + Codex model-switch investigation, 2026-09-13)
+- **Tracker:** https://github.com/esmaeilzadeh/agent-starter-kit/issues/47
 - **Start later:** new session, `./ask start-work stage-model-subagents`
 - **First stage:** 01 Grill (dest is ownable: adapter-generated stage subagents + preference layers). Skip 00 unless Grill opens “do we become an orchestrator?”
 
@@ -58,4 +59,4 @@ Per-work file can override the same keys for one `work-id` only.
 
 ## Note
 
-Local inbox card (gitignored). Soft spawn is not CI-grade: Cursor parent Task `model` can override frontmatter; Claude `CLAUDE_CODE_SUBAGENT_MODEL` overrides every child; Codex custom-agent attach has been buggy. Grill whether v1 is Review-only + provenance, or full stage map.
+Durable repository card mirrored by the GitHub issue above. Soft spawn is not CI-grade: Cursor parent Task `model` can override frontmatter; Claude `CLAUDE_CODE_SUBAGENT_MODEL` overrides every child; Codex custom-agent attach has been buggy. Grill whether v1 is Review-only + provenance, or full stage map.

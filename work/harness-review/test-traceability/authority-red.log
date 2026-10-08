@@ -1,0 +1,24 @@
+F
+======================================================================
+FAIL: test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations (test_traceability_evidence.EvidenceTests) [coordinator authority]
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_evidence.py", line 70, in test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations
+    with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations (test_traceability_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_evidence.py", line 77, in test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations
+    self.assertEqual(result['status'],'pass',result)
+AssertionError: 'fail' != 'pass'
+- fail
++ pass
+ : {'schema': 'ask-completion/v1', 'status': 'fail', 'scope': 'task', 'task_id': 'a', 'candidate_sha': '5d2727b608bb7d62d3cbe584a47219ccdc407fb6', 'input_digests': {'spec': '5052cd2db73c121106fb5f8816f2daa37982168c0273c8360b17a0f422b352ce', 'plan': '1a5a505dd0edf89424b9aae9a14815f589897c084d69ec02d1fde9cd2440ec34', 'accepted': 'b06c46e38eb5eb8596414c16ee5a4121ac1b30f29dbfab58fcbff5dd6e1a441f', 'review': '890df2aaadc2a90eba4170d71ff3f1d616454f07d94445b5c90d61005b9e7950', 'executions': '4bbce62254db13ced90feb2d0422e684c77217675c95696b717272a2fcecf4cb'}, 'criterion_evidence': [{'criterion_id': 'C1', 'verification_mode': 'tests', 'required_types': ['unit', 'e2e'], 'review': {'id': 'C1', 'coverage_decision': 'APPROVED', 'assessment': 'Exact uppercase output checked at domain and public CLI', 'type_adequacy': {'unit': {'decision': 'APPROVED', 'assessment': 'Calls public render with known literal result'}, 'e2e': {'decision': 'APPROVED', 'assessment': 'Separate app process checks documented stdout and exit status'}}}, 'tests': [{'test_id': 'U', 'case_id': 'test_app.Cases.test_unit', 'type': 'unit', 'tdd': 'red_green', 'red': [{'case_id': 'test_app.Cases.test_unit', 'outcome': 'failed', 'failure_kind': 'behavior_assertion', 'test_id': 'U', 'runner_id': 'r', 'execution_id': '2357a42ca75046a584ff8dd40d8f3998', 'phase': 'red', 'source_sha': 'd7f0ae8fe612e691edd319a8ac29895344affd98', 'source_digests': {'test_app.py': '212984f5c50b1866ac598b6260c902e0b8017e5d47b4f7e10aa9bcf06f8ef3c2'}, 'output_artifact': 'work/w/traceability/runs/4d655ed268494ae781eeb7c61cf5e157/2357a42ca75046a584ff8dd40d8f3998.log', 'output_digest': '71ee98088fba1ac3ac31cfa22522e34d788efb869de4fd7772934c57e557438b'}], 'final_execution': {'case_id': 'test_app.Cases.test_unit', 'outcome': 'passed', 'failure_kind': None, 'test_id': 'U', 'runner_id': 'r', 'execution_id': '3d056e1b800c4a80863fde9d660f98dd', 'phase': 'final_green', 'source_sha': '5d2727b608bb7d62d3cbe584a47219ccdc407fb6', 'source_digests': {'test_app.py': '212984f5c50b1866ac598b6260c902e0b8017e5d47b4f7e10aa9bcf06f8ef3c2'}, 'output_artifact': 'work/w/traceability/runs/88e96c05e8bc4562a71ff5bca54f9b37/3d056e1b800c4a80863fde9d660f98dd.log', 'output_digest': 'a3567a405356930946b1d367979a5547036dad77c96f4eab75f7090b1978b67e'}}]}], 'missing_evidence': [], 'errors': ['E: required case did not pass', 'U: required case did not pass'], 'execution_artifacts': ['work/w/traceability/runs/4d655ed268494ae781eeb7c61cf5e157/2357a42ca75046a584ff8dd40d8f3998.log', 'work/w/traceability/runs/88e96c05e8bc4562a71ff5bca54f9b37/3d056e1b800c4a80863fde9d660f98dd.log']}
+
+----------------------------------------------------------------------
+Ran 1 test in 1.828s
+
+FAILED (failures=2)

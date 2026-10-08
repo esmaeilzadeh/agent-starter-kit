@@ -207,6 +207,42 @@ tasks:
     depends_on: [t-a]
     owned_paths: [b/**]
 YAML
+mkdir -p "$DRV/.agents" "$DRV/_ask/policies" "$DRV/work/drv/inner-loop/evidence"
+mkdir -p "$DRV/.agents/ask"
+cp -R "$ROOT/.agents/ask/verification" "$DRV/.agents/ask/"
+cat > "$DRV/.agents/verification.yaml" <<'YAML'
+schema: ask-checkplan/v1
+no_production_datastore: true
+checks:
+  - id: fixture-check
+    tier: mandatory
+    command: 'true'
+YAML
+echo 'Coordinator delegates review to an identified reviewer.' > "$DRV/_ask/policies/delegation.md"
+printf '%s\n' 'work/*/inner-loop/state.*' 'work/*/inner-loop/results/' 'work/*/inner-loop/evidence/' '__pycache__/' '*.py[cod]' > "$DRV/.gitignore"
+python3 "$ROOT/_ask/tests/traceability_support.py" seed "$DRV" drv
+git -C "$DRV" add .
+git -C "$DRV" commit -q -m 'committed fixture CheckPlan and TaskGraph'
+python3 "$ROOT/_ask/tests/traceability_support.py" accept "$DRV" drv
+bind_result() {
+  python3 - "$DRV" "$1" <<'PY'
+import json,subprocess,sys
+from pathlib import Path
+root=Path(sys.argv[1]);tid=sys.argv[2]
+state=json.loads((root/'work/drv/inner-loop/state.json').read_text())
+path=root/f'work/drv/inner-loop/results/{tid}.json'
+result=json.loads(path.read_text())
+result.update(schema='ask-task-result/v2',work_id='drv',task_id=tid,
+              base_sha=state['tasks'][tid]['base_sha'],
+              candidate_sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip())
+path.write_text(json.dumps(result))
+PY
+}
+record_review() {
+  python3 "$ROOT/_ask/tests/traceability_support.py" review "$DRV" drv
+  echo 'APPROVED by fixture-reviewer' > "$DRV/work/drv/inner-loop/evidence/review-$1.md"
+  "${PY[@]}" --root "$DRV" record-review drv "$1" --reviewer fixture-reviewer --evidence "work/drv/inner-loop/evidence/review-$1.md" >/dev/null
+}
 out="$("${PY[@]}" --root "$DRV" run drv)"
 printf '%s\n' "$out" | grep -q 'running=t-a' || fail "run starts first ready: $out"
 out="$("${PY[@]}" --root "$DRV" run drv)"
@@ -216,6 +252,7 @@ printf '%s\n' "$out" | grep -q 'waiting=t-a' || fail "second run waits, no secon
 cat > "$DRV/work/drv/inner-loop/results/t-a.json" <<'JSON'
 {"schema":"ask-task-result/v1","task_id":"t-a","tdd":null,"exemption":null}
 JSON
+bind_result t-a
 set +e
 out="$("${PY[@]}" --root "$DRV" run drv 2>&1)"
 code=$?
@@ -227,6 +264,7 @@ printf '%s\n' "$out" | grep -qi 'tdd\|integrat' || fail "missing TDD message: $o
 cat > "$DRV/work/drv/inner-loop/results/t-a.json" <<'JSON'
 {"schema":"ask-task-result/v1","task_id":"t-a","tdd":null,"exemption":{"kind":"documentation-only","reason":"x"}}
 JSON
+bind_result t-a
 set +e
 out="$("${PY[@]}" --root "$DRV" run drv 2>&1)"
 code=$?
@@ -238,6 +276,8 @@ printf '%s\n' "$out" | grep -qi 'reviewer_ack\|exemption' || fail "exemption mes
 cat > "$DRV/work/drv/inner-loop/results/t-a.json" <<'JSON'
 {"schema":"ask-task-result/v1","task_id":"t-a","tdd":{"seam":"a","red":{"command":"t","output":"FAIL","exit_code":1},"green":{"command":"t","output":"PASS","exit_code":0}},"exemption":null}
 JSON
+bind_result t-a
+record_review t-a
 out="$("${PY[@]}" --root "$DRV" run drv)"
 printf '%s\n' "$out" | grep -q 'running=t-b' || fail "after TDD integrate, next ready: $out"
 st="$("${PY[@]}" --root "$DRV" status drv)"
@@ -247,6 +287,8 @@ printf '%s\n' "$st" | grep -q 't-a	integrated' || fail "t-a integrated: $st"
 cat > "$DRV/work/drv/inner-loop/results/t-b.json" <<'JSON'
 {"schema":"ask-task-result/v1","task_id":"t-b","tdd":null,"exemption":{"kind":"documentation-only","reason":"x","reviewer_ack":true}}
 JSON
+bind_result t-b
+record_review t-b
 out="$("${PY[@]}" --root "$DRV" run drv)"
 printf '%s\n' "$out" | grep -q 'quiescent' || fail "all integrated → quiescent: $out"
 

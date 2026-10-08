@@ -1,0 +1,21 @@
+{
+  "schema": "ask-accepted-tests/v1",
+  "capability": "ask-traceability/v1",
+  "contract_sha": "ae39b58555fc6ba2966601aa5373bfb2770b775c",
+  "work_id": "harness-review",
+  "reviewer": "codex-independent-traceability-reviewer:/root/traceability_challenge",
+  "recorded_by": "codex-coordinator:/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "plan_review": {
+    "decision": "APPROVED",
+    "reviewer": "codex-independent-traceability-reviewer:/root/traceability_challenge",
+    "spec_digest": "550b94d49178c4a19b6715597a0c920e285570cb321c543368f08fd826f93b9e",
+    "plan_digest": "c2dd338f44264159f356abbdf039e2036f2a33ce430bf86954f73b0300d0c988",
+    "assessment": "Canonical criteria preserve all TT-001 through TT-011; the plan maps exactly all 18 reviewed cases with explicit criterion/type obligations, concrete scenarios, declared case identities and source paths. Required unit/integration/E2E choices fit the respective structural, component and public journey claims. Prior positive integration coverage condition is resolved."
+  },
+  "plan_review_digest": "7b6eea0f0b60519f391aa7af613a40498fdc2948ff9a55bd2576454f2b93fba8",
+  "spec_digest": "550b94d49178c4a19b6715597a0c920e285570cb321c543368f08fd826f93b9e",
+  "plan_digest": "c2dd338f44264159f356abbdf039e2036f2a33ce430bf86954f73b0300d0c988",
+  "graph_digest": "b8cce95f94bb3842447a35cad31d68789df636e11353ab4a75179d86761d804c"
+}

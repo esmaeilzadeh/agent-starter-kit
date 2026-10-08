@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import fcntl
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -37,6 +40,53 @@ def load_state(root: Path, work_id: str) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+@contextmanager
+def state_lock(root: Path, work_id: str):
+    """Serialize cooperative local processes; keep the lock inode across writes."""
+    _require_coordinator()
+    path = state_path(root, work_id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.with_suffix(".lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+
+
+def _write_state(path: Path, doc: dict) -> None:
+    running = [tid for tid, t in doc["tasks"].items() if t.get("status") == "running"]
+    if len(running) > 1:
+        raise SecondWriter("second writer refused; running: " + ",".join(running))
+    # Replacement is atomic for readers. File fsync is not a promise of power-loss
+    # durability for the directory entry on every filesystem.
+    name = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                         prefix=".state-", suffix=".tmp", delete=False) as tmp:
+            name = tmp.name
+            tmp.write(json.dumps(doc, indent=2) + "\n")
+            tmp.flush()
+            os.fsync(tmp.fileno())
+        os.replace(name, path)
+    finally:
+        if name is not None:
+            Path(name).unlink(missing_ok=True)
+
+
+@contextmanager
+def state_transaction(root: Path, work_id: str, observed_revision: int | None = None):
+    """Hold the lock through validation, side effects and one atomic state fold."""
+    with state_lock(root, work_id):
+        doc = load_state(root, work_id)
+        stored = int(doc["revision"])
+        if observed_revision is not None and stored != observed_revision:
+            raise CasConflict(f"revision mismatch: observed={observed_revision} stored={stored}")
+        yield doc
+        doc["revision"] = stored + 1
+        _write_state(state_path(root, work_id), doc)
+
+
 def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str = "") -> dict:
     _require_coordinator()
     doc = {
@@ -60,34 +110,27 @@ def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str
         },
     }
     path = state_path(root, work_id)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
-    return doc
+    with state_lock(root, work_id):
+        if path.exists():
+            return load_state(root, work_id)
+        _write_state(path, doc)
+        return doc
 
 
 def cas_apply(root: Path, work_id: str, observed_revision: int, mutator) -> dict:
-    _require_coordinator()
-    path = state_path(root, work_id)
-    doc = load_state(root, work_id)
-    stored = int(doc.get("revision", 0))
-    if stored != observed_revision:
-        raise CasConflict(f"revision mismatch: observed={observed_revision} stored={stored}")
-    mutator(doc)
-    doc["revision"] = stored + 1
-    path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    with state_transaction(root, work_id, observed_revision) as doc:
+        mutator(doc)
     return doc
 
 
 def spawn_writer(root: Path, work_id: str, task_id: str) -> dict:
-    _require_coordinator()
-    doc = load_state(root, work_id)
-    running = [tid for tid, t in (doc.get("tasks") or {}).items() if t.get("status") == "running"]
-    if running:
-        raise SecondWriter(f"second writer refused; already running: {','.join(running)}")
-    if task_id not in doc.get("tasks", {}):
-        raise KeyError(task_id)
-
-    def mut(d: dict) -> None:
-        d["tasks"][task_id]["status"] = "running"
-
-    return cas_apply(root, work_id, int(doc["revision"]), mut)
+    with state_transaction(root, work_id) as doc:
+        running = [tid for tid, t in doc["tasks"].items() if t.get("status") == "running"]
+        if running:
+            raise SecondWriter(f"second writer refused; already running: {','.join(running)}")
+        task = doc["tasks"][task_id]
+        if task["status"] not in ("pending", "ready"):
+            raise ProtocolViolation(f"cannot start {task_id}: {task['status']}")
+        task["status"] = "running"
+        task["base_sha"] = doc["coordinator_sha"]
+    return doc

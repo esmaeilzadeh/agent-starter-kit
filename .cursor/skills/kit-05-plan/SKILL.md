@@ -48,3 +48,9 @@ When this stage’s resolved model differs from the parent, or an explicit overr
 ## E2E
 
 Map the spec’s E2E contract to tooling and isolation. `not_applicable` plus reason is valid. Missing E2E with no reason refuses this plan.
+
+## Structured test evidence
+
+Prepare `work/<work-id>/test-plan.json`, link every required criterion/type to explicit cases and accepted TaskGraph scopes, then independently review and pin the committed contract before implementation.
+
+Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

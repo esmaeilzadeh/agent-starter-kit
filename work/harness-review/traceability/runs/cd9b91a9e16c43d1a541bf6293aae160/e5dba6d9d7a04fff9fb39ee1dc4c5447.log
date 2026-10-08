@@ -1,0 +1,50 @@
+test_U01_rejects_malformed_contract_fields_and_duplicate_ids (test_traceability_contracts.ContractTests) ... ok
+test_U02_unit_does_not_cover_required_e2e_or_orphan_assertions (test_traceability_contracts.ContractTests) ... ok
+test_U03_task_scopes_must_match_accepted_graph_and_cover_all_tests (test_traceability_contracts.ContractTests) ... ok
+test_E01_public_red_review_verify_record_accept_journey (test_traceability_entrypoints.EntrypointTests) ... ok
+test_E02_omitted_e2e_names_missing_case_and_never_records_pass (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I05_all_normal_entrypoints_reject_omitted_e2e (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I06_preflight_failure_replaces_old_pass (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I03_changed_candidate_invalidates_bound_semantic_review (test_traceability_evidence.EvidenceTests) ... ok
+test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations (test_traceability_evidence.EvidenceTests) ... ok
+test_U04_every_required_outcome_collection_and_case_identity_matters (test_traceability_evidence.EvidenceTests) ... ok
+test_U05_setup_failure_and_missing_red_never_satisfy_tdd (test_traceability_evidence.EvidenceTests) ... FAIL
+test_U06_blanket_approval_missing_type_and_counterexample_are_rejected (test_traceability_evidence.EvidenceTests) ... ok
+test_U07_mutated_log_source_run_identity_or_revision_is_rejected (test_traceability_evidence.EvidenceTests) ... ok
+test_I08_missing_contract_migration_preserves_history_and_config (test_traceability_migration.MigrationTests) ... FAIL
+test_I09_templates_and_stage_commands_share_contract_versions (test_traceability_migration.MigrationTests) ... FAIL
+test_I01_actual_outcomes_and_collection_errors_are_not_exit_code_claims (test_traceability_runner.RunnerTests) ... ok
+test_I02_red_and_green_retain_real_case_revision_and_log (test_traceability_runner.RunnerTests) ... ok
+
+======================================================================
+FAIL: test_U05_setup_failure_and_missing_red_never_satisfy_tdd (test_traceability_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-0sxy1quz/candidate/_ask/tests/test_traceability_evidence.py", line 41, in test_U05_setup_failure_and_missing_red_never_satisfy_tdd
+    self.assertEqual(result['status'],'pass',result)
+AssertionError: 'fail' != 'pass'
+- fail
++ pass
+ : {'schema': 'ask-completion/v1', 'status': 'fail', 'scope': 'workstream', 'task_id': None, 'candidate_sha': '05c25121d06a79ae824f61ca0ce76e15493b4401', 'input_digests': {'spec': '5052cd2db73c121106fb5f8816f2daa37982168c0273c8360b17a0f422b352ce', 'plan': 'c3a5852ff0a006cc565c6d7e8f790b93fd0c1989544c72e823d49fa1e86959c3', 'accepted': '0f61f5d9902901cc22a2d1ba7e7bf83036b007913977d146f84434c0ec5b6160', 'review': 'f62b4ea0fd039fd8100dfa3366b7448b3fac9a89041e980ad853e87f505d1b07', 'executions': '7f60b45cbab3d7aa1d96d98dd443ef209e58bb4177937052fb9f08f081b60203'}, 'criterion_evidence': [{'criterion_id': 'C1', 'verification_mode': 'tests', 'required_types': ['unit', 'e2e'], 'review': {'id': 'C1', 'coverage_decision': 'APPROVED', 'assessment': 'Exact uppercase output checked at domain and public CLI', 'type_adequacy': {'unit': {'decision': 'APPROVED', 'assessment': 'Calls public render with known literal result'}, 'e2e': {'decision': 'APPROVED', 'assessment': 'Separate app process checks documented stdout and exit status'}}}, 'tests': [{'test_id': 'U', 'case_id': 'test_app.Cases.test_unit', 'type': 'unit', 'tdd': 'missing', 'red': [], 'final_execution': {'case_id': 'test_app.Cases.test_unit', 'outcome': 'passed', 'failure_kind': None, 'test_id': 'U', 'runner_id': 'r', 'execution_id': 'aad1926f3d154cf1b5a0e031a0626ffc', 'phase': 'final_green', 'source_sha': '05c25121d06a79ae824f61ca0ce76e15493b4401', 'source_digests': {'test_app.py': 'fc2c75369af911042f04ace25d9bbf8ed971e7fdc9afa3c8c80db73b3698a73d'}, 'output_artifact': 'work/w/traceability/runs/89337fff4f2644bfa1c501d8a0b24e93/aad1926f3d154cf1b5a0e031a0626ffc.log', 'output_digest': '4e143e79415274dfd7ea3f785fbf211c9cbf195ad21b6f844382b394877009ba'}}, {'test_id': 'E', 'case_id': 'test_app.Cases.test_cli', 'type': 'e2e', 'tdd': 'missing', 'red': [], 'final_execution': {'case_id': 'test_app.Cases.test_cli', 'outcome': 'passed', 'failure_kind': None, 'test_id': 'E', 'runner_id': 'r', 'execution_id': 'aad1926f3d154cf1b5a0e031a0626ffc', 'phase': 'final_green', 'source_sha': '05c25121d06a79ae824f61ca0ce76e15493b4401', 'source_digests': {'test_app.py': 'fc2c75369af911042f04ace25d9bbf8ed971e7fdc9afa3c8c80db73b3698a73d'}, 'output_artifact': 'work/w/traceability/runs/89337fff4f2644bfa1c501d8a0b24e93/aad1926f3d154cf1b5a0e031a0626ffc.log', 'output_digest': '4e143e79415274dfd7ea3f785fbf211c9cbf195ad21b6f844382b394877009ba'}}]}], 'missing_evidence': [{'criterion_id': 'C1', 'test_id': 'U', 'reason': 'recognized behavior red and final green required'}, {'criterion_id': 'C1', 'test_id': 'E', 'reason': 'recognized behavior red and final green required'}], 'errors': [], 'execution_artifacts': ['work/w/traceability/runs/89337fff4f2644bfa1c501d8a0b24e93/aad1926f3d154cf1b5a0e031a0626ffc.log']}
+
+======================================================================
+FAIL: test_I08_missing_contract_migration_preserves_history_and_config (test_traceability_migration.MigrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-0sxy1quz/candidate/_ask/tests/test_traceability_migration.py", line 16, in test_I08_missing_contract_migration_preserves_history_and_config
+    self.assertIn('migration_required',result.stdout+result.stderr)
+AssertionError: 'migration_required' not found in '{\n  "schema": "ask-verify-result/v1",\n  "commit_sha": "3fa7bef72ab174cc611848e344b18ae53fcb7fa9",\n  "result": "fail",\n  "checks": [],\n  "error": "invalid JSON work/w/traceability-accepted.json"\n}\nverify: commit_sha=3fa7bef72ab174cc611848e344b18ae53fcb7fa9\nverify: invalid JSON work/w/traceability-accepted.json\n'
+
+======================================================================
+FAIL: test_I09_templates_and_stage_commands_share_contract_versions (test_traceability_migration.MigrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-0sxy1quz/candidate/_ask/tests/test_traceability_migration.py", line 34, in test_I09_templates_and_stage_commands_share_contract_versions
+    self.assertIn('_ask/docs/spec-test-traceability.md',stage.read_text(),str(stage))
+AssertionError: '_ask/docs/spec-test-traceability.md' not found in '# Kit Protocol: 02 Spec\n\nSource contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.\n\nOutput: specification under `specs/` (template `_ask/templates/spec.md`).\n\n## 15.2 02 Spec Agent\n\nPurpose:\n\n```text\nTurn clarified intent into an explicit engineering specification.\n```\n\nMust:\n\n```text\npreserve What and Why\nmake constraints explicit\ndefine observable acceptance criteria\nseparate requirements from implementation preferences\nmark uncertainty explicitly\n```\n\nOutput:\n\n```text\nspecs/proposals/<work-id>.md\n```\n\n---\n\n## Kit path\n\nSee `_ask/policies/workflow.md`. Prepare the spec artifact (do not skip the document). After defaults-OK, mark it CURRENT unless the human asked to stop. Off-path only if they explicitly leave the kit.\n\nBefore finishing the specification, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the specification. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.\n\n## E2E\n\nCarry Grill’s E2E applicability into the spec: journeys (or `not_applicable` plus reason), environment, data, reset. Human confirms with this specification. Missing E2E with no reason refuses Plan/Implement.\n' : /tmp/ask-cases-0sxy1quz/candidate/.agents/ask/stages/02-spec.md
+
+----------------------------------------------------------------------
+Ran 18 tests in 19.475s
+
+FAILED (failures=3)

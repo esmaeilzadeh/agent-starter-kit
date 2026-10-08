@@ -24,7 +24,7 @@ def integrate(root: Path, task_ref: str, method: str = "ff-only") -> str:
     return sha
 
 
-def resume(root: Path, coordinator_sha: str) -> str:
+def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = None) -> str:
     porcelain = _run(root, ["git", "status", "--porcelain"]).stdout
     git_dir = Path(_run(root, ["git", "rev-parse", "--git-dir"]).stdout.strip())
     if not git_dir.is_absolute():
@@ -35,6 +35,21 @@ def resume(root: Path, coordinator_sha: str) -> str:
     anc = _run(root, ["git", "merge-base", "--is-ancestor", coordinator_sha, "HEAD"], check=False)
     if anc.returncode != 0:
         raise Escalate("cannot abort to coordinator_sha; not an ancestor of HEAD")
+    if preserve_paths:
+        # Abort protocol work without letting a global reset rewind/remove the
+        # tracked runtime state currently protected by the coordinator lock.
+        # --quit clears operation metadata but leaves index/worktree intact.
+        if (git_dir / 'MERGE_HEAD').exists():
+            _run(root, ['git', 'merge', '--quit'])
+        if (git_dir / 'CHERRY_PICK_HEAD').exists():
+            _run(root, ['git', 'cherry-pick', '--quit'])
+        current = _run(root, ['git', 'rev-parse', 'HEAD']).stdout.strip()
+        # update-ref leaves even an unmerged index untouched; reset --soft
+        # refuses that index. Expected-old guards against concurrent ref drift.
+        _run(root, ['git', 'update-ref', '-m', 'ask resume source repair', 'HEAD', coordinator_sha, current])
+        _run(root, ['git', 'restore', f'--source={coordinator_sha}', '--staged', '--worktree',
+                    '--', '.', *preserve_paths])
+        return 'aborted'
     if in_progress:
         _run(root, ["git", "merge", "--abort"], check=False)
         _run(root, ["git", "cherry-pick", "--abort"], check=False)

@@ -1,0 +1,287 @@
+{
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "4c13aec67d17228fad5b67074125cf939e2d4c7d",
+  "result": "pass",
+  "checks": [
+    {
+      "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-complete.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-first-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-self-install.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-clean-worktree.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-guidance.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-humanizer-docs-specs.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop-reliability.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-apply.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-dry-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-user-completion.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-later-inbox-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-writes-manifest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-env-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-human-only.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-no-explore-map.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-status.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-status.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-off-path-command.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-workstream-smoke.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": ""
+    }
+  ]
+}
