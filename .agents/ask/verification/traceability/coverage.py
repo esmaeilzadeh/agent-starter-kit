@@ -3,7 +3,7 @@ from __future__ import annotations
 from .contracts import TYPES, POLICY, Violation, digest, indexed, safe_path, scenario, slug, string_list, text
 
 
-def validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = None) -> list[Violation]:
+def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = None) -> list[Violation]:
     errors=[]
     if not isinstance(spec,dict) or not isinstance(plan,dict):
         return [Violation('invalid_contract',field='spec/plan')]
@@ -62,7 +62,7 @@ def validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = Non
     for rid,r in runners.items():
         argv=r.get('argv')
         if (not string_list(argv) or len(argv)<4 or argv[1:3]!=['-m','unittest']
-            or r.get('adapter')!='unittest' or PathName(argv[0]) not in {'python','python3'}):
+            or r.get('adapter')!='unittest' or argv[0] not in {'python','python3'}):
             errors.append(Violation('unsupported_runner',field=rid))
     graph_ids={t['id'] for t in (accepted_task_graph or {}).get('tasks',[])}
     if set(scopes)!=graph_ids: errors.append(Violation('task_graph_mismatch'))
@@ -86,3 +86,8 @@ def scoped_tests(plan,scope='workstream',task_id=None):
         matches=[s['test_ids'] for s in plan['task_scopes'] if s['task_id']==task_id]
         if len(matches)==1: return [t for t in plan['tests'] if t['id'] in matches[0]]
     raise ValueError('invalid accepted task/workstream scope')
+
+
+def validate_plan(spec,plan,accepted_task_graph=None):
+    try:return _validate_plan(spec,plan,accepted_task_graph)
+    except (TypeError,KeyError,AttributeError) as exc:return [Violation('invalid_field_type',field=str(exc))]

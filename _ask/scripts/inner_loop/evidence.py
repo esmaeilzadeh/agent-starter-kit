@@ -51,7 +51,9 @@ def source_changes(root: Path, work_id: str) -> list[str]:
     def operational(name):
         return (name in {prefix + f for f in RUNTIME_FILES}
                 or name.startswith(tuple(prefix + d for d in RUNTIME_DIRS))
-                or (name.startswith(prefix + '.state-') and name.endswith('.tmp')))
+                or (name.startswith(prefix + '.state-') and name.endswith('.tmp'))
+                or name.startswith(f'work/{work_id}/traceability/')
+                or name == f'work/{work_id}/result.json')
     return sorted(n for n in names if n and not operational(n))
 
 
@@ -59,7 +61,8 @@ def runtime_exclusions(work_id: str) -> list[str]:
     prefix = f'work/{work_id}/inner-loop/'
     return ([f':(literal,exclude){prefix}{f}' for f in RUNTIME_FILES]
             + [f':(glob,exclude){prefix}{d}**' for d in RUNTIME_DIRS]
-            + [f':(glob,exclude){prefix}.state-*.tmp'])
+            + [f':(glob,exclude){prefix}.state-*.tmp']
+            + [f':(glob,exclude)work/{work_id}/traceability/**',f':(literal,exclude)work/{work_id}/result.json'])
 
 
 @dataclass
@@ -231,13 +234,18 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
         with tempfile.TemporaryDirectory(prefix='ask-candidate-') as tmp:
             runner, report['runner_digest'] = snapshot_runner(root, identity['base_sha'], Path(tmp) / 'trusted')
             report['runner_sha'] = identity['base_sha']
+            if not (runner.parent/'traceability/__init__.py').is_file():
+                raise NotIntegrable('migration_required: pinned runner has no traceability capability')
             checkout = Path(tmp) / 'checkout'
             git(root, 'worktree', 'add', '--detach', str(checkout), identity['candidate_sha'])
             try:
                 report['tree_sha'] = git(checkout, 'rev-parse', 'HEAD^{tree}')
                 report['checkplan_digest'], expected = plan_identity(checkout, runner)
                 env = dict(os.environ, ASK_ROOT=str(checkout), VERIFY_JSON=str(out / 'verification.json'),
-                           VERIFY_OUT_DIR=str(out))
+                           VERIFY_OUT_DIR=str(out), ASK_WORK_ID=identity['work_id'],
+                           ASK_TRACEABILITY_ANCHOR_SHA=identity['base_sha'],
+                           ASK_TRACEABILITY_RUNTIME_ROOT=str(root), ASK_TRACEABILITY_SCOPE='task',
+                           ASK_TRACEABILITY_TASK_ID=identity['task_id'])
                 with (out / 'output.log').open('w') as log:
                     proc = subprocess.run([sys.executable, str(runner)],
                                           cwd=checkout, env=env, stdout=log, stderr=subprocess.STDOUT)

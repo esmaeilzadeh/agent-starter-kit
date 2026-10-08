@@ -43,13 +43,14 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
                 with log.open('w') as stream:
                     try:
-                        proc=subprocess.run([sys.executable,str(runner_file),str(raw),*argv[3:]],cwd=checkout,env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=300)
+                        actual_argv=[sys.executable,str(runner_file),str(raw),*argv[3:]]
+                        proc=subprocess.run(actual_argv,cwd=checkout,env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=300)
                         code=proc.returncode
                     except subprocess.TimeoutExpired:code=124
                 try:data=json.loads(raw.read_text())
                 except (OSError,ValueError):data={'cases':[],'collection_status':'error'}
                 artifact=str(log.relative_to(root));log_digest=file_digest(log)
-                execution={'id':eid,'runner_id':runner['id'],'argv':argv,'adapter':'unittest','phase':phase,'source_sha':sha,'exit_code':code,
+                execution={'id':eid,'runner_id':runner['id'],'argv':argv,'adapter':'unittest','actual_argv':actual_argv,'interpreter':sys.executable,'interpreter_version':sys.version,'phase':phase,'source_sha':sha,'exit_code':code,
                            'collection_status':data['collection_status'],'output_artifact':artifact,'output_digest':log_digest}
                 report['executions'].append(execution)
                 known={t['case_id']:t for t in plan['tests'] if t['runner_id']==runner['id']}
@@ -61,4 +62,12 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 raise Invalid('candidate source changed during test execution')
         finally:git(root,'worktree','remove','--force',str(checkout))
     (directory/'results.json').write_text(json.dumps(report,indent=2)+'\n')
+    from .evidence import write_json
+    import fcntl
+    ledger=directory.parent.parent/'executions.json'
+    with (directory.parent.parent/'executions.lock').open('a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        entries=json.loads(ledger.read_text()) if ledger.exists() else []
+        entries.append({'run_id':run_id,'digest':digest(report),'phase':phase,'scope':scope,'task_id':task_id,'candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan)})
+        write_json(ledger,entries)
     return report

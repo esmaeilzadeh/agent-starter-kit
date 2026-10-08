@@ -89,20 +89,25 @@ def source_digests(root,sha,plan):
 def inventory(root,base,sha,plan):
     changed=git(root,'diff','--name-only',base,sha,'--','*.py').splitlines()
     sources={name for t in plan['tests'] for name in t['source_paths']}
-    inspected=sorted(set(changed)&sources | {n for n in changed if Path(n).name.startswith('test_')})
-    cases=[];unmapped=[]
+    inspected=sorted(changed)
+    cases=[];unmapped=[];behavior_changes=[]
     for path in inspected:
         try:tree=ast.parse(read_at(root,sha,path))
         except (Invalid,SyntaxError):continue
+        try: old_tree=ast.parse(read_at(root,base,path))
+        except (Invalid,SyntaxError): old_tree=ast.Module(body=[],type_ignores=[])
+        old_methods={f'{c.name}.{m.name}':ast.dump(m,include_attributes=False) for c in old_tree.body if isinstance(c,ast.ClassDef) for m in c.body if isinstance(m,(ast.FunctionDef,ast.AsyncFunctionDef)) and m.name.startswith('test')}
         for cls in tree.body:
             if not isinstance(cls,ast.ClassDef):continue
             for method in cls.body:
                 if not isinstance(method,(ast.FunctionDef,ast.AsyncFunctionDef)) or not method.name.startswith('test'):continue
                 suffix=f'.{cls.name}.{method.name}'
                 matches=[t['id'] for t in plan['tests'] if path in t['source_paths'] and t['case_id'].endswith(suffix)]
-                if len(matches)==1:cases.extend(matches)
+                if len(matches)==1:
+                    cases.extend(matches)
+                    if old_methods.get(f'{cls.name}.{method.name}')!=ast.dump(method,include_attributes=False):behavior_changes.extend(matches)
                 else:unmapped.append(path+suffix)
-    return {'inspected_sources':inspected,'changed_cases':sorted(set(cases)),'unmapped_cases':sorted(unmapped)}
+    return {'inspected_sources':inspected,'changed_cases':sorted(set(cases)),'unmapped_cases':sorted(unmapped),'behavior_changes':sorted(set(behavior_changes))}
 
 
 def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by):
@@ -130,6 +135,8 @@ def review_errors(root,contracts,review,sha):
     if (review.get('inspected_sources')!=actual['inspected_sources'] or review.get('changed_cases')!=actual['changed_cases']
         or set(exclusions)!=set(actual['unmapped_cases']) or any(not text(v) for v in exclusions.values())):
         errors.append('changed test inventory is incomplete')
+    for test in plan['tests']:
+        if test['id'] in actual['behavior_changes'] and test['change_kind']=='regression':errors.append(test['id']+': changed behavior cannot be classified regression')
     from .contracts import indexed
     invalid=[];criteria=indexed(review.get('criteria'),'review.criteria',invalid);tests=indexed(review.get('tests'),'review.tests',invalid)
     if invalid:errors.append('duplicate or malformed semantic review decisions')
@@ -165,5 +172,5 @@ def source_changes(root,work_id):
         names.update(raw.split('\0'))
     prefix=f'work/{work_id}/inner-loop/'
     return sorted(n for n in names if n and not n.startswith(f'work/{work_id}/traceability/')
-                  and n not in {prefix+'state.json',prefix+'state.lock'}
+                  and n not in {prefix+'state.json',prefix+'state.lock',f'work/{work_id}/result.json'}
                   and not n.startswith((prefix+'evidence/',prefix+'results/',prefix+'.state-')))

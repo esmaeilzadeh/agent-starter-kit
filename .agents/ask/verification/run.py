@@ -1,82 +1,88 @@
-# CheckPlan / VerifyResult runner. Language CLIs live in presets, not here.
+"""Pinned CheckPlan and spec-to-test runner; language commands live in presets."""
 from __future__ import annotations
-
 import json
 import os
+from pathlib import Path
+import shlex
 import subprocess
 import sys
-from pathlib import Path
+import tempfile
 
-HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent))
+HERE=Path(__file__).resolve().parent
+sys.path.insert(0,str(HERE.parent))
+from verification.isolation import check_isolation
+from verification.plan import expand_plan,load_plan
+from verification.traceability.adapters import git,run_tests
+from verification.traceability.contracts import Invalid,digest,file_digest
+from verification.traceability.evidence import load_accepted,source_changes,write_json
+from verification.traceability.service import check_completion
 
-from verification.isolation import IsolationLeak, check_isolation  # noqa: E402
-from verification.plan import expand_plan, load_plan  # noqa: E402
 
-
-def main() -> int:
-    root = Path(os.environ.get("ASK_ROOT") or HERE.parents[3]).resolve()
-    os.chdir(root)
-    sha = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        capture_output=True,
-        text=True,
-        cwd=root,
-    ).stdout.strip() or "unknown"
-    out_dir = Path(os.environ.get("VERIFY_OUT_DIR") or ".")
-    out_json = Path(os.environ.get("VERIFY_JSON") or out_dir / "verification-result.json")
-
+def main():
+    root=Path(os.environ.get('ASK_ROOT') or HERE.parents[3]).resolve()
+    runtime=Path(os.environ.get('ASK_TRACEABILITY_RUNTIME_ROOT') or root).resolve()
+    out_dir=Path(os.environ.get('VERIFY_OUT_DIR') or root)
+    out_json=Path(os.environ.get('VERIFY_JSON') or out_dir/'verification-result.json')
+    sha=git(root,'rev-parse','HEAD')
+    branch=git(root,'rev-parse','--abbrev-ref','HEAD')
+    work_id=os.environ.get('ASK_WORK_ID') or (branch.split('/')[1] if branch.startswith('agent/') else None)
+    anchor=os.environ.get('ASK_TRACEABILITY_ANCHOR_SHA') or sha
+    scope=os.environ.get('ASK_TRACEABILITY_SCOPE','workstream');task_id=os.environ.get('ASK_TRACEABILITY_TASK_ID')
+    doc={'schema':'ask-verify-result/v1','commit_sha':sha,'result':'fail','checks':[]}
+    receipt={'candidate_sha':sha,'result':'fail'}
+    completion=None
+    checkout=None;tmp=None
     try:
-        plan = load_plan(root)
-        checks = expand_plan(root, plan)
-    except FileNotFoundError as e:
-        print(f"verify: {e}", file=sys.stderr)
-        return 1
-
-    mandatory = [c for c in checks if c.get("tier", "mandatory") == "mandatory"]
-    if not checks or not mandatory:
-        print("verify: empty CheckPlan or zero mandatory checks", file=sys.stderr)
-        return 1
-
-    try:
-        check_isolation(root, plan, [c.get("command", "") for c in checks])
-    except IsolationLeak as e:
-        print(f"verify: {e}", file=sys.stderr)
-        return 1
-
-    results = []
-    overall = 0
-    for c in checks:
-        cmd = c["command"]
-        print(f"verify: running: {cmd}")
-        proc = subprocess.run(["bash", "-lc", cmd], cwd=root)
-        code = proc.returncode
-        status = "pass" if code == 0 else "fail"
-        if code != 0:
-            overall = 1
-        results.append(
-            {
-                "id": c.get("id", cmd),
-                "tier": c.get("tier", "mandatory"),
-                "command": cmd,
-                "status": status,
-                "exit_code": code,
-                "evidence": "",
-            }
-        )
-
-    doc = {
-        "schema": "ask-verify-result/v1",
-        "commit_sha": sha,
-        "result": "pass" if overall == 0 else "fail",
-        "checks": results,
-    }
-    print(json.dumps(doc, indent=2))
-    out_json.parent.mkdir(parents=True, exist_ok=True)
-    out_json.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
-    print(f"verify: commit_sha={sha}")
-    return overall
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        plan=load_plan(root);checks=expand_plan(root,plan)
+        if not checks or not any(c.get('tier','mandatory')=='mandatory' for c in checks):raise Invalid('empty CheckPlan or zero mandatory checks')
+        check_isolation(root,plan,[c.get('command','') for c in checks])
+        receipt['checkplan_digest']=digest({'checks':checks,'yaml_digest':file_digest(root/'.agents/verification.yaml')})
+        contracts=None
+        if work_id:
+            contracts=load_accepted(root,work_id,anchor,sha)
+            if root==runtime and source_changes(root,work_id):raise Invalid('dirty candidate source')
+            # Both behavior and static checks execute committed immutable source.
+            if root==runtime:
+                tmp=tempfile.TemporaryDirectory(prefix='ask-static-');checkout=Path(tmp.name)/'candidate'
+                git(root,'worktree','add','--detach',str(checkout),sha)
+            cases=run_tests(runtime,contracts,sha,scope,task_id)
+        check_root=checkout or root
+        cache={}
+        if contracts:
+            for runner in contracts['plan']['runners']:
+                runs=[r for r in cases['executions'] if r['runner_id']==runner['id']]
+                if len(runs)==1:
+                    cache[tuple(runner['argv'])]=runs[0]['exit_code'] if runs[0]['collection_status']=='ok' else 1
+        command_cache={}
+        for check in checks:
+            command=check['command'];print(f'verify: running: {command}',flush=True)
+            if command in command_cache:code=command_cache[command]
+            elif tuple(shlex.split(command)) in cache and not any(c in command for c in '|;&<>$`\n'):
+                code=cache[tuple(shlex.split(command))]
+            else:
+                env=dict(os.environ,ASK_ROOT=str(check_root),PYTHONDONTWRITEBYTECODE='1')
+                proc=subprocess.run(['bash','-lc',command],cwd=check_root,env=env);code=proc.returncode
+            command_cache[command]=code
+            doc['checks'].append({'id':check.get('id',command),'tier':check.get('tier','mandatory'),'command':command,'status':'pass' if code==0 else 'fail','exit_code':code,'evidence':''})
+        if any(c['exit_code'] for c in doc['checks']):raise Invalid('required candidate verification failed')
+        if git(check_root,'rev-parse','HEAD')!=sha or (work_id and source_changes(check_root,work_id)):raise Invalid('candidate source/CheckPlan changed during verification')
+        receipt['result']='pass'
+        if work_id:
+            write_json(runtime/'work'/work_id/'traceability'/('static-'+sha+'.json'),receipt)
+            completion=check_completion(root,work_id,sha,anchor,scope,task_id,receipt,runtime)
+            if completion['status']!='pass':raise Invalid('spec-to-test completion failed: '+json.dumps(completion))
+        doc['result']='pass'
+    except (OSError,ValueError,KeyError,TypeError,RuntimeError) as exc:
+        doc['error']=str(exc);print('verify: '+str(exc),file=sys.stderr)
+        if work_id and completion is None:
+            completion={'schema':'ask-completion/v1','status':'fail','scope':scope,'task_id':task_id,'candidate_sha':sha,'input_digests':{},'criterion_evidence':[],'missing_evidence':[],'errors':[str(exc)],'execution_artifacts':[]}
+            write_json(runtime/'work'/work_id/'traceability'/'completion.json',completion)
+            write_json(runtime/'work'/work_id/'traceability'/('static-'+sha+'.json'),receipt)
+    finally:
+        if checkout:
+            git(root,'worktree','remove','--force',str(checkout))
+        if tmp:tmp.cleanup()
+        write_json(out_json,doc)
+    print(json.dumps(doc,indent=2));print('verify: commit_sha='+sha)
+    return 0 if doc['result']=='pass' else 1
+if __name__=='__main__':raise SystemExit(main())

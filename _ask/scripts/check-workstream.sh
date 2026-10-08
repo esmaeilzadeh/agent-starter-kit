@@ -11,10 +11,12 @@ if [[ $# -lt 1 || -z "${1:-}" ]]; then
 fi
 WORK_ID="$1"
 ALLOW_DIRTY=0
+ACCEPTANCE=0
 shift || true
 for arg in "$@"; do
   case "$arg" in
     --allow-dirty) ALLOW_DIRTY=1 ;;
+    --acceptance) ACCEPTANCE=1 ;;
     *) echo "unknown arg: $arg" >&2; exit 2 ;;
   esac
 done
@@ -24,6 +26,10 @@ EXPECTED="agent/${WORK_ID}"
 if [[ "$BRANCH" != "$EXPECTED" ]]; then
   echo "check-workstream: branch '${BRANCH}' is not dedicated to work-id '${WORK_ID}' (expected '${EXPECTED}')" >&2
   exit 1
+fi
+
+if [[ "$ACCEPTANCE" -eq 1 ]]; then
+  exec "$ROOT/_ask/scripts/traceability.sh" --root "$ROOT" check-acceptance "$WORK_ID"
 fi
 
 if [[ "$ALLOW_DIRTY" -eq 0 ]]; then

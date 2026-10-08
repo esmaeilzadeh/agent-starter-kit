@@ -61,4 +61,5 @@ class Consumer:
                 'tests':[{'id':t['id'],'decision':'APPROVED','assertion_assessment':'Checks literal HELLO, not output derived from render','counterexample':'Returning the input unchanged fails exact output comparison','tdd_continuity_assessment':'Same test source and exact output assertions in red and green'} for t in plan['tests']]}
     def context(self):return {'root':self.root,'candidate_sha':self.sha,'scope':'workstream','task_id':None,'static_checks':{'result':'pass','candidate_sha':self.sha}}
     def command(self,*args):
-        return subprocess.run([str(self.root/'ask'),*args],cwd=self.root,text=True,capture_output=True,env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1'))
+        env={k:v for k,v in os.environ.items() if not k.startswith(('ASK_TRACEABILITY_','VERIFY_')) and k not in {'ASK_ROOT','ASK_WORK_ID'}}
+        return subprocess.run([str(self.root/'ask'),*args],cwd=self.root,text=True,capture_output=True,env=dict(env,PYTHONDONTWRITEBYTECODE='1'))
