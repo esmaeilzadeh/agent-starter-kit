@@ -9,6 +9,9 @@ import copy
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import patch
+import os
+import shutil
+import subprocess
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from engineering_model.actions import run_action, edit
@@ -16,6 +19,55 @@ from engineering_model.admission import admit, load_published
 
 
 class DocumentGuardTests(unittest.TestCase):
+    def test_public_mutators_cannot_bypass_admission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = Path(__file__).resolve().parents[2]
+            shutil.copytree(source / "_ask/scripts", root / "_ask/scripts", ignore=shutil.ignore_patterns("__pycache__"))
+            shutil.copytree(source / ".agents/ask/verification", root / ".agents/ask/verification", ignore=shutil.ignore_patterns("__pycache__"))
+            shutil.copy2(source / "ask", root / "ask")
+            def git(*arguments):
+                return subprocess.check_output(["git", *arguments], cwd=root, text=True, stderr=subprocess.PIPE).strip()
+            git("init", "-q", "-b", "agent/pilot")
+            git("config", "user.name", "Test")
+            git("config", "user.email", "test@example.com")
+            (root / ".gitignore").write_text("__pycache__/\nwork/pilot/traceability/\nverification-result.json\n", encoding="utf-8")
+            model, _spec = referenced_model(root)
+            before, errors = admit(root, "pilot")
+            self.assertEqual(errors, [])
+            model["nodes"] = []
+            write_json(root, "work/pilot/engineering-model.json", model)
+            (root / "work/pilot/plan.md").write_text("# Plan\n", encoding="utf-8")
+            (root / ".agents/verification.yaml").write_text("schema: ask-checkplan/v1\nno_production_datastore: true\nchecks:\n  - command: 'false'\n    tier: mandatory\n", encoding="utf-8")
+            git("add", ".")
+            git("commit", "-qm", "invalid adopted fixture")
+            sha = git("rev-parse", "HEAD")
+            marker = root / "action-marker"
+            commands = [
+                ["verify"],
+                ["record-result", "--work-id", "pilot", "--commit-sha", sha, "--result", "pass"],
+                ["check-workstream", "pilot", "--acceptance"],
+                ["inner-loop", "run", "pilot"], ["inner-loop", "resume", "pilot"],
+                ["inner-loop", "integrate", "--task-ref", "HEAD"],
+                ["traceability", "record-review", "pilot", "--candidate-sha", sha,
+                 "--recorded-by", "coordinator", "--evidence", "must-not-be-read.json"],
+                ["traceability", "check-acceptance", "pilot"],
+                ["model", "admit", "--work-id", "pilot", "--action", "review", "--",
+                 sys.executable, "-c", "from pathlib import Path; Path('action-marker').write_text('ran')"],
+                ["model", "edit", "--work-id", "pilot", "--expected", before.identity["digest"],
+                 "--batch", "must-not-be-read.json"],
+            ]
+            environment = {k: v for k, v in os.environ.items() if not k.startswith(("ASK_", "VERIFY_"))}
+            environment["PYTHONDONTWRITEBYTECODE"] = "1"
+            for command in commands:
+                process = subprocess.run([str(root / "ask"), *command], cwd=root, env=environment,
+                                         capture_output=True, text=True)
+                self.assertNotEqual(process.returncode, 0, command)
+                self.assertIn("EM001_INTENT_COUNT", process.stdout + process.stderr,
+                              f"{command} bypassed shared document admission: {process.stdout}{process.stderr}")
+                self.assertFalse(marker.exists(), command)
+                self.assertEqual(load_published(root, "pilot").identity, before.identity)
+
     def test_successful_guard_order_and_identities(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
