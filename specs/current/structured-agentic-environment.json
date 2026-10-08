@@ -1,0 +1,61 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "structured-agentic-environment",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "EM-001",
+      "given": "A broad typed model or malformed graph/reference/lifecycle",
+      "when": "Standalone validation runs",
+      "then": [
+        "Valid models are accepted and duplicate/broken identities, illegal edges/cardinality/cycles, malformed fields and lifecycle conflicts produce precise nonmutating diagnostics"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-002",
+      "given": "A valid Engineering Model with decisions and dependent tasks",
+      "when": "A digest-bound semantic edit or concurrent stale edit is submitted",
+      "then": [
+        "Attributable history, revisions, blockers and transitive decision invalidation are persisted atomically; invalid and stale writers preserve definition bytes"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-003",
+      "given": "Canonical scenario/test references and coordinator evidence, possibly missing, tampered or historical",
+      "when": "Read-only scenario and evidence projection runs",
+      "then": [
+        "Assertions, actual outcomes and revision provenance are inspected through existing authority; missing/invalid/historical evidence is honest and inspection writes nothing"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-004",
+      "given": "One revisioned model used by agents and humans",
+      "when": "Public CLI validates, projects JSON/Markdown and performs a decision journey",
+      "then": [
+        "Both projections retain identical IDs/digest and task/attention state, useful errors preserve data and CLI edits survive reload"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-005",
+      "given": "Valid or malformed workstream definitions and real evidence references",
+      "when": "Interactive work/scenario inspection runs",
+      "then": [
+        "Canonical assertions/tests/revisions and honest evidence states are visible; invalid definitions have actionable diagnostics"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-006",
+      "given": "An attention item, valid/invalid decision form or concurrently changed definition",
+      "when": "The developer records a reasoned choice then reloads, or submits a stale/invalid form",
+      "then": [
+        "A valid choice persists and changes task attention; stale or invalid submissions reject without writes"
+      ],
+      "verification_mode": "tests"
+    }
+  ]
+}
