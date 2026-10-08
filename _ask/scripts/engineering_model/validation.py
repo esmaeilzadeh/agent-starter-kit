@@ -202,11 +202,11 @@ def validate(document: object, root: str | Path, work_id: str) -> list[dict]:
         elif kind == "covers":
             valid = source_type == "test" and target_type == "scenario"
         elif kind == "implements":
-            valid = source_type == "implementation" and target_type in {"scenario", "task"}
+            valid = source_type == "implementation" and isinstance(target_type, str) and target_type in {"scenario", "task"}
         elif kind == "executes":
             valid = source_type == "test_run" and target_type == "test"
         elif kind == "supports":
-            valid = source_type == "evidence" and target_type in {"test", "test_run"}
+            valid = source_type == "evidence" and isinstance(target_type, str) and target_type in {"test", "test_run"}
         if not valid:
             errors.append(_diagnostic("EM001_ILLEGAL_EDGE", path, "edge is not legal for its node types", source, target))
 
@@ -282,6 +282,7 @@ def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
         option_ids: set[str] = set()
     else:
         option_ids = set()
+        labels: set[str] = set()
         for index, option in enumerate(options):
             if not isinstance(option, dict) or set(option) != {"id", "label"}:
                 errors.append(_diagnostic("EM001_DECISION_OPTION", f"{path}.options[{index}]", "option needs id and label", node_id))
@@ -291,8 +292,10 @@ def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
                 errors.append(_diagnostic("EM001_DECISION_OPTION", f"{path}.options[{index}].id", "option id must be unique and nonempty", node_id))
             else:
                 option_ids.add(option_id)
-            if not isinstance(label, str) or not label.strip():
-                errors.append(_diagnostic("EM001_DECISION_OPTION", f"{path}.options[{index}].label", "option label must be nonempty", node_id))
+            if not isinstance(label, str) or not label.strip() or label in labels:
+                errors.append(_diagnostic("EM001_DECISION_OPTION", f"{path}.options[{index}].label", "option label must be unique and nonempty", node_id))
+            else:
+                labels.add(label)
     lifecycle = node.get("lifecycle")
     resolution = node.get("resolution")
     if lifecycle == "resolved":
