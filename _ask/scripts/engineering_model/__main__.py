@@ -17,6 +17,7 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     validate_parser = commands.add_parser("validate", help="validate the workstream Engineering Model")
     validate_parser.add_argument("--work-id", required=True)
+    validate_parser.add_argument("--full", action="store_true", help="force full validation (currently every check is full)")
     admit_parser = commands.add_parser("admit", help="admit current documents to a validated generation (not workflow authorization)")
     admit_parser.add_argument("--work-id", required=True)
     admit_parser.add_argument("--expected", help="refuse if the complete input digest has changed")
@@ -26,11 +27,25 @@ def main(argv: list[str] | None = None) -> int:
     edit_parser.add_argument("--work-id", required=True)
     edit_parser.add_argument("--expected", required=True, help="complete displayed input digest")
     edit_parser.add_argument("--batch", required=True, help="JSON proposal file")
+    watch_parser = commands.add_parser("watch", help="validate external saves with native observation and freshness fallback")
+    watch_parser.add_argument("--work-id", required=True)
+    watch_parser.add_argument("--once", action="store_true")
     args = parser.parse_args(argv)
 
     root = Path.cwd().resolve()
     if not SLUG.fullmatch(args.work_id):
         parser.error("--work-id must be a lowercase hyphenated slug")
+    if args.command == "watch":
+        from .observer import updates
+        try:
+            valid = True
+            for result in updates(root, args.work_id, once=args.once):
+                print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
+                valid = result["valid"]
+            return 0 if valid else 1
+        except (RuntimeError, OSError) as exc:
+            print(json.dumps({"valid": False, "diagnostics": [{"code": "EM007_OBSERVER", "path": "$", "message": str(exc)}]}))
+            return 1
     if args.command == "edit":
         result = edit(root, args.work_id, args.expected, lambda: decode(Path(args.batch).read_bytes()))
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))

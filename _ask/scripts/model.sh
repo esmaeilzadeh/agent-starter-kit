@@ -6,8 +6,8 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   export PYTHONPATH="$ROOT/_ask/scripts${PYTHONPATH:+:$PYTHONPATH}"
   exec python3 -m engineering_model --help
 fi
-if [[ "${1:-}" != "validate" && "${1:-}" != "admit" && "${1:-}" != "show" && "${1:-}" != "edit" ]]; then
-  echo "usage: ./ask model {validate|admit|show|edit} --work-id <work-id>" >&2
+if [[ "${1:-}" != "validate" && "${1:-}" != "admit" && "${1:-}" != "show" && "${1:-}" != "edit" && "${1:-}" != "watch" ]]; then
+  echo "usage: ./ask model {validate|admit|show|edit|watch} --work-id <work-id>" >&2
   exit 2
 fi
 export PYTHONPATH="$ROOT/_ask/scripts${PYTHONPATH:+:$PYTHONPATH}"

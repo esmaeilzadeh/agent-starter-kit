@@ -91,7 +91,7 @@ def _rollback(root, journal):
     return conflicts
 
 
-def recover_locked(root, work_id, state):
+def recover_locked(root, work_id, state, *, validated=None):
     """Resume a journal under the writer lock; no semantic action is re-invoked."""
     path = state / "pending.json"
     if not path.exists():
@@ -119,7 +119,12 @@ def recover_locked(root, work_id, state):
                 raise Refused("EM007_RECOVERY_CONFLICT", "external save conflicts with interrupted action", relative)
         for relative, record in journal["changes"].items():
             _write_target(root, relative, _decoded(record["after"]))
-        candidate, errors = validate_current(root, work_id, allow_pending=True)
+        if validated is None:
+            candidate, errors = validate_current(root, work_id, allow_pending=True)
+        else:
+            candidate, errors = validated, []
+            if not is_current(candidate, root):
+                errors = [{"code": "EM007_INPUT_CHANGED"}]
         if errors or candidate.identity["digest"] != journal["result_digest"]:
             conflicts = _rollback(root, journal)
             if not conflicts:
@@ -188,7 +193,7 @@ def run_action(root, work_id, expected, action):
             _sync_directory(state)
             # Recovery applies the staged bytes, validates again, and moves the
             # single publication pointer. It never calls action again.
-            recover_locked(root, work_id, state)
+            recover_locked(root, work_id, state, validated=candidate)
             steps.append("publication")
     except Refused as exc:
         diagnostics = [exc.diagnostic]
@@ -200,6 +205,7 @@ def run_action(root, work_id, expected, action):
 def _result(base, candidate, diagnostics, steps):
     return {"schema": "ask-engineering-action/v1", "valid": not diagnostics,
             "diagnostics": diagnostics, "steps": steps,
+            "validation_counts": {"pre": steps.count("pre"), "post": steps.count("post")},
             "input_snapshot": base.identity if base is not None else None,
             "snapshot": candidate.identity if candidate is not None else None}
 
