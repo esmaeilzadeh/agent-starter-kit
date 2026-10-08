@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 from . import CAPABILITY
 from .adapters import git
-from .contracts import Invalid, POLICY, digest, file_digest, load, safe_path, slug, text
+from .contracts import EXEMPTIONS, Invalid, POLICY, digest, file_digest, load, safe_path, slug, text
 from .coverage import validate_plan
 from verification.yaml_lite import parse_yaml
 
@@ -38,7 +38,7 @@ def contracts_at(root,work_id,sha):
     return {'spec':spec,'plan':plan,'graph':graph}
 
 
-def accept_plan(root,work_id,revision,reviewer,recorded_by,evidence):
+def _accept_plan(root,work_id,revision,reviewer,recorded_by,evidence):
     if not text(reviewer) or not text(recorded_by) or reviewer==recorded_by:raise Invalid('independent reviewer and coordinator required')
     sha=git(root,'rev-parse','--verify',revision+'^{commit}')
     contracts=contracts_at(root,work_id,sha)
@@ -52,12 +52,29 @@ def accept_plan(root,work_id,revision,reviewer,recorded_by,evidence):
          'reviewer':reviewer,'recorded_by':recorded_by,'policy':POLICY,'policy_digest':file_digest(Path(root)/POLICY),
          'plan_review':decision,'plan_review_digest':digest(decision),
          **{k+'_digest':digest(v) for k,v in contracts.items()}}
+    # Store coordinator authority outside the candidate tree. A source commit
+    # cannot advance this ref; only an explicit reviewed accept-plan operation can.
+    ref=f'refs/ask/accepted-tests/{work_id}'
+    previous=subprocess.run(['git','rev-parse','--verify',ref],cwd=root,capture_output=True,text=True).stdout.strip()
+    def object_command(args,data):
+        proc=subprocess.run(['git',*args],input=data,cwd=root,capture_output=True)
+        if proc.returncode:raise Invalid(proc.stderr.decode())
+        return proc.stdout.decode().strip()
+    blob=object_command(['hash-object','-w','--stdin'],json.dumps(doc,sort_keys=True).encode())
+    tree=object_command(['mktree'],f'100644 blob {blob}\taccepted.json\n'.encode())
+    commit=object_command(['commit-tree',tree,'-p',sha],b'Coordinator accepted reviewed test obligations\n')
+    git(root,'update-ref',ref,commit,previous or '0'*40)
     path=Path(root)/'work'/work_id/'traceability-accepted.json';write_json(path,doc)
     return doc
 
 
 def load_accepted(root,work_id,anchor_sha,candidate_sha=None):
-    pin=json_at(root,anchor_sha,f'work/{work_id}/traceability-accepted.json')
+    if not slug(work_id):raise Invalid('invalid work_id')
+    authority=subprocess.run(['git','rev-parse','--verify',f'refs/ask/accepted-tests/{work_id}'],cwd=root,capture_output=True,text=True)
+    if authority.returncode:raise Invalid('migration_required: missing coordinator accepted-tests ref')
+    pin=json_at(root,authority.stdout.strip(),'accepted.json')
+    candidate_pin=json_at(root,anchor_sha,f'work/{work_id}/traceability-accepted.json')
+    if candidate_pin!=pin:raise Invalid('candidate acceptance document differs from coordinator authority')
     if (pin.get('schema')!='ask-accepted-tests/v1' or pin.get('capability')!=CAPABILITY
         or pin.get('work_id')!=work_id or not text(pin.get('reviewer')) or not text(pin.get('recorded_by'))
         or pin['reviewer']==pin['recorded_by'] or pin.get('policy')!=POLICY):raise Invalid('migration_required: invalid accepted test contract')
@@ -149,7 +166,14 @@ def review_errors(root,contracts,review,sha):
         for kind in obligations.get(cid,[]):
             item=types.get(kind,{})
             if not isinstance(item,dict) or item.get('decision')!='APPROVED' or not text(item.get('assessment')):errors.append(f'{cid}: missing/rejected {kind} review')
+    classifications={t['id']:t for t in plan['tests']}
     for tid,t in tests.items():
+        exemption=t.get('tdd_exemption')
+        if exemption is not None:
+            if (not isinstance(exemption,dict) or exemption.get('kind') not in EXEMPTIONS
+                or not text(exemption.get('reason')) or exemption.get('reviewer_ack') is not True
+                or exemption.get('decision')!='APPROVED' or classifications.get(tid,{}).get('change_kind')!='changed'
+                or tid in actual['behavior_changes']):errors.append(f'{tid}: unsupported behavior TDD exemption')
         if t.get('decision')!='APPROVED' or any(not text(t.get(k)) for k in ['assertion_assessment','counterexample','tdd_continuity_assessment']):errors.append(f'{tid}: incomplete/rejected assertion review')
     return errors
 
@@ -174,3 +198,16 @@ def source_changes(root,work_id):
     return sorted(n for n in names if n and not n.startswith(f'work/{work_id}/traceability/')
                   and n not in {prefix+'state.json',prefix+'state.lock',f'work/{work_id}/result.json'}
                   and not n.startswith((prefix+'evidence/',prefix+'results/',prefix+'.state-')))
+
+
+def accept_plan(root,work_id,revision,reviewer,recorded_by,evidence):
+    import fcntl,os
+    if not slug(work_id):raise Invalid('invalid work_id')
+    if os.environ.get('ASK_INNER_LOOP_ROLE')=='worker':raise Invalid('coordinator operation cannot be performed by worker')
+    directory=Path(root)/'work'/work_id/'inner-loop';directory.mkdir(parents=True,exist_ok=True)
+    with (directory/'state.lock').open('a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        path=directory/'state.json'
+        if path.exists() and any(t.get('status')=='running' for t in load(path).get('tasks',{}).values()):
+            raise Invalid('cannot amend accepted obligations while a task is running')
+        return _accept_plan(root,work_id,revision,reviewer,recorded_by,evidence)

@@ -30,7 +30,7 @@ class CaseResult(unittest.TextTestResult):
         super().addSubTest(test,subtest,err);self.record(subtest,'unsupported_subtest',err)
 
 def main():
-    output=Path(sys.argv[1]);args=sys.argv[2:];sys.path.insert(0,str(Path.cwd()))
+    output=Path(sys.argv[1]);selected=json.loads(sys.argv[2]);args=sys.argv[3:];sys.path.insert(0,str(Path.cwd()))
     loader=unittest.TestLoader()
     try:
         if args and args[0]=='discover':
@@ -38,6 +38,12 @@ def main():
             ns=parser.parse_args(args[1:]);suite=loader.discover(ns.s,ns.p,ns.t)
         elif args and not any(x.startswith('-') for x in args):suite=loader.loadTestsFromNames(args)
         else:raise ValueError('unsupported unittest selectors')
+        if selected is not None:
+            def flatten(suite):
+                for test in suite:
+                    if isinstance(test,unittest.TestSuite):yield from flatten(test)
+                    else:yield test
+            suite=unittest.TestSuite(test for test in flatten(suite) if test.id() in selected)
         result=unittest.TextTestRunner(verbosity=2,resultclass=CaseResult).run(suite)
         doc={'cases':result.cases,'collection_status':'error' if loader.errors or not result.testsRun else 'ok'}
         output.write_text(json.dumps(doc))

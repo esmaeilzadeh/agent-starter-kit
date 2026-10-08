@@ -5,7 +5,7 @@ from . import CAPABILITY
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
 from .coverage import scoped_tests, validate_plan
 from .evidence import (file_digest_bytes, git, read_at, review_errors, source_changes,
-                       source_digests)
+                       source_digests,load_accepted)
 
 
 def evaluate_completion(contracts, review, executions, trusted_context):
@@ -17,12 +17,16 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             'input_digests':{'spec':digest(spec),'plan':digest(plan),'accepted':digest(pin),'review':digest(review),'executions':digest(executions)},
             'criterion_evidence':rows,'missing_evidence':missing,'errors':errors,'execution_artifacts':artifacts}
     try:
+        authoritative=load_accepted(root,work_id,sha,sha)
+        if authoritative['pin']!=pin:errors.append('contracts differ from coordinator authority')
         selected=scoped_tests(plan,scope,task_id)
         if validate_plan(spec,plan,contracts['graph']):errors.append('invalid accepted plan')
         # Runtime evidence does not exempt changes to candidate source/contracts.
         if not trusted_context.get('detached_candidate'):
             if git(root,'rev-parse','HEAD')!=sha:errors.append('candidate is not current HEAD')
             if source_changes(root,work_id):errors.append('dirty candidate source')
+        retained_review=load(root/'work'/work_id/'traceability'/'reviews'/(sha+'.json'))
+        if retained_review!=review:errors.append('review differs from coordinator record')
         sources=source_digests(root,sha,plan)
         if (not isinstance(review,dict) or review.get('schema')!='ask-recorded-test-review/v1'
             or review.get('candidate_sha')!=sha or review.get('contract_digest')!=digest(pin)
@@ -88,10 +92,11 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                         reds.setdefault(tid,[]).append(case)
                 else:errors.append(f'{tid}: unknown test phase')
             for eid,run in processes.items():
-                expected={t['case_id'] for t in plan['tests'] if t['runner_id']==run['runner_id']}
-                if set(cases_by_execution[eid])!=expected:errors.append(f'{run_id}: missing/unplanned collected cases for {run["runner_id"]}')
+                expected={t['case_id'] for t in scoped_tests(plan,execution_report['scope'],execution_report['task_id']) if t['runner_id']==run['runner_id']}
+                if run.get('phase')!='red' and set(cases_by_execution[eid])!=expected:errors.append(f'{run_id}: missing/unplanned collected cases for {run["runner_id"]}')
         static=trusted_context.get('static_checks') or {}
         if static.get('result')!='pass' or static.get('candidate_sha')!=sha:errors.append('mandatory static checks missing/failed/stale')
+        semantic_tests={t['id']:t for t in semantic.get('tests',[]) if isinstance(t,dict) and 'id' in t}
         semantic_criteria={c['id']:c for c in semantic.get('criteria',[]) if isinstance(c,dict) and 'id' in c}
         obligations={o['criterion_id']:o['required_types'] for o in plan['obligations']}
         for criterion in spec['criteria']:
@@ -100,7 +105,9 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             evidence=[]
             for test in tests:
                 tid=test['id'];green=finals.get(tid);red=reds.get(tid,[])
-                tdd='regression' if test['change_kind']=='regression' else 'red_green' if red and green else 'missing'
+                exemption=semantic_tests.get(tid,{}).get('tdd_exemption')
+                if exemption and red:errors.append(f'{tid}: exemption and TDD history are mutually exclusive')
+                tdd='exempt:'+exemption['kind'] if exemption and green else 'regression' if test['change_kind']=='regression' else 'red_green' if red and green else 'missing'
                 if not green or green.get('outcome')!='passed':missing.append({'criterion_id':cid,'required_type':test['type'],'test_id':tid,'reason':'final passing execution missing'})
                 if tdd=='missing':missing.append({'criterion_id':cid,'test_id':tid,'reason':'recognized behavior red and final green required'})
                 evidence.append({'test_id':tid,'case_id':test['case_id'],'type':test['type'],'tdd':tdd,'red':red,'final_execution':green})

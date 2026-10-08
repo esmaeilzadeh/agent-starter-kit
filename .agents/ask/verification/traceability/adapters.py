@@ -43,7 +43,8 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
                 with log.open('w') as stream:
                     try:
-                        actual_argv=[sys.executable,str(runner_file),str(raw),*argv[3:]]
+                        selection=[t['case_id'] for t in expected] if scope=='task' else None
+                        actual_argv=[sys.executable,str(runner_file),str(raw),json.dumps(selection),*argv[3:]]
                         proc=subprocess.run(actual_argv,cwd=checkout,env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=300)
                         code=proc.returncode
                     except subprocess.TimeoutExpired:code=124

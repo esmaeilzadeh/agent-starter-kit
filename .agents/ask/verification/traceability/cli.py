@@ -37,6 +37,12 @@ def main(argv=None):
             contracts=load_accepted(root,args.work_id,anchor)
             if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
             doc=run_tests(root,contracts,sha,args.scope,args.task_id,args.phase)
+            expected=[t for t in contracts['plan']['tests'] if args.scope=='workstream' or t['id'] in next(s['test_ids'] for s in contracts['plan']['task_scopes'] if s['task_id']==args.task_id)]
+            if (any(r['collection_status']!='ok' for r in doc['executions'])
+                or (args.phase=='final_green' and len(doc['cases'])!=len(expected))
+                or (args.phase=='final_green' and (any(r['exit_code']!=0 for r in doc['executions']) or any(c['outcome']!='passed' for c in doc['cases'])))
+                or (args.phase=='red' and (not any(c['outcome']=='failed' and c['failure_kind']=='behavior_assertion' for c in doc['cases']) or any(c['outcome'] in {'error','unsupported_subtest'} for c in doc['cases'])))):
+                print(json.dumps(doc,indent=2));return 1
         elif args.command=='record-result':
             if args.result=='pass':
                 doc=check_completion(root,args.work_id,sha,anchor)

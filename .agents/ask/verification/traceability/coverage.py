@@ -46,15 +46,15 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
         for cid in links:
             if cid not in criteria or criteria[cid].get('verification_mode')!='tests':
                 errors.append(Violation('unknown_criterion',cid,tid))
-        if t.get('type') not in TYPES: errors.append(Violation('invalid_test_type',test_id=tid))
-        if t.get('change_kind') not in {'new','changed','regression'}: errors.append(Violation('invalid_change_kind',test_id=tid))
+        if not text(t.get('type')) or t.get('type') not in TYPES: errors.append(Violation('invalid_test_type',test_id=tid))
+        if not text(t.get('change_kind')) or t.get('change_kind') not in {'new','changed','regression'}: errors.append(Violation('invalid_change_kind',test_id=tid))
         if not scenario(t.get('scenario')): errors.append(Violation('empty_behavior',test_id=tid))
         assertions=indexed(t.get('expected_assertions'),'expected_assertions',errors,'criterion_id')
         if set(assertions)!=set(links) or any(not string_list(a.get('checks')) for a in assertions.values()):
             errors.append(Violation('missing_expected_assertions',test_id=tid))
         if not string_list(t.get('source_paths')) or not all(safe_path(p) for p in t.get('source_paths',[])):
             errors.append(Violation('invalid_source_paths',test_id=tid))
-        if t.get('runner_id') not in runners or not text(t.get('case_id')):
+        if not text(t.get('runner_id')) or t.get('runner_id') not in runners or not text(t.get('case_id')):
             errors.append(Violation('invalid_runner_case',test_id=tid));continue
         identity=(t['runner_id'],t['case_id'])
         if identity in seen: errors.append(Violation('duplicate_case',test_id=tid))
@@ -64,7 +64,7 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
         if (not string_list(argv) or len(argv)<4 or argv[1:3]!=['-m','unittest']
             or r.get('adapter')!='unittest' or argv[0] not in {'python','python3'}):
             errors.append(Violation('unsupported_runner',field=rid))
-    graph_ids={t['id'] for t in (accepted_task_graph or {}).get('tasks',[])}
+    graph_ids=set(indexed((accepted_task_graph or {}).get('tasks',[]),'graph.tasks',errors))
     if set(scopes)!=graph_ids: errors.append(Violation('task_graph_mismatch'))
     assigned=set()
     for task_id,s in scopes.items():

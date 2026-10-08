@@ -41,6 +41,12 @@ def check_completion(root,work_id,sha=None,anchor_sha=None,scope='workstream',ta
             checks=expand_plan(root,load_plan(root))
             identity=digest({'checks':checks,'yaml_digest':file_digest(root/'.agents/verification.yaml')})
             if receipt.get('checkplan_digest')!=identity:raise Invalid('stale static CheckPlan')
+            executed=receipt.get('checks',[])
+            check_identity=lambda cs:[(c.get('id',c.get('command')),c.get('tier','mandatory'),c.get('command')) for c in cs]
+            if (check_identity(executed)!=check_identity(checks) or any(type(c.get('exit_code')) is not int or c['exit_code']!=0 or c.get('status')!='pass' for c in executed) or receipt.get('runner_digest')!=file_digest(Path(__file__).parents[1]/'run.py')):raise Invalid('static check execution failed or differs from pinned runner/CheckPlan')
+            for check in executed:
+                artifact=(runtime_root/check.get('evidence','')).resolve()
+                if not artifact.is_relative_to((runtime_root/'work'/work_id/'traceability').resolve()) or file_digest(artifact)!=check.get('output_digest'):raise Invalid('changed/missing static execution log')
             static=receipt
         report=evaluate_completion(contracts,review,runs,{'root':runtime_root,'candidate_sha':sha,'scope':scope,'task_id':task_id,'static_checks':static,'detached_candidate':root!=runtime_root})
     except (Invalid,OSError,ValueError,KeyError,TypeError) as exc:report['errors'].append(str(exc))
