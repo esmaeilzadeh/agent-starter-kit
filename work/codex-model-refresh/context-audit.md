@@ -1,7 +1,7 @@
 # Context-engineering audit
 
-Workstream: `codex-model-refresh`  
-Reviewed candidate: `0f937ac90bfbdc49dcbfdfb36871202d4ba87b34`  
+Workstream: `codex-model-refresh`
+Reviewed candidate: `0f937ac90bfbdc49dcbfdfb36871202d4ba87b34`
 Scope: accepted specification, Codex runtime binding, generated agents, sync regression, and routing guidance.
 
 | ID | Check | Status | Evidence |

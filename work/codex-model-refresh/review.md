@@ -1,5 +1,7 @@
 # Independent implementation review
 
+## Model
+
 Workstream: `codex-model-refresh`\
 Reviewer: `codex-luna-implementation-review`\
 Model: `gpt-6-luna` / runtime `codex` / parent model `GPT-6`\
