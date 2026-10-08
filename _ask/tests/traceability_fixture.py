@@ -13,7 +13,7 @@ from verification.traceability.evidence import accept_plan,inventory,load_accept
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
-    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new"):
+    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         self.git('init','-q','-b','agent/w');self.git('config','user.email','test@example.com');self.git('config','user.name','Test')
         self.write('.gitignore','__pycache__/\nverification-result.json\nwork/w/traceability/\nwork/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n')
@@ -33,6 +33,9 @@ class Consumer:
         if tasks:
             self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n')
             self.plan['task_scopes']=[{'task_id':'a','test_ids':['U','E']}]
+            if tasks=='split':
+                self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n  - id: b\n    depends_on: [a]\n    owned_paths: [app.py]\n')
+                self.plan['task_scopes']=[{'task_id':'a','test_ids':['U']},{'task_id':'b','test_ids':['E']}]
         self.write('work/w/plan.md','# Plan\nExecute explicit unit and separate-process CLI cases.\n')
         self.write('specs/current/w.json',self.spec);self.write('work/w/test-plan.json',self.plan)
         self.red_sha=self.commit('faulty implementation with behavior assertions')
@@ -43,6 +46,7 @@ class Consumer:
         self.contracts=load_accepted(self.root,'w','HEAD')
         self.red=run_tests(self.root,self.contracts,self.red_sha,phase='red')
         self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(render(sys.argv[1]))\n")
+        if split_failure:self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(sys.argv[1])\n")
         if not behavior_change:self.write('test_app.py',(self.root/'test_app.py').read_text()+'\n# Explain unchanged uppercase assertion.\n')
         self.sha=self.commit('implement uppercase behavior');self.contracts=load_accepted(self.root,'w',self.sha,self.sha)
         self.review=self.make_review()

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations (test_traceability_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/test_traceability_evidence.py", line 69, in test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations
+    with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.925s
+
+FAILED (failures=1)

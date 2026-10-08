@@ -60,5 +60,20 @@ class EvidenceTests(unittest.TestCase):
         from verification.traceability.evidence import load_accepted
         self.c.plan['tests']=self.c.plan['tests'][:1];self.c.write('work/w/test-plan.json',self.c.plan);sha=self.c.commit('remove e2e')
         with self.assertRaisesRegex(ValueError,'missing_test_type|accepted obligations'):load_accepted(self.c.root,'w',self.c.sha,sha)
+        # Coordinated metadata edits must not replace coordinator authority.
+        self.c.plan['obligations'][0]['required_types']=['unit'];self.c.plan['runners'][0]['argv'][-1]='test_app.Cases.test_unit'
+        self.c.write('work/w/test-plan.json',self.c.plan);contract_sha=self.c.commit('shrink obligations consistently')
+        pin=copy.deepcopy(self.c.contracts['pin']);pin.update(contract_sha=contract_sha,plan_digest=digest(self.c.plan))
+        pin['plan_review']['plan_digest']=pin['plan_digest'];pin['plan_review_digest']=digest(pin['plan_review'])
+        self.c.write('work/w/traceability-accepted.json',pin);candidate=self.c.commit('candidate replaces authority document')
+        with self.assertRaisesRegex(ValueError,'coordinator|accepted obligations'):load_accepted(self.c.root,'w',candidate,candidate)
+        # Unit task can pass while another task's E2E in the same runner still fails.
+        c=Consumer(tasks='split',split_failure=True);self.addCleanup(c.close)
+        from verification.traceability.adapters import run_tests
+        task_green=run_tests(c.root,c.contracts,c.sha,scope='task',task_id='a')
+        context=c.context();context.update(scope='task',task_id='a')
+        result=evaluate_completion(c.contracts,c.record,[c.red,task_green],context)
+        self.assertEqual(result['status'],'pass',result)
+        self.assertEqual({case['test_id'] for case in task_green['cases']},{'U'})
 
 if __name__=='__main__':unittest.main()

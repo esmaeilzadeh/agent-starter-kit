@@ -22,6 +22,7 @@ class EntrypointTests(unittest.TestCase):
         self.require_pass(c.command('inner-loop','record-review','w','a','--reviewer','fixture-reviewer','--evidence','work/w/inner-loop/evidence/review.md'))
         self.require_fail(c.command('inner-loop','run','w'))
         self.assertEqual(json.loads((c.root/'work/w/inner-loop/state.json').read_text())['tasks']['a']['status'],'running')
+        self.require_fail(c.command('traceability','run','w','--candidate-sha',c.red_sha,'--phase','final_green'))
     def test_I06_preflight_failure_replaces_old_pass(self):
         c=self.consumer();self.require_pass(c.command('verify'))
         c.write('app.py','broken dirty source\n');self.require_fail(c.command('verify'))
