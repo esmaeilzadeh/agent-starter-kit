@@ -104,6 +104,11 @@ def main(argv: list[str] | None = None) -> int:
                 result.update({key: value for key, value in view.items()
                                if key not in {"schema", "work_id", "snapshot", "model"}})
                 if args.format == "markdown":
+                    if diagnostics:
+                        print("Last validated snapshot — Noneditable. Working inputs failed admission.\n")
+                        for diagnostic in diagnostics:
+                            print(f"- {diagnostic['code']}: {diagnostic.get('message', '')}")
+                        print()
                     print(render_markdown(view), end="")
                     return 0 if not diagnostics else 1
             except (ValueError, OSError, KeyError, TypeError) as exc:
