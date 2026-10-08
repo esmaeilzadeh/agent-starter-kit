@@ -79,6 +79,11 @@ def _checked(root, work_id, base, base_publication, expected=None):
     _refuse(diagnostics)
     if expected is not None and current.identity['digest'] != expected:
         raise Refused('EM007_STALE_INPUT', 'expected workflow snapshot is no longer current')
+    published = load_published(root, work_id)
+    if published is None:
+        raise Refused('EM007_INPUT_CHANGED', 'workflow publication is no longer available')
+    if _canonical(current) != _canonical(published):
+        raise Refused('EM007_INPUT_CHANGED', 'canonical definitions changed since the last guarded publication')
     if _canonical(current) != _canonical(base):
         if not publications.guarded_publication_chain(
                 root, work_id, base.identity['digest'], current.identity['digest'],
@@ -93,8 +98,9 @@ def workflow_admission(root, work_id, expected=None):
 
     Nested calls validate at their own boundaries and share the outer snapshot
     and exact publication event. Canonical changes need a verified guarded edit
-    chain from that event. Only the outermost call publishes its result. No document writer lock
-    survives entry/exit admission or is held while the action/subprocess runs.
+    chain from that event. Only the outermost call publishes its result. No
+    document writer lock survives entry/exit admission or is held while the
+    action/subprocess runs.
     Unadopted work yields None and acquires no validated-state label.
     """
     root = Path(root).resolve()
@@ -120,8 +126,14 @@ def workflow_admission(root, work_id, expected=None):
             raise Refused('EM007_INPUT_CHANGED', 'admitted workflow generation is no longer published')
         base_publication = publications.publication_identity(root, work_id)
         confirmed = load_published(root, work_id)
+        fresh, diagnostics = validate_current(root, work_id)
+        _refuse(diagnostics)
         if (base_publication is None or confirmed is None or confirmed.identity != captured.identity
-                or publications.publication_identity(root, work_id) != base_publication):
+                or fresh.identity != captured.identity
+                or publications.publication_identity(root, work_id) != base_publication
+                or not publications.guarded_publication_chain(
+                    root, work_id, captured.identity['digest'], captured.identity['digest'],
+                    base_publication=base_publication)):
             raise Refused('EM007_INPUT_CHANGED', 'admitted workflow publication changed before action')
     token = _active.set({**active, key: (base, base_publication)})
     try:
