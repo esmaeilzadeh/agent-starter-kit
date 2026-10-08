@@ -38,7 +38,7 @@ class DocumentGuardTests(unittest.TestCase):
             # The action receipt and one semantic revision do not hide a second
             # full post-check. Recovery must validate its captured candidate,
             # not recapture/validate a second independently read document set.
-            self.assertEqual(receipt["validation_counts"], {"pre": 1, "post": 1})
+            self.assertEqual(receipt.get("validation_counts"), {"pre": 1, "post": 1})
 
     def test_cached_and_full_validation_agree(self):
         with tempfile.TemporaryDirectory() as directory:
