@@ -179,6 +179,27 @@ edit(root, 'pilot', os.environ['EXPECTED'], proposal)
             # full post-check. Recovery must validate its captured candidate,
             # not recapture/validate a second independently read document set.
             self.assertEqual(receipt.get("validation_counts"), {"pre": 1, "post": 1})
+            # A cooperating workflow may perform validated edits, not arbitrary
+            # definition writes disguised by a later read/admission.
+            from engineering_model.workflow import workflow_admission
+            try:
+                with workflow_admission(root, "pilot"):
+                    first = edit(root, "pilot", after.identity["digest"], {
+                        "commands": [{"op": "revise_node", "id": "purpose", "changes": {"title": "Clear purpose"}}]})
+                    self.assertTrue(first["valid"], first)
+                    second = edit(root, "pilot", first["snapshot"]["digest"], {
+                        "commands": [{"op": "revise_node", "id": "purpose", "changes": {"title": "Final purpose"}}]})
+                    self.assertTrue(second["valid"], second)
+            except ValueError as exc:
+                self.fail(f"validated guarded edit chain was refused: {exc}")
+            self.assertEqual(load_published(root, "pilot").document["nodes"][0]["title"], "Final purpose")
+            with self.assertRaisesRegex(ValueError, "canonical definitions changed"):
+                with workflow_admission(root, "pilot"):
+                    raw = load_published(root, "pilot").document
+                    raw["nodes"][0]["title"] = "Unmanaged write"
+                    write_json(root, "work/pilot/engineering-model.json", raw)
+                    _snapshot, errors = admit(root, "pilot")
+                    self.assertEqual(errors, [])
 
     def test_cached_and_full_validation_agree(self):
         with tempfile.TemporaryDirectory() as directory:
