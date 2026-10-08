@@ -44,4 +44,4 @@ When `work/<work-id>/inner-loop/tasks.yaml` exists, review the **current** write
 - Outside glob and not required → extras; revert; one remediation.
 - Required path outside the glob → `glob_too_narrow`; blocked.
 
-Review commits nothing. Scratch writes are allowed. Done when the verdict and boundary are recorded on the TaskResult.
+Review commits nothing. Scratch writes are allowed. Write an attributable review artifact for the exact candidate and report verdict/boundary to the coordinator. The coordinator uses `./ask inner-loop record-review` to bind that decision to the TaskResult and review bytes; see `_ask/docs/inner-loop-evidence.md`. A worker-supplied acknowledgment alone cannot authorize integration.

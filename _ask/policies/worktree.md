@@ -62,6 +62,12 @@ uncommitted files. That spawn is not a human dirty-tree grill.
 Inner-loop task branches stay inside this workstream. Cross-workstream overlap
 stays under **No concurrent conflicting workstreams** above.
 
+Cooperative local POSIX coordinator processes use a persistent adjacent state
+lock for initialization, CAS, writer invariants and integration. Keep the lock
+file in place. State replacement is atomic for readers; Git and state are not
+one cross-resource transaction. Candidate verification/review and interruption
+recovery: `_ask/docs/inner-loop-evidence.md`.
+
 ## Inventory (not the checkout)
 
 `work/<work-id>/` is committed on `agent/<work-id>`, so artifact state is **branch-local**. Do not use the current working tree as the workstream inventory.

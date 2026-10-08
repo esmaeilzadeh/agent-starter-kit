@@ -14,6 +14,7 @@ from inner_loop.evidence import record_review  # noqa: E402
 from inner_loop.driver import (  # noqa: E402
     NotIntegrable,
     cancel,
+    git_sha,
     resume_from_state,
     run_until,
 )
@@ -59,7 +60,7 @@ def cmd_status(root: Path, work_id: str) -> int:
 def cmd_cas_init(root: Path, work_id: str) -> int:
     graph = load_graph(root, work_id)
     ids = list(_task_map(graph))
-    doc = cas_init(root, work_id, ids)
+    doc = cas_init(root, work_id, ids, coordinator_sha=git_sha(root))
     print(f"revision={doc['revision']}")
     return 0
 
@@ -90,7 +91,7 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("status", help="print coordinator state")
     s.add_argument("work_id")
 
-    ci = sub.add_parser("cas-init", help="write initial state.json")
+    ci = sub.add_parser("cas-init", help="initialize state.json without overwriting existing state")
     ci.add_argument("work_id")
 
     ca = sub.add_parser("cas-apply", help="CAS increment")

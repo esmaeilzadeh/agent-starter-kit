@@ -25,10 +25,13 @@ Mapped commands:
 ./ask upgrade --version <tag>  → _ask/scripts/upgrade-kit.sh
 ./ask prepare                  → _ask/skills/prepare-skills.sh
 ./ask setup                    → _ask/scripts/setup.sh   # human-only; refuse without a TTY
-./ask inner-loop …             → _ask/scripts/inner_loop/  # validate|status|run|resume|cancel
+./ask inner-loop …             → _ask/scripts/inner_loop/  # validate|status|run|resume|cancel|record-review
 ```
 
 Unknown command names that match an executable `_ask/scripts/<name>.sh` are exec'd. `install-kit` / `upgrade-kit` copy and refresh root `ask` as kit-owned adapter alongside `AGENTS.md` and `.cursor/`.
+
+Future TaskResult v2, coordinator-recorded review, executed candidate checks,
+local POSIX state transactions and recovery: `_ask/docs/inner-loop-evidence.md`.
 
 ## 22.10 Human-only setup (`./ask setup`)
 
