@@ -6,16 +6,8 @@ import json
 from pathlib import Path
 import sys
 
-from .validation import SLUG, snapshot_identity, validate
-
-
-def _unique_objects(pairs: list[tuple[str, object]]) -> dict:
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate JSON object key: {key}")
-        result[key] = value
-    return result
+from .validation import SLUG
+from .snapshot import capture, is_current
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -41,9 +33,9 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 1
     try:
-        document = json.loads(raw, object_pairs_hook=_unique_objects)
-        diagnostics = validate(document, root, args.work_id)
-        snapshot = snapshot_identity(document, root, args.work_id, raw)
+        captured = capture(root, args.work_id, model_bytes=raw)
+        diagnostics = captured.diagnostics(root)
+        snapshot = captured.identity
     except (UnicodeError, ValueError) as exc:
         diagnostics = [{
             "code": "EM001_JSON",
@@ -52,12 +44,7 @@ def main(argv: list[str] | None = None) -> int:
         }]
         snapshot = None
     if snapshot is not None:
-        try:
-            current_raw = path.read_bytes()
-            current_snapshot = snapshot_identity(document, root, args.work_id, current_raw)
-        except OSError:
-            current_snapshot = None
-        if current_snapshot is None or current_snapshot["digest"] != snapshot["digest"]:
+        if not is_current(captured, root):
             diagnostics.append({
                 "code": "EM007_INPUT_CHANGED",
                 "path": f"work/{args.work_id}/engineering-model.json",
