@@ -82,6 +82,8 @@ def apply_batch(document, commands, *, timestamp=None):
                     raise ValueError("add_node requires a node definition")
                 if node["id"] in nodes:
                     raise ValueError("node ID already exists")
+                if node.get("type") == "decision" and (node.get("lifecycle") != "open" or node.get("resolution") is not None or node.get("history")):
+                    raise ValueError("new decisions must start open; resolve/retire through attributable operations")
                 node = deepcopy(node)
                 candidate["nodes"].append(node)
                 nodes[node["id"]] = node
