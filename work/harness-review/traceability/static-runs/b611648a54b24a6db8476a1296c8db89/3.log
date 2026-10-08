@@ -1,0 +1,10 @@
+askit: kit /tmp/ask-static-6tg0wvrw/candidate @ HEAD
+askit: cache /tmp/tmp.ecPFYrlTBO/.cache/askit/kit
+Cloning into '/tmp/tmp.ecPFYrlTBO/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/harness-review'.
+askit: /tmp/tmp.ecPFYrlTBO/.local/bin/askit -> /tmp/tmp.ecPFYrlTBO/.cache/askit/kit/askit
+askit: /tmp/tmp.ecPFYrlTBO/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.ecPFYrlTBO/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)

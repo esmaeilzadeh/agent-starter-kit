@@ -1,0 +1,126 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "a498339d299b4a988ac7aa0d0f727922",
+  "scope": "workstream",
+  "task_id": null,
+  "candidate_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+  "spec_digest": "550b94d49178c4a19b6715597a0c920e285570cb321c543368f08fd826f93b9e",
+  "plan_digest": "c2dd338f44264159f356abbdf039e2036f2a33ce430bf86954f73b0300d0c988",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "3701ba69d6534f68a46efe2df15575ca",
+      "runner_id": "traceability",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability*.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.json",
+        "null",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability*.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "exit_code": 1,
+      "collection_status": "ok",
+      "output_artifact": "work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.log",
+      "output_digest": "924efd659c78012de91b10335d31babeeadf26e40483aa5875e6da63dc05f3e3"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_traceability_contracts.ContractTests.test_U01_rejects_malformed_contract_fields_and_duplicate_ids",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "U01",
+      "runner_id": "traceability",
+      "execution_id": "3701ba69d6534f68a46efe2df15575ca",
+      "phase": "red",
+      "source_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "source_digests": {
+        "_ask/tests/test_traceability_contracts.py": "76324ccf7809ba9c4a0feea1362e4321b44ce7a972045cb5652e664225d99eca"
+      },
+      "output_artifact": "work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.log",
+      "output_digest": "924efd659c78012de91b10335d31babeeadf26e40483aa5875e6da63dc05f3e3"
+    },
+    {
+      "case_id": "test_traceability_contracts.ContractTests.test_U02_unit_does_not_cover_required_e2e_or_orphan_assertions",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "U02",
+      "runner_id": "traceability",
+      "execution_id": "3701ba69d6534f68a46efe2df15575ca",
+      "phase": "red",
+      "source_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "source_digests": {
+        "_ask/tests/test_traceability_contracts.py": "76324ccf7809ba9c4a0feea1362e4321b44ce7a972045cb5652e664225d99eca"
+      },
+      "output_artifact": "work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.log",
+      "output_digest": "924efd659c78012de91b10335d31babeeadf26e40483aa5875e6da63dc05f3e3"
+    },
+    {
+      "case_id": "test_traceability_contracts.ContractTests.test_U03_task_scopes_must_match_accepted_graph_and_cover_all_tests",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "U03",
+      "runner_id": "traceability",
+      "execution_id": "3701ba69d6534f68a46efe2df15575ca",
+      "phase": "red",
+      "source_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "source_digests": {
+        "_ask/tests/test_traceability_contracts.py": "76324ccf7809ba9c4a0feea1362e4321b44ce7a972045cb5652e664225d99eca"
+      },
+      "output_artifact": "work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.log",
+      "output_digest": "924efd659c78012de91b10335d31babeeadf26e40483aa5875e6da63dc05f3e3"
+    },
+    {
+      "case_id": "test_traceability_runner.RunnerTests.test_I01_actual_outcomes_and_collection_errors_are_not_exit_code_claims",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "I01",
+      "runner_id": "traceability",
+      "execution_id": "3701ba69d6534f68a46efe2df15575ca",
+      "phase": "red",
+      "source_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "source_digests": {
+        "_ask/tests/test_traceability_runner.py": "8320cd3c4d81ddf616bd6e9b7b3ce539c4be8e63ad58bdb83df80db03b8febe4"
+      },
+      "output_artifact": "work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.log",
+      "output_digest": "924efd659c78012de91b10335d31babeeadf26e40483aa5875e6da63dc05f3e3"
+    },
+    {
+      "case_id": "test_traceability_runner.RunnerTests.test_I02_red_and_green_retain_real_case_revision_and_log",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "I02",
+      "runner_id": "traceability",
+      "execution_id": "3701ba69d6534f68a46efe2df15575ca",
+      "phase": "red",
+      "source_sha": "697f6bd445d9e48fe59ef32248b6b25cf312d919",
+      "source_digests": {
+        "_ask/tests/test_traceability_runner.py": "8320cd3c4d81ddf616bd6e9b7b3ce539c4be8e63ad58bdb83df80db03b8febe4"
+      },
+      "output_artifact": "work/harness-review/traceability/runs/a498339d299b4a988ac7aa0d0f727922/3701ba69d6534f68a46efe2df15575ca.log",
+      "output_digest": "924efd659c78012de91b10335d31babeeadf26e40483aa5875e6da63dc05f3e3"
+    }
+  ]
+}

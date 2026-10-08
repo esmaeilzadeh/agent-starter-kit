@@ -1,0 +1,37 @@
+{
+  "schema": "ask-context-audit/v1",
+  "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+  "checks": [
+    {
+      "id": "CE-01",
+      "status": "pass",
+      "evidence": "Canonical .agents/ask stages point to one Python contract and _ask/docs/spec-test-traceability.md."
+    },
+    {
+      "id": "CE-02",
+      "status": "pass",
+      "evidence": "Stages keep runner delegation; no TaskGraph is copied into stage instructions."
+    },
+    {
+      "id": "CE-03",
+      "status": "pass",
+      "evidence": "Existing load-bearing Grill and spec-change authority remain; user explicitly sequenced approved implementation."
+    },
+    {
+      "id": "CE-04",
+      "status": "pass",
+      "evidence": "Final ./ask verify is fail-closed for static checks, required case evidence, independent review, TDD and candidate identity."
+    },
+    {
+      "id": "CE-05",
+      "status": "pass",
+      "evidence": "One agent/harness-review branch, stepwise commits, isolated execution, state locks and FF-only integration preserved; original 29 cases pass."
+    },
+    {
+      "id": "CE-06",
+      "status": "pass",
+      "evidence": "./ask sync and generated-binding parity checks pass; Python policy is not duplicated in shell or skills."
+    }
+  ],
+  "open_ids": []
+}

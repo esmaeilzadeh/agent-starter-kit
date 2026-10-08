@@ -1,85 +1,42 @@
-# Harness reliability and test-traceability continuation
+# Harness review continuation
 
-## Latest request: planning only
+The original R1/R2 reliability plan is implemented and its accepted source/evidence
+remain unchanged. The subsequently requested test-traceability plan is now fully
+implemented and independently reviewed through P01-P07 on `agent/harness-review`.
 
-The user requested a clear plan for spec-rooted tests, independent test review
-and executed per-test completion evidence, preferring JSON metadata and Python.
-The proposal is specs/proposals/spec-test-traceability.json; the canonical plan
-is work/harness-review/test-traceability/plan.json. It sequences seven tasks and
-18 unit/integration/E2E scenarios. The adjacent contracts.example.json and
-coverage.example.py are illustrative, not executed feature evidence.
+Verified traceability source: `a4682b5ed1a6f697411bc0c23b6dca4028f0d40f`.
+`./ask verify` passed all 36 mandatory checks, including 18 explicit traceability
+cases and the original 29 reliability cases. The shared gate reports all 11 TT
+criteria complete with recognized immutable assertion-red, final passing cases
+and independent semantic review. Gate-authorized result recording and acceptance
+checks passed. Later commits archive evidence and this handoff only.
 
-The proposed traceability/completion gate is NOT IMPLEMENTED. The existing
-R1/R2 implementation and results below remain separate and unchanged. Resume
-from the JSON plan for any subsequently requested implementation.
+Read `test-traceability/executed-results.json`, `completion.json`,
+`implementation-review.json`, `task-results.json`, `context-audit.json` and
+`acceptance.json`. The retained runtime bundle is `traceability/`; it includes
+original logs, per-case reports, ledger, coordinator review and static receipts.
+Three unsupported historical subtest attempts remain visible as rejected history;
+they supply no TDD evidence. Current explicit cases all pass. The initial full
+Verify at f827e01 passed configured checks but its final case gate refused the
+unsupported subtest; the corrected source and full reexecution are recorded above.
 
-The execution handoff draft is test-traceability/handoff-draft.json. It records
-the starting state, preparation, P01-P07 execution, independent test/spec review
-and final evidence requirements. Drafting the handoff did not start implementation.
-The draft passed JSON/reference checks and all 35 existing repository checks at
-7b74456; the report is test-traceability/handoff-verification.json. result.json
-now records the handoff-only outcome.
+Canonical feature spec: `specs/current/spec-test-traceability.json`. Canonical
+criterion registry: `specs/current/harness-review.json`; test obligations:
+`work/harness-review/test-plan.json`. Coordinator authority is independently pinned
+under `refs/ask/accepted-tests/harness-review`, matching `traceability-accepted.json`.
+Source-only transfers require reviewed registration of that local ref before new
+completion. New source changes invalidate exact candidate review/final evidence.
 
-Planning commit 74cd8c5 passed all 35 existing repository verification checks.
-Planning syntax/reference checks are in test-traceability/plan-validation.json;
-full verification and logs are in test-traceability/verification.json and
-test-traceability/verify.log. The historical R1/R2 result is preserved at
-evidence/r1-r2-result.json; the planning-only outcome remains recorded in
-test-traceability/plan-validation.json.
+The gate is shared by Verify, task integration, result pass and acceptance.
+It preserves static YAML, FF-only integration, state transactions and R1/R2 history.
+Initial adapter: explicit unittest cases; unsupported runners and subtests cannot
+satisfy completion. Repository write access is cooperative attribution, not hostile
+identity authentication or security isolation. Independent review used the available
+inherited model/context; its exact model identifier was not exposed and no model
+diversity claim is made.
 
-## Current state
-
-R1/R2 are implemented and locally verified on agent/harness-review. Independent
-review is APPROVED. No implementation or verification work remains. Acceptance
-eligibility/evidence is in acceptance.md; no separate human final acceptance is
-invented and no permission question is pending.
-
-Verified source commit: 4c13aec67d17228fad5b67074125cf939e2d4c7d.
-Independent review/context-audit commit: e3a660fec76f88a37751dcbcd3ba0ad479653eca.
-Final full ./ask verify: PASS, all 35 mandatory shell checks including 29
-reliability cases. verification.json and evidence/full-verify.log record the
-executed source SHA. Later commits contain result/review artifacts only.
-
-## Delivered behavior
-
-- TaskResult v2 binds work/task/base/candidate and keeps TDD history distinct
-  from verification. A coordinator operation records attributable review bound
-  to result, review and policy bytes; worker acknowledgment alone is insufficient.
-- Verification snapshots runner/imports from the recorded coordinator base,
-  executes the candidate's committed CheckPlan in a clean detached worktree,
-  records checks/provenance, and revalidates inputs before pinned FF/state fold.
-- State initialization is idempotent; local process-safe transactions serialize
-  CAS and writer invariants. Same-directory atomic replacement protects readers.
-- Resume preserves tracked runtime state/reviews during source or merge repair,
-  and revalidates FF-before-fold interruptions without resetting valid candidates.
-- Canonical instructions/docs and generated projections describe the new flow.
-- AGENTS.md records the user's rule requiring concrete progress feedback at
-  least every 60 seconds; a generic Working indicator is insufficient.
-
-## Preparation and branch reconciliation
-
-335d120 preserved the handoff/resume documents. ed6fa62 merged current main into
-develop while preserving both later inboxes. Main remained unchanged. Baseline
-verification passed 34 checks; the new reliability test raises the final count
-to 35. Pinned skills prepared, bindings synced, and the workstream started from
-updated develop. Handoff basis 9602217 and current main had identical reviewed
-integration/state/verification source; both findings were confirmed.
-
-## Findings and limitations
-
-The first independent review found tracked-state loss on resume despite passing
-initial tests. Its reproduction, fix and independent rerun are retained in
-review.md/refactor.md and evidence/. Configured generated-role models were
-unavailable; independent same-family fallback contexts were used and disclosed.
-The boundary is cooperative local POSIX processes, not a security sandbox or a
-multi-host store. No power-loss durability or comparative performance claim.
-
-R3–R5 are explicit recommendations in followups.md. The companion
-decision-review-harness-note.md was absent; its contents were not inferred.
-No pushes, feature merges, tags, deployment or external messages were performed.
-
-## Future continuation
-
-Read acceptance.md, review.md and verification.json before release/integration.
-Treat R3–R5 as separately sequenced pilot/evaluation work. Preserve the later
-inbox if reconciling branches again; no unrelated workstream was started here.
+Original R1/R2 source: `4c13aec67d17228fad5b67074125cf939e2d4c7d`.
+Its acceptance/review/audit remain in root workstream artifacts and historical
+result remains at `evidence/r1-r2-result.json`. Original plan.md is preserved.
+R3-R5 pilots and the absent companion review note remain out of scope. No further
+implementation task from either referenced plan remains open.

@@ -1,0 +1,16 @@
+{
+  "schema": "ask-refactor-result/v1",
+  "source_sha": "a4682b5ed1a6f697411bc0c23b6dca4028f0d40f",
+  "status": "done",
+  "resolved_findings": [
+    "Coordinator authority moved to refs/ask/accepted-tests/<id>; source commits cannot replace accepted obligations.",
+    "Task suites filter exact accepted case IDs; unfinished cases from another task do not block task completion.",
+    "AST inventory detects mapped behavior changes and tests outside test_ filenames; regression labels cannot waive changed behavior.",
+    "Reviewed typed exemptions only cover nonbehavioral changes with unchanged assertions.",
+    "Persisted evidence mutations exercise actual identity/outcome/log validation.",
+    "Static pass reloads individual check identities/outcomes/logs; no bare pass receipt.",
+    "Explicit capability version, successful FF integration, unsupported final-green exit statuses covered.",
+    "Own dynamic subtest removed; invalid historical attempts retained but cannot supply TDD evidence."
+  ],
+  "open_findings": []
+}

@@ -1,0 +1,39 @@
+test_U01_rejects_malformed_contract_fields_and_duplicate_ids (test_traceability_contracts.ContractTests) ... ok
+test_U02_unit_does_not_cover_required_e2e_or_orphan_assertions (test_traceability_contracts.ContractTests) ... ok
+test_U03_task_scopes_must_match_accepted_graph_and_cover_all_tests (test_traceability_contracts.ContractTests) ... ok
+test_E01_public_red_review_verify_record_accept_journey (test_traceability_entrypoints.EntrypointTests) ... ok
+test_E02_omitted_e2e_names_missing_case_and_never_records_pass (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I05_all_normal_entrypoints_reject_omitted_e2e (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I06_preflight_failure_replaces_old_pass (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I03_changed_candidate_invalidates_bound_semantic_review (test_traceability_evidence.EvidenceTests) ... ok
+test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations (test_traceability_evidence.EvidenceTests) ... ok
+test_U04_every_required_outcome_collection_and_case_identity_matters (test_traceability_evidence.EvidenceTests) ... ok
+test_U05_setup_failure_and_missing_red_never_satisfy_tdd (test_traceability_evidence.EvidenceTests) ... ok
+test_U06_blanket_approval_missing_type_and_counterexample_are_rejected (test_traceability_evidence.EvidenceTests) ... ok
+test_U07_mutated_log_source_run_identity_or_revision_is_rejected (test_traceability_evidence.EvidenceTests) ... ok
+test_I08_missing_contract_migration_preserves_history_and_config (test_traceability_migration.MigrationTests) ... FAIL
+test_I09_templates_and_stage_commands_share_contract_versions (test_traceability_migration.MigrationTests) ... FAIL
+test_I01_actual_outcomes_and_collection_errors_are_not_exit_code_claims (test_traceability_runner.RunnerTests) ... ok
+test_I02_red_and_green_retain_real_case_revision_and_log (test_traceability_runner.RunnerTests) ... ok
+
+======================================================================
+FAIL: test_I08_missing_contract_migration_preserves_history_and_config (test_traceability_migration.MigrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-g29l7rvh/candidate/_ask/tests/test_traceability_migration.py", line 16, in test_I08_missing_contract_migration_preserves_history_and_config
+    self.assertIn('migration_required',result.stdout+result.stderr)
+AssertionError: 'migration_required' not found in '{\n  "schema": "ask-verify-result/v1",\n  "commit_sha": "f3e5b9224b2b5f802378bc6f0c7b7bc8b034fae5",\n  "result": "fail",\n  "checks": [],\n  "error": "invalid JSON work/w/traceability-accepted.json"\n}\nverify: commit_sha=f3e5b9224b2b5f802378bc6f0c7b7bc8b034fae5\nverify: invalid JSON work/w/traceability-accepted.json\n'
+
+======================================================================
+FAIL: test_I09_templates_and_stage_commands_share_contract_versions (test_traceability_migration.MigrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-g29l7rvh/candidate/_ask/tests/test_traceability_migration.py", line 34, in test_I09_templates_and_stage_commands_share_contract_versions
+    self.assertIn('_ask/docs/spec-test-traceability.md',stage.read_text(),str(stage))
+AssertionError: '_ask/docs/spec-test-traceability.md' not found in '# Kit Protocol: 02 Spec\n\nSource contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.\n\nOutput: specification under `specs/` (template `_ask/templates/spec.md`).\n\n## 15.2 02 Spec Agent\n\nPurpose:\n\n```text\nTurn clarified intent into an explicit engineering specification.\n```\n\nMust:\n\n```text\npreserve What and Why\nmake constraints explicit\ndefine observable acceptance criteria\nseparate requirements from implementation preferences\nmark uncertainty explicitly\n```\n\nOutput:\n\n```text\nspecs/proposals/<work-id>.md\n```\n\n---\n\n## Kit path\n\nSee `_ask/policies/workflow.md`. Prepare the spec artifact (do not skip the document). After defaults-OK, mark it CURRENT unless the human asked to stop. Off-path only if they explicitly leave the kit.\n\nBefore finishing the specification, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the specification. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.\n\n## E2E\n\nCarry Grill’s E2E applicability into the spec: journeys (or `not_applicable` plus reason), environment, data, reset. Human confirms with this specification. Missing E2E with no reason refuses Plan/Implement.\n' : /tmp/ask-cases-g29l7rvh/candidate/.agents/ask/stages/02-spec.md
+
+----------------------------------------------------------------------
+Ran 18 tests in 18.311s
+
+FAILED (failures=2)
