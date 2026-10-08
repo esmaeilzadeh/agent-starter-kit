@@ -25,6 +25,11 @@ class EntrypointTests(unittest.TestCase):
         self.require_fail(c.command('traceability','run','w','--candidate-sha',c.red_sha,'--phase','final_green'))
     def test_I06_preflight_failure_replaces_old_pass(self):
         c=self.consumer();self.require_pass(c.command('verify'))
+        receipt_path=c.root/'work/w/traceability'/('static-'+c.sha+'.json')
+        receipt=json.loads(receipt_path.read_text());receipt['checks']=[{'id':'syntax','tier':'mandatory','command':"python3 -c 'import app'",'status':'fail','exit_code':7}]
+        receipt_path.write_text(json.dumps(receipt))
+        self.require_fail(c.command('traceability','check-completion','w'))
+        self.require_pass(c.command('verify'))
         c.write('app.py','broken dirty source\n');self.require_fail(c.command('verify'))
         report=json.loads((c.root/'verification-result.json').read_text());self.assertEqual(report['result'],'fail')
         self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
