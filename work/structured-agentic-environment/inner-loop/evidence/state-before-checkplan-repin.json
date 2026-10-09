@@ -1,0 +1,115 @@
+{
+  "schema": "ask-inner-loop-state/v1",
+  "work_id": "structured-agentic-environment",
+  "revision": 4,
+  "coordinator_sha": "b1f8b49fe4c94c993deb1d65ea59a04303fc66df",
+  "coordinator_branch": "agent/structured-agentic-environment",
+  "tasks": {
+    "WB-001": {
+      "status": "cancelled",
+      "base_sha": "b1f8b49fe4c94c993deb1d65ea59a04303fc66df",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-001",
+          "base_sha": "b1f8b49fe4c94c993deb1d65ea59a04303fc66df",
+          "candidate_sha": "69cfc37ff6b0d8264f0200c6a17668f3efc3e288",
+          "result_digest": "d26c8ba2fd4db7484f6924ecbca989af6b4ee9272d7a2ca81f36cec61d67d820",
+          "reviewer": "/root/review_wb001",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-001-review-69cfc37.md",
+          "evidence_digest": "e9e850f41d2413d967f69ef74f351a930a0f38f1b48606ca761ee11fb44ae4ac",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      }
+    },
+    "WB-002": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-003": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-004": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-005": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-006": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-007": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-008": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-009": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    }
+  }
+}

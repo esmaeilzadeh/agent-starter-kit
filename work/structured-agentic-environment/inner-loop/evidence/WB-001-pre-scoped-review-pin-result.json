@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "structured-agentic-environment",
+  "task_id": "WB-001",
+  "base_sha": "822c24338765f00cc66b189d863e247a2b688d38",
+  "candidate_sha": "0b14c15317d90c94435b045924d77adb304795ea",
+  "tdd": {
+    "seam": "CheckPlan static test synthetic runtime model-selection invocations must not inherit the selected workstream's ASK_WORK_ID",
+    "red": {
+      "command": "ASK_WORK_ID=structured-agentic-environment ASK_RISK=HIGH python3 _ask/scripts/sync-runtime-agents.py >/dev/null; if grep -q 'model: kimi-k3' .cursor/agents/kit-07-review.md; then echo 'PASS'; else echo 'FAIL: inherited ASK_WORK_ID overrides synthetic ASK_RISK=HIGH (expected model: kimi-k3)'; exit 1; fi",
+      "output": "FAIL: inherited ASK_WORK_ID overrides synthetic ASK_RISK=HIGH (expected model: kimi-k3)",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "ASK_WORK_ID=structured-agentic-environment bash _ask/tests/test-sync-runtime-agents.sh",
+      "output": "Ran 5 tests in 0.575s | OK | PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "This resumed WB-001 attempt is based on the independently reviewed amended pin. The earlier WB-001 projection TDD and approved review remain in the preserved prior result/evidence; this candidate contains only the plan-authorized CheckPlan test isolation. The accepted task suite also passed 25/25 cases in run 6ac33e168a104cf89ee5ff989aa33346."
+}
