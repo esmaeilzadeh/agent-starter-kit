@@ -21,6 +21,11 @@ if str(SCRIPT_ROOT) not in sys.path:
 from engineering_model.actions import edit
 from engineering_model.admission import admit, load_published
 from engineering_model.projection import project
+from workbench_context import (
+    STATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,
+    reset_for_work, route_to,
+)
+from workbench_navigation import build_outline, render_breadcrumbs, render_outline
 
 
 STATE_VIEW = "_engineering_displayed_view"
@@ -569,23 +574,38 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
     if not option_ids:
         st.info("This decision has no declared options.")
         return
-    with st.form("decision_resolution"):
-        st.selectbox("Option", options=option_ids, key="option_id", disabled=not editable)
-        st.text_input("Actor", key="actor", disabled=not editable)
-        st.text_area("Rationale", key="rationale", disabled=not editable)
-        submitted = st.form_submit_button("Resolve decision", key="resolve", disabled=not editable)
+    captured = st.session_state.get(STATE_FORM_IDENTITY)
+    captured_for_work = (captured if isinstance(captured, dict)
+                         and captured.get("work_id") == work_id else None)
+    form_editable = bool(editable and captured_for_work and captured_for_work.get("editable"))
+    if not form_editable:
+        st.info("This source is read-only. Select the current working source and refresh before editing.")
+    field_context = f"{work_id}:{node['id']}:{captured_for_work.get('digest') if captured_for_work else 'unavailable'}"
+    with st.form(f"decision_resolution:{field_context}"):
+        st.selectbox("Option", options=option_ids, key=f"decision-option:{field_context}",
+                     disabled=not form_editable)
+        st.text_input("Actor", key=f"decision-actor:{field_context}", disabled=not form_editable)
+        st.text_area("Rationale", key=f"decision-rationale:{field_context}",
+                     disabled=not form_editable)
+        submitted = st.form_submit_button("Resolve decision", key="decision:submit",
+                                          disabled=not form_editable)
     if not submitted:
         return
-    if not st.session_state.actor.strip() or not st.session_state.rationale.strip():
+    actor = st.session_state.get(f"decision-actor:{field_context}", "")
+    rationale = st.session_state.get(f"decision-rationale:{field_context}", "")
+    option_id = st.session_state.get(f"decision-option:{field_context}", option_ids[0])
+    if not actor.strip() or not rationale.strip():
         st.error("Actor and rationale are required to resolve a decision.")
         return
     proposal = {"commands": [{"op": "resolve_decision", "id": node["id"],
-                              "option_id": st.session_state.option_id,
-                              "actor": st.session_state.actor,
-                              "rationale": st.session_state.rationale}]}
-    result = edit(root, work_id, view["snapshot"]["digest"], proposal)
+                              "option_id": option_id,
+                              "actor": actor,
+                              "rationale": rationale}]}
+    expected_digest = (captured_for_work or {}).get("digest") or view["snapshot"]["digest"]
+    result = edit(root, work_id, expected_digest, proposal)
     if not result["valid"]:
         st.session_state[STATE_FEEDBACK] = result.get("diagnostics", [])
+        st.error("This decision form is stale. No change was saved; refresh to capture the current inputs.")
         return
     st.session_state[STATE_FEEDBACK] = []
     refreshed = _capture_view(root, work_id)
@@ -594,12 +614,15 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
     st.session_state[STATE_CANDIDATE] = None
     st.session_state[STATE_EVIDENCE_PROJECTION] = None
     st.session_state[STATE_OVERVIEW_RESULTS] = None
+    outline = build_outline(refreshed["projection"] or {})
+    reset_for_work(st.session_state, work_id, refreshed,
+                   outline["roots"][0] if outline["roots"] else "")
     st.rerun()
 
 
 st.set_page_config(page_title="Engineering workbench", page_icon=":material/schema:", layout="wide")
 st.title("Engineering workbench")
-st.caption("Inspect model state, planned behavior, and verification evidence.")
+st.caption("Follow promised work through delivery tasks, tests, and recorded results.")
 
 root = _model_root()
 branch = _current_branch(root)
@@ -616,16 +639,16 @@ if (st.session_state.get(STATE_BRANCH) != branch or "work_id" not in st.session_
     st.session_state[STATE_VIEW] = None
     st.session_state[STATE_WORK] = None
 with st.container(horizontal=True, vertical_alignment="bottom"):
-    work_id = st.selectbox("Workstream in current branch", options=work_ids, key="work_id")
-    refresh_inputs = st.button("Refresh inputs", key="refresh", icon=":material/refresh:")
-st.caption(f"Branch: `{branch}`. This view reads workstreams from this checkout only; use the selector to switch among workstreams on this branch. To inspect work from another branch, check out that branch and refresh the page.")
+    work_id = st.selectbox("Workstream", options=work_ids, key="work_id")
+    refresh_inputs = st.button("Refresh", key="refresh", icon=":material/refresh:")
 
 if st.session_state.get(STATE_WORK) != work_id or STATE_VIEW not in st.session_state:
     st.session_state[STATE_VIEW] = _capture_view(root, work_id)
     st.session_state[STATE_WORK] = work_id
-    st.session_state[STATE_CANDIDATE] = None
-    st.session_state[STATE_EVIDENCE_PROJECTION] = None
-    st.session_state[STATE_OVERVIEW_RESULTS] = None
+    selected_view = st.session_state[STATE_VIEW]
+    initial_outline = build_outline(selected_view["projection"] or {})
+    reset_for_work(st.session_state, work_id, selected_view,
+                   initial_outline["roots"][0] if initial_outline["roots"] else "")
 
 view = st.session_state[STATE_VIEW]
 projection = view.get("projection")
@@ -634,15 +657,23 @@ if projection is None:
     _show_diagnostics(view.get("diagnostics", []))
     st.error("No admitted or previously published snapshot is available for this workstream.")
     if refresh_inputs:
-        st.session_state[STATE_VIEW] = _capture_view(root, work_id)
+        refreshed = _capture_view(root, work_id)
+        st.session_state[STATE_VIEW] = refreshed
+        st.session_state[STATE_WORK] = work_id
+        outline = build_outline(refreshed["projection"] or {})
+        reset_for_work(st.session_state, work_id, refreshed,
+                       outline["roots"][0] if outline["roots"] else "")
         st.rerun()
     st.stop()
 
 identity = view["snapshot"]
+source_label = "Working tree" if st.session_state.get(STATE_SOURCE, {}).get("kind") == "working-tree" else "Selected source"
 with st.container(horizontal=True, vertical_alignment="center"):
-    st.badge("Validated snapshot" if view["editable"] else "Read-only snapshot",
+    st.badge(source_label, icon=":material/source:", color="blue")
+    st.badge("Validated inputs" if view["editable"] else "Read-only snapshot",
              icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
              color="green" if view["editable"] else "orange")
+st.caption(f"Checkout: `{branch}` · Workstream: `{work_id}`")
 if view["last_validated"]:
     st.warning("Showing last validated snapshot (read-only). Current working inputs were not admitted.")
 elif view.get("diagnostics"):
@@ -650,70 +681,66 @@ elif view.get("diagnostics"):
 _show_diagnostics(view.get("diagnostics", []))
 
 if refresh_inputs:
-    st.session_state[STATE_VIEW] = _capture_view(root, work_id)
+    refreshed = _capture_view(root, work_id)
+    st.session_state[STATE_VIEW] = refreshed
     st.session_state[STATE_WORK] = work_id
-    st.session_state[STATE_CANDIDATE] = None
-    st.session_state[STATE_EVIDENCE_PROJECTION] = None
-    st.session_state[STATE_OVERVIEW_RESULTS] = None
+    outline = build_outline(refreshed["projection"] or {})
+    reset_for_work(st.session_state, work_id, refreshed,
+                   outline["roots"][0] if outline["roots"] else "")
     st.rerun()
 
 projection = view["projection"]
-nodes = _node_map(projection)
-st.session_state.setdefault("workbench_section", "Overview")
-section = st.segmented_control(
-    "Workbench section",
-    ["Overview", "Objects", "Scenarios", "Evidence"],
-    key="workbench_section", label_visibility="collapsed",
-    selection_mode="single", required=True, width="stretch")
-
-overview_context = f"{work_id}:{identity['digest']}"
-if section == "Overview":
-    def load_overview_results():
-        with st.spinner("Loading test results…"):
-            st.session_state[STATE_OVERVIEW_RESULTS] = project(view["captured"], root)
-
-    _render_overview(projection, view["captured"], root, work_id, overview_context,
-                     load_overview_results,
-                     st.session_state.get(STATE_OVERVIEW_RESULTS) is not None)
-
-if section == "Objects":
-    selected_node = _render_objects(nodes, f"{work_id}:{identity['digest']}:objects")
-    if selected_node is not None:
-        _render_decision(selected_node, view["editable"], root, work_id, view)
-
-def _get_evidence_projection() -> dict:
-    cached = st.session_state.get(STATE_EVIDENCE_PROJECTION)
-    if cached is None:
-        with st.spinner("Loading verification evidence…"):
-            cached = project(view["captured"], root)
-        st.session_state[STATE_EVIDENCE_PROJECTION] = cached
-    return cached
-
-if section == "Scenarios":
-    _render_scenarios(_get_evidence_projection(), f"{work_id}:{identity['digest']}:scenarios")
-
-if section == "Evidence":
-    with st.form("evidence_candidate_inspection", border=False):
-        input_col, action_col = st.columns([3, 1], vertical_alignment="bottom")
-        input_col.text_input("Evidence candidate", key="candidate_sha",
-                             placeholder="Empty means current checkout")
-        inspect_candidate = action_col.form_submit_button(
-            "Inspect candidate", key="inspect_candidate", icon=":material/search:", type="primary")
-    if inspect_candidate:
-        try:
-            with st.spinner("Inspecting candidate evidence…"):
-                st.session_state[STATE_CANDIDATE] = project(
-                    view["captured"], root,
-                    candidate_sha=st.session_state.candidate_sha.strip() or None,
-                )
-            st.session_state[STATE_FEEDBACK] = []
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            st.session_state[STATE_CANDIDATE] = None
-            st.session_state[STATE_FEEDBACK] = [_diagnostic("EM007_EVIDENCE", "$candidate_sha", str(exc))]
-
-    candidate_projection = st.session_state.get(STATE_CANDIDATE)
-    _render_evidence(candidate_projection or _get_evidence_projection(), root,
-                     f"{work_id}:{identity['digest']}:{candidate_projection is not None}")
+navigation_col, detail_col = st.columns([1, 2], gap="large")
+with navigation_col:
+    outline = render_outline(projection)
+route_id = st.session_state.get(STATE_ROUTE)
+if route_id not in outline["ancestors"]:
+    route_id = outline["roots"][0] if outline["roots"] else ""
+    route_to(st.session_state, route_id)
+with detail_col:
+    with st.container(border=True):
+        render_breadcrumbs(outline, route_id)
+        selected = next((entry for entry in outline["entries"]
+                         if entry["route_id"] == route_id), None)
+        if selected is None:
+            st.info("This workstream has no epic record yet.")
+        elif selected["kind"] == "decision":
+            selected_node = _node_map(projection).get(selected["node_id"])
+            if selected_node:
+                _render_decision(selected_node, view["editable"], root, work_id, view)
+        elif selected["kind"] == "result":
+            test_id = selected["node_id"]
+            st.subheader("Result and evidence")
+            st.caption(f"Selected test: {test_id}")
+            st.info("Recorded execution details are available from this test's result once results are loaded.")
+        elif selected["kind"] == "test":
+            st.subheader(selected["label"])
+            st.caption("Test · linked to its scenario and implementation task")
+            st.info("Open Result / evidence in the outline to inspect a recorded execution.")
+        elif selected["kind"] == "task":
+            st.subheader(selected["label"])
+            task = next((item for item in projection.get("tasks", [])
+                         if item["id"] == selected["node_id"]), {})
+            st.caption(f"Task status: {task.get('status', 'not recorded')} · source: {task.get('record_source', 'unavailable')}")
+        elif selected["kind"] == "scenario":
+            scenario = next((item for item in projection.get("scenarios", [])
+                             if item["id"] == selected["node_id"]), {})
+            st.subheader(scenario.get("title") or selected["label"])
+            if scenario.get("criterion_id"):
+                st.caption(f"Canonical behavior · {scenario['criterion_id']}")
+            if scenario.get("canonical_status") == "unavailable":
+                st.warning("Canonical scenario details are unavailable in the captured source.")
+        elif selected["kind"] == "story":
+            st.subheader(selected["label"])
+            st.caption("Recorded story in the current Engineering Model.")
+        else:
+            st.subheader(selected["label"])
+            if selected["kind"] == "epic":
+                st.caption("Epic · root of the selected workstream hierarchy")
+                st.markdown("**Purpose**")
+                st.write(selected["label"])
+            else:
+                st.info("Select a story, scenario, task, test, or result from this outline.")
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
     st.error("The requested action or inspection did not succeed. The displayed snapshot was not refreshed.")
