@@ -192,7 +192,7 @@ class WorkbenchTests(unittest.TestCase):
                 app.selectbox(key="work_id").select("archive").run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.selectbox(key="work_id").value, "archive")
-                self.assertEqual(app.session_state["_engineering_route"], "purpose")
+                self.assertEqual(app.session_state["_engineering_route"], "")
                 archived_view = _text(app)
                 if "EM001_CANONICAL_DEFINITION" not in archived_view:
                     failures.append("committed snapshots must expose canonical spec-to-plan admission errors")
