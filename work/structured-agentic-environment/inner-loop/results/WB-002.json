@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "structured-agentic-environment",
+  "task_id": "WB-002",
+  "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+  "candidate_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+  "tdd": {
+    "seam": "_ask/scripts/engineering_model/workbench_sources.py:_later_cards",
+    "red": {
+      "command": "python3 -m unittest discover -s _ask/tests -p test_engineering_*.py (accepted WB-002 selection through traceability adapter) at 019dad0322154e4eeb028c8b1935b02f9b593ac4; traceability run b8eabe0b113c4923a40aa8a7e8d364a0",
+      "output": "test_cross_branch_snapshot_is_consistent_and_read_only (test_engineering_workbench_sources.WorkbenchTests) ... ok\ntest_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests) ... FAIL\ntest_missing_blobs_and_unsafe_paths_are_explained (test_engineering_workbench_sources.WorkbenchTests) ... ok\n\n======================================================================\nFAIL: test_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/ask-cases-ix4_x_aj/candidate/_ask/tests/test_engineering_workbench_sources.py\", line 80, in test_current_work_and_ref_archive_inventory\n    self.assertEqual(isolated[\"later\"], [],\nAssertionError: Lists differ: [{'slug': 'private', 'title': 'External card', 'path': '.later/private.md'}] != []\n\nFirst list contains 1 additional elements.\nFirst extra element 0:\n{'slug': 'private', 'title': 'External card', 'path': '.later/private.md'}\n\n- [{'path': '.later/private.md', 'slug': 'private', 'title': 'External card'}]\n+ [] : a symlinked .later root must not expose cards outside the checkout\n\n----------------------------------------------------------------------\nRan 3 tests in 0.516s\n\nFAILED (failures=1)\n",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "python3 -m unittest discover -s _ask/tests -p test_engineering_*.py (accepted WB-002 selection through traceability adapter) at b9644b94da99dc6752a5f5a01cdd59e3e19d74a6; traceability run 16738323cd53448d9dc1c0659a589956",
+      "output": "test_cross_branch_snapshot_is_consistent_and_read_only (test_engineering_workbench_sources.WorkbenchTests) ... ok\ntest_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests) ... ok\ntest_missing_blobs_and_unsafe_paths_are_explained (test_engineering_workbench_sources.WorkbenchTests) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.356s\n\nOK\n",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "Confinement regression: a symlinked .later root pointing outside the checkout must not expose external cards. Candidate b9644b94da99dc6752a5f5a01cdd59e3e19d74a6 contains the guard. Preserved prior WB-002 candidate 43d5138f2d4bd49446200ef0311534e73946450a and its pre-confinement TaskResult at inner-loop/evidence/WB-002-pre-confinement-result.json. Earlier rejected red attempt 28eb1a9 and run 29bba382314d4f2a920fe6322605669d remains historical and is not used."
+}

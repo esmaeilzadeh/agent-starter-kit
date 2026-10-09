@@ -1,0 +1,1248 @@
+{
+  "schema": "ask-inner-loop-state/v1",
+  "work_id": "structured-agentic-environment",
+  "revision": 10,
+  "coordinator_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+  "coordinator_branch": "agent/structured-agentic-environment",
+  "tasks": {
+    "WB-001": {
+      "status": "integrated",
+      "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+      "task_branch": "",
+      "result_path": "work/structured-agentic-environment/inner-loop/results/WB-001.json",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-001",
+          "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "candidate_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "result_digest": "2a1512b14efdaa5a4ad5b92945a4b4db7d718511c5b963d2f5ed7e0e01b85fb0",
+          "reviewer": "/root/review_wb001",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-001-review-adf2593.md",
+          "evidence_digest": "8f465f6f9b2391573f68a782310b81f9f416e0b5277b6982a1ad22719589556a",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-001",
+          "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "candidate_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "2a1512b14efdaa5a4ad5b92945a4b4db7d718511c5b963d2f5ed7e0e01b85fb0",
+          "checks": [
+            {
+              "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-ask.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/0.log",
+              "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-complete.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/1.log",
+              "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-first-run.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/2.log",
+              "output_digest": "7053a6d8a416e10a3d762e4b0360f548926a8288b16bd28a5964515b0d062702"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-self-install.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/3.log",
+              "output_digest": "d1422bba430fbd82433e6387976129528002d29aa13db2dab4d13454ccc59d1a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/4.log",
+              "output_digest": "c4c47e68022154fa4342948a680d241fda54c426f7b89b9e1de25ca3596eb1ad"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-clean-worktree.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/5.log",
+              "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-workstream-confirmation.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/6.log",
+              "output_digest": "b8979a891f5697edb8f3d7b62d61dd1fcc368895f7f5bf8d0e0fca26f5c29a50"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-workstream-guidance.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/7.log",
+              "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-codex-skill-parity.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/8.log",
+              "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-e2e-contract-sections.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/9.log",
+              "output_digest": "c762ce58bd9cfc80df3f2ae08cdb0f0cce4547c2d348213d71178c7747769e01"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/10.log",
+              "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-humanizer-docs-specs.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/11.log",
+              "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-inner-loop-reliability.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/12.log",
+              "output_digest": "2612741d40c076585dcb7a2fd41ab255fd539b6f5824d2f8eebb187ff3eb04c2"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-inner-loop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/13.log",
+              "output_digest": "83b988f8bbb38e6b46d6c247a15a5e640ead5a8e0c22307cfea13e5b874383f8"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-kit-apply.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/14.log",
+              "output_digest": "0057c70db7fd1db916c9cfa21762dee4a306d3f96a02d18d4d8dd675f2aec6bb"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-kit-dry-run.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/15.log",
+              "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-user-completion.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/16.log",
+              "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-later-inbox-gitignore.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/17.log",
+              "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/18.log",
+              "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/19.log",
+              "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/20.log",
+              "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/21.log",
+              "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-writes-manifest.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/22.log",
+              "output_digest": "931c37932f2288e47616e1fde5ff0ba8638b69fd5c57d9555241d62e47db523d"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-setup-env-gitignore.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/23.log",
+              "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-setup-human-only.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/24.log",
+              "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-stages-inner-loop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/25.log",
+              "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-from-develop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/26.log",
+              "output_digest": "5e9264990c06550eda18ba3bbbf2d492e6a07b903db84d7e83fe0fe0fe174a60"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-no-explore-map.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/27.log",
+              "output_digest": "10cfb834d0daaa9676fe34905b634d947a6b9ea5c06fbf4535508a75170958de"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/28.log",
+              "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-status.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-status.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/29.log",
+              "output_digest": "2b725201c26ac19a1d5c92f3639a9fd83949377423a32bed93dfb6cf5ccd9cc5"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-canonical-ask.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/30.log",
+              "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-off-path-command.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/31.log",
+              "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-runtime-agents.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/32.log",
+              "output_digest": "17abdb43dba77cbf00d2287baab795e75f1af47c7d30325933fb964d4474425a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-verify-fail-closed.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/33.log",
+              "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-verify-scaffold.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/34.log",
+              "output_digest": "c7b0450fc0145e3266228eca150f4d2b6bbae3c4e898e731584798a2e5ac6610"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-workstream-smoke.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/35.log",
+              "output_digest": "3477da30fb3ecbd84a20e547267c217f8870055d6a18c208175772dba81f762c"
+            },
+            {
+              "id": "traceability-cases",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/1e672bbf0b4845efae5bfa5cd0eab1ab/36.log",
+              "output_digest": "aa423e5f7142224ae225ca7f42598371e5ed223cccbfe2652f9669475ae02de6"
+            }
+          ],
+          "evidence_path": "work/structured-agentic-environment/inner-loop/evidence/verify-6vc8e7xr/verification.json",
+          "log_path": "work/structured-agentic-environment/inner-loop/evidence/verify-6vc8e7xr/output.log",
+          "runner_digest": "93e03cd993c9c4471d67686ae669866b0d84b3d32dd436384b00beb6f4113ed0",
+          "runner_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "tree_sha": "5857b9eb5ac11060a822cbcd6f644fd48d51950a",
+          "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
+          "record_path": "work/structured-agentic-environment/inner-loop/evidence/verify-6vc8e7xr/integration.json",
+          "resulting_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "review": {
+            "work_id": "structured-agentic-environment",
+            "task_id": "WB-001",
+            "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+            "candidate_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+            "result_digest": "2a1512b14efdaa5a4ad5b92945a4b4db7d718511c5b963d2f5ed7e0e01b85fb0",
+            "reviewer": "/root/review_wb001",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+            "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-001-review-adf2593.md",
+            "evidence_digest": "8f465f6f9b2391573f68a782310b81f9f416e0b5277b6982a1ad22719589556a",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        }
+      }
+    },
+    "WB-002": {
+      "status": "integrated",
+      "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+      "task_branch": "",
+      "result_path": "work/structured-agentic-environment/inner-loop/results/WB-002.json",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-002",
+          "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "candidate_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+          "result_digest": "9120beecd8d0e4b5f0c9c6f9ca790991d6a72197e652f74076ff27253851a3e7",
+          "reviewer": "/root/review_wb001",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-002-review-b9644b9.md",
+          "evidence_digest": "367f4f027d40b01ad4ee0e9b980a46a7b8f2679accd9f8ceddd199be74d552d6",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-002",
+          "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "candidate_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "9120beecd8d0e4b5f0c9c6f9ca790991d6a72197e652f74076ff27253851a3e7",
+          "checks": [
+            {
+              "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-ask.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/0.log",
+              "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-complete.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/1.log",
+              "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-first-run.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/2.log",
+              "output_digest": "7552cb9e25b2f80861c958434fc885986ef2011928473b847ce75d35f8cbf222"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-self-install.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/3.log",
+              "output_digest": "e83ddcd8a8d6d128184a04002e1f862be84a176adaff77f8bcf103fd72e96ca7"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/4.log",
+              "output_digest": "cc92e9f19c3ccc1bd876a64325b93cc0eac1b9dd5bf10e7e30a9232599227860"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-clean-worktree.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/5.log",
+              "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-workstream-confirmation.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/6.log",
+              "output_digest": "b8979a891f5697edb8f3d7b62d61dd1fcc368895f7f5bf8d0e0fca26f5c29a50"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-workstream-guidance.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/7.log",
+              "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-codex-skill-parity.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/8.log",
+              "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-e2e-contract-sections.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/9.log",
+              "output_digest": "c762ce58bd9cfc80df3f2ae08cdb0f0cce4547c2d348213d71178c7747769e01"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/10.log",
+              "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-humanizer-docs-specs.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/11.log",
+              "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-inner-loop-reliability.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/12.log",
+              "output_digest": "10c60d5e4133314b1d18f2d10557d7057dcc2ad8db1676b07ed802d394e5dfa4"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-inner-loop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/13.log",
+              "output_digest": "83b988f8bbb38e6b46d6c247a15a5e640ead5a8e0c22307cfea13e5b874383f8"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-kit-apply.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/14.log",
+              "output_digest": "968a4d05af9985668a36475678237df621348434ecd39c651defc62eb7d2bca6"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-kit-dry-run.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/15.log",
+              "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-user-completion.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/16.log",
+              "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-later-inbox-gitignore.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/17.log",
+              "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/18.log",
+              "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/19.log",
+              "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/20.log",
+              "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/21.log",
+              "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-writes-manifest.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/22.log",
+              "output_digest": "6faf3e03b43b53e15f528e5dacb79d5bd8ec250d7d9a6ea382621bf9e5ce3903"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-setup-env-gitignore.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/23.log",
+              "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-setup-human-only.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/24.log",
+              "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-stages-inner-loop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/25.log",
+              "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-from-develop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/26.log",
+              "output_digest": "97df6c50f154bfde484d2f9e4757fc88f203fbdfc4f9f2b7c09101475e0c9bc5"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-no-explore-map.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/27.log",
+              "output_digest": "c08b1cde5305852cea6f81c3d12861192bb4208cf2ceffb9c0444b0db48ade0c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/28.log",
+              "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-status.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-status.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/29.log",
+              "output_digest": "2b725201c26ac19a1d5c92f3639a9fd83949377423a32bed93dfb6cf5ccd9cc5"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-canonical-ask.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/30.log",
+              "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-off-path-command.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/31.log",
+              "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-runtime-agents.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/32.log",
+              "output_digest": "e7467a82d165d8508b81e21c5225f6d92fa1940cb30bcedfeb9298f6db09721c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-verify-fail-closed.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/33.log",
+              "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-verify-scaffold.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/34.log",
+              "output_digest": "263a6b01b78ad4dbf9cf2d0830de8f50df32148aacfe2f5fda8a37d7cfafb424"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-workstream-smoke.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/35.log",
+              "output_digest": "7bdedecc322a9c0cee35f4b13ed2ebebf4d83f80a23c169c9e3738c71734ea19"
+            },
+            {
+              "id": "traceability-cases",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/2eb5e282f1694407a731a12abcca3529/36.log",
+              "output_digest": "52b93251ed2c69a45db607dba1780b9dae7a1d07f47aa53d1c31cd7663cfa815"
+            }
+          ],
+          "evidence_path": "work/structured-agentic-environment/inner-loop/evidence/verify-0f359u5s/verification.json",
+          "log_path": "work/structured-agentic-environment/inner-loop/evidence/verify-0f359u5s/output.log",
+          "runner_digest": "93e03cd993c9c4471d67686ae669866b0d84b3d32dd436384b00beb6f4113ed0",
+          "runner_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+          "tree_sha": "97335e439a36f1c393574524167dd259d98e51ed",
+          "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
+          "record_path": "work/structured-agentic-environment/inner-loop/evidence/verify-0f359u5s/integration.json",
+          "resulting_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+          "review": {
+            "work_id": "structured-agentic-environment",
+            "task_id": "WB-002",
+            "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+            "candidate_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+            "result_digest": "9120beecd8d0e4b5f0c9c6f9ca790991d6a72197e652f74076ff27253851a3e7",
+            "reviewer": "/root/review_wb001",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+            "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-002-review-b9644b9.md",
+            "evidence_digest": "367f4f027d40b01ad4ee0e9b980a46a7b8f2679accd9f8ceddd199be74d552d6",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        }
+      }
+    },
+    "WB-003": {
+      "status": "integrated",
+      "base_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+      "task_branch": "",
+      "result_path": "work/structured-agentic-environment/inner-loop/results/WB-003.json",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-003",
+          "base_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+          "candidate_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+          "result_digest": "28f6afa38d8ef06ca50d49cf6d9f7bc76fa91a0ec7050956fd6adf2707280784",
+          "reviewer": "/root/review_wb001",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-003-review-70dd295.md",
+          "evidence_digest": "9511f9e6c09a705a8559775528f2e7d49ca784fd509fa99bf2f6ae7911aaf5fb",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-003",
+          "base_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+          "candidate_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "28f6afa38d8ef06ca50d49cf6d9f7bc76fa91a0ec7050956fd6adf2707280784",
+          "checks": [
+            {
+              "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-ask.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/0.log",
+              "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-complete.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/1.log",
+              "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-first-run.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/2.log",
+              "output_digest": "77c576f61bba191e8b62d55004a9cd0eccc19b29863eafc2f89d690bba21a2bb"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-askit-self-install.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/3.log",
+              "output_digest": "9892aae44f9399158ca2f97289dade97f3090a01ff7b39135c3eac30af950f99"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/4.log",
+              "output_digest": "3258f6569278842867e7b14e8be94410d8cc5e78d243177998404f56a5e03a46"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-clean-worktree.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/5.log",
+              "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-workstream-confirmation.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/6.log",
+              "output_digest": "b8979a891f5697edb8f3d7b62d61dd1fcc368895f7f5bf8d0e0fca26f5c29a50"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-check-workstream-guidance.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/7.log",
+              "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-codex-skill-parity.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/8.log",
+              "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-e2e-contract-sections.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/9.log",
+              "output_digest": "c762ce58bd9cfc80df3f2ae08cdb0f0cce4547c2d348213d71178c7747769e01"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/10.log",
+              "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-humanizer-docs-specs.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/11.log",
+              "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-inner-loop-reliability.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/12.log",
+              "output_digest": "c13fca6de6ec99d44194083c83691d990a131faeb8f74d7b4e69c04056c51561"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-inner-loop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/13.log",
+              "output_digest": "83b988f8bbb38e6b46d6c247a15a5e640ead5a8e0c22307cfea13e5b874383f8"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-kit-apply.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/14.log",
+              "output_digest": "a536b8628d77782b54dd166cd43665a9534cbd813a8ca3b35b28ef6f7e059006"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-kit-dry-run.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/15.log",
+              "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-install-user-completion.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/16.log",
+              "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-later-inbox-gitignore.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/17.log",
+              "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/18.log",
+              "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/19.log",
+              "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/20.log",
+              "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/21.log",
+              "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-record-run-writes-manifest.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/22.log",
+              "output_digest": "84be604d4a51e73de454ee2e574d8a86ac29b93944a574c0df2ca99ca3a5974a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-setup-env-gitignore.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/23.log",
+              "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-setup-human-only.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/24.log",
+              "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-stages-inner-loop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/25.log",
+              "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-from-develop.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/26.log",
+              "output_digest": "4cca8e83d05e5b2ab3173905df86782378b9ddddcf4efdf418003e3d70b50da7"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-no-explore-map.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/27.log",
+              "output_digest": "c10f881ef9094c1e382e4549dcdd855bdaa245ca03c8c7eedb4560a7962351a3"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/28.log",
+              "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-status.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-status.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/29.log",
+              "output_digest": "2b725201c26ac19a1d5c92f3639a9fd83949377423a32bed93dfb6cf5ccd9cc5"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-canonical-ask.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/30.log",
+              "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-off-path-command.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/31.log",
+              "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-sync-runtime-agents.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/32.log",
+              "output_digest": "7389143a47fc721c4e86ec9165c757adf85b948a406deceaffe46de3161fdea3"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-verify-fail-closed.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/33.log",
+              "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-verify-scaffold.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/34.log",
+              "output_digest": "d4881bc0f643b448e56893810ac4b631cbb6345ad3bbd07d4ae9b61a33bc235a"
+            },
+            {
+              "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+              "tier": "mandatory",
+              "command": "_ask/tests/test-workstream-smoke.sh",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/35.log",
+              "output_digest": "e98c0117f106ee080dbc58c4206936c91321fff67f52aa2759c92b19d6229739"
+            },
+            {
+              "id": "traceability-cases",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/structured-agentic-environment/traceability/static-runs/a2ca3ba76a0b408287fa33d85f030aae/36.log",
+              "output_digest": "c43741c1b8a43edfc9261c1eb95156f6d7c09670eabb096a4bd35079ba20fa03"
+            }
+          ],
+          "evidence_path": "work/structured-agentic-environment/inner-loop/evidence/verify-vf28kxs4/verification.json",
+          "log_path": "work/structured-agentic-environment/inner-loop/evidence/verify-vf28kxs4/output.log",
+          "runner_digest": "93e03cd993c9c4471d67686ae669866b0d84b3d32dd436384b00beb6f4113ed0",
+          "runner_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+          "tree_sha": "7caed2800ac46c3d4cf7bcd34cfa11b07d4c5d10",
+          "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
+          "record_path": "work/structured-agentic-environment/inner-loop/evidence/verify-vf28kxs4/integration.json",
+          "resulting_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+          "review": {
+            "work_id": "structured-agentic-environment",
+            "task_id": "WB-003",
+            "base_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+            "candidate_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+            "result_digest": "28f6afa38d8ef06ca50d49cf6d9f7bc76fa91a0ec7050956fd6adf2707280784",
+            "reviewer": "/root/review_wb001",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+            "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-003-review-70dd295.md",
+            "evidence_digest": "9511f9e6c09a705a8559775528f2e7d49ca784fd509fa99bf2f6ae7911aaf5fb",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        }
+      }
+    },
+    "WB-004": {
+      "status": "running",
+      "base_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-005": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-006": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-007": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-008": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "WB-009": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    }
+  }
+}
