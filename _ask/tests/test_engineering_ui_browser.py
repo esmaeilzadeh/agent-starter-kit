@@ -12,7 +12,7 @@ import unittest
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from playwright.sync_api import expect, sync_playwright
+from playwright.sync_api import Error as PlaywrightError, expect, sync_playwright
 
 from engineering_fixture import evidence_workbench, workbench_model
 
@@ -25,7 +25,15 @@ from engineering_model.admission import load_published, validate_current
 class WorkbenchBrowserJourney(unittest.TestCase):
     @staticmethod
     def _table_below(page, heading):
-        heading_box = page.get_by_text(heading, exact=True).bounding_box()
+        section_heading = page.get_by_text(heading, exact=True)
+        section_heading.wait_for()
+        try:
+            section_heading.scroll_into_view_if_needed()
+        except PlaywrightError:
+            section_heading = page.get_by_text(heading, exact=True)
+            section_heading.wait_for()
+            section_heading.scroll_into_view_if_needed()
+        heading_box = section_heading.bounding_box()
         tables = page.locator('[data-testid="stDataFrame"]')
         candidates = []
         for index in range(tables.count()):
@@ -55,8 +63,24 @@ class WorkbenchBrowserJourney(unittest.TestCase):
         page.get_by_text(f"Status: {status}", exact=True).wait_for()
 
     @staticmethod
+    def select_task(page, row_index):
+        table = WorkbenchBrowserJourney._table_below(page, "Tasks")
+        WorkbenchBrowserJourney._click_row(page, table, row_index)
+
+    @staticmethod
+    def select_scenario(page, row_index):
+        table = WorkbenchBrowserJourney._table_below(page, "Scenarios and planned tests")
+        WorkbenchBrowserJourney._click_row(page, table, row_index)
+
+    @staticmethod
     def select_evidence_status(page, status):
         page.get_by_text(f"{status} evidence", exact=False).wait_for()
+
+    @staticmethod
+    def select_evidence(page, row_index):
+        page.locator('[data-testid="stDataFrame"]').first.wait_for()
+        table = WorkbenchBrowserJourney._table_below(page, "Evidence")
+        WorkbenchBrowserJourney._click_row(page, table, row_index)
 
     @staticmethod
     def choose(page, label, value):
@@ -112,12 +136,28 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         first = first_context.new_page()
                         first.goto(url, wait_until="domcontentloaded")
                         self.select_task_status(first, "blocked")
+                        first.locator('[data-testid="stDataFrame"]').first.wait_for()
+                        expect(first.get_by_text("Task details · build", exact=True)).to_be_visible()
+                        self.select_task(first, 1)
+                        expect(first.get_by_text("Task details · review-build", exact=True)).to_be_visible()
+                        self.select_task(first, 0)
+                        expect(first.get_by_text("Task details · build", exact=True)).to_be_visible()
+                        self.select_scenario(first, 0)
+                        expect(first.get_by_text("Scenario details · scenario", exact=True)).to_be_visible()
+                        self.select_scenario(first, 1)
+                        expect(first.get_by_text("Scenario details · scenario-other", exact=True)).to_be_visible()
+                        self.select_evidence(first, 0)
+                        expect(first.get_by_text("Evidence details · other", exact=True)).to_be_visible()
+                        self.select_evidence(first, 1)
+                        expect(first.get_by_text("Evidence details · w", exact=True)).to_be_visible()
                         self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(current_sha)
                         first.get_by_role("button", name="Inspect evidence candidate").click()
+                        self.select_evidence(first, 1)
                         self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(historical_sha)
                         first.get_by_role("button", name="Inspect evidence candidate").click()
+                        self.select_evidence(first, 1)
                         self.select_evidence_status(first, "historical")
                         second_context = browser.new_context()
                         second = second_context.new_page()

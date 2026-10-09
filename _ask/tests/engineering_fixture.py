@@ -92,21 +92,34 @@ def evidence_workbench():
         model["work_id"] = "w"
         model["nodes"].extend([
             {"id": "build", "type": "task", "title": "Build", "lifecycle": "planned"},
+            {"id": "review-build", "type": "task", "title": "Review build", "lifecycle": "planned"},
             {"id": "requirement", "type": "requirement", "title": "Uppercase requirement", "lifecycle": "active",
              "reference": {"path": "specs/current/w.json", "id": "C1"}},
             {"id": "scenario", "type": "scenario", "title": "Uppercase behavior", "lifecycle": "active",
              "reference": {"path": "specs/current/w.json", "id": "C1"}},
+            {"id": "scenario-other", "type": "scenario", "title": "Second canonical behavior", "lifecycle": "active",
+             "reference": {"path": "specs/current/other.json", "id": "O1"}},
+            {"id": "requirement-other", "type": "requirement", "title": "Second requirement", "lifecycle": "active",
+             "reference": {"path": "specs/current/other.json", "id": "O1"}},
             {"id": "case", "type": "test", "title": "Uppercase assertion", "lifecycle": "active",
              "reference": {"path": "work/w/test-plan.json", "id": "U"}},
         ])
         model["edges"].extend([
             {"type": "contains", "source": "purpose", "target": "build"},
+            {"type": "contains", "source": "purpose", "target": "review-build"},
             {"type": "depends_on", "source": "build", "target": "choice"},
             {"type": "contains", "source": "purpose", "target": "requirement"},
+            {"type": "contains", "source": "purpose", "target": "requirement-other"},
             {"type": "contains", "source": "requirement", "target": "scenario"},
+            {"type": "contains", "source": "requirement-other", "target": "scenario-other"},
             {"type": "covers", "source": "case", "target": "scenario"},
         ])
         consumer.write("specs/current/w.md", "# Uppercase specification\n")
+        consumer.write("specs/current/other.json", json.dumps({"schema": "ask-spec/v1", "work_id": "other",
+            "revision": 1, "criteria": [{"id": "O1", "given": "Given another input",
+            "when": "When inspected", "then": ["Show the second behavior"],
+            "verification_mode": "tests"}]}))
+        consumer.write("specs/current/other.md", "# Second specification\n")
         consumer.write("work/w/engineering-model.json", model)
         consumer.commit("adopt workbench without claiming completion for the new revision")
         return consumer, historical
