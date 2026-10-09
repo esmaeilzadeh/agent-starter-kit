@@ -1,5 +1,45 @@
 # Plan: validated Engineering Model, then interactive workbench
 
+## Current follow-up plan: tabular inspection and approval choices
+
+Status: READY FOR HUMAN MODEL SWITCH. Stop after this planning checkpoint; the human will switch to Luna before UI implementation. This section supersedes the historical status/handoff below. Continue on `agent/structured-agentic-environment`; do not start another workstream. The approved intent is `intent.md`, with the exact human reply recorded in `intent-confirmation.json`.
+
+### Completed approval-process checkpoint
+
+Commit `a838212` adds `./ask confirm-intent --work-id <id> --choice approve|revise`. A submitted approval choice is stored as `ask-intent-confirmation/v2` with `human_choice: approve`, the complete-intent scope/prompt and intent digest. Requesting revisions cannot create or replace approval. Existing v1 text records remain supported; exact typed `approve` now works. Choice and text inputs are mutually exclusive. Missing/stale approval and non-affirmative recorded choices still fail the gate.
+
+Grill/Implement sources, workflow policy, dispatcher help and generated bindings instruct agents to offer “Approve complete intent and assumptions” / “Request changes” through the runtime choice control. A preselected option is not submission. Record an explicit text reply exactly when the human uses text or choice controls are unavailable; do not ask for special spelling after a clear approval.
+
+Targeted validation passed: `bash _ask/tests/test-check-workstream-confirmation.sh` covers legacy records, exact `approve`, approval choice, revision refusal without replacing the prior record, conflicting inputs, non-affirmative recorded choice and stale intent. `./ask check-workstream structured-agentic-environment` passed. Full Verify and independent review remain pending.
+
+### Remaining sequence after the model switch
+
+1. Recheck the clean checkout and current confirmation. Amend the existing spec/test artifacts for tabular presentation under EM-005/EM-006; retain canonical scenario/evidence authority. Challenge the bounded contract and selection/reset cases before implementation. Preserve evidence history and disclose test chronology gaps.
+2. Add meaningful table/detail AppTest and browser cases before the UI changes. Cover empty collections, long/nested values, missing/historical evidence, workstream changes, refresh and evidence-candidate replacement. Use disposable fixtures; do not mutate committed pilot data.
+3. Replace text-list and JSON-first inspection with native read-only `st.dataframe` sections, readable column headings and hidden indexes. No editable-grid widgets, framework replacement, CSS, domain/schema changes or training-run viewer changes.
+
+   | Section | Table columns | Selected-item details |
+   | --- | --- | --- |
+   | Tasks | ID, title from existing node map, status, lifecycle, blocker count | Full blocker IDs/reasons, task description/reference |
+   | Engineering objects | ID, type, title, lifecycle, reference | Full description/reference/history, declared options, existing decision form |
+   | Scenarios/planned tests | Scenario ID, title, canonical reference, availability, test count | Complete Given/When/Then, test/case IDs, runner/type/source references, assertions, nested evidence |
+   | Evidence | Workstream, adapter status, candidate/current SHA, historical, current completion | Complete errors, criterion/test/outcome/provenance details; collapsed raw JSON for debugging |
+
+4. Single-row selection opens each section's detail panel. Map selection to stable IDs using the displayed table's source rows, never a separately reordered list. Handle no selection/empty tables. Namespace/reset selection on workstream, displayed snapshot and evidence-candidate changes so an old row index cannot point to another item. Selecting a row must not recapture concurrent inputs or weaken stale-form protection. Keep workstream selection, refresh, candidate inspection and guarded decision submission.
+5. Adapt tests that assert old text-list status or use the object selectbox to the table interaction. Assert actual table values and detail content, not widget presence alone. Retain decision persistence/new-session reload, stale spec-only rejection, refresh recovery, gitless roots and historical candidate inspection. Real-browser tests exercise row selection; AppTest cannot substitute for unsupported browser interactions.
+6. Run the targeted UI and browser suites against disposable fixtures/temporary processes. Capture a screenshot of the implemented table/detail view for the final handoff. Remove only test-owned server/browser resources.
+7. Commit meaningful slices on the current branch. Obtain independent candidate review, address findings, run `./ask verify`, and record candidate-bound results through `./ask record-result`. Prepare verification, review/context-audit and acceptance evidence. Human Accept is separate; this planning request authorizes no merge/push.
+
+### Completion criteria, ownership and escalation
+
+All four sections are readable tables; selecting a row opens the correct complete details; raw evidence JSON is collapsed by default. Missing/historical evidence remains honest and candidate inspection stays read-only. Existing refresh, validated snapshot display, attributed decision persistence and stale-state rejection continue to work. Approval uses submitted choices where available and accepts clear text approval without requiring special wording.
+
+UI ownership: `_ask/ui/streamlit_app.py`. Verification ownership: `_ask/tests/test_engineering_ui.py` and `_ask/tests/test_engineering_ui_browser.py`, with fixture extensions only where necessary. Contract changes stay in the existing workstream/spec/test artifacts. The completed approval checkpoint owns only the dispatcher, recorder/test, workflow policy and stage-source/generated binding changes already committed.
+
+Escalate if row selection requires model/schema changes, loses complete evidence, changes completion authority or cannot preserve captured-view freshness. Full verification and independent review remain pending. The tabular UI is not implemented at this checkpoint. Resume only after the human switches models and asks to continue.
+
+## Historical foundation plan
+
 ## Status and stopping condition
 
 PLAN ONLY. The human requested “continue till you give me a plan.” This document incorporates the subsequent validator requirements; feature implementation must not continue in this turn. The original interrupted scaffolds are non-executable drafts under `drafts/`, not delivered code or executed tests.
