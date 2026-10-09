@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "8edc2618e5055e0854ea618d6d3475dd392fe86a",
+  "contract_sha": "cc399c6a337cd07d5b1afaa9b93314aa7db9832c",
   "work_id": "structured-agentic-environment",
   "reviewer": "review_tabular_ui",
   "recorded_by": "codex-coordinator",
@@ -10,12 +10,12 @@
   "plan_review": {
     "reviewer": "review_tabular_ui",
     "decision": "APPROVED",
-    "reviewedSHA": "c22efc4f2d1790bcaef6a3858fb1e39d1c7ea5e7",
+    "reviewedSHA": "211b0e24aa7a8c2e19aa1c32bfaa20506e666075",
     "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
-    "plan_digest": "0ceb5850cd5b090defebe9b6d596c0dccf93ba91cae8ed563b5a907f0bc1082f"
+    "plan_digest": "16167497490c5054fe67dd9820612355b44e9e6c408fc3d2eacbc218eb82bad7"
   },
-  "plan_review_digest": "a85582d23d13c5abf3e5af9c822092ce16ee1af84e8257903b28704758641e64",
+  "plan_review_digest": "937782f48fcec16ef9c18ce4561d8945fee05180727ebae848e1ee7b2f586f78",
   "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
-  "plan_digest": "0ceb5850cd5b090defebe9b6d596c0dccf93ba91cae8ed563b5a907f0bc1082f",
+  "plan_digest": "16167497490c5054fe67dd9820612355b44e9e6c408fc3d2eacbc218eb82bad7",
   "graph_digest": "b8cce95f94bb3842447a35cad31d68789df636e11353ab4a75179d86761d804c"
 }
