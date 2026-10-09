@@ -146,6 +146,11 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
             statuses.setdefault(path, "missing")
             files.setdefault(path, None)
         snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
+        diagnostics = snapshot.diagnostics(root)
+        if diagnostics:
+            return {"snapshot": None, "projection": None, "captured": snapshot,
+                    "editable": False, "last_validated": False, "diagnostics": diagnostics,
+                    "source_context": {"ref": ref, "commit": commit}}
         projection = project(snapshot, root, include_evidence=False)
         # Runtime state is checkout-local. A historical source must not borrow it.
         for task in projection.get("workbench", {}).get("tasks", []):
@@ -759,6 +764,14 @@ if work_changed or source_changed or STATE_VIEW not in st.session_state:
 
 view = st.session_state[STATE_VIEW]
 projection = view.get("projection")
+source_context = st.session_state.get(STATE_SOURCE, {})
+source_label = ("Working tree" if source_context.get("kind") == "working-tree" else
+                f"Committed · {source_context.get('ref', 'source')} · {source_context.get('commit', '')[:7]}")
+with st.container(horizontal=True, vertical_alignment="center"):
+    st.badge(source_label, icon=":material/source:", color="blue")
+    st.badge("Validated inputs" if view["editable"] else "Read-only source" if source_context.get("kind") == "git-commit" else "Read-only snapshot",
+             icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
+             color="green" if view["editable"] else "orange")
 if projection is None:
     st.warning("Current inputs could not be admitted.")
     _show_diagnostics(view.get("diagnostics", []))
@@ -783,14 +796,6 @@ if projection is None:
     st.stop()
 
 identity = view["snapshot"]
-source_context = st.session_state.get(STATE_SOURCE, {})
-source_label = ("Working tree" if source_context.get("kind") == "working-tree" else
-                f"Committed · {source_context.get('ref', 'source')} · {source_context.get('commit', '')[:7]}")
-with st.container(horizontal=True, vertical_alignment="center"):
-    st.badge(source_label, icon=":material/source:", color="blue")
-    st.badge("Validated inputs" if view["editable"] else "Read-only source" if source_context.get("kind") == "git-commit" else "Read-only snapshot",
-             icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
-             color="green" if view["editable"] else "orange")
 st.caption(f"Checkout: `{branch}` · Workstream: `{work_id}`")
 if view["last_validated"]:
     st.warning("Showing last validated snapshot (read-only). Current working inputs were not admitted.")
