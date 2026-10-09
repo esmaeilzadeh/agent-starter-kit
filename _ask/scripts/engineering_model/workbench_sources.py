@@ -80,6 +80,11 @@ def _safe_path(path):
 def _later_cards(root):
     directory = Path(root) / ".later"
     try:
+        if directory.is_symlink():
+            return []
+    except OSError:
+        return []
+    try:
         entries = sorted(directory.iterdir(), key=lambda item: os.fsencode(item.name))
     except OSError:
         return []
