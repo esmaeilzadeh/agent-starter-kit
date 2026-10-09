@@ -24,6 +24,7 @@ def text(app):
                for element in getattr(app, kind)]
     visible.extend(element.value.to_string(index=False)
                    for collection in (app.dataframe, app.table) for element in collection)
+    visible.extend(str(element.value) for element in app.code)
     return "\n".join(visible)
 
 
@@ -51,25 +52,37 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertIn("Planned assertions for C1", text(app))
             app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
             self.assertFalse(app.exception, app.exception)
-            evidence_key = next(item.key for item in app.dataframe
-                                if item.key and item.key.startswith("table:Evidence:"))
+            evidence_key = next(item.key for item in app.selectbox
+                                if item.key and item.key.startswith("item:Evidence:"))
             app.text_input(key="candidate_sha").input(current_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertIn("unavailable evidence", text(app))
             self.assertIn(current_sha, text(app))
-            current_key = next(item.key for item in app.dataframe
-                               if item.key and item.key.startswith("table:Evidence:"))
+            current_key = next(item.key for item in app.selectbox
+                               if item.key and item.key.startswith("item:Evidence:"))
             app.text_input(key="candidate_sha").input(historical_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertIn("(historical)", text(app))
             self.assertIn(historical_sha, text(app))
             self.assertEqual(len(app.json), 0)
-            historical_key = next(item.key for item in app.dataframe
-                                  if item.key and item.key.startswith("table:Evidence:"))
+            historical_key = next(item.key for item in app.selectbox
+                                  if item.key and item.key.startswith("item:Evidence:"))
             self.assertNotEqual(evidence_key, historical_key)
             self.assertNotEqual(current_key, historical_key)
+
+    def test_planned_test_shows_its_source_in_the_detail_panel(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("test_behavior", text(app))
+                self.assertIn("self.assertEqual(actual, 'accepted')", text(app))
+                self.assertIn("Test source", text(app))
 
     def test_empty_task_and_scenario_tables_show_clear_states(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -99,7 +112,8 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build Build blocked", text(app))
+                self.assertIn("Build", text(app))
+                self.assertIn("Blocked", text(app))
                 app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 app.selectbox(key="option_id").select("one")
@@ -112,7 +126,7 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertIn("Measured fit for the pilot", text(app))
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
-                self.assertIn("ready", text(reloaded))
+                self.assertIn("Ready", text(reloaded))
                 reloaded.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
                 self.assertIn("Measured fit for the pilot", text(reloaded))
                 self.assertIn("resolved", text(reloaded))
@@ -124,7 +138,8 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build Build blocked", text(app))
+                self.assertIn("Build", text(app))
+                self.assertIn("Blocked", text(app))
                 self.assertEqual(len(app.json), 0)
                 with patch.object(projection_module, "inspect_evidence",
                                   side_effect=AssertionError("overview must defer evidence scans")):
@@ -143,7 +158,8 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build Build blocked", text(app))
+                self.assertIn("Build", text(app))
+                self.assertIn("Blocked", text(app))
                 app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
 
@@ -183,4 +199,4 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertIn("resolved", text(app))
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
-                self.assertIn("ready", text(reloaded))
+                self.assertIn("Ready", text(reloaded))

@@ -4,6 +4,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import re
+import ast
+import subprocess
 import sys
 
 import pandas as pd
@@ -25,6 +27,7 @@ STATE_WORK = "_engineering_displayed_work_id"
 STATE_CANDIDATE = "_engineering_candidate_projection"
 STATE_FEEDBACK = "_engineering_feedback"
 STATE_EVIDENCE_PROJECTION = "_engineering_evidence_projection"
+STATE_BRANCH = "_engineering_branch"
 
 
 def _model_root() -> Path:
@@ -37,6 +40,20 @@ def _workstreams(root: Path) -> list[str]:
     if not work.is_dir():
         return []
     return sorted(path.parent.name for path in work.glob("*/engineering-model.json") if path.is_file())
+
+
+def _current_branch(root: Path) -> str:
+    try:
+        result = subprocess.run(["git", "branch", "--show-current"], cwd=root,
+                                capture_output=True, text=True, timeout=2, check=False)
+        return result.stdout.strip() if result.returncode == 0 else "unknown branch"
+    except (OSError, subprocess.TimeoutExpired):
+        return "unknown branch"
+
+
+def _default_workstream(branch: str, work_ids: list[str]) -> str:
+    branch_work_id = branch.removeprefix("agent/") if branch.startswith("agent/") else None
+    return branch_work_id if branch_work_id in work_ids else work_ids[0]
 
 
 def _diagnostic(code: str, path: str, message: str) -> dict:
@@ -91,21 +108,20 @@ def _reference_label(reference: dict | None) -> str:
             + (f"::{reference['symbol']}" if reference.get("symbol") is not None else ""))
 
 
-def _selected_table_row(title: str, rows: list[dict], *, columns: list[str], context: str,
+def _selected_item(title: str, rows: list[dict], *, columns: list[str], context: str,
                         empty_message: str) -> dict | None:
     st.subheader(title)
     if not rows:
         st.info(empty_message)
         return None
-    frame = pd.DataFrame([{column: row.get(column, "") for column in columns} for row in rows])
-    key = f"table:{title}:{context}"
     preferred = next((index for index, row in enumerate(rows) if row.get("_preferred")), 0)
-    event = st.dataframe(frame, column_order=columns, hide_index=True, key=key, row_height=36,
-                         on_select="rerun", selection_mode="single-row",
-                         selection_default={"selection": {"rows": [preferred]}})
-    selected = event.selection.rows
-    index = selected[0] if selected else preferred
-    return rows[index]
+    def label(row: dict) -> str:
+        return " · ".join(str(row.get(column, "")) for column in columns[:3] if row.get(column, ""))
+    by_id = {str(row["_id"]): row for row in rows}
+    selected_id = st.selectbox(title, options=list(by_id), index=preferred,
+                               format_func=lambda identity: label(by_id[identity]),
+                               key=f"item:{title}:{context}", label_visibility="collapsed")
+    return by_id[selected_id]
 
 
 def _render_tasks(projection: dict, nodes: dict[str, dict], context: str) -> None:
@@ -114,7 +130,7 @@ def _render_tasks(projection: dict, nodes: dict[str, dict], context: str) -> Non
              "Title": nodes.get(task["id"], {}).get("title", ""),
              "Status": task["status"], "Lifecycle": task["lifecycle"],
              "Blockers": len(task["blockers"])} for task in tasks]
-    selected = _selected_table_row("Tasks", rows,
+    selected = _selected_item("Tasks", rows,
                                    columns=["ID", "Title", "Status", "Lifecycle", "Blockers"],
                                    context=context, empty_message="No tasks in this snapshot.")
     with st.container(border=True):
@@ -170,7 +186,7 @@ def _render_objects(nodes: dict[str, dict], context: str) -> dict | None:
         preferred = next((row["_id"] for row in rows if row["Type"] == "decision"), None)
     for row in rows:
         row["_preferred"] = row["_id"] == preferred
-    selected = _selected_table_row("Engineering objects", rows,
+    selected = _selected_item("Engineering objects", rows,
                                    columns=["ID", "Type", "Title", "Lifecycle", "Reference"],
                                    context=context,
                                    empty_message="No engineering objects in this snapshot.")
@@ -216,13 +232,35 @@ def _render_nested(value: object, label: str) -> None:
                         _render_nested(item, label)
 
 
+def _test_source(root: Path, case: dict) -> tuple[str, str] | None:
+    """Find the named test method in the plan's repository-local source files."""
+    method_name = str(case.get("case_id", "")).rsplit(".", 1)[-1]
+    if not method_name:
+        return None
+    for relative in case.get("source_paths", []):
+        source_path = (root / relative).resolve()
+        try:
+            source_path.relative_to(root.resolve())
+            source = source_path.read_text(encoding="utf-8")
+            tree = ast.parse(source)
+        except (OSError, UnicodeError, SyntaxError, ValueError):
+            continue
+        methods = [node for node in ast.walk(tree)
+                   if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                   and node.name == method_name]
+        if methods:
+            node = methods[0]
+            return relative, "\n".join(source.splitlines()[node.lineno - 1:node.end_lineno])
+    return None
+
+
 def _render_scenarios(projection: dict, context: str) -> None:
     scenarios = projection.get("scenarios", [])
     rows = [{"_id": item["id"], "ID": item["id"], "Title": item.get("title", ""),
              "Reference": _reference_label(item.get("reference")),
              "Canonical": item.get("canonical_status", "available"),
              "Planned tests": len(item.get("tests", []))} for item in scenarios]
-    selected = _selected_table_row("Scenarios and planned tests", rows,
+    selected = _selected_item("Scenarios and planned tests", rows,
                                    columns=["ID", "Title", "Reference", "Canonical", "Planned tests"],
                                    context=context,
                                    empty_message="No canonical scenarios are linked in this snapshot.")
@@ -243,24 +281,32 @@ def _render_scenarios(projection: dict, context: str) -> None:
                     st.write(entry)
         cases = scenario.get("tests", [])
         if cases:
-            st.markdown("**Planned tests**")
-            st.table(pd.DataFrame([
-                {"Test node": case.get("node_id", ""),
-                 "Title": case.get("title", ""),
-                 "Case": case.get("case_id", case.get("id", "")),
-                 "Type": case.get("type", ""), "Runner": case.get("runner_id", ""),
-                 "Availability": case.get("canonical_status", "available")}
-                for case in cases]))
-            for case in cases:
-                with st.expander(f"Test detail · {case.get('node_id', '')}", expanded=False):
-                    if case.get("canonical_status") == "unavailable":
-                        st.warning("Planned case details are unavailable in the captured snapshot.")
-                    for assertion in case.get("expected_assertions", []):
-                        st.markdown(f"**Planned assertions for {assertion.get('criterion_id', '')}**")
-                        for check in assertion.get("checks", []):
-                            st.write(check)
-                    if case.get("source_paths"):
-                        st.table(pd.DataFrame([{"Source": path} for path in case["source_paths"]]))
+            def case_identity(case: dict) -> str:
+                return str(case.get("node_id", case.get("id", "Test")))
+            cases_by_id = {case_identity(case): case for case in cases}
+            selected_case = st.selectbox(
+                "Planned test", options=list(cases_by_id),
+                format_func=lambda identity: f"{cases_by_id[identity].get('title', identity)} · {cases_by_id[identity].get('type', 'test')}",
+                key=f"scenario-test:{context}:{scenario['id']}")
+            selected_case = cases_by_id[selected_case]
+            with st.container(border=True):
+                st.markdown(f"#### {selected_case.get('title', selected_case.get('node_id', 'Test'))}")
+                st.caption("{} · {} · runner {}".format(
+                    selected_case.get("case_id", selected_case.get("id", "")),
+                    selected_case.get("type", "test"), selected_case.get("runner_id", "unspecified")))
+                if selected_case.get("canonical_status") == "unavailable":
+                    st.warning("Planned case details are unavailable in the captured snapshot.")
+                for assertion in selected_case.get("expected_assertions", []):
+                    st.markdown(f"**Planned assertions for {assertion.get('criterion_id', '')}**")
+                    for check in assertion.get("checks", []):
+                        st.write(check)
+                source = _test_source(root, selected_case)
+                if source:
+                    source_path, code = source
+                    st.markdown(f"**Test source · `{source_path}`**")
+                    st.code(code, language="python", line_numbers=True)
+                else:
+                    st.info("Test source is not available in the current checkout.")
         if scenario.get("evidence"):
             details = st.expander("Scenario evidence", expanded=False, on_change="rerun")
             if details.open:
@@ -268,7 +314,7 @@ def _render_scenarios(projection: dict, context: str) -> None:
                     _render_nested(scenario["evidence"], "Scenario evidence")
 
 
-def _render_evidence(projection: dict) -> None:
+def _render_evidence(projection: dict, context: str) -> None:
     st.subheader("Evidence records")
     # This is the adapter's complete read-only result, not a UI-derived outcome.
     evidence = projection.get("evidence", {})
@@ -283,7 +329,7 @@ def _render_evidence(projection: dict) -> None:
              "Historical": bool(result.get("historical")),
              "Current completion": bool(result.get("current_completion"))}
             for work_id, result in sorted(results.items())]
-    selected = _selected_table_row("Evidence", rows,
+    selected = _selected_item("Evidence", rows,
                                    columns=["Workstream", "Status", "Candidate SHA", "Current SHA",
                                             "Historical", "Current completion"],
                                    context=projection["snapshot"]["digest"] + ":" + str(candidate),
@@ -345,17 +391,23 @@ st.title("Engineering workbench")
 st.caption("Inspect model state, planned behavior, and verification evidence.")
 
 root = _model_root()
+branch = _current_branch(root)
 work_ids = _workstreams(root)
 if not work_ids:
     st.warning("No Engineering Model workstreams were found under the configured model root.")
     st.text(str(root))
     st.stop()
 
-if "work_id" not in st.session_state or st.session_state.work_id not in work_ids:
-    st.session_state.work_id = work_ids[0]
+if (st.session_state.get(STATE_BRANCH) != branch or "work_id" not in st.session_state
+        or st.session_state.work_id not in work_ids):
+    st.session_state.work_id = _default_workstream(branch, work_ids)
+    st.session_state[STATE_BRANCH] = branch
+    st.session_state[STATE_VIEW] = None
+    st.session_state[STATE_WORK] = None
 with st.container(horizontal=True, vertical_alignment="bottom"):
-    work_id = st.selectbox("Workstream", options=work_ids, key="work_id")
+    work_id = st.selectbox("Workstream in current branch", options=work_ids, key="work_id")
     refresh_inputs = st.button("Refresh inputs", key="refresh", icon=":material/refresh:")
+st.caption(f"Branch: `{branch}`. This view reads workstreams from this checkout only; use the selector to switch among workstreams on this branch. To inspect work from another branch, check out that branch and refresh the page.")
 
 if st.session_state.get(STATE_WORK) != work_id or STATE_VIEW not in st.session_state:
     st.session_state[STATE_VIEW] = _capture_view(root, work_id)
@@ -451,7 +503,8 @@ if section == "Evidence":
             st.session_state[STATE_FEEDBACK] = [_diagnostic("EM007_EVIDENCE", "$candidate_sha", str(exc))]
 
     candidate_projection = st.session_state.get(STATE_CANDIDATE)
-    _render_evidence(candidate_projection or _get_evidence_projection())
+    _render_evidence(candidate_projection or _get_evidence_projection(),
+                     f"{work_id}:{identity['digest']}:{candidate_projection is not None}")
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
     st.error("The requested action or inspection did not succeed. The displayed snapshot was not refreshed.")
