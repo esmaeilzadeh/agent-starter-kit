@@ -1,13 +1,14 @@
 """Shared completion behavior, including evidence and semantic-review mutations."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from verification.traceability.completion import evaluate_completion
-from verification.traceability.contracts import digest
-from verification.traceability.evidence import record_test_review,write_json
+from verification.traceability.contracts import Invalid,digest
+from verification.traceability.evidence import record_test_review,review_errors,write_json
 from traceability_fixture import Consumer
 
 class EvidenceTests(unittest.TestCase):
@@ -89,5 +90,39 @@ class EvidenceTests(unittest.TestCase):
         result=evaluate_completion(c.contracts,c.record,[c.red,task_green],context)
         self.assertEqual(result['status'],'pass',result)
         self.assertEqual({case['test_id'] for case in task_green['cases']},{'U'})
+    def test_I05_task_review_ignores_unavailable_future_test_sources(self):
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        contracts=copy.deepcopy(c.contracts)
+        plan=contracts['plan']
+        future=next(test for test in plan['tests'] if test['id']=='E')
+        future['source_paths']=['future/test_cli.py']
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'],plan_digest=digest(plan))
+        review['source_digests']={'test_app.py':hashlib.sha256((c.root/'test_app.py').read_bytes()).hexdigest()}
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion calls the public render function with a fixed input and expected output.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        try:
+            errors=review_errors(c.root,contracts,review,c.sha)
+        except (Invalid,OSError) as exc:
+            errors=[f'task review attempted an unavailable future source: {exc}']
+        self.assertEqual(errors,[])
+    def test_I06_task_review_completes_only_its_task(self):
+        from verification.traceability.evidence import source_digests
+        from verification.traceability.adapters import run_tests
+        c=Consumer(tasks='split',split_failure=True);self.addCleanup(c.close)
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'])
+        review['source_digests']=source_digests(c.root,c.sha,c.contracts['plan'],['U'])
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion calls the public render function with a fixed input and expected output.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        c.write('work/w/traceability/review-input.json',review)
+        record=record_test_review(c.root,'w',c.sha,c.sha,'work/w/traceability/review-input.json','fixture-coordinator')
+        task_green=run_tests(c.root,c.contracts,c.sha,scope='task',task_id='a')
+        context=c.context();context.update(scope='task',task_id='a')
+        result=evaluate_completion(c.contracts,record,[c.red,task_green],context)
+        self.assertEqual(result['status'],'pass',result)
+        final=evaluate_completion(c.contracts,record,[c.red,c.green],c.context())
+        self.assertEqual(final['status'],'fail')
+        self.assertIn('task-scoped semantic review cannot satisfy workstream completion',final['errors'])
 
 if __name__=='__main__':unittest.main()

@@ -15,7 +15,9 @@ Amend the verification contract to support task-scoped semantic review for task-
 - Task-level completion validates the matching scoped review and its selected source digests. It continues to require every assigned case, red/green history, and current candidate identity.
 - Workstream scope continues to require semantic review of all criteria and all accepted tests. No missing future test module or assessment is treated as available.
 
-Update the traceability review recorder/evaluator and their tests as verification support, then independently review and pin the changed contract before applying them. Preserve WB-001's current approved inner-loop review, 25-case green run, prior failed integration evidence, and all future obligations. Rebind WB-001 to a fresh coordinator/base after pinning, as required by the accepted-contract loader.
+Update the traceability review recorder/evaluator and their tests as verification support. Independently review the exact contract and source candidate, then accept and pin that reviewed candidate before the coordinator uses the updated runner. Preserve WB-001's current approved inner-loop review, 25-case green run, prior failed integration evidence, and all future obligations. Rebind WB-001 to a fresh coordinator/base after pinning, as required by the accepted-contract loader.
+
+Also add the user's delivery rule for UI tasks: after each WB-004–WB-009 integration, run the integrated UI, inspect it against the connected hierarchy and task outcome, and record a candidate-bound screenshot and findings before the next UI task starts.
 
 ## Why the change is needed
 
@@ -24,9 +26,10 @@ The current single review shape conflates two stages: a task integration check a
 ## Impacted artifacts
 
 - `work/structured-agentic-environment/plan.md`: define task-scoped semantic review for task candidate integration and retain full review for final workstream verification.
-- `work/structured-agentic-environment/inner-loop/tasks.yaml`: add bounded WB-001 verification-support ownership for the traceability review recorder/evaluator and focused tests, if accepted.
-- `.agents/ask/verification/traceability/evidence.py`, `service.py`, and `completion.py` (exact modules confirmed during implementation): represent, record, and validate the requested review scope.
-- Traceability CLI and verification tests covering scoped review selection, source hashing, wrong scope, missing modules, and unchanged full-workstream requirements.
+- `work/structured-agentic-environment/inner-loop/tasks.yaml`: add bounded WB-001 verification-support ownership for the traceability review recorder/evaluator and focused tests.
+- `.agents/ask/verification/traceability/evidence.py` and `completion.py`: represent, record, and validate the requested review scope.
+- Traceability verification tests covering scoped review selection, source hashing, wrong scope, missing modules, and unchanged full-workstream requirements.
+- Unique WB-004–WB-009 checkpoint notes and screenshots, each owned by its corresponding task.
 - New independent review and accepted pin; new WB-001 coordinator attempt and candidate-bound result/review/integration evidence.
 
 No product criteria or product behavior changes are proposed. No future test modules or assertions are added early.
@@ -45,7 +48,8 @@ Keep the previous accepted pin and the `0b14c15` candidate review, red/green evi
 2. The review binds only present source files selected by those tests, the exact candidate and accepted contract, and cannot satisfy another task's review.
 3. Task-level Verify accepts a complete matching task review and still rejects missing/failed task cases, stale source, wrong candidate, or invalid review.
 4. Workstream-level review still requires every accepted test and criterion; absent future sources remain unavailable until their tasks add them.
-5. The modified recorder/evaluator and tests receive independent review and a new accepted pin before use.
+5. The modified recorder/evaluator and tests receive independent review and are included in a new accepted pin before coordinator integration uses them.
+6. Every UI task WB-004–WB-009 ends with a candidate-bound visual checkpoint; a mismatch is corrected before the next UI task begins.
 
 ## Decision
 

@@ -61,7 +61,9 @@ class Consumer:
     def make_review(self):
         plan=self.contracts['plan'];base=self.contracts['pin']['contract_sha']
         inv=inventory(self.root,base,self.sha,plan)
-        return {'schema':'ask-test-review/v1','reviewer':'fixture-independent','candidate_sha':self.sha,'base_sha':base,'spec_digest':digest(self.spec),'plan_digest':digest(plan),'source_digests':source_digests(self.root,self.sha,plan),
+        test_ids=[t['id'] for t in plan['tests']];criterion_ids=sorted({cid for t in plan['tests'] for cid in t['criterion_ids']})
+        return {'schema':'ask-test-review/v2','reviewer':'fixture-independent','candidate_sha':self.sha,'base_sha':base,'spec_digest':digest(self.spec),'plan_digest':digest(plan),
+                'scope':'workstream','task_id':None,'test_ids':test_ids,'criterion_ids':criterion_ids,'source_digests':source_digests(self.root,self.sha,plan),
                 'inspected_sources':inv['inspected_sources'],'changed_cases':inv['changed_cases'],'inventory_exclusions':{},
                 'criteria':[{'id':'C1','coverage_decision':'APPROVED','assessment':'Exact uppercase output checked at domain and public CLI','type_adequacy':{kind:{'decision':'APPROVED','assessment':assessment} for kind,assessment in [('unit','Calls public render with known literal result'),('e2e','Separate app process checks documented stdout and exit status')]}}],
                 'tests':[{'id':t['id'],'decision':'APPROVED','assertion_assessment':'Checks literal HELLO, not output derived from render','counterexample':'Returning the input unchanged fails exact output comparison','tdd_continuity_assessment':'Same test source and exact output assertions in red and green'} for t in plan['tests']]}
