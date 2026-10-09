@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+import streamlit as st
 from streamlit.testing.v1 import AppTest
 from engineering_fixture import workbench_model, evidence_workbench, write_json
 
@@ -83,6 +84,50 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertIn("test_behavior", text(app))
                 self.assertIn("self.assertEqual(actual, 'accepted')", text(app))
                 self.assertIn("Test source", text(app))
+
+    def test_overview_shortcuts_open_the_task_or_decision_they_count(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                app.button(key="shortcut_blocked").click().run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertEqual(app.segmented_control(key="workbench_section").value, "Overview")
+                self.assertIn("Build", text(app))
+                app.button(key="shortcut_open_decisions").click().run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertEqual(app.segmented_control(key="workbench_section").value, "Objects")
+                self.assertIn("Resolve decision", text(app))
+                self.assertIn("Choose", text(app))
+
+    def test_repeated_nested_evidence_fields_do_not_duplicate_expanders(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            nested_evidence = {
+                "status": "invalid", "candidate_sha": "abc", "current_sha": "abc",
+                "historical": False, "current_completion": False,
+                "scenarios": [
+                    {"tests": [{"references": [{"id": "one"}]}]},
+                    {"tests": [{"references": [{"id": "two"}]}]},
+                ],
+                "completion": {"errors": ["migration_required: missing review JSON for candidate"]},
+            }
+            original_expander = st.expander
+
+            def expand_all(*args, **kwargs):
+                kwargs["expanded"] = True
+                return original_expander(*args, **kwargs)
+
+            with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
+                  patch.object(projection_module, "inspect_evidence", return_value=nested_evidence),
+                  patch.object(st, "expander", expand_all)):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                app.segmented_control(key="workbench_section").select("Evidence").run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertTrue(any("migration_required" in str(item.value) for item in app.warning))
+                self.assertFalse(any("migration_required" in str(item.value) for item in app.error))
 
     def test_empty_task_and_scenario_tables_show_clear_states(self):
         with tempfile.TemporaryDirectory() as directory:

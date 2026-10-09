@@ -108,6 +108,19 @@ def _reference_label(reference: dict | None) -> str:
             + (f"::{reference['symbol']}" if reference.get("symbol") is not None else ""))
 
 
+def _show_evidence_error(message: object) -> None:
+    text = str(message)
+    if text.startswith("migration_required:"):
+        st.warning(text)
+    else:
+        st.error(text)
+
+
+def _navigate_to_item(section: str, widget_key: str, selected_id: str) -> None:
+    st.session_state["workbench_section"] = section
+    st.session_state[widget_key] = selected_id
+
+
 def _selected_item(title: str, rows: list[dict], *, columns: list[str], context: str,
                         empty_message: str) -> dict | None:
     st.subheader(title)
@@ -118,9 +131,12 @@ def _selected_item(title: str, rows: list[dict], *, columns: list[str], context:
     def label(row: dict) -> str:
         return " · ".join(str(row.get(column, "")) for column in columns[:3] if row.get(column, ""))
     by_id = {str(row["_id"]): row for row in rows}
-    selected_id = st.selectbox(title, options=list(by_id), index=preferred,
+    widget_key = f"item:{title}:{context}"
+    if widget_key not in st.session_state:
+        st.session_state[widget_key] = list(by_id)[preferred]
+    selected_id = st.selectbox(title, options=list(by_id),
                                format_func=lambda identity: label(by_id[identity]),
-                               key=f"item:{title}:{context}", label_visibility="collapsed")
+                               key=widget_key, label_visibility="collapsed")
     return by_id[selected_id]
 
 
@@ -199,7 +215,7 @@ def _render_objects(nodes: dict[str, dict], context: str) -> dict | None:
     return node
 
 
-def _render_nested(value: object, label: str) -> None:
+def _render_nested(value: object, label: str, path: str = "root") -> None:
     """Show nested evidence in labeled fields and tables instead of an expanded JSON blob."""
     if isinstance(value, dict):
         simple = {key: item for key, item in value.items() if not isinstance(item, (dict, list))}
@@ -211,25 +227,28 @@ def _render_nested(value: object, label: str) -> None:
                 if isinstance(item, list) and all(not isinstance(entry, (dict, list)) for entry in item):
                     st.markdown(f"**{key.replace('_', ' ').title()}**")
                     if key == "errors":
-                        for entry in item:
-                            st.error(str(entry))
+                        if not path.endswith(".completion"):
+                            for entry in item:
+                                _show_evidence_error(entry)
                     else:
-                        _render_nested(item, key)
+                        _render_nested(item, key, f"{path}.{key}")
                     continue
                 details = st.expander(f"{key.replace('_', ' ').title()} · {len(item)}",
-                                      expanded=False, on_change="rerun")
+                                      expanded=False, on_change="rerun",
+                                      key=f"nested:{path}.{key}")
                 if details.open:
                     with details:
-                        _render_nested(item, key)
+                        _render_nested(item, key, f"{path}.{key}")
     elif isinstance(value, list):
         if all(not isinstance(item, (dict, list)) for item in value):
             st.table(pd.DataFrame([{"Value": str(item)} for item in value]))
         else:
             for index, item in enumerate(value):
-                details = st.expander(f"{label} {index + 1}", expanded=False, on_change="rerun")
+                details = st.expander(f"{label} {index + 1}", expanded=False,
+                                      on_change="rerun", key=f"nested:{path}[{index}]")
                 if details.open:
                     with details:
-                        _render_nested(item, label)
+                        _render_nested(item, label, f"{path}[{index}]")
 
 
 def _test_source(root: Path, case: dict) -> tuple[str, str] | None:
@@ -311,7 +330,8 @@ def _render_scenarios(projection: dict, context: str) -> None:
             details = st.expander("Scenario evidence", expanded=False, on_change="rerun")
             if details.open:
                 with details:
-                    _render_nested(scenario["evidence"], "Scenario evidence")
+                        _render_nested(scenario["evidence"], "Scenario evidence",
+                                       f"scenario:{scenario['id']}:evidence")
 
 
 def _render_evidence(projection: dict, context: str) -> None:
@@ -343,11 +363,12 @@ def _render_evidence(projection: dict, context: str) -> None:
                 " (historical)" if result.get("historical") else "",
                 "yes" if result.get("current_completion") else "no"))
             for error in result.get("completion", {}).get("errors", []):
-                st.error(str(error))
-            _render_nested(result, "Evidence")
+                _show_evidence_error(error)
+            _render_nested(result, "Evidence", f"evidence:{selected['_id']}")
         else:
             st.caption("Select a workstream to inspect its evidence record.")
-    raw_details = st.expander("Raw evidence JSON", expanded=False, on_change="rerun")
+    raw_details = st.expander("Raw evidence JSON", expanded=False,
+                              on_change="rerun", key=f"raw-evidence:{context}")
     if raw_details.open:
         with raw_details:
             st.json(evidence, expanded=False)
@@ -449,22 +470,46 @@ if refresh_inputs:
 
 projection = view["projection"]
 nodes = _node_map(projection)
+st.session_state.setdefault("workbench_section", "Overview")
 section = st.segmented_control(
     "Workbench section",
     ["Overview", "Objects", "Scenarios", "Evidence"],
-    key="workbench_section", default="Overview", label_visibility="collapsed",
+    key="workbench_section", label_visibility="collapsed",
     selection_mode="single", required=True, width="stretch")
 
+tasks = projection.get("tasks", [])
+blocked_tasks = [task for task in tasks if task.get("status") == "blocked"]
+open_decisions = [node for node in nodes.values()
+                  if node.get("type") == "decision" and node.get("lifecycle") == "open"]
+overview_context = f"{work_id}:{identity['digest']}"
+object_context = f"{overview_context}:objects"
+shortcut_cols = st.columns(3)
+shortcut_cols[0].button(
+    f"Tasks · {len(tasks)}", key="shortcut_tasks", icon=":material/task_alt:",
+    help=f"Inspect {tasks[0]['id']}" if tasks else "No tasks in this workstream",
+    disabled=not tasks, use_container_width=True,
+    on_click=_navigate_to_item,
+    args=("Overview", f"item:Tasks:{overview_context}", tasks[0]["id"] if tasks else ""))
+shortcut_cols[1].button(
+    f"Blocked · {len(blocked_tasks)}", key="shortcut_blocked", icon=":material/block:",
+    help=f"Review blocked task {blocked_tasks[0]['id']}" if blocked_tasks else "No blocked tasks",
+    disabled=not blocked_tasks, use_container_width=True,
+    on_click=_navigate_to_item,
+    args=("Overview", f"item:Tasks:{overview_context}", blocked_tasks[0]["id"] if blocked_tasks else ""))
+shortcut_cols[2].button(
+    f"Open decisions · {len(open_decisions)}", key="shortcut_open_decisions",
+    icon=":material/gavel:",
+    help=f"Review decision {open_decisions[0]['id']}" if open_decisions else "No open decisions",
+    disabled=not open_decisions, use_container_width=True,
+    on_click=_navigate_to_item,
+    args=("Objects", f"item:Engineering objects:{object_context}",
+          open_decisions[0]["id"] if open_decisions else ""))
+
 if section == "Overview":
-    tasks = projection.get("tasks", [])
     model_nodes = projection.get("model", {}).get("nodes", [])
     open_decisions = sum(node.get("type") == "decision" and node.get("lifecycle") == "open"
                          for node in model_nodes)
     blocked_tasks = sum(task.get("status") == "blocked" for task in tasks)
-    metric_cols = st.columns(3)
-    metric_cols[0].metric("Tasks", len(tasks))
-    metric_cols[1].metric("Blocked", blocked_tasks, delta_color="inverse")
-    metric_cols[2].metric("Open decisions", open_decisions, delta_color="inverse")
     _render_tasks(projection, nodes, f"{work_id}:{identity['digest']}")
 
 if section == "Objects":
