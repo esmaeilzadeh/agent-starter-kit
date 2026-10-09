@@ -14,7 +14,10 @@ import streamlit as st
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+UI_ROOT = Path(__file__).resolve().parent
 SCRIPT_ROOT = REPOSITORY_ROOT / "_ask" / "scripts"
+if str(UI_ROOT) not in sys.path:
+    sys.path.insert(0, str(UI_ROOT))
 if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
