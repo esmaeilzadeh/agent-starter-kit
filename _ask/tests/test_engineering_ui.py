@@ -70,6 +70,18 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertIn("Measured fit for the pilot", text(reloaded))
                 self.assertIn("resolved", text(reloaded))
 
+    def test_gitless_model_root_keeps_workbench_usable_without_git_fatal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                rendered = text(app) + "\n" + "\n".join(str(item.value) for item in app.json)
+                self.assertIn("build: blocked", rendered)
+                self.assertIn("Git evidence inspection is unavailable", rendered)
+                self.assertNotIn("fatal: not a git repository", rendered)
+
     def test_referenced_spec_change_keeps_form_stale_until_refresh(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

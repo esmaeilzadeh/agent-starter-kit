@@ -25,7 +25,18 @@ def inspect(root, work_id, candidate_sha=None):
     try:
         if not slug(work_id):
             raise Invalid('invalid work_id')
-        current = git(root, 'rev-parse', 'HEAD')
+        try:
+            current = git(root, 'rev-parse', 'HEAD')
+        except Invalid:
+            result['status'] = 'unavailable'
+            result['completion'] = {
+                'schema': 'ask-completion/v1', 'status': 'fail', 'scope': 'workstream',
+                'task_id': None, 'candidate_sha': candidate_sha, 'input_digests': {},
+                'criterion_evidence': [], 'missing_evidence': [],
+                'errors': ['Git evidence inspection is unavailable because the configured model root is not a Git checkout.'],
+                'execution_artifacts': [],
+            }
+            return result
         result['current_sha'] = current
         sha = current if candidate_sha is None else git(
             root, 'rev-parse', '--verify', candidate_sha + '^{commit}')
