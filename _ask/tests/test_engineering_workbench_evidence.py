@@ -146,6 +146,7 @@ class WorkbenchTests(unittest.TestCase):
         self._ledger(report)
         valid = execution_history(self.root, "w", expected, spec_digest="spec-1",
                                   plan_digest="contract-1", candidate_sha=self.candidate_sha)
+        self.assertEqual(len(valid["runs"]), 1, valid)
         self.assertEqual(valid["runs"][0]["outcome"], "failed")
         self.assertEqual(valid["runs"][0]["output_status"], "valid")
         log = self.root / valid["runs"][0]["output_artifact"]
