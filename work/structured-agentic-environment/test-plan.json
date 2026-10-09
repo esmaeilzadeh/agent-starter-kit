@@ -440,10 +440,11 @@
         }
       ],
       "runner_id": "engineering-model",
-      "case_id": "test_engineering_ui.UiIntegrationTests.test_inspect_assertions_and_missing_evidence",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_historical_evidence_candidate_is_inspectable_without_being_current",
       "source_paths": [
         "_ask/tests/test_engineering_ui.py",
-        "_ask/tests/engineering_fixture.py"
+        "_ask/tests/engineering_fixture.py",
+        "_ask/tests/test_engineering_evidence.py"
       ]
     },
     {
@@ -498,7 +499,7 @@
         }
       ],
       "runner_id": "engineering-model",
-      "case_id": "test_engineering_ui.UiIntegrationTests.test_stale_and_invalid_forms",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_referenced_spec_change_keeps_form_stale_until_refresh",
       "source_paths": [
         "_ask/tests/test_engineering_ui.py",
         "_ask/tests/engineering_fixture.py"
@@ -534,9 +535,9 @@
         }
       ],
       "runner_id": "engineering-model",
-      "case_id": "test_engineering_browser.UiBrowserTests.test_inspect_decide_reload_and_stale_session",
+      "case_id": "test_engineering_ui_browser.WorkbenchBrowserJourney.test_stale_spec_then_refresh_and_persist_in_new_browser_session",
       "source_paths": [
-        "_ask/tests/test_engineering_browser.py",
+        "_ask/tests/test_engineering_ui_browser.py",
         "_ask/tests/engineering_fixture.py"
       ]
     },

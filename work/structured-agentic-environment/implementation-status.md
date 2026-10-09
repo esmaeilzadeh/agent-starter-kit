@@ -21,22 +21,36 @@ superseded; accepted criteria and test obligations remain unchanged.
 - Hashed cooperative publication history distinguishes guarded edit chains from
   raw canonical writes during a workflow action. This is local provenance,
   not authentication or a distributed transaction.
+- Shared JSON/Markdown projections, read-only evidence inspection, CLI validation,
+  admission, semantic edits, snapshots and native external-save observation.
+- Native Streamlit workbench with read-only invalid-state display, attributed
+  decision resolution, task consequences, canonical assertions and evidence
+  inspection. The form retains the displayed identity until explicit refresh.
+- AppTest and real-browser journeys for missing/historical evidence, stale
+  spec-only forms, refresh, decision persistence and new-session reload.
 
-The guard test suite passed ten cases at `3da5de1`; subsequent targeted tests
-passed guarded edit chains and continuous native observation. Runtime reports
-retain actual candidate identities. These passes do not establish all 26
-accepted cases or full feature verification.
+Targeted guard/model/CLI/evidence/UI/browser suites passed 26 tests together at
+the implementation checkpoint. The accepted test plan's UI selectors and
+source paths were reconciled with the implemented test names; its requirements
+and criteria were not changed. Some behaviors/tests post-date their production
+code, so their historical red/green sequence is not claimed.
+
+The complete guarded-action benchmark was run against commit `f5c2b48` on
+Python 3.10.12, Linux x86_64, Intel i7-2720QM. It used three fresh processes
+per action/workload and disposable repositories. Valid-action median/p95
+measurements were approximately 570/600 ms (12-node pilot), 618/633 ms (100),
+778/789 ms (1,000), and 2,901/2,943 ms (10,000). This supports retaining the
+stdlib Python implementation for the current pilot: no native backend was
+available or justified by this measurement. The 10,000-node synthetic case is
+multi-second; no performance target was agreed, and timing includes benchmark
+instrumentation. The measurement is indicative, not a production SLO.
 
 ## Remaining exit gates
 
-1. Complete and independently inspect shared CLI projections.
-2. Build the native Streamlit consumer and real browser journeys after the
-   broader model interfaces are working.
-3. Measure the complete guard on representative workloads and record backend
-   selection rationale; the initial parser/validator benchmark is historical.
-4. Resolve review counterexamples and audit genuine red/green evidence for
-   every accepted case. Some tests were introduced after their implementation;
-   retain that fact rather than manufacturing historical failures.
-5. Record independent candidate-bound review, full Verify and result evidence.
-6. Obtain the required human Accept confirmation, then perform the authorized
+1. Finish the final test-plan-bound test run and audit actual red/green evidence;
+   retain the known chronology gaps instead of manufacturing failures.
+2. Obtain an independent final review of the integrated branch and address any
+   findings.
+3. Run full Verify, exact-candidate result recording and acceptance checks.
+4. Obtain required human Accept confirmation, then perform the authorized
    `develop` merge/push. No partial implementation merge.

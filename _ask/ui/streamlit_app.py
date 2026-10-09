@@ -146,7 +146,15 @@ def _render_scenarios(projection: dict) -> None:
 def _render_evidence(projection: dict) -> None:
     st.subheader("Evidence adapter inspection")
     # This is the adapter's complete read-only result, not a UI-derived outcome.
-    st.json(projection.get("evidence", {}), expanded=2)
+    evidence = projection.get("evidence", {})
+    for work_id, result in sorted(evidence.get("by_workstream", {}).items()):
+        st.text("{}: {}{}; current completion: {}".format(
+            work_id, result.get("status", "unknown"),
+            " (historical)" if result.get("historical") else "",
+            "yes" if result.get("current_completion") else "no"))
+        for error in result.get("completion", {}).get("errors", []):
+            st.caption(str(error))
+    st.json(evidence, expanded=2)
 
 
 def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view: dict) -> None:

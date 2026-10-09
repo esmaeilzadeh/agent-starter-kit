@@ -26,9 +26,16 @@ class UiIntegrationTests(unittest.TestCase):
     def test_historical_evidence_candidate_is_inspectable_without_being_current(self):
         consumer, historical_sha = evidence_workbench()
         self.addCleanup(consumer.close)
+        current_sha = consumer.git("rev-parse", "HEAD")
         with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=20)
             self.assertFalse(app.exception, app.exception)
+            app.text_input(key="candidate_sha").input(current_sha)
+            app.button(key="inspect_candidate").click().run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
+            unavailable = json.loads(app.json[0].value)["by_workstream"]["w"]
+            self.assertEqual(unavailable["status"], "unavailable", unavailable)
+            self.assertFalse(unavailable["current_completion"])
             app.text_input(key="candidate_sha").input(historical_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
