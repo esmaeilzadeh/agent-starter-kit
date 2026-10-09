@@ -201,10 +201,6 @@ class WorkbenchTests(unittest.TestCase):
             candidate_sha=production_candidate)
         old_implementation = next(row for row in after_production_change["runs"]
                                   if row["run_id"] == "run-4")
-        self.assertEqual(old_implementation["source_status"], "historical")
-        self.assertEqual(old_implementation["applicability"], "historical")
-        self.assertEqual(old_implementation["duration_status"], "unavailable")
-        self.assertEqual(old_implementation["recorded_at_status"], "unavailable")
 
         # A valid external copy must not be accepted through work/<id> symlink.
         external = self.root.parent / (self.root.name + "-external")
@@ -218,13 +214,15 @@ class WorkbenchTests(unittest.TestCase):
             outside = execution_history(
                 self.root, "w", expected, spec_digest="spec-1", plan_digest="contract-1",
                 candidate_sha=production_candidate)
-            self.assertEqual(outside["status"], "invalid", outside)
-            self.assertEqual(outside["runs"], [])
-            self.assertIn("symlink", outside["diagnostic"])
         finally:
             local_work.unlink()
             saved_work.rename(local_work)
             shutil.rmtree(external)
+        self.assertEqual((old_implementation["source_status"], old_implementation["applicability"],
+                          old_implementation["duration_status"], old_implementation["recorded_at_status"],
+                          outside["status"], outside["runs"], "symlink" in outside["diagnostic"]),
+                         ("historical", "historical", "unavailable", "unavailable",
+                          "invalid", [], True))
 
 if __name__ == "__main__":
     unittest.main()
