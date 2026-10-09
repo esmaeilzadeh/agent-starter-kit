@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "structured-agentic-environment",
-  "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -51,6 +51,44 @@
       "required_types": [
         "integration",
         "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-008",
+      "required_types": [
+        "e2e",
+        "integration",
+        "unit"
+      ]
+    },
+    {
+      "criterion_id": "EM-009",
+      "required_types": [
+        "e2e",
+        "integration",
+        "unit"
+      ]
+    },
+    {
+      "criterion_id": "EM-010",
+      "required_types": [
+        "e2e",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "EM-011",
+      "required_types": [
+        "e2e",
+        "integration",
+        "unit"
+      ]
+    },
+    {
+      "criterion_id": "EM-012",
+      "required_types": [
+        "e2e",
+        "integration"
       ]
     }
   ],
@@ -668,14 +706,14 @@
         "given": "An admitted epic with linked canonical behavior, tasks and planned tests",
         "when": "Open Overview",
         "then": [
-          "Epic, scenarios, tasks, related tests, assertions and test source are visible while hashes are omitted from the first view"
+          "Epic, story/scenario/task summaries and related test links are visible without hashes or eager source; opening the selected test detail displays its source and assertions"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-005",
           "checks": [
-            "Epic, scenarios, tasks, related tests, assertions and test source are visible while hashes are omitted from the first view"
+            "Epic, story/scenario/task summaries and related test links are visible without hashes or eager source; opening the selected test detail displays its source and assertions"
           ]
         }
       ],
@@ -1076,6 +1114,776 @@
         "_ask/tests/test_engineering_guard.py",
         "_ask/tests/engineering_fixture.py"
       ]
+    },
+    {
+      "id": "WB-relations",
+      "criterion_ids": [
+        "EM-008"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two scenarios and two tasks relate to a shared scenario test owned by exactly one task; another work reuses its ID",
+        "when": "Build and filter work relationships",
+        "then": [
+          "All legitimate memberships remain navigable; executable test ownership stays with one task and secondary task links are labeled via scenario coverage, never direct completion; totals deduplicate within a work; foreign work IDs never join"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "All legitimate memberships remain navigable; executable test ownership stays with one task and secondary task links are labeled via scenario coverage, never direct completion; totals deduplicate within a work; foreign work IDs never join"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench.WorkbenchTests.test_many_to_many_relations_and_deduplication",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench.py"
+      ]
+    },
+    {
+      "id": "WB-task-history",
+      "criterion_ids": [
+        "EM-008",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Real task graph scopes plus actual integrated, blocked and missing runtime records",
+        "when": "Project the task inventory",
+        "then": [
+          "Titles, outcomes, dependencies, owned paths and scoped tests remain attributable; no runtime record implies planned or unknown, never invented completion; legacy model-only task stays labeled"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Titles, outcomes, dependencies, owned paths and scoped tests remain attributable; no runtime record implies planned or unknown, never invented completion; legacy model-only task stays labeled"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Titles, outcomes, dependencies, owned paths and scoped tests remain attributable; no runtime record implies planned or unknown, never invented completion; legacy model-only task stays labeled"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench.WorkbenchTests.test_task_scopes_runtime_and_missing_history",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench.py"
+      ]
+    },
+    {
+      "id": "WB-story-context",
+      "criterion_ids": [
+        "EM-008"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An epic with stories and scenarios plus legacy scenarios without story parents",
+        "when": "Project and navigate the connected hierarchy",
+        "then": [
+          "Story membership and scenario context are retained; shared task/test associations do not become false containment; absent story records stay explicitly absent"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Story membership and scenario context are retained; shared task/test associations do not become false containment; absent story records stay explicitly absent"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench.WorkbenchTests.test_story_scope_and_missing_story_are_honest",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench.py"
+      ]
+    },
+    {
+      "id": "WB-inventory",
+      "criterion_ids": [
+        "EM-009"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Local live branches, a task branch, archived work and work without a model",
+        "when": "Load inventory and choose default work",
+        "then": [
+          "Correct current work is selected; parked work is excluded from live inventory; missing-model work remains discoverable; detached and gitless modes explain their source"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Correct current work is selected; parked work is excluded from live inventory; missing-model work remains discoverable; detached and gitless modes explain their source"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_sources.WorkbenchTests.test_current_work_and_ref_archive_inventory",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_sources.py"
+      ]
+    },
+    {
+      "id": "WB-snapshot",
+      "criterion_ids": [
+        "EM-009"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two refs have different models, plans and test source with one moved ref",
+        "when": "Inspect the other committed revision and then refresh",
+        "then": [
+          "Model, graph, plan and source come from the pinned commit; live HEAD, refs and files remain unchanged; inspection cannot publish admission or resolve a decision; explicit refresh alone moves the selected tip"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Model, graph, plan and source come from the pinned commit; live HEAD, refs and files remain unchanged; inspection cannot publish admission or resolve a decision; explicit refresh alone moves the selected tip"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_sources.py"
+      ]
+    },
+    {
+      "id": "WB-source-errors",
+      "criterion_ids": [
+        "EM-009"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Missing model/blob, unsafe path or symlink outside the source root",
+        "when": "Read selected source through shared path and validation policy",
+        "then": [
+          "Missing and unsafe sources are explained; no external file is exposed and no unverifiable snapshot becomes editable"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Missing and unsafe sources are explained; no external file is exposed and no unverifiable snapshot becomes editable"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_sources.WorkbenchTests.test_missing_blobs_and_unsafe_paths_are_explained",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_sources.py"
+      ]
+    },
+    {
+      "id": "WB-evidence-identity",
+      "criterion_ids": [
+        "EM-003",
+        "EM-011"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Duplicate test IDs across works and runs with different contract bindings",
+        "when": "Select a task test and execution",
+        "then": [
+          "Only its matching work/test/run/contract result attaches; recorded pass does not imply overall completion; failed assertion output remains accessible"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Only its matching work/test/run/contract result attaches; recorded pass does not imply overall completion; failed assertion output remains accessible"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Only its matching work/test/run/contract result attaches; recorded pass does not imply overall completion; failed assertion output remains accessible"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_evidence.py"
+      ]
+    },
+    {
+      "id": "WB-source-version",
+      "criterion_ids": [
+        "EM-011"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two classes have identically named methods and current source differs from historical source",
+        "when": "Inspect the selected qualified test at both revisions",
+        "then": [
+          "Correct class/method and revision bytes are shown; unsafe or missing source is explained rather than replaced with another revision"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Correct class/method and revision bytes are shown; unsafe or missing source is explained rather than replaced with another revision"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_qualified_source_matches_selected_revision",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_evidence.py"
+      ]
+    },
+    {
+      "id": "WB-evidence-states",
+      "criterion_ids": [
+        "EM-003",
+        "EM-011",
+        "EM-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Passed, failed, skipped and runtime-error records, missing timing, stale source, incomplete red history and later changed logs or accepted refs",
+        "when": "Load results, mutate their underlying inputs and refresh or reopen detail",
+        "then": [
+          "Availability, outcome, currency and verification-history gaps remain distinct; missing timestamps/durations are explicit; changed evidence cannot reuse a cached valid verdict; inspection writes no evidence or refs"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Availability, outcome, currency and verification-history gaps remain distinct; missing timestamps/durations are explicit; changed evidence cannot reuse a cached valid verdict; inspection writes no evidence or refs"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Availability, outcome, currency and verification-history gaps remain distinct; missing timestamps/durations are explicit; changed evidence cannot reuse a cached valid verdict; inspection writes no evidence or refs"
+          ]
+        },
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Availability, outcome, currency and verification-history gaps remain distinct; missing timestamps/durations are explicit; changed evidence cannot reuse a cached valid verdict; inspection writes no evidence or refs"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_missing_stale_tampered_and_refreshed_evidence",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_evidence.py"
+      ]
+    },
+    {
+      "id": "WB-navigation",
+      "criterion_ids": [
+        "EM-008",
+        "EM-009"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Multiple works and a selected scenario/task/test route",
+        "when": "Open default work, follow links, go Back and switch source",
+        "then": [
+          "Current work opens at its epic root; one connected hierarchy and breadcrumbs retain story/scenario/task/test/result context; incompatible selections and caches reset on work/source switch without changing checkout"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Current work opens at its epic root; one connected hierarchy and breadcrumbs retain story/scenario/task/test/result context; incompatible selections and caches reset on work/source switch without changing checkout"
+          ]
+        },
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Current work opens at its epic root; one connected hierarchy and breadcrumbs retain story/scenario/task/test/result context; incompatible selections and caches reset on work/source switch without changing checkout"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_navigation.WorkbenchTests.test_work_default_routes_and_context_reset",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_navigation.py"
+      ]
+    },
+    {
+      "id": "WB-form-context",
+      "criterion_ids": [
+        "EM-006",
+        "EM-009"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An open decision with captured identity, a linked-spec edit and a historical source",
+        "when": "Navigate without refresh then attempt a submission",
+        "then": [
+          "Navigation preserves original identity; stale form rejects without writes; historical mode is noneditable; explicit refresh admits updated state"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Navigation preserves original identity; stale form rejects without writes; historical mode is noneditable; explicit refresh admits updated state"
+          ]
+        },
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Navigation preserves original identity; stale form rejects without writes; historical mode is noneditable; explicit refresh admits updated state"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_navigation.WorkbenchTests.test_navigation_does_not_refresh_stale_form_identity",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_navigation.py"
+      ]
+    },
+    {
+      "id": "WB-overview",
+      "criterion_ids": [
+        "EM-008",
+        "EM-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A work with named epic, scenarios, task statuses, unresolved decisions and unloaded results",
+        "when": "Open the epic root and inspect a story then a scenario",
+        "then": [
+          "Purpose, recorded story/scenario summaries, task progress and attention are visible; results say not loaded; initial overview performs zero evidence inspections and zero test-source reads; scenario details link tasks and tests"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Purpose, recorded story/scenario summaries, task progress and attention are visible; results say not loaded; initial overview performs zero evidence inspections and zero test-source reads; scenario details link tasks and tests"
+          ]
+        },
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Purpose, recorded story/scenario summaries, task progress and attention are visible; results say not loaded; initial overview performs zero evidence inspections and zero test-source reads; scenario details link tasks and tests"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_overview.WorkbenchTests.test_overview_is_comprehensive_and_lazy",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_overview.py"
+      ]
+    },
+    {
+      "id": "WB-summary-links",
+      "criterion_ids": [
+        "EM-008",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Distinct blocked tasks, open decisions and failed results plus a shared test",
+        "when": "Click each summary count and follow its records",
+        "then": [
+          "Each count opens its exact stable-ID filtered set; shared tests are counted once; unknown results do not display zero failures"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Each count opens its exact stable-ID filtered set; shared tests are counted once; unknown results do not display zero failures"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Each count opens its exact stable-ID filtered set; shared tests are counted once; unknown results do not display zero failures"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_overview.WorkbenchTests.test_summary_counts_open_exact_records",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_overview.py"
+      ]
+    },
+    {
+      "id": "WB-task-detail",
+      "criterion_ids": [
+        "EM-008",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Tasks with different statuses, dependencies, scenario links, scoped tests and implementation references",
+        "when": "Search/filter tasks and open a blocked task",
+        "then": [
+          "Task outcome, status dimensions, dependency reasons, scenarios, tests and actual implementation evidence are shown; planned ownership is not labeled changed files; missing relationships are explicit"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Task outcome, status dimensions, dependency reasons, scenarios, tests and actual implementation evidence are shown; planned ownership is not labeled changed files; missing relationships are explicit"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Task outcome, status dimensions, dependency reasons, scenarios, tests and actual implementation evidence are shown; planned ownership is not labeled changed files; missing relationships are explicit"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_tasks.WorkbenchTests.test_task_detail_explains_work_dependencies_and_tests",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_tasks.py"
+      ]
+    },
+    {
+      "id": "WB-completed-tasks",
+      "criterion_ids": [
+        "EM-010",
+        "EM-011"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An actually integrated task, declared-done model task, stale evidence and incomplete legacy breakdown",
+        "when": "Filter Done and inspect each task",
+        "then": [
+          "Completed work stays discoverable with related tests/results; declared done and actual evidence stay distinct; legacy records never fabricate completion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Completed work stays discoverable with related tests/results; declared done and actual evidence stay distinct; legacy records never fabricate completion"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Completed work stays discoverable with related tests/results; declared done and actual evidence stay distinct; legacy records never fabricate completion"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_tasks.WorkbenchTests.test_completed_tasks_retain_tests_results_and_gaps",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_tasks.py"
+      ]
+    },
+    {
+      "id": "WB-attention",
+      "criterion_ids": [
+        "EM-006",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Blocked tasks, open decisions, missing mapping and stale or failed evidence",
+        "when": "Open and filter Attention records",
+        "then": [
+          "Every item links its originating record; blocker reasons and declared options/context/dependents are visible; absent consequences are not invented"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Every item links its originating record; blocker reasons and declared options/context/dependents are visible; absent consequences are not invented"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Every item links its originating record; blocker reasons and declared options/context/dependents are visible; absent consequences are not invented"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_attention.WorkbenchTests.test_attention_links_blockers_decisions_and_evidence",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_attention.py"
+      ]
+    },
+    {
+      "id": "WB-decision-choice",
+      "criterion_ids": [
+        "EM-006",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An editable open decision and another source inspected read-only",
+        "when": "Submit incomplete choice then valid actor/rationale and start a new session",
+        "then": [
+          "Incomplete input preserves bytes; guarded valid choice persists and updates actual dependent tasks; read-only source offers no mutation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Incomplete input preserves bytes; guarded valid choice persists and updates actual dependent tasks; read-only source offers no mutation"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Incomplete input preserves bytes; guarded valid choice persists and updates actual dependent tasks; read-only source offers no mutation"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_attention.WorkbenchTests.test_reasoned_choice_persists_and_read_only_rejects",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_attention.py"
+      ]
+    },
+    {
+      "id": "WB-test-panel",
+      "criterion_ids": [
+        "EM-008",
+        "EM-011"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A shared test with historical/current runs and a failed assertion",
+        "when": "Open it from a scenario and from a task; select Source, Result and Runs",
+        "then": [
+          "Correct source and failure output are readable, related contexts stay navigable, actual timestamps/durations or their absence are displayed, and selected revision remains explicit"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Correct source and failure output are readable, related contexts stay navigable, actual timestamps/durations or their absence are displayed, and selected revision remains explicit"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Correct source and failure output are readable, related contexts stay navigable, actual timestamps/durations or their absence are displayed, and selected revision remains explicit"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_tests.WorkbenchTests.test_selected_test_shows_source_results_and_related_work",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_tests.py"
+      ]
+    },
+    {
+      "id": "WB-debug",
+      "criterion_ids": [
+        "EM-011",
+        "EM-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Candidate, spec/plan, snapshot, run and review identities",
+        "when": "Open technical details and copy identifiers",
+        "then": [
+          "Identifiers and JSON are collapsed initially; each has a meaning and usable artifact/command; digest is never presented as a Git commit; copying does not reevaluate evidence"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Identifiers and JSON are collapsed initially; each has a meaning and usable artifact/command; digest is never presented as a Git commit; copying does not reevaluate evidence"
+          ]
+        },
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Identifiers and JSON are collapsed initially; each has a meaning and usable artifact/command; digest is never presented as a Git commit; copying does not reevaluate evidence"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_tests.WorkbenchTests.test_identifiers_have_explanations_and_copy_actions",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_tests.py"
+      ]
+    },
+    {
+      "id": "WB-browser-journey",
+      "criterion_ids": [
+        "EM-008",
+        "EM-009",
+        "EM-010",
+        "EM-011"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A disposable repository with an epic, a recorded story, scenario, several tasks, shared tests, actual outcomes and another branch",
+        "when": "Navigate epic root to its recorded story, scenario, completed task, test, result/evidence, summary filters and another branch",
+        "then": [
+          "The complete chain is reachable; results match the chosen source; branch browsing leaves checkout/refs unchanged and prevents edits; new session opens current work"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "The complete chain is reachable; results match the chosen source; branch browsing leaves checkout/refs unchanged and prevents edits; new session opens current work"
+          ]
+        },
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "The complete chain is reachable; results match the chosen source; branch browsing leaves checkout/refs unchanged and prevents edits; new session opens current work"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "The complete chain is reachable; results match the chosen source; branch browsing leaves checkout/refs unchanged and prevents edits; new session opens current work"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "The complete chain is reachable; results match the chosen source; branch browsing leaves checkout/refs unchanged and prevents edits; new session opens current work"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_browser.WorkbenchTests.test_work_scenario_task_test_result_and_branch_journey",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_browser.py"
+      ]
+    },
+    {
+      "id": "WB-browser-accessibility",
+      "criterion_ids": [
+        "EM-006",
+        "EM-012"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The workbench at 1440px and 390px widths with an open decision",
+        "when": "Navigate with keyboard, inspect task/source/debug and resolve a valid choice across reload",
+        "then": [
+          "Primary controls have labels and visible keyboard focus; status includes text; no page-level horizontal overflow; option and attribution flow works; rendered normal text contrast is at least 4.5:1, large text at least 3:1 and focus indicators have at least 3:1 contrast against adjacent colors"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Primary controls have labels and visible keyboard focus; status includes text; no page-level horizontal overflow; option and attribution flow works; rendered normal text contrast is at least 4.5:1, large text at least 3:1 and focus indicators have at least 3:1 contrast against adjacent colors"
+          ]
+        },
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Primary controls have labels and visible keyboard focus; status includes text; no page-level horizontal overflow; option and attribution flow works; rendered normal text contrast is at least 4.5:1, large text at least 3:1 and focus indicators have at least 3:1 contrast against adjacent colors"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_browser.WorkbenchTests.test_keyboard_narrow_layout_and_decision_journey",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_browser.py"
+      ]
+    },
+    {
+      "id": "WB-performance",
+      "criterion_ids": [
+        "EM-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Instrumented pilot and deterministic 100/1000-task fixture with controlled source/evidence mutations",
+        "when": "Load Overview, select details, revisit metadata and refresh",
+        "then": [
+          "Initial evidence/source work is zero; only selected details load; untouched metadata navigation avoids repeated parsing/evaluation; changed content, accepted refs or logs invalidate appropriate caches without bypassing guard checks"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Initial evidence/source work is zero; only selected details load; untouched metadata navigation avoids repeated parsing/evaluation; changed content, accepted refs or logs invalidate appropriate caches without bypassing guard checks"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_performance.WorkbenchTests.test_lazy_work_and_integrity_bound_cache_invalidation",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_performance.py"
+      ]
+    },
+    {
+      "id": "WB-latency-budget",
+      "criterion_ids": [
+        "EM-012"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The candidate pilot on a test-owned local server using the pinned environment and recorded workload sizes",
+        "when": "Measure 20 warm sessions and navigation/detail samples plus five full cold starts using content-specific readiness markers",
+        "then": [
+          "Raw samples and environment are saved with candidate identity; nearest-rank warm overview p95 is at most 1500ms, metadata navigation/filter p95 at most 500ms, selected source/result p95 at most 1000ms and cold start-to-usable at most 4000ms; failures remain test failures and correctness checks are retained"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Raw samples and environment are saved with candidate identity; nearest-rank warm overview p95 is at most 1500ms, metadata navigation/filter p95 at most 500ms, selected source/result p95 at most 1000ms and cold start-to-usable at most 4000ms; failures remain test failures and correctness checks are retained"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_workbench_performance.WorkbenchTests.test_measured_pilot_latency_budgets",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_performance.py"
+      ]
     }
   ],
   "runners": [
@@ -1094,5 +1902,108 @@
       ]
     }
   ],
-  "task_scopes": []
+  "task_scopes": [
+    {
+      "task_id": "WB-001",
+      "test_ids": [
+        "WB-relations",
+        "WB-task-history",
+        "WB-story-context",
+        "MV-valid",
+        "MV-graph",
+        "MV-fields",
+        "MV-refs",
+        "ME-decision",
+        "ME-revise",
+        "ME-reject",
+        "ME-race",
+        "EV-real",
+        "EV-missing",
+        "MP-shared",
+        "MC-journey",
+        "DG-pre",
+        "DG-post",
+        "DG-refs",
+        "DG-events",
+        "DG-parity",
+        "DG-publish",
+        "DG-bootstrap",
+        "ME-batch",
+        "DG-success",
+        "DG-entrypoints"
+      ]
+    },
+    {
+      "task_id": "WB-002",
+      "test_ids": [
+        "WB-inventory",
+        "WB-snapshot",
+        "WB-source-errors"
+      ]
+    },
+    {
+      "task_id": "WB-003",
+      "test_ids": [
+        "WB-evidence-identity",
+        "WB-source-version",
+        "WB-evidence-states"
+      ]
+    },
+    {
+      "task_id": "WB-004",
+      "test_ids": [
+        "WB-navigation",
+        "WB-form-context"
+      ]
+    },
+    {
+      "task_id": "WB-005",
+      "test_ids": [
+        "WB-overview",
+        "WB-summary-links"
+      ]
+    },
+    {
+      "task_id": "WB-006",
+      "test_ids": [
+        "WB-task-detail",
+        "WB-completed-tasks"
+      ]
+    },
+    {
+      "task_id": "WB-007",
+      "test_ids": [
+        "WB-attention",
+        "WB-decision-choice"
+      ]
+    },
+    {
+      "task_id": "WB-008",
+      "test_ids": [
+        "WB-test-panel",
+        "WB-debug"
+      ]
+    },
+    {
+      "task_id": "WB-009",
+      "test_ids": [
+        "WB-browser-journey",
+        "WB-browser-accessibility",
+        "WB-performance",
+        "WB-latency-budget",
+        "UI-inspect",
+        "UI-persist",
+        "UI-conflict",
+        "UI-browser",
+        "UI-empty",
+        "UI-gitless",
+        "UI-decision-object",
+        "UI-overview-results",
+        "UI-overview-hierarchy",
+        "UI-test-source",
+        "UI-expander-ids",
+        "UI-browser-gitless"
+      ]
+    }
+  ]
 }

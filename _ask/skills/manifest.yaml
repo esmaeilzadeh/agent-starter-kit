@@ -4,6 +4,12 @@
 # CLI --skill names must exist at the pinned revision.
 # Latest mattpocock/skills tag as of this pin: v1.2.3
 skills:
+  frontend-design:
+    source: anthropics/skills
+    revision: "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f"
+    skill: frontend-design
+    role: engineering-workbench-design
+    required: false
   wayfinder:
     source: mattpocock/skills
     revision: "v1.2.3"
