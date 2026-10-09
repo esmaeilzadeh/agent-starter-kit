@@ -133,7 +133,7 @@ def _scenario_views(snapshot, model, evidence_by_reference):
     return result
 
 
-def project(snapshot, root, *, node_id=None, candidate_sha=None):
+def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidence=True):
     """Project one immutable snapshot and a read-only evidence inspection."""
     model = snapshot.document
     nodes = {node["id"]: node for node in model.get("nodes", [])}
@@ -141,17 +141,18 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None):
         raise ValueError(f"unknown Engineering Model node: {node_id}")
     tasks = task_states(model)
     evidence_work_ids = {snapshot.work_id}
-    for node in model.get("nodes", []):
-        if node.get("type") not in {"requirement", "scenario"}:
-            continue
-        reference = node.get("reference", {})
-        work_id = _work_id_from_spec_path(reference.get("path"))
-        if work_id:
-            evidence_work_ids.add(work_id)
-    evidence_by_workstream = {
+    if include_evidence:
+        for node in model.get("nodes", []):
+            if node.get("type") not in {"requirement", "scenario"}:
+                continue
+            reference = node.get("reference", {})
+            work_id = _work_id_from_spec_path(reference.get("path"))
+            if work_id:
+                evidence_work_ids.add(work_id)
+    evidence_by_workstream = ({
         work_id: inspect_evidence(Path(root), work_id, candidate_sha)
         for work_id in sorted(evidence_work_ids)
-    }
+    } if include_evidence else {})
     evidence_by_reference = {}
     for result in evidence_by_workstream.values():
         for item in result.get("scenarios", []):

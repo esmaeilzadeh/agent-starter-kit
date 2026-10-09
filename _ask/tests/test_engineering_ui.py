@@ -15,13 +15,15 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
 from engineering_model.admission import validate_current, load_published
 from engineering_model.actions import edit
+from engineering_model import projection as projection_module
 
 
 def text(app):
     visible = [str(element.value) for kind in ("title", "header", "subheader", "markdown", "caption",
                                                "info", "warning", "error", "success")
                for element in getattr(app, kind)]
-    visible.extend(element.value.to_string(index=False) for element in app.dataframe)
+    visible.extend(element.value.to_string(index=False)
+                   for collection in (app.dataframe, app.table) for element in collection)
     return "\n".join(visible)
 
 
@@ -33,31 +35,37 @@ class UiIntegrationTests(unittest.TestCase):
         with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=20)
             self.assertFalse(app.exception, app.exception)
-            unavailable = json.loads(app.json[0].value)["by_workstream"]["w"]
-            self.assertEqual(unavailable["status"], "unavailable", unavailable)
-            self.assertFalse(unavailable["current_completion"])
+            self.assertEqual(len(app.json), 0)
+            app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
+            self.assertIn("unavailable evidence", text(app))
+            self.assertIn(current_sha, text(app))
+            self.assertEqual(len(app.json), 0)
+            app.segmented_control(key="workbench_section").select("Objects").run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
             self.assertIn("Engineering objects", text(app))
+            app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
             self.assertIn("Scenarios and planned tests", text(app))
             self.assertIn("Uppercase assertion", text(app))
             self.assertIn("Planned assertions for C1", text(app))
-            self.assertEqual(len(app.json), 1)
+            app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
             evidence_key = next(item.key for item in app.dataframe
                                 if item.key and item.key.startswith("table:Evidence:"))
             app.text_input(key="candidate_sha").input(current_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
-            unavailable = json.loads(app.json[0].value)["by_workstream"]["w"]
-            self.assertEqual(unavailable["status"], "unavailable", unavailable)
-            self.assertFalse(unavailable["current_completion"])
+            self.assertIn("unavailable evidence", text(app))
+            self.assertIn(current_sha, text(app))
             current_key = next(item.key for item in app.dataframe
                                if item.key and item.key.startswith("table:Evidence:"))
             app.text_input(key="candidate_sha").input(historical_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
-            inspection = json.loads(app.json[0].value)["by_workstream"]["w"]
-            self.assertEqual(inspection["status"], "historical", inspection)
-            self.assertFalse(inspection["current_completion"])
-            self.assertEqual(inspection["candidate_sha"], historical_sha)
+            self.assertIn("(historical)", text(app))
+            self.assertIn(historical_sha, text(app))
+            self.assertEqual(len(app.json), 0)
             historical_key = next(item.key for item in app.dataframe
                                   if item.key and item.key.startswith("table:Evidence:"))
             self.assertNotEqual(evidence_key, historical_key)
@@ -78,6 +86,8 @@ class UiIntegrationTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("No tasks in this snapshot.", text(app))
+                app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
                 self.assertIn("No canonical scenarios are linked in this snapshot.", text(app))
 
     def test_resolution_survives_new_session(self):
@@ -90,18 +100,20 @@ class UiIntegrationTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("build Build blocked", text(app))
+                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
                 app.selectbox(key="option_id").select("one")
                 app.text_input(key="actor").input("Developer")
                 app.text_area(key="rationale").input("Measured fit for the pilot")
                 app.button(key="resolve").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("Build", text(app))
-                self.assertIn("ready", text(app))
+                self.assertIn("resolved", text(app))
                 self.assertIn("Developer", text(app))
                 self.assertIn("Measured fit for the pilot", text(app))
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
                 self.assertIn("ready", text(reloaded))
+                reloaded.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
                 self.assertIn("Measured fit for the pilot", text(reloaded))
                 self.assertIn("resolved", text(reloaded))
 
@@ -112,8 +124,15 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
+                self.assertIn("build Build blocked", text(app))
+                self.assertEqual(len(app.json), 0)
+                with patch.object(projection_module, "inspect_evidence",
+                                  side_effect=AssertionError("overview must defer evidence scans")):
+                    initial = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                    self.assertFalse(initial.exception, initial.exception)
+                app.segmented_control(key="workbench_section").select("Evidence").run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
                 rendered = text(app) + "\n" + "\n".join(str(item.value) for item in app.json)
-                self.assertIn("build Build blocked", rendered)
                 self.assertIn("Git evidence inspection is unavailable", rendered)
                 self.assertNotIn("fatal: not a git repository", rendered)
 
@@ -125,6 +144,8 @@ class UiIntegrationTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("build Build blocked", text(app))
+                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
 
                 before, diagnostics = validate_current(root, "pilot")
                 self.assertEqual(diagnostics, [], diagnostics)
@@ -153,9 +174,13 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertEqual(choice["lifecycle"], "open")
 
                 app.button(key="refresh").click().run(timeout=15)
+                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
                 app.selectbox(key="option_id").select("one")
                 app.text_input(key="actor").input("Developer")
                 app.text_area(key="rationale").input("Use the amended requirement")
                 app.button(key="resolve").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("ready", text(app))
+                self.assertIn("resolved", text(app))
+                reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                self.assertFalse(reloaded.exception, reloaded.exception)
+                self.assertIn("ready", text(reloaded))
