@@ -21,6 +21,9 @@ identify dependencies
 identify verification steps
 identify escalation points
 identify possible spec-change triggers
+decompose implementation into one or more reviewable tasks before implementation
+give every task a stable ID, outcome, dependencies, owned paths, and completion evidence
+map every planned test case to the task that it verifies
 ```
 
 Must not redefine the requirement.
@@ -44,6 +47,24 @@ Map the spec’s E2E contract to tooling and isolation. `not_applicable` plus re
 
 ## Structured test evidence
 
-Prepare `work/<work-id>/test-plan.json`, link every required criterion/type to explicit cases and accepted TaskGraph scopes, then independently review and pin the committed contract before implementation.
+Prepare both `work/<work-id>/inner-loop/tasks.yaml` and `work/<work-id>/test-plan.json`.
+The plan's Work breakdown table and task graph must describe the same tasks. A task
+is a bounded implementation outcome, not a placeholder for an unresolved future
+decision or the entire workstream. Use one task when the change is a single
+cohesive deliverable; record why splitting it would create artificial boundaries.
+
+Give each task an ID, outcome, dependency IDs, non-overlapping owned-path globs,
+completion evidence, and the test IDs that verify it. Split independent outcomes
+when they have distinct reviewable results; sequence tasks that share files.
+Populate `test-plan.json`'s `task_scopes` with the exact task IDs and assign each
+planned test case to its responsible task. A task with no executable test needs a
+specific verification rationale in the plan. Preserve the graph's IDs in task
+results and evidence so completed work can be inspected by task.
+
+Run the graph and contract checks, then independently review and pin the exact
+specification, task graph, and test mapping before implementation. Implementation
+does not begin while any task, test, or dependency is missing from that reviewed
+contract. If implementation discovers another deliverable, update the plan and
+obtain review of the amended contract before starting it.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
