@@ -263,7 +263,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         page.goto(url, wait_until="domcontentloaded")
                         self.select_section(page, "Evidence")
                         self.select_evidence_status(page, "unavailable")
-                        page.get_by_text("Debug trace and identifiers", exact=True).click()
+                        page.get_by_text("Debug trace and identifiers", exact=True).last.click()
                         body = page.locator("body").inner_text()
                         self.assertIn("Git evidence inspection is unavailable", body)
                         self.assertNotIn("fatal: not a git repository", body)
