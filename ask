@@ -84,6 +84,9 @@ Commands:
   model {validate|admit|show|edit|watch} --work-id <work-id>
       Validate the Engineering Model and its canonical references.
 
+  ui [streamlit options]
+      Launch the local Engineering Model workbench.
+
   completion bash|zsh
       Print a tab-completion snippet. `askit` installs this automatically;
       you do not need to eval it. Still available for debugging.
@@ -263,6 +266,9 @@ case "$cmd" in
     ;;
   model)
     exec bash "$SCRIPTS/model.sh" "$@"
+    ;;
+  ui)
+    exec bash "$SCRIPTS/ui.sh" "$@"
     ;;
   *)
     if [[ -x "$SCRIPTS/${cmd}.sh" ]]; then

@@ -87,7 +87,7 @@ Install the optional runtime dependencies and launch the local UI:
 
 ```sh
 python -m pip install -r _ask/ui/requirements.txt
-streamlit run _ask/ui/streamlit_app.py
+./ask ui
 ```
 
 Set `ASK_MODEL_ROOT` to a repository root when inspecting a different checkout.

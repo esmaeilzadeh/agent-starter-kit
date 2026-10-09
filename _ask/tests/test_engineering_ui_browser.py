@@ -42,10 +42,11 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 port = listener.getsockname()[1]
             environment = dict(os.environ)
             environment["ASK_MODEL_ROOT"] = str(root)
+            environment["ASK_PYTHON"] = sys.executable
             environment["PYTHONPATH"] = str(ROOT / "_ask/scripts")
             server = subprocess.Popen(
-                [sys.executable, "-m", "streamlit", "run", str(ROOT / "_ask/ui/streamlit_app.py"),
-                 "--server.headless=true", f"--server.port={port}", "--server.address=127.0.0.1"],
+                [str(ROOT / "ask"), "ui", "--server.headless=true",
+                 f"--server.port={port}", "--server.address=127.0.0.1"],
                 cwd=ROOT, env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             )
             try:
