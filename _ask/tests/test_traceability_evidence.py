@@ -124,5 +124,25 @@ class EvidenceTests(unittest.TestCase):
         final=evaluate_completion(c.contracts,record,[c.red,c.green],c.context())
         self.assertEqual(final['status'],'fail')
         self.assertIn('task-scoped semantic review cannot satisfy workstream completion',final['errors'])
+    def test_I07_recorded_review_scope_cannot_be_relabelled(self):
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        record=copy.deepcopy(c.record)
+        record['scope']='task';record['task_id']='a'
+        context=c.context()
+        context.update(scope='task',task_id='a')
+        result=evaluate_completion(c.contracts,record,[c.red,c.green],context)
+        self.assertEqual(result['status'],'fail')
+        self.assertIn('recorded semantic-review scope differs from reviewed scope',result['errors'])
+    def test_I08_workstream_review_includes_review_only_criteria(self):
+        contracts=copy.deepcopy(self.c.contracts)
+        contracts['spec']['criteria'].append({'id':'R1','given':'A governance-only constraint','when':'The accepted plan is assessed','then':['The constraint is explicitly reviewed'],'verification_mode':'review'})
+        contracts['plan']['obligations'].append({'criterion_id':'R1','required_types':[]})
+        review=copy.deepcopy(self.c.review)
+        review['spec_digest']=digest(contracts['spec']);review['plan_digest']=digest(contracts['plan'])
+        review['criterion_ids'].append('R1')
+        review['criteria'].append({'id':'R1','coverage_decision':'APPROVED','assessment':'The governance constraint is explicitly accounted for.','type_adequacy':{}})
+        self.assertEqual(review_errors(self.c.root,contracts,review,self.c.sha),[])
+        review['criterion_ids'].remove('R1');review['criteria'].pop()
+        self.assertIn('missing per-criterion/test semantic review',review_errors(self.c.root,contracts,review,self.c.sha))
 
 if __name__=='__main__':unittest.main()

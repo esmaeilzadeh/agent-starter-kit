@@ -13,7 +13,8 @@ Amend the verification contract to support task-scoped semantic review for task-
 - A review records its scope (`task` plus task ID, or `workstream`) and binds the exact selected test IDs and criterion IDs.
 - For task scope, source inventory and digests include only source paths referenced by that task's accepted test IDs. Per-test assessments cover every selected case; criterion assessments cover the criteria represented by those selected cases.
 - Task-level completion validates the matching scoped review and its selected source digests. It continues to require every assigned case, red/green history, and current candidate identity.
-- Workstream scope continues to require semantic review of all criteria and all accepted tests. No missing future test module or assessment is treated as available.
+- Workstream scope continues to require semantic review of every accepted criterion, including review-only criteria with no executable cases, and all accepted tests. No missing future test module or assessment is treated as available.
+- The coordinator record's scope and task ID must match the nested independently reviewed scope and task ID; changing only the record wrapper cannot relabel a task review as a workstream or another-task review.
 
 Update the traceability review recorder/evaluator and their tests as verification support. Independently review the exact contract and source candidate, then accept and pin that reviewed candidate before the coordinator uses the updated runner. Preserve WB-001's current approved inner-loop review, 25-case green run, prior failed integration evidence, and all future obligations. Rebind WB-001 to a fresh coordinator/base after pinning, as required by the accepted-contract loader.
 
@@ -47,10 +48,11 @@ Keep the previous accepted pin and the `0b14c15` candidate review, red/green evi
 1. A WB-001 task review resolves exactly the 25 accepted WB-001 test IDs and the criterion IDs they cover, without reading absent later-task source modules.
 2. The review binds only present source files selected by those tests, the exact candidate and accepted contract, and cannot satisfy another task's review.
 3. Task-level Verify accepts a complete matching task review and still rejects missing/failed task cases, stale source, wrong candidate, or invalid review.
-4. Workstream-level review still requires every accepted test and criterion; absent future sources remain unavailable until their tasks add them.
-5. The modified recorder/evaluator and tests receive independent review and are included in a new accepted pin before coordinator integration uses them.
-6. Every UI task WB-004–WB-009 ends with a candidate-bound visual checkpoint; a mismatch is corrected before the next UI task begins.
+4. Workstream-level review still requires every accepted test and criterion, including review-only criteria; absent future sources remain unavailable until their tasks add them.
+5. Mutating the coordinator record's scope or task ID independently of its nested review fails completion for both workstream and task scopes.
+6. The modified recorder/evaluator and tests receive independent review and are included in a new accepted pin before coordinator integration uses them.
+7. Every UI task WB-004–WB-009 ends with a candidate-bound visual checkpoint; a mismatch is corrected before the next UI task begins.
 
 ## Decision
 
-Approved by the human in chat on 2026-10-09: “do not wait run all task I will review the final result.” I interpret this as authorization to proceed with the necessary reviewed task-scoped verification amendment, while retaining full workstream review. The accepted plan is being amended and will require independent review and a new pin before implementation. No traceability implementation has been changed by this proposal.
+Approved by the human in chat on 2026-10-09: “do not wait run all task I will review the final result.” I interpret this as authorization to proceed with the necessary reviewed task-scoped verification amendment, while retaining full workstream review. The implementation and plan amendment are prepared; the exact candidate still requires independent review and a new pin before the coordinator uses the updated runner.

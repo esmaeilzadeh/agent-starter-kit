@@ -49,8 +49,10 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             or review.get('recorded_by')==(review.get('review') or {}).get('reviewer')):
             errors.append('missing or stale coordinator-recorded semantic review')
         semantic=(review or {}).get('review') or {}
-        review_scope=(review or {}).get('scope','workstream')
-        review_task=(review or {}).get('task_id')
+        review_scope=semantic.get('scope','workstream')
+        review_task=semantic.get('task_id')
+        if review.get('scope')!=review_scope or review.get('task_id')!=review_task:
+            errors.append('recorded semantic-review scope differs from reviewed scope')
         if scope=='workstream' and (review_scope!='workstream' or review_task is not None):errors.append('task-scoped semantic review cannot satisfy workstream completion')
         if scope=='task' and review_scope not in {'workstream','task'}:errors.append('semantic review scope does not cover task completion')
         if scope=='task' and review_scope=='task' and review_task!=task_id:errors.append('semantic review belongs to another task')

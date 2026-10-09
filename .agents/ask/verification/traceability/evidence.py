@@ -155,7 +155,11 @@ def review_errors(root,contracts,review,sha):
         selected_ids=set(matches[0]);selected_tests=[t for t in plan['tests'] if t['id'] in selected_ids]
     else:return ['semantic review scope must be workstream or task']
     selected_ids=[t['id'] for t in selected_tests]
-    selected_criteria=sorted({cid for test in selected_tests for cid in test['criterion_ids']})
+    # Workstream review covers every accepted criterion, including review-only
+    # obligations with no executable test. Task review covers the criteria
+    # referenced by that task's assigned cases.
+    selected_criteria=(sorted(o['criterion_id'] for o in plan['obligations']) if scope=='workstream'
+                       else sorted({cid for test in selected_tests for cid in test['criterion_ids']}))
     source_ids=None if scope=='workstream' else selected_ids
     expected={'schema':'ask-test-review/v2','candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan),
               'scope':scope,'task_id':task_id,'test_ids':selected_ids,'criterion_ids':selected_criteria,

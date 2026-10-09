@@ -13,6 +13,8 @@ tasks:
       - .agents/ask/verification/traceability/evidence.py
       - .agents/ask/verification/traceability/completion.py
       - _ask/tests/test_traceability_evidence.py
+      - _ask/tests/traceability_fixture.py
+      - _ask/tests/traceability_support.py
     completion_evidence: "Projection fixtures preserve relationship identity, task provenance and missing-history states; task-level semantic review binds only assigned tests and present sources while final workstream review still covers every accepted case"
     test_ids: [WB-relations, WB-task-history, WB-story-context, MV-valid, MV-graph, MV-fields, MV-refs, ME-decision, ME-revise, ME-reject, ME-race, EV-real, EV-missing, MP-shared, MC-journey, DG-pre, DG-post, DG-refs, DG-events, DG-parity, DG-publish, DG-bootstrap, ME-batch, DG-success, DG-entrypoints]
   - id: WB-002
