@@ -1,21 +1,21 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "18c3c34c74e620b46588ff8d0b0e27089b40ecd3",
+  "contract_sha": "8edc2618e5055e0854ea618d6d3475dd392fe86a",
   "work_id": "structured-agentic-environment",
-  "reviewer": "codex-astra-model-challenge",
+  "reviewer": "review_tabular_ui",
   "recorded_by": "codex-coordinator",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
   "plan_review": {
-    "reviewer": "codex-astra-model-challenge",
+    "reviewer": "review_tabular_ui",
     "decision": "APPROVED",
-    "reviewedSHA": "18c3c34c74e620b46588ff8d0b0e27089b40ecd3",
+    "reviewedSHA": "c22efc4f2d1790bcaef6a3858fb1e39d1c7ea5e7",
     "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
-    "plan_digest": "18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58"
+    "plan_digest": "0ceb5850cd5b090defebe9b6d596c0dccf93ba91cae8ed563b5a907f0bc1082f"
   },
-  "plan_review_digest": "e360f19f7324f0a79c282868b5e5ee420bb335d6e89379679149c69308cf78a1",
+  "plan_review_digest": "a85582d23d13c5abf3e5af9c822092ce16ee1af84e8257903b28704758641e64",
   "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
-  "plan_digest": "18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58",
+  "plan_digest": "0ceb5850cd5b090defebe9b6d596c0dccf93ba91cae8ed563b5a907f0bc1082f",
   "graph_digest": "b8cce95f94bb3842447a35cad31d68789df636e11353ab4a75179d86761d804c"
 }
