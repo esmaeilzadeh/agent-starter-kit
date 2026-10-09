@@ -113,11 +113,13 @@ class WorkbenchTests(unittest.TestCase):
             committed_head = subprocess.check_output(
                 ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                failures = []
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.selectbox(key="work_id").value, "pilot")
-                self.assertTrue(any(item.key == "source_id" for item in app.selectbox),
-                                "a separate source selector is required")
+                has_source_selector = any(item.key == "source_id" for item in app.selectbox)
+                if not has_source_selector:
+                    failures.append("a separate source selector is required")
                 self.assertIn("Epic", _text(app))
                 self.assertIn("Working draft story", _text(app))
                 self.assertIn("Working tree", _text(app))
@@ -133,37 +135,42 @@ class WorkbenchTests(unittest.TestCase):
                     self.assertIn(crumb, rendered)
                 app.button(key="route:scenario-2").click().run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
-                app.button(key="route:test:CASE-2").click().run(timeout=20)
-                self.assertFalse(app.exception, app.exception)
-                self.assertEqual(app.session_state["_engineering_route"], "test:CASE-2")
-                crumbs = _text(app)
-                for crumb in ("Working draft story", "Second behavior", "Build", "Second assertion"):
-                    self.assertIn(crumb, crumbs)
-                app.button(key="route:result:CASE-2").click().run(timeout=20)
-                self.assertEqual(app.session_state["_engineering_route"], "result:CASE-2")
-                self.assertIn("Selected test: CASE-2", _text(app))
-                app.button(key="route:back").click().run(timeout=20)
-                self.assertFalse(app.exception, app.exception)
-                self.assertEqual(app.session_state["_engineering_route"], "test:CASE-2")
-                self.assertEqual(app.subheader[0].value, "Second assertion",
-                                 "Back should render the restored test in the same rerun")
+                available_routes = {item.key for item in app.button}
+                if "route:test:CASE-2" not in available_routes:
+                    failures.append("second scenario must retain its task, distinct test, and result route")
+                else:
+                    app.button(key="route:test:CASE-2").click().run(timeout=20)
+                    self.assertFalse(app.exception, app.exception)
+                    self.assertEqual(app.session_state["_engineering_route"], "test:CASE-2")
+                    crumbs = _text(app)
+                    for crumb in ("Working draft story", "Second behavior", "Build", "Second assertion"):
+                        self.assertIn(crumb, crumbs)
+                    app.button(key="route:result:CASE-2").click().run(timeout=20)
+                    self.assertEqual(app.session_state["_engineering_route"], "result:CASE-2")
+                    self.assertIn("Selected test: CASE-2", _text(app))
+                    app.button(key="route:back").click().run(timeout=20)
+                    self.assertFalse(app.exception, app.exception)
+                    self.assertEqual(app.session_state["_engineering_route"], "test:CASE-2")
+                    self.assertEqual(app.subheader[0].value, "Second assertion",
+                                     "Back should render the restored test in the same rerun")
 
                 # A committed ref is a distinct, immutable source; selecting it must
                 # reset route/form state without moving the checkout.
-                source_selector = app.selectbox(key="source_id")
-                self.assertIn("git:agent/pilot", source_selector.options)
-                source_selector.select("git:agent/pilot").run(timeout=20)
-                self.assertFalse(app.exception, app.exception)
-                self.assertEqual(app.session_state["_engineering_route"], "purpose")
-                self.assertFalse(app.session_state["_engineering_form_identity"]["editable"])
-                self.assertEqual(app.session_state["_engineering_source_context"]["commit"], committed_head)
-                self.assertIn("Read-only source", _text(app))
-                self.assertIn("Pilot story", _text(app))
-                self.assertNotIn("Working draft story", _text(app))
-                app.button(key="route:decision").click().run(timeout=20)
-                self.assertTrue(app.button(key="decision:submit").disabled)
-                self.assertEqual(subprocess.check_output(
-                    ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip(), committed_head)
+                if has_source_selector:
+                    source_selector = app.selectbox(key="source_id")
+                    self.assertIn("git:agent/pilot", source_selector.options)
+                    source_selector.select("git:agent/pilot").run(timeout=20)
+                    self.assertFalse(app.exception, app.exception)
+                    self.assertEqual(app.session_state["_engineering_route"], "purpose")
+                    self.assertFalse(app.session_state["_engineering_form_identity"]["editable"])
+                    self.assertEqual(app.session_state["_engineering_source_context"]["commit"], committed_head)
+                    self.assertIn("Read-only source", _text(app))
+                    self.assertIn("Pilot story", _text(app))
+                    self.assertNotIn("Working draft story", _text(app))
+                    app.button(key="route:decision").click().run(timeout=20)
+                    self.assertTrue(app.button(key="decision:submit").disabled)
+                    self.assertEqual(subprocess.check_output(
+                        ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip(), committed_head)
 
                 app.selectbox(key="work_id").select("archive").run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
@@ -176,6 +183,7 @@ class WorkbenchTests(unittest.TestCase):
                 app.selectbox(key="work_id").select("missing").run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("could not be admitted", _text(app).lower())
+                self.assertEqual(failures, [], "; ".join(failures))
 
     def test_navigation_does_not_refresh_stale_form_identity(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -198,6 +206,11 @@ class WorkbenchTests(unittest.TestCase):
                                  {"work_id": "pilot", "digest": digest, "editable": True})
                 app.button(key="route:scenario").click().run(timeout=20)
                 self.assertEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
+                app.button(key="route:back").click().run(timeout=20)
+                self.assertEqual(app.session_state["_engineering_route"], "purpose")
+                self.assertEqual(app.subheader[0].value, "Purpose",
+                                 "Back should render the restored epic in the same rerun")
+                app.button(key="route:scenario").click().run(timeout=20)
 
                 # A linked spec change makes the captured edit stale. Navigation cannot
                 # replace its identity or write the form; Refresh is the explicit recapture.
