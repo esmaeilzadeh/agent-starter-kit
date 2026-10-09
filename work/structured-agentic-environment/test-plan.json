@@ -542,6 +542,238 @@
       ]
     },
     {
+      "id": "UI-empty",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "An admitted snapshot with no tasks or canonical scenarios",
+        "when": "Open Overview and Scenarios",
+        "then": [
+          "Empty model collections show clear no-task and no-scenario states without exceptions"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Empty model collections show clear no-task and no-scenario states without exceptions"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_empty_task_and_scenario_tables_show_clear_states",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-gitless",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "A valid model root without a Git repository",
+        "when": "Open Overview then Evidence",
+        "then": [
+          "Workbench remains usable and evidence shows actionable Git-unavailable state without fatal Git output"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Workbench remains usable and evidence shows actionable Git-unavailable state without fatal Git output"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_gitless_model_root_keeps_workbench_usable_without_git_fatal",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-decision-object",
+      "criterion_ids": [
+        "EM-006"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "An admitted workstream with a blocked task and open decision",
+        "when": "Inspect Overview and switch to Objects",
+        "then": [
+          "Task is visible on Overview and decision resolution remains available in Objects"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Task is visible on Overview and decision resolution remains available in Objects"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_overview_keeps_decision_resolution_in_the_objects_section",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-overview-results",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An admitted epic and an available passing result",
+        "when": "Open Overview, then request test results",
+        "then": [
+          "Overview does not scan evidence initially; requested loading displays a passed outcome and debug guidance"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Overview does not scan evidence initially; requested loading displays a passed outcome and debug guidance"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_overview_loads_results_on_demand_and_explains_debug_identifiers",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-overview-hierarchy",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An admitted epic with linked canonical behavior, tasks and planned tests",
+        "when": "Open Overview",
+        "then": [
+          "Epic, scenarios, tasks, related tests, assertions and test source are visible while hashes are omitted from the first view"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Epic, scenarios, tasks, related tests, assertions and test source are visible while hashes are omitted from the first view"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-test-source",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "A canonical scenario with a planned test source path",
+        "when": "Inspect the test details",
+        "then": [
+          "The selected planned test shows its source assertion in the detail panel"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "The selected planned test shows its source assertion in the detail panel"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_planned_test_shows_its_source_in_the_detail_panel",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-expander-ids",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Repeated nested evidence fields across records",
+        "when": "Expand evidence details",
+        "then": [
+          "Each nested detail control remains uniquely addressable and migration errors retain warning severity"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Each nested detail control remains uniquely addressable and migration errors retain warning severity"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui.UiIntegrationTests.test_repeated_nested_evidence_fields_do_not_duplicate_expanders",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
+      "id": "UI-browser-gitless",
+      "criterion_ids": [
+        "EM-005"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "A valid model root without Git metadata and a running workbench",
+        "when": "Open Evidence and its debug trace",
+        "then": [
+          "Browser shows actionable Git evidence unavailability without fatal Git output"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Browser shows actionable Git evidence unavailability without fatal Git output"
+          ]
+        }
+      ],
+      "runner_id": "engineering-model",
+      "case_id": "test_engineering_ui_browser.WorkbenchBrowserJourney.test_gitless_model_root_shows_actionable_evidence_unavailable_state",
+      "source_paths": [
+        "_ask/tests/test_engineering_ui_browser.py",
+        "_ask/tests/engineering_fixture.py"
+      ]
+    },
+    {
       "id": "DG-pre",
       "criterion_ids": [
         "EM-007"
