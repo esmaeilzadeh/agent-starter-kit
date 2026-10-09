@@ -196,6 +196,8 @@ class WorkbenchTests(unittest.TestCase):
                 archived_view = _text(app)
                 if "EM001_CANONICAL_DEFINITION" not in archived_view:
                     failures.append("committed snapshots must expose canonical spec-to-plan admission errors")
+                if "spec_digest_mismatch" not in archived_view:
+                    failures.append("committed admission diagnostics must identify the stale spec digest")
                 if "Canonical behavior" in archived_view:
                     failures.append("a rejected committed snapshot must not render its normal hierarchy")
                 self.assertEqual(subprocess.check_output(
