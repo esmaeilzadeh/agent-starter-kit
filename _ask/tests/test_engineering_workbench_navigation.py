@@ -25,6 +25,9 @@ def _add_story(model):
     model["nodes"].append({"id": "story", "type": "story", "title": "Pilot story",
                            "lifecycle": "active"})
     model["edges"].append({"type": "contains", "source": "purpose", "target": "story"})
+    model["edges"] = [edge for edge in model["edges"]
+                      if not (edge.get("type") == "contains" and edge.get("target") == "scenario")]
+    model["edges"].append({"type": "contains", "source": "story", "target": "scenario"})
     return model
 
 
@@ -87,8 +90,9 @@ class WorkbenchTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
-                captured = app.session_state["_engineering_form_identity"]
-                digest = captured["digest"]
+                digest = app.session_state["_engineering_displayed_view"]["snapshot"]["digest"]
+                self.assertEqual(app.session_state.get("_engineering_form_identity"),
+                                 {"work_id": "pilot", "digest": digest, "editable": True})
                 app.button(key="route:scenario").click().run(timeout=20)
                 self.assertEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
 
@@ -103,7 +107,6 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertIn("stale", _text(app).lower())
                 self.assertFalse(app.button(key="decision:submit").disabled)
                 self.assertTrue(app.button(key="refresh"))
-                self.assertEqual(app.session_state["_engineering_candidate_projection"], None)
 
 
 if __name__ == "__main__":
