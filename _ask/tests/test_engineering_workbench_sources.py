@@ -69,6 +69,17 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(gitless["workstreams"][0]["work_id"], "local")
         self.assertIn("Git is unavailable", gitless["selection_note"])
 
+        later = self.root / ".later"
+        (later / "parked.md").unlink()
+        later.rmdir()
+        with tempfile.TemporaryDirectory() as directory:
+            external = Path(directory)
+            (external / "private.md").write_text("# External card\n", encoding="utf-8")
+            later.symlink_to(external, target_is_directory=True)
+            isolated = discover_work(self.root)
+        self.assertEqual(isolated["later"], [],
+                         "a symlinked .later root must not expose cards outside the checkout")
+
     def test_cross_branch_snapshot_is_consistent_and_read_only(self):
         self.write("work/pilot/engineering-model.json", '{"revision":1}')
         self.write("work/pilot/inner-loop/tasks.yaml", "revision: 1\n")
