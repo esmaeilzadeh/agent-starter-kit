@@ -54,6 +54,29 @@ class DocumentGuardTests(unittest.TestCase):
                  "options": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}], "history": "bad"}}]})
             self.assertFalse(bad["valid"])
 
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _model, spec = referenced_model(root)
+            base, errors = admit(root, "pilot")
+            self.assertEqual(errors, [], errors)
+            linked = edit(root, "pilot", base.identity["digest"], {"commands": [
+                {"op": "add_edge", "edge": {"type": "depends_on", "source": "choice", "target": "requirement"}},
+                {"op": "resolve_decision", "id": "choice", "option_id": "one",
+                 "actor": "Developer", "rationale": "Accept the current criterion"},
+            ]})
+            self.assertTrue(linked["valid"], linked)
+            self.assertEqual(next(node for node in load_published(root, "pilot").document["nodes"]
+                                  if node["id"] == "choice")["lifecycle"], "resolved")
+            spec["criteria"][0]["then"] = ["Reject"]
+            amended = edit(root, "pilot", linked["snapshot"]["digest"],
+                           {"files": {"specs/current/pilot.json": json.dumps(spec)}})
+            self.assertTrue(amended["valid"], amended)
+            choice = next(node for node in load_published(root, "pilot").document["nodes"]
+                          if node["id"] == "choice")
+            self.assertEqual(choice["lifecycle"], "open",
+                             "a changed referenced criterion must reopen dependent decisions")
+            self.assertTrue(any(entry["event"] == "invalidated" for entry in choice["history"]))
+
     def test_concurrent_multifile_publication_and_recovery(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

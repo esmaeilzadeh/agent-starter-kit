@@ -18,6 +18,7 @@ from engineering_fixture import decision_model, referenced_model, write_json, mo
 from traceability.contracts import digest
 from concurrent.futures import ThreadPoolExecutor
 from engineering_model.domain import apply_batch
+from engineering_model.snapshot import capture
 
 
 class ModelEditTests(unittest.TestCase):
@@ -361,11 +362,12 @@ class ModelValidationTests(unittest.TestCase):
             # closure, even when the model only points at its parent spec.
             spec["feature_specification"] = "docs/feature.json"
             write_json(root, "specs/current/pilot.json", spec)
+            write_json(root, "work/pilot/engineering-model.json", model)
             write_json(root, "docs/feature.json", {
                 "schema": "ask-feature-spec/v1", "id": "feature", "status": "CURRENT",
                 "extends": "../outside.json",
             })
-            feature_errors = validate(model, root, "pilot")
+            feature_errors = capture(root, "pilot").diagnostics(root)
             self.assertIn("EM001_CANONICAL_DEFINITION", {e["code"] for e in feature_errors}, feature_errors)
 
             # Simulate an external editor replacing a definition immediately after
