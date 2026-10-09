@@ -99,8 +99,10 @@ def file_digest_bytes(raw):
     return hashlib.sha256(raw).hexdigest()
 
 
-def source_digests(root,sha,plan):
-    return {name:file_digest_bytes(read_at(root,sha,name)) for t in plan['tests'] for name in t['source_paths']}
+def source_digests(root,sha,plan,test_ids=None):
+    selected=None if test_ids is None else set(test_ids)
+    paths={name for test in plan['tests'] if selected is None or test['id'] in selected for name in test['source_paths']}
+    return {name:file_digest_bytes(read_at(root,sha,name)) for name in sorted(paths)}
 
 
 def inventory(root,base,sha,plan):
@@ -134,7 +136,8 @@ def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorde
     if errors:raise Invalid('; '.join(errors))
     record={'schema':'ask-recorded-test-review/v1','recorded_by':recorded_by,'policy':POLICY,
             'policy_digest':contracts['pin']['policy_digest'],'contract_digest':digest(contracts['pin']),
-            'review_digest':digest(review),'review':review,'candidate_sha':candidate_sha}
+            'review_digest':digest(review),'review':review,'candidate_sha':candidate_sha,
+            'scope':review.get('scope','workstream'),'task_id':review.get('task_id')}
     write_json(Path(root)/'work'/work_id/'traceability'/'reviews'/(candidate_sha+'.json'),record)
     return record
 
@@ -142,7 +145,21 @@ def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorde
 def review_errors(root,contracts,review,sha):
     errors=[];spec=contracts['spec'];plan=contracts['plan']
     if not isinstance(review,dict):return ['missing independent semantic review']
-    expected={'schema':'ask-test-review/v1','candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan),'source_digests':source_digests(root,sha,plan)}
+    scope=review.get('scope','workstream');task_id=review.get('task_id')
+    if scope=='workstream':
+        if task_id is not None:errors.append('workstream review must not name a task')
+        selected_tests=list(plan['tests'])
+    elif scope=='task':
+        matches=[s['test_ids'] for s in plan.get('task_scopes',[]) if s.get('task_id')==task_id]
+        if len(matches)!=1:return ['task review does not identify one accepted task scope']
+        selected_ids=set(matches[0]);selected_tests=[t for t in plan['tests'] if t['id'] in selected_ids]
+    else:return ['semantic review scope must be workstream or task']
+    selected_ids=[t['id'] for t in selected_tests]
+    selected_criteria=sorted({cid for test in selected_tests for cid in test['criterion_ids']})
+    source_ids=None if scope=='workstream' else selected_ids
+    expected={'schema':'ask-test-review/v2','candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan),
+              'scope':scope,'task_id':task_id,'test_ids':selected_ids,'criterion_ids':selected_criteria,
+              'source_digests':source_digests(root,sha,plan,source_ids)}
     if any(review.get(k)!=v for k,v in expected.items()):errors.append('stale review candidate/spec/plan/source binding')
     if not text(review.get('reviewer')):errors.append('missing reviewer')
     if review.get('base_sha')!=contracts['pin']['contract_sha']:errors.append('review inventory base differs from accepted contract revision')
@@ -157,13 +174,15 @@ def review_errors(root,contracts,review,sha):
     from .contracts import indexed
     invalid=[];criteria=indexed(review.get('criteria'),'review.criteria',invalid);tests=indexed(review.get('tests'),'review.tests',invalid)
     if invalid:errors.append('duplicate or malformed semantic review decisions')
-    if set(criteria)!={c['id'] for c in spec['criteria']} or set(tests)!={t['id'] for t in plan['tests']}:errors.append('missing per-criterion/test semantic review')
+    if set(criteria)!=set(selected_criteria) or set(tests)!=set(selected_ids):errors.append('missing per-criterion/test semantic review')
     obligations={o['criterion_id']:o['required_types'] for o in plan['obligations']}
+    task_types={cid:{t['type'] for t in selected_tests if cid in t['criterion_ids']} for cid in selected_criteria}
     for cid,c in criteria.items():
         if c.get('coverage_decision')!='APPROVED' or not text(c.get('assessment')):errors.append(f'{cid}: coverage rejected/missing assessment')
         types=c.get('type_adequacy',{})
         if not isinstance(types,dict):types={}
-        for kind in obligations.get(cid,[]):
+        required=obligations.get(cid,[]) if scope=='workstream' else [kind for kind in obligations.get(cid,[]) if kind in task_types.get(cid,set())]
+        for kind in required:
             item=types.get(kind,{})
             if not isinstance(item,dict) or item.get('decision')!='APPROVED' or not text(item.get('assessment')):errors.append(f'{cid}: missing/rejected {kind} review')
     classifications={t['id']:t for t in plan['tests']}

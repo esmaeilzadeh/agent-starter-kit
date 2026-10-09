@@ -38,7 +38,9 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             if source_changes(root,work_id):errors.append('dirty candidate source')
         retained_review=load(root/'work'/work_id/'traceability'/'reviews'/(sha+'.json'))
         if retained_review!=review:errors.append('review differs from coordinator record')
-        sources=source_digests(root,sha,plan)
+        selected=scoped_tests(plan,scope,task_id)
+        selected_ids=[t['id'] for t in selected]
+        sources=source_digests(root,sha,plan,None if scope=='workstream' else selected_ids)
         if (not isinstance(review,dict) or review.get('schema')!='ask-recorded-test-review/v1'
             or review.get('candidate_sha')!=sha or review.get('contract_digest')!=digest(pin)
             or review.get('policy')!=POLICY or review.get('policy_digest')!=pin['policy_digest']
@@ -47,6 +49,11 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             or review.get('recorded_by')==(review.get('review') or {}).get('reviewer')):
             errors.append('missing or stale coordinator-recorded semantic review')
         semantic=(review or {}).get('review') or {}
+        review_scope=(review or {}).get('scope','workstream')
+        review_task=(review or {}).get('task_id')
+        if scope=='workstream' and (review_scope!='workstream' or review_task is not None):errors.append('task-scoped semantic review cannot satisfy workstream completion')
+        if scope=='task' and review_scope not in {'workstream','task'}:errors.append('semantic review scope does not cover task completion')
+        if scope=='task' and review_scope=='task' and review_task!=task_id:errors.append('semantic review belongs to another task')
         errors.extend(review_errors(root,contracts,semantic,sha))
         policy_digest=file_digest_bytes(read_at(root,sha,POLICY)) if historical else file_digest(root/POLICY)
         if policy_digest!=pin['policy_digest']:errors.append('changed policy artifact')
