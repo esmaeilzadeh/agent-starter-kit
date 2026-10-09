@@ -41,8 +41,8 @@ def _run(root: Path):
 def _text(app) -> str:
     return "\n".join(str(item.value) for collection in (
         app.title, app.header, app.subheader, app.markdown, app.caption,
-        app.info, app.warning, app.error, app.success, app.button,
-    ) for item in collection)
+        app.info, app.warning, app.error, app.success,
+    ) for item in collection) + "\n" + "\n".join(str(item.label) for item in app.button)
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -111,9 +111,22 @@ class WorkbenchTests(unittest.TestCase):
                 write_json(root, "specs/current/pilot.json", spec)
                 app.button(key="route:decision").click().run(timeout=20)
                 self.assertEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
+                actor_key = next(item.key for item in app.text_input
+                                 if item.key and item.key.startswith("decision-actor:"))
+                rationale_key = next(item.key for item in app.text_area
+                                     if item.key and item.key.startswith("decision-rationale:"))
+                app.text_input(key=actor_key).input("Developer")
+                app.text_area(key=rationale_key).input("Checked against the current specification")
+                app.button(key="decision:submit").click().run(timeout=20)
                 self.assertIn("stale", _text(app).lower())
                 self.assertFalse(app.button(key="decision:submit").disabled)
+                current_model = __import__("json").loads(
+                    (root / "work/pilot/engineering-model.json").read_text(encoding="utf-8"))
+                decision = next(node for node in current_model["nodes"] if node["id"] == "choice")
+                self.assertEqual(decision["history"], [])
                 self.assertTrue(app.button(key="refresh"))
+                app.button(key="refresh").click().run(timeout=20)
+                self.assertNotEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
 
 
 if __name__ == "__main__":
