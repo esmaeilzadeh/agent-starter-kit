@@ -65,8 +65,10 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(qualified_source(self.root, unsafe, self.source_sha)["status"], "unavailable")
 
     def _report(self, *, test_id="T", work_id="w", run_id="run-1", contract="contract-1",
-                outcome="passed", log=b"assertion succeeded\n", source_sha=None):
+                outcome="passed", log=b"assertion succeeded\n", source_sha=None,
+                candidate_sha=None):
         source_sha = source_sha or self.candidate_sha
+        candidate_sha = candidate_sha or self.candidate_sha
         artifact = f"work/{work_id}/traceability/runs/{run_id}/execution.log"
         log_path = self.root / artifact
         log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -83,7 +85,8 @@ class WorkbenchTests(unittest.TestCase):
                 "outcome": outcome, "failure_kind": None, "output_artifact": artifact,
                 "output_digest": output_digest}
         report = {"schema": "ask-test-results/v1", "run_id": run_id,
-                  "candidate_sha": self.candidate_sha, "spec_digest": "spec-1",
+                  "candidate_sha": candidate_sha, "spec_digest": "spec-1",
+                  "scope": "task", "task_id": "WB-003",
                   "plan_digest": contract, "runner_identity": {"capability": "ask-traceability/v1"},
                   "executions": [execution], "cases": [case]}
         run_dir = self.runtime / "runs" / run_id
@@ -97,12 +100,14 @@ class WorkbenchTests(unittest.TestCase):
         return hashlib.sha256(blob).hexdigest()
 
     def _ledger(self, report, *, work_id="w", test_id="T", contract="contract-1"):
-        ledger = [{"work_id": work_id, "run_id": report["run_id"], "phase": "final_green",
-                   "candidate_sha": self.candidate_sha, "spec_digest": "spec-1",
-                   "plan_digest": contract, "scope": "task", "task_id": "WB-003",
-                   "digest": hashlib.sha256(json.dumps(report, sort_keys=True,
-                       separators=(",", ":")).encode()).hexdigest(), "test_id": test_id}]
-        (self.runtime / "executions.json").write_text(json.dumps(ledger), encoding="utf-8")
+        path = self.runtime / "executions.json"
+        ledger = json.loads(path.read_text()) if path.exists() else []
+        ledger.append({"work_id": work_id, "run_id": report["run_id"], "phase": "final_green",
+                       "candidate_sha": report["candidate_sha"], "spec_digest": "spec-1",
+                       "plan_digest": contract, "scope": "task", "task_id": "WB-003",
+                       "digest": hashlib.sha256(json.dumps(report, sort_keys=True,
+                           separators=(",", ":")).encode()).hexdigest(), "test_id": test_id})
+        path.write_text(json.dumps(ledger), encoding="utf-8")
 
     def test_results_match_work_test_run_and_contract(self):
         expected = {"id": "T", "runner_id": "python", "case_id": "test_sample.First.test_same",
@@ -155,12 +160,22 @@ class WorkbenchTests(unittest.TestCase):
                                      plan_digest="contract-1", candidate_sha=self.candidate_sha)
         self.assertEqual(tampered["runs"][0]["output_status"], "invalid")
         self.assertIn("digest", tampered["runs"][0]["diagnostic"])
-        report = self._report(outcome="skipped", log=b"skipped by runner\n")
+        report = self._report(run_id="run-2", outcome="skipped", log=b"skipped by runner\n")
         self._ledger(report)
         refreshed = execution_history(self.root, "w", expected, spec_digest="spec-1",
                                       plan_digest="contract-1", candidate_sha=self.candidate_sha)
-        self.assertEqual(refreshed["runs"][0]["outcome"], "skipped")
-        self.assertEqual(refreshed["runs"][0]["output_status"], "valid")
+        latest = next(row for row in refreshed["runs"] if row["run_id"] == "run-2")
+        self.assertEqual(latest["outcome"], "skipped")
+        self.assertEqual(latest["output_status"], "valid")
+        older = self._report(run_id="run-3", source_sha=self.source_sha,
+                             candidate_sha=self.source_sha, outcome="passed")
+        self._ledger(older)
+        stale = execution_history(self.root, "w", expected, spec_digest="spec-1",
+                                  plan_digest="contract-1", candidate_sha=self.candidate_sha)
+        old_run = next(row for row in stale["runs"] if row["run_id"] == "run-3")
+        self.assertEqual(old_run["outcome"], "passed")
+        self.assertEqual(old_run["output_status"], "valid")
+        self.assertEqual(old_run["applicability"], "stale")
 
 if __name__ == "__main__":
     unittest.main()
