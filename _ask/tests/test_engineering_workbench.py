@@ -31,10 +31,10 @@ class WorkbenchTests(unittest.TestCase):
                 {"id": "task-b", "type": "task", "title": "Model hint B", "lifecycle": "planned"},
                 {"id": "implementation", "type": "implementation", "title": "Recorded implementation",
                  "lifecycle": "active"},
+                {"id": "legacy-implementation", "type": "implementation", "title": "Legacy implementation",
+                 "lifecycle": "active"},
                 {"id": "case-shared", "type": "test", "title": "Shared scenario case", "lifecycle": "active",
                  "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-1"}},
-                {"id": "case-second", "type": "test", "title": "Second scenario case", "lifecycle": "active",
-                 "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-2"}},
                 {"id": "foreign-case", "type": "test", "title": "Foreign reused ID", "lifecycle": "active",
                  "reference": {"path": "work/other/test-plan.json", "id": "CASE-1"}},
             ],
@@ -47,9 +47,10 @@ class WorkbenchTests(unittest.TestCase):
                 {"type": "contains", "source": "epic", "target": "task-b"},
                 {"type": "implements", "source": "implementation", "target": "task-a"},
                 {"type": "implements", "source": "implementation", "target": "s3"},
+                {"type": "implements", "source": "legacy-implementation", "target": "legacy-task"},
+                {"type": "implements", "source": "legacy-implementation", "target": "s3"},
                 {"type": "covers", "source": "case-shared", "target": "s1"},
                 {"type": "covers", "source": "case-shared", "target": "s2"},
-                {"type": "covers", "source": "case-second", "target": "s2"},
                 {"type": "covers", "source": "foreign-case", "target": "s1"},
             ],
         }
@@ -120,6 +121,8 @@ tasks:
         self.assertEqual(tasks["task-b"]["owned_test_ids"], ["CASE-2"])
         self.assertEqual(tests["CASE-1"]["scenario_ids"], ["s1", "s2"])
         self.assertEqual(tests["CASE-1"]["owner_task_id"], "task-a")
+        self.assertEqual(tests["CASE-2"]["scenario_ids"], ["s2"])
+        self.assertEqual(tests["CASE-2"]["owner_task_id"], "task-b")
         self.assertIn({"task_id": "task-b", "via": "scenario-coverage"},
                       tests["CASE-1"]["related_tasks"])
         self.assertEqual(len(tests), 2)
@@ -141,6 +144,9 @@ tasks:
         self.assertEqual(tasks["task-a"]["status_source"], "no-runtime-record")
         self.assertEqual(tasks["legacy-task"]["record_source"], "engineering-model")
         self.assertEqual(tasks["legacy-task"]["status"], "not-recorded")
+        self.assertEqual(tasks["legacy-task"]["related_scenarios"], [
+            {"id": "s3", "via": "recorded-implementation"},
+        ])
 
         self.write("work/pilot/inner-loop/state.json", {
             "work_id": "pilot", "tasks": {
