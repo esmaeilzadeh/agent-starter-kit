@@ -7,7 +7,7 @@ import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from verification.traceability.completion import evaluate_completion
-from verification.traceability.contracts import Invalid,digest
+from verification.traceability.contracts import Invalid,POLICY,digest
 from verification.traceability.evidence import record_test_review,review_errors,write_json
 from traceability_fixture import Consumer
 
@@ -135,8 +135,10 @@ class EvidenceTests(unittest.TestCase):
         self.assertIn('recorded semantic-review scope differs from reviewed scope',result['errors'])
     def test_I08_workstream_review_includes_review_only_criteria(self):
         contracts=copy.deepcopy(self.c.contracts)
-        contracts['spec']['criteria'].append({'id':'R1','given':'A governance-only constraint','when':'The accepted plan is assessed','then':['The constraint is explicitly reviewed'],'verification_mode':'review'})
-        contracts['plan']['obligations'].append({'criterion_id':'R1','required_types':[]})
+        contracts['spec']['criteria'].append({'id':'R1','given':'A governance-only constraint','when':'The accepted plan is assessed','then':['The constraint is explicitly reviewed'],'verification_mode':'review','reason':'This is reviewed as configuration metadata, without executable behavior.','review_decision':{'decision':'APPROVED','reviewer':'fixture-reviewer','recorded_by':'fixture-coordinator','policy':POLICY}})
+        contracts['plan']['spec_digest']=digest(contracts['spec'])
+        from verification.traceability.coverage import validate_plan
+        self.assertEqual(validate_plan(contracts['spec'],contracts['plan'],contracts['graph']),[])
         review=copy.deepcopy(self.c.review)
         review['spec_digest']=digest(contracts['spec']);review['plan_digest']=digest(contracts['plan'])
         review['criterion_ids'].append('R1')

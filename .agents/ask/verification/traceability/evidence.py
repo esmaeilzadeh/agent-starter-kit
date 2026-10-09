@@ -158,7 +158,7 @@ def review_errors(root,contracts,review,sha):
     # Workstream review covers every accepted criterion, including review-only
     # obligations with no executable test. Task review covers the criteria
     # referenced by that task's assigned cases.
-    selected_criteria=(sorted(o['criterion_id'] for o in plan['obligations']) if scope=='workstream'
+    selected_criteria=(sorted(c['id'] for c in spec['criteria']) if scope=='workstream'
                        else sorted({cid for test in selected_tests for cid in test['criterion_ids']}))
     source_ids=None if scope=='workstream' else selected_ids
     expected={'schema':'ask-test-review/v2','candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan),
