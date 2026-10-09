@@ -12,6 +12,13 @@ Purpose:
 Perform delegated implementation labor.
 ```
 
+Before the first implementation change, use the accepted plan's task graph as
+the execution queue. Work only on its reviewed task IDs and owned paths. Record
+the task ID on its result and verification evidence, then update that task's
+state only when its planned completion evidence is present. A new deliverable
+or changed test assignment returns to Plan for an amended, independently
+reviewed contract before implementation continues.
+
 Preconditions (`./ask check-workstream`; missing intent confirmation is a hard refusal — `_ask/policies/workflow.md`):
 
 ```text

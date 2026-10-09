@@ -329,7 +329,14 @@ What dependencies are affected?
 What can be done independently?
 What verification is required?
 Where might the specification need to change?
+What reviewable implementation tasks deliver the plan, and which tests verify each task?
 ```
+
+Before implementation, record task IDs, outcomes, dependencies, owned paths,
+test assignments, and completion evidence in the plan and accepted task graph.
+Keep the task count proportional to independently reviewable outcomes: a single
+cohesive deliverable can be one task, while separate outcomes receive separate
+tasks and explicit dependencies.
 
 A critical rule is:
 
