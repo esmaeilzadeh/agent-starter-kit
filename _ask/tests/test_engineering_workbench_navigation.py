@@ -60,6 +60,7 @@ class WorkbenchTests(unittest.TestCase):
             other_model = copy.deepcopy(model)
             other_model["work_id"] = "archive"
             write_json(root, "work/archive/engineering-model.json", other_model)
+            write_json(root, "work/missing/engineering-model.json", {"schema": "unrecognized"})
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
@@ -85,6 +86,9 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertEqual(subprocess.check_output(
                     ["git", "-C", str(root), "branch", "--show-current"], text=True).strip(),
                     "agent/pilot")
+                app.selectbox(key="work_id").select("missing").run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("could not be admitted", _text(app).lower())
 
     def test_navigation_does_not_refresh_stale_form_identity(self):
         with tempfile.TemporaryDirectory() as directory:
