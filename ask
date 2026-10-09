@@ -25,8 +25,11 @@ Commands:
       <work-id>   required slug
 
   check-workstream <work-id> [--allow-dirty] [--acceptance]
-      Preconditions before implement (branch, spec, plan).
+      Preconditions before implement (branch, spec, plan, current human intent confirmation).
       --allow-dirty   skip the clean-tree check
+
+  confirm-intent --work-id <id> --response <exact-human-response>
+      Record the human's explicit confirmation of the complete intent and assumptions.
 
   status [--work-id <id>] [--json] [--later-only] [--work-only]
       Live agent/* plus archived work/* on the default branch (no checkout).
@@ -233,6 +236,9 @@ case "$cmd" in
     ;;
   check-workstream|check)
     exec "$SCRIPTS/check-workstream.sh" "$@"
+    ;;
+  confirm-intent)
+    exec python3 "$SCRIPTS/intent-confirmation.py" confirm --root "$ROOT" "$@"
     ;;
   status)
     exec "$SCRIPTS/status.sh" "$@"

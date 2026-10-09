@@ -82,6 +82,11 @@ if [[ ! -f "${WS}/plan.md" ]]; then
   exit 1
 fi
 
+if ! python3 "$ROOT/_ask/scripts/intent-confirmation.py" validate --root "$ROOT" --work-id "$WORK_ID"; then
+  echo "check-workstream: human confirmation of the complete intent and assumptions is required before implementation." >&2
+  exit 1
+fi
+
 if [[ -f "${WS}/review.md" ]] && ! grep -qiE '^## Model' "${WS}/review.md"; then
   echo "check-workstream: warning — ${WS}/review.md has no ## Model record" >&2
 fi

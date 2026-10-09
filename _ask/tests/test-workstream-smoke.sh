@@ -59,6 +59,12 @@ print('handoff ok')
 PY
 
 git add work && git commit -q -m "explore handoff" || true
+if ./_ask/scripts/check-workstream.sh smoke-demo >/dev/null 2>&1; then
+  echo 'FAIL: implementation gate accepted an intent without explicit human confirmation' >&2
+  exit 1
+fi
+./ask confirm-intent --work-id smoke-demo --response 'I approve these defaults are OK'
+git add work && git commit -q -m "confirm complete intent and assumptions"
 ./_ask/scripts/check-workstream.sh smoke-demo
 # Do not invoke full verify.sh here — it would re-run this smoke test.
 sha=$(git rev-parse HEAD)

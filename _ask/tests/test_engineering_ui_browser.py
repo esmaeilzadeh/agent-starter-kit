@@ -14,7 +14,7 @@ from urllib.request import urlopen
 
 from playwright.sync_api import sync_playwright
 
-from engineering_fixture import evidence_workbench
+from engineering_fixture import evidence_workbench, workbench_model
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
@@ -134,6 +134,56 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         ).first.wait_for()
                         second.get_by_role("button", name="Refresh inputs").click()
                         second.get_by_text("build: ready", exact=True).wait_for()
+                    finally:
+                        browser.close()
+            finally:
+                server.terminate()
+                try:
+                    server.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    server.kill()
+                    server.wait(timeout=5)
+
+    def test_gitless_model_root_shows_actionable_evidence_unavailable_state(self):
+        with tempfile.TemporaryDirectory(prefix="ask-ui-gitless-") as temporary:
+            root = Path(temporary)
+            workbench_model(root)
+            with socket.socket() as listener:
+                listener.bind(("127.0.0.1", 0))
+                port = listener.getsockname()[1]
+            environment = dict(os.environ, ASK_MODEL_ROOT=str(root), ASK_PYTHON=sys.executable)
+            server = subprocess.Popen(
+                [str(ROOT / "ask"), "ui", "--server.headless=true",
+                 f"--server.port={port}", "--server.address=127.0.0.1"],
+                cwd=ROOT, env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+            try:
+                url = f"http://127.0.0.1:{port}"
+                for _ in range(100):
+                    if server.poll() is not None:
+                        self.fail(f"Streamlit exited before startup with code {server.returncode}")
+                    try:
+                        with urlopen(url, timeout=1):
+                            break
+                    except (URLError, TimeoutError):
+                        time.sleep(0.1)
+                else:
+                    self.fail("Streamlit did not become ready")
+
+                with sync_playwright() as playwright:
+                    browser = playwright.chromium.launch(
+                        headless=True,
+                        executable_path=os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
+                        or playwright.chromium.executable_path,
+                        args=["--no-sandbox"],
+                    )
+                    try:
+                        page = browser.new_page()
+                        page.goto(url, wait_until="domcontentloaded")
+                        page.get_by_text("pilot: unavailable; current completion: no", exact=True).wait_for()
+                        body = page.locator("body").inner_text()
+                        self.assertIn("Git evidence inspection is unavailable", body)
+                        self.assertNotIn("fatal: not a git repository", body)
                     finally:
                         browser.close()
             finally:

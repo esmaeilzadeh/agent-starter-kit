@@ -19,11 +19,12 @@ Purpose:
 Perform delegated implementation labor.
 ```
 
-Default preconditions (`./ask check-workstream`; **guidance**, not a lock — `_ask/policies/workflow.md`):
+Preconditions (`./ask check-workstream`; missing intent confirmation is a hard refusal — `_ask/policies/workflow.md`):
 
 ```text
 clean working tree          ← still hard (safety)
 dedicated branch
+explicit human confirmation of the complete current intent and assumptions
 accepted spec               ← on-path: prepare from defaults if missing
 active plan                 ← on-path: prepare from defaults if missing
 no unrelated uncommitted changes
@@ -50,6 +51,8 @@ At meaningful milestones, create commits so that important engineering states ar
 ---
 
 ## Kit emphasis
+
+- A missing or stale explicit intent confirmation is a hard stop: present the full current intent and assumptions, ask “Do you approve the complete intent and every listed assumption as written?”, wait for an affirmative response, record that exact response with `./ask confirm-intent`, and re-run the gate. Never infer confirmation from an implementation request or a prior approval of only the direction/order.
 
 - **Default:** run `./ask check-workstream <work-id>` before implementing. If it fails for missing spec/plan and they are still on the kit path, **prepare** those artifacts from accepted defaults (confirm “defaults OK” once if not already), then continue — do not implement on empty paper. Off-path (“just code”) only if they explicitly left: warn once and follow.
 - If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset). That refusal is safety, not workflow theater.

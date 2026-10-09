@@ -28,6 +28,7 @@ A new chat is on-path again. Saying “skip the kit” / “just code” in an o
 ## Still hard (safety, not ceremony)
 
 - Dirty worktree without grilling (`_ask/policies/worktree.md`)
+- Explicit Grill confirmation of the complete intent and assumptions, recorded against the exact `intent.md` digest. `./ask check-workstream` refuses implementation when it is missing or stale; implementation permission or a broad direction choice is not a substitute.
 - Silent stash/reset
 - Claiming verify/accept without running checks or recording a commit SHA
 - Changing What/Why or acceptance criteria without Spec Change (or a new defaults confirm that owns that change)
