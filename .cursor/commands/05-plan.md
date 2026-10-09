@@ -59,7 +59,7 @@ Give each task an ID, outcome, dependency IDs, non-overlapping owned-path globs,
 completion evidence, and the test IDs that verify it. Split independent outcomes
 when they have distinct reviewable results; sequence tasks that share files.
 Populate `test-plan.json`'s `task_scopes` with the exact task IDs and assign each
-planned test case to exactly one task. A task with no executable test needs a
+planned test case to its responsible task. A task with no executable test needs a
 specific verification rationale in the plan. Preserve the graph's IDs in task
 results and evidence so completed work can be inspected by task.
 
