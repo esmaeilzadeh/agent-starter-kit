@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from streamlit.testing.v1 import AppTest
-from engineering_fixture import workbench_model, evidence_workbench
+from engineering_fixture import workbench_model, evidence_workbench, write_json
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
@@ -18,8 +18,11 @@ from engineering_model.actions import edit
 
 
 def text(app):
-    return "\n".join(str(element.value) for kind in ("markdown", "caption", "info", "warning", "error", "success")
-                     for element in getattr(app, kind))
+    visible = [str(element.value) for kind in ("title", "header", "subheader", "markdown", "caption",
+                                               "info", "warning", "error", "success")
+               for element in getattr(app, kind)]
+    visible.extend(element.value.to_string(index=False) for element in app.dataframe)
+    return "\n".join(visible)
 
 
 class UiIntegrationTests(unittest.TestCase):
@@ -30,12 +33,24 @@ class UiIntegrationTests(unittest.TestCase):
         with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=20)
             self.assertFalse(app.exception, app.exception)
+            unavailable = json.loads(app.json[0].value)["by_workstream"]["w"]
+            self.assertEqual(unavailable["status"], "unavailable", unavailable)
+            self.assertFalse(unavailable["current_completion"])
+            self.assertIn("Engineering objects", text(app))
+            self.assertIn("Scenarios and planned tests", text(app))
+            self.assertIn("Uppercase assertion", text(app))
+            self.assertIn("Planned assertions for C1", text(app))
+            self.assertEqual(len(app.json), 1)
+            evidence_key = next(item.key for item in app.dataframe
+                                if item.key and item.key.startswith("table:Evidence:"))
             app.text_input(key="candidate_sha").input(current_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             unavailable = json.loads(app.json[0].value)["by_workstream"]["w"]
             self.assertEqual(unavailable["status"], "unavailable", unavailable)
             self.assertFalse(unavailable["current_completion"])
+            current_key = next(item.key for item in app.dataframe
+                               if item.key and item.key.startswith("table:Evidence:"))
             app.text_input(key="candidate_sha").input(historical_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
@@ -43,6 +58,27 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertEqual(inspection["status"], "historical", inspection)
             self.assertFalse(inspection["current_completion"])
             self.assertEqual(inspection["candidate_sha"], historical_sha)
+            historical_key = next(item.key for item in app.dataframe
+                                  if item.key and item.key.startswith("table:Evidence:"))
+            self.assertNotEqual(evidence_key, historical_key)
+            self.assertNotEqual(current_key, historical_key)
+
+    def test_empty_task_and_scenario_tables_show_clear_states(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, _spec = workbench_model(root)
+            removed = {"build", "scenario", "case"}
+            model["nodes"] = [node for node in model["nodes"] if node["id"] not in removed]
+            model["edges"] = [edge for edge in model["edges"]
+                               if edge["source"] not in removed and edge["target"] not in removed]
+            write_json(root, "work/pilot/engineering-model.json", model)
+            _snapshot, diagnostics = validate_current(root, "pilot")
+            self.assertEqual(diagnostics, [], diagnostics)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("No tasks in this snapshot.", text(app))
+                self.assertIn("No canonical scenarios are linked in this snapshot.", text(app))
 
     def test_resolution_survives_new_session(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -53,20 +89,19 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build: blocked", text(app))
-                app.selectbox(key="object_id").select("choice").run()
+                self.assertIn("build Build blocked", text(app))
                 app.selectbox(key="option_id").select("one")
                 app.text_input(key="actor").input("Developer")
                 app.text_area(key="rationale").input("Measured fit for the pilot")
                 app.button(key="resolve").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build: ready", text(app))
+                self.assertIn("Build", text(app))
+                self.assertIn("ready", text(app))
                 self.assertIn("Developer", text(app))
                 self.assertIn("Measured fit for the pilot", text(app))
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
-                self.assertIn("build: ready", text(reloaded))
-                reloaded.selectbox(key="object_id").select("choice").run()
+                self.assertIn("ready", text(reloaded))
                 self.assertIn("Measured fit for the pilot", text(reloaded))
                 self.assertIn("resolved", text(reloaded))
 
@@ -78,7 +113,7 @@ class UiIntegrationTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 rendered = text(app) + "\n" + "\n".join(str(item.value) for item in app.json)
-                self.assertIn("build: blocked", rendered)
+                self.assertIn("build Build blocked", rendered)
                 self.assertIn("Git evidence inspection is unavailable", rendered)
                 self.assertNotIn("fatal: not a git repository", rendered)
 
@@ -89,7 +124,7 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build: blocked", text(app))
+                self.assertIn("build Build blocked", text(app))
 
                 before, diagnostics = validate_current(root, "pilot")
                 self.assertEqual(diagnostics, [], diagnostics)
@@ -107,8 +142,6 @@ class UiIntegrationTests(unittest.TestCase):
                 })
                 self.assertTrue(external["valid"], external)
                 published = load_published(root, "pilot")
-                self.assertNotEqual(app.selectbox(key="object_id").value, "choice")
-                app.selectbox(key="object_id").select("choice").run()
                 app.selectbox(key="option_id").select("one")
                 app.text_input(key="actor").input("Developer")
                 app.text_area(key="rationale").input("Use the amended requirement")
@@ -120,10 +153,9 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertEqual(choice["lifecycle"], "open")
 
                 app.button(key="refresh").click().run(timeout=15)
-                app.selectbox(key="object_id").select("choice").run()
                 app.selectbox(key="option_id").select("one")
                 app.text_input(key="actor").input("Developer")
                 app.text_area(key="rationale").input("Use the amended requirement")
                 app.button(key="resolve").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("build: ready", text(app))
+                self.assertIn("ready", text(app))

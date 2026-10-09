@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import sys
 
+import pandas as pd
 import streamlit as st
 
 
@@ -81,14 +82,53 @@ def _markdown_escape(value: object) -> str:
     return re.sub(r"([\\`*_{}\[\]()#+.!|>~-])", r"\\\1", str(value))
 
 
-def _render_tasks(projection: dict) -> None:
-    st.subheader("Tasks")
+def _reference_label(reference: dict | None) -> str:
+    if not reference:
+        return ""
+    return (str(reference.get("path", ""))
+            + (f"#{reference['id']}" if reference.get("id") is not None else "")
+            + (f"::{reference['symbol']}" if reference.get("symbol") is not None else ""))
+
+
+def _selected_table_row(title: str, rows: list[dict], *, columns: list[str], context: str,
+                        empty_message: str) -> dict | None:
+    st.subheader(title)
+    if not rows:
+        st.info(empty_message)
+        return None
+    frame = pd.DataFrame([{column: row.get(column, "") for column in columns} for row in rows])
+    key = f"table:{title}:{context}"
+    preferred = next((index for index, row in enumerate(rows) if row.get("_preferred")), 0)
+    event = st.dataframe(frame, column_order=columns, hide_index=True, key=key, row_height=36,
+                         on_select="rerun", selection_mode="single-row",
+                         selection_default={"selection": {"rows": [preferred]}})
+    selected = event.selection.rows
+    index = selected[0] if selected else preferred
+    return rows[index]
+
+
+def _render_tasks(projection: dict, nodes: dict[str, dict], context: str) -> None:
     tasks = projection.get("tasks", [])
-    if not tasks:
-        st.text("No tasks in this snapshot.")
-    for task in tasks:
-        # Admitted IDs/statuses are constrained by the Engineering Model schema.
-        st.markdown(f"{task['id']}: {task['status']}")
+    rows = [{"_id": task["id"], "ID": task["id"],
+             "Title": nodes.get(task["id"], {}).get("title", ""),
+             "Status": task["status"], "Lifecycle": task["lifecycle"],
+             "Blockers": len(task["blockers"])} for task in tasks]
+    selected = _selected_table_row("Tasks", rows,
+                                   columns=["ID", "Title", "Status", "Lifecycle", "Blockers"],
+                                   context=context, empty_message="No tasks in this snapshot.")
+    if selected:
+        task = next(item for item in tasks if item["id"] == selected["_id"])
+        st.subheader(f"Task details · {task['id']}")
+        st.caption(f"Status: {task['status']}")
+        description = nodes.get(task["id"], {}).get("description")
+        if description:
+            st.write(description)
+        if task["blockers"]:
+            st.dataframe(pd.DataFrame([{"ID": item["id"], "Type": item["type"],
+                                        "Lifecycle": item["lifecycle"], "Reason": item["reason"]}
+                                       for item in task["blockers"]]), hide_index=True)
+        else:
+            st.caption("No unresolved prerequisites.")
 
 
 def _render_node(node: dict) -> None:
@@ -109,52 +149,134 @@ def _render_node(node: dict) -> None:
         st.caption(_markdown_escape(history_text))
 
 
-def _render_scenarios(projection: dict) -> None:
-    st.subheader("Canonical scenarios and planned tests")
+def _render_objects(nodes: dict[str, dict], context: str) -> dict | None:
+    rows = [{"_id": node_id, "ID": node_id, "Type": node["type"],
+             "Title": node.get("title", ""), "Lifecycle": node["lifecycle"],
+             "Reference": _reference_label(node.get("reference")),
+             "_preferred": node["type"] == "decision" and
+             (node["lifecycle"] == "open", bool(node.get("history")))}
+            for node_id, node in sorted(nodes.items())]
+    preferred = next((row["_id"] for row in rows if row["Type"] == "decision" and
+                      row["Lifecycle"] == "open"), None)
+    if preferred is None:
+        preferred = next((row["_id"] for row in rows if row["Type"] == "decision"), None)
+    for row in rows:
+        row["_preferred"] = row["_id"] == preferred
+    selected = _selected_table_row("Engineering objects", rows,
+                                   columns=["ID", "Type", "Title", "Lifecycle", "Reference"],
+                                   context=context, empty_message="No engineering objects in this snapshot.")
+    if selected is None:
+        return None
+    node = nodes[selected["_id"]]
+    _render_node(node)
+    return node
+
+
+def _render_nested(value: object, label: str) -> None:
+    """Show nested evidence in labeled fields and tables instead of an expanded JSON blob."""
+    if isinstance(value, dict):
+        simple = {key: item for key, item in value.items() if not isinstance(item, (dict, list))}
+        if simple:
+            st.dataframe(pd.DataFrame([{"Field": key, "Value": str(item)}
+                                       for key, item in simple.items()]), hide_index=True)
+        for key, item in value.items():
+            if isinstance(item, (dict, list)) and item:
+                if isinstance(item, list) and all(not isinstance(entry, (dict, list)) for entry in item):
+                    st.markdown(f"**{key.replace('_', ' ').title()}**")
+                    if key == "errors":
+                        for entry in item:
+                            st.error(str(entry))
+                    else:
+                        _render_nested(item, key)
+                    continue
+                with st.expander(f"{key.replace('_', ' ').title()} · {len(item)}", expanded=False):
+                    _render_nested(item, key)
+    elif isinstance(value, list):
+        if all(not isinstance(item, (dict, list)) for item in value):
+            st.dataframe(pd.DataFrame([{"Value": str(item)} for item in value]), hide_index=True)
+        else:
+            for index, item in enumerate(value):
+                with st.expander(f"{label} {index + 1}", expanded=True):
+                    _render_nested(item, label)
+
+
+def _render_scenarios(projection: dict, context: str) -> None:
     scenarios = projection.get("scenarios", [])
-    if not scenarios:
-        st.text("No canonical scenarios are linked in this snapshot.")
-    for scenario in scenarios:
-        st.markdown(f"**{scenario['id']}**")
-        st.text(scenario.get("title", ""))
-        ref = scenario.get("reference", {})
-        st.text(f"Reference: {ref.get('path', '')}"
-                + (f"#{ref['id']}" if ref.get("id") is not None else "")
-                + (f"::{ref['symbol']}" if ref.get("symbol") is not None else ""))
-        for field in ("given", "when", "then"):
-            if field not in scenario:
-                continue
+    rows = [{"_id": item["id"], "ID": item["id"], "Title": item.get("title", ""),
+             "Reference": _reference_label(item.get("reference")),
+             "Canonical": item.get("canonical_status", "available"),
+             "Planned tests": len(item.get("tests", []))} for item in scenarios]
+    selected = _selected_table_row("Scenarios and planned tests", rows,
+                                   columns=["ID", "Title", "Reference", "Canonical", "Planned tests"],
+                                   context=context,
+                                   empty_message="No canonical scenarios are linked in this snapshot.")
+    if selected is None:
+        return
+    scenario = next(item for item in scenarios if item["id"] == selected["_id"])
+    st.subheader(f"Scenario details · {scenario['id']}")
+    st.write(scenario.get("title", ""))
+    if scenario.get("canonical_status") == "unavailable":
+        st.warning("Canonical scenario details are unavailable in the captured snapshot.")
+    for field in ("given", "when", "then"):
+        if field in scenario:
+            st.markdown(f"**{field.title()}**")
             value = scenario[field]
-            values = value if isinstance(value, list) else [value]
-            for entry in values:
-                st.text(f"{field}: {entry}")
-        if scenario.get("canonical_status") == "unavailable":
-            st.text("Canonical scenario details are unavailable in the captured snapshot.")
-        for case in scenario.get("tests", []):
-            st.text(f"Test node: {case.get('node_id', '')}")
-            st.text(f"Test reference: {case.get('reference', {}).get('path', '')}"
-                    + (f"#{case['reference']['id']}" if case.get("reference", {}).get("id") is not None else "")
-                    + (f"::{case['reference']['symbol']}" if case.get("reference", {}).get("symbol") is not None else ""))
-            if case.get("case_id"):
-                st.text(f"Case: {case['case_id']} via {case.get('runner_id', '')} ({case.get('type', '')})")
-            for assertion in case.get("expected_assertions", []):
-                st.text(f"Planned assertions for {assertion.get('criterion_id', '')}:")
-                for check in assertion.get("checks", []):
-                    st.text(f"- {check}")
+            for entry in value if isinstance(value, list) else [value]:
+                st.write(entry)
+    cases = scenario.get("tests", [])
+    if cases:
+        st.markdown("**Planned tests**")
+        st.dataframe(pd.DataFrame([
+            {"Test node": case.get("node_id", ""), "Case": case.get("case_id", case.get("id", "")),
+             "Type": case.get("type", ""), "Runner": case.get("runner_id", ""),
+             "Reference": _reference_label(case.get("reference")),
+             "Availability": case.get("canonical_status", "available")}
+            for case in cases]), hide_index=True)
+        for case in cases:
+            with st.expander(f"Test detail · {case.get('node_id', '')}", expanded=True):
+                if case.get("canonical_status") == "unavailable":
+                    st.warning("Planned case details are unavailable in the captured snapshot.")
+                for assertion in case.get("expected_assertions", []):
+                    st.markdown(f"**Planned assertions for {assertion.get('criterion_id', '')}**")
+                    for check in assertion.get("checks", []):
+                        st.write(check)
+                if case.get("source_paths"):
+                    st.dataframe(pd.DataFrame([{"Source": path} for path in case["source_paths"]]),
+                                 hide_index=True)
+    if scenario.get("evidence"):
+        st.markdown("**Scenario evidence**")
+        _render_nested(scenario["evidence"], "Scenario evidence")
 
 
 def _render_evidence(projection: dict) -> None:
     st.subheader("Evidence adapter inspection")
     # This is the adapter's complete read-only result, not a UI-derived outcome.
     evidence = projection.get("evidence", {})
-    for work_id, result in sorted(evidence.get("by_workstream", {}).items()):
-        st.text("{}: {}{}; current completion: {}".format(
-            work_id, result.get("status", "unknown"),
+    results = evidence.get("by_workstream", {})
+    candidate = next((item.get("candidate_sha") for item in results.values()
+                      if item.get("candidate_sha")), "current")
+    rows = [{"_id": work_id, "Workstream": work_id,
+             "Status": result.get("status", "unknown"),
+             "Candidate SHA": result.get("candidate_sha", ""),
+             "Current SHA": result.get("current_sha", ""),
+             "Historical": bool(result.get("historical")),
+             "Current completion": bool(result.get("current_completion"))}
+            for work_id, result in sorted(results.items())]
+    selected = _selected_table_row("Evidence", rows,
+                                   columns=["Workstream", "Status", "Candidate SHA", "Current SHA",
+                                            "Historical", "Current completion"],
+                                   context=projection["snapshot"]["digest"] + ":" + str(candidate),
+                                   empty_message="No evidence adapter results are available.")
+    if selected:
+        st.subheader(f"Evidence details · {selected['_id']}")
+        result = results[selected["_id"]]
+        st.caption("{} evidence{}; current completion: {}".format(
+            result.get("status", "unknown"),
             " (historical)" if result.get("historical") else "",
             "yes" if result.get("current_completion") else "no"))
-        for error in result.get("completion", {}).get("errors", []):
-            st.caption(str(error))
-    st.json(evidence, expanded=2)
+        _render_nested(result, "Evidence")
+    with st.expander("Raw evidence JSON", expanded=False):
+        st.json(evidence, expanded=False)
 
 
 def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view: dict) -> None:
@@ -234,18 +356,7 @@ if st.button("Refresh inputs", key="refresh"):
     st.rerun()
 
 projection = view["projection"]
-_render_tasks(projection)
 nodes = _node_map(projection)
-node_ids = sorted(nodes)
-if "object_id" not in st.session_state or st.session_state.object_id not in node_ids:
-    st.session_state.object_id = node_ids[0]
-object_id = st.selectbox("Engineering object", options=node_ids, key="object_id")
-selected_node = nodes[object_id]
-_render_node(selected_node)
-_render_decision(selected_node, view["editable"], root, work_id, view)
-
-_render_scenarios(projection)
-
 with st.form("evidence_candidate_inspection"):
     st.text_input("Evidence candidate", key="candidate_sha", placeholder="Empty means current checkout")
     inspect_candidate = st.form_submit_button("Inspect evidence candidate", key="inspect_candidate")
@@ -257,9 +368,18 @@ if inspect_candidate:
         )
         st.session_state[STATE_FEEDBACK] = []
     except (OSError, ValueError, KeyError, TypeError) as exc:
+        st.session_state[STATE_CANDIDATE] = None
         st.session_state[STATE_FEEDBACK] = [_diagnostic("EM007_EVIDENCE", "$candidate_sha", str(exc))]
 
 candidate_projection = st.session_state.get(STATE_CANDIDATE)
+candidate_sha = (st.session_state.candidate_sha.strip()
+                 if candidate_projection is not None else "current")
+table_context = f"{work_id}:{view['snapshot']['digest']}:{candidate_sha}"
+_render_tasks(projection, nodes, table_context)
+selected_node = _render_objects(nodes, table_context)
+_render_decision(selected_node, view["editable"], root, work_id, view)
+
+_render_scenarios(projection, table_context)
 _render_evidence(candidate_projection or projection)
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:

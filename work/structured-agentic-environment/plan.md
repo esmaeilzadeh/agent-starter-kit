@@ -14,8 +14,8 @@ Targeted validation passed: `bash _ask/tests/test-check-workstream-confirmation.
 
 ### Remaining sequence after the model switch
 
-1. Recheck the clean checkout and current confirmation. Amend the existing spec/test artifacts for tabular presentation under EM-005/EM-006; retain canonical scenario/evidence authority. Challenge the bounded contract and selection/reset cases before implementation. Preserve evidence history and disclose test chronology gaps.
-2. Add meaningful table/detail AppTest and browser cases before the UI changes. Cover empty collections, long/nested values, missing/historical evidence, workstream changes, refresh and evidence-candidate replacement. Use disposable fixtures; do not mutate committed pilot data.
+1. Recheck the clean checkout and current confirmation. EM-005/EM-006 already cover the workbench and selection safety; keep their accepted test-plan contract intact and add table/row-selection assertions to the already-mapped UI tests. Preserve canonical scenario/evidence authority and evidence history; disclose test chronology gaps.
+2. Maintain the table/detail AppTest and browser cases added before the UI changes. Cover empty collections, long/nested values, missing/historical evidence, workstream changes, refresh and evidence-candidate replacement. Use disposable fixtures; do not mutate committed pilot data.
 3. Replace text-list and JSON-first inspection with native read-only `st.dataframe` sections, readable column headings and hidden indexes. No editable-grid widgets, framework replacement, CSS, domain/schema changes or training-run viewer changes.
 
    | Section | Table columns | Selected-item details |

@@ -12,7 +12,7 @@ import unittest
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 from engineering_fixture import evidence_workbench, workbench_model
 
@@ -24,7 +24,45 @@ from engineering_model.admission import load_published, validate_current
 
 class WorkbenchBrowserJourney(unittest.TestCase):
     @staticmethod
+    def _table_below(page, heading):
+        heading_box = page.get_by_text(heading, exact=True).bounding_box()
+        tables = page.locator('[data-testid="stDataFrame"]')
+        candidates = []
+        for index in range(tables.count()):
+            box = tables.nth(index).bounding_box()
+            if box and heading_box and box["y"] >= heading_box["y"]:
+                candidates.append((box["y"], tables.nth(index)))
+        if not candidates:
+            raise AssertionError(f"no rendered table follows {heading}")
+        return min(candidates, key=lambda candidate: candidate[0])[1]
+
+    @staticmethod
+    def _click_row(page, table, row_index):
+        table.scroll_into_view_if_needed()
+        canvas = table.locator("canvas").first.bounding_box()
+        if not canvas:
+            raise AssertionError("table has no visible selection surface")
+        page.mouse.click(canvas["x"] + 16, canvas["y"] + 54 + row_index * 36)
+
+    @staticmethod
+    def select_object(page, value):
+        row_index = ["build", "case", "choice", "purpose", "requirement", "scenario"].index(value)
+        table = WorkbenchBrowserJourney._table_below(page, "Engineering objects")
+        WorkbenchBrowserJourney._click_row(page, table, row_index)
+
+    @staticmethod
+    def select_task_status(page, status):
+        page.get_by_text(f"Status: {status}", exact=True).wait_for()
+
+    @staticmethod
+    def select_evidence_status(page, status):
+        page.get_by_text(f"{status} evidence", exact=False).wait_for()
+
+    @staticmethod
     def choose(page, label, value):
+        if label == "Engineering object":
+            WorkbenchBrowserJourney.select_object(page, value)
+            return
         control = page.get_by_role("combobox", name=label)
         control.click()
         control.fill(value)
@@ -73,20 +111,23 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         first_context = browser.new_context()
                         first = first_context.new_page()
                         first.goto(url, wait_until="domcontentloaded")
-                        first.get_by_text("build: blocked", exact=True).wait_for()
-                        first.get_by_text("w: unavailable; current completion: no", exact=True).wait_for()
+                        self.select_task_status(first, "blocked")
+                        self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(current_sha)
                         first.get_by_role("button", name="Inspect evidence candidate").click()
-                        first.get_by_text("w: unavailable; current completion: no", exact=True).wait_for()
+                        self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(historical_sha)
                         first.get_by_role("button", name="Inspect evidence candidate").click()
-                        first.get_by_text(
-                            "w: historical (historical); current completion: no", exact=True
-                        ).wait_for()
+                        self.select_evidence_status(first, "historical")
                         second_context = browser.new_context()
                         second = second_context.new_page()
                         second.goto(url, wait_until="domcontentloaded")
-                        second.get_by_text("build: blocked", exact=True).wait_for()
+                        self.select_task_status(second, "blocked")
+                        self.select_object(first, "build")
+                        expect(first.get_by_role("button", name="Resolve decision")).to_have_count(0)
+                        self.select_object(first, "choice")
+                        expect(first.get_by_role("button", name="Resolve decision")).to_be_visible()
+                        first.screenshot(path="/tmp/structured-agentic-workbench.png", full_page=True)
 
                         before, diagnostics = validate_current(root, "w")
                         self.assertEqual(diagnostics, [], diagnostics)
@@ -122,18 +163,17 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         first.get_by_label("Actor").fill("Browser developer")
                         first.get_by_label("Rationale").fill("Use the amended requirement")
                         first.get_by_role("button", name="Resolve decision").click()
-                        first.get_by_text("build: ready", exact=True).wait_for()
+                        self.select_task_status(first, "ready")
 
                         fresh_context = browser.new_context()
                         fresh = fresh_context.new_page()
                         fresh.goto(url, wait_until="domcontentloaded")
-                        fresh.get_by_text("build: ready", exact=True).wait_for()
-                        self.choose(fresh, "Engineering object", "choice")
+                        self.select_task_status(fresh, "ready")
                         fresh.get_by_text(
                             "resolved: Browser developer — Use the amended requirement", exact=True
                         ).first.wait_for()
                         second.get_by_role("button", name="Refresh inputs").click()
-                        second.get_by_text("build: ready", exact=True).wait_for()
+                        self.select_task_status(second, "ready")
                     finally:
                         browser.close()
             finally:
@@ -180,7 +220,8 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     try:
                         page = browser.new_page()
                         page.goto(url, wait_until="domcontentloaded")
-                        page.get_by_text("pilot: unavailable; current completion: no", exact=True).wait_for()
+                        self.select_evidence_status(page, "unavailable")
+                        page.get_by_text("Completion · 10", exact=True).click()
                         body = page.locator("body").inner_text()
                         self.assertIn("Git evidence inspection is unavailable", body)
                         self.assertNotIn("fatal: not a git repository", body)
