@@ -63,7 +63,7 @@ def _invalidate(document, roots, timestamp, actor, include_roots=False):
             node["lifecycle"] = "open"
 
 
-def apply_batch(document, commands, *, timestamp=None):
+def apply_batch(document, commands, *, timestamp=None, changed_references=()):
     """Apply an isolated semantic proposal, with one revision for the whole batch."""
     candidate = deepcopy(document)
     effects = []
@@ -158,6 +158,15 @@ def apply_batch(document, commands, *, timestamp=None):
                 raise ValueError(f"unsupported command: {op}")
             effects.append({"op": op, "id": identity})
             _invalidate(candidate, {identity}, timestamp, command.get("actor", "document-change"))
+        changed_references = set(changed_references)
+        if changed_references:
+            affected_roots = {
+                node["id"] for node in candidate["nodes"]
+                if isinstance(node.get("reference"), dict)
+                and node["reference"].get("path") in changed_references
+            }
+            if affected_roots:
+                _invalidate(candidate, affected_roots, timestamp, "document-change", include_roots=True)
         candidate["revision"] += 1
         return {"valid": True, "model": candidate, "diagnostics": [], "effects": effects, "tasks": task_states(candidate)}
     except (ValueError, KeyError, TypeError) as exc:

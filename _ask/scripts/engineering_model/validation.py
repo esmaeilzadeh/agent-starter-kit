@@ -13,7 +13,7 @@ from pathlib import Path, PureWindowsPath
 
 
 SCHEMA = "ask-engineering-model/v1"
-RULES_VERSION = "ask-engineering-validator-rules/v4"
+RULES_VERSION = "ask-engineering-validator-rules/v5"
 NODE_TYPES = {
     "intent", "requirement", "feature", "story", "scenario", "decision",
     "assumption", "task", "implementation", "test", "test_run", "risk",
@@ -276,7 +276,56 @@ def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
     history = node.get("history", [])
     if not isinstance(history, list):
         errors.append(_diagnostic("EM001_DECISION_HISTORY", f"{path}.history", "history must be an array", node_id))
+    else:
+        allowed_events = {"resolved", "reopened", "retired", "options_revised", "invalidated"}
+        required = {"event", "actor", "rationale", "timestamp", "options", "resolution"}
+        for index, entry in enumerate(history):
+            entry_path = f"{path}.history[{index}]"
+            if not isinstance(entry, dict) or set(entry) != required:
+                errors.append(_diagnostic("EM001_DECISION_HISTORY", entry_path,
+                                          "history entry has an invalid shape", node_id))
+                continue
+            if (entry["event"] not in allowed_events
+                    or not isinstance(entry["actor"], str) or not entry["actor"].strip()
+                    or not isinstance(entry["rationale"], str) or not entry["rationale"].strip()
+                    or not _utc_timestamp(entry["timestamp"])):
+                errors.append(_diagnostic("EM001_DECISION_HISTORY", entry_path,
+                                          "history needs a known event, attribution, rationale, and UTC timestamp", node_id))
+            historical_options = entry["options"]
+            if (not isinstance(historical_options, list)
+                    or any(not isinstance(option, dict) or set(option) != {"id", "label"}
+                           or not isinstance(option.get("id"), str) or not option["id"]
+                           or not isinstance(option.get("label"), str) or not option["label"].strip()
+                           for option in historical_options)
+                    or len({option["id"] for option in historical_options if isinstance(option, dict)
+                            and isinstance(option.get("id"), str)}) != len(historical_options)
+                    or len({option["label"] for option in historical_options if isinstance(option, dict)
+                            and isinstance(option.get("label"), str)}) != len(historical_options)):
+                errors.append(_diagnostic("EM001_DECISION_HISTORY", f"{entry_path}.options",
+                                          "historical options must have unique nonempty IDs and labels", node_id))
+            resolution = entry["resolution"]
+            if resolution != {}:
+                if (not isinstance(resolution, dict)
+                        or set(resolution) != {"option_id", "actor", "rationale", "timestamp"}
+                        or resolution.get("option_id") not in {
+                            option.get("id") for option in historical_options
+                            if isinstance(option, dict)}
+                        or not isinstance(resolution.get("actor"), str) or not resolution["actor"].strip()
+                        or not isinstance(resolution.get("rationale"), str) or not resolution["rationale"].strip()
+                        or not _utc_timestamp(resolution.get("timestamp"))):
+                    errors.append(_diagnostic("EM001_DECISION_HISTORY", f"{entry_path}.resolution",
+                                              "historical resolution must select a retained option with attribution", node_id))
     return errors
+
+
+def _utc_timestamp(value) -> bool:
+    if not isinstance(value, str) or not value.strip():
+        return False
+    try:
+        instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return instant.tzinfo is not None and instant.utcoffset() == timezone.utc.utcoffset(instant)
+    except ValueError:
+        return False
 
 
 def _validate_reference(node: dict, node_path: str, node_id: str, node_type: str,
@@ -296,6 +345,14 @@ def _validate_reference(node: dict, node_path: str, node_id: str, node_type: str
         errors.append(_diagnostic("EM001_REFERENCE", f"{node_path}.reference", "reference has an invalid shape", node_id))
         return
     raw_path = reference.get("path")
+    if node_type == "implementation" and "symbol" in reference:
+        symbol = reference["symbol"]
+        if not isinstance(symbol, str) or not symbol.strip():
+            errors.append(_diagnostic("EM001_REFERENCE", f"{node_path}.reference.symbol",
+                                      "implementation symbol must be nonempty text", node_id))
+    if node_type in {"test_run", "evidence"} and isinstance(raw_path, str) and not raw_path.endswith(".json"):
+        errors.append(_diagnostic("EM001_REFERENCE", f"{node_path}.reference.path",
+                                  "test-run and evidence references must name JSON records", node_id))
     if (not isinstance(raw_path, str) or not raw_path or "\\" in raw_path
             or Path(raw_path).is_absolute() or PureWindowsPath(raw_path).drive
             or ".." in Path(raw_path).parts):
@@ -322,6 +379,14 @@ def _validate_reference(node: dict, node_path: str, node_id: str, node_type: str
     if not resolved.is_relative_to(repository):
         errors.append(_diagnostic("EM001_REFERENCE_PATH", f"{node_path}.reference.path", "reference path escapes the repository", node_id))
         return
+    if node_type == "implementation":
+        if reference_bytes is not None:
+            if reference_bytes.get(raw_path) is None:
+                errors.append(_diagnostic("EM001_REFERENCE_MISSING", f"{node_path}.reference.path",
+                                          "implementation source is unavailable", node_id))
+        elif not resolved.is_file():
+            errors.append(_diagnostic("EM001_REFERENCE_MISSING", f"{node_path}.reference.path",
+                                      "implementation source is unavailable", node_id))
     if node_type in {"requirement", "scenario"} and "id" in reference:
         _check_id(resolved, reference["id"], "criteria", node_path, node_id, errors,
                   captured=reference_bytes, relative=raw_path)

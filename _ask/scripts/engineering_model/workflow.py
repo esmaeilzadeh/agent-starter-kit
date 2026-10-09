@@ -84,9 +84,10 @@ def _checked(root, work_id, base, base_publication, expected=None):
         raise Refused('EM007_INPUT_CHANGED', 'workflow publication is no longer available')
     if _canonical(current) != _canonical(published):
         raise Refused('EM007_INPUT_CHANGED', 'canonical definitions changed since the last guarded publication')
-    if _canonical(current) != _canonical(base):
+    publication = publications.publication_identity(root, work_id)
+    if publication != base_publication:
         if not publications.guarded_publication_chain(
-                root, work_id, base.identity['digest'], current.identity['digest'],
+                root, work_id, base.identity['digest'], published.identity['digest'],
                 base_publication=base_publication):
             raise Refused('EM007_INPUT_CHANGED', 'canonical definitions changed during workflow without a verified guarded edit chain')
     return current

@@ -5,6 +5,8 @@ A durable journal permits forward recovery without executing an action twice.
 Conflicting external writes are preserved and block admission.
 """
 import base64
+import ctypes
+import errno
 import hashlib
 import json
 import os
@@ -35,7 +37,22 @@ def _signature(status, raw):
     return {"status": status, "sha256": hashlib.sha256(raw).hexdigest() if raw is not None else None}
 
 
-def _write_target(root, relative, raw):
+_UNSET = object()
+_AT_FDCWD = -100
+_RENAME_NOREPLACE = 1
+_RENAME_EXCHANGE = 2
+
+
+def _renameat2(source, target, flags):
+    renameat2 = ctypes.CDLL(None, use_errno=True).renameat2
+    renameat2.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int, ctypes.c_char_p, ctypes.c_uint]
+    renameat2.restype = ctypes.c_int
+    if renameat2(_AT_FDCWD, os.fsencode(source), _AT_FDCWD, os.fsencode(target), flags) != 0:
+        code = ctypes.get_errno()
+        raise OSError(code, os.strerror(code), str(target))
+
+
+def _write_target(root, relative, raw, *, expected=_UNSET):
     if not safe_relative(relative):
         raise Refused("EM007_UNSAFE_CHANGE", "unsafe change path", relative)
     path = root / relative
@@ -44,18 +61,53 @@ def _write_target(root, relative, raw):
             break
         if parent.is_symlink():
             raise Refused("EM007_UNSAFE_CHANGE", "managed changes cannot replace symlink paths", relative)
-    if raw is None:
-        path.unlink(missing_ok=True)
-        if path.parent.exists():
-            _sync_directory(path.parent)
-        return
     path.parent.mkdir(parents=True, exist_ok=True)
+    if expected is _UNSET:
+        status, expected = read_input(root, relative)
+        if status not in {"present", "missing"}:
+            raise Refused("EM007_RECOVERY_CONFLICT", "change target cannot be safely compared", relative)
+    accepted = expected if isinstance(expected, tuple) else (expected,)
+    replacement = raw if raw is not None else b""
+    if path.exists() and (path.is_symlink() or not path.is_file()):
+        raise Refused("EM007_UNSAFE_CHANGE", "managed target must be a regular file", relative)
     descriptor, staged = tempfile.mkstemp(prefix=".ask-document-", dir=path.parent)
     with os.fdopen(descriptor, "wb") as stream:
-        stream.write(raw)
+        stream.write(replacement)
         stream.flush()
         os.fsync(stream.fileno())
-    os.replace(staged, path)
+    if not path.exists():
+        if raw is None:
+            Path(staged).unlink(missing_ok=True)
+            return
+        if None not in accepted:
+            Path(staged).unlink(missing_ok=True)
+            raise Refused("EM007_RECOVERY_CONFLICT", "change target disappeared before publication", relative)
+        try:
+            _renameat2(staged, path, _RENAME_NOREPLACE)
+        except FileExistsError as exc:
+            Path(staged).unlink(missing_ok=True)
+            raise Refused("EM007_RECOVERY_CONFLICT", "external save appeared before publication", relative) from exc
+    else:
+        try:
+            _renameat2(staged, path, _RENAME_EXCHANGE)
+        except OSError as exc:
+            Path(staged).unlink(missing_ok=True)
+            raise Refused("EM007_RECOVERY_CONFLICT", "change target changed or cannot be atomically compared", relative) from exc
+        displaced = Path(staged).read_bytes()
+        if displaced not in accepted:
+            try:
+                if path.read_bytes() == replacement:
+                    _renameat2(staged, path, _RENAME_EXCHANGE)
+                    Path(staged).unlink(missing_ok=True)
+                else:
+                    raise OSError("destination changed again during conflict recovery")
+            except OSError as exc:
+                raise Refused("EM007_RECOVERY_CONFLICT",
+                              f"external save preserved; displaced bytes retained at {staged}: {exc}", relative) from exc
+            raise Refused("EM007_RECOVERY_CONFLICT", "external save raced with managed publication", relative)
+        if raw is None:
+            path.unlink()
+        Path(staged).unlink(missing_ok=True)
     _sync_directory(path.parent)
 
 
@@ -85,7 +137,7 @@ def _rollback(root, journal):
         status, current = read_input(root, path)
         before, after = _decoded(record["before"]), _decoded(record["after"])
         if current == after and status in ("present", "missing"):
-            _write_target(root, path, before)
+            _write_target(root, path, before, expected=after)
         elif current != before or status not in ("present", "missing"):
             conflicts.append(path)
     return conflicts
@@ -118,7 +170,9 @@ def recover_locked(root, work_id, state, *, validated=None):
             if status not in ("present", "missing") or raw not in (before, after):
                 raise Refused("EM007_RECOVERY_CONFLICT", "external save conflicts with interrupted action", relative)
         for relative, record in journal["changes"].items():
-            _write_target(root, relative, _decoded(record["after"]))
+            before, after = _decoded(record["before"]), _decoded(record["after"])
+            _write_target(root, relative, _decoded(record["after"]),
+                          expected=(before, after))
         if validated is None:
             candidate, errors = validate_current(root, work_id, allow_pending=True)
         else:
@@ -231,7 +285,11 @@ def edit(root, work_id, expected, proposal):
             if text is not None and not isinstance(text, str):
                 raise Refused("EM002_ACTION", "file payload must be text or null", path)
             changes[path] = text.encode("utf-8") if text is not None else None
-        result = apply_batch(snapshot.document, commands)
+        changed_references = {
+            path for path, payload in changes.items()
+            if snapshot.files.get(path) != payload
+        }
+        result = apply_batch(snapshot.document, commands, changed_references=changed_references)
         if not result["valid"]:
             diagnostic = result["diagnostics"][0]
             raise Refused(diagnostic["code"], diagnostic["message"], diagnostic["path"])
