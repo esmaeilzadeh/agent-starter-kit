@@ -22,9 +22,12 @@ def _init_repo(root: Path, branch: str = "agent/pilot") -> None:
 
 
 def _add_story(model):
-    model["nodes"].append({"id": "story", "type": "story", "title": "Pilot story",
-                           "lifecycle": "active"})
-    model["edges"].append({"type": "contains", "source": "purpose", "target": "story"})
+    model["nodes"].extend([
+        {"id": "epic", "type": "feature", "title": "Pilot epic", "lifecycle": "active"},
+        {"id": "story", "type": "story", "title": "Pilot story", "lifecycle": "active"},
+    ])
+    model["edges"].append({"type": "contains", "source": "purpose", "target": "epic"})
+    model["edges"].append({"type": "contains", "source": "epic", "target": "story"})
     model["edges"] = [edge for edge in model["edges"]
                       if not (edge.get("type") == "contains" and edge.get("target") == "scenario")]
     model["edges"].append({"type": "contains", "source": "story", "target": "scenario"})
@@ -90,6 +93,7 @@ class WorkbenchTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
+                self.assertIsNotNone(app.session_state.get("_engineering_displayed_view"))
                 digest = app.session_state["_engineering_displayed_view"]["snapshot"]["digest"]
                 self.assertEqual(app.session_state.get("_engineering_form_identity"),
                                  {"work_id": "pilot", "digest": digest, "editable": True})
