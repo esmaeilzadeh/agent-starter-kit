@@ -107,6 +107,31 @@ edit(root, 'pilot', os.environ['EXPECTED'], proposal)
             self.assertEqual(load_published(root, "pilot").identity, recovered.identity)
             self.assertFalse((root / "work/pilot/traceability/model-state/pending.json").exists())
 
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            referenced_model(root)
+            base, errors = admit(root, "pilot")
+            self.assertEqual(errors, [], errors)
+            target = root / "specs/current/pilot.md"
+            external = b"# Editor save during publication\n"
+            fsync = os.fsync
+            injected = []
+
+            def editor_save_while_managed_temp_is_synced(descriptor):
+                staged = Path(os.readlink(f"/proc/self/fd/{descriptor}"))
+                if staged.name.startswith(".ask-document-") and not injected:
+                    target.write_bytes(external)
+                    injected.append(True)
+                return fsync(descriptor)
+
+            with patch("os.fsync", side_effect=editor_save_while_managed_temp_is_synced):
+                result = edit(root, "pilot", base.identity["digest"],
+                              {"files": {"specs/current/pilot.md": "# Managed edit\n"}})
+            self.assertFalse(result["valid"], result)
+            self.assertTrue(injected, "external save must interleave before atomic publication")
+            self.assertEqual(target.read_bytes(), external, "managed action must preserve the external save")
+            self.assertEqual(load_published(root, "pilot").identity, base.identity)
+
     def test_public_mutators_cannot_bypass_admission(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
