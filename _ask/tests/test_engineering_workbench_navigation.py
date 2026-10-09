@@ -88,7 +88,7 @@ def _run(root: Path):
 def _text(app) -> str:
     return "\n".join(str(item.value) for collection in (
         app.title, app.header, app.subheader, app.markdown, app.caption,
-        app.info, app.warning, app.error, app.success,
+        app.info, app.warning, app.error, app.success, app.text,
     ) for item in collection) + "\n" + "\n".join(str(item.label) for item in app.button)
 
 
@@ -100,6 +100,23 @@ class WorkbenchTests(unittest.TestCase):
             model, _ = workbench_model(root)
             other_model = copy.deepcopy(model)
             other_model["work_id"] = "archive"
+            other_spec = json.loads((root / "specs/current/pilot.json").read_text(encoding="utf-8"))
+            other_spec["work_id"] = "archive"
+            write_json(root, "specs/current/archive.json", other_spec)
+            for node in other_model["nodes"]:
+                reference = node.get("reference", {})
+                if reference.get("path") == "specs/current/pilot.json":
+                    reference["path"] = "specs/current/archive.json"
+                elif reference.get("path") == "work/pilot/test-plan.json":
+                    reference["path"] = "work/archive/test-plan.json"
+            other_plan = json.loads((root / "work/pilot/test-plan.json").read_text(encoding="utf-8"))
+            other_plan["work_id"] = "archive"
+            other_plan["spec_digest"] = "0" * 64
+            write_json(root, "work/archive/test-plan.json", other_plan)
+            (root / "work/archive/inner-loop").mkdir(parents=True)
+            (root / "work/archive/inner-loop/tasks.yaml").write_text(
+                (root / "work/pilot/inner-loop/tasks.yaml").read_text(encoding="utf-8").replace(
+                    "work_id: pilot", "work_id: archive"), encoding="utf-8")
             write_json(root, "work/archive/engineering-model.json", other_model)
             _commit(root, "Create archived baseline")
             _start_agent_branch(root)
@@ -176,7 +193,11 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.selectbox(key="work_id").value, "archive")
                 self.assertEqual(app.session_state["_engineering_route"], "purpose")
-                self.assertIn("Read-only source", _text(app))
+                archived_view = _text(app)
+                if "EM001_CANONICAL_DEFINITION" not in archived_view:
+                    failures.append("committed snapshots must expose canonical spec-to-plan admission errors")
+                if "Canonical behavior" in archived_view:
+                    failures.append("a rejected committed snapshot must not render its normal hierarchy")
                 self.assertEqual(subprocess.check_output(
                     ["git", "-C", str(root), "branch", "--show-current"], text=True).strip(),
                     "agent/pilot")
