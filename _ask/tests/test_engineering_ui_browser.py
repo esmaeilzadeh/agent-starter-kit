@@ -24,20 +24,33 @@ from engineering_model.admission import load_published, validate_current
 
 class WorkbenchBrowserJourney(unittest.TestCase):
     @staticmethod
+    def select_section(page, section):
+        option = page.get_by_role("radio", name=section)
+        if option.get_attribute("aria-checked") != "true":
+            option.click()
+        expect(option).to_be_checked()
+
+    @staticmethod
     def _table_below(page, heading):
-        section_heading = page.get_by_text(heading, exact=True)
-        section_heading.wait_for()
+        section_heading = page.get_by_text(heading, exact=True).first
+        try:
+            section_heading.wait_for(timeout=7000)
+        except PlaywrightError as exc:
+            raise AssertionError(f"section {heading} not rendered: {page.locator('body').inner_text()}") from exc
         try:
             section_heading.scroll_into_view_if_needed()
         except PlaywrightError:
-            section_heading = page.get_by_text(heading, exact=True)
+            section_heading = page.get_by_text(heading, exact=True).first
             section_heading.wait_for()
             section_heading.scroll_into_view_if_needed()
         heading_box = section_heading.bounding_box()
         tables = page.locator('[data-testid="stDataFrame"]')
         candidates = []
         for index in range(tables.count()):
-            box = tables.nth(index).bounding_box()
+            try:
+                box = tables.nth(index).bounding_box(timeout=1000)
+            except PlaywrightError:
+                continue
             if box and heading_box and box["y"] >= heading_box["y"]:
                 candidates.append((box["y"], tables.nth(index)))
         if not candidates:
@@ -55,29 +68,39 @@ class WorkbenchBrowserJourney(unittest.TestCase):
     @staticmethod
     def select_object(page, value):
         row_index = ["build", "case", "choice", "purpose", "requirement", "scenario"].index(value)
+        WorkbenchBrowserJourney.select_section(page, "Objects")
         table = WorkbenchBrowserJourney._table_below(page, "Engineering objects")
         WorkbenchBrowserJourney._click_row(page, table, row_index)
 
     @staticmethod
     def select_task_status(page, status):
-        page.get_by_text(f"Status: {status}", exact=True).wait_for()
+        try:
+            page.get_by_text(status.title(), exact=True).first.wait_for(timeout=7000)
+        except PlaywrightError as exc:
+            raise AssertionError(f"task status {status} not visible: {page.locator('body').inner_text()}") from exc
 
     @staticmethod
     def select_task(page, row_index):
+        WorkbenchBrowserJourney.select_section(page, "Overview")
         table = WorkbenchBrowserJourney._table_below(page, "Tasks")
         WorkbenchBrowserJourney._click_row(page, table, row_index)
 
     @staticmethod
     def select_scenario(page, row_index):
+        WorkbenchBrowserJourney.select_section(page, "Scenarios")
         table = WorkbenchBrowserJourney._table_below(page, "Scenarios and planned tests")
         WorkbenchBrowserJourney._click_row(page, table, row_index)
 
     @staticmethod
     def select_evidence_status(page, status):
-        page.get_by_text(f"{status} evidence", exact=False).wait_for()
+        try:
+            page.get_by_text(f"{status} evidence", exact=False).wait_for(timeout=5000)
+        except PlaywrightError as exc:
+            raise AssertionError(f"{status} evidence detail not visible: {page.locator('body').inner_text()}") from exc
 
     @staticmethod
     def select_evidence(page, row_index):
+        WorkbenchBrowserJourney.select_section(page, "Evidence")
         page.locator('[data-testid="stDataFrame"]').first.wait_for()
         table = WorkbenchBrowserJourney._table_below(page, "Evidence")
         WorkbenchBrowserJourney._click_row(page, table, row_index)
@@ -137,28 +160,28 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         first.goto(url, wait_until="domcontentloaded")
                         self.select_task_status(first, "blocked")
                         first.locator('[data-testid="stDataFrame"]').first.wait_for()
-                        expect(first.get_by_text("Task details · build", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="Build", exact=True)).to_be_visible()
                         self.select_task(first, 1)
-                        expect(first.get_by_text("Task details · review-build", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="Review build", exact=True)).to_be_visible()
                         self.select_task(first, 0)
-                        expect(first.get_by_text("Task details · build", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="Build", exact=True)).to_be_visible()
                         self.select_scenario(first, 0)
-                        expect(first.get_by_text("Scenario details · scenario", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="Uppercase behavior", exact=True)).to_be_visible()
                         self.select_scenario(first, 1)
-                        expect(first.get_by_text("Scenario details · scenario-other", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="Second canonical behavior", exact=True)).to_be_visible()
                         self.select_evidence(first, 0)
-                        expect(first.get_by_text("Evidence details · other", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="other", exact=True)).to_be_visible()
                         self.select_evidence(first, 1)
-                        expect(first.get_by_text("Evidence details · w", exact=True)).to_be_visible()
+                        expect(first.get_by_role("heading", name="w", exact=True)).to_be_visible()
                         self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(current_sha)
-                        first.get_by_role("button", name="Inspect evidence candidate").click()
-                        self.select_evidence(first, 1)
+                        first.get_by_role("button", name="Inspect candidate").click()
+                        first.get_by_text(f"Candidate revision: {current_sha}", exact=True).wait_for()
                         self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(historical_sha)
-                        first.get_by_role("button", name="Inspect evidence candidate").click()
-                        self.select_evidence(first, 1)
-                        self.select_evidence_status(first, "historical")
+                        first.get_by_role("button", name="Inspect candidate").click()
+                        first.get_by_text(f"Candidate revision: {historical_sha}", exact=True).wait_for()
+                        first.get_by_text("unavailable evidence (historical)", exact=False).wait_for()
                         second_context = browser.new_context()
                         second = second_context.new_page()
                         second.goto(url, wait_until="domcontentloaded")
@@ -198,17 +221,28 @@ class WorkbenchBrowserJourney(unittest.TestCase):
 
                         first.get_by_role("button", name="Refresh inputs").click()
                         first.get_by_text(f"Snapshot: {unchanged.identity['digest']}").wait_for()
+                        first.reload(wait_until="domcontentloaded")
+                        self.select_task_status(first, "blocked")
                         self.choose(first, "Engineering object", "choice")
+                        expect(first.get_by_role("button", name="Resolve decision")).to_be_visible()
                         self.choose(first, "Option", "one")
                         first.get_by_label("Actor").fill("Browser developer")
                         first.get_by_label("Rationale").fill("Use the amended requirement")
                         first.get_by_role("button", name="Resolve decision").click()
+                        expect(first.get_by_role("button", name="Resolve decision")).to_have_count(0)
+                        resolved = load_published(root, "w")
+                        choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
+                        self.assertEqual(choice["lifecycle"], "resolved")
+                        self.assertEqual(choice["history"][-1]["rationale"], "Use the amended requirement")
+                        self.select_section(first, "Overview")
                         self.select_task_status(first, "ready")
 
                         fresh_context = browser.new_context()
                         fresh = fresh_context.new_page()
                         fresh.goto(url, wait_until="domcontentloaded")
                         self.select_task_status(fresh, "ready")
+                        self.select_object(fresh, "choice")
+                        fresh.get_by_text("Decision history · 1", exact=True).click()
                         fresh.get_by_text(
                             "resolved: Browser developer — Use the amended requirement", exact=True
                         ).first.wait_for()
@@ -260,6 +294,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     try:
                         page = browser.new_page()
                         page.goto(url, wait_until="domcontentloaded")
+                        self.select_section(page, "Evidence")
                         self.select_evidence_status(page, "unavailable")
                         page.get_by_text("Completion · 10", exact=True).click()
                         body = page.locator("body").inner_text()

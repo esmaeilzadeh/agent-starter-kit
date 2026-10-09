@@ -24,6 +24,7 @@ STATE_VIEW = "_engineering_displayed_view"
 STATE_WORK = "_engineering_displayed_work_id"
 STATE_CANDIDATE = "_engineering_candidate_projection"
 STATE_FEEDBACK = "_engineering_feedback"
+STATE_EVIDENCE_PROJECTION = "_engineering_evidence_projection"
 
 
 def _model_root() -> Path:
@@ -58,7 +59,7 @@ def _capture_view(root: Path, work_id: str) -> dict:
         if snapshot is None:
             return {"snapshot": None, "projection": None, "captured": None,
                     "editable": False, "last_validated": False, "diagnostics": diagnostics}
-        return {"snapshot": snapshot.identity, "projection": project(snapshot, root),
+        return {"snapshot": snapshot.identity, "projection": project(snapshot, root, include_evidence=False),
                 "captured": snapshot, "editable": editable, "last_validated": last_validated,
                 "diagnostics": diagnostics}
     except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
@@ -116,25 +117,30 @@ def _render_tasks(projection: dict, nodes: dict[str, dict], context: str) -> Non
     selected = _selected_table_row("Tasks", rows,
                                    columns=["ID", "Title", "Status", "Lifecycle", "Blockers"],
                                    context=context, empty_message="No tasks in this snapshot.")
-    if selected:
-        task = next(item for item in tasks if item["id"] == selected["_id"])
-        st.subheader(f"Task details · {task['id']}")
-        st.caption(f"Status: {task['status']}")
-        description = nodes.get(task["id"], {}).get("description")
-        if description:
-            st.write(description)
-        if task["blockers"]:
-            st.dataframe(pd.DataFrame([{"ID": item["id"], "Type": item["type"],
-                                        "Lifecycle": item["lifecycle"], "Reason": item["reason"]}
-                                       for item in task["blockers"]]), hide_index=True)
+    with st.container(border=True):
+        if selected:
+            task = next(item for item in tasks if item["id"] == selected["_id"])
+            st.markdown(f"#### {nodes.get(task['id'], {}).get('title') or task['id']}")
+            st.caption(f"{task['id']} · {task['lifecycle']}")
+            st.badge(task["status"].replace("_", " ").title(),
+                     color="orange" if task["status"] == "blocked" else "green")
+            description = nodes.get(task["id"], {}).get("description")
+            if description:
+                st.write(description)
+            if task["blockers"]:
+                st.markdown("**Blocked by**")
+                st.table(pd.DataFrame([{"ID": item["id"], "Type": item["type"],
+                                        "Reason": item["reason"]}
+                                       for item in task["blockers"]]))
+            else:
+                st.caption("No unresolved prerequisites.")
         else:
-            st.caption("No unresolved prerequisites.")
+            st.caption("Select a task to inspect its status and blockers.")
 
 
 def _render_node(node: dict) -> None:
-    st.header("Engineering object")
-    st.text(f"{node['id']} · {node['type']} · {node['lifecycle']}")
-    st.text(node.get("title", ""))
+    st.markdown(f"#### {node.get('title') or node['id']}")
+    st.caption(f"{node['id']} · {node['type']} · {node['lifecycle']}")
     if node.get("description"):
         st.text(node["description"])
     reference = node.get("reference")
@@ -142,11 +148,13 @@ def _render_node(node: dict) -> None:
         st.text(f"Reference: {reference.get('path', '')}"
                 + (f"#{reference['id']}" if reference.get("id") is not None else "")
                 + (f"::{reference['symbol']}" if reference.get("symbol") is not None else ""))
-    for event in node.get("history", []):
-        history_text = "{}: {} — {}".format(
-            event.get("event", "history"), event.get("actor", ""), event.get("rationale", ""))
-        st.text(history_text)
-        st.caption(_markdown_escape(history_text))
+    history = node.get("history", [])
+    if history:
+        with st.expander(f"Decision history · {len(history)}", expanded=False):
+            for event in history:
+                history_text = "{}: {} — {}".format(
+                    event.get("event", "history"), event.get("actor", ""), event.get("rationale", ""))
+                st.caption(_markdown_escape(history_text))
 
 
 def _render_objects(nodes: dict[str, dict], context: str) -> dict | None:
@@ -164,11 +172,14 @@ def _render_objects(nodes: dict[str, dict], context: str) -> dict | None:
         row["_preferred"] = row["_id"] == preferred
     selected = _selected_table_row("Engineering objects", rows,
                                    columns=["ID", "Type", "Title", "Lifecycle", "Reference"],
-                                   context=context, empty_message="No engineering objects in this snapshot.")
-    if selected is None:
-        return None
-    node = nodes[selected["_id"]]
-    _render_node(node)
+                                   context=context,
+                                   empty_message="No engineering objects in this snapshot.")
+    with st.container(border=True):
+        if selected is None:
+            st.caption("Select an object to inspect its details.")
+            return None
+        node = nodes[selected["_id"]]
+        _render_node(node)
     return node
 
 
@@ -177,8 +188,8 @@ def _render_nested(value: object, label: str) -> None:
     if isinstance(value, dict):
         simple = {key: item for key, item in value.items() if not isinstance(item, (dict, list))}
         if simple:
-            st.dataframe(pd.DataFrame([{"Field": key, "Value": str(item)}
-                                       for key, item in simple.items()]), hide_index=True)
+            st.table(pd.DataFrame([{"Field": key, "Value": str(item)}
+                                   for key, item in simple.items()]))
         for key, item in value.items():
             if isinstance(item, (dict, list)) and item:
                 if isinstance(item, list) and all(not isinstance(entry, (dict, list)) for entry in item):
@@ -189,15 +200,20 @@ def _render_nested(value: object, label: str) -> None:
                     else:
                         _render_nested(item, key)
                     continue
-                with st.expander(f"{key.replace('_', ' ').title()} · {len(item)}", expanded=False):
-                    _render_nested(item, key)
+                details = st.expander(f"{key.replace('_', ' ').title()} · {len(item)}",
+                                      expanded=False, on_change="rerun")
+                if details.open:
+                    with details:
+                        _render_nested(item, key)
     elif isinstance(value, list):
         if all(not isinstance(item, (dict, list)) for item in value):
-            st.dataframe(pd.DataFrame([{"Value": str(item)} for item in value]), hide_index=True)
+            st.table(pd.DataFrame([{"Value": str(item)} for item in value]))
         else:
             for index, item in enumerate(value):
-                with st.expander(f"{label} {index + 1}", expanded=True):
-                    _render_nested(item, label)
+                details = st.expander(f"{label} {index + 1}", expanded=False, on_change="rerun")
+                if details.open:
+                    with details:
+                        _render_nested(item, label)
 
 
 def _render_scenarios(projection: dict, context: str) -> None:
@@ -210,51 +226,56 @@ def _render_scenarios(projection: dict, context: str) -> None:
                                    columns=["ID", "Title", "Reference", "Canonical", "Planned tests"],
                                    context=context,
                                    empty_message="No canonical scenarios are linked in this snapshot.")
-    if selected is None:
-        return
-    scenario = next(item for item in scenarios if item["id"] == selected["_id"])
-    st.subheader(f"Scenario details · {scenario['id']}")
-    st.write(scenario.get("title", ""))
-    if scenario.get("canonical_status") == "unavailable":
-        st.warning("Canonical scenario details are unavailable in the captured snapshot.")
-    for field in ("given", "when", "then"):
-        if field in scenario:
-            st.markdown(f"**{field.title()}**")
-            value = scenario[field]
-            for entry in value if isinstance(value, list) else [value]:
-                st.write(entry)
-    cases = scenario.get("tests", [])
-    if cases:
-        st.markdown("**Planned tests**")
-        st.dataframe(pd.DataFrame([
-            {"Test node": case.get("node_id", ""), "Case": case.get("case_id", case.get("id", "")),
-             "Type": case.get("type", ""), "Runner": case.get("runner_id", ""),
-             "Reference": _reference_label(case.get("reference")),
-             "Availability": case.get("canonical_status", "available")}
-            for case in cases]), hide_index=True)
-        for case in cases:
-            with st.expander(f"Test detail · {case.get('node_id', '')}", expanded=True):
-                if case.get("canonical_status") == "unavailable":
-                    st.warning("Planned case details are unavailable in the captured snapshot.")
-                for assertion in case.get("expected_assertions", []):
-                    st.markdown(f"**Planned assertions for {assertion.get('criterion_id', '')}**")
-                    for check in assertion.get("checks", []):
-                        st.write(check)
-                if case.get("source_paths"):
-                    st.dataframe(pd.DataFrame([{"Source": path} for path in case["source_paths"]]),
-                                 hide_index=True)
-    if scenario.get("evidence"):
-        st.markdown("**Scenario evidence**")
-        _render_nested(scenario["evidence"], "Scenario evidence")
+    with st.container(border=True):
+        if selected is None:
+            st.caption("Select a scenario to inspect its behavior and planned tests.")
+            return
+        scenario = next(item for item in scenarios if item["id"] == selected["_id"])
+        st.markdown(f"#### {scenario.get('title') or scenario['id']}")
+        st.caption(f"{scenario['id']} · {_reference_label(scenario.get('reference'))}")
+        if scenario.get("canonical_status") == "unavailable":
+            st.warning("Canonical scenario details are unavailable in the captured snapshot.")
+        for field in ("given", "when", "then"):
+            if field in scenario:
+                st.markdown(f"**{field.title()}**")
+                value = scenario[field]
+                for entry in value if isinstance(value, list) else [value]:
+                    st.write(entry)
+        cases = scenario.get("tests", [])
+        if cases:
+            st.markdown("**Planned tests**")
+            st.table(pd.DataFrame([
+                {"Test node": case.get("node_id", ""),
+                 "Title": case.get("title", ""),
+                 "Case": case.get("case_id", case.get("id", "")),
+                 "Type": case.get("type", ""), "Runner": case.get("runner_id", ""),
+                 "Availability": case.get("canonical_status", "available")}
+                for case in cases]))
+            for case in cases:
+                with st.expander(f"Test detail · {case.get('node_id', '')}", expanded=False):
+                    if case.get("canonical_status") == "unavailable":
+                        st.warning("Planned case details are unavailable in the captured snapshot.")
+                    for assertion in case.get("expected_assertions", []):
+                        st.markdown(f"**Planned assertions for {assertion.get('criterion_id', '')}**")
+                        for check in assertion.get("checks", []):
+                            st.write(check)
+                    if case.get("source_paths"):
+                        st.table(pd.DataFrame([{"Source": path} for path in case["source_paths"]]))
+        if scenario.get("evidence"):
+            details = st.expander("Scenario evidence", expanded=False, on_change="rerun")
+            if details.open:
+                with details:
+                    _render_nested(scenario["evidence"], "Scenario evidence")
 
 
 def _render_evidence(projection: dict) -> None:
-    st.subheader("Evidence adapter inspection")
+    st.subheader("Evidence records")
     # This is the adapter's complete read-only result, not a UI-derived outcome.
     evidence = projection.get("evidence", {})
     results = evidence.get("by_workstream", {})
     candidate = next((item.get("candidate_sha") for item in results.values()
                       if item.get("candidate_sha")), "current")
+    st.caption(f"Candidate revision: {candidate}")
     rows = [{"_id": work_id, "Workstream": work_id,
              "Status": result.get("status", "unknown"),
              "Candidate SHA": result.get("candidate_sha", ""),
@@ -267,16 +288,23 @@ def _render_evidence(projection: dict) -> None:
                                             "Historical", "Current completion"],
                                    context=projection["snapshot"]["digest"] + ":" + str(candidate),
                                    empty_message="No evidence adapter results are available.")
-    if selected:
-        st.subheader(f"Evidence details · {selected['_id']}")
-        result = results[selected["_id"]]
-        st.caption("{} evidence{}; current completion: {}".format(
-            result.get("status", "unknown"),
-            " (historical)" if result.get("historical") else "",
-            "yes" if result.get("current_completion") else "no"))
-        _render_nested(result, "Evidence")
-    with st.expander("Raw evidence JSON", expanded=False):
-        st.json(evidence, expanded=False)
+    with st.container(border=True):
+        if selected:
+            result = results[selected["_id"]]
+            st.markdown(f"#### {selected['_id']}")
+            st.caption("{} evidence{}; current completion: {}".format(
+                result.get("status", "unknown"),
+                " (historical)" if result.get("historical") else "",
+                "yes" if result.get("current_completion") else "no"))
+            for error in result.get("completion", {}).get("errors", []):
+                st.error(str(error))
+            _render_nested(result, "Evidence")
+        else:
+            st.caption("Select a workstream to inspect its evidence record.")
+    raw_details = st.expander("Raw evidence JSON", expanded=False, on_change="rerun")
+    if raw_details.open:
+        with raw_details:
+            st.json(evidence, expanded=False)
 
 
 def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view: dict) -> None:
@@ -308,11 +336,13 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
     st.session_state[STATE_VIEW] = refreshed
     st.session_state[STATE_WORK] = work_id
     st.session_state[STATE_CANDIDATE] = None
+    st.session_state[STATE_EVIDENCE_PROJECTION] = None
     st.rerun()
 
 
-st.set_page_config(page_title="Engineering Model", layout="wide")
-st.title("Engineering Model")
+st.set_page_config(page_title="Engineering workbench", page_icon=":material/schema:", layout="wide")
+st.title("Engineering workbench")
+st.caption("Inspect model state, planned behavior, and verification evidence.")
 
 root = _model_root()
 work_ids = _workstreams(root)
@@ -323,12 +353,15 @@ if not work_ids:
 
 if "work_id" not in st.session_state or st.session_state.work_id not in work_ids:
     st.session_state.work_id = work_ids[0]
-work_id = st.selectbox("Workstream", options=work_ids, key="work_id")
+with st.container(horizontal=True, vertical_alignment="bottom"):
+    work_id = st.selectbox("Workstream", options=work_ids, key="work_id")
+    refresh_inputs = st.button("Refresh inputs", key="refresh", icon=":material/refresh:")
 
 if st.session_state.get(STATE_WORK) != work_id or STATE_VIEW not in st.session_state:
     st.session_state[STATE_VIEW] = _capture_view(root, work_id)
     st.session_state[STATE_WORK] = work_id
     st.session_state[STATE_CANDIDATE] = None
+    st.session_state[STATE_EVIDENCE_PROJECTION] = None
 
 view = st.session_state[STATE_VIEW]
 projection = view.get("projection")
@@ -336,51 +369,89 @@ if projection is None:
     st.warning("Current inputs could not be admitted.")
     _show_diagnostics(view.get("diagnostics", []))
     st.error("No admitted or previously published snapshot is available for this workstream.")
-    if st.button("Refresh inputs", key="refresh"):
+    if refresh_inputs:
         st.session_state[STATE_VIEW] = _capture_view(root, work_id)
         st.rerun()
     st.stop()
 
 identity = view["snapshot"]
-st.caption(f"Snapshot: {identity['digest']}")
+status_col, snapshot_col = st.columns([1, 4], vertical_alignment="center")
+with status_col:
+    st.badge("Validated snapshot" if view["editable"] else "Read-only snapshot",
+             icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
+             color="green" if view["editable"] else "orange")
+with snapshot_col:
+    st.caption(f"Snapshot: {identity['digest']}")
 if view["last_validated"]:
     st.warning("Showing last validated snapshot (read-only). Current working inputs were not admitted.")
 elif view.get("diagnostics"):
     st.warning("Current inputs could not be admitted; the displayed snapshot is read-only.")
 _show_diagnostics(view.get("diagnostics", []))
 
-if st.button("Refresh inputs", key="refresh"):
+if refresh_inputs:
     st.session_state[STATE_VIEW] = _capture_view(root, work_id)
     st.session_state[STATE_WORK] = work_id
     st.session_state[STATE_CANDIDATE] = None
+    st.session_state[STATE_EVIDENCE_PROJECTION] = None
     st.rerun()
 
 projection = view["projection"]
 nodes = _node_map(projection)
-with st.form("evidence_candidate_inspection"):
-    st.text_input("Evidence candidate", key="candidate_sha", placeholder="Empty means current checkout")
-    inspect_candidate = st.form_submit_button("Inspect evidence candidate", key="inspect_candidate")
-if inspect_candidate:
-    try:
-        st.session_state[STATE_CANDIDATE] = project(
-            view["captured"], root,
-            candidate_sha=st.session_state.candidate_sha.strip() or None,
-        )
-        st.session_state[STATE_FEEDBACK] = []
-    except (OSError, ValueError, KeyError, TypeError) as exc:
-        st.session_state[STATE_CANDIDATE] = None
-        st.session_state[STATE_FEEDBACK] = [_diagnostic("EM007_EVIDENCE", "$candidate_sha", str(exc))]
+section = st.segmented_control(
+    "Workbench section",
+    ["Overview", "Objects", "Scenarios", "Evidence"],
+    key="workbench_section", default="Overview", label_visibility="collapsed",
+    selection_mode="single", required=True, width="stretch")
 
-candidate_projection = st.session_state.get(STATE_CANDIDATE)
-candidate_sha = (st.session_state.candidate_sha.strip()
-                 if candidate_projection is not None else "current")
-table_context = f"{work_id}:{view['snapshot']['digest']}:{candidate_sha}"
-_render_tasks(projection, nodes, table_context)
-selected_node = _render_objects(nodes, table_context)
-_render_decision(selected_node, view["editable"], root, work_id, view)
+if section == "Overview":
+    tasks = projection.get("tasks", [])
+    model_nodes = projection.get("model", {}).get("nodes", [])
+    open_decisions = sum(node.get("type") == "decision" and node.get("lifecycle") == "open"
+                         for node in model_nodes)
+    blocked_tasks = sum(task.get("status") == "blocked" for task in tasks)
+    metric_cols = st.columns(3)
+    metric_cols[0].metric("Tasks", len(tasks))
+    metric_cols[1].metric("Blocked", blocked_tasks, delta_color="inverse")
+    metric_cols[2].metric("Open decisions", open_decisions, delta_color="inverse")
+    _render_tasks(projection, nodes, f"{work_id}:{identity['digest']}")
 
-_render_scenarios(projection, table_context)
-_render_evidence(candidate_projection or projection)
+if section == "Objects":
+    selected_node = _render_objects(nodes, f"{work_id}:{identity['digest']}:objects")
+    if selected_node is not None:
+        _render_decision(selected_node, view["editable"], root, work_id, view)
+
+def _get_evidence_projection() -> dict:
+    cached = st.session_state.get(STATE_EVIDENCE_PROJECTION)
+    if cached is None:
+        with st.spinner("Loading verification evidence…"):
+            cached = project(view["captured"], root)
+        st.session_state[STATE_EVIDENCE_PROJECTION] = cached
+    return cached
+
+if section == "Scenarios":
+    _render_scenarios(_get_evidence_projection(), f"{work_id}:{identity['digest']}:scenarios")
+
+if section == "Evidence":
+    with st.form("evidence_candidate_inspection", border=False):
+        input_col, action_col = st.columns([3, 1], vertical_alignment="bottom")
+        input_col.text_input("Evidence candidate", key="candidate_sha",
+                             placeholder="Empty means current checkout")
+        inspect_candidate = action_col.form_submit_button(
+            "Inspect candidate", key="inspect_candidate", icon=":material/search:", type="primary")
+    if inspect_candidate:
+        try:
+            with st.spinner("Inspecting candidate evidence…"):
+                st.session_state[STATE_CANDIDATE] = project(
+                    view["captured"], root,
+                    candidate_sha=st.session_state.candidate_sha.strip() or None,
+                )
+            st.session_state[STATE_FEEDBACK] = []
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            st.session_state[STATE_CANDIDATE] = None
+            st.session_state[STATE_FEEDBACK] = [_diagnostic("EM007_EVIDENCE", "$candidate_sha", str(exc))]
+
+    candidate_projection = st.session_state.get(STATE_CANDIDATE)
+    _render_evidence(candidate_projection or _get_evidence_projection())
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
     st.error("The requested action or inspection did not succeed. The displayed snapshot was not refreshed.")
