@@ -8,6 +8,7 @@ import ast
 import json
 import subprocess
 import sys
+from types import MappingProxyType
 
 import pandas as pd
 import streamlit as st
@@ -24,8 +25,11 @@ if str(SCRIPT_ROOT) not in sys.path:
 from engineering_model.actions import edit
 from engineering_model.admission import admit, load_published
 from engineering_model.projection import project
+from engineering_model.snapshot import Snapshot, decode, referenced_paths
+from engineering_model.workbench_sources import discover_work, read_snapshot
 from workbench_context import (
-    STATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,
+    STATE_COMMITTED_SOURCE_CACHE, STATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,
+    STATE_SOURCE_SELECTION,
     reset_for_work, route_to,
 )
 from workbench_navigation import build_outline, render_breadcrumbs, render_outline
@@ -93,6 +97,67 @@ def _capture_view(root: Path, work_id: str) -> dict:
         return {"snapshot": None, "projection": None, "captured": None,
                 "editable": False, "last_validated": False,
                 "diagnostics": [_diagnostic("EM007_READ", f"work/{work_id}/engineering-model.json", str(exc))]}
+
+
+def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
+    """Project a source resolved entirely from one immutable Git commit."""
+    try:
+        initial = read_snapshot(root, ref, work_id)
+        commit = initial.commit
+        files = dict(initial.files)
+        requested = set()
+        pending = set(referenced_paths(decode(files[f"work/{work_id}/engineering-model.json"])))
+        while pending:
+            batch = sorted(pending - requested)
+            if not batch:
+                break
+            requested.update(batch)
+            captured = read_snapshot(root, commit, work_id, paths=batch)
+            files.update(captured.files)
+            for relative in batch:
+                raw = files.get(relative)
+                if raw is None or not relative.endswith(".json"):
+                    continue
+                try:
+                    linked = decode(raw)
+                except (UnicodeError, ValueError, TypeError):
+                    continue
+                if not isinstance(linked, dict):
+                    continue
+                if linked.get("schema") == "ask-spec/v1":
+                    pending.add(str(Path(relative).with_suffix(".md")))
+                    feature = linked.get("feature_specification")
+                    if isinstance(feature, str):
+                        pending.add(feature)
+                elif linked.get("schema") == "ask-feature-spec/v1":
+                    parent = linked.get("extends")
+                    if isinstance(parent, str):
+                        pending.add(parent)
+                elif linked.get("schema") == "ask-test-plan/v1":
+                    linked_work = linked.get("work_id")
+                    if isinstance(linked_work, str):
+                        pending.add(f"specs/current/{linked_work}.json")
+                        if linked.get("task_scopes"):
+                            pending.add(f"work/{linked_work}/inner-loop/tasks.yaml")
+                pending.update(referenced_paths(linked))
+        statuses = {path: "present" if raw is not None else "missing"
+                    for path, raw in files.items()}
+        for path in requested:
+            statuses.setdefault(path, "missing")
+            files.setdefault(path, None)
+        snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
+        projection = project(snapshot, root, include_evidence=False)
+        # Runtime state is checkout-local. A historical source must not borrow it.
+        for task in projection.get("workbench", {}).get("tasks", []):
+            task.update(status="planned", status_source="no-runtime-record",
+                        runtime_status=None, result_path=None)
+        return {"snapshot": snapshot.identity, "projection": projection, "captured": snapshot,
+                "editable": False, "last_validated": False, "diagnostics": list(initial.diagnostics),
+                "source_context": {"ref": ref, "commit": commit}}
+    except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
+        return {"snapshot": None, "projection": None, "captured": None,
+                "editable": False, "last_validated": False,
+                "diagnostics": [_diagnostic("EM008_COMMITTED_READ", f"work/{work_id}/engineering-model.json", str(exc))]}
 
 
 def _show_diagnostics(diagnostics: list[dict]) -> None:
@@ -629,7 +694,9 @@ st.caption("Follow promised work through delivery tasks, tests, and recorded res
 
 root = _model_root()
 branch = _current_branch(root)
-work_ids = _workstreams(root)
+inventory = discover_work(root)
+inventory_rows = {row["work_id"]: row for row in inventory.get("workstreams", [])}
+work_ids = sorted(set(_workstreams(root)) | set(inventory_rows))
 if not work_ids:
     st.warning("No Engineering Model workstreams were found under the configured model root.")
     st.text(str(root))
@@ -637,21 +704,58 @@ if not work_ids:
 
 if (st.session_state.get(STATE_BRANCH) != branch or "work_id" not in st.session_state
         or st.session_state.work_id not in work_ids):
-    st.session_state.work_id = _default_workstream(branch, work_ids)
+    preferred = inventory.get("current_work_id")
+    st.session_state.work_id = preferred if preferred in work_ids else _default_workstream(branch, work_ids)
     st.session_state[STATE_BRANCH] = branch
     st.session_state[STATE_VIEW] = None
     st.session_state[STATE_WORK] = None
 with st.container(horizontal=True, vertical_alignment="bottom"):
     work_id = st.selectbox("Workstream", options=work_ids, key="work_id")
+    source_ids = []
+    if (root / "work" / work_id / "engineering-model.json").is_file():
+        source_ids.append("working-tree")
+    for row in inventory_rows.values():
+        if row["work_id"] == work_id and row.get("model_status") == "available":
+            ref = row.get("branch")
+            if ref:
+                source_ids.append(f"git:{ref}")
+    if not source_ids:
+        source_ids.append("working-tree")
+    if st.session_state.get(STATE_WORK) != work_id or st.session_state.get(STATE_SOURCE_SELECTION) not in source_ids:
+        source_row = inventory_rows.get(work_id, {})
+        committed_ids = [value for value in source_ids if value.startswith("git:")]
+        checked_out_work = inventory.get("current_work_id") == work_id
+        preferred_source = (committed_ids[0] if source_row.get("read_only") and committed_ids and not checked_out_work else
+                            "working-tree" if "working-tree" in source_ids else source_ids[0])
+        st.session_state["source_id"] = preferred_source
+        st.session_state[STATE_SOURCE_SELECTION] = preferred_source
+    source_id = st.selectbox("Source", options=source_ids, key="source_id")
     refresh_inputs = st.button("Refresh", key="refresh", icon=":material/refresh:")
 
-if st.session_state.get(STATE_WORK) != work_id or STATE_VIEW not in st.session_state:
-    st.session_state[STATE_VIEW] = _capture_view(root, work_id)
+source_changed = st.session_state.get(STATE_SOURCE_SELECTION) != source_id
+work_changed = st.session_state.get(STATE_WORK) != work_id
+if work_changed or source_changed or STATE_VIEW not in st.session_state:
+    if source_id == "working-tree":
+        captured_view = _capture_view(root, work_id)
+        source_kind, source_context = "working-tree", {}
+    else:
+        ref = source_id.removeprefix("git:")
+        cache = st.session_state.setdefault(STATE_COMMITTED_SOURCE_CACHE, {})
+        cache_key = (work_id, source_id)
+        captured_view = cache.get(cache_key)
+        if captured_view is None:
+            captured_view = _capture_committed_view(root, work_id, ref)
+            if captured_view.get("projection") is not None:
+                cache[cache_key] = captured_view
+        source_kind, source_context = "git-commit", captured_view.get("source_context", {"ref": ref})
+    st.session_state[STATE_VIEW] = captured_view
     st.session_state[STATE_WORK] = work_id
+    st.session_state[STATE_SOURCE_SELECTION] = source_id
     selected_view = st.session_state[STATE_VIEW]
     initial_outline = build_outline(selected_view["projection"] or {})
     reset_for_work(st.session_state, work_id, selected_view,
-                   initial_outline["roots"][0] if initial_outline["roots"] else "")
+                   initial_outline["roots"][0] if initial_outline["roots"] else "",
+                   source=source_kind, source_context=source_context)
 
 view = st.session_state[STATE_VIEW]
 projection = view.get("projection")
@@ -660,20 +764,31 @@ if projection is None:
     _show_diagnostics(view.get("diagnostics", []))
     st.error("No admitted or previously published snapshot is available for this workstream.")
     if refresh_inputs:
-        refreshed = _capture_view(root, work_id)
+        if source_id == "working-tree":
+            refreshed = _capture_view(root, work_id)
+        else:
+            cache = st.session_state.setdefault(STATE_COMMITTED_SOURCE_CACHE, {})
+            cache.pop((work_id, source_id), None)
+            refreshed = _capture_committed_view(root, work_id, source_id.removeprefix("git:"))
+            if refreshed.get("projection") is not None:
+                cache[(work_id, source_id)] = refreshed
         st.session_state[STATE_VIEW] = refreshed
         st.session_state[STATE_WORK] = work_id
         outline = build_outline(refreshed["projection"] or {})
         reset_for_work(st.session_state, work_id, refreshed,
-                       outline["roots"][0] if outline["roots"] else "")
+                       outline["roots"][0] if outline["roots"] else "",
+                       source="working-tree" if source_id == "working-tree" else "git-commit",
+                       source_context=refreshed.get("source_context", {}))
         st.rerun()
     st.stop()
 
 identity = view["snapshot"]
-source_label = "Working tree" if st.session_state.get(STATE_SOURCE, {}).get("kind") == "working-tree" else "Selected source"
+source_context = st.session_state.get(STATE_SOURCE, {})
+source_label = ("Working tree" if source_context.get("kind") == "working-tree" else
+                f"Committed · {source_context.get('ref', 'source')} · {source_context.get('commit', '')[:7]}")
 with st.container(horizontal=True, vertical_alignment="center"):
     st.badge(source_label, icon=":material/source:", color="blue")
-    st.badge("Validated inputs" if view["editable"] else "Read-only snapshot",
+    st.badge("Validated inputs" if view["editable"] else "Read-only source" if source_context.get("kind") == "git-commit" else "Read-only snapshot",
              icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
              color="green" if view["editable"] else "orange")
 st.caption(f"Checkout: `{branch}` · Workstream: `{work_id}`")
@@ -684,12 +799,21 @@ elif view.get("diagnostics"):
 _show_diagnostics(view.get("diagnostics", []))
 
 if refresh_inputs:
-    refreshed = _capture_view(root, work_id)
+    if source_id == "working-tree":
+        refreshed = _capture_view(root, work_id)
+    else:
+        cache = st.session_state.setdefault(STATE_COMMITTED_SOURCE_CACHE, {})
+        cache.pop((work_id, source_id), None)
+        refreshed = _capture_committed_view(root, work_id, source_id.removeprefix("git:"))
+        if refreshed.get("projection") is not None:
+            cache[(work_id, source_id)] = refreshed
     st.session_state[STATE_VIEW] = refreshed
     st.session_state[STATE_WORK] = work_id
     outline = build_outline(refreshed["projection"] or {})
     reset_for_work(st.session_state, work_id, refreshed,
-                   outline["roots"][0] if outline["roots"] else "")
+                   outline["roots"][0] if outline["roots"] else "",
+                   source="working-tree" if source_id == "working-tree" else "git-commit",
+                   source_context=refreshed.get("source_context", {}))
     st.rerun()
 
 projection = view["projection"]
@@ -722,7 +846,7 @@ with detail_col:
             st.info("Open Result / evidence in the outline to inspect a recorded execution.")
         elif selected["kind"] == "task":
             st.subheader(selected["label"])
-            task = next((item for item in projection.get("tasks", [])
+            task = next((item for item in projection.get("workbench", {}).get("tasks", [])
                          if item["id"] == selected["node_id"]), {})
             st.caption(f"Task status: {task.get('status', 'not recorded')} · source: {task.get('record_source', 'unavailable')}")
         elif selected["kind"] == "scenario":

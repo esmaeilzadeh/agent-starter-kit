@@ -40,12 +40,11 @@ def build_outline(projection: dict) -> dict:
 
     stories = {item["id"]: item for item in projection.get("workbench", {}).get("stories", [])}
     scenarios = {item["id"]: item for item in projection.get("scenarios", [])}
-    tasks = {item["id"]: item for item in projection.get("tasks", [])}
+    tasks = {item["id"]: item for item in projection.get("workbench", {}).get("tasks", [])}
     tests = {item["id"]: item for item in projection.get("workbench", {}).get("tests", [])}
     entries: list[dict] = []
     ancestors: dict[str, list[tuple[str, str]]] = {}
-    emitted_tasks: set[str] = set()
-    emitted_tests: set[str] = set()
+    emitted_test_scenarios: set[tuple[str, str]] = set()
 
     def scenario_ids_for_story(story_id):
         explicit = set(stories.get(story_id, {}).get("scenario_ids", []))
@@ -60,33 +59,38 @@ def build_outline(projection: dict) -> dict:
 
     def tests_for_task(task_id, scenario_id):
         return sorted(test_id for test_id, test in tests.items()
-                      if test_id not in emitted_tests and scenario_id in test.get("scenario_ids", [])
+                      if (test_id, scenario_id) not in emitted_test_scenarios
+                      and scenario_id in test.get("scenario_ids", [])
                       and (test.get("owner_task_id") == task_id or any(
                           link.get("task_id") == task_id for link in test.get("related_tasks", []))))
 
-    def add_test(test_id, path, indent):
+    def unique_route(base, context):
+        return base if base not in ancestors else f"{base}@{context}"
+
+    def add_test(test_id, path, indent, scenario_id):
         test = tests[test_id]
-        route_id = f"test:{test_id}"
+        route_id = unique_route(f"test:{test_id}", scenario_id)
         label = test.get("title") or test_id
         _append(entries, ancestors, route_id, label, "test", [*path, (route_id, label)],
                 node_id=test_id, indent=indent)
-        result_id = f"result:{test_id}"
+        result_id = unique_route(f"result:{test_id}", scenario_id)
         _append(entries, ancestors, result_id, "Result / evidence", "result",
                 [*path, (route_id, label), (result_id, "Result / evidence")],
                 node_id=test_id, indent=indent + 1)
-        emitted_tests.add(test_id)
+        emitted_test_scenarios.add((test_id, scenario_id))
 
     def add_task(task_id, path, indent, scenario_id):
-        if task_id in emitted_tasks:
-            return
         task = tasks[task_id]
         label = task.get("title") or task_id
-        task_path = [*path, (task_id, label)]
-        _append(entries, ancestors, task_id, label, "task", task_path, indent=indent)
-        emitted_tasks.add(task_id)
+        if label:
+            label = label[0].upper() + label[1:]
+        route_id = unique_route(task_id, scenario_id or task_id)
+        task_path = [*path, (route_id, label)]
+        _append(entries, ancestors, route_id, label, "task", task_path,
+                node_id=task_id, indent=indent)
         related = tests_for_task(task_id, scenario_id) if scenario_id else []
         for test_id in related:
-            add_test(test_id, task_path, indent + 1)
+            add_test(test_id, task_path, indent + 1, scenario_id)
 
     def add_scenario(scenario_id, path, indent):
         scenario = scenarios[scenario_id]
@@ -98,7 +102,7 @@ def build_outline(projection: dict) -> dict:
         for task_id in linked_tasks:
             add_task(task_id, scenario_path, indent + 1, scenario_id)
         directly_linked_tests = sorted(test_id for test_id, test in tests.items()
-                                       if test_id not in emitted_tests
+                                       if (test_id, scenario_id) not in emitted_test_scenarios
                                        and scenario_id in test.get("scenario_ids", []))
         for test_id in directly_linked_tests:
             test = tests[test_id]
@@ -107,7 +111,7 @@ def build_outline(projection: dict) -> dict:
                 if owner in tasks:
                     add_task(owner, scenario_path, indent + 1, scenario_id)
                 else:
-                    add_test(test_id, scenario_path, indent + 1)
+                    add_test(test_id, scenario_path, indent + 1, scenario_id)
 
     root_routes = []
     for root_id in roots:
@@ -148,7 +152,7 @@ def build_outline(projection: dict) -> dict:
                 add_scenario(scenario_id, group_path, 2)
 
         unrelated_tasks = sorted(task_id for task_id, task in tasks.items()
-                                 if not task.get("related_scenarios") and task_id not in emitted_tasks)
+                                 if not task.get("related_scenarios"))
         if unrelated_tasks:
             group_id = f"unmapped-tasks:{root_id}"
             group_label = "Tasks without a scenario mapping"
@@ -181,9 +185,9 @@ def render_outline(projection: dict) -> dict:
             continue
         display = ("　" * entry["indent"]) + label
         key = f"route:{entry['route_id']}"
-        if st.button(display, key=key, type="primary" if st.session_state.get(STATE_ROUTE)
-                     == entry["route_id"] else "secondary", width="stretch"):
-            navigate(st.session_state, entry["route_id"])
+        st.button(display, key=key, type="primary" if st.session_state.get(STATE_ROUTE)
+                  == entry["route_id"] else "secondary", width="stretch",
+                  on_click=navigate, args=(st.session_state, entry["route_id"]))
     return outline
 
 
@@ -195,8 +199,9 @@ def render_breadcrumbs(outline: dict, route_id: str) -> None:
                 st.caption("/")
             if identity == route_id:
                 st.markdown(f"**{label}**")
-            elif st.button(label, key=f"breadcrumb:{identity}", type="tertiary"):
-                route_to(st.session_state, identity)
-        if st.button("Back", key="route:back", icon=":material/arrow_back:",
-                     disabled=not st.session_state.get("_engineering_route_history")):
-            back(st.session_state, outline["roots"][0] if outline["roots"] else "")
+            else:
+                st.button(label, key=f"breadcrumb:{identity}", type="tertiary",
+                          on_click=route_to, args=(st.session_state, identity))
+        st.button("Back", key="route:back", icon=":material/arrow_back:",
+                  disabled=not st.session_state.get("_engineering_route_history"),
+                  on_click=back, args=(st.session_state, outline["roots"][0] if outline["roots"] else ""))

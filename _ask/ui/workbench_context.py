@@ -6,6 +6,8 @@ STATE_ROUTE = "_engineering_route"
 STATE_ROUTE_HISTORY = "_engineering_route_history"
 STATE_FORM_IDENTITY = "_engineering_form_identity"
 STATE_SOURCE = "_engineering_source_context"
+STATE_SOURCE_SELECTION = "_engineering_source_selection"
+STATE_COMMITTED_SOURCE_CACHE = "_engineering_committed_source_cache"
 
 
 def identity_for(view: dict, work_id: str, source: str = "working-tree") -> dict | None:
@@ -18,12 +20,13 @@ def identity_for(view: dict, work_id: str, source: str = "working-tree") -> dict
 
 
 def reset_for_work(session, work_id: str, view: dict, epic_id: str,
-                   source: str = "working-tree") -> None:
+                   source: str = "working-tree", source_context: dict | None = None) -> None:
     """Reset selections and caches when the displayed work/source changes."""
     session[STATE_ROUTE] = epic_id
     session[STATE_ROUTE_HISTORY] = []
     session[STATE_FORM_IDENTITY] = identity_for(view, work_id, source)
-    session[STATE_SOURCE] = {"kind": source, "work_id": work_id}
+    session[STATE_SOURCE] = {"kind": source, "work_id": work_id,
+                             **(source_context or {})}
     for key in ("_engineering_candidate_projection", "_engineering_evidence_projection",
                 "_engineering_overview_results", "_engineering_feedback"):
         session[key] = None if key != "_engineering_feedback" else []
