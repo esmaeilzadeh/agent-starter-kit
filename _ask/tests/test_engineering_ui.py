@@ -26,6 +26,7 @@ def text(app):
     visible.extend(element.value.to_string(index=False)
                    for collection in (app.dataframe, app.table) for element in collection)
     visible.extend(str(element.value) for element in app.code)
+    visible.extend(str(element.label) for element in app.button)
     return "\n".join(visible)
 
 
@@ -41,7 +42,7 @@ class UiIntegrationTests(unittest.TestCase):
             app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertIn("unavailable evidence", text(app))
-            self.assertIn(current_sha, text(app))
+            self.assertNotIn(current_sha, text(app))
             self.assertEqual(len(app.json), 0)
             app.segmented_control(key="workbench_section").select("Objects").run(timeout=20)
             self.assertFalse(app.exception, app.exception)
@@ -59,14 +60,14 @@ class UiIntegrationTests(unittest.TestCase):
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertIn("unavailable evidence", text(app))
-            self.assertIn(current_sha, text(app))
+            self.assertNotIn(current_sha, text(app))
             current_key = next(item.key for item in app.selectbox
                                if item.key and item.key.startswith("item:Evidence:"))
             app.text_input(key="candidate_sha").input(historical_sha)
             app.button(key="inspect_candidate").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertIn("(historical)", text(app))
-            self.assertIn(historical_sha, text(app))
+            self.assertNotIn(historical_sha, text(app))
             self.assertEqual(len(app.json), 0)
             historical_key = next(item.key for item in app.selectbox
                                   if item.key and item.key.startswith("item:Evidence:"))
@@ -85,21 +86,77 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertIn("self.assertEqual(actual, 'accepted')", text(app))
                 self.assertIn("Test source", text(app))
 
-    def test_overview_shortcuts_open_the_task_or_decision_they_count(self):
+    def test_overview_keeps_decision_resolution_in_the_objects_section(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workbench_model(root)
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
-                app.button(key="shortcut_blocked").click().run(timeout=15)
-                self.assertFalse(app.exception, app.exception)
-                self.assertEqual(app.segmented_control(key="workbench_section").value, "Overview")
                 self.assertIn("Build", text(app))
-                app.button(key="shortcut_open_decisions").click().run(timeout=15)
+                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.segmented_control(key="workbench_section").value, "Objects")
                 self.assertIn("Resolve decision", text(app))
                 self.assertIn("Choose", text(app))
+
+    def test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                rendered = text(app)
+                for label in ("Epic", "Purpose", "Scenarios", "Canonical behavior",
+                              "Tasks", "Build", "Tests", "Behavior assertion",
+                              "Related tests: CASE-1", "self.assertEqual(actual, 'accepted')"):
+                    self.assertIn(label, rendered)
+                self.assertNotIn("Snapshot:", rendered)
+                self.assertNotRegex(rendered, r"\b[0-9a-f]{40}\b")
+
+    def test_overview_loads_results_on_demand_and_explains_debug_identifiers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            evidence = {
+                "schema": "ask-engineering-evidence/v1", "work_id": "pilot",
+                "status": "valid", "candidate_sha": "a" * 40,
+                "current_sha": "a" * 40, "historical": False,
+                "current_completion": True,
+                "scenarios": [{
+                    "criterion_id": "P-001",
+                    "reference": {"path": "specs/current/pilot.json", "id": "P-001"},
+                    "evidence": {"criterion_id": "P-001", "tests": [{
+                        "test_id": "CASE-1", "tdd": "red_green", "red": [],
+                        "final_execution": {"outcome": "passed"},
+                    }]},
+                }],
+                "completion": {"status": "pass", "errors": [], "criterion_evidence": []},
+            }
+            original_expander = st.expander
+
+            def expand_debug(*args, **kwargs):
+                if str(kwargs.get("key", "")).startswith("debug-trace:"):
+                    kwargs["expanded"] = True
+                return original_expander(*args, **kwargs)
+
+            with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
+                  patch.object(projection_module, "inspect_evidence", return_value=evidence) as inspect,
+                  patch.object(st, "expander", expand_debug)):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                inspect.assert_not_called()
+                self.assertIn("Load test results", text(app))
+                app.button(key="overview_load_results").click().run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                inspect.assert_called_once()
+                rendered = text(app)
+                self.assertIn("Passed", rendered)
+                self.assertIn("Commit SHA identifies a Git revision", rendered)
+                self.assertIn("Snapshot digest fingerprints the admitted model and referenced inputs", rendered)
+                self.assertIn("git show", rendered)
+                self.assertIn("./ask model show", rendered)
+                self.assertIn("./ask traceability check-completion", rendered)
 
     def test_repeated_nested_evidence_fields_do_not_duplicate_expanders(self):
         with tempfile.TemporaryDirectory() as directory:

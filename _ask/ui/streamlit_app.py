@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import re
 import ast
+import json
 import subprocess
 import sys
 
@@ -28,6 +29,7 @@ STATE_CANDIDATE = "_engineering_candidate_projection"
 STATE_FEEDBACK = "_engineering_feedback"
 STATE_EVIDENCE_PROJECTION = "_engineering_evidence_projection"
 STATE_BRANCH = "_engineering_branch"
+STATE_OVERVIEW_RESULTS = "_engineering_overview_results"
 
 
 def _model_root() -> Path:
@@ -116,9 +118,208 @@ def _show_evidence_error(message: object) -> None:
         st.error(text)
 
 
-def _navigate_to_item(section: str, widget_key: str, selected_id: str) -> None:
-    st.session_state["workbench_section"] = section
-    st.session_state[widget_key] = selected_id
+def _without_debug_identifiers(value: object) -> object:
+    """Keep hashes in the explicit debug panel, not ordinary evidence details."""
+    hidden = {"candidate_sha", "current_sha", "digest", "input_digests", "plan_digest",
+              "spec_digest", "review_digest", "source_digests", "yaml_digest"}
+    if isinstance(value, dict):
+        return {key: _without_debug_identifiers(item) for key, item in value.items()
+                if key not in hidden and not key.endswith("_digest")}
+    if isinstance(value, list):
+        return [_without_debug_identifiers(item) for item in value]
+    return value
+
+
+def _current_commit(root: Path) -> str | None:
+    try:
+        result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
+                                capture_output=True, text=True, timeout=2, check=False)
+        return result.stdout.strip() if result.returncode == 0 else None
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+
+def _render_debug_trace(root: Path, work_id: str, snapshot_digest: str,
+                        *, candidate_sha: str | None = None, key: str) -> None:
+    details = st.expander("Debug trace and identifiers", expanded=False,
+                          on_change="rerun", key=key)
+    if not details.open:
+        return
+    with details:
+        commit = candidate_sha or _current_commit(root)
+        st.markdown("**Commit SHA**")
+        st.write("Commit SHA identifies a Git revision. Use it to inspect that exact revision or ask the traceability evaluator to check it.")
+        if commit:
+            st.code(
+                f"git show {commit}\n"
+                f"./ask model show --work-id {work_id} --candidate {commit} --format markdown\n"
+                f"./ask traceability check-completion {work_id} --candidate-sha {commit} --anchor-sha HEAD",
+                language="bash")
+        else:
+            st.info("A Git commit SHA is unavailable for this model root. Substitute the commit you want to inspect in these commands.")
+            st.code(
+                f"git show <commit-sha>\n"
+                f"./ask model show --work-id {work_id} --candidate <commit-sha> --format markdown\n"
+                f"./ask traceability check-completion {work_id} --candidate-sha <commit-sha> --anchor-sha HEAD",
+                language="bash")
+        st.markdown("**Snapshot digest**")
+        st.write("Snapshot digest fingerprints the admitted model and referenced inputs. It guards freshness for edits; it is not a Git commit, so `git show` cannot use it.")
+        st.code(f"./ask model show --work-id {work_id}\n"
+                f"./ask model edit --work-id {work_id} --expected {snapshot_digest} --batch proposal.json",
+                language="bash")
+
+
+def _contained_descendants(nodes: dict[str, dict], model: dict, parent_id: str) -> set[str]:
+    children: dict[str, list[str]] = {}
+    for edge in model.get("edges", []):
+        if edge.get("type") == "contains":
+            children.setdefault(edge.get("source"), []).append(edge.get("target"))
+    found: set[str] = set()
+    pending = list(children.get(parent_id, []))
+    while pending:
+        identity = pending.pop()
+        if identity in found or identity not in nodes:
+            continue
+        found.add(identity)
+        pending.extend(children.get(identity, []))
+    return found
+
+
+def _overview_epics(nodes: dict[str, dict], model: dict) -> list[dict]:
+    parents = {edge.get("target") for edge in model.get("edges", [])
+               if edge.get("type") == "contains"}
+    root_intents = [node for identity, node in nodes.items()
+                    if node.get("type") == "intent" and identity not in parents]
+    if root_intents:
+        return sorted(root_intents, key=lambda node: node["id"])
+    root_features = [node for identity, node in nodes.items()
+                     if node.get("type") == "feature" and identity not in parents]
+    if root_features:
+        return sorted(root_features, key=lambda node: node["id"])
+    return sorted((node for node in nodes.values()
+                   if node.get("type") in {"intent", "feature"}), key=lambda node: node["id"])
+
+
+def _task_test_assignments(snapshot, work_id: str) -> dict[str, list[str]]:
+    path = f"work/{work_id}/test-plan.json"
+    raw = snapshot.files.get(path)
+    if raw is None:
+        return {}
+    try:
+        plan = json.loads(raw)
+    except (UnicodeError, ValueError, TypeError):
+        return {}
+    return {str(scope.get("task_id")): [str(test_id) for test_id in scope.get("test_ids", [])]
+            for scope in plan.get("task_scopes", []) if isinstance(scope, dict)
+            and isinstance(scope.get("task_id"), str)}
+
+
+def _result_label(record: dict | None) -> str:
+    if record is None:
+        return "No recorded result"
+    final = record.get("final_execution")
+    if isinstance(final, dict):
+        outcome = final.get("outcome", "unknown")
+        return "Passed" if outcome == "passed" else f"Final run: {outcome}"
+    if record.get("red"):
+        return "Baseline failed; final result missing"
+    return "Final result missing"
+
+
+def _render_overview(projection: dict, snapshot, root: Path, work_id: str, context: str,
+                     load_results, results_loaded: bool) -> None:
+    nodes = _node_map(projection)
+    model = projection.get("model", {})
+    tasks = {item["id"]: item for item in projection.get("tasks", [])}
+    scenarios = projection.get("scenarios", [])
+    test_plan = _task_test_assignments(snapshot, work_id)
+
+    epics = _overview_epics(nodes, model)
+    st.subheader("Epic")
+    if not epics:
+        st.info("No epic is defined in this workstream.")
+    for epic in epics:
+        st.markdown(f"### {epic.get('title') or epic['id']}")
+        if epic.get("description"):
+            st.write(epic["description"])
+        related = _contained_descendants(nodes, model, epic["id"])
+        epic_scenarios = [item for item in scenarios if item["id"] in related]
+        epic_tasks = [item for item in tasks.values() if item["id"] in related]
+        st.markdown("#### Scenarios")
+        if not epic_scenarios:
+            st.caption("No scenarios are linked to this epic.")
+        for scenario in epic_scenarios:
+            with st.container(border=True):
+                st.markdown(f"**{scenario.get('title') or scenario['id']}**")
+                for field in ("given", "when", "then"):
+                    if scenario.get(field):
+                        st.markdown(f"**{field.title()}**")
+                        value = scenario[field]
+                        for entry in value if isinstance(value, list) else [value]:
+                            st.write(entry)
+                cases = scenario.get("tests", [])
+                if cases:
+                    st.markdown("**Tests**")
+                for case in cases:
+                    test_id = str(case.get("case_id", case.get("id", case.get("node_id", "Test"))))
+                    with st.container(border=True):
+                        st.markdown(f"**{case.get('title') or test_id}**")
+                        st.caption(f"{test_id} · {case.get('type', 'test')}")
+                        for assertion in case.get("expected_assertions", []):
+                            st.markdown(f"Planned assertions for {assertion.get('criterion_id', '')}")
+                            for check in assertion.get("checks", []):
+                                st.write(check)
+                        source = _test_source(root, case)
+                        if source:
+                            source_path, code = source
+                            st.markdown(f"Test source · `{source_path}`")
+                            st.code(code, language="python", line_numbers=True)
+                        else:
+                            st.caption("Test source is not available in the current checkout.")
+        st.markdown("#### Tasks")
+        if not epic_tasks:
+            st.info("No tasks in this snapshot." if not tasks else "No tasks are linked to this epic.")
+        for task in sorted(epic_tasks, key=lambda item: item["id"]):
+            node = nodes.get(task["id"], {})
+            with st.container(border=True):
+                st.markdown(f"**{node.get('title') or task['id']}**")
+                st.badge(task["status"].replace("_", " ").title(),
+                         color="orange" if task["status"] == "blocked" else "green")
+                if node.get("description"):
+                    st.write(node["description"])
+                test_ids = test_plan.get(task["id"], [])
+                if test_ids:
+                    st.caption("Related tests: " + ", ".join(test_ids))
+                else:
+                    st.caption("No task-test link recorded.")
+
+    st.markdown("#### Results")
+    if not results_loaded:
+        st.caption("Test execution results are loaded only when requested.")
+        st.button("Load test results", key="overview_load_results",
+                  icon=":material/download:", on_click=load_results)
+    else:
+        evidence = st.session_state.get(STATE_OVERVIEW_RESULTS, {}).get("evidence", {})
+        by_workstream = evidence.get("by_workstream", {})
+        records = [record for result in by_workstream.values()
+                   for scenario in result.get("scenarios", [])
+                   for record in (scenario.get("evidence") or {}).get("tests", [])]
+        if not records:
+            st.info("No test results are recorded for this workstream.")
+        for record in records:
+            st.markdown(f"**{record.get('test_id', 'Test')}** · {_result_label(record)}")
+        for result in by_workstream.values():
+            for error in result.get("completion", {}).get("errors", []):
+                _show_evidence_error(error)
+
+    identity = projection.get("snapshot", {}).get("digest", "unavailable")
+    loaded = st.session_state.get(STATE_OVERVIEW_RESULTS) or {}
+    evidence = loaded.get("evidence", {})
+    candidate = next((item.get("candidate_sha") for item in
+                      evidence.get("by_workstream", {}).values()
+                      if item.get("candidate_sha")), None)
+    _render_debug_trace(root, work_id, identity, candidate_sha=candidate,
+                        key=f"debug-trace:{context}")
 
 
 def _selected_item(title: str, rows: list[dict], *, columns: list[str], context: str,
@@ -138,36 +339,6 @@ def _selected_item(title: str, rows: list[dict], *, columns: list[str], context:
                                format_func=lambda identity: label(by_id[identity]),
                                key=widget_key, label_visibility="collapsed")
     return by_id[selected_id]
-
-
-def _render_tasks(projection: dict, nodes: dict[str, dict], context: str) -> None:
-    tasks = projection.get("tasks", [])
-    rows = [{"_id": task["id"], "ID": task["id"],
-             "Title": nodes.get(task["id"], {}).get("title", ""),
-             "Status": task["status"], "Lifecycle": task["lifecycle"],
-             "Blockers": len(task["blockers"])} for task in tasks]
-    selected = _selected_item("Tasks", rows,
-                                   columns=["ID", "Title", "Status", "Lifecycle", "Blockers"],
-                                   context=context, empty_message="No tasks in this snapshot.")
-    with st.container(border=True):
-        if selected:
-            task = next(item for item in tasks if item["id"] == selected["_id"])
-            st.markdown(f"#### {nodes.get(task['id'], {}).get('title') or task['id']}")
-            st.caption(f"{task['id']} · {task['lifecycle']}")
-            st.badge(task["status"].replace("_", " ").title(),
-                     color="orange" if task["status"] == "blocked" else "green")
-            description = nodes.get(task["id"], {}).get("description")
-            if description:
-                st.write(description)
-            if task["blockers"]:
-                st.markdown("**Blocked by**")
-                st.table(pd.DataFrame([{"ID": item["id"], "Type": item["type"],
-                                        "Reason": item["reason"]}
-                                       for item in task["blockers"]]))
-            else:
-                st.caption("No unresolved prerequisites.")
-        else:
-            st.caption("Select a task to inspect its status and blockers.")
 
 
 def _render_node(node: dict) -> None:
@@ -330,29 +501,25 @@ def _render_scenarios(projection: dict, context: str) -> None:
             details = st.expander("Scenario evidence", expanded=False, on_change="rerun")
             if details.open:
                 with details:
-                        _render_nested(scenario["evidence"], "Scenario evidence",
+                        _render_nested(_without_debug_identifiers(scenario["evidence"]), "Scenario evidence",
                                        f"scenario:{scenario['id']}:evidence")
 
 
-def _render_evidence(projection: dict, context: str) -> None:
+def _render_evidence(projection: dict, root: Path, context: str) -> None:
     st.subheader("Evidence records")
     # This is the adapter's complete read-only result, not a UI-derived outcome.
     evidence = projection.get("evidence", {})
     results = evidence.get("by_workstream", {})
     candidate = next((item.get("candidate_sha") for item in results.values()
-                      if item.get("candidate_sha")), "current")
-    st.caption(f"Candidate revision: {candidate}")
+                      if item.get("candidate_sha")), None)
     rows = [{"_id": work_id, "Workstream": work_id,
              "Status": result.get("status", "unknown"),
-             "Candidate SHA": result.get("candidate_sha", ""),
-             "Current SHA": result.get("current_sha", ""),
              "Historical": bool(result.get("historical")),
              "Current completion": bool(result.get("current_completion"))}
             for work_id, result in sorted(results.items())]
     selected = _selected_item("Evidence", rows,
-                                   columns=["Workstream", "Status", "Candidate SHA", "Current SHA",
-                                            "Historical", "Current completion"],
-                                   context=projection["snapshot"]["digest"] + ":" + str(candidate),
+                                   columns=["Workstream", "Status", "Historical", "Current completion"],
+                                   context=projection["snapshot"]["digest"] + ":" + context + ":" + str(candidate),
                                    empty_message="No evidence adapter results are available.")
     with st.container(border=True):
         if selected:
@@ -364,7 +531,7 @@ def _render_evidence(projection: dict, context: str) -> None:
                 "yes" if result.get("current_completion") else "no"))
             for error in result.get("completion", {}).get("errors", []):
                 _show_evidence_error(error)
-            _render_nested(result, "Evidence", f"evidence:{selected['_id']}")
+            _render_nested(_without_debug_identifiers(result), "Evidence", f"evidence:{selected['_id']}")
         else:
             st.caption("Select a workstream to inspect its evidence record.")
     raw_details = st.expander("Raw evidence JSON", expanded=False,
@@ -372,6 +539,9 @@ def _render_evidence(projection: dict, context: str) -> None:
     if raw_details.open:
         with raw_details:
             st.json(evidence, expanded=False)
+    _render_debug_trace(root, selected["_id"] if selected else "unknown",
+                        projection["snapshot"]["digest"], candidate_sha=candidate,
+                        key=f"debug-trace:evidence:{context}")
 
 
 def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view: dict) -> None:
@@ -404,6 +574,7 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
     st.session_state[STATE_WORK] = work_id
     st.session_state[STATE_CANDIDATE] = None
     st.session_state[STATE_EVIDENCE_PROJECTION] = None
+    st.session_state[STATE_OVERVIEW_RESULTS] = None
     st.rerun()
 
 
@@ -435,6 +606,7 @@ if st.session_state.get(STATE_WORK) != work_id or STATE_VIEW not in st.session_s
     st.session_state[STATE_WORK] = work_id
     st.session_state[STATE_CANDIDATE] = None
     st.session_state[STATE_EVIDENCE_PROJECTION] = None
+    st.session_state[STATE_OVERVIEW_RESULTS] = None
 
 view = st.session_state[STATE_VIEW]
 projection = view.get("projection")
@@ -448,13 +620,10 @@ if projection is None:
     st.stop()
 
 identity = view["snapshot"]
-status_col, snapshot_col = st.columns([1, 4], vertical_alignment="center")
-with status_col:
+with st.container(horizontal=True, vertical_alignment="center"):
     st.badge("Validated snapshot" if view["editable"] else "Read-only snapshot",
              icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
              color="green" if view["editable"] else "orange")
-with snapshot_col:
-    st.caption(f"Snapshot: {identity['digest']}")
 if view["last_validated"]:
     st.warning("Showing last validated snapshot (read-only). Current working inputs were not admitted.")
 elif view.get("diagnostics"):
@@ -466,6 +635,7 @@ if refresh_inputs:
     st.session_state[STATE_WORK] = work_id
     st.session_state[STATE_CANDIDATE] = None
     st.session_state[STATE_EVIDENCE_PROJECTION] = None
+    st.session_state[STATE_OVERVIEW_RESULTS] = None
     st.rerun()
 
 projection = view["projection"]
@@ -477,40 +647,15 @@ section = st.segmented_control(
     key="workbench_section", label_visibility="collapsed",
     selection_mode="single", required=True, width="stretch")
 
-tasks = projection.get("tasks", [])
-blocked_tasks = [task for task in tasks if task.get("status") == "blocked"]
-open_decisions = [node for node in nodes.values()
-                  if node.get("type") == "decision" and node.get("lifecycle") == "open"]
 overview_context = f"{work_id}:{identity['digest']}"
-object_context = f"{overview_context}:objects"
-shortcut_cols = st.columns(3)
-shortcut_cols[0].button(
-    f"Tasks · {len(tasks)}", key="shortcut_tasks", icon=":material/task_alt:",
-    help=f"Inspect {tasks[0]['id']}" if tasks else "No tasks in this workstream",
-    disabled=not tasks, use_container_width=True,
-    on_click=_navigate_to_item,
-    args=("Overview", f"item:Tasks:{overview_context}", tasks[0]["id"] if tasks else ""))
-shortcut_cols[1].button(
-    f"Blocked · {len(blocked_tasks)}", key="shortcut_blocked", icon=":material/block:",
-    help=f"Review blocked task {blocked_tasks[0]['id']}" if blocked_tasks else "No blocked tasks",
-    disabled=not blocked_tasks, use_container_width=True,
-    on_click=_navigate_to_item,
-    args=("Overview", f"item:Tasks:{overview_context}", blocked_tasks[0]["id"] if blocked_tasks else ""))
-shortcut_cols[2].button(
-    f"Open decisions · {len(open_decisions)}", key="shortcut_open_decisions",
-    icon=":material/gavel:",
-    help=f"Review decision {open_decisions[0]['id']}" if open_decisions else "No open decisions",
-    disabled=not open_decisions, use_container_width=True,
-    on_click=_navigate_to_item,
-    args=("Objects", f"item:Engineering objects:{object_context}",
-          open_decisions[0]["id"] if open_decisions else ""))
-
 if section == "Overview":
-    model_nodes = projection.get("model", {}).get("nodes", [])
-    open_decisions = sum(node.get("type") == "decision" and node.get("lifecycle") == "open"
-                         for node in model_nodes)
-    blocked_tasks = sum(task.get("status") == "blocked" for task in tasks)
-    _render_tasks(projection, nodes, f"{work_id}:{identity['digest']}")
+    def load_overview_results():
+        with st.spinner("Loading test results…"):
+            st.session_state[STATE_OVERVIEW_RESULTS] = project(view["captured"], root)
+
+    _render_overview(projection, view["captured"], root, work_id, overview_context,
+                     load_overview_results,
+                     st.session_state.get(STATE_OVERVIEW_RESULTS) is not None)
 
 if section == "Objects":
     selected_node = _render_objects(nodes, f"{work_id}:{identity['digest']}:objects")
@@ -548,7 +693,7 @@ if section == "Evidence":
             st.session_state[STATE_FEEDBACK] = [_diagnostic("EM007_EVIDENCE", "$candidate_sha", str(exc))]
 
     candidate_projection = st.session_state.get(STATE_CANDIDATE)
-    _render_evidence(candidate_projection or _get_evidence_projection(),
+    _render_evidence(candidate_projection or _get_evidence_projection(), root,
                      f"{work_id}:{identity['digest']}:{candidate_projection is not None}")
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
