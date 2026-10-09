@@ -9,6 +9,7 @@ tasks:
       - _ask/scripts/engineering_model/workbench.py
       - _ask/scripts/engineering_model/projection.py
       - _ask/tests/test_engineering_workbench.py
+      - _ask/tests/test-sync-runtime-agents.sh
     completion_evidence: "Projection fixtures preserve relationship identity, task provenance and missing-history states; unchanged foundation regression suite remains executable"
     test_ids: [WB-relations, WB-task-history, WB-story-context, MV-valid, MV-graph, MV-fields, MV-refs, ME-decision, ME-revise, ME-reject, ME-race, EV-real, EV-missing, MP-shared, MC-journey, DG-pre, DG-post, DG-refs, DG-events, DG-parity, DG-publish, DG-bootstrap, ME-batch, DG-success, DG-entrypoints]
   - id: WB-002
