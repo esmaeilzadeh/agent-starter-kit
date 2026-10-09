@@ -93,9 +93,12 @@ class WorkbenchTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIsNotNone(app.session_state.get("_engineering_displayed_view"))
                 digest = app.session_state["_engineering_displayed_view"]["snapshot"]["digest"]
-                self.assertEqual(app.session_state.get("_engineering_form_identity"),
+                try:
+                    form_identity = app.session_state["_engineering_form_identity"]
+                except KeyError:
+                    form_identity = None
+                self.assertEqual(form_identity,
                                  {"work_id": "pilot", "digest": digest, "editable": True})
                 app.button(key="route:scenario").click().run(timeout=20)
                 self.assertEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
