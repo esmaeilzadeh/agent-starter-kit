@@ -28,8 +28,9 @@ Commands:
       Preconditions before implement (branch, spec, plan, current human intent confirmation).
       --allow-dirty   skip the clean-tree check
 
-  confirm-intent --work-id <id> --response <exact-human-response>
-      Record the human's explicit confirmation of the complete intent and assumptions.
+  confirm-intent --work-id <id> --choice approve|revise
+      Record the human's selected complete-intent approval choice.
+      Text fallback: --response <exact-human-response> (instead of --choice).
 
   status [--work-id <id>] [--json] [--later-only] [--work-only]
       Live agent/* plus archived work/* on the default branch (no checkout).

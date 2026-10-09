@@ -47,7 +47,7 @@ At meaningful milestones, create commits so that important engineering states ar
 
 ## Kit emphasis
 
-- A missing or stale explicit intent confirmation is a hard stop: present the full current intent and assumptions, ask “Do you approve the complete intent and every listed assumption as written?”, wait for an affirmative response, record that exact response with `./ask confirm-intent`, and re-run the gate. Never infer confirmation from an implementation request or a prior approval of only the direction/order.
+- A missing or stale explicit intent confirmation is a hard stop: present the full current intent and assumptions, ask “Do you approve the complete intent and every listed assumption as written?”, offer “Approve complete intent and assumptions” / “Request changes” through the runtime choice control, wait for a submitted approval, record it with `./ask confirm-intent --work-id <id> --choice approve`, and re-run the gate. For explicit text replies, use `--response` with the exact clear affirmative wording, including “approve”. A preselected option is not approval. Never infer confirmation from an implementation request or a prior approval of only the direction/order.
 
 - **Default:** run `./ask check-workstream <work-id>` before implementing. If it fails for missing spec/plan and they are still on the kit path, **prepare** those artifacts from accepted defaults (confirm “defaults OK” once if not already), then continue — do not implement on empty paper. Off-path (“just code”) only if they explicitly left: warn once and follow.
 - If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset). That refusal is safety, not workflow theater.
