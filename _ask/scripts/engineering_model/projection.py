@@ -8,6 +8,7 @@ from pathlib import PurePosixPath
 from .domain import task_states
 from .evidence import inspect as inspect_evidence
 from .snapshot import decode
+from .workbench import build_workbench
 
 
 def _captured_json(snapshot, path):
@@ -140,6 +141,13 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
     if node_id is not None and node_id not in nodes:
         raise ValueError(f"unknown Engineering Model node: {node_id}")
     tasks = task_states(model)
+    runtime_state = None
+    try:
+        runtime_state = json.loads((Path(root) / "work" / snapshot.work_id / "inner-loop" / "state.json")
+                                  .read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError):
+        pass
+    workbench = build_workbench(snapshot, model, tasks, runtime_state)
     evidence_work_ids = {snapshot.work_id}
     if include_evidence:
         for node in model.get("nodes", []):
@@ -189,6 +197,7 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
         "model": model,
         "hierarchy": _hierarchy(model, node_id),
         "tasks": tasks,
+        "workbench": workbench,
         "attention": attention,
         "scenarios": scenarios,
         "evidence": {"schema": "ask-engineering-evidence-set/v1",
