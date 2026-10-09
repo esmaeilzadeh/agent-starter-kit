@@ -27,6 +27,29 @@ def _safe_path(value):
             and ".." not in PurePosixPath(value).parts)
 
 
+def _confined_path(root, path, boundary=None):
+    """Reject symlinks in every path component and require resolved containment."""
+    root = Path(root).resolve()
+    path = Path(path)
+    if not path.is_absolute():
+        path = root / path
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        return False
+    cursor = root
+    for part in relative.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            return False
+    resolved = path.resolve()
+    if not resolved.is_relative_to(root):
+        return False
+    if boundary is not None and not resolved.is_relative_to(Path(boundary).resolve()):
+        return False
+    return True
+
+
 def _commit(root, revision):
     if not isinstance(revision, str) or not revision:
         raise ValueError("source revision is missing")
@@ -129,13 +152,13 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
         result["diagnostic"] = "selected work or test identity is invalid"
         return result
     runtime = root / "work" / work_id / "traceability"
-    if runtime.is_symlink() or not runtime.resolve().is_relative_to((root / "work" / work_id).resolve()):
+    if not _confined_path(root, runtime):
         result["status"] = "invalid"
-        result["diagnostic"] = "workstream evidence root is unsafe"
+        result["diagnostic"] = "workstream evidence root is unsafe or traverses a symlink"
         return result
     ledger_path = runtime / "executions.json"
     try:
-        if ledger_path.is_symlink() or not ledger_path.is_file():
+        if not _confined_path(root, ledger_path, runtime) or not ledger_path.is_file():
             raise FileNotFoundError("retained execution ledger is missing")
         ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
         if not isinstance(ledger, list) or any(not isinstance(entry, dict) for entry in ledger):
@@ -156,7 +179,7 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
             continue
         report_path = runtime / "runs" / run_id / "results.json"
         try:
-            if report_path.is_symlink() or not report_path.is_file():
+            if not _confined_path(root, report_path, runtime) or not report_path.is_file():
                 raise FileNotFoundError("retained run report is missing")
             report = json.loads(report_path.read_text(encoding="utf-8"))
             if not isinstance(report, dict):
@@ -214,6 +237,10 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
                     row["diagnostic"] = "case and execution identity differ"
                     result["runs"].append(row)
                     continue
+                if case.get("source_sha") != report.get("candidate_sha"):
+                    row["diagnostic"] = "case source revision differs from report candidate"
+                    result["runs"].append(row)
+                    continue
                 artifact = case.get("output_artifact")
                 prefix = f"work/{work_id}/traceability/runs/{run_id}/"
                 if (not isinstance(artifact, str) or not artifact.startswith(prefix)
@@ -222,7 +249,7 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
                     result["runs"].append(row)
                     continue
                 log_path = root / artifact
-                if log_path.is_symlink() or not log_path.is_file() or not log_path.resolve().is_relative_to(runtime.resolve()):
+                if not _confined_path(root, log_path, runtime) or not log_path.is_file():
                     row["diagnostic"] = "execution log is missing or outside the workstream evidence root"
                     result["runs"].append(row)
                     continue
@@ -252,6 +279,8 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
                         source_status = "unavailable"
                     elif selected_sources != source_digests:
                         source_status = "stale"
+                    elif report.get("candidate_sha") != requested_candidate:
+                        source_status = "historical"
                     elif requested_candidate != head:
                         source_status = "historical"
                     else:
