@@ -102,13 +102,22 @@ class DocumentGuardTests(unittest.TestCase):
 import json, os
 from pathlib import Path
 from engineering_model.actions import edit
+import engineering_model.actions as actions
 root = Path.cwd()
-replace = os.replace
-def interrupted(source, target):
-    replace(source, target)
-    if Path(target) == root / 'specs/current/pilot.md':
-        os._exit(86)
-os.replace = interrupted
+if hasattr(actions, '_renameat2'):
+    rename = actions._renameat2
+    def interrupted(source, target, flags):
+        rename(source, target, flags)
+        if Path(target) == root / 'specs/current/pilot.md':
+            os._exit(86)
+    actions._renameat2 = interrupted
+else:
+    replace = os.replace
+    def interrupted(source, target):
+        replace(source, target)
+        if Path(target) == root / 'specs/current/pilot.md':
+            os._exit(86)
+    os.replace = interrupted
 def proposal():
     print('action-invoked', flush=True)
     return {'commands': [{'op': 'resolve_decision', 'id': 'choice', 'option_id': 'one',
@@ -246,6 +255,18 @@ edit(root, 'pilot', os.environ['EXPECTED'], proposal)
                     raw = load_published(root, "pilot").document
                     raw["nodes"][0]["title"] = "Unmanaged write"
                     write_json(root, "work/pilot/engineering-model.json", raw)
+                    _snapshot, errors = admit(root, "pilot")
+                    self.assertEqual(errors, [])
+            original = load_published(root, "pilot")
+            model_path = root / original.model_path
+            with self.assertRaisesRegex(ValueError, "verified guarded edit chain"):
+                with workflow_admission(root, "pilot"):
+                    raw = copy.deepcopy(original.document)
+                    raw["nodes"][0]["title"] = "Temporary raw definition"
+                    write_json(root, original.model_path, raw)
+                    _snapshot, errors = admit(root, "pilot")
+                    self.assertEqual(errors, [])
+                    model_path.write_bytes(original.files[original.model_path])
                     _snapshot, errors = admit(root, "pilot")
                     self.assertEqual(errors, [])
 
