@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import os
+import copy
+import hashlib
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -54,7 +57,7 @@ class WorkbenchTests(unittest.TestCase):
             _add_story(model)
             write_json(root, "work/pilot/engineering-model.json", model)
             # The selector lists both local models, but the branch-matched work opens first.
-            other_model, _ = workbench_model(root)
+            other_model = copy.deepcopy(model)
             other_model["work_id"] = "archive"
             write_json(root, "work/archive/engineering-model.json", other_model)
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
@@ -106,9 +109,14 @@ class WorkbenchTests(unittest.TestCase):
                 # A linked spec change makes the captured edit stale. Navigation cannot
                 # replace its identity or write the form; Refresh is the explicit recapture.
                 spec_path = root / "specs/current/pilot.json"
-                spec = __import__("json").loads(spec_path.read_text(encoding="utf-8"))
+                spec = json.loads(spec_path.read_text(encoding="utf-8"))
                 spec["revision"] += 1
                 write_json(root, "specs/current/pilot.json", spec)
+                plan_path = root / "work/pilot/test-plan.json"
+                plan = json.loads(plan_path.read_text(encoding="utf-8"))
+                plan["spec_digest"] = hashlib.sha256(
+                    json.dumps(spec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+                write_json(root, "work/pilot/test-plan.json", plan)
                 app.button(key="route:decision").click().run(timeout=20)
                 self.assertEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
                 actor_key = next(item.key for item in app.text_input
@@ -120,7 +128,7 @@ class WorkbenchTests(unittest.TestCase):
                 app.button(key="decision:submit").click().run(timeout=20)
                 self.assertIn("stale", _text(app).lower())
                 self.assertFalse(app.button(key="decision:submit").disabled)
-                current_model = __import__("json").loads(
+                current_model = json.loads(
                     (root / "work/pilot/engineering-model.json").read_text(encoding="utf-8"))
                 decision = next(node for node in current_model["nodes"] if node["id"] == "choice")
                 self.assertEqual(decision["history"], [])
