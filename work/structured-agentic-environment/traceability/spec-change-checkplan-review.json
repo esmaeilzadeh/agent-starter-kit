@@ -1,0 +1,14 @@
+{
+  "decision": "APPROVED",
+  "reviewer": "review_checkplan_amendment",
+  "reviewedSHA": "897cb40a8362aed3d5858a4e105b9a374480fcc5",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "572d2c3dda82e69a49d78b1320ec35835f4f153137e62c35f41af678ad106330",
+  "graph_digest": "e6f96a81baca59a2dadab9ab1ecc12825ea6be5dab1379be2ee9edd5a2f36bb9",
+  "model": "gpt-6-astra",
+  "runtime": "codex",
+  "parent_model": "not exposed by runtime",
+  "scope": "CheckPlan verification contract amendment only",
+  "blocking_findings": [],
+  "notes": "Canonical spec and test plan are unchanged; TaskGraph adds only the WB-001 verification-support path. The independent review artifact records transition requirements for a fresh coordinator/base after repinning."
+}
