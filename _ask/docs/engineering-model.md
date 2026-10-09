@@ -78,4 +78,47 @@ blocked actions; the UI does not repair domain documents.
 
 Core validation/editing uses Python standard-library JSON, hash indexes and
 iterative graph traversal. Optional UI/watcher dependencies are separate. The
-historical initial benchmark does not establish final full-guard performance.
+full-guard benchmark below measures actual staged actions; it does not select a
+technology or establish a performance target.
+
+## Interactive workbench
+
+Install the optional runtime dependencies and launch the local UI:
+
+```sh
+python -m pip install -r _ask/ui/requirements.txt
+streamlit run _ask/ui/streamlit_app.py
+```
+
+Set `ASK_MODEL_ROOT` to a repository root when inspecting a different checkout.
+The default is this repository. The workbench displays admitted snapshots;
+decision forms use the shared expected-digest mutation path and stay bound to
+the snapshot shown until the user refreshes. Invalid working state is read-only
+and may show the last validated generation. No automatic execution or repair is
+performed.
+
+The browser integration test additionally needs the pinned Playwright test
+dependency and its Chromium browser:
+
+```sh
+python -m pip install -r _ask/ui/requirements.txt -r _ask/ui/requirements-test.txt
+python -m playwright install chromium
+PYTHONPATH=_ask/scripts:_ask/tests python -m unittest test_engineering_ui test_engineering_ui_browser
+```
+
+## Validator performance measurement
+
+The reproducible full-guard benchmark runs on disposable copies and emits JSON
+to stdout; it does not write repository runtime state:
+
+```sh
+PYTHONPATH=_ask/scripts python -m engineering_model.benchmark --guard --repeats 15
+```
+
+It measures actual pre/action/post/publication paths, rejected pre- and
+post-validation paths, component timings and process peak RSS across the pilot
+closure and synthetic closures. Results include source hashes and environment;
+timings include instrumentation overhead and do not imply cold OS caches or a
+performance target. The optional benchmark is evidence for deciding whether a
+different implementation technology is warranted, not a claim that Python is
+optimal.

@@ -76,3 +76,40 @@ def workbench_model(root):
     write_json(root, "work/pilot/engineering-model.json", model)
     write_json(root, "work/pilot/test-plan.json", plan)
     return model, spec
+
+
+def evidence_workbench():
+    """Real retained successful evidence, followed by a newer adopted checkout."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
+    from traceability_fixture import Consumer
+    consumer = Consumer()
+    try:
+        verified = consumer.command("verify")
+        if verified.returncode:
+            raise RuntimeError("evidence fixture verification failed: " + verified.stdout + verified.stderr)
+        historical = consumer.sha
+        model = decision_model()
+        model["work_id"] = "w"
+        model["nodes"].extend([
+            {"id": "build", "type": "task", "title": "Build", "lifecycle": "planned"},
+            {"id": "requirement", "type": "requirement", "title": "Uppercase requirement", "lifecycle": "active",
+             "reference": {"path": "specs/current/w.json", "id": "C1"}},
+            {"id": "scenario", "type": "scenario", "title": "Uppercase behavior", "lifecycle": "active",
+             "reference": {"path": "specs/current/w.json", "id": "C1"}},
+            {"id": "case", "type": "test", "title": "Uppercase assertion", "lifecycle": "active",
+             "reference": {"path": "work/w/test-plan.json", "id": "U"}},
+        ])
+        model["edges"].extend([
+            {"type": "contains", "source": "purpose", "target": "build"},
+            {"type": "depends_on", "source": "build", "target": "choice"},
+            {"type": "contains", "source": "purpose", "target": "requirement"},
+            {"type": "contains", "source": "requirement", "target": "scenario"},
+            {"type": "covers", "source": "case", "target": "scenario"},
+        ])
+        consumer.write("specs/current/w.md", "# Uppercase specification\n")
+        consumer.write("work/w/engineering-model.json", model)
+        consumer.commit("adopt workbench without claiming completion for the new revision")
+        return consumer, historical
+    except BaseException:
+        consumer.close()
+        raise

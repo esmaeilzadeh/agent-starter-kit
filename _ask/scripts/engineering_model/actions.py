@@ -6,7 +6,6 @@ Conflicting external writes are preserved and block admission.
 """
 import base64
 import ctypes
-import errno
 import hashlib
 import json
 import os
