@@ -80,8 +80,8 @@ class WorkbenchTests(unittest.TestCase):
                 app.selectbox(key="work_id").select("archive").run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.selectbox(key="work_id").value, "archive")
-                self.assertNotIn("Canonical behavior", _text(app))
                 self.assertEqual(app.session_state["_engineering_route"], "purpose")
+                self.assertIn("Working tree", _text(app))
                 self.assertEqual(subprocess.check_output(
                     ["git", "-C", str(root), "branch", "--show-current"], text=True).strip(),
                     "agent/pilot")
