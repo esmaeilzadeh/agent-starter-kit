@@ -2,6 +2,7 @@
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -141,6 +142,17 @@ class WorkbenchTests(unittest.TestCase):
                                   plan_digest="contract-1", candidate_sha=self.candidate_sha)
         self.assertNotIn("mismatched-case", [row["run_id"] for row in exact["runs"]])
 
+        # A digest-consistent report cannot attribute an older source to a newer run.
+        contradiction = self._report(run_id="contradictory-source", source_sha=self.source_sha,
+                                     candidate_sha=self.candidate_sha)
+        self._ledger(contradiction)
+        inspected = execution_history(self.root, "w", expected, spec_digest="spec-1",
+                                      plan_digest="contract-1", candidate_sha=self.candidate_sha)
+        row = next(item for item in inspected["runs"] if item["run_id"] == "contradictory-source")
+        self.assertEqual(row["outcome"], "passed")
+        self.assertEqual(row["output_status"], "invalid")
+        self.assertIn("candidate", row["diagnostic"])
+
     def test_missing_stale_tampered_and_refreshed_evidence(self):
         expected = {"id": "T", "runner_id": "python", "case_id": "test_sample.First.test_same",
                     "source_paths": ["test_sample.py"]}
@@ -176,6 +188,43 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(old_run["outcome"], "passed")
         self.assertEqual(old_run["output_status"], "valid")
         self.assertEqual(old_run["applicability"], "stale")
+
+        # A production-only commit makes an earlier run historical even when
+        # its test source bytes are unchanged.
+        recent = self._report(run_id="run-4", source_sha=self.candidate_sha,
+                              candidate_sha=self.candidate_sha, outcome="passed")
+        self._ledger(recent)
+        self.write("src/app.py", "VALUE = 'production-only change'\n")
+        production_candidate = self.commit("production-only change")
+        after_production_change = execution_history(
+            self.root, "w", expected, spec_digest="spec-1", plan_digest="contract-1",
+            candidate_sha=production_candidate)
+        old_implementation = next(row for row in after_production_change["runs"]
+                                  if row["run_id"] == "run-4")
+        self.assertEqual(old_implementation["source_status"], "historical")
+        self.assertEqual(old_implementation["applicability"], "historical")
+        self.assertEqual(old_implementation["duration_status"], "unavailable")
+        self.assertEqual(old_implementation["recorded_at_status"], "unavailable")
+
+        # A valid external copy must not be accepted through work/<id> symlink.
+        external = self.root.parent / (self.root.name + "-external")
+        external_work = external / "work/w"
+        shutil.copytree(self.root / "work/w", external_work)
+        local_work = self.root / "work/w"
+        saved_work = self.root / "work/w-saved"
+        local_work.rename(saved_work)
+        local_work.symlink_to(external_work, target_is_directory=True)
+        try:
+            outside = execution_history(
+                self.root, "w", expected, spec_digest="spec-1", plan_digest="contract-1",
+                candidate_sha=production_candidate)
+            self.assertEqual(outside["status"], "invalid", outside)
+            self.assertEqual(outside["runs"], [])
+            self.assertIn("symlink", outside["diagnostic"])
+        finally:
+            local_work.unlink()
+            saved_work.rename(local_work)
+            shutil.rmtree(external)
 
 if __name__ == "__main__":
     unittest.main()
