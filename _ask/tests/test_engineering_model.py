@@ -357,6 +357,17 @@ class ModelValidationTests(unittest.TestCase):
                 self.assertIn("EM001_REFERENCE_PATH", {e["code"] for e in validate(model, root, "pilot")})
             requirement["reference"]["path"] = "specs/current/pilot.json"
 
+            # A feature spec is part of the transitive canonical definition
+            # closure, even when the model only points at its parent spec.
+            spec["feature_specification"] = "docs/feature.json"
+            write_json(root, "specs/current/pilot.json", spec)
+            write_json(root, "docs/feature.json", {
+                "schema": "ask-feature-spec/v1", "id": "feature", "status": "CURRENT",
+                "extends": "../outside.json",
+            })
+            feature_errors = validate(model, root, "pilot")
+            self.assertIn("EM001_CANONICAL_DEFINITION", {e["code"] for e in feature_errors}, feature_errors)
+
             # Simulate an external editor replacing a definition immediately after
             # its bytes have been read. The filesystem is the system boundary.
             target = root / "specs/current/pilot.json"
@@ -424,6 +435,32 @@ class ModelValidationTests(unittest.TestCase):
             malformed["nodes"][0]["title"] = " "
             errors = validate(malformed, directory, "pilot")
             self.assertTrue({"EM001_REVISION", "EM001_FIELD", "EM001_TITLE"}.issubset({e["code"] for e in errors}))
+
+            malformed_history = decision_model()
+            malformed_history["nodes"][1]["history"] = [None, {
+                "event": "resolved", "actor": [], "timestamp": "yesterday",
+                "options": [], "resolution": {"option_id": "missing"},
+            }]
+            errors = validate(malformed_history, directory, "pilot")
+            self.assertIn("EM001_DECISION_HISTORY", {e["code"] for e in errors}, errors)
+
+            malformed_reference = decision_model()
+            malformed_reference["nodes"].append({
+                "id": "code", "type": "implementation", "title": "Source",
+                "lifecycle": "active", "reference": {"path": "missing.py", "symbol": 42},
+            })
+            malformed_reference["edges"].append({"type": "implements", "source": "code", "target": "choice"})
+            errors = validate(malformed_reference, directory, "pilot")
+            self.assertIn("EM001_REFERENCE", {e["code"] for e in errors}, errors)
+
+            malformed_evidence = decision_model()
+            malformed_evidence["nodes"].append({
+                "id": "proof", "type": "evidence", "title": "Proof",
+                "lifecycle": "active", "reference": {"path": "README.md"},
+            })
+            malformed_evidence["edges"].append({"type": "supports", "source": "proof", "target": "choice"})
+            errors = validate(malformed_evidence, directory, "pilot")
+            self.assertIn("EM001_REFERENCE", {e["code"] for e in errors}, errors)
 
 
 class ProjectionTests(unittest.TestCase):
