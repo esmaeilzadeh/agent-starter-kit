@@ -75,6 +75,14 @@ def workbench_model(root):
             "expected_assertions": [{"criterion_id": "P-001", "checks": ["Exact accepted behavior"]}]}]}
     write_json(root, "work/pilot/engineering-model.json", model)
     write_json(root, "work/pilot/test-plan.json", plan)
+    source = Path(root) / "test_fixture.py"
+    source.write_text(
+        "class Cases:\n"
+        "    def test_behavior(self):\n"
+        "        actual = validate_input('valid')\n"
+        "        self.assertEqual(actual, 'accepted')\n",
+        encoding="utf-8",
+    )
     return model, spec
 
 

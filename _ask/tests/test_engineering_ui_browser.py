@@ -31,46 +31,16 @@ class WorkbenchBrowserJourney(unittest.TestCase):
         expect(option).to_be_checked()
 
     @staticmethod
-    def _table_below(page, heading):
-        section_heading = page.get_by_text(heading, exact=True).first
-        try:
-            section_heading.wait_for(timeout=7000)
-        except PlaywrightError as exc:
-            raise AssertionError(f"section {heading} not rendered: {page.locator('body').inner_text()}") from exc
-        try:
-            section_heading.scroll_into_view_if_needed()
-        except PlaywrightError:
-            section_heading = page.get_by_text(heading, exact=True).first
-            section_heading.wait_for()
-            section_heading.scroll_into_view_if_needed()
-        heading_box = section_heading.bounding_box()
-        tables = page.locator('[data-testid="stDataFrame"]')
-        candidates = []
-        for index in range(tables.count()):
-            try:
-                box = tables.nth(index).bounding_box(timeout=1000)
-            except PlaywrightError:
-                continue
-            if box and heading_box and box["y"] >= heading_box["y"]:
-                candidates.append((box["y"], tables.nth(index)))
-        if not candidates:
-            raise AssertionError(f"no rendered table follows {heading}")
-        return min(candidates, key=lambda candidate: candidate[0])[1]
-
-    @staticmethod
-    def _click_row(page, table, row_index):
-        table.scroll_into_view_if_needed()
-        canvas = table.locator("canvas").first.bounding_box()
-        if not canvas:
-            raise AssertionError("table has no visible selection surface")
-        page.mouse.click(canvas["x"] + 16, canvas["y"] + 54 + row_index * 36)
+    def _choose_item(page, label, value):
+        control = page.get_by_role("combobox", name=label)
+        control.click()
+        control.fill(value)
+        control.press("Enter")
 
     @staticmethod
     def select_object(page, value):
-        row_index = ["build", "case", "choice", "purpose", "requirement", "scenario"].index(value)
         WorkbenchBrowserJourney.select_section(page, "Objects")
-        table = WorkbenchBrowserJourney._table_below(page, "Engineering objects")
-        WorkbenchBrowserJourney._click_row(page, table, row_index)
+        WorkbenchBrowserJourney._choose_item(page, "Engineering objects", value)
 
     @staticmethod
     def select_task_status(page, status):
@@ -80,16 +50,14 @@ class WorkbenchBrowserJourney(unittest.TestCase):
             raise AssertionError(f"task status {status} not visible: {page.locator('body').inner_text()}") from exc
 
     @staticmethod
-    def select_task(page, row_index):
+    def select_task(page, task_id):
         WorkbenchBrowserJourney.select_section(page, "Overview")
-        table = WorkbenchBrowserJourney._table_below(page, "Tasks")
-        WorkbenchBrowserJourney._click_row(page, table, row_index)
+        WorkbenchBrowserJourney._choose_item(page, "Tasks", task_id)
 
     @staticmethod
-    def select_scenario(page, row_index):
+    def select_scenario(page, scenario_id):
         WorkbenchBrowserJourney.select_section(page, "Scenarios")
-        table = WorkbenchBrowserJourney._table_below(page, "Scenarios and planned tests")
-        WorkbenchBrowserJourney._click_row(page, table, row_index)
+        WorkbenchBrowserJourney._choose_item(page, "Scenarios and planned tests", scenario_id)
 
     @staticmethod
     def select_evidence_status(page, status):
@@ -99,21 +67,16 @@ class WorkbenchBrowserJourney(unittest.TestCase):
             raise AssertionError(f"{status} evidence detail not visible: {page.locator('body').inner_text()}") from exc
 
     @staticmethod
-    def select_evidence(page, row_index):
+    def select_evidence(page, work_id):
         WorkbenchBrowserJourney.select_section(page, "Evidence")
-        page.locator('[data-testid="stDataFrame"]').first.wait_for()
-        table = WorkbenchBrowserJourney._table_below(page, "Evidence")
-        WorkbenchBrowserJourney._click_row(page, table, row_index)
+        WorkbenchBrowserJourney._choose_item(page, "Evidence", work_id)
 
     @staticmethod
     def choose(page, label, value):
         if label == "Engineering object":
             WorkbenchBrowserJourney.select_object(page, value)
             return
-        control = page.get_by_role("combobox", name=label)
-        control.click()
-        control.fill(value)
-        control.press("Enter")
+        WorkbenchBrowserJourney._choose_item(page, label, value)
 
     def test_stale_spec_then_refresh_and_persist_in_new_browser_session(self):
         with tempfile.TemporaryDirectory(prefix="ask-ui-browser-") as temporary:
@@ -158,20 +121,26 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                         first_context = browser.new_context()
                         first = first_context.new_page()
                         first.goto(url, wait_until="domcontentloaded")
+                        self.assertEqual(
+                            first.get_by_role("combobox", name="Workstream in current branch").input_value(),
+                            "w",
+                        )
                         self.select_task_status(first, "blocked")
-                        first.locator('[data-testid="stDataFrame"]').first.wait_for()
+                        expect(first.get_by_text("Branch:", exact=False)).to_be_visible()
                         expect(first.get_by_role("heading", name="Build", exact=True)).to_be_visible()
-                        self.select_task(first, 1)
+                        self.select_task(first, "review-build")
                         expect(first.get_by_role("heading", name="Review build", exact=True)).to_be_visible()
-                        self.select_task(first, 0)
+                        self.select_task(first, "build")
                         expect(first.get_by_role("heading", name="Build", exact=True)).to_be_visible()
-                        self.select_scenario(first, 0)
+                        self.select_scenario(first, "scenario")
                         expect(first.get_by_role("heading", name="Uppercase behavior", exact=True)).to_be_visible()
-                        self.select_scenario(first, 1)
+                        expect(first.get_by_text("Test source", exact=False)).to_be_visible()
+                        expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
+                        self.select_scenario(first, "scenario-other")
                         expect(first.get_by_role("heading", name="Second canonical behavior", exact=True)).to_be_visible()
-                        self.select_evidence(first, 0)
+                        self.select_evidence(first, "other")
                         expect(first.get_by_role("heading", name="other", exact=True)).to_be_visible()
-                        self.select_evidence(first, 1)
+                        self.select_evidence(first, "w")
                         expect(first.get_by_role("heading", name="w", exact=True)).to_be_visible()
                         self.select_evidence_status(first, "unavailable")
                         first.get_by_label("Evidence candidate").fill(current_sha)
