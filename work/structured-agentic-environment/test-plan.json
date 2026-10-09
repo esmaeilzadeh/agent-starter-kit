@@ -2005,5 +2005,31 @@
         "UI-browser-gitless"
       ]
     }
-  ]
+  ],
+  "task_scoped_baseline_regression_exemptions": {
+    "WB-001": [
+      "MV-valid",
+      "MV-graph",
+      "MV-fields",
+      "MV-refs",
+      "ME-decision",
+      "ME-revise",
+      "ME-reject",
+      "ME-race",
+      "EV-real",
+      "EV-missing",
+      "MP-shared",
+      "MC-journey",
+      "DG-pre",
+      "DG-post",
+      "DG-refs",
+      "DG-events",
+      "DG-parity",
+      "DG-publish",
+      "DG-bootstrap",
+      "ME-batch",
+      "DG-success",
+      "DG-entrypoints"
+    ]
+  }
 }

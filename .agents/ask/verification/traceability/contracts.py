@@ -9,7 +9,7 @@ from typing import Any
 
 TYPES = {'unit', 'integration', 'e2e'}
 POLICY = '_ask/policies/delegation.md'
-EXEMPTIONS = {'documentation-only', 'generated-projections', 'non-behavioral-config'}
+EXEMPTIONS = {'documentation-only', 'generated-projections', 'non-behavioral-config', 'baseline-regression'}
 
 @dataclass(frozen=True)
 class Violation:

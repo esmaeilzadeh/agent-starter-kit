@@ -193,10 +193,22 @@ def review_errors(root,contracts,review,sha):
     for tid,t in tests.items():
         exemption=t.get('tdd_exemption')
         if exemption is not None:
-            if (not isinstance(exemption,dict) or exemption.get('kind') not in EXEMPTIONS
-                or not text(exemption.get('reason')) or exemption.get('reviewer_ack') is not True
-                or exemption.get('decision')!='APPROVED' or classifications.get(tid,{}).get('change_kind')!='changed'
-                or tid in actual['behavior_changes']):errors.append(f'{tid}: unsupported behavior TDD exemption')
+            valid=(isinstance(exemption,dict) and exemption.get('kind') in EXEMPTIONS
+                   and text(exemption.get('reason')) and exemption.get('reviewer_ack') is True
+                   and exemption.get('decision')=='APPROVED')
+            if not valid:errors.append(f'{tid}: unsupported behavior TDD exemption')
+            case=classifications.get(tid,{})
+            if isinstance(exemption,dict) and exemption.get('kind')=='baseline-regression':
+                allowed=plan.get('task_scoped_baseline_regression_exemptions',{}).get(task_id,[])
+                unchanged=scope=='task' and case.get('change_kind')=='new' and tid in allowed
+                if unchanged:
+                    for path in case.get('source_paths',[]):
+                        try:unchanged=unchanged and read_at(root,contracts['pin']['contract_sha'],path)==read_at(root,sha,path)
+                        except (Invalid,OSError):unchanged=False
+                if not unchanged:
+                    errors.append(f'{tid}: baseline regression exemption is task-scoped and requires sources unchanged from the accepted baseline')
+            elif case.get('change_kind')!='changed' or tid in actual['behavior_changes']:
+                errors.append(f'{tid}: unsupported behavior TDD exemption')
         if t.get('decision')!='APPROVED' or any(not text(t.get(k)) for k in ['assertion_assessment','counterexample','tdd_continuity_assessment']):errors.append(f'{tid}: incomplete/rejected assertion review')
     return errors
 

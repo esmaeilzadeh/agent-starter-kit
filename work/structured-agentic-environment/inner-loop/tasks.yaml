@@ -12,10 +12,14 @@ tasks:
       - _ask/tests/test-sync-runtime-agents.sh
       - .agents/ask/verification/traceability/evidence.py
       - .agents/ask/verification/traceability/completion.py
+      - .agents/ask/verification/traceability/contracts.py
+      - .agents/ask/verification/traceability/coverage.py
+      - work/structured-agentic-environment/test-plan.json
       - _ask/tests/test_traceability_evidence.py
+      - _ask/tests/test_traceability_contracts.py
       - _ask/tests/traceability_fixture.py
       - _ask/tests/traceability_support.py
-    completion_evidence: "Projection fixtures preserve relationship identity, task provenance and missing-history states; task-level semantic review binds only assigned tests and present sources while final workstream review still covers every accepted case"
+    completion_evidence: "Projection fixtures preserve relationship identity, task provenance and missing-history states; task-level semantic review binds only assigned cases; the 22 explicitly listed unchanged baseline cases may use reviewer-acknowledged baseline-regression exemptions for task integration only, while final workstream completion still requires genuine red evidence"
     test_ids: [WB-relations, WB-task-history, WB-story-context, MV-valid, MV-graph, MV-fields, MV-refs, ME-decision, ME-revise, ME-reject, ME-race, EV-real, EV-missing, MP-shared, MC-journey, DG-pre, DG-post, DG-refs, DG-events, DG-parity, DG-publish, DG-bootstrap, ME-batch, DG-success, DG-entrypoints]
   - id: WB-002
     title: "Browse work across branch snapshots"

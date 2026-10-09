@@ -146,5 +146,31 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(review_errors(self.c.root,contracts,review,self.c.sha),[])
         review['criterion_ids'].remove('R1');review['criteria'].pop()
         self.assertIn('missing per-criterion/test semantic review',review_errors(self.c.root,contracts,review,self.c.sha))
+    def test_I09_task_review_can_acknowledge_unchanged_baseline_regression(self):
+        from verification.traceability.evidence import source_digests
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        c.contracts=copy.deepcopy(c.contracts);c.contracts['plan']['task_scoped_baseline_regression_exemptions']={'a':['U']}
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'],plan_digest=digest(c.contracts['plan']))
+        review['source_digests']=source_digests(c.root,c.sha,c.contracts['plan'],['U'])
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion checks a fixed public-function result.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        review['tests'][0]['tdd_exemption']={'kind':'baseline-regression','reason':'This accepted test source predates the task baseline and is byte-identical; its green run is regression protection, not newly authored behavior.','reviewer_ack':True,'decision':'APPROVED'}
+        self.assertEqual(review_errors(c.root,c.contracts,review,c.sha),[])
+        workstream=copy.deepcopy(review);workstream.update(scope='workstream',task_id=None)
+        self.assertTrue(any('baseline regression exemption is task-scoped' in error for error in review_errors(c.root,c.contracts,workstream,c.sha)))
+    def test_I10_baseline_regression_exemption_rejects_changed_source(self):
+        from verification.traceability.evidence import source_digests
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        c.contracts=copy.deepcopy(c.contracts);c.contracts['plan']['task_scoped_baseline_regression_exemptions']={'a':['U']}
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'],plan_digest=digest(c.contracts['plan']))
+        review['source_digests']=source_digests(c.root,c.sha,c.contracts['plan'],['U'])
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion checks a fixed public-function result.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        review['tests'][0]['tdd_exemption']={'kind':'baseline-regression','reason':'This accepted test source predates the task baseline and is byte-identical; its green run is regression protection, not newly authored behavior.','reviewer_ack':True,'decision':'APPROVED'}
+        c.write('test_app.py',(c.root/'test_app.py').read_text()+'\n# changed after accepted baseline\n')
+        candidate=c.commit('change baseline regression source')
+        self.assertTrue(any('baseline regression exemption is task-scoped and requires sources unchanged from the accepted baseline' in error for error in review_errors(c.root,c.contracts,review,candidate)))
 
 if __name__=='__main__':unittest.main()

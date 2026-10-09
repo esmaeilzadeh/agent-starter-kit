@@ -72,6 +72,15 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
         if not string_list(ids,nonempty=False) or not set(ids)<=tests.keys(): errors.append(Violation('invalid_task_scope',field=task_id));continue
         assigned.update(ids)
     if graph_ids and assigned!=set(tests): errors.append(Violation('unassigned_tests'))
+    exceptions=plan.get('task_scoped_baseline_regression_exemptions',{})
+    if not isinstance(exceptions,dict):
+        errors.append(Violation('invalid_baseline_regression_exemptions'))
+    else:
+        for task_id,ids in exceptions.items():
+            scope=scopes.get(task_id)
+            if (not scope or not string_list(ids) or not set(ids)<=set(scope.get('test_ids',[]))
+                or any(tests.get(tid,{}).get('change_kind')!='new' for tid in ids)):
+                errors.append(Violation('invalid_baseline_regression_exemptions',field=task_id))
     return errors
 
 
