@@ -11,6 +11,7 @@ The human previously requested that newly parked tasks be added to develop inste
 
 ## Proposed What (unapproved)
 
+- When the human asks to add something to the later inbox, agents must invoke the canonical Ask command (proposed `./ask later add`) instead of manually writing cards or assembling Git operations. That command owns card creation and publication on develop, including commit and push when authorized.
 - Route every newly parked later card to develop, or the configured integration branch, regardless of the current workstream branch. Keep live engineering work on its dedicated agent/<work-id> branch.
 - Make the entry instruction and later-add/publication command resolve the same integration-branch policy. Refuse an accidental card commit on a work branch with an actionable explanation.
 - Read the durable inbox from the integration ref when listing later work, including while an agent branch is checked out. Identify unpublished local cards separately so existing in-progress additions are not hidden.
