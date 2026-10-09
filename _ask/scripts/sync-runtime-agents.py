@@ -235,6 +235,27 @@ def render(tpl: str, **kw: str) -> str:
     return out
 
 
+def resolve_effort(stage: str, model: str, cfg: dict, consumer: dict, work: dict, env: dict) -> str | None:
+    """Codex-only effort; explicit inheritance and unknown models stay unpinned."""
+    key = "ASK_EFFORT_" + stage.upper().replace("-", "_")
+    value = env.get(key + "_CODEX", env.get(key))
+    if value is None:
+        for overlay in (work, consumer):
+            value = value_from_overlay(overlay.get("reasoning_effort") or {}, stage, "codex")
+            if value is not None:
+                break
+    if value is None:
+        efforts = cfg.get("reasoning_effort") or {}
+        models = efforts.get("models") or {}
+        if model in models:
+            value = (efforts.get("stages") or {}).get(stage, models[model])
+    if value is None or value == "inherit":
+        return None
+    if not isinstance(value, str) or value not in {"low", "medium", "high", "xhigh", "max"}:
+        raise SystemExit(f"invalid reasoning effort for codex {stage}: {value!r}")
+    return value
+
+
 def bindings_dir(root: Path) -> Path:
     ask_bind = root / ".agents" / "ask" / "bindings"
     if (root / ".agents" / "ask" / "stages").is_dir() and ask_bind.is_dir():
@@ -262,13 +283,13 @@ def main() -> int:
     toml_tpl = (bind / "templates" / "agent.toml.tpl").read_text(encoding="utf-8")
     opencode_tpl = (bind / "templates" / "agent.opencode.md.tpl").read_text(encoding="utf-8")
 
+    outputs = []
     for runtime in RUNTIMES:
         cfg = load_yaml(bind / "runtimes" / f"{runtime}.yaml")
         if not cfg:
             print(f"sync-runtime-agents: skip {runtime} (no yaml)", file=sys.stderr)
             continue
         out_dir = root / OUT_DIRS[runtime]
-        out_dir.mkdir(parents=True, exist_ok=True)
         for stage in STAGES:
             slug = resolve_slug(stage, runtime, defaults, cfg, consumer, work, os.environ)
             name = f"kit-{stage}"
@@ -276,11 +297,13 @@ def main() -> int:
             readonly = "readonly: true\n" if stage == "07-review" else ""
             permission_block = "permission:\n  edit: deny\n" if stage == "07-review" else ""
             if runtime == "codex":
+                effort = resolve_effort(stage, slug, cfg, consumer, work, os.environ)
                 text = render(
                     toml_tpl,
                     name=name,
                     description=desc,
                     model=slug,
+                    reasoning_effort_line=f'model_reasoning_effort = "{effort}"\n' if effort else "",
                     runtime=runtime,
                     stage=stage,
                 )
@@ -306,7 +329,12 @@ def main() -> int:
                     stage=stage,
                 )
                 dest = out_dir / f"{name}.md"
-            dest.write_text(text, encoding="utf-8")
+            outputs.append((dest, text))
+    # Preflight every assignment before touching any runtime's existing output.
+    for dest, text in outputs:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(text, encoding="utf-8")
+    for out_dir in sorted({dest.parent for dest, _ in outputs}):
         print(f"sync-runtime-agents: wrote {out_dir}")
     return 0
 

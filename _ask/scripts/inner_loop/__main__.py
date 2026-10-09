@@ -30,6 +30,8 @@ from inner_loop.state import (  # noqa: E402
     load_state,
     spawn_writer,
 )
+from engineering_model.actions import Refused
+from engineering_model.workflow import guarded_workflow, workflow_admission
 
 
 def repo_root(ns_root: str | None) -> Path:
@@ -57,6 +59,7 @@ def cmd_status(root: Path, work_id: str) -> int:
     return 0
 
 
+@guarded_workflow
 def cmd_cas_init(root: Path, work_id: str) -> int:
     graph = load_graph(root, work_id)
     ids = list(_task_map(graph))
@@ -65,6 +68,7 @@ def cmd_cas_init(root: Path, work_id: str) -> int:
     return 0
 
 
+@guarded_workflow
 def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
     def mut(doc: dict) -> None:
         return None
@@ -74,6 +78,7 @@ def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
     return 0
 
 
+@guarded_workflow
 def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
     doc = spawn_writer(root, work_id, task_id)
     print(f"running={task_id} revision={doc['revision']}")
@@ -160,8 +165,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "spawn-writer":
             return cmd_spawn(root, args.work_id, args.task_id)
         if args.cmd == "record-review":
-            review = record_review(root, args.work_id, args.task_id, args.reviewer, args.policy,
-                                   args.evidence, args.verdict, args.boundary)
+            with workflow_admission(root,args.work_id):
+                review = record_review(root, args.work_id, args.task_id, args.reviewer, args.policy,
+                                       args.evidence, args.verdict, args.boundary)
             print(f"review={review['verdict']} candidate={review['candidate_sha']}")
             return 0
         if args.cmd == "check-paths":
@@ -226,6 +232,9 @@ def main(argv: list[str] | None = None) -> int:
     except NotIntegrable as e:
         print(e, file=sys.stderr)
         return 2
+    except Refused as e:
+        print(e.diagnostic['code']+': '+str(e),file=sys.stderr)
+        return 1
     except ValueError as e:
         print(e, file=sys.stderr)
         return 1

@@ -1,0 +1,13 @@
+runtime: codex
+risk: MEDIUM
+codex:
+  05-plan: gpt-6.1-sol
+  06-implement: gpt-6.1-sol
+  07-review: gpt-6.1-sol
+  08-refactor: gpt-6.1-sol
+reasoning_effort:
+  codex:
+    05-plan: high
+    06-implement: high
+    07-review: high
+    08-refactor: high

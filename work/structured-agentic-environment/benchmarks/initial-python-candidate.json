@@ -1,0 +1,424 @@
+{
+  "candidate": "Python validator with stdlib graph traversal",
+  "environment": {
+    "cpu_model": "Intel(R) Core(TM) i7-2720QM CPU @ 2.20GHz",
+    "logical_cpus": 8,
+    "machine": "x86_64",
+    "native_toolchains": {
+      "cargo": null,
+      "cc": "/usr/bin/cc",
+      "clang": null,
+      "go": null,
+      "rustc": null
+    },
+    "platform": "Linux-6.2.0-26-generic-x86_64-with-glibc2.35",
+    "python": "3.10.12",
+    "repeats": 15
+  },
+  "implementation_status": "initial candidate; language/tool selection remains open",
+  "limits": [
+    "First-run timing includes process startup and may benefit from the OS file cache.",
+    "Repeat timings start a fresh process each time; validator-level cache is not implemented.",
+    "Only the present Python candidate and available JSON parsers are measured here.",
+    "The complete pre/post action guard is not implemented and is not measured.",
+    "No performance target has been agreed."
+  ],
+  "measurements": [
+    {
+      "components": {
+        "diagnostic_count": 0,
+        "file_read": {
+          "p50_ms": 0.057,
+          "p95_ms": 0.186
+        },
+        "model_validation": {
+          "p50_ms": 4.617,
+          "p95_ms": 10.737
+        },
+        "stdlib_parse": {
+          "p50_ms": 0.095,
+          "p95_ms": 0.252
+        }
+      },
+      "diagnostic_count": 0,
+      "document_file_count": 6,
+      "edge_count": 12,
+      "first_run_ms": 90.095,
+      "kind": "actual-pilot",
+      "node_count": 12,
+      "parser_comparison": {
+        "input_bytes": 4534,
+        "orjson": {
+          "warm_p50_ms": 0.02,
+          "warm_p95_ms": 0.048
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 0.055,
+          "warm_p95_ms": 0.093
+        }
+      },
+      "peak_rss_kib": 15104,
+      "repeat_p50_ms": 84.354,
+      "repeat_p95_ms": 89.053,
+      "work_id": "structured-agentic-environment"
+    },
+    {
+      "components": {
+        "diagnostic_count": 0,
+        "file_read": {
+          "p50_ms": 0.135,
+          "p95_ms": 0.227
+        },
+        "model_validation": {
+          "p50_ms": 6.217,
+          "p95_ms": 9.467
+        },
+        "stdlib_parse": {
+          "p50_ms": 0.958,
+          "p95_ms": 1.926
+        }
+      },
+      "diagnostic_count": 0,
+      "document_file_count": 1,
+      "edge_count": 197,
+      "first_run_ms": 90.804,
+      "kind": "valid",
+      "node_count": 100,
+      "parser_comparison": {
+        "input_bytes": 20896,
+        "orjson": {
+          "warm_p50_ms": 0.172,
+          "warm_p95_ms": 0.228
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 0.413,
+          "warm_p95_ms": 0.758
+        }
+      },
+      "peak_rss_kib": 15184,
+      "repeat_p50_ms": 78.571,
+      "repeat_p95_ms": 91.724,
+      "work_id": "benchmark-100-valid"
+    },
+    {
+      "components": {
+        "diagnostic_count": 1,
+        "file_read": {
+          "p50_ms": 0.104,
+          "p95_ms": 0.254
+        },
+        "model_validation": {
+          "p50_ms": 3.686,
+          "p95_ms": 9.506
+        },
+        "stdlib_parse": {
+          "p50_ms": 0.529,
+          "p95_ms": 1.39
+        }
+      },
+      "diagnostic_count": 1,
+      "document_file_count": 1,
+      "edge_count": 198,
+      "first_run_ms": 71.152,
+      "kind": "missing-link",
+      "node_count": 100,
+      "parser_comparison": {
+        "input_bytes": 20971,
+        "orjson": {
+          "warm_p50_ms": 0.205,
+          "warm_p95_ms": 0.231
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 0.446,
+          "warm_p95_ms": 0.476
+        }
+      },
+      "peak_rss_kib": 15188,
+      "repeat_p50_ms": 77.138,
+      "repeat_p95_ms": 83.519,
+      "work_id": "benchmark-100-missing-link"
+    },
+    {
+      "components": {
+        "diagnostic_count": 1,
+        "file_read": {
+          "p50_ms": 0.116,
+          "p95_ms": 0.231
+        },
+        "model_validation": {
+          "p50_ms": 5.194,
+          "p95_ms": 9.397
+        },
+        "stdlib_parse": {
+          "p50_ms": 0.769,
+          "p95_ms": 1.392
+        }
+      },
+      "diagnostic_count": 1,
+      "document_file_count": 1,
+      "edge_count": 198,
+      "first_run_ms": 80.638,
+      "kind": "cycle",
+      "node_count": 100,
+      "parser_comparison": {
+        "input_bytes": 20962,
+        "orjson": {
+          "warm_p50_ms": 0.145,
+          "warm_p95_ms": 0.158
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 0.302,
+          "warm_p95_ms": 0.666
+        }
+      },
+      "peak_rss_kib": 15192,
+      "repeat_p50_ms": 77.358,
+      "repeat_p95_ms": 83.543,
+      "work_id": "benchmark-100-cycle"
+    },
+    {
+      "components": {
+        "diagnostic_count": 0,
+        "file_read": {
+          "p50_ms": 0.126,
+          "p95_ms": 0.378
+        },
+        "model_validation": {
+          "p50_ms": 23.51,
+          "p95_ms": 59.993
+        },
+        "stdlib_parse": {
+          "p50_ms": 3.196,
+          "p95_ms": 11.207
+        }
+      },
+      "diagnostic_count": 0,
+      "document_file_count": 1,
+      "edge_count": 1997,
+      "first_run_ms": 108.074,
+      "kind": "valid",
+      "node_count": 1000,
+      "parser_comparison": {
+        "input_bytes": 210796,
+        "orjson": {
+          "warm_p50_ms": 1.514,
+          "warm_p95_ms": 5.409
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 2.911,
+          "warm_p95_ms": 5.454
+        }
+      },
+      "peak_rss_kib": 17536,
+      "repeat_p50_ms": 111.645,
+      "repeat_p95_ms": 118.527,
+      "work_id": "benchmark-1000-valid"
+    },
+    {
+      "components": {
+        "diagnostic_count": 1,
+        "file_read": {
+          "p50_ms": 0.122,
+          "p95_ms": 0.366
+        },
+        "model_validation": {
+          "p50_ms": 22.947,
+          "p95_ms": 59.524
+        },
+        "stdlib_parse": {
+          "p50_ms": 3.071,
+          "p95_ms": 11.488
+        }
+      },
+      "diagnostic_count": 1,
+      "document_file_count": 1,
+      "edge_count": 1998,
+      "first_run_ms": 116.034,
+      "kind": "missing-link",
+      "node_count": 1000,
+      "parser_comparison": {
+        "input_bytes": 210871,
+        "orjson": {
+          "warm_p50_ms": 1.515,
+          "warm_p95_ms": 1.711
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 2.927,
+          "warm_p95_ms": 7.146
+        }
+      },
+      "peak_rss_kib": 17536,
+      "repeat_p50_ms": 109.241,
+      "repeat_p95_ms": 115.736,
+      "work_id": "benchmark-1000-missing-link"
+    },
+    {
+      "components": {
+        "diagnostic_count": 1,
+        "file_read": {
+          "p50_ms": 0.118,
+          "p95_ms": 0.406
+        },
+        "model_validation": {
+          "p50_ms": 22.16,
+          "p95_ms": 36.248
+        },
+        "stdlib_parse": {
+          "p50_ms": 3.099,
+          "p95_ms": 11.254
+        }
+      },
+      "diagnostic_count": 1,
+      "document_file_count": 1,
+      "edge_count": 1998,
+      "first_run_ms": 102.532,
+      "kind": "cycle",
+      "node_count": 1000,
+      "parser_comparison": {
+        "input_bytes": 210862,
+        "orjson": {
+          "warm_p50_ms": 1.534,
+          "warm_p95_ms": 2.77
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 2.903,
+          "warm_p95_ms": 6.626
+        }
+      },
+      "peak_rss_kib": 17664,
+      "repeat_p50_ms": 111.03,
+      "repeat_p95_ms": 157.178,
+      "work_id": "benchmark-1000-cycle"
+    },
+    {
+      "components": {
+        "diagnostic_count": 0,
+        "file_read": {
+          "p50_ms": 0.533,
+          "p95_ms": 1.099
+        },
+        "model_validation": {
+          "p50_ms": 267.941,
+          "p95_ms": 290.169
+        },
+        "stdlib_parse": {
+          "p50_ms": 34.725,
+          "p95_ms": 41.199
+        }
+      },
+      "diagnostic_count": 0,
+      "document_file_count": 1,
+      "edge_count": 19997,
+      "first_run_ms": 452.461,
+      "kind": "valid",
+      "node_count": 10000,
+      "parser_comparison": {
+        "input_bytes": 2118796,
+        "orjson": {
+          "warm_p50_ms": 18.515,
+          "warm_p95_ms": 21.654
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 32.518,
+          "warm_p95_ms": 42.557
+        }
+      },
+      "peak_rss_kib": 40624,
+      "repeat_p50_ms": 436.505,
+      "repeat_p95_ms": 471.015,
+      "work_id": "benchmark-10000-valid"
+    },
+    {
+      "components": {
+        "diagnostic_count": 1,
+        "file_read": {
+          "p50_ms": 0.539,
+          "p95_ms": 0.577
+        },
+        "model_validation": {
+          "p50_ms": 260.254,
+          "p95_ms": 269.216
+        },
+        "stdlib_parse": {
+          "p50_ms": 34.148,
+          "p95_ms": 40.84
+        }
+      },
+      "diagnostic_count": 1,
+      "document_file_count": 1,
+      "edge_count": 19998,
+      "first_run_ms": 442.068,
+      "kind": "missing-link",
+      "node_count": 10000,
+      "parser_comparison": {
+        "input_bytes": 2118871,
+        "orjson": {
+          "warm_p50_ms": 16.377,
+          "warm_p95_ms": 17.145
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 30.181,
+          "warm_p95_ms": 36.607
+        }
+      },
+      "peak_rss_kib": 40544,
+      "repeat_p50_ms": 437.617,
+      "repeat_p95_ms": 461.1,
+      "work_id": "benchmark-10000-missing-link"
+    },
+    {
+      "components": {
+        "diagnostic_count": 1,
+        "file_read": {
+          "p50_ms": 0.512,
+          "p95_ms": 0.84
+        },
+        "model_validation": {
+          "p50_ms": 263.416,
+          "p95_ms": 294.198
+        },
+        "stdlib_parse": {
+          "p50_ms": 33.011,
+          "p95_ms": 65.677
+        }
+      },
+      "diagnostic_count": 1,
+      "document_file_count": 1,
+      "edge_count": 19998,
+      "first_run_ms": 435.214,
+      "kind": "cycle",
+      "node_count": 10000,
+      "parser_comparison": {
+        "input_bytes": 2118862,
+        "orjson": {
+          "warm_p50_ms": 16.575,
+          "warm_p95_ms": 17.324
+        },
+        "orjson_version": "3.11.7",
+        "stdlib_json": {
+          "warm_p50_ms": 30.502,
+          "warm_p95_ms": 37.041
+        }
+      },
+      "peak_rss_kib": 41824,
+      "repeat_p50_ms": 438.806,
+      "repeat_p95_ms": 473.709,
+      "work_id": "benchmark-10000-cycle"
+    }
+  ],
+  "schema": "ask-engineering-benchmark/v1",
+  "source": {
+    "benchmark_sha256": "fd2822671c36c2b58ff50f03b5dd91c2c69e7cf8230e37ccce26d0dfc950a9ca",
+    "commit": "023e01637162734d76ddd2cd746253de7b4993e9",
+    "validator_sha256": "e3e8d20ca7c56b59dc36a9fc7fbd91dbdf8dd418189e8f9efb752f420d59a0b4"
+  }
+}

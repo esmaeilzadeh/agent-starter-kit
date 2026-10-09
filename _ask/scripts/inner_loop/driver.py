@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from engineering_model.workflow import guarded_workflow
 
 from inner_loop.evidence import (
     NotIntegrable, check_integrable, git, read_candidate, result_path,
@@ -74,6 +75,7 @@ def ready_ids(graph: dict, doc: dict) -> list[str]:
     return ready
 
 
+@guarded_workflow
 def ensure_state(root: Path, work_id: str) -> dict:
     graph = load_graph(root, work_id)
     status = validate_graph(graph)
@@ -86,6 +88,7 @@ def ensure_state(root: Path, work_id: str) -> dict:
         return cas_init(root, work_id, ids, coordinator_sha=git_sha(root))
 
 
+@guarded_workflow
 def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str:
     # Hold the same process lock as cancellation/spawn through Git and evidence
     # side effects. A crash after FF leaves old valid state and is retryable.
@@ -107,7 +110,7 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         if current != candidate or source_changes(root, work_id):
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
-        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only')
+        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
             raise Escalate('integrated HEAD/tree differs from verified candidate')
         evidence['resulting_sha'] = sha
@@ -120,6 +123,7 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
     return sha
 
 
+@guarded_workflow
 def run_once(root: Path, work_id: str) -> str:
     ensure_state(root, work_id)
     graph = load_graph(root, work_id)
@@ -139,6 +143,7 @@ def run_once(root: Path, work_id: str) -> str:
     return f"running={tid}"
 
 
+@guarded_workflow
 def run_until(root: Path, work_id: str) -> str:
     while True:
         out = run_once(root, work_id)
@@ -149,6 +154,7 @@ def run_until(root: Path, work_id: str) -> str:
         return out
 
 
+@guarded_workflow
 def resume_from_state(root: Path, work_id: str) -> str:
     ensure_state(root, work_id)
     aborted = ""
@@ -161,13 +167,14 @@ def resume_from_state(root: Path, work_id: str) -> str:
             # Runtime result/state/evidence changes are expected. In particular,
             # do not reset a verified FF candidate back to its pre-task base.
             if source_changes(root, work_id) or in_progress:
-                aborted = git_resume(root, sha, preserve_paths=runtime_exclusions(work_id))
+                aborted = git_resume(root, sha, preserve_paths=runtime_exclusions(work_id), work_id=work_id)
     nxt = run_until(root, work_id)
     if aborted == "aborted":
         return f"aborted\n{nxt}"
     return nxt
 
 
+@guarded_workflow
 def cancel(root: Path, work_id: str, target: str) -> str:
     doc = ensure_state(root, work_id)
     ids = list(doc.get("tasks") or {})

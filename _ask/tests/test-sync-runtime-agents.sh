@@ -21,7 +21,7 @@ grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
 grep -q 'readonly: true' .cursor/agents/kit-07-review.md
 grep -q 'model: composer-2.5' .cursor/agents/kit-06-implement.md
 grep -q 'model: sonnet' .claude/agents/kit-07-review.md
-grep -q 'model = "gpt-5.4-mini"' .codex/agents/kit-06-implement.toml
+grep -q 'model = "gpt-6-luna"' .codex/agents/kit-06-implement.toml
 
 test -f .opencode/agents/kit-06-implement.md
 grep -q '^description:' .opencode/agents/kit-06-implement.md
@@ -35,8 +35,12 @@ grep -q 'edit: deny' .opencode/agents/kit-07-review.md
 
 ASK_RISK=HIGH python3 _ask/scripts/sync-runtime-agents.py >/dev/null
 grep -q 'model: kimi-k3' .cursor/agents/kit-07-review.md
+grep -q 'model = "gpt-6-astra"' .codex/agents/kit-07-review.toml
 ASK_MODEL_07_REVIEW=thinking python3 _ask/scripts/sync-runtime-agents.py >/dev/null
 grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
+grep -q 'model = "gpt-6.1-sol"' .codex/agents/kit-07-review.toml
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
+
+python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
 
 echo "PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs"

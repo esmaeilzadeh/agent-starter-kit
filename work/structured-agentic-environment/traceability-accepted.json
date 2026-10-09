@@ -1,0 +1,21 @@
+{
+  "schema": "ask-accepted-tests/v1",
+  "capability": "ask-traceability/v1",
+  "contract_sha": "18c3c34c74e620b46588ff8d0b0e27089b40ecd3",
+  "work_id": "structured-agentic-environment",
+  "reviewer": "codex-astra-model-challenge",
+  "recorded_by": "codex-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "plan_review": {
+    "reviewer": "codex-astra-model-challenge",
+    "decision": "APPROVED",
+    "reviewedSHA": "18c3c34c74e620b46588ff8d0b0e27089b40ecd3",
+    "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
+    "plan_digest": "18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58"
+  },
+  "plan_review_digest": "e360f19f7324f0a79c282868b5e5ee420bb335d6e89379679149c69308cf78a1",
+  "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
+  "plan_digest": "18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58",
+  "graph_digest": "b8cce95f94bb3842447a35cad31d68789df636e11353ab4a75179d86761d804c"
+}

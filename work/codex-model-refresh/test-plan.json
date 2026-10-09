@@ -1,0 +1,178 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "codex-model-refresh",
+  "spec_digest": "72a6f4b390de8d0d878f656a060b7b1190a35cf515a795d0ecb820e78b137cc9",
+  "obligations": [
+    {
+      "criterion_id": "CM-004",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "CE-defaults",
+      "criterion_ids": [
+        "CM-004"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Generate all runtimes from canonical bindings",
+        "when": "Run the public generator with a clean consumer",
+        "then": [
+          "Eleven Codex stages receive task-fit models and explicit efforts; other runtime output has no effort field"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CM-004",
+          "checks": [
+            "Eleven Codex stages receive task-fit models and explicit efforts; other runtime output has no effort field"
+          ]
+        }
+      ],
+      "runner_id": "codex-effort",
+      "case_id": "test_codex_effort.CodexEffortTests.test_default_journey",
+      "source_paths": [
+        "_ask/tests/test_codex_effort.py",
+        "_ask/scripts/sync-runtime-agents.py"
+      ]
+    },
+    {
+      "id": "CE-risk",
+      "criterion_ids": [
+        "CM-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A workstream records HIGH risk",
+        "when": "Generate agents through the public script",
+        "then": [
+          "Review is Astra at high effort without escalating bounded implementation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CM-004",
+          "checks": [
+            "Review is Astra at high effort without escalating bounded implementation"
+          ]
+        }
+      ],
+      "runner_id": "codex-effort",
+      "case_id": "test_codex_effort.CodexEffortTests.test_high_risk_review",
+      "source_paths": [
+        "_ask/tests/test_codex_effort.py",
+        "_ask/scripts/sync-runtime-agents.py"
+      ]
+    },
+    {
+      "id": "CE-overrides",
+      "criterion_ids": [
+        "CM-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Consumer, workstream and both effort environment levels conflict",
+        "when": "Generate with each override level present or removed",
+        "then": [
+          "Runtime environment, generic environment, workstream and consumer win in that order independently of model routing"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CM-004",
+          "checks": [
+            "Runtime environment, generic environment, workstream and consumer win in that order independently of model routing"
+          ]
+        }
+      ],
+      "runner_id": "codex-effort",
+      "case_id": "test_codex_effort.CodexEffortTests.test_effort_precedence",
+      "source_paths": [
+        "_ask/tests/test_codex_effort.py",
+        "_ask/scripts/sync-runtime-agents.py"
+      ]
+    },
+    {
+      "id": "CE-inherit",
+      "criterion_ids": [
+        "CM-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A stage requests inherited effort or an unrecognized model",
+        "when": "Generate assignments",
+        "then": [
+          "Inherited and unknown-model stages omit effort instead of inheriting a mismatched explicit pin"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CM-004",
+          "checks": [
+            "Inherited and unknown-model stages omit effort instead of inheriting a mismatched explicit pin"
+          ]
+        }
+      ],
+      "runner_id": "codex-effort",
+      "case_id": "test_codex_effort.CodexEffortTests.test_inherit_and_unknown_model",
+      "source_paths": [
+        "_ask/tests/test_codex_effort.py",
+        "_ask/scripts/sync-runtime-agents.py"
+      ]
+    },
+    {
+      "id": "CE-invalid",
+      "criterion_ids": [
+        "CM-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+          "given": "Generated outputs exist and an explicit effort override is invalid",
+        "when": "Run the generator again",
+        "then": [
+          "Generation fails with a useful diagnostic and no output bytes change"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CM-004",
+          "checks": [
+            "Generation fails with a useful diagnostic and no output bytes change"
+          ]
+        }
+      ],
+      "runner_id": "codex-effort",
+      "case_id": "test_codex_effort.CodexEffortTests.test_invalid_effort_preserves_outputs",
+      "source_paths": [
+        "_ask/tests/test_codex_effort.py",
+        "_ask/scripts/sync-runtime-agents.py"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "id": "codex-effort",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_codex_effort.py"
+      ]
+    }
+  ],
+  "task_scopes": []
+}

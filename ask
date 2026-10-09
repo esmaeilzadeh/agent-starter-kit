@@ -25,8 +25,12 @@ Commands:
       <work-id>   required slug
 
   check-workstream <work-id> [--allow-dirty] [--acceptance]
-      Preconditions before implement (branch, spec, plan).
+      Preconditions before implement (branch, spec, plan, current human intent confirmation).
       --allow-dirty   skip the clean-tree check
+
+  confirm-intent --work-id <id> --choice approve|revise
+      Record the human's selected complete-intent approval choice.
+      Text fallback: --response <exact-human-response> (instead of --choice).
 
   status [--work-id <id>] [--json] [--later-only] [--work-only]
       Live agent/* plus archived work/* on the default branch (no checkout).
@@ -80,6 +84,12 @@ Commands:
 
   inner-loop validate|status|run|resume|cancel [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
+
+  model {validate|admit|show|edit|watch} --work-id <work-id>
+      Validate the Engineering Model and its canonical references.
+
+  ui [streamlit options]
+      Launch the local Engineering Model workbench.
 
   completion bash|zsh
       Print a tab-completion snippet. `askit` installs this automatically;
@@ -228,6 +238,9 @@ case "$cmd" in
   check-workstream|check)
     exec "$SCRIPTS/check-workstream.sh" "$@"
     ;;
+  confirm-intent)
+    exec python3 "$SCRIPTS/intent-confirmation.py" confirm --root "$ROOT" "$@"
+    ;;
   status)
     exec "$SCRIPTS/status.sh" "$@"
     ;;
@@ -257,6 +270,12 @@ case "$cmd" in
     ;;
   inner-loop)
     exec python3 "$SCRIPTS/inner_loop/__main__.py" "$@"
+    ;;
+  model)
+    exec bash "$SCRIPTS/model.sh" "$@"
+    ;;
+  ui)
+    exec bash "$SCRIPTS/ui.sh" "$@"
     ;;
   *)
     if [[ -x "$SCRIPTS/${cmd}.sh" ]]; then

@@ -1,0 +1,27 @@
+"""Unimplemented planning sketch, archived after the user requested plan-only work.
+
+Not a validator or approved language choice. This file is deliberately non-executable.
+"""
+
+
+class ModelError(ValueError):
+    pass
+
+
+def validate(document, root):
+    return []
+
+
+class Model:
+    def __init__(self, root, work_id):
+        self.root, self.work_id = root, work_id
+
+    def inspect(self):
+        return {}
+
+    def apply(self, command, expected_digest):
+        return {}
+
+
+def render_markdown(snapshot):
+    return ""
