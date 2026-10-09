@@ -39,7 +39,7 @@ def _text(app) -> str:
     ) for item in collection)
 
 
-class WorkbenchNavigationTests(unittest.TestCase):
+class WorkbenchTests(unittest.TestCase):
     def test_work_default_routes_and_context_reset(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
