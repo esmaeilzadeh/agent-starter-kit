@@ -226,6 +226,22 @@ def _result_label(record: dict | None) -> str:
     return "Final result missing"
 
 
+def _find_test_result(result: dict | None, test_id: str) -> dict | None:
+    if result is None:
+        return None
+    for scenario in result.get("scenarios", []):
+        for record in (scenario.get("evidence") or {}).get("tests", []):
+            if record.get("test_id") == test_id:
+                return record
+    return None
+
+
+def _scenario_work_id(scenario: dict, default: str) -> str:
+    path = str((scenario.get("reference") or {}).get("path", ""))
+    parts = Path(path).parts
+    return Path(parts[2]).stem if len(parts) == 3 and parts[:2] == ("specs", "current") else default
+
+
 def _render_overview(projection: dict, snapshot, root: Path, work_id: str, context: str,
                      load_results, results_loaded: bool) -> None:
     nodes = _node_map(projection)
@@ -233,6 +249,8 @@ def _render_overview(projection: dict, snapshot, root: Path, work_id: str, conte
     tasks = {item["id"]: item for item in projection.get("tasks", [])}
     scenarios = projection.get("scenarios", [])
     test_plan = _task_test_assignments(snapshot, work_id)
+    loaded = st.session_state.get(STATE_OVERVIEW_RESULTS) or {}
+    results_by_workstream = loaded.get("evidence", {}).get("by_workstream", {})
 
     epics = _overview_epics(nodes, model)
     st.subheader("Epic")
@@ -261,10 +279,17 @@ def _render_overview(projection: dict, snapshot, root: Path, work_id: str, conte
                 if cases:
                     st.markdown("**Tests**")
                 for case in cases:
-                    test_id = str(case.get("case_id", case.get("id", case.get("node_id", "Test"))))
+                    test_id = str((case.get("reference") or {}).get("id")
+                                  or case.get("id", case.get("node_id", "Test")))
                     with st.container(border=True):
                         st.markdown(f"**{case.get('title') or test_id}**")
-                        st.caption(f"{test_id} · {case.get('type', 'test')}")
+                        st.caption(f"Test {test_id} · {case.get('type', 'test')}")
+                        scenario_work_id = _scenario_work_id(scenario, work_id)
+                        record = _find_test_result(results_by_workstream.get(scenario_work_id), test_id)
+                        if not loaded:
+                            st.caption("Result not loaded")
+                        else:
+                            st.caption(f"Result · {_result_label(record)} · {scenario_work_id}")
                         for assertion in case.get("expected_assertions", []):
                             st.markdown(f"Planned assertions for {assertion.get('criterion_id', '')}")
                             for check in assertion.get("checks", []):
@@ -295,25 +320,16 @@ def _render_overview(projection: dict, snapshot, root: Path, work_id: str, conte
 
     st.markdown("#### Results")
     if not results_loaded:
-        st.caption("Test execution results are loaded only when requested.")
+        st.caption("Execution results are shown with their related tests and loaded only when requested.")
         st.button("Load test results", key="overview_load_results",
                   icon=":material/download:", on_click=load_results)
     else:
-        evidence = st.session_state.get(STATE_OVERVIEW_RESULTS, {}).get("evidence", {})
-        by_workstream = evidence.get("by_workstream", {})
-        records = [record for result in by_workstream.values()
-                   for scenario in result.get("scenarios", [])
-                   for record in (scenario.get("evidence") or {}).get("tests", [])]
-        if not records:
-            st.info("No test results are recorded for this workstream.")
-        for record in records:
-            st.markdown(f"**{record.get('test_id', 'Test')}** · {_result_label(record)}")
-        for result in by_workstream.values():
-            for error in result.get("completion", {}).get("errors", []):
-                _show_evidence_error(error)
+        if not results_by_workstream:
+            st.info("No verification result is recorded for this workstream.")
+        else:
+            st.caption("Each result above is matched to the workstream named by its scenario reference.")
 
     identity = projection.get("snapshot", {}).get("digest", "unavailable")
-    loaded = st.session_state.get(STATE_OVERVIEW_RESULTS) or {}
     evidence = loaded.get("evidence", {})
     candidate = next((item.get("candidate_sha") for item in
                       evidence.get("by_workstream", {}).values()
@@ -559,6 +575,9 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
         st.text_area("Rationale", key="rationale", disabled=not editable)
         submitted = st.form_submit_button("Resolve decision", key="resolve", disabled=not editable)
     if not submitted:
+        return
+    if not st.session_state.actor.strip() or not st.session_state.rationale.strip():
+        st.error("Actor and rationale are required to resolve a decision.")
         return
     proposal = {"commands": [{"op": "resolve_decision", "id": node["id"],
                               "option_id": st.session_state.option_id,

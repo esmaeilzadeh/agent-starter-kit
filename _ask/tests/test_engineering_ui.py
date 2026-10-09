@@ -267,6 +267,13 @@ class UiIntegrationTests(unittest.TestCase):
 
                 before, diagnostics = validate_current(root, "pilot")
                 self.assertEqual(diagnostics, [], diagnostics)
+                published = load_published(root, "pilot")
+                app.button(key="resolve").click().run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("Actor and rationale are required", text(app))
+                self.assertEqual(load_published(root, "pilot").identity, published.identity)
+                choice = next(node for node in published.document["nodes"] if node["id"] == "choice")
+                self.assertEqual(choice["lifecycle"], "open")
                 spec["criteria"][0]["then"] = ["Reject invalid input"]
                 plan_path = root / "work/pilot/test-plan.json"
                 plan = json.loads(plan_path.read_text(encoding="utf-8"))
