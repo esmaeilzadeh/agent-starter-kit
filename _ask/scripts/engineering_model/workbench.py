@@ -56,7 +56,13 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
     test_node_by_case = {}
     scenario_ids_by_case = {}
     explicit_scenarios_by_task = {}
+    scenarios_by_criterion = {}
+    canonical_spec_path = f"specs/current/{work_id}.json"
     for node in nodes.values():
+        if node.get("type") == "scenario":
+            ref = node.get("reference", {})
+            if ref.get("path") == canonical_spec_path and isinstance(ref.get("id"), str):
+                scenarios_by_criterion.setdefault(ref["id"], set()).add(node["id"])
         if node.get("type") != "test":
             continue
         ref = node.get("reference", {})
@@ -65,6 +71,13 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
         case_id = ref["id"]
         test_node_by_case.setdefault(case_id, []).append(node)
         scenario_ids_by_case.setdefault(case_id, set())
+    for case_id, test in test_definitions.items():
+        scenario_ids_by_case.setdefault(case_id, set()).update(
+            scenario_id
+            for criterion_id in test.get("criterion_ids", [])
+            if isinstance(criterion_id, str)
+            for scenario_id in scenarios_by_criterion.get(criterion_id, set())
+        )
     for edge in model.get("edges", []):
         if not isinstance(edge, dict):
             continue
@@ -133,7 +146,10 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
         task_rows.append({
             "id": task_id, "title": node.get("title", task_id), "outcome": "",
             "dependencies": [], "owned_paths": [], "owned_test_ids": [],
-            "related_scenarios": [], "status": "not-recorded",
+            "related_scenarios": [
+                {"id": scenario, "via": "recorded-implementation"}
+                for scenario in sorted(explicit_scenarios_by_task.get(task_id, set()))
+            ], "status": "not-recorded",
             "status_source": "no-task-record", "record_source": "engineering-model",
             "runtime_status": None, "result_path": None,
             "lifecycle": task.get("lifecycle"), "model_status": task.get("status"),
