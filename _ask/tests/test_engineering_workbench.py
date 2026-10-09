@@ -24,20 +24,33 @@ class WorkbenchTests(unittest.TestCase):
                  "reference": {"path": "specs/current/pilot.json", "id": "C1"}},
                 {"id": "s2", "type": "scenario", "title": "Second", "lifecycle": "active",
                  "reference": {"path": "specs/current/pilot.json", "id": "C2"}},
+                {"id": "s3", "type": "scenario", "title": "Legacy without story", "lifecycle": "active",
+                 "reference": {"path": "specs/current/pilot.json", "id": "C3"}},
                 {"id": "legacy-task", "type": "task", "title": "Pilot-only task", "lifecycle": "planned"},
+                {"id": "task-a", "type": "task", "title": "Model hint A", "lifecycle": "planned"},
+                {"id": "task-b", "type": "task", "title": "Model hint B", "lifecycle": "planned"},
+                {"id": "implementation", "type": "implementation", "title": "Recorded implementation",
+                 "lifecycle": "active"},
                 {"id": "case-shared", "type": "test", "title": "Shared scenario case", "lifecycle": "active",
                  "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-1"}},
                 {"id": "case-second", "type": "test", "title": "Second scenario case", "lifecycle": "active",
                  "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-2"}},
+                {"id": "foreign-case", "type": "test", "title": "Foreign reused ID", "lifecycle": "active",
+                 "reference": {"path": "work/other/test-plan.json", "id": "CASE-1"}},
             ],
             "edges": [
                 {"type": "contains", "source": "epic", "target": "story"},
                 {"type": "contains", "source": "story", "target": "s1"},
                 {"type": "contains", "source": "story", "target": "s2"},
                 {"type": "contains", "source": "epic", "target": "legacy-task"},
+                {"type": "contains", "source": "epic", "target": "task-a"},
+                {"type": "contains", "source": "epic", "target": "task-b"},
+                {"type": "implements", "source": "implementation", "target": "task-a"},
+                {"type": "implements", "source": "implementation", "target": "s3"},
                 {"type": "covers", "source": "case-shared", "target": "s1"},
                 {"type": "covers", "source": "case-shared", "target": "s2"},
                 {"type": "covers", "source": "case-second", "target": "s2"},
+                {"type": "covers", "source": "foreign-case", "target": "s1"},
             ],
         }
         self.write("work/pilot/engineering-model.json", model)
@@ -46,6 +59,7 @@ class WorkbenchTests(unittest.TestCase):
             "criteria": [
                 {"id": "C1", "given": "A", "when": "B", "then": ["C"], "verification_mode": "tests"},
                 {"id": "C2", "given": "D", "when": "E", "then": ["F"], "verification_mode": "tests"},
+                {"id": "C3", "given": "G", "when": "H", "then": ["I"], "verification_mode": "tests"},
             ],
         })
         self.write("work/pilot/test-plan.json", {
@@ -75,6 +89,11 @@ tasks:
     depends_on: [task-a]
     owned_paths: [src/b.py]
 """)
+        self.write("work/other/test-plan.json", {
+            "schema": "ask-test-plan/v1", "work_id": "other",
+            "task_scopes": [{"task_id": "foreign-task", "test_ids": ["CASE-1"]}],
+            "tests": [{"id": "CASE-1", "criterion_ids": ["C1"], "type": "unit"}],
+        })
 
     def tearDown(self):
         self.temp.cleanup()
@@ -112,16 +131,33 @@ tasks:
         self.assertEqual(tasks["task-a"]["title"], "First task")
         self.assertEqual(tasks["task-a"]["outcome"], "Preserve shared ownership")
         self.assertEqual(tasks["task-a"]["owned_paths"], ["src/a.py"])
+        self.assertEqual(tasks["task-a"]["related_scenarios"], [
+            {"id": "s1", "via": "test-mapping"},
+            {"id": "s2", "via": "test-mapping"},
+            {"id": "s3", "via": "recorded-implementation"},
+        ])
         self.assertEqual(tasks["task-a"]["dependencies"], [])
         self.assertEqual(tasks["task-a"]["status"], "planned")
         self.assertEqual(tasks["task-a"]["status_source"], "no-runtime-record")
         self.assertEqual(tasks["legacy-task"]["record_source"], "engineering-model")
         self.assertEqual(tasks["legacy-task"]["status"], "not-recorded")
 
+        self.write("work/pilot/inner-loop/state.json", {
+            "work_id": "pilot", "tasks": {
+                "task-a": {"status": "integrated", "result_path": "work/pilot/results/task-a.json"},
+                "task-b": {"status": "blocked"},
+            },
+        })
+        tasks = {task["id"]: task for task in self.projection()["workbench"]["tasks"]}
+        self.assertEqual(tasks["task-a"]["status"], "completed")
+        self.assertEqual(tasks["task-a"]["status_source"], "task-state")
+        self.assertEqual(tasks["task-a"]["runtime_status"], "integrated")
+        self.assertEqual(tasks["task-b"]["status"], "blocked")
+
     def test_story_scope_and_missing_story_are_honest(self):
         workbench = self.workbench()
         stories = {story["id"]: story for story in workbench["stories"]}
 
         self.assertEqual(stories["story"]["scenario_ids"], ["s1", "s2"])
-        self.assertEqual(workbench["unassigned_scenario_ids"], [])
+        self.assertEqual(workbench["unassigned_scenario_ids"], ["s3"])
         self.assertNotIn("task-a", stories)
