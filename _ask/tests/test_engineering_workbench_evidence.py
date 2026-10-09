@@ -220,7 +220,8 @@ class WorkbenchTests(unittest.TestCase):
             shutil.rmtree(external)
         self.assertEqual((old_implementation["source_status"], old_implementation["applicability"],
                           old_implementation["duration_status"], old_implementation["recorded_at_status"],
-                          outside["status"], outside["runs"], "symlink" in outside["diagnostic"]),
+                          outside["status"], outside["runs"],
+                          isinstance(outside["diagnostic"], str) and "symlink" in outside["diagnostic"]),
                          ("historical", "historical", "unavailable", "unavailable",
                           "invalid", [], True))
 
