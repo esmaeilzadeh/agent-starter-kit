@@ -67,6 +67,8 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertEqual(app.selectbox(key="work_id").value, "pilot")
                 self.assertIn("Epic", _text(app))
                 self.assertIn("Pilot story", _text(app))
+                self.assertIn("Working tree", _text(app))
+                self.assertIn("Validated inputs", _text(app))
                 self.assertNotIn("Workbench section", _text(app))
                 self.assertFalse(app.tabs)
 
@@ -77,6 +79,9 @@ class WorkbenchTests(unittest.TestCase):
                 for crumb in ("Purpose", "Pilot story", "Canonical behavior"):
                     self.assertIn(crumb, rendered)
                 self.assertTrue(app.button(key="route:back"))
+                app.button(key="route:back").click().run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                self.assertEqual(app.session_state["_engineering_route"], "purpose")
 
                 app.selectbox(key="work_id").select("archive").run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
@@ -139,6 +144,7 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertTrue(app.button(key="refresh"))
                 app.button(key="refresh").click().run(timeout=20)
                 self.assertNotEqual(app.session_state["_engineering_form_identity"]["digest"], digest)
+                self.assertEqual(app.session_state["_engineering_route"], "purpose")
 
 
 if __name__ == "__main__":
