@@ -20,7 +20,18 @@ from engineering_fixture import workbench_model, write_json
 
 
 def _init_repo(root: Path, branch: str = "agent/pilot") -> None:
-    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(["git", "init", "-q", "--initial-branch=main", str(root)], check=True)
+    subprocess.run(["git", "-C", str(root), "config", "user.name", "Workbench Test"], check=True)
+    subprocess.run(["git", "-C", str(root), "config", "user.email", "workbench@example.invalid"], check=True)
+
+
+def _commit(root: Path, message: str) -> str:
+    subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+    subprocess.run(["git", "-C", str(root), "commit", "-q", "-m", message], check=True)
+    return subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+
+
+def _start_agent_branch(root: Path, branch: str = "agent/pilot") -> None:
     subprocess.run(["git", "-C", str(root), "checkout", "-q", "-b", branch], check=True)
 
 
@@ -34,6 +45,39 @@ def _add_story(model):
     model["edges"] = [edge for edge in model["edges"]
                       if not (edge.get("type") == "contains" and edge.get("target") == "scenario")]
     model["edges"].append({"type": "contains", "source": "story", "target": "scenario"})
+    return model
+
+
+def _add_second_scenario(root: Path, model):
+    spec_path = root / "specs/current/pilot.json"
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    spec["criteria"].append({"id": "P-002", "given": "A second input", "when": "Validate",
+                             "then": ["Accept the second case"], "verification_mode": "tests"})
+    write_json(root, "specs/current/pilot.json", spec)
+    plan_path = root / "work/pilot/test-plan.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    plan["spec_digest"] = hashlib.sha256(
+        json.dumps(spec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    plan["obligations"].append({"criterion_id": "P-002", "required_types": ["unit"]})
+    plan["task_scopes"][0]["test_ids"].append("CASE-2")
+    plan["tests"].append({
+        "id": "CASE-2", "criterion_ids": ["P-002"], "type": "unit", "change_kind": "new",
+        "runner_id": "fixture", "case_id": "test_fixture.Cases.test_second_behavior",
+        "source_paths": ["test_fixture.py"],
+        "scenario": {"given": "A second input", "when": "Validate", "then": ["Accept"]},
+        "expected_assertions": [{"criterion_id": "P-002", "checks": ["Accept second input"]}],
+    })
+    write_json(root, "work/pilot/test-plan.json", plan)
+    model["nodes"].extend([
+        {"id": "scenario-2", "type": "scenario", "title": "Second behavior", "lifecycle": "active",
+         "reference": {"path": "specs/current/pilot.json", "id": "P-002"}},
+        {"id": "case-2", "type": "test", "title": "Second assertion", "lifecycle": "active",
+         "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-2"}},
+    ])
+    model["edges"].extend([
+        {"type": "contains", "source": "story", "target": "scenario-2"},
+        {"type": "covers", "source": "case-2", "target": "scenario-2"},
+    ])
     return model
 
 
@@ -52,21 +96,30 @@ class WorkbenchTests(unittest.TestCase):
     def test_work_default_routes_and_context_reset(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            _init_repo(root, "agent/pilot")
+            _init_repo(root)
             model, _ = workbench_model(root)
-            _add_story(model)
-            write_json(root, "work/pilot/engineering-model.json", model)
-            # The selector lists both local models, but the branch-matched work opens first.
             other_model = copy.deepcopy(model)
             other_model["work_id"] = "archive"
             write_json(root, "work/archive/engineering-model.json", other_model)
+            _commit(root, "Create archived baseline")
+            _start_agent_branch(root)
+            _add_story(model)
+            _add_second_scenario(root, model)
+            write_json(root, "work/pilot/engineering-model.json", model)
+            _commit(root, "Connect pilot story and scenario tests")
+            next(node for node in model["nodes"] if node["id"] == "story")["title"] = "Working draft story"
+            write_json(root, "work/pilot/engineering-model.json", model)
             write_json(root, "work/missing/engineering-model.json", {"schema": "unrecognized"})
+            committed_head = subprocess.check_output(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.selectbox(key="work_id").value, "pilot")
+                self.assertTrue(any(item.key == "source_id" for item in app.selectbox),
+                                "a separate source selector is required")
                 self.assertIn("Epic", _text(app))
-                self.assertIn("Pilot story", _text(app))
+                self.assertIn("Working draft story", _text(app))
                 self.assertIn("Working tree", _text(app))
                 self.assertIn("Validated inputs", _text(app))
                 self.assertNotIn("Workbench section", _text(app))
@@ -76,18 +129,47 @@ class WorkbenchTests(unittest.TestCase):
                 app.button(key="route:scenario").click().run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
                 rendered = _text(app)
-                for crumb in ("Purpose", "Pilot story", "Canonical behavior"):
+                for crumb in ("Purpose", "Working draft story", "Canonical behavior"):
                     self.assertIn(crumb, rendered)
-                self.assertTrue(app.button(key="route:back"))
+                app.button(key="route:scenario-2").click().run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                app.button(key="route:test:CASE-2").click().run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                self.assertEqual(app.session_state["_engineering_route"], "test:CASE-2")
+                crumbs = _text(app)
+                for crumb in ("Working draft story", "Second behavior", "Build", "Second assertion"):
+                    self.assertIn(crumb, crumbs)
+                app.button(key="route:result:CASE-2").click().run(timeout=20)
+                self.assertEqual(app.session_state["_engineering_route"], "result:CASE-2")
+                self.assertIn("Selected test: CASE-2", _text(app))
                 app.button(key="route:back").click().run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
+                self.assertEqual(app.session_state["_engineering_route"], "test:CASE-2")
+                self.assertEqual(app.subheader[0].value, "Second assertion",
+                                 "Back should render the restored test in the same rerun")
+
+                # A committed ref is a distinct, immutable source; selecting it must
+                # reset route/form state without moving the checkout.
+                source_selector = app.selectbox(key="source_id")
+                self.assertIn("git:agent/pilot", source_selector.options)
+                source_selector.select("git:agent/pilot").run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.session_state["_engineering_route"], "purpose")
+                self.assertFalse(app.session_state["_engineering_form_identity"]["editable"])
+                self.assertEqual(app.session_state["_engineering_source_context"]["commit"], committed_head)
+                self.assertIn("Read-only source", _text(app))
+                self.assertIn("Pilot story", _text(app))
+                self.assertNotIn("Working draft story", _text(app))
+                app.button(key="route:decision").click().run(timeout=20)
+                self.assertTrue(app.button(key="decision:submit").disabled)
+                self.assertEqual(subprocess.check_output(
+                    ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip(), committed_head)
 
                 app.selectbox(key="work_id").select("archive").run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.selectbox(key="work_id").value, "archive")
                 self.assertEqual(app.session_state["_engineering_route"], "purpose")
-                self.assertIn("Working tree", _text(app))
+                self.assertIn("Read-only source", _text(app))
                 self.assertEqual(subprocess.check_output(
                     ["git", "-C", str(root), "branch", "--show-current"], text=True).strip(),
                     "agent/pilot")
@@ -102,6 +184,8 @@ class WorkbenchTests(unittest.TestCase):
             model, _ = workbench_model(root)
             _add_story(model)
             write_json(root, "work/pilot/engineering-model.json", model)
+            _commit(root, "Create editable pilot")
+            _start_agent_branch(root)
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _run(root)
                 self.assertFalse(app.exception, app.exception)
