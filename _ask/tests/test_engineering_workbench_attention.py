@@ -45,6 +45,7 @@ st.info("Incomplete input preserves the captured snapshot; guarded mutation belo
                        "Incomplete input preserves"):
             self.assertIn(phrase, text)
         self.assertTrue(app.dataframe)
+        self.assertIn("Missing guarded choice", text)
 
 
 if __name__ == "__main__":
