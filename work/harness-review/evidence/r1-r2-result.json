@@ -1,6 +1,0 @@
-{
-  "work_id": "harness-review",
-  "commit_sha": "4c13aec67d17228fad5b67074125cf939e2d4c7d",
-  "result": "pass",
-  "notes": "R1/R2 implemented; 35 mandatory checks including 29 reliability cases pass; independent review approved with same-family fallback; R3-R5 remain follow-ups."
-}

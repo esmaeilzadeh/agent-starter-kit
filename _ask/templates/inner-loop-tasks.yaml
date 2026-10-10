@@ -1,7 +1,0 @@
-schema: ask-inner-loop-tasks/v1
-work_id: <work-id>
-tasks:
-  - id: <task-id>
-    depends_on: []
-    owned_paths:
-      - path/to/owned/module/**
