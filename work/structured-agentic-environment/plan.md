@@ -34,9 +34,40 @@ All tasks below are planned future implementation outcomes. They are not reconst
 | WB-006 | Provide a task list-detail view with related scenarios, tests, blockers and implementation evidence | WB-005 | `_ask/ui/workbench_tasks.py`<br>`_ask/tests/test_engineering_workbench_tasks.py`<br>`work/structured-agentic-environment/ui-checkpoints/WB-006.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-006.png` | WB-task-detail, WB-completed-tasks | Task status/search filters and detail links retain completed work and distinguish lifecycle from verified completion; exact integrated UI is inspected and recorded |
 | WB-007 | Open each attention record and persist attributed choices through the existing guard | WB-006 | `_ask/ui/workbench_attention.py`<br>`_ask/tests/test_engineering_workbench_attention.py`<br>`work/structured-agentic-environment/ui-checkpoints/WB-007.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-007.png` | WB-attention, WB-decision-choice | Attention links, option context, rejection without writes and new-session resolution consequences are verified; exact integrated UI is inspected and recorded |
 | WB-008 | Expose selected test source, execution history and actionable technical provenance | WB-007 | `_ask/ui/workbench_tests.py`<br>`_ask/ui/workbench_debug.py`<br>`_ask/tests/test_engineering_workbench_tests.py`<br>`work/structured-agentic-environment/ui-checkpoints/WB-008.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-008.png` | WB-test-panel, WB-debug | Selected test/result/source journeys and collapsed debug copy/command behavior match their exact underlying identities; exact integrated UI is inspected and recorded |
-| WB-009 | Measure and finish the redesigned experience in a real browser without weakening existing verification | WB-008 | `_ask/tests/test_engineering_ui.py`<br>`_ask/tests/test_engineering_ui_browser.py`<br>`_ask/tests/test_engineering_workbench_browser.py`<br>`_ask/tests/test_engineering_workbench_performance.py`<br>`_ask/ui/benchmark_workbench.py`<br>`_ask/ui/requirements-test.txt`<br>`work/structured-agentic-environment/workbench-validation.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-009.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-009.png` | WB-browser-journey, WB-browser-accessibility, WB-performance, WB-latency-budget, UI-inspect, UI-persist, UI-conflict, UI-browser, UI-empty, UI-gitless, UI-decision-object, UI-overview-results, UI-overview-hierarchy, UI-test-source, UI-expander-ids, UI-browser-gitless | Browser screenshots from real work, isolated end-to-end fixtures, keyboard/narrow-layout evidence, measured budgets and honest full verification outcome; exact integrated UI is inspected and recorded |
+| WB-009 | Adapt legacy UI journeys to Epic → Story → Scenario → Task → Test → Result / Evidence, then measure and validate that connected experience in a real browser without weakening existing verification | WB-008 | `_ask/tests/test_engineering_ui.py`<br>`_ask/tests/test_engineering_ui_browser.py`<br>`_ask/tests/test_engineering_workbench_browser.py`<br>`_ask/tests/test_engineering_workbench_performance.py`<br>`_ask/ui/benchmark_workbench.py`<br>`_ask/ui/requirements-test.txt`<br>`work/structured-agentic-environment/workbench-validation.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-009.md`<br>`work/structured-agentic-environment/ui-checkpoints/WB-009.png` | WB-browser-journey, WB-browser-accessibility, WB-performance, WB-latency-budget, UI-inspect, UI-persist, UI-conflict, UI-browser, UI-empty, UI-gitless, UI-decision-object, UI-overview-results, UI-overview-hierarchy, UI-test-source, UI-expander-ids, UI-browser-gitless | Continuity assessment for all 16 mapped test IDs using connected routes; browser screenshots from real work, isolated end-to-end fixtures, keyboard/narrow-layout evidence, unchanged measured budgets and honest full verification outcome; exact integrated UI is inspected and recorded |
 
 Execution order is WB-001 → WB-002 → WB-003 → WB-004 → WB-005 → WB-006 → WB-007 → WB-008 → WB-009. Shared existing UI regression tests are adapted in WB-009, after the selected detail renderers exist. Other tasks use separate test modules, keeping source ownership clear. One writer and one workstream branch; no parallel related branches.
+
+### WB-009 compatibility with the current plan
+
+WB-009 remains required. Its legacy selectors are an adaptation task, not a blocker
+and not a reason to restore record-type sections. Replace `workbench_section` and
+Objects/Scenarios/Evidence navigation in AppTest and Playwright with the actual
+outline, breadcrumbs, selected detail, related links and attention/decision routes.
+Use accessible labels and stable semantic keys from the current UI.
+
+Keep all 16 test IDs, case bindings, classifications and criterion assignments.
+Historical method names remain stable identifiers even when they mention the old
+Objects section. The `UI-decision-object` obligation now verifies that an overview
+attention link reaches the originating decision detail and its guarded resolution.
+Gitless checks use selected test/result detail and collapsed debug. Overview result
+checks load evidence only after selecting a test/result; overview itself performs
+zero evidence inspections or source reads. Empty collections remain understandable
+at epic root without requiring a separate Scenarios screen.
+
+For each migrated test, record the old assertion, new route/selector, preserved
+behavior and evidence in `workbench-validation.md`. Preserve no-write rejection for
+invalid/stale/foreign-source choices, refreshed resolution, cross-session persistence,
+actual source assertions, historical/current/unavailable evidence distinctions and
+warning severity. Do not delete assertions, skip tests or invent red history to get
+green results. A real missing behavior discovered by these tests is an implementation
+gap in its owning task and must be reported and repaired under reviewed ownership;
+selector migration alone cannot certify it.
+
+Browser, keyboard, 390/1440px layout, contrast, lazy-loading and latency obligations
+remain unchanged. Independently review and pin this amendment before a fresh
+WB-009 implementation attempt. Cancelling the prior attempt does not remove WB-009
+from the graph or declare it obsolete/completed.
 
 ### UI checkpoint rule
 

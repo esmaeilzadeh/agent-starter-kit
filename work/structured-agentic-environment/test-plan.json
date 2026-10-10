@@ -464,7 +464,7 @@
       "change_kind": "new",
       "scenario": {
         "given": "Valid snapshots reference missing and historical evidence",
-        "when": "AppTest navigates scenario and its actual evidence variants",
+        "when": "AppTest follows the connected outline from scenario to selected test/result and its actual evidence variants",
         "then": [
           "Canonical assertion/case identity and explicit missing/historical provenance are visible without UI domain validation"
         ]
@@ -494,7 +494,7 @@
       "change_kind": "new",
       "scenario": {
         "given": "Open pilot decision blocks a task",
-        "when": "Submit valid form and create new AppTest session",
+        "when": "Open the originating decision detail from overview attention, submit its valid guarded form and create a new AppTest session",
         "then": [
           "Resolution/actor/reason and unblocked task survive new session"
         ]
@@ -588,7 +588,7 @@
       "change_kind": "regression",
       "scenario": {
         "given": "An admitted snapshot with no tasks or canonical scenarios",
-        "when": "Open Overview and Scenarios",
+        "when": "Open epic root and inspect the empty connected hierarchy",
         "then": [
           "Empty model collections show clear no-task and no-scenario states without exceptions"
         ]
@@ -617,7 +617,7 @@
       "change_kind": "regression",
       "scenario": {
         "given": "A valid model root without a Git repository",
-        "when": "Open Overview then Evidence",
+        "when": "Open epic root, then selected test/result detail and its debug trace",
         "then": [
           "Workbench remains usable and evidence shows actionable Git-unavailable state without fatal Git output"
         ]
@@ -646,16 +646,16 @@
       "change_kind": "regression",
       "scenario": {
         "given": "An admitted workstream with a blocked task and open decision",
-        "when": "Inspect Overview and switch to Objects",
+        "when": "Inspect overview attention and follow its link to the originating decision detail",
         "then": [
-          "Task is visible on Overview and decision resolution remains available in Objects"
+          "Blocked task is visible from overview and its originating decision resolution remains available in the connected decision detail"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-006",
           "checks": [
-            "Task is visible on Overview and decision resolution remains available in Objects"
+            "Blocked task is visible from overview and its originating decision resolution remains available in the connected decision detail"
           ]
         }
       ],
@@ -675,16 +675,16 @@
       "change_kind": "new",
       "scenario": {
         "given": "An admitted epic and an available passing result",
-        "when": "Open Overview, then request test results",
+        "when": "Open epic overview, then select a test/result detail to request its evidence",
         "then": [
-          "Overview does not scan evidence initially; requested loading displays a passed outcome and debug guidance"
+          "Overview does not scan evidence initially; selected test/result loading displays a passed outcome and debug guidance"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-005",
           "checks": [
-            "Overview does not scan evidence initially; requested loading displays a passed outcome and debug guidance"
+            "Overview does not scan evidence initially; selected test/result loading displays a passed outcome and debug guidance"
           ]
         }
       ],
@@ -762,7 +762,7 @@
       "change_kind": "regression",
       "scenario": {
         "given": "Repeated nested evidence fields across records",
-        "when": "Expand evidence details",
+        "when": "Select a test/result through the connected hierarchy and expand its evidence details",
         "then": [
           "Each nested detail control remains uniquely addressable and migration errors retain warning severity"
         ]
@@ -791,7 +791,7 @@
       "change_kind": "regression",
       "scenario": {
         "given": "A valid model root without Git metadata and a running workbench",
-        "when": "Open Evidence and its debug trace",
+        "when": "Open selected test/result detail through the connected hierarchy and expand its debug trace",
         "then": [
           "Browser shows actionable Git evidence unavailability without fatal Git output"
         ]

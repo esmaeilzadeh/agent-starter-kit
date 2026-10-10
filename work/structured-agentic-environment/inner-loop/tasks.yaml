@@ -102,8 +102,8 @@ tasks:
     completion_evidence: "Selected test/result/source journeys and collapsed debug copy/command behavior match their exact underlying identities; exact integrated UI checkpoint is recorded"
     test_ids: [WB-test-panel, WB-debug]
   - id: WB-009
-    title: "Validate responsiveness, performance and regression journeys"
-    outcome: "Measure and finish the redesigned experience in a real browser without weakening existing verification"
+    title: "Validate connected hierarchy, responsiveness and regression journeys"
+    outcome: "Adapt legacy UI journeys to Epic → Story → Scenario → Task → Test → Result / Evidence, then measure and validate that connected experience in a real browser without weakening existing verification"
     depends_on: [WB-008]
     owned_paths:
       - _ask/tests/test_engineering_ui.py
@@ -115,5 +115,5 @@ tasks:
       - work/structured-agentic-environment/workbench-validation.md
       - work/structured-agentic-environment/ui-checkpoints/WB-009.md
       - work/structured-agentic-environment/ui-checkpoints/WB-009.png
-    completion_evidence: "Browser screenshots from real work, isolated end-to-end fixtures, keyboard/narrow-layout evidence, measured budgets, honest full verification outcome and exact integrated UI checkpoint"
+    completion_evidence: "Continuity assessment for all 16 mapped test IDs replaces obsolete workbench_section/Objects/Scenarios/Evidence selectors with connected routes while preserving guarded writes, persistence, evidence provenance and Gitless states; browser screenshots from real work, isolated end-to-end fixtures, keyboard/narrow-layout evidence, unchanged measured budgets, honest full verification outcome and exact integrated UI checkpoint"
     test_ids: [WB-browser-journey, WB-browser-accessibility, WB-performance, WB-latency-budget, UI-inspect, UI-persist, UI-conflict, UI-browser, UI-empty, UI-gitless, UI-decision-object, UI-overview-results, UI-overview-hierarchy, UI-test-source, UI-expander-ids, UI-browser-gitless]
