@@ -36,6 +36,7 @@ from workbench_navigation import build_outline, render_breadcrumbs, render_outli
 from workbench_overview import render_overview
 from workbench_scenarios import render_scenario
 from workbench_stories import render_story
+from workbench_tasks import render_tasks
 
 
 STATE_VIEW = "_engineering_displayed_view"
@@ -880,10 +881,7 @@ with detail_col:
             st.caption("Test · linked to its scenario and implementation task")
             st.info("Open Result / evidence in the outline to inspect a recorded execution.")
         elif selected["kind"] == "task":
-            st.subheader(selected["label"])
-            task = next((item for item in projection.get("workbench", {}).get("tasks", [])
-                         if item["id"] == selected["node_id"]), {})
-            st.caption(f"Task status: {task.get('status', 'not recorded')} · source: {task.get('record_source', 'unavailable')}")
+            render_tasks(projection, context=f"route:{selected['route_id']}", on_open=_open_related_route)
         elif selected["kind"] == "scenario":
             render_scenario(projection, selected["node_id"], on_open=_open_related_route)
         elif selected["kind"] == "story":
