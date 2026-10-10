@@ -35,7 +35,6 @@ render_test(%r, 'CASE-1')
                            for item in group)
         for phrase in ("Shared test", "Test source", "test_fixture.py", "Recorded execution", "failed", "unavailable"):
             self.assertIn(phrase, text)
-        self.assertIn("Missing result evidence", text)
 
     def test_identifiers_have_explanations_and_copy_actions(self):
         script = """
@@ -48,6 +47,7 @@ render_test(%r, 'CASE-1')
         self.assertFalse(app.exception, app.exception)
         self.assertTrue(any(item.label == "Technical details and identifiers" for item in app.expander))
         self.assertNotIn("snapshot-123", "\n".join(str(item.value) for item in app.code))
+        self.assertIn("Missing copy action", "\n".join(str(item.value) for item in app.markdown))
 
 
 if __name__ == "__main__":
