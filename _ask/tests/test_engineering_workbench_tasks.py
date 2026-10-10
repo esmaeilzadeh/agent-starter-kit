@@ -30,8 +30,8 @@ def _text(app) -> str:
     return "\n".join(str(item.value) for group in collections for item in group)
 
 
-class WorkbenchTaskTests(unittest.TestCase):
-    def test_task_rows_keep_lifecycle_separate_from_completion(self):
+class WorkbenchTests(unittest.TestCase):
+    def test_task_detail_explains_work_dependencies_and_tests(self):
         projection = {"model": {"nodes": [{"id": "planned", "type": "task",
                                                "title": "Planned task", "lifecycle": "active"}]},
                       "workbench": {"tasks": [{"id": "planned", "title": "Planned task",
@@ -43,7 +43,7 @@ class WorkbenchTaskTests(unittest.TestCase):
         self.assertEqual(row["status"], "planned")
         self.assertFalse(row["verified"])
 
-    def test_task_route_shows_filterable_list_and_related_detail(self):
+    def test_completed_tasks_retain_tests_results_and_gaps(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _fixture(root)
