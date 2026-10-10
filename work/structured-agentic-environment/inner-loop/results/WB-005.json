@@ -2,29 +2,35 @@
   "schema": "ask-task-result/v2",
   "work_id": "structured-agentic-environment",
   "task_id": "WB-005",
-  "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-  "candidate_sha": "238acc80169ab7db809fb940794bc98d96c968a3",
+  "base_sha": "ef2da7386e610cf07e01d09ecfba59625f49668d",
+  "candidate_sha": "c4811dee08c4abe35028e570c04bdd49bb10ef4b",
   "tdd": {
-    "seam": "_ask/ui/workbench_overview.py:_render_delivery; _ask/ui/streamlit_app.py:_open_related_route",
+    "seam": "_ask/ui/streamlit_app.py:_open_related_route; _ask/ui/workbench_overview.py:_render_filter",
     "red": {
-      "command": "./ask traceability run structured-agentic-environment --candidate-sha 16ba62d96c4648c33d56ba6a55a8dea9951daeee --scope task --task-id WB-005 --phase red",
-      "output": "Run aa8a402513634ddc8f93bb621b850f44 collected WB-overview and WB-summary-links with collection_status=ok; both failed behavior assertions. WB-overview aggregated the missing unassigned overview row, wrong shared-task alias, and discarded Back history; WB-summary-links failed because filtered Open record left the epic selected. Captured log is bound by SHA-256.",
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 2c9d0587b51875e6c765530c897dca9e77ccd27c --anchor-sha ef2da7386e610cf07e01d09ecfba59625f49668d --scope task --task-id WB-005 --phase red",
+      "output": "Run 93f292f55bc94834b80c97249c6bd0f4 collected both assigned cases. WB-summary-links failed by behavior assertion: opening a filtered task cleared the stable-ID/work-bound filter, so Back could not restore it. WB-overview passed, including mixed story/unassigned coverage, shared task aliases/Back, and empty/back behavior. collection_status=ok.",
       "exit_code": 1,
-      "run_id": "aa8a402513634ddc8f93bb621b850f44",
-      "output_artifact": "work/structured-agentic-environment/traceability/runs/aa8a402513634ddc8f93bb621b850f44/755ae5315b704f68aa54f83f2f6f659c.log",
-      "output_digest": "3f488004f888b85ee3e791327190e185521fcbaa7f4be131bbca6a3b4d54829d",
-      "case_ids": ["WB-overview", "WB-summary-links"]
+      "run_id": "93f292f55bc94834b80c97249c6bd0f4",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/93f292f55bc94834b80c97249c6bd0f4/82fd2151d5e44245a1bbfdd7cb575929.log",
+      "output_digest": "47f2bb5ce706e87e277d5582183718ed7ec5cf0e11b883b5adee6632839f56a5",
+      "case_ids": [
+        "WB-overview",
+        "WB-summary-links"
+      ]
     },
     "green": {
-      "command": "./ask traceability run structured-agentic-environment --candidate-sha 238acc80169ab7db809fb940794bc98d96c968a3 --scope task --task-id WB-005 --phase final_green",
-      "output": "Run 301391f9c8a144709ad80891c4d8ca29 passed WB-overview and WB-summary-links; collection_status=ok. Captured log is bound by SHA-256.",
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha c4811dee08c4abe35028e570c04bdd49bb10ef4b --anchor-sha ef2da7386e610cf07e01d09ecfba59625f49668d --scope task --task-id WB-005 --phase final_green",
+      "output": "Run 4e556768cf0f4c6cafa9a4609d5e63ec passed WB-overview and WB-summary-links; collection_status=ok.",
       "exit_code": 0,
-      "run_id": "301391f9c8a144709ad80891c4d8ca29",
-      "output_artifact": "work/structured-agentic-environment/traceability/runs/301391f9c8a144709ad80891c4d8ca29/24dcb95d64d64258a7634895c147a4d3.log",
-      "output_digest": "a460ccf73cc1ef51639678fb913ed6b70cce759b5b940225830c6bcc50c8f09c",
-      "case_ids": ["WB-overview", "WB-summary-links"]
+      "run_id": "4e556768cf0f4c6cafa9a4609d5e63ec",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/4e556768cf0f4c6cafa9a4609d5e63ec/0e23dfb1b2294b368fa38cccd77fa21c.log",
+      "output_digest": "30bcd09e656f26486ef7aa7e7d8e139ad2702dd568b20e429e161323c54a715a",
+      "case_ids": [
+        "WB-overview",
+        "WB-summary-links"
+      ]
     }
   },
   "exemption": null,
-  "notes": "Remediates all three findings from rejected candidate 2da7789. Filtered record kinds (tasks, blocked, scenarios, decisions, failed-results) now resolve to canonical task/scenario/decision/result routes by stable identity. Related-record navigation selects the alias under the current ancestry and pushes the prior route, preserving breadcrumbs and Back. Epic summary explicitly groups and links scenarios outside recorded story membership even when other scenarios belong to stories. No story or edge is synthesized. The red fixture uses legal recorded feature/story/scenario containment and a task whose scoped tests cover both scenarios. Task AppTests exercise the actual app entry point and continue to verify zero eager evidence/source reads. UI checkpoint remains coordinator-owned after integration."
+  "notes": "Keeps the active overview filter (kind, exact stable IDs, and work ID) while navigating to a filtered record. The existing route history therefore returns to the same epic filter state on Back; only the explicit Clear filter action removes it. Added AppTest journeys for nonempty filter\u2192record\u2192Back, empty filter\u2192scenario\u2192Back, and Back disabled at the initial epic. All earlier review fixes remain covered: plural filter kinds resolve to canonical routes, shared tasks select the alias under the active scenario and preserve Back, and mixed story/unassigned scenarios both appear in the overview. No synthetic relationships are introduced; zero eager source/evidence assertions remain. UI screenshot/findings and integration remain coordinator-owned. Exact final-green rerun at merge candidate c4811de retains the original red commit ancestry required by task-scoped completion."
 }
