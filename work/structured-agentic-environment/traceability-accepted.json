@@ -1,70 +1,81 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+  "contract_sha": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
   "work_id": "structured-agentic-environment",
-  "reviewer": "/root/review_wb001",
+  "reviewer": "/root/review_wb009_amendment",
   "recorded_by": "/root",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
   "plan_review": {
     "schema": "ask-plan-review/v1",
     "decision": "APPROVED",
-    "reviewer": "/root/review_wb001",
-    "recorded_by": "codex-coordinator",
-    "work_id": "structured-agentic-environment",
-    "reviewedSHA": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-    "reviewed_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-    "candidate_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-    "comparison_base": "55c11fad3e0391f8a47236166c8d5941d824ef73",
-    "patch_base": "bf3e708c5ef02ffc5af7f5030c14512edbff97c8",
-    "model": "gpt-6-astra",
+    "reviewer": "/root/review_wb009_amendment",
     "runtime": "codex",
-    "parent_model": "gpt-6-luna",
-    "policy": "_ask/policies/delegation.md",
-    "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+    "work_id": "structured-agentic-environment",
+    "scope": "WB-009 plan compatibility amendment only; no implementation, TDD history, task integration, or workstream completion approval",
+    "base_sha": "6ad3e9697b23e8a8cb2d0e69100d2155c7765f11",
+    "candidate_sha": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
+    "reviewed_sha": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
+    "reviewedSHA": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
     "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
-    "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
-    "graph_digest": "ad8e3e6a647d83b6b699fbe5c15e13a2ae8c0bc880be686e1cc9e5cc91a8664d",
-    "scope": "Independent WB-005 ownership/route-wiring plan amendment; eligible for coordinator accept-plan at this exact revision only. No implementation, task integration or workstream completion approval.",
-    "blocking_findings": [],
+    "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b",
+    "graph_digest": "d93ec784872044059db0c529c5177b970cab1a2827787669db6137b7fb50793f",
+    "digest_method": "Repository contracts_at() parses the exact committed JSON/YAML; contracts.digest() hashes canonical sorted compact JSON for spec, test plan and parsed graph.",
+    "inspected_paths": [
+      "work/structured-agentic-environment/plan.md",
+      "work/structured-agentic-environment/test-plan.json",
+      "work/structured-agentic-environment/inner-loop/tasks.yaml"
+    ],
+    "findings": [],
+    "resolved_findings": [
+      {
+        "previous_candidate_sha": "feca396ec46fd1bf75477853b5254b9ad2ff5aad",
+        "finding": "Preserving regression classifications while changing test-method selectors contradicted the evaluator's AST inventory and review rules.",
+        "resolution": "The six migrated legacy regression cases are explicitly classified changed. The plan requires genuine assertion-red, final-green and independent continuity review, and forbids a nonbehavioral exemption for selector migration."
+      }
+    ],
     "semantic_assessment": {
-      "purpose": "The existing WB-005 renderers must be called from the existing selected epic/story/scenario app routes to satisfy their already accepted visible outcome; app-entry ownership makes that implementation reachable.",
-      "authority": "Only the sequential WB-005 writer gains the precise entry path. Dispatch/data handoff must consume the already captured validated projection and preserve source/edit identity; validation/evaluator policy is unchanged.",
-      "acceptance": "Existing WB-overview and WB-summary-links must exercise the actual app entry routes, fail when dispatch is absent, and demonstrate relationship readability/count navigation/zero eager source or evidence work. Acceptance is tightened to observable integration without adding criteria or changing test identity.",
-      "serialization": "WB-004 retains its ownership and prior reviewed evidence. WB-005 depends directly on WB-004; the graph explicitly permits shared paths when dependency reachability serializes their writers. No parallel common-file branch or conflicting ready writer is introduced.",
-      "test_plan": "All 12 criteria and 57 test IDs/records remain unchanged; all nine task scopes preserve assignments and dependencies. The canonical plan digest is unchanged; parsed graph digest changes because ownership and completion evidence change.",
-      "transition": "Coordinator must explicitly accept and pin the reviewed amended graph, then bind a fresh WB-005 attempt to the amended clean base. Existing earlier-task execution/review/checkpoint evidence remains historical and is not relabeled."
+      "spec_compatibility": "Accepted specification revision 3 is byte-equivalent as parsed data to the base contract. Connected outline, breadcrumbs, selected details and contextual decisions implement its existing hierarchy direction; obsolete record-type navigation is no longer an acceptance prerequisite.",
+      "coverage_and_bindings": "All 57 test IDs remain in the same order. All 16 WB-009 assignments, case IDs, runner IDs, source paths, test types and criterion assignments remain unchanged. Plan obligations, task scopes, runner bindings and baseline exemptions are unchanged. No task outside WB-009 is amended; its dependencies and owned paths are unchanged.",
+      "classification_continuity": "Only UI-empty, UI-gitless, UI-decision-object, UI-test-source, UI-expander-ids and UI-browser-gitless move from regression to changed. All existing new classifications remain new. This increases required continuity evidence rather than excusing missing red history.",
+      "behavior_preservation": "The revised journeys retain missing/historical/current evidence distinctions, canonical assertions, source assertions, uniquely addressable nested evidence and warning severity, actionable Gitless states, invalid/stale rejection without writes, explicit refresh and persistence across sessions. Decision access changes from Objects to the originating contextual detail; result loading changes to selected test/result while overview stays lazy. Each migrated assertion requires a recorded continuity assessment.",
+      "browser_accessibility_performance": "Real-browser hierarchy and foreign-source journeys, immutable checkout/refs, keyboard focus and labels, non-color status, 390/1440px layouts, rendered contrast, zero initial source/evidence work, content-bound cache invalidation, 20 warm samples and five cold starts retain their existing numerical budgets and required evidence. No performance or accessibility assertions are relaxed.",
+      "ownership_and_remaining_work": "Missing application behavior must be repaired under its reviewed owning task; selector migration alone cannot certify the implementation. WB-009 remains unfinished. The session correction withdrawing earlier WB-006 through WB-008 review/TDD claims remains applicable; this decision does not restore those claims."
     },
-    "checks": {
-      "traceability_contract_validation": "pass: contracts_at exact candidate and validate_plan=[]",
-      "graph_validation": "ok: exact candidate graph; CLI inner-loop validate also ok",
-      "canonical_specification": "unchanged byte-for-byte from accepted contract",
-      "canonical_test_plan": "unchanged byte-for-byte from accepted contract; all 57 test records, assignments, classifications, scenarios, types and assertions preserved",
-      "graph_change": "only WB-005 owned_paths adds streamlit_app.py and completion_evidence requires actual app routes",
-      "task_order_and_dependencies": "unchanged; WB-001 through WB-009 sequential; WB-005 depends on WB-004",
-      "ownership_overlap": "shared app entry only under WB-004 and WB-005; dependency serialization prevents concurrent ownership conflict",
-      "amendment_patch": "only plan.md, tasks.yaml, spec-change proposal; no implementation/source changes",
-      "test_ownership": "nine graph scopes exactly match accepted plan scopes; all 57 cases uniquely assigned",
-      "policy": "unchanged candidate/root/accepted pin digest"
-    },
-    "reviewed_file_sha256": {
-      "specs/current/structured-agentic-environment.json": "a6f8c64e2f15903ef3dffb4592062d4bf55e72140987298da4a6b419381053eb",
-      "work/structured-agentic-environment/test-plan.json": "64969b577e4d10385fe5fb5afb9adeb83eff4bf365b905ee0ff5a051110f20a0",
-      "work/structured-agentic-environment/inner-loop/tasks.yaml": "f8d4d69ffad4fc16e2883632e179577a12280f4bd517d7f7e8bdb958ed1bc495",
-      "work/structured-agentic-environment/plan.md": "74e6c3e35d9c9d8f61d2a13d1beed1d5f4cff17e0c6ed81e89b791283438ab92",
-      "work/structured-agentic-environment/spec-change-wb005-renderer-wiring.md": "68cb11468cdd578315879804e2e02fe45bfe268ea176d431f1fe331ac1482ef8",
-      "_ask/policies/delegation.md": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107"
-    },
-    "evidence": "work/structured-agentic-environment/spec-change-wb005-renderer-wiring-review-dcae11d.md",
+    "checks_run": [
+      {
+        "check": "Read exact three-file amendment versus 6ad3e9697b23e8a8cb2d0e69100d2155c7765f11 and correction versus feca396ec46fd1bf75477853b5254b9ad2ff5aad",
+        "result": "passed"
+      },
+      {
+        "check": "./ask traceability validate-plan structured-agentic-environment --revision 291db209c9af2e8c5335b2c9233ee8f826bfad11",
+        "result": "exit 0"
+      },
+      {
+        "check": "./ask inner-loop validate structured-agentic-environment",
+        "result": "exit 0; ok"
+      },
+      {
+        "check": "Repository contracts_at()/validate_graph() plus explicit Python assertions for 57 IDs, 16 WB-009 assignments, immutable spec revision 3, protected metadata, exact six classification changes, unchanged non-WB-009 tasks and unchanged task scopes/obligations/runner bindings",
+        "result": "passed at exact reviewed commit"
+      },
+      {
+        "check": "In-memory selector-only method edit through repository inventory()",
+        "result": "Confirmed UI-decision-object is identified as behavior_changes; corrected changed classification complies with the existing evaluator. No repository test source was edited."
+      },
+      {
+        "check": "git diff --check 6ad3e9697b23e8a8cb2d0e69100d2155c7765f11 291db209c9af2e8c5335b2c9233ee8f826bfad11 and exact changed-path inventory",
+        "result": "exit 0; exactly the three scoped planning files changed"
+      }
+    ],
     "limitations": [
-      "This review evaluates the plan amendment, not implemented WB-005 route dispatch or passing WB-005 assertions.",
-      "No source edits, coordinator authority/ref/state changes, accept-plan invocation or task integration were performed.",
-      "No new test execution is needed for this planning-only diff; explicit requested graph and traceability validation passed."
+      "No application behavior tests, real-browser journey, screenshot checkpoint, latency benchmark, final Verify or workstream completion evaluation were run as part of this plan-only review.",
+      "Independent implementation review and genuine execution/continuity evidence are still required for WB-009 and any repaired prerequisite behavior."
     ]
   },
-  "plan_review_digest": "46da2b0f02dedf08e624b4deb245f68b37163d6d23894cc6fa0809cbafef0979",
+  "plan_review_digest": "4b257e2dac2d22e8444a121f3289a3eb4cb6d5348131f93f447e73f379b03fac",
   "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
-  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
-  "graph_digest": "ad8e3e6a647d83b6b699fbe5c15e13a2ae8c0bc880be686e1cc9e5cc91a8664d"
+  "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b",
+  "graph_digest": "d93ec784872044059db0c529c5177b970cab1a2827787669db6137b7fb50793f"
 }
