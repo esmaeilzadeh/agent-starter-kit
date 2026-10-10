@@ -71,7 +71,6 @@ def _open_related_route(kind: str, identity: str) -> None:
     selected = selected or (matching[0] if matching else None)
     if selected is None:
         return
-    _clear_overview_filter()
     navigate(st.session_state, selected["route_id"])
 
 
