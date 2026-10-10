@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "structured-agentic-environment",
-  "revision": 35,
-  "coordinator_sha": "daf9428b39f8d65bef82e0c40c35549d0f1019ea",
+  "revision": 36,
+  "coordinator_sha": "f5e95e35c2188a482873517166726411018008b6",
   "coordinator_branch": "agent/structured-agentic-environment",
   "tasks": {
     "WB-001": {
@@ -3150,8 +3150,8 @@
       }
     },
     "WB-009": {
-      "status": "cancelled",
-      "base_sha": "daf9428b39f8d65bef82e0c40c35549d0f1019ea",
+      "status": "pending",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
