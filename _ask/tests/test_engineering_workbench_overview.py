@@ -31,10 +31,13 @@ def _app(root: Path):
     return AppTest.from_file(str(UI / "streamlit_app.py")).run(timeout=30)
 
 
-def _fixture(root: Path, *, mixed_story: bool = False) -> None:
+def _fixture(root: Path, *, mixed_story: bool = False, no_blocked: bool = False) -> None:
     model, _ = workbench_model(root)
     purpose = next(node for node in model["nodes"] if node["id"] == "purpose")
     purpose["description"] = "Make delivery decisions and proof easy to inspect."
+    if no_blocked:
+        model["edges"] = [edge for edge in model["edges"]
+                          if not (edge.get("type") == "depends_on" and edge.get("source") == "build")]
     if mixed_story:
         spec_path = root / "specs/current/pilot.json"
         spec = json.loads(spec_path.read_text(encoding="utf-8"))
@@ -158,6 +161,8 @@ class WorkbenchTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _app(root)
                 self.assertFalse(app.exception, app.exception)
+                self.assertTrue(app.button(key="route:back").disabled,
+                                "Back is disabled at the initial epic route")
                 controls = {item.key: item for item in app.button}
                 self.assertIn("overview:summary:blocked", controls,
                               "blocked-task summary must open its stable-ID filtered records")
@@ -187,6 +192,36 @@ class WorkbenchTests(unittest.TestCase):
                 app.button(key="overview:filter:open:blocked:build").click().run(timeout=30)
                 self.assertEqual(app.session_state["_engineering_route"], "build")
                 self.assertIn("Task status", _text(app))
+                defects = []
+                expected_filter = {"kind": "blocked", "ids": ["build"], "work_id": "pilot"}
+                if app.session_state["_engineering_overview_filter"] != expected_filter:
+                    defects.append("opening a filtered record discarded its exact filter state")
+                app.button(key="route:back").click().run(timeout=30)
+                if app.session_state["_engineering_route"] != "purpose":
+                    defects.append("Back did not restore the epic route")
+                if app.session_state["_engineering_overview_filter"] != expected_filter:
+                    defects.append("Back did not restore the exact stable-ID filter")
+                if "overview:filter:open:blocked:build" not in {item.key for item in app.button}:
+                    defects.append("restored overview did not show the filtered task")
+                self.assertEqual(defects, [], "; ".join(defects))
+
+            with tempfile.TemporaryDirectory() as empty_directory:
+                empty_root = Path(empty_directory)
+                _fixture(empty_root, no_blocked=True)
+                with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(empty_root)}):
+                    empty_app = _app(empty_root)
+                    self.assertFalse(empty_app.exception, empty_app.exception)
+                    self.assertTrue(empty_app.button(key="route:back").disabled)
+                    empty_app.button(key="overview:summary:blocked").click().run(timeout=30)
+                    empty_filter = {"kind": "blocked", "ids": [], "work_id": "pilot"}
+                    self.assertEqual(empty_app.session_state["_engineering_overview_filter"], empty_filter)
+                    self.assertIn("No records match this summary", _text(empty_app))
+                    empty_app.button(key="route:scenario").click().run(timeout=30)
+                    self.assertFalse(empty_app.exception, empty_app.exception)
+                    empty_app.button(key="route:back").click().run(timeout=30)
+                    self.assertEqual(empty_app.session_state["_engineering_route"], "purpose")
+                    self.assertEqual(empty_app.session_state["_engineering_overview_filter"], empty_filter)
+                    self.assertIn("No records match this summary", _text(empty_app))
 
 
 if __name__ == "__main__":
