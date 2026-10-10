@@ -1,0 +1,209 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "structured-agentic-environment",
+  "reviewer": "/root/review_wb001",
+  "recorded_by": "codex-coordinator",
+  "model": "gpt-6-astra",
+  "runtime": "codex",
+  "parent_model": "gpt-6-luna",
+  "scope": "task",
+  "task_id": "WB-005",
+  "candidate_sha": "2da7789398ecaee48eae260b2e7203cea5e4c13a",
+  "task_base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+  "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "test_ids": [
+    "WB-overview",
+    "WB-summary-links"
+  ],
+  "criterion_ids": [
+    "EM-008",
+    "EM-010",
+    "EM-012"
+  ],
+  "source_digests": {
+    "_ask/tests/test_engineering_workbench_overview.py": "0023706e2ada4e2c830b76746196c8199814f2c941c28c6a105d5b36817dd064"
+  },
+  "inspected_sources": [
+    "_ask/tests/test_engineering_workbench_overview.py",
+    "_ask/ui/streamlit_app.py",
+    "_ask/ui/workbench_overview.py",
+    "_ask/ui/workbench_scenarios.py",
+    "_ask/ui/workbench_stories.py"
+  ],
+  "changed_cases": [
+    "WB-overview",
+    "WB-summary-links"
+  ],
+  "inventory_exclusions": {},
+  "decision": "REJECTED",
+  "boundary": "ok",
+  "boundary_details": {
+    "raw_task_base_diff": [
+      "_ask/tests/test_engineering_workbench_overview.py",
+      "_ask/ui/streamlit_app.py",
+      "_ask/ui/workbench_overview.py",
+      "_ask/ui/workbench_scenarios.py",
+      "_ask/ui/workbench_stories.py",
+      "work/structured-agentic-environment/inner-loop/state.json",
+      "work/structured-agentic-environment/spec-change-wb005-renderer-wiring-review-dcae11d.md",
+      "work/structured-agentic-environment/traceability-accepted.json"
+    ],
+    "worker_source_paths": [
+      "_ask/tests/test_engineering_workbench_overview.py",
+      "_ask/ui/streamlit_app.py",
+      "_ask/ui/workbench_overview.py",
+      "_ask/ui/workbench_scenarios.py",
+      "_ask/ui/workbench_stories.py"
+    ],
+    "preimplementation_coordinator_metadata": {
+      "commit": "d334bb2",
+      "paths": [
+        "work/structured-agentic-environment/traceability-accepted.json",
+        "work/structured-agentic-environment/spec-change-wb005-renderer-wiring-review-dcae11d.md"
+      ],
+      "assessment": "The accepted-plan registration and reviewer artifact were committed by the coordinator before WB-005 test/implementation commits; they are not writer changes or newly granted source ownership."
+    }
+  },
+  "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-005.json",
+  "task_result_sha256": "bd54dd33edd276aec4cdd87fdef89c77f47ae19f5949bcf522e56c403f0d6828",
+  "owned_source_digests": {
+    "_ask/tests/test_engineering_workbench_overview.py": "0023706e2ada4e2c830b76746196c8199814f2c941c28c6a105d5b36817dd064",
+    "_ask/ui/streamlit_app.py": "3240da9d8c488041a171db95a32627991348592ce16aa974ac5739ebe46530b7",
+    "_ask/ui/workbench_overview.py": "95eeb6f60a18e12d6928288ac032dcb979f5d91386152bc98d707fa8258a7358",
+    "_ask/ui/workbench_scenarios.py": "511630ba7bc02d9893643f0fcb5c937f8cfe3d670589f8821f7f24f8e852c694",
+    "_ask/ui/workbench_stories.py": "a369e10e0c0dfc930f9e14c1046efd31f8752a823c248aac55b581eb9ed9e40a"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "path": "_ask/ui/workbench_overview.py",
+      "line": 179,
+      "assessment": "Filtered record buttons pass collection/filter kinds (blocked, tasks, scenarios, decisions) to a route matcher that requires singular canonical kinds (task, scenario, decision). All such Open record buttons silently return without navigation. Normalize filter kind to canonical record kind or carry an explicit resolved route with the stable ID.",
+      "reproduction": "Open the assigned fixture; click overview:summary:blocked, then overview:filter:open:blocked:build. The filter state correctly names build, but route remains purpose and detail remains Purpose. streamlit_app.py:64 finds no outline entry of kind blocked. The same mismatch applies to decisions/scenarios/tasks.",
+      "related_test_ids": [
+        "WB-summary-links"
+      ]
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "path": "_ask/ui/streamlit_app.py",
+      "line": 63,
+      "assessment": "Related navigation chooses the first alias for a canonical ID and uses route_to, losing the current parent context and clearing Back history. Prefer the route alias under the current ancestry and navigate while preserving history/filter context.",
+      "reproduction": "Use an admitted story with two scenarios and one task owned by both; open scenario-2 then scenario:scenario-2:task:build. The app selects build under scenario (the first scenario), not build@scenario-2. Breadcrumbs show Canonical behavior instead of Second behavior, route history is [], and Back is disabled.",
+      "related_test_ids": [
+        "WB-overview",
+        "WB-summary-links"
+      ]
+    },
+    {
+      "id": "R3",
+      "severity": "medium",
+      "path": "_ask/ui/workbench_overview.py",
+      "line": 68,
+      "assessment": "The overview exposes unassigned scenarios only when there are no stories at all. With mixed recorded membership it renders only story-linked scenarios and omits remaining scenarios from the overview delivery summary. Render an explicit unassigned group for scenarios outside the union of recorded story memberships, while retaining the existing model relationships.",
+      "reproduction": "Create an admitted model with story\u2192scenario and a second canonical scenario directly under the epic. Projection stories contains only scenario, while projection scenarios contains scenario and scenario-2. Overview has only overview:scenario:scenario, with no overview:scenario:scenario-2. The left outline still contains route:scenario-2 and its grouping; the omission is specifically in the epic delivery summary.",
+      "related_test_ids": [
+        "WB-overview"
+      ]
+    }
+  ],
+  "criteria": [
+    {
+      "id": "EM-008",
+      "coverage_decision": "REJECTED",
+      "assessment": "Real app routes call the three owned renderers and the no-story pilot honestly exposes canonical scenarios, progress dimensions and unloaded results. However related task navigation loses its active scenario/Back context, and mixed story membership hides unassigned scenarios from overview delivery summaries. These violate the assigned relationship/context behavior.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The AppTest follows overview\u2192scenario with no recorded story and checks labels/control existence. It does not exercise a recorded story route, a task shared across scenarios, mixed assigned/unassigned scenarios or clicking related task/test links, leaving R2/R3 undetected."
+        }
+      }
+    },
+    {
+      "id": "EM-010",
+      "coverage_decision": "REJECTED",
+      "assessment": "Blocked and open-decision summaries capture correct stable IDs/work context and unknown results stay Not loaded. Following a filtered record silently does nothing because filter kinds do not match route kinds, and related navigation cannot preserve parent/Back context. The accepted summary-to-record journey is incomplete.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The count test verifies only filter state and rendered text, not Open record clicks or their exact routed detail and return behavior. Its fixture has no distinct failed-result set/shared-test case despite the planned scenario; passing counts alone cannot establish complete summary navigation."
+        }
+      }
+    },
+    {
+      "id": "EM-012",
+      "coverage_decision": "APPROVED",
+      "assessment": "For this task slice the actual app overview/scenario routes use captured metadata and do not eagerly inspect verification evidence or read test source. The task test raises on eager evidence inspection; an independent strengthened filesystem probe counts both text and byte reads and observes zero selected test-source reads. Browser accessibility and latency obligations remain later tasks.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Both opening overview and navigating to a scenario run while evidence inspection raises and test-source text reads are counted. Independent read_text/read_bytes guards also confirm zero source reads across the same actual app route journey."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "WB-overview",
+      "decision": "REJECTED",
+      "assertion_assessment": "The actual app entry exposes purpose, no-story disclosure, scenario controls, separate task/readiness/lifecycle dimensions, attention and Not loaded results while suppressing eager evidence/source reads. Scenario details show canonical G/W/T and mapped task/test controls. The fixture has no recorded story and never clicks those relationship controls, so it misses shared-task context loss and partial-story orphan omission.",
+      "counterexample": "An admitted epic has one story-linked scenario and another directly under the epic: the overview summary lacks the second scenario link. Separately a task shared by two scenarios opened from scenario-2 resolves to the first scenario alias and disables Back. Both preserve valid recorded relationships yet break the expected journey.",
+      "tdd_continuity_assessment": "Accepted red 1be0d48ad30d4af29abc47ec84e7886a at 54aa9b32dcc3595a0fd066377fa823fafeced0cf collects both mapped cases and fails each by behavior_assertion. Final green 9bc371ff4aff4536941825ff64a90911 passes both at exact candidate 2da7789398ecaee48eae260b2e7203cea5e4c13a. Test-file changes between red and green add scripts import path, metric text inspection, dependency readiness and route-control assertions, and work_id to expected filter context; they do not remove the failing purpose/summary behavior checks. Verified ledger/report/log/source digests. Genuine continuity covers existing assertions, not the omitted navigation/mixed-membership counterexamples. No exemption."
+    },
+    {
+      "id": "WB-summary-links",
+      "decision": "REJECTED",
+      "assertion_assessment": "Blocked/open-decision counts capture exact filter IDs plus work_id; Clear filter works and unknown results never claim zero failures. The test does not click filtered Open record or verify routed details/Back. Those buttons pass blocked/decisions kinds to a singular route matcher and do nothing. Failed-result/shared-test variants named by the plan are not exercised.",
+      "counterexample": "Click View blocked tasks then Open record for build. Filter state is {kind: blocked, ids: [build], work_id: pilot}, but route stays purpose and Purpose detail remains. Clicking open decisions has the same kind mismatch.",
+      "tdd_continuity_assessment": "Accepted red 1be0d48ad30d4af29abc47ec84e7886a at 54aa9b32dcc3595a0fd066377fa823fafeced0cf collects both mapped cases and fails each by behavior_assertion. Final green 9bc371ff4aff4536941825ff64a90911 passes both at exact candidate 2da7789398ecaee48eae260b2e7203cea5e4c13a. Test-file changes between red and green add scripts import path, metric text inspection, dependency readiness and route-control assertions, and work_id to expected filter context; they do not remove the failing purpose/summary behavior checks. Verified ledger/report/log/source digests. Genuine continuity covers existing assertions, not the omitted navigation/mixed-membership counterexamples. No exemption."
+    }
+  ],
+  "limitations": [
+    "Task source boundary is ok after attributing preimplementation accepted-plan registration metadata to its coordinator commit; the raw task-base diff is enumerated explicitly.",
+    "This review does not invent loaded failed-result evidence or full workstream completion from metadata counters.",
+    "UI checkpoint is prescribed after integration and not the rejection reason.",
+    "No source edits, coordinator-state changes, recording, acceptance or integration performed. recorded_by identifies the intended coordinator only."
+  ],
+  "execution_evidence": {
+    "red": {
+      "run_id": "1be0d48ad30d4af29abc47ec84e7886a",
+      "candidate_sha": "54aa9b32dcc3595a0fd066377fa823fafeced0cf",
+      "canonical_report_digest": "853d247ba96f83d40b06a0acf857742a241281eb8246964125528b3a81353e72",
+      "report_file_sha256": "7351045fcb70b960f7d9c7dd01be57351ccaad5802ee4843fa904718d430b45a",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/1be0d48ad30d4af29abc47ec84e7886a/75c33e9abe45464895d530fa2c14d49e.log",
+      "output_digest": "fedf5b31c36f07bc84db3a31bf04d0788a09abede4be40622f1698b033a19859",
+      "outcomes": {
+        "WB-overview": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        },
+        "WB-summary-links": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        }
+      }
+    },
+    "green": {
+      "run_id": "9bc371ff4aff4536941825ff64a90911",
+      "candidate_sha": "2da7789398ecaee48eae260b2e7203cea5e4c13a",
+      "canonical_report_digest": "084f127d1e55f5d6083abe146008748df9c05f1fd79932f385f403733d453b65",
+      "report_file_sha256": "bf45662d434e9d94489dbdd4286c360bca4f648b1e078cfe3b056f11fc0b89e0",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/9bc371ff4aff4536941825ff64a90911/a564b6216d024a60a6eb5a67fa5ddb89.log",
+      "output_digest": "e3dc8442df5fffb6b1a8a36e4cfa60266aeec63d8ff48a212b8c5eb7854d6d0f",
+      "outcomes": {
+        "WB-overview": {
+          "outcome": "passed",
+          "failure_kind": null
+        },
+        "WB-summary-links": {
+          "outcome": "passed",
+          "failure_kind": null
+        }
+      }
+    }
+  }
+}

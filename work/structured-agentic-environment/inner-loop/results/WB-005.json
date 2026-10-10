@@ -1,0 +1,30 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "structured-agentic-environment",
+  "task_id": "WB-005",
+  "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+  "candidate_sha": "2da7789398ecaee48eae260b2e7203cea5e4c13a",
+  "tdd": {
+    "seam": "_ask/ui/workbench_overview.py:render_overview; _ask/ui/workbench_scenarios.py:render_scenario; _ask/ui/workbench_stories.py:render_story; _ask/ui/streamlit_app.py:connected hierarchy dispatch",
+    "red": {
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 54aa9b32dcc3595a0fd066377fa823fafeced0cf --anchor-sha dcae11d61c2b73745ba9f5b2187065792d84ac46 --scope task --task-id WB-005 --phase red",
+      "output": "Run 1be0d48ad30d4af29abc47ec84e7886a collected WB-overview and WB-summary-links with collection_status=ok; both failed as behavior assertions. Captured output: work/structured-agentic-environment/traceability/runs/1be0d48ad30d4af29abc47ec84e7886a/75c33e9abe45464895d530fa2c14d49e.log",
+      "exit_code": 1,
+      "run_id": "1be0d48ad30d4af29abc47ec84e7886a",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/1be0d48ad30d4af29abc47ec84e7886a/75c33e9abe45464895d530fa2c14d49e.log",
+      "output_digest": "fedf5b31c36f07bc84db3a31bf04d0788a09abede4be40622f1698b033a19859",
+      "case_ids": ["WB-overview", "WB-summary-links"]
+    },
+    "green": {
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 2da7789398ecaee48eae260b2e7203cea5e4c13a --anchor-sha dcae11d61c2b73745ba9f5b2187065792d84ac46 --scope task --task-id WB-005 --phase final_green",
+      "output": "Run 9bc371ff4aff4536941825ff64a90911 passed WB-overview and WB-summary-links; collection_status=ok. Captured output: work/structured-agentic-environment/traceability/runs/9bc371ff4aff4536941825ff64a90911/a564b6216d024a60a6eb5a67fa5ddb89.log",
+      "exit_code": 0,
+      "run_id": "9bc371ff4aff4536941825ff64a90911",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/9bc371ff4aff4536941825ff64a90911/a564b6216d024a60a6eb5a67fa5ddb89.log",
+      "output_digest": "e3dc8442df5fffb6b1a8a36e4cfa60266aeec63d8ff48a212b8c5eb7854d6d0f",
+      "case_ids": ["WB-overview", "WB-summary-links"]
+    }
+  },
+  "exemption": null,
+  "notes": "Epic root now explains recorded purpose, story/scenario mapping, separate task graph/runner status, declared lifecycle and dependency readiness, and contextual attention. Missing story records are disclosed and existing scenarios remain directly accessible; no synthetic story or task/scenario edge is created. Scenario details show canonical Given/When/Then plus only recorded task/test mappings. Summary filters preserve exact stable IDs and work identity; unknown results remain Not loaded. AppTest exercises actual streamlit_app.py routing and confirms zero eager evidence inspections and test-source reads on overview/scenario navigation. UI screenshot and integrated-candidate findings are coordinator-owned after integration."
+}

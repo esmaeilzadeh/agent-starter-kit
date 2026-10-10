@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "structured-agentic-environment",
-  "revision": 15,
+  "revision": 17,
   "coordinator_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
   "coordinator_branch": "agent/structured-agentic-environment",
   "tasks": {
@@ -1580,12 +1580,28 @@
     "WB-005": {
       "status": "running",
       "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-      "task_branch": "",
+      "task_branch": "wb005/candidate-2da7789",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {
+        "review": {
+          "work_id": "structured-agentic-environment",
+          "task_id": "WB-005",
+          "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+          "candidate_sha": "2da7789398ecaee48eae260b2e7203cea5e4c13a",
+          "result_digest": "bd54dd33edd276aec4cdd87fdef89c77f47ae19f5949bcf522e56c403f0d6828",
+          "reviewer": "/root/review_wb001",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/structured-agentic-environment/inner-loop/evidence/WB-005-review-2da7789.md",
+          "evidence_digest": "55d568205fc49ca751bf50988eaceda8fe49136836d4adc2490fbb7f1441bcd5",
+          "verdict": "REJECTED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      }
     },
     "WB-006": {
       "status": "pending",
