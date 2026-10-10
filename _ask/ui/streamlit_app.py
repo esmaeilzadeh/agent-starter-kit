@@ -33,6 +33,9 @@ from workbench_context import (
     reset_for_work, route_to,
 )
 from workbench_navigation import build_outline, render_breadcrumbs, render_outline
+from workbench_overview import render_overview
+from workbench_scenarios import render_scenario
+from workbench_stories import render_story
 
 
 STATE_VIEW = "_engineering_displayed_view"
@@ -42,6 +45,27 @@ STATE_FEEDBACK = "_engineering_feedback"
 STATE_EVIDENCE_PROJECTION = "_engineering_evidence_projection"
 STATE_BRANCH = "_engineering_branch"
 STATE_OVERVIEW_RESULTS = "_engineering_overview_results"
+STATE_OVERVIEW_FILTER = "_engineering_overview_filter"
+
+
+def _set_overview_filter(kind: str, ids: list[str], work_id: str) -> None:
+    st.session_state[STATE_OVERVIEW_FILTER] = {"kind": kind, "ids": list(ids), "work_id": work_id}
+
+
+def _clear_overview_filter() -> None:
+    st.session_state[STATE_OVERVIEW_FILTER] = None
+
+
+def _open_related_route(kind: str, identity: str) -> None:
+    view = st.session_state.get(STATE_VIEW) or {}
+    projection = view.get("projection") or {}
+    outline = build_outline(projection)
+    selected = next((entry for entry in outline["entries"]
+                     if entry.get("kind") == kind and str(entry.get("node_id")) == str(identity)), None)
+    if selected is None:
+        return
+    _clear_overview_filter()
+    route_to(st.session_state, selected["route_id"])
 
 
 def _model_root() -> Path:
@@ -855,23 +879,21 @@ with detail_col:
                          if item["id"] == selected["node_id"]), {})
             st.caption(f"Task status: {task.get('status', 'not recorded')} · source: {task.get('record_source', 'unavailable')}")
         elif selected["kind"] == "scenario":
-            scenario = next((item for item in projection.get("scenarios", [])
-                             if item["id"] == selected["node_id"]), {})
-            st.subheader(scenario.get("title") or selected["label"])
-            if scenario.get("criterion_id"):
-                st.caption(f"Canonical behavior · {scenario['criterion_id']}")
-            if scenario.get("canonical_status") == "unavailable":
-                st.warning("Canonical scenario details are unavailable in the captured source.")
+            render_scenario(projection, selected["node_id"], on_open=_open_related_route)
         elif selected["kind"] == "story":
-            st.subheader(selected["label"])
-            st.caption("Recorded story in the current Engineering Model.")
+            render_story(projection, selected["node_id"], on_open=_open_related_route)
         else:
-            st.subheader(selected["label"])
             if selected["kind"] == "epic":
-                st.caption("Epic · root of the selected workstream hierarchy")
-                st.markdown("**Purpose**")
-                st.write(selected["label"])
+                active_filter = st.session_state.get(STATE_OVERVIEW_FILTER)
+                render_overview(
+                    projection, work_id=work_id,
+                    on_filter=_set_overview_filter,
+                    on_open=_open_related_route,
+                    on_clear=_clear_overview_filter,
+                    active_filter=active_filter,
+                )
             else:
+                st.subheader(selected["label"])
                 st.info("Select a story, scenario, task, test, or result from this outline.")
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
