@@ -37,6 +37,7 @@ from workbench_overview import render_overview
 from workbench_scenarios import render_scenario
 from workbench_stories import render_story
 from workbench_tasks import render_tasks
+from workbench_tests import render_test
 
 
 STATE_VIEW = "_engineering_displayed_view"
@@ -872,14 +873,11 @@ with detail_col:
             if selected_node:
                 _render_decision(selected_node, view["editable"], root, work_id, view)
         elif selected["kind"] == "result":
-            test_id = selected["node_id"]
-            st.subheader("Result and evidence")
-            st.caption(f"Selected test: {test_id}")
-            st.info("Recorded execution details are available from this test's result once results are loaded.")
+            render_test(projection, selected["node_id"],
+                        context=f"result:{selected['route_id']}", on_open=_open_related_route)
         elif selected["kind"] == "test":
-            st.subheader(selected["label"])
-            st.caption("Test · linked to its scenario and implementation task")
-            st.info("Open Result / evidence in the outline to inspect a recorded execution.")
+            render_test(projection, selected["node_id"],
+                        context=f"test:{selected['route_id']}", on_open=_open_related_route)
         elif selected["kind"] == "task":
             render_tasks(projection, context=f"route:{selected['route_id']}", on_open=_open_related_route)
         elif selected["kind"] == "scenario":
