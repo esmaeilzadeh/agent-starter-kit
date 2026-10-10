@@ -58,13 +58,14 @@ tasks:
     outcome: "Explain purpose, stories, scenarios, status and attention inside the connected hierarchy"
     depends_on: [WB-004]
     owned_paths:
+      - _ask/ui/streamlit_app.py
       - _ask/ui/workbench_overview.py
       - _ask/ui/workbench_scenarios.py
       - _ask/ui/workbench_stories.py
       - _ask/tests/test_engineering_workbench_overview.py
       - work/structured-agentic-environment/ui-checkpoints/WB-005.md
       - work/structured-agentic-environment/ui-checkpoints/WB-005.png
-    completion_evidence: "Overview and scenario AppTest assertions prove readable relationships, count navigation and zero eager evidence/source work; exact integrated UI checkpoint is recorded"
+    completion_evidence: "The app entry routes selected epic/story/scenario details through the owned renderers; AppTest proves readable relationships, count navigation and zero eager evidence/source work through those routes; exact integrated UI checkpoint is recorded"
     test_ids: [WB-overview, WB-summary-links]
   - id: WB-006
     title: "Inspect planned and completed tasks"

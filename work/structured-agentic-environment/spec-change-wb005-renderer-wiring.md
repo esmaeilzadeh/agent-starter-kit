@@ -39,4 +39,4 @@ No data or runtime migration is required. If confirmed, recompute and independen
 
 ## Decision
 
-Pending human confirmation.
+Approved by the user with the exact response “continue” on 2026-10-10. The implementation and plan amendment must still receive candidate-bound independent review before WB-005 resumes.
