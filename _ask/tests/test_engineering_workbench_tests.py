@@ -35,6 +35,7 @@ render_test(%r, 'CASE-1')
                            for item in group)
         for phrase in ("Shared test", "Test source", "test_fixture.py", "Recorded execution", "failed", "unavailable"):
             self.assertIn(phrase, text)
+        self.assertIn("Missing result evidence", text)
 
     def test_identifiers_have_explanations_and_copy_actions(self):
         script = """
