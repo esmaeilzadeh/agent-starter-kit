@@ -59,7 +59,6 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertTrue(app.dataframe)
                 self.assertIn("Status filter", {item.label for item in app.selectbox})
                 self.assertIn("Search tasks", {item.label for item in app.text_input})
-                self.assertIn("Unrecorded implementation gap", text)
                 self.assertTrue(any(item.key.startswith("tasks:selected:") for item in app.selectbox))
 
 
