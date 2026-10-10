@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "structured-agentic-environment",
-  "revision": 14,
+  "revision": 15,
   "coordinator_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
   "coordinator_branch": "agent/structured-agentic-environment",
   "tasks": {
@@ -1578,8 +1578,8 @@
       }
     },
     "WB-005": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
