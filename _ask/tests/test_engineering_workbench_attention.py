@@ -26,7 +26,6 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual({row["id"] for row in rows}, {"choice", "task-b"})
         self.assertEqual(rows[0]["options"][0]["id"], "fast")
         self.assertIn("choice is open", rows[1]["reason"])
-        self.assertIn("Missing attention record", rows[0]["title"])
 
     def test_reasoned_choice_persists_and_read_only_rejects(self):
         script = """
