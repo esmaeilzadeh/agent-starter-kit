@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -29,10 +31,47 @@ def _app(root: Path):
     return AppTest.from_file(str(UI / "streamlit_app.py")).run(timeout=30)
 
 
-def _fixture(root: Path) -> None:
+def _fixture(root: Path, *, mixed_story: bool = False) -> None:
     model, _ = workbench_model(root)
     purpose = next(node for node in model["nodes"] if node["id"] == "purpose")
     purpose["description"] = "Make delivery decisions and proof easy to inspect."
+    if mixed_story:
+        spec_path = root / "specs/current/pilot.json"
+        spec = json.loads(spec_path.read_text(encoding="utf-8"))
+        spec["criteria"].append({"id": "P-002", "given": "A second input", "when": "Validate",
+                                 "then": ["Accept the second case"], "verification_mode": "tests"})
+        spec_path.write_text(json.dumps(spec), encoding="utf-8")
+        plan_path = root / "work/pilot/test-plan.json"
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        plan["spec_digest"] = hashlib.sha256(
+            json.dumps(spec, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        plan["obligations"].append({"criterion_id": "P-002", "required_types": ["unit"]})
+        plan["task_scopes"][0]["test_ids"].append("CASE-2")
+        plan["tests"].append({
+            "id": "CASE-2", "criterion_ids": ["P-002"], "type": "unit", "change_kind": "new",
+            "runner_id": "fixture", "case_id": "test_fixture.Cases.test_second_behavior",
+            "source_paths": ["test_fixture.py"],
+            "scenario": {"given": "A second input", "when": "Validate", "then": ["Accept"]},
+            "expected_assertions": [{"criterion_id": "P-002", "checks": ["Accept second input"]}],
+        })
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        model["nodes"].extend([
+            {"id": "epic", "type": "feature", "title": "Pilot epic", "lifecycle": "active"},
+            {"id": "story", "type": "story", "title": "Recorded delivery story", "lifecycle": "active"},
+            {"id": "scenario-2", "type": "scenario", "title": "Second behavior", "lifecycle": "active",
+             "reference": {"path": "specs/current/pilot.json", "id": "P-002"}},
+            {"id": "case-2", "type": "test", "title": "Second assertion", "lifecycle": "active",
+             "reference": {"path": "work/pilot/test-plan.json", "id": "CASE-2"}},
+        ])
+        model["edges"] = [edge for edge in model["edges"]
+                          if not (edge.get("type") == "contains" and edge.get("target") == "scenario")]
+        model["edges"].extend([
+            {"type": "contains", "source": "purpose", "target": "epic"},
+            {"type": "contains", "source": "epic", "target": "story"},
+            {"type": "contains", "source": "story", "target": "scenario"},
+            {"type": "contains", "source": "epic", "target": "scenario-2"},
+            {"type": "covers", "source": "case-2", "target": "scenario-2"},
+        ])
     # The accepted pilot has a scenario but no story node, and one task has no
     # explicit task-to-scenario implementation edge. Preserve those absences.
     (root / "work/pilot/engineering-model.json").write_text(
@@ -79,6 +118,32 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertIn("scenario:scenario:test:CASE-1", route_controls)
                 self.assertEqual(source_reads, [], "scenario details must not eagerly read test source")
 
+            # Mixed story membership must preserve the directly recorded
+            # epic-to-scenario path. One task owns tests for both scenarios.
+            with tempfile.TemporaryDirectory() as mixed_directory:
+                mixed_root = Path(mixed_directory)
+                _fixture(mixed_root, mixed_story=True)
+                with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(mixed_root)}):
+                    mixed_app = _app(mixed_root)
+                    self.assertFalse(mixed_app.exception, mixed_app.exception)
+                    self.assertIn("Scenarios without a recorded story", _text(mixed_app))
+                    self.assertIn("Second behavior", _text(mixed_app))
+                    overview_links = {item.key for item in mixed_app.button}
+                    with self.subTest(defect="mixed story/unassigned overview summary"):
+                        self.assertIn("overview:scenario:scenario", overview_links)
+                        self.assertIn("overview:scenario:scenario-2", overview_links,
+                                      "overview must include scenarios outside recorded story membership")
+                    mixed_app.button(key="route:scenario-2").click().run(timeout=30)
+                    self.assertFalse(mixed_app.exception, mixed_app.exception)
+                    mixed_app.button(key="scenario:scenario-2:task:build").click().run(timeout=30)
+                    self.assertFalse(mixed_app.exception, mixed_app.exception)
+                    with self.subTest(defect="shared task scenario alias"):
+                        self.assertEqual(mixed_app.session_state["_engineering_route"], "build@scenario-2")
+                        self.assertIn("Second behavior", _text(mixed_app))
+                        self.assertFalse(mixed_app.button(key="route:back").disabled)
+                        mixed_app.button(key="route:back").click().run(timeout=30)
+                        self.assertEqual(mixed_app.session_state["_engineering_route"], "scenario-2")
+
     def test_summary_counts_open_exact_records(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -107,6 +172,14 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertIn("Choose", _text(app))
                 self.assertIn("Not loaded", _text(app))
                 self.assertNotIn("0 failed", _text(app).lower())
+
+                controls = {item.key: item for item in app.button}
+                controls["overview:filter:clear"].click().run(timeout=30)
+                app.button(key="overview:summary:blocked").click().run(timeout=30)
+                self.assertIn("overview:filter:open:blocked:build", {item.key for item in app.button})
+                app.button(key="overview:filter:open:blocked:build").click().run(timeout=30)
+                self.assertEqual(app.session_state["_engineering_route"], "build")
+                self.assertIn("Task status", _text(app))
 
 
 if __name__ == "__main__":
