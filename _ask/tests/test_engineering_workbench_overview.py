@@ -82,15 +82,22 @@ class WorkbenchTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = _app(root)
                 self.assertFalse(app.exception, app.exception)
-                app.button(key="overview:summary:blocked").click().run(timeout=30)
+                controls = {item.key: item for item in app.button}
+                self.assertIn("overview:summary:blocked", controls,
+                              "blocked-task summary must open its stable-ID filtered records")
+                controls["overview:summary:blocked"].click().run(timeout=30)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.session_state["_engineering_overview_filter"],
                                  {"kind": "blocked", "ids": ["build"]})
                 self.assertIn("Build", _text(app))
                 self.assertIn("Blocked", _text(app))
 
-                app.button(key="overview:filter:clear").click().run(timeout=30)
-                app.button(key="overview:summary:decisions").click().run(timeout=30)
+                controls = {item.key: item for item in app.button}
+                self.assertIn("overview:filter:clear", controls)
+                controls["overview:filter:clear"].click().run(timeout=30)
+                controls = {item.key: item for item in app.button}
+                self.assertIn("overview:summary:decisions", controls)
+                controls["overview:summary:decisions"].click().run(timeout=30)
                 self.assertEqual(app.session_state["_engineering_overview_filter"],
                                  {"kind": "decisions", "ids": ["choice"]})
                 self.assertIn("Choose", _text(app))
