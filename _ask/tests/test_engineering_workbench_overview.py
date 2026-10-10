@@ -129,20 +129,27 @@ class WorkbenchTests(unittest.TestCase):
                     self.assertIn("Scenarios without a recorded story", _text(mixed_app))
                     self.assertIn("Second behavior", _text(mixed_app))
                     overview_links = {item.key for item in mixed_app.button}
-                    with self.subTest(defect="mixed story/unassigned overview summary"):
-                        self.assertIn("overview:scenario:scenario", overview_links)
-                        self.assertIn("overview:scenario:scenario-2", overview_links,
-                                      "overview must include scenarios outside recorded story membership")
+                    defects = []
+                    if "overview:scenario:scenario" not in overview_links:
+                        defects.append("story-linked scenario missing from overview")
+                    if "overview:scenario:scenario-2" not in overview_links:
+                        defects.append("unassigned scenario missing from overview summary")
                     mixed_app.button(key="route:scenario-2").click().run(timeout=30)
                     self.assertFalse(mixed_app.exception, mixed_app.exception)
                     mixed_app.button(key="scenario:scenario-2:task:build").click().run(timeout=30)
                     self.assertFalse(mixed_app.exception, mixed_app.exception)
-                    with self.subTest(defect="shared task scenario alias"):
-                        self.assertEqual(mixed_app.session_state["_engineering_route"], "build@scenario-2")
-                        self.assertIn("Second behavior", _text(mixed_app))
-                        self.assertFalse(mixed_app.button(key="route:back").disabled)
+                    if mixed_app.session_state["_engineering_route"] != "build@scenario-2":
+                        defects.append("shared task navigation selected the wrong scenario alias")
+                    if "Second behavior" not in _text(mixed_app):
+                        defects.append("shared task breadcrumb lost the selected scenario context")
+                    back = mixed_app.button(key="route:back")
+                    if back.disabled:
+                        defects.append("shared task navigation discarded Back history")
+                    else:
                         mixed_app.button(key="route:back").click().run(timeout=30)
-                        self.assertEqual(mixed_app.session_state["_engineering_route"], "scenario-2")
+                        if mixed_app.session_state["_engineering_route"] != "scenario-2":
+                            defects.append("Back did not restore scenario-2")
+                    self.assertEqual(defects, [], "; ".join(defects))
 
     def test_summary_counts_open_exact_records(self):
         with tempfile.TemporaryDirectory() as directory:
