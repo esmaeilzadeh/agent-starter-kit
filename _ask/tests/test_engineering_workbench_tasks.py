@@ -42,6 +42,7 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(row["lifecycle"], "active")
         self.assertEqual(row["status"], "planned")
         self.assertFalse(row["verified"])
+        self.assertIn("Unrecorded implementation gap", row["title"])
 
     def test_completed_tasks_retain_tests_results_and_gaps(self):
         with tempfile.TemporaryDirectory() as directory:
