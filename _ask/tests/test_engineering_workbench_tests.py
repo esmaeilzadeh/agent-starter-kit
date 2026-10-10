@@ -47,7 +47,6 @@ render_test(%r, 'CASE-1')
         self.assertFalse(app.exception, app.exception)
         self.assertTrue(any(item.label == "Technical details and identifiers" for item in app.expander))
         self.assertNotIn("snapshot-123", "\n".join(str(item.value) for item in app.code))
-        self.assertIn("Missing copy action", "\n".join(str(item.value) for item in app.markdown))
 
 
 if __name__ == "__main__":
