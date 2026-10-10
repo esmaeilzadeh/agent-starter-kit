@@ -13,7 +13,7 @@ from streamlit.testing.v1 import AppTest
 ROOT = Path(__file__).resolve().parents[2]
 UI = ROOT / "_ask/ui"
 TESTS = ROOT / "_ask/tests"
-sys.path[:0] = [str(UI), str(TESTS)]
+sys.path[:0] = [str(UI), str(TESTS), str(ROOT / "_ask/scripts")]
 from engineering_fixture import workbench_model
 
 
@@ -21,7 +21,8 @@ def _text(app) -> str:
     collections = (app.title, app.header, app.subheader, app.markdown, app.caption,
                    app.info, app.warning, app.error, app.success, app.text)
     return "\n".join(str(item.value) for group in collections for item in group) + "\n" + \
-        "\n".join(str(item.label) for item in app.button)
+        "\n".join(str(item.label) for item in app.button) + "\n" + \
+        "\n".join(f"{item.label} {item.value}" for item in app.metric)
 
 
 def _app(root: Path):
@@ -60,7 +61,7 @@ class WorkbenchTests(unittest.TestCase):
                 rendered = _text(app)
                 for phrase in ("Make delivery decisions and proof easy to inspect.",
                                "No story records are present", "Scenarios without a recorded story",
-                               "Canonical behavior", "Blocked tasks", "Open decisions",
+                               "Canonical behavior", "Dependency readiness", "Blocked tasks", "Open decisions",
                                "Not loaded", "Choose"):
                     self.assertIn(phrase, rendered)
                 self.assertNotIn("Exact accepted behavior", rendered)
@@ -73,6 +74,9 @@ class WorkbenchTests(unittest.TestCase):
                 scenario_text = _text(app)
                 for phrase in ("Valid input", "Validate", "Accept", "Behavior assertion", "Build"):
                     self.assertIn(phrase, scenario_text)
+                route_controls = {item.key for item in app.button}
+                self.assertIn("scenario:scenario:task:build", route_controls)
+                self.assertIn("scenario:scenario:test:CASE-1", route_controls)
                 self.assertEqual(source_reads, [], "scenario details must not eagerly read test source")
 
     def test_summary_counts_open_exact_records(self):
@@ -88,7 +92,7 @@ class WorkbenchTests(unittest.TestCase):
                 controls["overview:summary:blocked"].click().run(timeout=30)
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(app.session_state["_engineering_overview_filter"],
-                                 {"kind": "blocked", "ids": ["build"]})
+                                 {"kind": "blocked", "ids": ["build"], "work_id": "pilot"})
                 self.assertIn("Build", _text(app))
                 self.assertIn("Blocked", _text(app))
 
@@ -99,7 +103,7 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertIn("overview:summary:decisions", controls)
                 controls["overview:summary:decisions"].click().run(timeout=30)
                 self.assertEqual(app.session_state["_engineering_overview_filter"],
-                                 {"kind": "decisions", "ids": ["choice"]})
+                                 {"kind": "decisions", "ids": ["choice"], "work_id": "pilot"})
                 self.assertIn("Choose", _text(app))
                 self.assertIn("Not loaded", _text(app))
                 self.assertNotIn("0 failed", _text(app).lower())
