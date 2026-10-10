@@ -3,28 +3,28 @@
   "work_id": "structured-agentic-environment",
   "task_id": "WB-005",
   "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-  "candidate_sha": "2da7789398ecaee48eae260b2e7203cea5e4c13a",
+  "candidate_sha": "238acc80169ab7db809fb940794bc98d96c968a3",
   "tdd": {
-    "seam": "_ask/ui/workbench_overview.py:render_overview; _ask/ui/workbench_scenarios.py:render_scenario; _ask/ui/workbench_stories.py:render_story; _ask/ui/streamlit_app.py:connected hierarchy dispatch",
+    "seam": "_ask/ui/workbench_overview.py:_render_delivery; _ask/ui/streamlit_app.py:_open_related_route",
     "red": {
-      "command": "./ask traceability run structured-agentic-environment --candidate-sha 54aa9b32dcc3595a0fd066377fa823fafeced0cf --anchor-sha dcae11d61c2b73745ba9f5b2187065792d84ac46 --scope task --task-id WB-005 --phase red",
-      "output": "Run 1be0d48ad30d4af29abc47ec84e7886a collected WB-overview and WB-summary-links with collection_status=ok; both failed as behavior assertions. Captured output: work/structured-agentic-environment/traceability/runs/1be0d48ad30d4af29abc47ec84e7886a/75c33e9abe45464895d530fa2c14d49e.log",
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 16ba62d96c4648c33d56ba6a55a8dea9951daeee --scope task --task-id WB-005 --phase red",
+      "output": "Run aa8a402513634ddc8f93bb621b850f44 collected WB-overview and WB-summary-links with collection_status=ok; both failed behavior assertions. WB-overview aggregated the missing unassigned overview row, wrong shared-task alias, and discarded Back history; WB-summary-links failed because filtered Open record left the epic selected. Captured log is bound by SHA-256.",
       "exit_code": 1,
-      "run_id": "1be0d48ad30d4af29abc47ec84e7886a",
-      "output_artifact": "work/structured-agentic-environment/traceability/runs/1be0d48ad30d4af29abc47ec84e7886a/75c33e9abe45464895d530fa2c14d49e.log",
-      "output_digest": "fedf5b31c36f07bc84db3a31bf04d0788a09abede4be40622f1698b033a19859",
+      "run_id": "aa8a402513634ddc8f93bb621b850f44",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/aa8a402513634ddc8f93bb621b850f44/755ae5315b704f68aa54f83f2f6f659c.log",
+      "output_digest": "3f488004f888b85ee3e791327190e185521fcbaa7f4be131bbca6a3b4d54829d",
       "case_ids": ["WB-overview", "WB-summary-links"]
     },
     "green": {
-      "command": "./ask traceability run structured-agentic-environment --candidate-sha 2da7789398ecaee48eae260b2e7203cea5e4c13a --anchor-sha dcae11d61c2b73745ba9f5b2187065792d84ac46 --scope task --task-id WB-005 --phase final_green",
-      "output": "Run 9bc371ff4aff4536941825ff64a90911 passed WB-overview and WB-summary-links; collection_status=ok. Captured output: work/structured-agentic-environment/traceability/runs/9bc371ff4aff4536941825ff64a90911/a564b6216d024a60a6eb5a67fa5ddb89.log",
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 238acc80169ab7db809fb940794bc98d96c968a3 --scope task --task-id WB-005 --phase final_green",
+      "output": "Run 301391f9c8a144709ad80891c4d8ca29 passed WB-overview and WB-summary-links; collection_status=ok. Captured log is bound by SHA-256.",
       "exit_code": 0,
-      "run_id": "9bc371ff4aff4536941825ff64a90911",
-      "output_artifact": "work/structured-agentic-environment/traceability/runs/9bc371ff4aff4536941825ff64a90911/a564b6216d024a60a6eb5a67fa5ddb89.log",
-      "output_digest": "e3dc8442df5fffb6b1a8a36e4cfa60266aeec63d8ff48a212b8c5eb7854d6d0f",
+      "run_id": "301391f9c8a144709ad80891c4d8ca29",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/301391f9c8a144709ad80891c4d8ca29/24dcb95d64d64258a7634895c147a4d3.log",
+      "output_digest": "a460ccf73cc1ef51639678fb913ed6b70cce759b5b940225830c6bcc50c8f09c",
       "case_ids": ["WB-overview", "WB-summary-links"]
     }
   },
   "exemption": null,
-  "notes": "Epic root now explains recorded purpose, story/scenario mapping, separate task graph/runner status, declared lifecycle and dependency readiness, and contextual attention. Missing story records are disclosed and existing scenarios remain directly accessible; no synthetic story or task/scenario edge is created. Scenario details show canonical Given/When/Then plus only recorded task/test mappings. Summary filters preserve exact stable IDs and work identity; unknown results remain Not loaded. AppTest exercises actual streamlit_app.py routing and confirms zero eager evidence inspections and test-source reads on overview/scenario navigation. UI screenshot and integrated-candidate findings are coordinator-owned after integration."
+  "notes": "Remediates all three findings from rejected candidate 2da7789. Filtered record kinds (tasks, blocked, scenarios, decisions, failed-results) now resolve to canonical task/scenario/decision/result routes by stable identity. Related-record navigation selects the alias under the current ancestry and pushes the prior route, preserving breadcrumbs and Back. Epic summary explicitly groups and links scenarios outside recorded story membership even when other scenarios belong to stories. No story or edge is synthesized. The red fixture uses legal recorded feature/story/scenario containment and a task whose scoped tests cover both scenarios. Task AppTests exercise the actual app entry point and continue to verify zero eager evidence/source reads. UI checkpoint remains coordinator-owned after integration."
 }
