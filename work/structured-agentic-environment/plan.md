@@ -46,7 +46,13 @@ Objects/Scenarios/Evidence navigation in AppTest and Playwright with the actual
 outline, breadcrumbs, selected detail, related links and attention/decision routes.
 Use accessible labels and stable semantic keys from the current UI.
 
-Keep all 16 test IDs, case bindings, classifications and criterion assignments.
+Keep all 16 test IDs, case bindings, required types and criterion assignments.
+Reclassify the six migrated regression cases (`UI-empty`, `UI-gitless`,
+`UI-decision-object`, `UI-test-source`, `UI-expander-ids`, `UI-browser-gitless`) as
+`changed`; preserve every existing `new` classification. The evaluator treats
+method AST changes, including selector edits, as changed behavior. Each migrated
+case requires genuine assertion-red, final-green and independent assertion
+continuity review; a selector migration cannot use a nonbehavioral exemption.
 Historical method names remain stable identifiers even when they mention the old
 Objects section. The `UI-decision-object` obligation now verifies that an overview
 attention link reaches the originating decision detail and its guarded resolution.
@@ -73,7 +79,7 @@ from the graph or declare it obsolete/completed.
 
 After each UI task WB-004 through WB-009 integrates, run the exact integrated Streamlit candidate and inspect it against the connected Epic → Story → Scenario → Task → Test → Result design and that task's outcome. Record the candidate SHA, screenshot, inspection findings and any corrective action in that task's owned `ui-checkpoints/WB-00X.md` and `.png` artifacts. Resolve a mismatch before starting the next UI task. Automated tests alone do not satisfy this visual checkpoint.
 
-WB-001 carries the unchanged model/guard/CLI/evidence suite as regression protection for the new read projection; this does not assign it historical authorship. WB-009 carries the existing UI/browser journeys plus the final browser/performance cases. Existing test IDs and change classifications are retained, except an explicit expected-assertion amendment for lazy overview source; no existing new case is relabeled regression to conceal missing red evidence. Future assertion/selector changes require continuity review.
+WB-001 carries the unchanged model/guard/CLI/evidence suite as regression protection for the new read projection; this does not assign it historical authorship. WB-009 carries the existing UI/browser journeys plus the final browser/performance cases. Existing test IDs are retained. Six legacy regression cases are explicitly reclassified as changed for connected-route migration as listed above, with genuine red/green and continuity review required. The lazy overview source expectation remains explicit; no existing new case is relabeled regression to conceal missing red evidence. Future assertion/selector changes require continuity review.
 
 ## Dependencies and affected components
 

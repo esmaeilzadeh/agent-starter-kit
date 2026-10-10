@@ -585,7 +585,7 @@
         "EM-005"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "scenario": {
         "given": "An admitted snapshot with no tasks or canonical scenarios",
         "when": "Open epic root and inspect the empty connected hierarchy",
@@ -614,7 +614,7 @@
         "EM-005"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "scenario": {
         "given": "A valid model root without a Git repository",
         "when": "Open epic root, then selected test/result detail and its debug trace",
@@ -643,7 +643,7 @@
         "EM-006"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "scenario": {
         "given": "An admitted workstream with a blocked task and open decision",
         "when": "Inspect overview attention and follow its link to the originating decision detail",
@@ -730,7 +730,7 @@
         "EM-005"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "scenario": {
         "given": "A canonical scenario with a planned test source path",
         "when": "Inspect the test details",
@@ -759,7 +759,7 @@
         "EM-005"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "scenario": {
         "given": "Repeated nested evidence fields across records",
         "when": "Select a test/result through the connected hierarchy and expand its evidence details",
@@ -788,7 +788,7 @@
         "EM-005"
       ],
       "type": "e2e",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "scenario": {
         "given": "A valid model root without Git metadata and a running workbench",
         "when": "Open selected test/result detail through the connected hierarchy and expand its debug trace",
