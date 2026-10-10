@@ -30,7 +30,7 @@ from engineering_model.workbench_sources import discover_work, read_snapshot
 from workbench_context import (
     STATE_COMMITTED_SOURCE_CACHE, STATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,
     STATE_SOURCE_SELECTION,
-    reset_for_work, route_to,
+    navigate, reset_for_work, route_to,
 )
 from workbench_navigation import build_outline, render_breadcrumbs, render_outline
 from workbench_overview import render_overview
@@ -60,12 +60,19 @@ def _open_related_route(kind: str, identity: str) -> None:
     view = st.session_state.get(STATE_VIEW) or {}
     projection = view.get("projection") or {}
     outline = build_outline(projection)
-    selected = next((entry for entry in outline["entries"]
-                     if entry.get("kind") == kind and str(entry.get("node_id")) == str(identity)), None)
+    canonical_kind = {"tasks": "task", "blocked": "task", "scenarios": "scenario",
+                      "decisions": "decision", "failed-results": "result"}.get(kind, kind)
+    matching = [entry for entry in outline["entries"]
+                if entry.get("kind") == canonical_kind
+                and str(entry.get("node_id")) == str(identity)]
+    current = st.session_state.get(STATE_ROUTE)
+    selected = next((entry for entry in matching
+                     if any(route_id == current for route_id, _ in entry.get("path", []))), None)
+    selected = selected or (matching[0] if matching else None)
     if selected is None:
         return
     _clear_overview_filter()
-    route_to(st.session_state, selected["route_id"])
+    navigate(st.session_state, selected["route_id"])
 
 
 def _model_root() -> Path:

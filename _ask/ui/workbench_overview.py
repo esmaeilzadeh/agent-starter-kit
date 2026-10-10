@@ -75,6 +75,12 @@ def _render_delivery(stories: list[dict], scenarios: list[dict], on_open) -> Non
                 st.caption("No scenarios are recorded under this story.")
             for scenario in linked:
                 _scenario_row(scenario, on_open)
+    assigned_ids = {str(identity) for story in stories for identity in story.get("scenario_ids", [])}
+    unassigned = [scenario for scenario in scenarios if str(scenario.get("id")) not in assigned_ids]
+    if unassigned:
+        st.caption("Scenarios without a recorded story")
+        for scenario in unassigned:
+            _scenario_row(scenario, on_open)
 
 
 def _scenario_row(scenario: dict, on_open) -> None:
