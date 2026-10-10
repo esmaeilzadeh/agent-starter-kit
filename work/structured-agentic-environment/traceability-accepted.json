@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
+  "contract_sha": "1898b635e67d50056cb7006d27037dfc84358970",
   "work_id": "structured-agentic-environment",
   "reviewer": "/root/review_wb009_amendment",
   "recorded_by": "/root",
@@ -13,69 +13,62 @@
     "reviewer": "/root/review_wb009_amendment",
     "runtime": "codex",
     "work_id": "structured-agentic-environment",
-    "scope": "WB-009 plan compatibility amendment only; no implementation, TDD history, task integration, or workstream completion approval",
-    "base_sha": "6ad3e9697b23e8a8cb2d0e69100d2155c7765f11",
-    "candidate_sha": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
-    "reviewed_sha": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
-    "reviewedSHA": "291db209c9af2e8c5335b2c9233ee8f826bfad11",
+    "scope": "WB-009 repair ownership amendment only; no implementation, execution, TDD continuity, integration, or completion approval",
+    "base_sha": "28092be58c883c42cb0f2182a90f9063634da361",
+    "candidate_sha": "1898b635e67d50056cb7006d27037dfc84358970",
+    "reviewed_sha": "1898b635e67d50056cb7006d27037dfc84358970",
+    "reviewedSHA": "1898b635e67d50056cb7006d27037dfc84358970",
     "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
     "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b",
-    "graph_digest": "d93ec784872044059db0c529c5177b970cab1a2827787669db6137b7fb50793f",
-    "digest_method": "Repository contracts_at() parses the exact committed JSON/YAML; contracts.digest() hashes canonical sorted compact JSON for spec, test plan and parsed graph.",
+    "graph_digest": "df12d680aee2bfff4de0bc6ab70e3e372d4ece87594301272fcd8648f3b911ed",
+    "digest_method": "Repository contracts_at() parses committed JSON/YAML at the exact candidate; contracts.digest() hashes canonical sorted compact JSON.",
     "inspected_paths": [
       "work/structured-agentic-environment/plan.md",
-      "work/structured-agentic-environment/test-plan.json",
       "work/structured-agentic-environment/inner-loop/tasks.yaml"
     ],
     "findings": [],
-    "resolved_findings": [
-      {
-        "previous_candidate_sha": "feca396ec46fd1bf75477853b5254b9ad2ff5aad",
-        "finding": "Preserving regression classifications while changing test-method selectors contradicted the evaluator's AST inventory and review rules.",
-        "resolution": "The six migrated legacy regression cases are explicitly classified changed. The plan requires genuine assertion-red, final-green and independent continuity review, and forbids a nonbehavioral exemption for selector migration."
-      }
-    ],
     "semantic_assessment": {
-      "spec_compatibility": "Accepted specification revision 3 is byte-equivalent as parsed data to the base contract. Connected outline, breadcrumbs, selected details and contextual decisions implement its existing hierarchy direction; obsolete record-type navigation is no longer an acceptance prerequisite.",
-      "coverage_and_bindings": "All 57 test IDs remain in the same order. All 16 WB-009 assignments, case IDs, runner IDs, source paths, test types and criterion assignments remain unchanged. Plan obligations, task scopes, runner bindings and baseline exemptions are unchanged. No task outside WB-009 is amended; its dependencies and owned paths are unchanged.",
-      "classification_continuity": "Only UI-empty, UI-gitless, UI-decision-object, UI-test-source, UI-expander-ids and UI-browser-gitless move from regression to changed. All existing new classifications remain new. This increases required continuity evidence rather than excusing missing red history.",
-      "behavior_preservation": "The revised journeys retain missing/historical/current evidence distinctions, canonical assertions, source assertions, uniquely addressable nested evidence and warning severity, actionable Gitless states, invalid/stale rejection without writes, explicit refresh and persistence across sessions. Decision access changes from Objects to the originating contextual detail; result loading changes to selected test/result while overview stays lazy. Each migrated assertion requires a recorded continuity assessment.",
-      "browser_accessibility_performance": "Real-browser hierarchy and foreign-source journeys, immutable checkout/refs, keyboard focus and labels, non-color status, 390/1440px layouts, rendered contrast, zero initial source/evidence work, content-bound cache invalidation, 20 warm samples and five cold starts retain their existing numerical budgets and required evidence. No performance or accessibility assertions are relaxed.",
-      "ownership_and_remaining_work": "Missing application behavior must be repaired under its reviewed owning task; selector migration alone cannot certify the implementation. WB-009 remains unfinished. The session correction withdrawing earlier WB-006 through WB-008 review/TDD claims remains applicable; this decision does not restore those claims."
+      "existing_requirements": "The repair scope completes existing revision-3 hierarchy, selected source/result, preserved decision history, task identity and evidence distinctions, lazy loading and integrity-bound caching requirements. It introduces no new acceptance criteria or domain authority.",
+      "bounded_ownership": "Exactly nine paths are added to WB-009: the existing workbench projection; UI shell, context, navigation, task, attention, test and debug modules; and a new loading module. Original WB-009 paths and every other task remain unchanged. These seams correspond to the named integration repairs and preserve one cohesive final workbench deliverable.",
+      "serialization": "The unchanged WB-001 through WB-009 dependency chain serializes every overlapping path. The graph validator returns ok; no parallel conflicting writer or second workstream is authorized by the amendment.",
+      "contract_preservation": "Specification revision 3 and the entire canonical test plan are identical to both the immediate base and reviewed hierarchy contract 291db20. All 57 test IDs, 16 WB-009 assignments, classifications, test types, runner/case/source bindings, criterion mappings, obligations and TDD requirements are unchanged.",
+      "guards_and_evidence": "Repairs must load authoritative evidence through existing adapters, preserve source/definition/authority/log/review identity, retain guarded edits and avoid inferring verification from lifecycle or result paths. Cache ownership grants no edit authority. Evaluator, guard and criteria changes are expressly excluded; prior implementation records are not retroactively approved.",
+      "browser_and_performance": "The prior real-browser, accessibility, layout, screenshot, lazy-loading and numerical latency obligations remain intact. Readiness markers support reproducible timing without adding product-facing implementation details. This review does not certify measured performance or browser behavior.",
+      "excluded_work": "Dark mode and verification tooling changes remain outside WB-009. Historical evidence gaps and withdrawn prior approval/TDD claims remain unresolved by this ownership pin."
     },
     "checks_run": [
       {
-        "check": "Read exact three-file amendment versus 6ad3e9697b23e8a8cb2d0e69100d2155c7765f11 and correction versus feca396ec46fd1bf75477853b5254b9ad2ff5aad",
+        "check": "Read complete two-file ownership diff 28092be58c883c42cb0f2182a90f9063634da361..1898b635e67d50056cb7006d27037dfc84358970",
+        "result": "passed; only plan.md and inner-loop/tasks.yaml changed"
+      },
+      {
+        "check": "Exact committed contracts_at() comparisons against immediate base and reviewed 291db20 hierarchy contract",
+        "result": "passed; identical revision-3 spec and canonical test plan, 57 tests, 16 WB-009 assignments"
+      },
+      {
+        "check": "Python assertions for unchanged task IDs, non-WB-009 tasks, WB-009 metadata except owned_paths, and exact nine-path ownership prefix",
         "result": "passed"
       },
       {
-        "check": "./ask traceability validate-plan structured-agentic-environment --revision 291db209c9af2e8c5335b2c9233ee8f826bfad11",
+        "check": "Repository validate_graph() and ./ask inner-loop validate structured-agentic-environment",
+        "result": "passed; graph is serialized and valid; CLI exit 0, ok"
+      },
+      {
+        "check": "./ask traceability validate-plan structured-agentic-environment --revision 1898b635e67d50056cb7006d27037dfc84358970",
         "result": "exit 0"
       },
       {
-        "check": "./ask inner-loop validate structured-agentic-environment",
-        "result": "exit 0; ok"
-      },
-      {
-        "check": "Repository contracts_at()/validate_graph() plus explicit Python assertions for 57 IDs, 16 WB-009 assignments, immutable spec revision 3, protected metadata, exact six classification changes, unchanged non-WB-009 tasks and unchanged task scopes/obligations/runner bindings",
-        "result": "passed at exact reviewed commit"
-      },
-      {
-        "check": "In-memory selector-only method edit through repository inventory()",
-        "result": "Confirmed UI-decision-object is identified as behavior_changes; corrected changed classification complies with the existing evaluator. No repository test source was edited."
-      },
-      {
-        "check": "git diff --check 6ad3e9697b23e8a8cb2d0e69100d2155c7765f11 291db209c9af2e8c5335b2c9233ee8f826bfad11 and exact changed-path inventory",
-        "result": "exit 0; exactly the three scoped planning files changed"
+        "check": "git diff --check 28092be58c883c42cb0f2182a90f9063634da361 1898b635e67d50056cb7006d27037dfc84358970",
+        "result": "exit 0"
       }
     ],
     "limitations": [
-      "No application behavior tests, real-browser journey, screenshot checkpoint, latency benchmark, final Verify or workstream completion evaluation were run as part of this plan-only review.",
-      "Independent implementation review and genuine execution/continuity evidence are still required for WB-009 and any repaired prerequisite behavior."
+      "The coordinator reported migrated AppTest assertion failures as the motivation for these repairs; this plan-only review did not rerun or independently approve that execution or its TDD history.",
+      "Application behavior, browser journeys, screenshots, benchmarks and final Verify still require execution and independent candidate-bound implementation review."
     ]
   },
-  "plan_review_digest": "4b257e2dac2d22e8444a121f3289a3eb4cb6d5348131f93f447e73f379b03fac",
+  "plan_review_digest": "781142491d6312d98ca691c7aecc7b6e708ba4bafce43cf2a8ed29df6d012d7a",
   "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
   "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b",
-  "graph_digest": "d93ec784872044059db0c529c5177b970cab1a2827787669db6137b7fb50793f"
+  "graph_digest": "df12d680aee2bfff4de0bc6ab70e3e372d4ece87594301272fcd8648f3b911ed"
 }
