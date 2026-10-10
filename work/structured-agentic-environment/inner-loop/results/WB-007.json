@@ -1,0 +1,14 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "structured-agentic-environment",
+  "task_id": "WB-007",
+  "base_sha": "05dd6a1c29ea68df3f3d8ece933d0f3d832012a1",
+  "candidate_sha": "f1a01c3c4b05f8dbb3fcf90ae728e9ee9cfc5051",
+  "tdd": {
+    "seam": "_ask/ui/workbench_attention.py",
+    "red": {"command": "./ask traceability run structured-agentic-environment --candidate-sha 7c963ab7ae315b397a04fd97dca6192bcdb62a85 --anchor-sha 05dd6a1c29ea68df3f3d8ece933d0f3d832012a1 --scope task --task-id WB-007 --phase red", "output": "WB-decision-choice failed by behavior assertion while WB-attention passed; collection_status=ok.", "exit_code": 1, "run_id": "fd6940b22631418a88febc831425d9d7", "output_artifact": "work/structured-agentic-environment/traceability/runs/fd6940b22631418a88febc831425d9d7/466e195c039041f0924698adc1ef0b8e.log"},
+    "green": {"command": "./ask traceability run structured-agentic-environment --candidate-sha f1a01c3c4b05f8dbb3fcf90ae728e9ee9cfc5051 --anchor-sha 05dd6a1c29ea68df3f3d8ece933d0f3d832012a1 --scope task --task-id WB-007 --phase final_green", "output": "WB-attention and WB-decision-choice passed; collection_status=ok.", "exit_code": 0, "run_id": "88639d37c5894ac297a62bc1bd9c912b", "output_artifact": "work/structured-agentic-environment/traceability/runs/88639d37c5894ac297a62bc1bd9c912b/3d9967b89d59427c8fc08b7234a19618.log"}
+  },
+  "exemption": null,
+  "notes": "Attention rows retain originating IDs, reasons, options, and dependents; existing guarded decision form remains the mutation authority."
+}

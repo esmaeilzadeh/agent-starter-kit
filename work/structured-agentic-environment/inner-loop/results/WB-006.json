@@ -1,0 +1,26 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "structured-agentic-environment",
+  "task_id": "WB-006",
+  "base_sha": "c4811dee08c4abe35028e570c04bdd49bb10ef4b",
+  "candidate_sha": "05dd6a1c29ea68df3f3d8ece933d0f3d832012a1",
+  "tdd": {
+    "seam": "_ask/ui/workbench_tasks.py; _ask/ui/streamlit_app.py",
+    "red": {
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 46d98ac9c8da9f6a258c1ac585a541feef989dcc --anchor-sha c4811dee08c4abe35028e570c04bdd49bb10ef4b --scope task --task-id WB-006 --phase red",
+      "output": "WB-completed-tasks failed by behavior assertion while WB-task-detail passed; the task detail assertion for the missing implementation-gap message was absent.",
+      "exit_code": 1,
+      "run_id": "f0e871407e3946f9a8ef05c135fff2cf",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/f0e871407e3946f9a8ef05c135fff2cf/e1c55b5e6b8841648c308166b58a7b14.log"
+    },
+    "green": {
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha 3ca8253dd968d708768218392bca2a4e7eed80d0 --anchor-sha c4811dee08c4abe35028e570c04bdd49bb10ef4b --scope task --task-id WB-006 --phase final_green",
+      "output": "Both WB-task-detail and WB-completed-tasks passed; collection_status=ok.",
+      "exit_code": 0,
+      "run_id": "6e297e24039f4858a4ed2229bdfc30a2",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/6e297e24039f4858a4ed2229bdfc30a2/145f7a61516d4f78b6f21be6d75fbe60.log"
+    }
+  },
+  "exemption": null,
+  "notes": "Task list/detail view distinguishes lifecycle, runtime status and verified completion; exposes blockers, related scenarios/tests, and implementation evidence."
+}
