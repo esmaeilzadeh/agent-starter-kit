@@ -106,6 +106,15 @@ tasks:
     outcome: "Adapt legacy UI journeys to Epic → Story → Scenario → Task → Test → Result / Evidence, then measure and validate that connected experience in a real browser without weakening existing verification"
     depends_on: [WB-008]
     owned_paths:
+      - _ask/scripts/engineering_model/workbench.py
+      - _ask/ui/streamlit_app.py
+      - _ask/ui/workbench_context.py
+      - _ask/ui/workbench_navigation.py
+      - _ask/ui/workbench_tasks.py
+      - _ask/ui/workbench_attention.py
+      - _ask/ui/workbench_tests.py
+      - _ask/ui/workbench_debug.py
+      - _ask/ui/workbench_loading.py
       - _ask/tests/test_engineering_ui.py
       - _ask/tests/test_engineering_ui_browser.py
       - _ask/tests/test_engineering_workbench_browser.py
