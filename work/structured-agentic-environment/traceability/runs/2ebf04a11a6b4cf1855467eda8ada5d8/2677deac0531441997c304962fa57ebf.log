@@ -1,0 +1,39 @@
+test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests) ... FAIL
+test_qualified_source_matches_selected_revision (test_engineering_workbench_evidence.WorkbenchTests) ... FAIL
+test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests) ... FAIL
+
+======================================================================
+FAIL: test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-srg28bjc/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 149, in test_missing_stale_tampered_and_refreshed_evidence
+    self.assertEqual(len(valid["runs"]), 1, valid)
+AssertionError: 0 != 1 : {'status': 'unavailable', 'completion': 'not_evaluated', 'runs': [], 'diagnostic': 'retained execution evidence is unavailable'}
+
+======================================================================
+FAIL: test_qualified_source_matches_selected_revision (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-srg28bjc/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 53, in test_qualified_source_matches_selected_revision
+    self.assertEqual(historical["status"], "historical", historical)
+AssertionError: 'unavailable' != 'historical'
+- unavailable
++ historical
+ : {'status': 'unavailable', 'selector': 'test_sample.Second.test_same', 'source_sha': '7a38ae396c862f709683c86d01d3175df64731a3', 'current_sha': '6448f18a9298d3ccca5104e63bc1a36419632f0c', 'source': '', 'diagnostic': 'qualified source is unavailable'}
+
+======================================================================
+FAIL: test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-srg28bjc/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 114, in test_results_match_work_test_run_and_contract
+    self.assertEqual(rows["status"], "available", rows)
+AssertionError: 'unavailable' != 'available'
+- unavailable
+? --
++ available
+ : {'status': 'unavailable', 'completion': 'not_evaluated', 'runs': [], 'diagnostic': 'retained execution evidence is unavailable'}
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.305s
+
+FAILED (failures=3)

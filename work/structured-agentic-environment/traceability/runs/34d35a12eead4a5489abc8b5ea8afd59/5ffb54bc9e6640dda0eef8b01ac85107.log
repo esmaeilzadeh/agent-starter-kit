@@ -1,0 +1,28 @@
+test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests) ... ERROR
+test_qualified_source_matches_selected_revision (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests) ... FAIL
+
+======================================================================
+ERROR: test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yd87anzl/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 223, in test_missing_stale_tampered_and_refreshed_evidence
+    outside["status"], outside["runs"], "symlink" in outside["diagnostic"]),
+TypeError: argument of type 'NoneType' is not iterable
+
+======================================================================
+FAIL: test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yd87anzl/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 153, in test_results_match_work_test_run_and_contract
+    self.assertEqual(row["output_status"], "invalid")
+AssertionError: 'valid' != 'invalid'
+- valid
++ invalid
+? ++
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.550s
+
+FAILED (failures=1, errors=1)

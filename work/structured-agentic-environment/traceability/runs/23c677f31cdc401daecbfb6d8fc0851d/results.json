@@ -1,0 +1,50 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "23c677f31cdc401daecbfb6d8fc0851d",
+  "scope": "workstream",
+  "task_id": null,
+  "candidate_sha": "78a1aabaf5e3f218ad333e0ce63dd58768103e01",
+  "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
+  "plan_digest": "18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "5d703a9a92a9457593a2bac32dd78193",
+      "runner_id": "engineering-model",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/structured-agentic-environment/traceability/runs/23c677f31cdc401daecbfb6d8fc0851d/5d703a9a92a9457593a2bac32dd78193.json",
+        "null",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "78a1aabaf5e3f218ad333e0ce63dd58768103e01",
+      "exit_code": 1,
+      "collection_status": "error",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/23c677f31cdc401daecbfb6d8fc0851d/5d703a9a92a9457593a2bac32dd78193.log",
+      "output_digest": "0022ee81eaae586301bd919619db568337b011018f4f635ccdae17bcdd457edb"
+    }
+  ],
+  "cases": []
+}

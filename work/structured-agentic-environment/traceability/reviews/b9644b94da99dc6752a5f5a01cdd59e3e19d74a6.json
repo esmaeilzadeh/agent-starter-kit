@@ -1,0 +1,109 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "contract_digest": "808a76b3c091bb7970e012ca702441392fd739339e22ff42540cabb55ec8901c",
+  "review_digest": "bdeb358342c6b951ac420d57b9df1130501edc4fa66e49a206050493d47e4dbd",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "work_id": "structured-agentic-environment",
+    "reviewer": "/root/review_wb001",
+    "recorded_by": "codex-coordinator",
+    "model": "gpt-6-astra",
+    "runtime": "codex",
+    "parent_model": "gpt-6-luna",
+    "scope": "task",
+    "task_id": "WB-002",
+    "candidate_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+    "base_sha": "55c11fad3e0391f8a47236166c8d5941d824ef73",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+    "test_ids": [
+      "WB-inventory",
+      "WB-snapshot",
+      "WB-source-errors"
+    ],
+    "criterion_ids": [
+      "EM-009"
+    ],
+    "source_digests": {
+      "_ask/tests/test_engineering_workbench_sources.py": "4ac7243bb39e4e15bdd377adc101a1ff89496cfef65ee56748907622d15dec3e"
+    },
+    "inspected_sources": [
+      "_ask/scripts/engineering_model/workbench_sources.py",
+      "_ask/tests/test_engineering_workbench_sources.py"
+    ],
+    "changed_cases": [
+      "WB-inventory",
+      "WB-snapshot",
+      "WB-source-errors"
+    ],
+    "inventory_exclusions": {},
+    "decision": "APPROVED",
+    "boundary": "ok",
+    "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-002.json",
+    "task_result_sha256": "9120beecd8d0e4b5f0c9c6f9ca790991d6a72197e652f74076ff27253851a3e7",
+    "criteria": [
+      {
+        "id": "EM-009",
+        "coverage_decision": "APPROVED",
+        "assessment": "Approved for the assigned WB-002 source/inventory slice: local current/task/archive/gitless attribution, pinned full-commit requested bytes, explicit refresh semantics, safe missing-source diagnostics and noneditable committed snapshots. The prior external .later root read is now rejected before enumeration and has a discriminating retained regression. UI navigation and full source admission remain subsequent tasks.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "WB-source-errors asserts traversal rejection, missing blob/model diagnostics and committed outside-symlink exclusion. The independently checked root-directory-symlink remediation in inventory complements these safe-source assertions."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "WB-inventory covers current/task ref, archive/missing-model discovery, parked-card separation, detached/gitless explanations and a symlinked .later root. WB-snapshot binds all requested bytes to one resolved commit and preserves the old capture after explicit refresh. Independent instrumented reproduction confirms no unsafe directory enumeration/content read and unchanged HEAD/refs."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "WB-inventory",
+        "decision": "APPROVED",
+        "assertion_assessment": "Retained assertions cover task-branch current work, local live/archive inventory, missing models, parked-card separation, detached context and gitless fallback. The added external .later directory symlink fixture now requires an empty parked-card result, discriminating the exact previously rejected content/source-attribution bug. Independent wrappers additionally observed no enumeration or content read through that symlink.",
+        "counterexample": "The pre-fix implementation returns the external private.md heading as a local parked card. New regression at 019dad0322154e4eeb028c8b1935b02f9b593ac4 fails by behavior assertion on that result; the candidate returns before iterdir and does not read the external heading.",
+        "tdd_continuity_assessment": "Original valid red 5aaefa45ffdc4d50a057bb88c8ae150d establishes the inventory feature. Remediation red b8eabe0b113c4923a40aa8a7e8d364a0 fails WB-inventory on the exact ancestor-symlink finding with collection_status=ok and failure_kind=behavior_assertion. Repair-red test bytes match final candidate source; final-green 16738323cd53448d9dc1c0659a589956 passes all three cases. No exemption."
+      },
+      {
+        "id": "WB-snapshot",
+        "decision": "APPROVED",
+        "assertion_assessment": "Assertions bind model, graph, plan and requested source to the first captured full commit, preserve the captured bytes after ref movement, permit a new snapshot only on explicit reread, and expose editable=false. The implementation uses read-only Git commands and no publication/edit path.",
+        "counterexample": "A reader that resolves the moving ref independently for each blob can mix revision 1 model and revision 2 source; a refreshed read that mutates the original capture fails the retained REVISION=1 assertion. The test could be strengthened by capturing HEAD/refs/files before the initial read instead of afterward.",
+        "tdd_continuity_assessment": "Original valid red 5aaefa45ffdc4d50a057bb88c8ae150d fails the captured full-commit assertion. Snapshot test method/assertions and implementation are unchanged by the confinement repair. Repair-red b8eabe0b113c4923a40aa8a7e8d364a0 and exact-candidate final-green 16738323cd53448d9dc1c0659a589956 pass this selector; the mapped source file changes only by adding the inventory counterexample. No exemption."
+      },
+      {
+        "id": "WB-source-errors",
+        "decision": "APPROVED",
+        "assertion_assessment": "Missing optional blobs, unsafe traversal, direct committed outside symlinks and missing-model failures retain explicit diagnostics or exceptions without substituting unsafe bytes. These assertions are unchanged by the repair; WB-inventory now supplies the previously missing ancestor-directory-symlink regression and independent read instrumentation confirms confinement.",
+        "counterexample": "Returning bytes for ../outside.py or src/outside-link.py fails explicit exclusion and code assertions. Following an external .later root now fails the new WB-inventory regression rather than remaining unobserved.",
+        "tdd_continuity_assessment": "Original valid red 5aaefa45ffdc4d50a057bb88c8ae150d fails this selector by behavior_assertion. Its test method/assertions remain unchanged when the inventory regression is appended to the same file. Repair-red b8eabe0b113c4923a40aa8a7e8d364a0 passes this case and exact-candidate final-green 16738323cd53448d9dc1c0659a589956 passes it. Earlier runtime-error attempt 29bba382314d4f2a920fe6322605669d remains excluded. No exemption."
+      }
+    ],
+    "findings": [],
+    "limitations": [
+      "SourceSnapshot is a raw committed byte container, not a validated Engineering Model admission. Downstream selected-source validation must use the existing document layer before consumption; editable=false does not establish validation.",
+      "No coordinator recording or integration was performed."
+    ],
+    "resolved_findings": [
+      {
+        "id": "R1",
+        "path": "_ask/scripts/engineering_model/workbench_sources.py",
+        "line": 83,
+        "assessment": "A symlinked .later root returns no cards before directory enumeration. New regression and independent instrumented reproduction establish no external content read; original rejected artifact remains preserved."
+      }
+    ],
+    "evidence_run_ids": [
+      "5aaefa45ffdc4d50a057bb88c8ae150d",
+      "b8eabe0b113c4923a40aa8a7e8d364a0",
+      "16738323cd53448d9dc1c0659a589956"
+    ]
+  },
+  "candidate_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+  "scope": "task",
+  "task_id": "WB-002"
+}

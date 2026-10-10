@@ -1,0 +1,14 @@
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... FAIL
+
+======================================================================
+FAIL: test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-i2rx22zk/candidate/_ask/tests/test_engineering_model.py", line 27, in test_malformed_fields_and_lifecycle
+    self.assertTrue(any(error["code"] == "EM001_DECISION_OPTION"
+AssertionError: False is not true : two different option IDs must not allow the same label
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

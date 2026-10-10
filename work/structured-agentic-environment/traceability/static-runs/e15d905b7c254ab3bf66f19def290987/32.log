@@ -1,0 +1,6 @@
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.542s
+
+OK
+PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs

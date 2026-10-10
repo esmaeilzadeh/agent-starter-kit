@@ -1,0 +1,92 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "2d525959fd354e1a817e2d6fe52b9149",
+  "scope": "task",
+  "task_id": "WB-005",
+  "candidate_sha": "4791de297425bf0861ed48434077b0eda3ea89ef",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "5f058a57db674fb08420fe5fef507907",
+      "runner_id": "engineering-model",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/structured-agentic-environment/traceability/runs/2d525959fd354e1a817e2d6fe52b9149/5f058a57db674fb08420fe5fef507907.json",
+        "[\"test_engineering_workbench_overview.WorkbenchTests.test_overview_is_comprehensive_and_lazy\", \"test_engineering_workbench_overview.WorkbenchTests.test_summary_counts_open_exact_records\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "4791de297425bf0861ed48434077b0eda3ea89ef",
+      "exit_code": 1,
+      "collection_status": "ok",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/2d525959fd354e1a817e2d6fe52b9149/5f058a57db674fb08420fe5fef507907.log",
+      "output_digest": "8fe01834a43435522507ce9a24a8ea6586a3fa08a9df99fd8fca581d02a5daa9"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_engineering_workbench_overview.WorkbenchTests.test_overview_is_comprehensive_and_lazy (defect='mixed story/unassigned overview summary')",
+      "outcome": "unsupported_subtest",
+      "failure_kind": "setup_or_runtime_error",
+      "test_id": null,
+      "runner_id": "engineering-model",
+      "execution_id": "5f058a57db674fb08420fe5fef507907",
+      "phase": "red",
+      "source_sha": "4791de297425bf0861ed48434077b0eda3ea89ef",
+      "source_digests": {},
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/2d525959fd354e1a817e2d6fe52b9149/5f058a57db674fb08420fe5fef507907.log",
+      "output_digest": "8fe01834a43435522507ce9a24a8ea6586a3fa08a9df99fd8fca581d02a5daa9"
+    },
+    {
+      "case_id": "test_engineering_workbench_overview.WorkbenchTests.test_overview_is_comprehensive_and_lazy (defect='shared task scenario alias')",
+      "outcome": "unsupported_subtest",
+      "failure_kind": "setup_or_runtime_error",
+      "test_id": null,
+      "runner_id": "engineering-model",
+      "execution_id": "5f058a57db674fb08420fe5fef507907",
+      "phase": "red",
+      "source_sha": "4791de297425bf0861ed48434077b0eda3ea89ef",
+      "source_digests": {},
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/2d525959fd354e1a817e2d6fe52b9149/5f058a57db674fb08420fe5fef507907.log",
+      "output_digest": "8fe01834a43435522507ce9a24a8ea6586a3fa08a9df99fd8fca581d02a5daa9"
+    },
+    {
+      "case_id": "test_engineering_workbench_overview.WorkbenchTests.test_summary_counts_open_exact_records",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "WB-summary-links",
+      "runner_id": "engineering-model",
+      "execution_id": "5f058a57db674fb08420fe5fef507907",
+      "phase": "red",
+      "source_sha": "4791de297425bf0861ed48434077b0eda3ea89ef",
+      "source_digests": {
+        "_ask/tests/test_engineering_workbench_overview.py": "fd37012f9b8737b9d1437b66147c0cfe6dbfde0d455a3f6730ffd1a3515decdb"
+      },
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/2d525959fd354e1a817e2d6fe52b9149/5f058a57db674fb08420fe5fef507907.log",
+      "output_digest": "8fe01834a43435522507ce9a24a8ea6586a3fa08a9df99fd8fca581d02a5daa9"
+    }
+  ]
+}

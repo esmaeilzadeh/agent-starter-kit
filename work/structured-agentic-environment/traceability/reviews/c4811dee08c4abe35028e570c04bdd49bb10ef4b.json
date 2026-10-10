@@ -1,0 +1,256 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "codex-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "contract_digest": "45715d1ebd97a57c500edd5c0a8edb43fc86a22f9751d514330e7072f114570a",
+  "review_digest": "93e33ab4573f1c5f8a258608c3157bb460dc5ac0065b8be0634c0d5a746a259f",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "work_id": "structured-agentic-environment",
+    "reviewer": "/root/review_wb001",
+    "recorded_by": "codex-coordinator",
+    "model": "gpt-6-astra",
+    "runtime": "codex",
+    "parent_model": "gpt-6-luna",
+    "scope": "task",
+    "task_id": "WB-005",
+    "candidate_sha": "c4811dee08c4abe35028e570c04bdd49bb10ef4b",
+    "task_base_sha": "ef2da7386e610cf07e01d09ecfba59625f49668d",
+    "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+    "test_ids": [
+      "WB-overview",
+      "WB-summary-links"
+    ],
+    "criterion_ids": [
+      "EM-008",
+      "EM-010",
+      "EM-012"
+    ],
+    "source_digests": {
+      "_ask/tests/test_engineering_workbench_overview.py": "0bf95fa1ea93286973128d52146bd6086582cbdf045d3e0ee5e99df4c763cc1e"
+    },
+    "inspected_sources": [
+      "_ask/tests/test_engineering_workbench_overview.py",
+      "_ask/ui/streamlit_app.py",
+      "_ask/ui/workbench_overview.py",
+      "_ask/ui/workbench_scenarios.py",
+      "_ask/ui/workbench_stories.py"
+    ],
+    "changed_cases": [
+      "WB-overview",
+      "WB-summary-links"
+    ],
+    "inventory_exclusions": {},
+    "decision": "APPROVED",
+    "boundary": "ok",
+    "boundary_details": {
+      "raw_task_base_diff": [
+        "_ask/tests/test_engineering_workbench_overview.py",
+        "_ask/ui/streamlit_app.py",
+        "_ask/ui/workbench_overview.py",
+        "_ask/ui/workbench_scenarios.py",
+        "_ask/ui/workbench_stories.py",
+        "work/structured-agentic-environment/inner-loop/evidence/WB-005-review-238acc8.md",
+        "work/structured-agentic-environment/inner-loop/evidence/WB-005-review-2da7789.md",
+        "work/structured-agentic-environment/inner-loop/results/WB-005.json",
+        "work/structured-agentic-environment/inner-loop/state.json",
+        "work/structured-agentic-environment/traceability/review-input-WB-005-238acc8.json",
+        "work/structured-agentic-environment/traceability/review-input-WB-005-2da7789.json"
+      ],
+      "worker_source_paths": [
+        "_ask/tests/test_engineering_workbench_overview.py",
+        "_ask/ui/streamlit_app.py",
+        "_ask/ui/workbench_overview.py",
+        "_ask/ui/workbench_scenarios.py",
+        "_ask/ui/workbench_stories.py"
+      ],
+      "assessment": "Merged candidate has the identical complete tree to approved 06f2da8. Source changes relative to registered task base remain exactly the five accepted owned implementation/test files. Remaining changes are preserved review and inner-loop runtime evidence."
+    },
+    "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-005.json",
+    "task_result_sha256": "f43b1782d33f85d133c98ada7f8f12c26a4fbd6ba04530f9574b3469731e90e4",
+    "owned_source_digests": {
+      "_ask/tests/test_engineering_workbench_overview.py": "0bf95fa1ea93286973128d52146bd6086582cbdf045d3e0ee5e99df4c763cc1e",
+      "_ask/ui/streamlit_app.py": "af953ad4b6c37ab3e37f777980e04172a060e3992d1c39b8a487e099cc450eae",
+      "_ask/ui/workbench_overview.py": "d05fb08decf043bf59d3b5380ad2e3489c950968fcbbf7115024a62cd096df59",
+      "_ask/ui/workbench_scenarios.py": "511630ba7bc02d9893643f0fcb5c937f8cfe3d670589f8821f7f24f8e852c694",
+      "_ask/ui/workbench_stories.py": "a369e10e0c0dfc930f9e14c1046efd31f8752a823c248aac55b581eb9ed9e40a"
+    },
+    "findings": [],
+    "criteria": [
+      {
+        "id": "EM-008",
+        "coverage_decision": "APPROVED",
+        "assessment": "This task now delivers app-routed overview/story/scenario details with explicit real versus missing story membership, shared-task ancestry, canonical task/test links and route/filter return context. The admitted mixed-story fixture preserves both direct and story-owned scenarios without synthetic relationships. Later selected task/test/result renderers remain separately assigned.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The actual app tests exercise no-story disclosure, mixed story/unassigned summaries, scenario-2\u2192shared-task alias\u2192Back and exact nonempty/empty summary filters through return navigation. Independent story round-trip and strengthened filter-return/root-Back checks corroborate the task slice."
+          }
+        }
+      },
+      {
+        "id": "EM-010",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned summary navigation captures stable task/decision/scenario IDs with work identity, opens the selected canonical record and now preserves the filtered set on return. Unknown results stay Not loaded; no metadata status or declared lifecycle is promoted to verified completion. Later task/decision/result detail work remains separately assigned.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The expanded summary case clicks blocked\u2192Open build\u2192Back, compares the exact filter during and after inspection, and checks the restored task row. It also covers an empty filter and disabled initial root Back. Independent checks verify disabled returned-root Back and explicit Clear for both empty/nonempty sets."
+          }
+        }
+      },
+      {
+        "id": "EM-012",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned overview/scenario surface remains lazy: it consumes captured metadata without evidence inspection or test-source reads. Independent text and byte guards pass across filter/record/Back journeys. This approves only the structural contribution; later browser/accessibility/latency requirements remain separately assigned.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The original eager-inspector assertion and test-source read counter are retained. Independent Path.read_text and Path.read_bytes guards observe zero reads of test_fixture.py while navigating both nonempty and empty filters, scenarios and return routes."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "WB-overview",
+        "decision": "APPROVED",
+        "assertion_assessment": "Actual app routes expose purpose, task progress/readiness/lifecycle, attention and unknown results lazily, then canonical scenario details and recorded tasks/tests. The new admitted mixed-story fixture checks both story-linked and unassigned scenario overview controls, opens the shared task under scenario-2 and asserts correct alias, ancestry and Back restoration. Independent story\u2192scenario\u2192Back and zero text/byte source-read probes corroborate the task slice.",
+        "counterexample": "Removing unassigned-summary rendering leaves overview:scenario:scenario-2 absent; selecting the first task alias yields build instead of build@scenario-2; clearing route history disables Back. All three are collected in the new behavior-red fixture before its aggregate assertion.",
+        "tdd_continuity_assessment": "Genuine remediation red aa8a402513634ddc8f93bb621b850f44 at 16ba62d96c4648c33d56ba6a55a8dea9951daeee fails this case by behavior_assertion on unassigned summary row, shared task alias and Back history. Its complete overview test method AST is unchanged through current candidate 06f2da8f3831b4926a0ec43f1a83645b23fcd207. Latest filter-specific red 93f292f55bc94834b80c97249c6bd0f4 correctly passes this already fixed case. Final green 9de43ecfeca54b6d904914fbcec171f2 passes at the exact candidate. All reports/log/source bindings verified; no exemption. Merged exact candidate c4811dee08c4abe35028e570c04bdd49bb10ef4b has identical complete Git tree b49608e729b28fa564df5a46364f64290e40e269 to approved 06f2da8f3831b4926a0ec43f1a83645b23fcd207; genuine filter-red commit 2c9d0587b51875e6c765530c897dca9e77ccd27c is now an ancestor. New exact-candidate final-green 4e556768cf0f4c6cafa9a4609d5e63ec passes both assigned cases, with retained adapter results/log/source digests independently checked. No exemption."
+      },
+      {
+        "id": "WB-summary-links",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case checks exact blocked/open-decision filter IDs and work identity, Clear behavior and honest unloaded results, then opens filtered build and verifies task detail. Its new aggregate assertions preserve the exact filter during inspection and on Back, restore the intended row, and cover an empty blocked set through scenario navigation/Back with an explicit empty message. Root Back is disabled. Independent checks additionally verify disabled Back after return and explicit Clear for both sets.",
+        "counterexample": "Clearing the filter before navigate returns to purpose with None and no restored row. The accepted red fails all three aggregate checks: filter discarded on opening, filter not restored on Back, and filtered task absent. Treating an empty list as no filter would also remove the explicit empty-set state asserted by the final test.",
+        "tdd_continuity_assessment": "Accepted filter-specific red 93f292f55bc94834b80c97249c6bd0f4 at 2c9d0587b51875e6c765530c897dca9e77ccd27c collects both cases and fails this case by behavior_assertion at its aggregate filter assertions. Exact final green 9de43ecfeca54b6d904914fbcec171f2 passes both at 06f2da8f3831b4926a0ec43f1a83645b23fcd207. Mapped test-file bytes are identical red/final. The red fails before the later empty-filter fixture; the final green executes it. Genuine prior reds also anchor initial summary/filter-kind behavior. No exemption. Merged exact candidate c4811dee08c4abe35028e570c04bdd49bb10ef4b has identical complete Git tree b49608e729b28fa564df5a46364f64290e40e269 to approved 06f2da8f3831b4926a0ec43f1a83645b23fcd207; genuine filter-red commit 2c9d0587b51875e6c765530c897dca9e77ccd27c is now an ancestor. New exact-candidate final-green 4e556768cf0f4c6cafa9a4609d5e63ec passes both assigned cases, with retained adapter results/log/source digests independently checked. No exemption."
+      }
+    ],
+    "limitations": [
+      "TaskResult is bound to exact Git blob on wb005/submission-final-merge; reviewer did not overwrite checkout result bytes.",
+      "Task scope only: this approval does not assert future result/source detail renderers, UI checkpoints, browser accessibility, latency measurements or overall workstream completion.",
+      "Boundary uses the corrected registered task base ef2da7386e610cf07e01d09ecfba59625f49668d; semantic inventory base remains accepted contract dcae11d61c2b73745ba9f5b2187065792d84ac46 as required by ask-test-review/v2.",
+      "No source/coordinator-state changes, recording, acceptance or integration. recorded_by identifies the intended coordinator only."
+    ],
+    "execution_evidence": {
+      "aa8a402513634ddc8f93bb621b850f44": {
+        "candidate_sha": "16ba62d96c4648c33d56ba6a55a8dea9951daeee",
+        "phase": "red",
+        "canonical_report_digest": "2b993ae6454364553bdeb2b771c875fedc5b2d2b8566dc68681729d741dec3ea",
+        "report_file_sha256": "a26aa0fb1918900589feb7f6dac8d5ffa961f5acd1c70edaef775bff641775a3",
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/aa8a402513634ddc8f93bb621b850f44/755ae5315b704f68aa54f83f2f6f659c.log",
+        "output_digest": "3f488004f888b85ee3e791327190e185521fcbaa7f4be131bbca6a3b4d54829d",
+        "outcomes": {
+          "WB-overview": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          },
+          "WB-summary-links": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          }
+        }
+      },
+      "93f292f55bc94834b80c97249c6bd0f4": {
+        "candidate_sha": "2c9d0587b51875e6c765530c897dca9e77ccd27c",
+        "phase": "red",
+        "canonical_report_digest": "c65f84b415486ed24613fa9be445842b7f49dd1089d6ce1f5e94b94791029522",
+        "report_file_sha256": "4348f3ea44b67335145e88cf35b201d544f64730dc24196e7d18f5558713ba78",
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/93f292f55bc94834b80c97249c6bd0f4/82fd2151d5e44245a1bbfdd7cb575929.log",
+        "output_digest": "47f2bb5ce706e87e277d5582183718ed7ec5cf0e11b883b5adee6632839f56a5",
+        "outcomes": {
+          "WB-overview": {
+            "outcome": "passed",
+            "failure_kind": null
+          },
+          "WB-summary-links": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          }
+        }
+      },
+      "9de43ecfeca54b6d904914fbcec171f2": {
+        "candidate_sha": "06f2da8f3831b4926a0ec43f1a83645b23fcd207",
+        "phase": "final_green",
+        "canonical_report_digest": "62554d7310b69398e1d9f9dc25f9b7d5bb6e42462e962c63ab526da274303081",
+        "report_file_sha256": "579d438f65afd7aaa78dd0a330bd89224d6763be567f2965ce8b9806722fa385",
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/9de43ecfeca54b6d904914fbcec171f2/4fad880784ba4456acf701849d96c03c.log",
+        "output_digest": "5be89932173285ee05be56c4560b88d5dbf93a8fdfdc564778440e6bf112e594",
+        "outcomes": {
+          "WB-overview": {
+            "outcome": "passed",
+            "failure_kind": null
+          },
+          "WB-summary-links": {
+            "outcome": "passed",
+            "failure_kind": null
+          }
+        }
+      },
+      "4e556768cf0f4c6cafa9a4609d5e63ec": {
+        "candidate_sha": "c4811dee08c4abe35028e570c04bdd49bb10ef4b",
+        "phase": "final_green",
+        "canonical_report_digest": "c682a96244afe1cdf0902f192f96f1ff9fa265a4b48927acb4bbe224f837afaa",
+        "report_file_sha256": "72cd24b5c804706c063fd1d99d46cb9df7446c76d0d8ba8249b2beed815af67d",
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/4e556768cf0f4c6cafa9a4609d5e63ec/0e23dfb1b2294b368fa38cccd77fa21c.log",
+        "output_digest": "30bcd09e656f26486ef7aa7e7d8e139ad2702dd568b20e429e161323c54a715a",
+        "duration_seconds": 6.979,
+        "adapter_result_sha256": "ecd4bd85ff89fde8f9e5b1882979edb6b9a8c7223b5ebcd1d26acf9e9d1aca8f",
+        "outcomes": {
+          "WB-overview": {
+            "outcome": "passed",
+            "failure_kind": null
+          },
+          "WB-summary-links": {
+            "outcome": "passed",
+            "failure_kind": null
+          }
+        }
+      }
+    },
+    "task_result_revision": "beeb00e607d4055f05e094cd5029caf813fcdf18",
+    "task_result_ref": "wb005/submission-final-merge",
+    "resolved_findings": [
+      {
+        "id": "R1",
+        "assessment": "Filter collection kinds now normalize to canonical route kinds. Assigned regression clicks blocked\u2192build and independent checks also open decision and scenario filtered records successfully."
+      },
+      {
+        "id": "R2",
+        "assessment": "Related navigation prefers the alias under the active scenario and navigate pushes the prior route. Shared task from scenario-2 opens build@scenario-2; Back restores scenario-2. Overview filter context is also retained after the R4 fix."
+      },
+      {
+        "id": "R3",
+        "assessment": "The epic summary computes the union of story memberships and explicitly renders unassigned scenarios outside it. The new legal mixed-story fixture retains both scenario links without synthesizing stories or edges."
+      },
+      {
+        "id": "R4",
+        "path": "_ask/ui/streamlit_app.py",
+        "line": 74,
+        "assessment": "Opening a related record no longer clears the active overview filter. Assigned and independent nonempty filter\u2192record\u2192Back assertions preserve exact kind/IDs/work_id and restored row. Empty filter\u2192scenario\u2192Back retains its exact empty set and explanatory state; Back is disabled at initial and returned root, and explicit Clear removes the filter."
+      }
+    ],
+    "reissue_assessment": {
+      "previous_review_path": "work/structured-agentic-environment/traceability/review-input-WB-005-06f2da8-correct-base.json",
+      "previous_review_sha256": "b38aea537c6b878387a653bce8d6c509162e635d201465db0c75b5973204f8bb",
+      "accepted_anchor_sha": "ef2da7386e610cf07e01d09ecfba59625f49668d",
+      "accepted_contract_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+      "approved_candidate_sha": "06f2da8f3831b4926a0ec43f1a83645b23fcd207",
+      "merged_candidate_sha": "c4811dee08c4abe35028e570c04bdd49bb10ef4b",
+      "git_tree_sha": "b49608e729b28fa564df5a46364f64290e40e269",
+      "merge_parents": [
+        "06f2da8f3831b4926a0ec43f1a83645b23fcd207",
+        "2da7789398ecaee48eae260b2e7203cea5e4c13a"
+      ],
+      "red_ancestor_sha": "2c9d0587b51875e6c765530c897dca9e77ccd27c",
+      "independent_checks": "Complete Git tree identity, accepted authority/obligation/policy bindings, source/check-out digests, task-base and red ancestry, exact fresh final-green report/adapter/log and prior red report/log integrity. Prior independent app routing/filter/back and zero eager evidence/text/byte-source read checks remain applicable to the identical complete tree. No new execution required."
+    }
+  },
+  "candidate_sha": "c4811dee08c4abe35028e570c04bdd49bb10ef4b",
+  "scope": "task",
+  "task_id": "WB-005"
+}

@@ -1,0 +1,9 @@
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:49:44.629 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:49:47.040 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 4.121s
+
+OK

@@ -1,0 +1,16 @@
+test_completed_tasks_retain_tests_results_and_gaps (test_engineering_workbench_tasks.WorkbenchTests) ... 2026-10-10 06:10:55.819 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_task_detail_explains_work_dependencies_and_tests (test_engineering_workbench_tasks.WorkbenchTests) ... ok
+
+======================================================================
+FAIL: test_completed_tasks_retain_tests_results_and_gaps (test_engineering_workbench_tasks.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-bmmnfj4b/candidate/_ask/tests/test_engineering_workbench_tasks.py", line 62, in test_completed_tasks_retain_tests_results_and_gaps
+    self.assertIn("Unrecorded implementation gap", text)
+AssertionError: 'Unrecorded implementation gap' not found in 'Engineering workbench\nTasks\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Build**\n### build\n**Task status**\nPlanned\n#### Blockers\n#### Related scenarios\nscenario\n#### Related tests\nCASE-1\n#### Implementation evidence\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\n/\n/\n/\nbuild · lifecycle: planned\nRuntime record: not recorded\ntest-mapping\nLifecycle status is separate from verified completion; no completed result is attached to this task.\nchoice · choice is open; requires resolved'
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.075s
+
+FAILED (failures=1)

@@ -1,0 +1,14 @@
+{
+  "schema": "ask-completion/v1",
+  "status": "fail",
+  "scope": "workstream",
+  "task_id": null,
+  "candidate_sha": "f76170981496d14d7d1512705e1f0d61aa8000ea",
+  "input_digests": {},
+  "criterion_evidence": [],
+  "missing_evidence": [],
+  "errors": [
+    "candidate source/CheckPlan changed during verification"
+  ],
+  "execution_artifacts": []
+}

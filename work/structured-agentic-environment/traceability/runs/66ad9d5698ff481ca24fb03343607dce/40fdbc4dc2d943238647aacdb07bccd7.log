@@ -1,0 +1,221 @@
+test_cli_inspect_resolve_reload_and_invalid (test_engineering_cli.CliJourneyTests) ... ok
+test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests) ... ok
+test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests) ... ok
+test_atomic_node_edges_and_lifecycle_batch (test_engineering_guard.DocumentGuardTests) ... ok
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_cached_and_full_validation_agree (test_engineering_guard.DocumentGuardTests) ... ok
+test_concurrent_multifile_publication_and_recovery (test_engineering_guard.DocumentGuardTests) ... ok
+test_external_changes_and_missed_events_fail_closed (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_candidate_preserves_stable_generation (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_public_mutators_cannot_bypass_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_successful_guard_order_and_identities (test_engineering_guard.DocumentGuardTests) ... ok
+test_concurrent_compare_and_swap (test_engineering_model.ModelEditTests) ... ok
+test_decision_history_and_dependency_propagation (test_engineering_model.ModelEditTests) ... ok
+test_invalid_and_stale_edits_preserve_bytes (test_engineering_model.ModelEditTests) ... ok
+test_revise_invalidates_transitive_decisions (test_engineering_model.ModelEditTests) ... ok
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... ok
+test_json_markdown_same_ids_and_no_outcomes (test_engineering_model.ProjectionTests) ... ok
+test_empty_task_and_scenario_tables_show_clear_states (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:37.387 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_gitless_model_root_keeps_workbench_usable_without_git_fatal (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:39.204 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-10 08:56:40.372 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_historical_evidence_candidate_is_inspectable_without_being_current (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:42.435 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_overview_keeps_decision_resolution_in_the_objects_section (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:43.669 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_overview_loads_results_on_demand_and_explains_debug_identifiers (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:44.728 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:45.815 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_planned_test_shows_its_source_in_the_detail_panel (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:47.011 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_referenced_spec_change_keeps_form_stale_until_refresh (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:48.079 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_repeated_nested_evidence_fields_do_not_duplicate_expanders (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:49.272 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_resolution_survives_new_session (test_engineering_ui.UiIntegrationTests) ... 2026-10-10 08:56:50.410 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_gitless_model_root_shows_actionable_evidence_unavailable_state (test_engineering_ui_browser.WorkbenchBrowserJourney) ... ERROR
+test_stale_spec_then_refresh_and_persist_in_new_browser_session (test_engineering_ui_browser.WorkbenchBrowserJourney) ... ERROR
+test_many_to_many_relations_and_deduplication (test_engineering_workbench.WorkbenchTests) ... ok
+test_story_scope_and_missing_story_are_honest (test_engineering_workbench.WorkbenchTests) ... ok
+test_task_scopes_runtime_and_missing_history (test_engineering_workbench.WorkbenchTests) ... ok
+test_attention_links_blockers_decisions_and_evidence (test_engineering_workbench_attention.WorkbenchTests) ... ok
+test_reasoned_choice_persists_and_read_only_rejects (test_engineering_workbench_attention.WorkbenchTests) ... 2026-10-10 08:58:01.015 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_qualified_source_matches_selected_revision (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 08:58:02.153 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 08:58:04.654 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 08:58:07.555 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-10 08:58:09.009 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_summary_counts_open_exact_records (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 08:58:10.665 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-10 08:58:12.985 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_cross_branch_snapshot_is_consistent_and_read_only (test_engineering_workbench_sources.WorkbenchTests) ... ok
+test_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests) ... ok
+test_missing_blobs_and_unsafe_paths_are_explained (test_engineering_workbench_sources.WorkbenchTests) ... ok
+test_completed_tasks_retain_tests_results_and_gaps (test_engineering_workbench_tasks.WorkbenchTests) ... 2026-10-10 08:58:15.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_task_detail_explains_work_dependencies_and_tests (test_engineering_workbench_tasks.WorkbenchTests) ... ok
+test_identifiers_have_explanations_and_copy_actions (test_engineering_workbench_tests.WorkbenchTests) ... 2026-10-10 08:58:16.511 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_selected_test_shows_source_results_and_related_work (test_engineering_workbench_tests.WorkbenchTests) ... 2026-10-10 08:58:17.226 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+======================================================================
+ERROR: test_gitless_model_root_keeps_workbench_usable_without_git_fatal (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 250, in test_gitless_model_root_keeps_workbench_usable_without_git_fatal
+    app.segmented_control(key="workbench_section").select("Evidence").run(timeout=15)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_historical_evidence_candidate_is_inspectable_without_being_current (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 42, in test_historical_evidence_candidate_is_inspectable_without_being_current
+    app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_overview_keeps_decision_resolution_in_the_objects_section (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 96, in test_overview_keeps_decision_resolution_in_the_objects_section
+    app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_planned_test_shows_its_source_in_the_detail_panel (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 83, in test_planned_test_shows_its_source_in_the_detail_panel
+    app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=15)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_referenced_spec_change_keeps_form_stale_until_refresh (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 265, in test_referenced_spec_change_keeps_form_stale_until_refresh
+    app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_repeated_nested_evidence_fields_do_not_duplicate_expanders (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 184, in test_repeated_nested_evidence_fields_do_not_duplicate_expanders
+    app.segmented_control(key="workbench_section").select("Evidence").run(timeout=15)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_resolution_survives_new_session (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 219, in test_resolution_survives_new_session
+    app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/testing/v1/element_tree.py", line 284, in __call__
+    raise KeyError(key)
+KeyError: 'workbench_section'
+
+======================================================================
+ERROR: test_gitless_model_root_shows_actionable_evidence_unavailable_state (test_engineering_ui_browser.WorkbenchBrowserJourney)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui_browser.py", line 264, in test_gitless_model_root_shows_actionable_evidence_unavailable_state
+    self.select_section(page, "Evidence")
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui_browser.py", line 29, in select_section
+    if option.get_attribute("aria-checked") != "true":
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/sync_api/_generated.py", line 19470, in get_attribute
+    self._sync(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_locator.py", line 469, in get_attribute
+    return await self._frame.get_attribute(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_frame.py", line 758, in get_attribute
+    return await self._channel.send(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.get_attribute: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("radio", name="Evidence")
+
+
+======================================================================
+ERROR: test_stale_spec_then_refresh_and_persist_in_new_browser_session (test_engineering_ui_browser.WorkbenchBrowserJourney)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui_browser.py", line 125, in test_stale_spec_then_refresh_and_persist_in_new_browser_session
+    first.get_by_role("combobox", name="Workstream in current branch").input_value(),
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/sync_api/_generated.py", line 19643, in input_value
+    self._sync(self._impl_obj.input_value(timeout=to_milliseconds(timeout)))
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_locator.py", line 510, in input_value
+    return await self._frame.input_value(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_frame.py", line 823, in input_value
+    return await self._channel.send(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_connection.py", line 76, in send
+    return await self._connection.wrap_api_call(
+  File "/home/mohamad/.local/lib/python3.10/site-packages/playwright/_impl/_connection.py", line 632, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TimeoutError: Locator.input_value: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("combobox", name="Workstream in current branch")
+
+
+======================================================================
+FAIL: test_empty_task_and_scenario_tables_show_clear_states (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 203, in test_empty_task_and_scenario_tables_show_clear_states
+    self.assertIn("No tasks in this snapshot.", text(app))
+AssertionError: 'No tasks in this snapshot.' not found in 'Engineering workbench\nPurpose\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Purpose**\nPurpose\n#### Stories and scenarios\n#### Task progress\n#### Needs attention\nDecision · Choose\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nPurpose\nNo canonical scenarios are recorded.\nNo task records are available.\ndecision requires an explicit resolution\nResults are not loaded. Open a result to inspect recorded executions.\nNo story records are present. Existing scenarios are shown directly here; story membership is not inferred.\nRefresh\nPurpose\n\u3000Decision · Choose\nBack\nOpen\nView scenarios\nView tasks\nView blocked tasks\nView open decisions'
+
+======================================================================
+FAIL: test_overview_loads_results_on_demand_and_explains_debug_identifiers (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 149, in test_overview_loads_results_on_demand_and_explains_debug_identifiers
+    self.assertIn("Load test results", text(app))
+AssertionError: 'Load test results' not found in 'Engineering workbench\nPurpose\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Purpose**\nPurpose\n#### Stories and scenarios\nCanonical behavior\n#### Task progress\n#### Needs attention\nDecision · Choose\nTask · Build\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\nPurpose\nScenarios without a recorded story\nscenario · available\nTask graph / runner: Planned 1\nDeclared lifecycle: Planned 1\nDependency readiness: Blocked 1\ndecision requires an explicit resolution\ntask has unresolved prerequisites\nResults are not loaded. Open a result to inspect recorded executions.\nNo story records are present. Existing scenarios are shown directly here; story membership is not inferred.\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000\u3000Build\n\u3000\u3000\u3000\u3000Behavior assertion\n\u3000\u3000\u3000\u3000\u3000Result / evidence\n\u3000Decision · Choose\nBack\nOpen scenario\nOpen\nOpen\nView scenarios\nView tasks\nView blocked tasks\nView open decisions'
+
+======================================================================
+FAIL: test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes (test_engineering_ui.UiIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-u28ixpkq/candidate/_ask/tests/test_engineering_ui.py", line 113, in test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes
+    self.assertIn(label, rendered)
+AssertionError: 'Tasks' not found in 'Engineering workbench\nPurpose\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Purpose**\nPurpose\n#### Stories and scenarios\nCanonical behavior\n#### Task progress\n#### Needs attention\nDecision · Choose\nTask · Build\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\nPurpose\nScenarios without a recorded story\nscenario · available\nTask graph / runner: Planned 1\nDeclared lifecycle: Planned 1\nDependency readiness: Blocked 1\ndecision requires an explicit resolution\ntask has unresolved prerequisites\nResults are not loaded. Open a result to inspect recorded executions.\nNo story records are present. Existing scenarios are shown directly here; story membership is not inferred.\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000\u3000Build\n\u3000\u3000\u3000\u3000Behavior assertion\n\u3000\u3000\u3000\u3000\u3000Result / evidence\n\u3000Decision · Choose\nBack\nOpen scenario\nOpen\nOpen\nView scenarios\nView tasks\nView blocked tasks\nView open decisions'
+
+----------------------------------------------------------------------
+Ran 53 tests in 122.197s
+
+FAILED (failures=3, errors=9)

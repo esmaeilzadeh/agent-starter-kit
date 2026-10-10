@@ -1,0 +1,97 @@
+schema: ask-inner-loop-tasks/v1
+work_id: structured-agentic-environment
+tasks:
+  - id: WB-001
+    title: "Project the real work and relationship graph"
+    outcome: "Join epic, canonical scenarios, task graph and reviewed test scopes without inventing task history"
+    depends_on: []
+    owned_paths:
+      - _ask/scripts/engineering_model/workbench.py
+      - _ask/scripts/engineering_model/projection.py
+      - _ask/tests/test_engineering_workbench.py
+      - _ask/tests/test-sync-runtime-agents.sh
+    completion_evidence: "Projection fixtures preserve relationship identity, task provenance and missing-history states; unchanged foundation regression suite remains executable"
+    test_ids: [WB-relations, WB-task-history, WB-story-context, MV-valid, MV-graph, MV-fields, MV-refs, ME-decision, ME-revise, ME-reject, ME-race, EV-real, EV-missing, MP-shared, MC-journey, DG-pre, DG-post, DG-refs, DG-events, DG-parity, DG-publish, DG-bootstrap, ME-batch, DG-success, DG-entrypoints]
+  - id: WB-002
+    title: "Browse work across branch snapshots"
+    outcome: "Discover live and archived work and read one consistent branch revision without changing checkout"
+    depends_on: [WB-001]
+    owned_paths:
+      - _ask/scripts/engineering_model/workbench_sources.py
+      - _ask/tests/test_engineering_workbench_sources.py
+    completion_evidence: "Disposable Git refs show correct default work, archived/missing-model inventory, immutable source selection and unchanged HEAD/refs/model bytes"
+    test_ids: [WB-inventory, WB-snapshot, WB-source-errors]
+  - id: WB-003
+    title: "Bind test source and result details"
+    outcome: "Present qualified source and actual retained execution with version and integrity-aware identity"
+    depends_on: [WB-002]
+    owned_paths:
+      - _ask/scripts/engineering_model/workbench_evidence.py
+      - _ask/tests/test_engineering_workbench_evidence.py
+    completion_evidence: "Adversarial identity, version, missing-data and tampered-log fixtures preserve evaluator authority and actual case outcomes"
+    test_ids: [WB-evidence-identity, WB-source-version, WB-evidence-states]
+  - id: WB-004
+    title: "Build the connected hierarchy navigator"
+    outcome: "Keep one Epic to Story to Scenario to Task to Test to Result navigator, source context and captured edit identity stable across navigation"
+    depends_on: [WB-003]
+    owned_paths:
+      - _ask/ui/streamlit_app.py
+      - _ask/ui/workbench_context.py
+      - _ask/ui/workbench_navigation.py
+      - _ask/ui/.streamlit/config.toml
+      - _ask/tests/test_engineering_workbench_navigation.py
+    completion_evidence: "AppTest exercises current work default, source badges, routes, Back/refresh, missing inputs and captured-form identity"
+    test_ids: [WB-navigation, WB-form-context]
+  - id: WB-005
+    title: "Show epic, story and scenario delivery in context"
+    outcome: "Explain purpose, stories, scenarios, status and attention inside the connected hierarchy"
+    depends_on: [WB-004]
+    owned_paths:
+      - _ask/ui/workbench_overview.py
+      - _ask/ui/workbench_scenarios.py
+      - _ask/ui/workbench_stories.py
+      - _ask/tests/test_engineering_workbench_overview.py
+    completion_evidence: "Overview and scenario AppTest assertions prove readable relationships, count navigation and zero eager evidence/source work"
+    test_ids: [WB-overview, WB-summary-links]
+  - id: WB-006
+    title: "Inspect planned and completed tasks"
+    outcome: "Provide a task list-detail view with related scenarios, tests, blockers and implementation evidence"
+    depends_on: [WB-005]
+    owned_paths:
+      - _ask/ui/workbench_tasks.py
+      - _ask/tests/test_engineering_workbench_tasks.py
+    completion_evidence: "Task status/search filters and detail links retain completed work and distinguish lifecycle from verified completion"
+    test_ids: [WB-task-detail, WB-completed-tasks]
+  - id: WB-007
+    title: "Resolve attention and decisions in context"
+    outcome: "Open each attention record and persist attributed choices through the existing guard"
+    depends_on: [WB-006]
+    owned_paths:
+      - _ask/ui/workbench_attention.py
+      - _ask/tests/test_engineering_workbench_attention.py
+    completion_evidence: "Attention links, option context, rejection without writes and new-session resolution consequences are verified"
+    test_ids: [WB-attention, WB-decision-choice]
+  - id: WB-008
+    title: "Inspect tests, results and useful debug details"
+    outcome: "Expose selected test source, execution history and actionable technical provenance"
+    depends_on: [WB-007]
+    owned_paths:
+      - _ask/ui/workbench_tests.py
+      - _ask/ui/workbench_debug.py
+      - _ask/tests/test_engineering_workbench_tests.py
+    completion_evidence: "Selected test/result/source journeys and collapsed debug copy/command behavior match their exact underlying identities"
+    test_ids: [WB-test-panel, WB-debug]
+  - id: WB-009
+    title: "Validate responsiveness, performance and regression journeys"
+    outcome: "Measure and finish the redesigned experience in a real browser without weakening existing verification"
+    depends_on: [WB-008]
+    owned_paths:
+      - _ask/tests/test_engineering_ui.py
+      - _ask/tests/test_engineering_ui_browser.py
+      - _ask/tests/test_engineering_workbench_browser.py
+      - _ask/tests/test_engineering_workbench_performance.py
+      - _ask/ui/benchmark_workbench.py
+      - _ask/ui/requirements-test.txt
+      - work/structured-agentic-environment/workbench-validation.md
+    completion_evidence: "Browser screenshots from real work, isolated end-to-end fixtures, keyboard/narrow-layout evidence, measured budgets and honest full verification outcome"
+    test_ids: [WB-browser-journey, WB-browser-accessibility, WB-performance, WB-latency-budget, UI-inspect, UI-persist, UI-conflict, UI-browser, UI-empty, UI-gitless, UI-decision-object, UI-overview-results, UI-overview-hierarchy, UI-test-source, UI-expander-ids, UI-browser-gitless]

@@ -1,0 +1,23 @@
+test_cross_branch_snapshot_is_consistent_and_read_only (test_engineering_workbench_sources.WorkbenchTests) ... ok
+test_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests) ... FAIL
+test_missing_blobs_and_unsafe_paths_are_explained (test_engineering_workbench_sources.WorkbenchTests) ... ok
+
+======================================================================
+FAIL: test_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-ix4_x_aj/candidate/_ask/tests/test_engineering_workbench_sources.py", line 80, in test_current_work_and_ref_archive_inventory
+    self.assertEqual(isolated["later"], [],
+AssertionError: Lists differ: [{'slug': 'private', 'title': 'External card', 'path': '.later/private.md'}] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+{'slug': 'private', 'title': 'External card', 'path': '.later/private.md'}
+
+- [{'path': '.later/private.md', 'slug': 'private', 'title': 'External card'}]
++ [] : a symlinked .later root must not expose cards outside the checkout
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.516s
+
+FAILED (failures=1)

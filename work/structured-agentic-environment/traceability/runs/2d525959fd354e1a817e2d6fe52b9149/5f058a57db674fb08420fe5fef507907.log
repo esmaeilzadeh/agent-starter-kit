@@ -1,0 +1,39 @@
+test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 05:19:07.424 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-10 05:19:09.464 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+test_summary_counts_open_exact_records (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 05:19:10.772 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+
+======================================================================
+FAIL: test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests) (defect='mixed story/unassigned overview summary')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2qrwza2d/candidate/_ask/tests/test_engineering_workbench_overview.py", line 134, in test_overview_is_comprehensive_and_lazy
+    self.assertIn("overview:scenario:scenario-2", overview_links,
+AssertionError: 'overview:scenario:scenario-2' not found in {'overview:scenario:scenario', 'route:test:CASE-1', 'route:test:CASE-2', 'overview:attention:task:build', 'route:scenario-2', 'route:back', 'route:build@scenario-2', 'overview:summary:blocked', 'refresh', 'route:result:CASE-1', 'route:story', 'overview:summary:scenarios', 'route:decision', 'route:result:CASE-2', 'route:purpose', 'overview:summary:decisions', 'overview:summary:tasks', 'route:build', 'route:scenario', 'overview:attention:decision:choice'} : overview must include scenarios outside recorded story membership
+
+======================================================================
+FAIL: test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests) (defect='shared task scenario alias')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2qrwza2d/candidate/_ask/tests/test_engineering_workbench_overview.py", line 141, in test_overview_is_comprehensive_and_lazy
+    self.assertEqual(mixed_app.session_state["_engineering_route"], "build@scenario-2")
+AssertionError: 'build' != 'build@scenario-2'
+- build
++ build@scenario-2
+
+
+======================================================================
+FAIL: test_summary_counts_open_exact_records (test_engineering_workbench_overview.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2qrwza2d/candidate/_ask/tests/test_engineering_workbench_overview.py", line 181, in test_summary_counts_open_exact_records
+    self.assertEqual(app.session_state["_engineering_route"], "build")
+AssertionError: 'purpose' != 'build'
+- purpose
++ build
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 5.348s
+
+FAILED (failures=3)

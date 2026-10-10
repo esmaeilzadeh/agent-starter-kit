@@ -1,0 +1,11 @@
+intent-confirmation: response must explicitly approve the complete intent and assumptions
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+intent-confirmation: human requested revisions; intent was not approved
+usage: intent-confirmation.py [-h] [--root ROOT] --work-id WORK_ID
+                              [--choice {approve,revise} | --response RESPONSE]
+                              {confirm,validate}
+intent-confirmation.py: error: argument --response: not allowed with argument --choice
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+PASS: workstream gate requires an explicit, current intent confirmation

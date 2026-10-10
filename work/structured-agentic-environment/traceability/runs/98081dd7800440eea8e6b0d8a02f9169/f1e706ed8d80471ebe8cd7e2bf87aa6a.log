@@ -1,0 +1,17 @@
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+FAIL: test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-1687cxrk/candidate/_ask/tests/test_engineering_guard.py", line 34, in test_linked_spec_change_invalidates_admission
+    self.assertEqual(malformed.returncode, 1, "canonical schema must be checked, not just selected ID existence")
+AssertionError: 0 != 1 : canonical schema must be checked, not just selected ID existence
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.000s
+
+FAILED (failures=1)

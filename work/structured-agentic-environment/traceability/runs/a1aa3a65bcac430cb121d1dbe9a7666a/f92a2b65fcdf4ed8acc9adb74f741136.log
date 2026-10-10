@@ -1,0 +1,18 @@
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+FAIL: test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-9ugfpx5r/candidate/_ask/tests/test_engineering_guard.py", line 16, in test_bootstrap_admits_only_validated_state
+    self.assertEqual(admitted.returncode, 0, admitted.stderr)
+AssertionError: 2 != 0 : usage: ask model [-h] {validate} ...
+ask model: error: argument command: invalid choice: 'admit' (choose from 'validate')
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.109s
+
+FAILED (failures=1)

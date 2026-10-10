@@ -1,0 +1,57 @@
+test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests) ... FAIL
+test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests) ... FAIL
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_decision_history_and_dependency_propagation (test_engineering_model.ModelEditTests) ... FAIL
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+FAIL: test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-q5rms4sq/candidate/_ask/tests/test_engineering_evidence.py", line 173, in test_missing_and_historical_evidence
+    missing = self.inspect()
+  File "/tmp/ask-cases-q5rms4sq/candidate/_ask/tests/test_engineering_evidence.py", line 57, in inspect
+    self.assertEqual(changed, [], 'Inspection changed repository artifacts or refs')
+AssertionError: Lists differ: ['work/w/traceability/completion.json'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'work/w/traceability/completion.json'
+
+- ['work/w/traceability/completion.json']
++ [] : Inspection changed repository artifacts or refs
+
+======================================================================
+FAIL: test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-q5rms4sq/candidate/_ask/tests/test_engineering_evidence.py", line 75, in test_real_evidence_and_tamper_is_read_only
+    result = self.inspect()
+  File "/tmp/ask-cases-q5rms4sq/candidate/_ask/tests/test_engineering_evidence.py", line 57, in inspect
+    self.assertEqual(changed, [], 'Inspection changed repository artifacts or refs')
+AssertionError: Lists differ: ['work/w/traceability/completion.json'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'work/w/traceability/completion.json'
+
+- ['work/w/traceability/completion.json']
++ [] : Inspection changed repository artifacts or refs
+
+======================================================================
+FAIL: test_decision_history_and_dependency_propagation (test_engineering_model.ModelEditTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-q5rms4sq/candidate/_ask/tests/test_engineering_model.py", line 37, in test_decision_history_and_dependency_propagation
+    self.assertTrue(resolved["valid"], resolved)
+AssertionError: False is not true : {'valid': False, 'model': {'schema': 'ask-engineering-model/v1', 'work_id': 'pilot', 'revision': 1, 'nodes': [{'id': 'purpose', 'type': 'intent', 'title': 'Purpose', 'lifecycle': 'active'}, {'id': 'choice', 'type': 'decision', 'title': 'Choose', 'lifecycle': 'open', 'options': [{'id': 'one', 'label': 'First'}, {'id': 'two', 'label': 'Second'}], 'history': []}, {'id': 'build', 'type': 'task', 'title': 'Build', 'lifecycle': 'planned'}, {'id': 'assumption', 'type': 'assumption', 'title': 'Assumption', 'lifecycle': 'unverified'}], 'edges': [{'type': 'contains', 'source': 'purpose', 'target': 'choice'}, {'type': 'contains', 'source': 'purpose', 'target': 'build'}, {'type': 'contains', 'source': 'purpose', 'target': 'assumption'}, {'type': 'depends_on', 'source': 'build', 'target': 'choice'}, {'type': 'depends_on', 'source': 'build', 'target': 'assumption'}]}, 'diagnostics': [{'code': 'EM002_COMMAND', 'path': '$.commands', 'message': 'unsupported command batch'}], 'effects': []}
+
+----------------------------------------------------------------------
+Ran 10 tests in 6.315s
+
+FAILED (failures=3)

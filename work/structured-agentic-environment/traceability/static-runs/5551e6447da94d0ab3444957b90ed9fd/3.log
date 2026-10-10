@@ -1,0 +1,10 @@
+askit: kit /tmp/ask-candidate-krrtuz1n/checkout @ HEAD
+askit: cache /tmp/tmp.soQMXFUohN/.cache/askit/kit
+Cloning into '/tmp/tmp.soQMXFUohN/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/structured-agentic-environment'.
+askit: /tmp/tmp.soQMXFUohN/.local/bin/askit -> /tmp/tmp.soQMXFUohN/.cache/askit/kit/askit
+askit: /tmp/tmp.soQMXFUohN/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.soQMXFUohN/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)

@@ -1,0 +1,16 @@
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+FAIL: test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-07uuw17_/candidate/_ask/tests/test_engineering_guard.py", line 47, in test_bootstrap_admits_only_validated_state
+    self.assertEqual(corrupted.returncode, 1, "a corrupt stored generation must not be reused as valid")
+AssertionError: 0 != 1 : a corrupt stored generation must not be reused as valid
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.835s
+
+FAILED (failures=1)

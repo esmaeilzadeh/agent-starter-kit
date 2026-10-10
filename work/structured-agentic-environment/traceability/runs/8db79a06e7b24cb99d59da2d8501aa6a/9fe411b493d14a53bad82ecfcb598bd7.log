@@ -1,0 +1,17 @@
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:55:16.311 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:55:18.810 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+
+======================================================================
+FAIL: test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yjpuz7u8/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 119, in test_work_default_routes_and_context_reset
+    self.assertTrue(any(item.key == "source_id" for item in app.selectbox),
+AssertionError: False is not true : a separate source selector is required
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.559s
+
+FAILED (failures=1)

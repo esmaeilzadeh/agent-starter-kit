@@ -1,0 +1,50 @@
+test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests) ... ok
+test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests) ... ok
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_cached_and_full_validation_agree (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_external_changes_and_missed_events_fail_closed (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_invalid_candidate_preserves_stable_generation (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_successful_guard_order_and_identities (test_engineering_guard.DocumentGuardTests) ... ERROR
+test_concurrent_compare_and_swap (test_engineering_model.ModelEditTests) ... ok
+test_decision_history_and_dependency_propagation (test_engineering_model.ModelEditTests) ... ok
+test_invalid_and_stale_edits_preserve_bytes (test_engineering_model.ModelEditTests) ... ok
+test_revise_invalidates_transitive_decisions (test_engineering_model.ModelEditTests) ... ok
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+ERROR: test_successful_guard_order_and_identities (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-jpub357u/candidate/_ask/tests/test_engineering_guard.py", line 41, in test_successful_guard_order_and_identities
+    self.assertEqual(receipt["validation_counts"], {"pre": 1, "post": 1})
+KeyError: 'validation_counts'
+
+======================================================================
+FAIL: test_cached_and_full_validation_agree (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-jpub357u/candidate/_ask/tests/test_engineering_guard.py", line 59, in test_cached_and_full_validation_agree
+    self.assertEqual(full.returncode, ordinary.returncode, full.stderr)
+AssertionError: 2 != 0 : usage: ask model [-h] {validate,admit,show,edit} ...
+ask model: error: unrecognized arguments: --full
+
+
+======================================================================
+FAIL: test_external_changes_and_missed_events_fail_closed (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-jpub357u/candidate/_ask/tests/test_engineering_guard.py", line 67, in test_external_changes_and_missed_events_fail_closed
+    self.assertEqual(initial.returncode, 0, initial.stderr)
+AssertionError: 2 != 0 : usage: ask model [-h] {validate,admit,show,edit} ...
+ask model: error: argument command: invalid choice: 'watch' (choose from 'validate', 'admit', 'show', 'edit')
+
+
+----------------------------------------------------------------------
+Ran 17 tests in 13.359s
+
+FAILED (failures=2, errors=1)

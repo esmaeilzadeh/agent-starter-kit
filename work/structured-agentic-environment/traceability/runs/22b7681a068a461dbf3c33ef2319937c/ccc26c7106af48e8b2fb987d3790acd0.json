@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "test_engineering_workbench_tasks.WorkbenchTests.test_completed_tasks_retain_tests_results_and_gaps", "outcome": "passed", "failure_kind": null}, {"case_id": "test_engineering_workbench_tasks.WorkbenchTests.test_task_detail_explains_work_dependencies_and_tests", "outcome": "passed", "failure_kind": null}], "collection_status": "ok"}

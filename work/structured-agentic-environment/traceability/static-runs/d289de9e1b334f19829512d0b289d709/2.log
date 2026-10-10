@@ -1,0 +1,8 @@
+sync-runtime-agents: wrote /tmp/ask-candidate-9m90fb24/checkout/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-9m90fb24/checkout/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-9m90fb24/checkout/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-9m90fb24/checkout/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.12EQTqCrC6
+status: no live agent/* branches; no archived work/* on master
+PASS: first-run askit gates on git + confirm, then overlays

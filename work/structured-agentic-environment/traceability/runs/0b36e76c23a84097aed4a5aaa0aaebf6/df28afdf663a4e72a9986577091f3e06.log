@@ -1,0 +1,9 @@
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.221s
+
+OK

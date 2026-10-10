@@ -1,0 +1,219 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "contract_digest": "808a76b3c091bb7970e012ca702441392fd739339e22ff42540cabb55ec8901c",
+  "review_digest": "f37e95aeceb543665048cfc0aa9e047f433699215089b8be655eb6091c16bf13",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "work_id": "structured-agentic-environment",
+    "reviewer": "/root/review_wb001",
+    "recorded_by": "codex-coordinator",
+    "model": "gpt-6-astra",
+    "runtime": "codex",
+    "parent_model": "gpt-6-luna",
+    "scope": "task",
+    "task_id": "WB-003",
+    "candidate_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+    "base_sha": "55c11fad3e0391f8a47236166c8d5941d824ef73",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+    "test_ids": [
+      "WB-evidence-identity",
+      "WB-source-version",
+      "WB-evidence-states"
+    ],
+    "criterion_ids": [
+      "EM-003",
+      "EM-011",
+      "EM-012"
+    ],
+    "source_digests": {
+      "_ask/tests/test_engineering_workbench_evidence.py": "a690829ed979e6f4976f83300337822d682d363573adc89ef88f759f40d47414"
+    },
+    "inspected_sources": [
+      "_ask/scripts/engineering_model/workbench_evidence.py",
+      "_ask/scripts/engineering_model/workbench_sources.py",
+      "_ask/tests/test_engineering_workbench_evidence.py",
+      "_ask/tests/test_engineering_workbench_sources.py"
+    ],
+    "changed_cases": [
+      "WB-evidence-identity",
+      "WB-evidence-states",
+      "WB-inventory",
+      "WB-snapshot",
+      "WB-source-errors",
+      "WB-source-version"
+    ],
+    "inventory_exclusions": {},
+    "decision": "APPROVED",
+    "boundary": "ok",
+    "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-003.json",
+    "task_result_sha256": "28f6afa38d8ef06ca50d49cf6d9f7bc76fa91a0ec7050956fd6adf2707280784",
+    "criteria": [
+      {
+        "id": "EM-003",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned evidence projection reads retained outcomes without promoting them to completion. Report/ledger/run/contract identities and case/execution source identity are checked, retained log and source digests are verified, contradictory candidate attribution is rejected, and older production candidates stay historical. Independent runtime-error and changed-contract probes preserve raw meaning and do not write evidence or refs.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Identity assertions filter foreign work/contract/test records and reject a digest-consistent report whose candidate differs from the execution source. They explicitly preserve completion=not_evaluated."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The real temporary Git/evidence fixture observes failed and skipped outcomes, rejects modified log bytes on a second read, distinguishes stale source from historical unchanged-test runs, explicitly reports absent timing and rejects an external work-directory symlink."
+          }
+        }
+      },
+      {
+        "id": "EM-011",
+        "coverage_decision": "APPROVED",
+        "assessment": "For this task slice, qualified class/method source comes from the selected immutable Git revision and never falls back to another revision. Evidence rows preserve exact work/test/run/contract/source identities, actual outcomes, output availability and source currency. Missing source and timing remain explicit; UI highlighting and collapsed identifiers belong to later assigned renderers.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Two classes with the same method name discriminate full qualified selection at two revisions, including positive historical/current source assertions and unavailable/unsafe revision cases. The identity test now rejects inconsistent report versus source commits."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Production-only changes with unchanged test bytes now yield historical source/applicability, while changed test bytes yield stale. Tampered logs become invalid after refresh; missing ledger/timing and skipped outcomes stay distinct. An independent runtime-error probe also preserves that raw outcome."
+          }
+        }
+      },
+      {
+        "id": "EM-012",
+        "coverage_decision": "APPROVED",
+        "assessment": "The WB-003 contribution to the refresh requirement rereads retained inputs on every inspection; an earlier valid output cannot survive changed log bytes. Source and candidate checks use current supplied inputs, and symlink confinement precedes external reads. Browser accessibility, loading budgets and UI cache integration remain later task obligations.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The assigned test reads a valid failure, mutates its log, and reopens detail to assert invalid output, then adds a new skipped run and reads the refreshed ledger. Independent symlink probes reject external evidence at seven path levels with zero external reads."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "WB-evidence-identity",
+        "decision": "APPROVED",
+        "assertion_assessment": "The assertions bind selected work/test/qualified selector/run/contract and preserve actual passed outcome independently of completion=not_evaluated. A new digest-consistent contradictory-source report is explicitly rejected as invalid, while foreign work/contract and another test ID do not attach. Independent execution of the exact candidate reproduces this rejection.",
+        "counterexample": "Keep ledger/report/log/source digests internally consistent but set report and ledger candidate to the newer commit while case and execution source use the older commit. The new output_status=invalid and candidate diagnostic assertions fail against the rejected implementation and pass at this candidate.",
+        "tdd_continuity_assessment": "Remediation red 111e0f24d5e448c387cd1558b864b18e at 1b7475403617b81c245fc6633a5134a3961f7442 collected all three cases and fails this case by behavior_assertion: valid != invalid. Final green 799924ec199b4717a3eabf4fb39a1bdc passes at 70dd295aacff869857081a94870d02fcbf4d640c with identical mapped test-file bytes. Original red 7bb07cdc57204777919381371c0f2324 also establishes the initial behavior. Verified report/ledger/log/source bindings; no exemption."
+      },
+      {
+        "id": "WB-source-version",
+        "decision": "APPROVED",
+        "assertion_assessment": "Two classes with identically named methods discriminate full qualified class/method selection. Historical/current queries return the correct revision bytes and identities, exclude the other class, and explicitly explain missing or unsafe source without substituting current bytes. The exact-candidate test passes independently.",
+        "counterexample": "A first-method-by-name implementation returns First.test_same when Second.test_same is requested and fails the negative first-v1 assertion. Reading current bytes for a historical revision fails second-v1 and selected-source identity assertions.",
+        "tdd_continuity_assessment": "Original accepted red 7bb07cdc57204777919381371c0f2324 at 754520d49298ba3608502527225e6ed1aa6255e6 fails this case by behavior_assertion. The complete qualified-source test method AST is unchanged through the remediation candidate; new fixture assertions modify the other methods. The remediation red passes this already implemented case, and final green 799924ec199b4717a3eabf4fb39a1bdc passes it at the exact candidate. Source/log/report digests checked; no exemption."
+      },
+      {
+        "id": "WB-evidence-states",
+        "decision": "APPROVED",
+        "assertion_assessment": "The integration fixture asserts missing-ledger unavailability, genuine failed log output, later log-tampering invalidation, refreshed skipped outcome and stale changed-test source. New assertions jointly require historical status after a production-only commit, explicit unavailable timing and rejection of external work-directory evidence. Independent probes also preserve runtime_error, filter a changed contract, confirm zero external reads at all seven evidence path levels, and confirm unchanged repository files/refs after inspection.",
+        "counterexample": "Record a valid run, commit only production src/app.py and inspect the new candidate with unchanged test bytes: marking that prior run current fails the historical assertions. Copy valid retained evidence outside the repository and symlink work/w to it: accepting its rows fails invalid/empty-runs assertions. Appending forged bytes to a previously valid log independently fails the repeated-read digest assertion.",
+        "tdd_continuity_assessment": "Remediation red 111e0f24d5e448c387cd1558b864b18e collects this case and fails by behavior_assertion in the combined historical/timing/external-root tuple. Both historical and external-root queries execute before the assertion; it is a behavioral failure, not collection/setup failure. Final green 799924ec199b4717a3eabf4fb39a1bdc passes all three mapped cases at the exact candidate with identical red/green test-file bytes. Original red 7bb07cdc57204777919381371c0f2324 establishes the initial case behavior. No exemption."
+      }
+    ],
+    "findings": [],
+    "limitations": [
+      "Task scope only: raw retained execution integrity does not assert verification-history adequacy, evaluator approval or workstream completion; completion remains not_evaluated.",
+      "Accepted-pin inventory includes inherited WB-002 paths/cases; they are enumerated for exact inventory binding and their prior review is not replaced. Only the two WB-003 owned source paths are in the current task diff.",
+      "Coordinator state, implementation sources, evidence recording and integration were not changed. recorded_by identifies the intended recording coordinator only."
+    ],
+    "task_base_sha": "b9644b94da99dc6752a5f5a01cdd59e3e19d74a6",
+    "execution_evidence": {
+      "7bb07cdc57204777919381371c0f2324": {
+        "candidate_sha": "754520d49298ba3608502527225e6ed1aa6255e6",
+        "phase": "red",
+        "canonical_report_digest": "245ce043517f95c4c08b3cd1cd7dd6c23e73d6e1dbfaa3ce09d285596404a29a",
+        "report_file_sha256": "72429a9a4300b83cc441c1dfad04f81d49226bf18a8f7e98d6b41a3d82b13342",
+        "outcomes": {
+          "WB-evidence-states": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          },
+          "WB-source-version": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          },
+          "WB-evidence-identity": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          }
+        },
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/7bb07cdc57204777919381371c0f2324/f370f5722316424b91ef59bb8ab7e4d3.log",
+        "output_digest": "e5b9c992898d2af370f1c1bf1466f63357cf6abb09beddfeb81d98dc02a008ec"
+      },
+      "111e0f24d5e448c387cd1558b864b18e": {
+        "candidate_sha": "1b7475403617b81c245fc6633a5134a3961f7442",
+        "phase": "red",
+        "canonical_report_digest": "96acb23195c930172610c5d8a4c0e3317b9e695e77904785c44c1fd6c214b54d",
+        "report_file_sha256": "398634068bd5e270b7489a40b1244eeacd14d3f6cc1b10733d951f94897f2991",
+        "outcomes": {
+          "WB-evidence-states": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          },
+          "WB-source-version": {
+            "outcome": "passed",
+            "failure_kind": null
+          },
+          "WB-evidence-identity": {
+            "outcome": "failed",
+            "failure_kind": "behavior_assertion"
+          }
+        },
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/111e0f24d5e448c387cd1558b864b18e/b8abca1e67724001ba3b41e481241b86.log",
+        "output_digest": "e9d3004668d28bcaeb5068c60f4360b2e647e90f8ff26b65421af6ee949cfcd9"
+      },
+      "799924ec199b4717a3eabf4fb39a1bdc": {
+        "candidate_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+        "phase": "final_green",
+        "canonical_report_digest": "989d3a54624870f55d284e5396161683380b8661dcd08146df503450a5ebaf67",
+        "report_file_sha256": "39644fe7bb9d164a969341b47db4963d42b353aaa18f2b424533291b07f13593",
+        "outcomes": {
+          "WB-evidence-states": {
+            "outcome": "passed",
+            "failure_kind": null
+          },
+          "WB-source-version": {
+            "outcome": "passed",
+            "failure_kind": null
+          },
+          "WB-evidence-identity": {
+            "outcome": "passed",
+            "failure_kind": null
+          }
+        },
+        "output_artifact": "work/structured-agentic-environment/traceability/runs/799924ec199b4717a3eabf4fb39a1bdc/607486c098a04c849ea462b3aae88e1f.log",
+        "output_digest": "020e0797771061f5c2c8244fc7853c7b3e41e93d5d44b81f3b193d68815b9ff9"
+      }
+    },
+    "resolved_findings": [
+      {
+        "id": "R1",
+        "path": "_ask/scripts/engineering_model/workbench_evidence.py",
+        "line": 240,
+        "assessment": "Case source must equal report candidate in addition to existing case/execution and report/ledger equality; independent contradictory-source fixture returns invalid with candidate diagnostic."
+      },
+      {
+        "id": "R2",
+        "path": "_ask/scripts/engineering_model/workbench_evidence.py",
+        "line": 282,
+        "assessment": "Report candidate is compared with the selected resolved candidate before current classification; an independently generated production-only commit yields historical/historical despite identical tests."
+      },
+      {
+        "id": "R3",
+        "path": "_ask/scripts/engineering_model/workbench_evidence.py",
+        "line": 30,
+        "assessment": "Every evidence path component is checked for symlinks before ledger/report/log content reads. Seven independent external-symlink fixtures at work, work ID, traceability, ledger, run directory, report and log all perform zero external content reads and never return valid output."
+      }
+    ]
+  },
+  "candidate_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+  "scope": "task",
+  "task_id": "WB-003"
+}

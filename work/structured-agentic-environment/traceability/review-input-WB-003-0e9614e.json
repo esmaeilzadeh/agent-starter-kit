@@ -1,0 +1,141 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "structured-agentic-environment",
+  "reviewer": "/root/review_wb001",
+  "recorded_by": "codex-coordinator",
+  "model": "gpt-6-astra",
+  "runtime": "codex",
+  "parent_model": "gpt-6-luna",
+  "scope": "task",
+  "task_id": "WB-003",
+  "candidate_sha": "0e9614eb6d364f5541ffbe2b48d69347518eeb6f",
+  "base_sha": "55c11fad3e0391f8a47236166c8d5941d824ef73",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "test_ids": [
+    "WB-evidence-identity",
+    "WB-source-version",
+    "WB-evidence-states"
+  ],
+  "criterion_ids": [
+    "EM-003",
+    "EM-011",
+    "EM-012"
+  ],
+  "source_digests": {
+    "_ask/tests/test_engineering_workbench_evidence.py": "c513dc60c7ba6f8df49ff07f80761dd361f912051d96b70bfaacd78b56a7e7e1"
+  },
+  "inspected_sources": [
+    "_ask/scripts/engineering_model/workbench_evidence.py",
+    "_ask/scripts/engineering_model/workbench_sources.py",
+    "_ask/tests/test_engineering_workbench_evidence.py",
+    "_ask/tests/test_engineering_workbench_sources.py"
+  ],
+  "changed_cases": [
+    "WB-evidence-identity",
+    "WB-evidence-states",
+    "WB-inventory",
+    "WB-snapshot",
+    "WB-source-errors",
+    "WB-source-version"
+  ],
+  "inventory_exclusions": {},
+  "decision": "REJECTED",
+  "boundary": "ok",
+  "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-003.json",
+  "task_result_sha256": "e30de56e49eb77cd919c7ea1e525c2bb4880feace23e7b97b32509fc0c0b37ac",
+  "criteria": [
+    {
+      "id": "EM-003",
+      "coverage_decision": "REJECTED",
+      "assessment": "The task preserves raw outcomes and never claims completion, but the retained-result adapter accepts inconsistent report/source commit identities, marks historical executions current when test bytes match, and permits evidence reads outside the repository through an ancestor work-directory symlink. These reproduced gaps prevent adequate integrity/applicability coverage for the assigned task slice.",
+      "type_adequacy": {
+        "unit": {
+          "decision": "REJECTED",
+          "assessment": "Qualified-source class/method extraction passes its representative selector tests, but the assigned identity fixture omits report candidate versus execution-source mismatch."
+        },
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The log tampering and stale-test fixture is useful but omits historical run with unchanged tests, source/report identity mismatch and unsafe ancestor evidence directories."
+        }
+      }
+    },
+    {
+      "id": "EM-011",
+      "coverage_decision": "REJECTED",
+      "assessment": "The task preserves raw outcomes and never claims completion, but the retained-result adapter accepts inconsistent report/source commit identities, marks historical executions current when test bytes match, and permits evidence reads outside the repository through an ancestor work-directory symlink. These reproduced gaps prevent adequate integrity/applicability coverage for the assigned task slice.",
+      "type_adequacy": {
+        "unit": {
+          "decision": "REJECTED",
+          "assessment": "Qualified-source class/method extraction passes its representative selector tests, but the assigned identity fixture omits report candidate versus execution-source mismatch."
+        },
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The log tampering and stale-test fixture is useful but omits historical run with unchanged tests, source/report identity mismatch and unsafe ancestor evidence directories."
+        }
+      }
+    },
+    {
+      "id": "EM-012",
+      "coverage_decision": "REJECTED",
+      "assessment": "The task preserves raw outcomes and never claims completion, but the retained-result adapter accepts inconsistent report/source commit identities, marks historical executions current when test bytes match, and permits evidence reads outside the repository through an ancestor work-directory symlink. These reproduced gaps prevent adequate integrity/applicability coverage for the assigned task slice.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The log tampering and stale-test fixture is useful but omits historical run with unchanged tests, source/report identity mismatch and unsafe ancestor evidence directories."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "WB-evidence-identity",
+      "decision": "REJECTED",
+      "assertion_assessment": "Work/test/runner/selector/run/contract matching and completion=not_evaluated are asserted, including filtering a foreign work/contract and another test ID. The test omits the required report candidate to execution/source identity binding; a report at one candidate with case+execution source_sha at another still yields output_status=valid.",
+      "counterexample": "Call the fixture report builder with candidate_sha=current and source_sha=older, retain matching report/ledger/log/source digests, and inspect the current candidate. The row claims current report candidate and older execution source but output_status=valid with no diagnostic. Those identities must agree before detail is accepted.",
+      "tdd_continuity_assessment": "Valid run 7bb07cdc57204777919381371c0f2324 at 754520d49298ba3608502527225e6ed1aa6255e6 fails by behavior_assertion. Final run bb7f280329f0405789f6080d159ef37b passes at the exact candidate; mapped test bytes are identical. Valid continuity does not cover the missing mismatch counterexample. No exemption."
+    },
+    {
+      "id": "WB-source-version",
+      "decision": "APPROVED",
+      "assertion_assessment": "Two classes with identically named methods discriminate full class/method selection. Historical and current selected revisions return different correct source bytes, preserve both identities and explain unavailable revisions or unsafe traversal without falling back to current source.",
+      "counterexample": "Selecting the first method by name alone would return First.test_same instead of Second.test_same and fail the negative first-v1 assertion; using current source for the historical revision would fail second-v1/source_sha assertions.",
+      "tdd_continuity_assessment": "Valid red 7bb07cdc57204777919381371c0f2324 fails historical source availability; final bb7f280329f0405789f6080d159ef37b passes current/historical selector assertions at the exact candidate with unchanged mapped test bytes. No exemption."
+    },
+    {
+      "id": "WB-evidence-states",
+      "decision": "REJECTED",
+      "assertion_assessment": "The fixture asserts missing-ledger unavailability, retained failure output, log-digest tampering rejection, refreshed skip outcome and stale test-source bytes. It does not discriminate historical executions with unchanged tests, nor ancestor symlinks in the evidence root. Missing timing status fields are implemented but not explicitly asserted.",
+      "counterexample": "Record a run, then commit only production src/app.py and inspect the new HEAD: older outcome receives applicability=current because test bytes match. Separately, move work/w to an external temporary directory and replace it with a symlink: external ledger/report/log data still returns available and output_status=valid.",
+      "tdd_continuity_assessment": "Valid red 7bb07cdc57204777919381371c0f2324 fails this behavior assertion; final bb7f280329f0405789f6080d159ef37b passes with identical mapped test bytes. The red/green outcome does not establish the omitted historical/confinement counterexamples. No exemption."
+    }
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "path": "_ask/scripts/engineering_model/workbench_evidence.py",
+      "line": 209,
+      "assessment": "Bind report/ledger candidate, execution source and case source to the same resolved immutable commit; checking only execution==case and report==ledger permits contradictory attribution."
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "path": "_ask/scripts/engineering_model/workbench_evidence.py",
+      "line": 248,
+      "assessment": "Do not derive execution applicability solely from test-source equality and the requested candidate versus HEAD. An older run remains historical relative to a newer production candidate even if test files are byte-identical."
+    },
+    {
+      "id": "R3",
+      "severity": "medium",
+      "path": "_ask/scripts/engineering_model/workbench_evidence.py",
+      "line": 132,
+      "assessment": "Confine all ancestor evidence paths to the supplied repository root before reading ledger/report/log. Comparing runtime.resolve against an already resolved external work root admits an external work-directory symlink."
+    }
+  ],
+  "limitations": [
+    "The adapter explicitly leaves completion not_evaluated; this review does not convert raw log/source integrity into evaluator approval or workstream completion.",
+    "The computed accepted-pin inventory also contains inherited WB-002 sources/cases already independently reviewed; the current writer diff is only the two WB-003 paths.",
+    "No source edits, coordinator recording or integration were performed."
+  ]
+}

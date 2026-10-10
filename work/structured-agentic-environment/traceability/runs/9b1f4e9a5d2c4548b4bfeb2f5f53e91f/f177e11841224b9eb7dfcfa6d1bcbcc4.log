@@ -1,0 +1,16 @@
+test_attention_links_blockers_decisions_and_evidence (test_engineering_workbench_attention.WorkbenchTests) ... FAIL
+test_reasoned_choice_persists_and_read_only_rejects (test_engineering_workbench_attention.WorkbenchTests) ... 2026-10-10 06:21:13.876 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+======================================================================
+FAIL: test_attention_links_blockers_decisions_and_evidence (test_engineering_workbench_attention.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-phom0s0g/candidate/_ask/tests/test_engineering_workbench_attention.py", line 29, in test_attention_links_blockers_decisions_and_evidence
+    self.assertIn("Missing attention record", rows[0]["title"])
+AssertionError: 'Missing attention record' not found in 'Choose'
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.234s
+
+FAILED (failures=1)
