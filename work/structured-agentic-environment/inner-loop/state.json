@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "structured-agentic-environment",
-  "revision": 17,
+  "revision": 18,
   "coordinator_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
   "coordinator_branch": "agent/structured-agentic-environment",
   "tasks": {
@@ -1580,10 +1580,10 @@
     "WB-005": {
       "status": "running",
       "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
-      "task_branch": "wb005/candidate-2da7789",
+      "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
-      "review_round": 0,
+      "review_round": 1,
       "debug_round": 0,
       "evidence": {
         "review": {
