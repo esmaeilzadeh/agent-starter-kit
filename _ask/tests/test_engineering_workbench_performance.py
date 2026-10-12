@@ -124,6 +124,13 @@ render_test(%r, %r, detail=%r)
         snapshot, diagnostics = admit(root, "w")
         self.assertEqual(diagnostics, [], diagnostics)
         projection = project(snapshot, root, include_evidence=False)
+        current_candidate = consumer.git("rev-parse", "HEAD")
+        current_run = consumer.command("traceability", "run", "w", "--scope", "workstream",
+                                      "--phase", "final_green", "--candidate-sha", current_candidate)
+        self.assertEqual(current_run.returncode, 0, current_run.stdout + current_run.stderr)
+        current_report = json.loads(current_run.stdout)
+        current_green = next(case for case in current_report["cases"]
+                             if case.get("test_id") == "U" and case.get("phase") == "final_green")
         tests = {item["id"]: item for item in projection.get("workbench", {}).get("tests", [])}
         self.assertIn("U", tests, "selected test metadata comes from the admitted projection")
         test = tests["U"]
@@ -156,11 +163,20 @@ render_test(%r, %r, detail=%r)
             source_path.write_bytes(source_before.replace(assertion, source_marker + assertion, 1))
             working_detail = workbench_loading.load_selected_detail(
                 root, snapshot, test, node_id="case", source_context=context,
-                candidate_sha=historical, cache=cache)
+                candidate_sha=current_candidate, cache=cache)
             require(working_detail["source"].get("status") == "working-tree",
                     "working-tree selection silently switches to a Git revision source")
             require("working-tree-only-marker" in working_detail["source"].get("source", ""),
                     "selected working-tree source omits exact uncommitted bytes")
+            selected_green = next(run for run in working_detail["execution_history"].get("runs", [])
+                                  if run.get("output_artifact") == current_green.get("output_artifact"))
+            self.assertEqual(selected_green["source_status"], "current",
+                             "fresh evidence must be current for the pinned Git candidate")
+            rendered_current = self._render_test_text(projection, "U", working_detail)
+            require("Git candidate currency: current" in rendered_current,
+                    "recorded evidence does not state its currency against the selected Git candidate")
+            require("Working source applicability: differs from selected source" in rendered_current,
+                    "current Git evidence is incorrectly applicable to different working-tree test bytes")
         finally:
             source_path.write_bytes(source_before)
 
