@@ -106,38 +106,53 @@ def _working_source(root: Path, test: dict) -> dict:
     return result
 
 
-def _source_file_digest(root: Path, test: dict, revision: str | None = None) -> str | None:
-    """Hash the exact declared source file from the working tree or one Git commit."""
+def _accepted_source_digests(root: Path, test: dict,
+                             revision: str | None = None) -> dict[str, str] | None:
+    """Hash every declared source file, requiring confined regular files/blobs."""
     selector = test.get("case_id") if isinstance(test, dict) else None
     paths = test.get("source_paths") if isinstance(test, dict) else None
-    if not isinstance(selector, str) or not isinstance(paths, list):
+    if not isinstance(selector, str) or not isinstance(paths, list) or not paths:
         return None
-    module = selector.split(".", 1)[0]
-    candidates = [path for path in paths if _safe_relative(path)
-                  and PurePosixPath(path).stem == module]
-    if not candidates and len(paths) == 1 and _safe_relative(paths[0]):
-        candidates = list(paths)
-    if len(candidates) != 1:
+    if any(not _safe_relative(path) for path in paths) or len(paths) != len(set(paths)):
         return None
+    results = {}
     if revision is None:
-        path = _confined_file(root, candidates[0])
-        if path is None:
-            return None
-        try:
-            return _sha(path.read_bytes()) if path.is_file() else None
-        except OSError:
-            return None
+        for relative in paths:
+            path = _confined_file(root, relative)
+            if path is None:
+                return None
+            try:
+                if not path.is_file():
+                    return None
+                results[relative] = _sha(path.read_bytes())
+            except OSError:
+                return None
+        return results
     try:
         checked = subprocess.run(["git", "rev-parse", "--verify", f"{revision}^{{commit}}"],
                                  cwd=root, capture_output=True, timeout=3, check=False)
         if checked.returncode:
             return None
         commit = checked.stdout.decode("ascii").strip()
-        blob = subprocess.run(["git", "cat-file", "blob", f"{commit}:{candidates[0]}"],
-                             cwd=root, capture_output=True, timeout=3, check=False)
-        if blob.returncode:
-            return None
-        return _sha(blob.stdout)
+        for relative in paths:
+            listing = subprocess.run(["git", "ls-tree", "-z", commit, "--", relative],
+                                     cwd=root, capture_output=True, timeout=3, check=False)
+            if listing.returncode:
+                return None
+            entries = [item for item in listing.stdout.split(b"\0") if item]
+            if len(entries) != 1 or b"\t" not in entries[0]:
+                return None
+            metadata, listed_path = entries[0].split(b"\t", 1)
+            fields = metadata.split()
+            if (listed_path.decode("utf-8", "strict") != relative or len(fields) != 3
+                    or fields[0] not in {b"100644", b"100755"} or fields[1] != b"blob"):
+                return None
+            blob = subprocess.run(["git", "cat-file", "blob", fields[2].decode("ascii")],
+                                  cwd=root, capture_output=True, timeout=3, check=False)
+            if blob.returncode:
+                return None
+            results[relative] = _sha(blob.stdout)
+        return results
     except (OSError, UnicodeError, subprocess.TimeoutExpired):
         return None
 
@@ -241,11 +256,25 @@ def _historical_contract_evidence(root: Path, work_id: str, test: dict,
     for candidate in candidates:
         try:
             inspected = inspect_workstream_evidence(root, work_id, candidate)
-        except (OSError, ValueError, KeyError, TypeError):
-            continue
-        if inspected.get("status") != "historical":
-            continue
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            inspected = {"status": "unavailable", "diagnostic": str(exc), "scenarios": []}
         completion = inspected.get("completion", {})
+        record = records.setdefault(candidate, {
+            "candidate_sha": candidate,
+            "inspection_status": inspected.get("status", "unavailable"),
+            "inspection_diagnostic": inspected.get("diagnostic"),
+            "criterion_id": "unavailable",
+            "spec_digest": completion.get("input_digests", {}).get("spec", "unavailable"),
+            "plan_digest": completion.get("input_digests", {}).get("plan", "unavailable"),
+            "identity_status": "not_checked",
+            "executions": [],
+        })
+        if inspected.get("status") != "historical":
+            if not record.get("inspection_diagnostic"):
+                errors = completion.get("errors") if isinstance(completion, dict) else None
+                record["inspection_diagnostic"] = "; ".join(map(str, errors)) if errors else None
+            continue
+        record["identity_status"] = "no_match"
         for scenario in inspected.get("scenarios", []):
             evidence = scenario.get("evidence") or {}
             matching_plan_tests = [planned for planned in scenario.get("tests", [])
@@ -254,17 +283,12 @@ def _historical_contract_evidence(root: Path, work_id: str, test: dict,
                                    and planned.get("runner_id") == test.get("runner_id")]
             if len(matching_plan_tests) != 1:
                 continue
+            record["identity_status"] = "matched"
+            record["criterion_id"] = scenario.get("criterion_id", "unavailable")
             for historical_test in evidence.get("tests", []):
                 if (historical_test.get("test_id") != test.get("id")
                         or historical_test.get("case_id") != test.get("case_id")):
                     continue
-                record = records.setdefault(candidate, {
-                    "candidate_sha": candidate,
-                    "criterion_id": scenario.get("criterion_id", "unavailable"),
-                    "spec_digest": completion.get("input_digests", {}).get("spec", "unavailable"),
-                    "plan_digest": completion.get("input_digests", {}).get("plan", "unavailable"),
-                    "executions": [],
-                })
                 for phase, key in (("red", "red"), ("final_green", "final_execution")):
                     outcomes = historical_test.get(key, []) if key == "red" else [historical_test.get(key)]
                     for outcome in outcomes:
@@ -363,14 +387,14 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     # Backend source currency is evaluated against the selected Git candidate.
     # Keep that verdict separate from whether the retained source bytes match
     # the exact test method currently shown in this detail panel.
-    selected_source_digest = _source_file_digest(
+    selected_source_digests = _accepted_source_digests(
         root, test, str(selected_candidate) if context_kind == "git-commit" and selected_candidate else None)
     for run in history.get("runs", []):
         applicability = "unavailable"
         retained_sha = run.get("source_sha") if isinstance(run, dict) else None
-        retained_source_digest = _source_file_digest(root, test, retained_sha) if retained_sha else None
-        if selected_source_digest and retained_source_digest:
-            applicability = ("matches selected source" if retained_source_digest == selected_source_digest
+        retained_source_digests = _accepted_source_digests(root, test, retained_sha) if retained_sha else None
+        if selected_source_digests and retained_source_digests:
+            applicability = ("matches selected source" if retained_source_digests == selected_source_digests
                              else "differs from selected source")
         if isinstance(run, dict):
             run["working_source_applicability"] = applicability

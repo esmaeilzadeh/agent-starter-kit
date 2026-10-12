@@ -143,9 +143,19 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
         historical_contracts = st.session_state.get(inspected_key)
         if historical_contracts is None:
             st.caption("No candidate has been inspected for this selected work, source and test.")
-        elif not historical_contracts:
-            st.info("This retained candidate has no outcome matching the exact selected test identity.")
         for index, record in enumerate(historical_contracts or []):
+            inspection_status = str(record.get("inspection_status", "unavailable"))
+            if inspection_status != "historical":
+                st.error(f"Historical candidate inspection: {inspection_status}")
+                if record.get("inspection_diagnostic"):
+                    st.caption("Inspection diagnostic: " + str(record["inspection_diagnostic"]))
+                continue
+            if record.get("identity_status") == "no_match":
+                st.info("No retained historical contract matches this exact selected test identity.")
+                continue
+            if not record.get("executions"):
+                st.info("The historical contract matches this test, but it has no retained execution outcomes.")
+                continue
             st.caption(f"Historical candidate: {record.get('candidate_sha', 'unavailable')} · "
                        f"Criterion: {record.get('criterion_id', 'unavailable')}")
             st.caption("Historical contract: spec " + str(record.get("spec_digest", "unavailable")) +

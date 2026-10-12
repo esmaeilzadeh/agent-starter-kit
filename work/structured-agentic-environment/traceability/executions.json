@@ -1328,5 +1328,15 @@
     "candidate_sha": "667771a06dfe3d33b9347ea33bf593d6a60be153",
     "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
     "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
+  },
+  {
+    "run_id": "908d298791f84fdf946a24d6317b815f",
+    "digest": "069fc341409819c07d965f4f36a6eb5f8064425de8281246f567f23d21b9c3dc",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "WB-009",
+    "candidate_sha": "548dcbd2ff0074a484b2aeeb4b8b202d9d5f3fa5",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
   }
 ]
