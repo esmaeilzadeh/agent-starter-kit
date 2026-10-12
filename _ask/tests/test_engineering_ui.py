@@ -57,22 +57,14 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertEqual(len(app.json), 0)
             open_route(app, "result:U", timeout=20)
             self.assertFalse(app.exception, app.exception)
-            self.assertIn("U", text(app))
-            self.assertIn("Evidence candidate", text(app))
-            required_widget(app.text_input, lambda item: item.key == "candidate_sha",
-                            "evidence candidate").input(current_sha)
-            required_widget(app.button, lambda item: item.key == "inspect_candidate",
-                            "inspect evidence candidate").click().run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            self.assertIn("unavailable evidence", text(app))
-            self.assertNotIn(current_sha, text(app))
-            required_widget(app.text_input, lambda item: item.key == "candidate_sha",
-                            "evidence candidate").input(historical_sha)
-            required_widget(app.button, lambda item: item.key == "inspect_candidate",
-                            "inspect evidence candidate").click().run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            self.assertIn("(historical)", text(app))
-            self.assertNotIn(historical_sha, text(app))
+            rendered = text(app)
+            self.assertIn("Selected test: U", rendered)
+            self.assertIn("Exact HELLO output", rendered)
+            self.assertIn("Current evidence is unavailable", rendered)
+            self.assertIn("Historical evidence", rendered)
+            self.assertIn("passed", rendered.casefold())
+            self.assertNotIn(current_sha, rendered)
+            self.assertNotIn(historical_sha, rendered)
             self.assertEqual(len(app.json), 0)
 
     def test_planned_test_shows_its_source_in_the_detail_panel(self):
@@ -146,7 +138,7 @@ class UiIntegrationTests(unittest.TestCase):
             original_expander = st.expander
 
             def expand_debug(*args, **kwargs):
-                if str(kwargs.get("key", "")).startswith("debug-trace:"):
+                if "Technical details and identifiers" in str(args[:1]):
                     kwargs["expanded"] = True
                 return original_expander(*args, **kwargs)
 
@@ -156,18 +148,14 @@ class UiIntegrationTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 inspect.assert_not_called()
-                self.assertIn("Results are not loaded", text(app))
+                self.assertIn("Purpose", text(app))
                 open_route(app, "result:CASE-1")
-                self.assertFalse(app.exception, app.exception)
-                self.assertIn("Load test results", text(app))
-                required_widget(app.button, lambda item: item.key == "test_load_results",
-                                "load selected test results").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
                 inspect.assert_called_once()
                 rendered = text(app)
                 self.assertIn("Passed", rendered)
-                self.assertIn("Commit SHA identifies a Git revision", rendered)
-                self.assertIn("Snapshot digest fingerprints the admitted model and referenced inputs", rendered)
+                self.assertIn("Snapshot digest", rendered)
+                self.assertIn("Git revision", rendered)
                 self.assertIn("git show", rendered)
                 self.assertIn("./ask model show", rendered)
                 self.assertIn("./ask traceability check-completion", rendered)
@@ -197,10 +185,10 @@ class UiIntegrationTests(unittest.TestCase):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 open_route(app, "result:CASE-1")
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("Load test results", text(app))
-                required_widget(app.button, lambda item: item.key == "test_load_results",
-                                "load selected test results").click().run(timeout=15)
-                self.assertFalse(app.exception, app.exception)
+                self.assertIn("Selected test: CASE-1", text(app))
+                expanders = [str(item.label) for item in app.expander]
+                self.assertEqual(len(expanders), len(set(expanders)),
+                                 "selected nested detail controls remain uniquely labeled")
                 self.assertTrue(any("migration_required" in str(item.value) for item in app.warning))
                 self.assertFalse(any("migration_required" in str(item.value) for item in app.error))
 
@@ -276,9 +264,7 @@ class UiIntegrationTests(unittest.TestCase):
                     self.assertFalse(initial.exception, initial.exception)
                 open_route(app, "result:CASE-1")
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("Load test results", text(app))
-                app.button(key="test_load_results").click().run(timeout=15)
-                self.assertFalse(app.exception, app.exception)
+                self.assertIn("Selected test: CASE-1", text(app))
                 rendered = text(app) + "\n" + "\n".join(str(item.value) for item in app.json)
                 self.assertIn("Git evidence inspection is unavailable", rendered)
                 self.assertNotIn("fatal: not a git repository", rendered)

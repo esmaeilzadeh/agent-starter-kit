@@ -18,10 +18,72 @@ import time
 from importlib.metadata import version, PackageNotFoundError
 from urllib.error import URLError
 from urllib.request import urlopen
+import yaml
 
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "_ask/scripts"))
+
+from engineering_model.projection import project
+from engineering_model.snapshot import Snapshot
+from workbench_navigation import build_outline
+
+
+def _key_class(key: str) -> str:
+    import re
+    return "st-key-" + re.sub(r"[^A-Za-z0-9_-]", "-", key)
+
+
+def structural_workload(task_count: int) -> dict:
+    """Exercise projection and outline construction against a deterministic graph size."""
+    work_id = f"scale-{task_count}"
+    spec = {"schema": "ask-spec/v1", "work_id": work_id, "revision": 1,
+            "criteria": [{"id": "C1", "given": "Input", "when": "Rendered", "then": ["Output"],
+                          "verification_mode": "tests"}]}
+    plan = {"schema": "ask-test-plan/v1", "work_id": work_id,
+            "task_scopes": [], "tests": []}
+    model = {"schema": "ask-engineering-model/v1", "work_id": work_id, "revision": 1,
+             "nodes": [{"id": "purpose", "type": "intent", "title": "Scale fixture", "lifecycle": "active"},
+                       {"id": "scenario", "type": "scenario", "title": "Shared behavior", "lifecycle": "active",
+                        "reference": {"path": f"specs/current/{work_id}.json", "id": "C1"}}],
+             "edges": [{"type": "contains", "source": "purpose", "target": "scenario"}]}
+    graph_lines = ["schema: ask-inner-loop-tasks/v1", f"work_id: {work_id}", "tasks:"]
+    for index in range(task_count):
+        task_id, test_id = f"task-{index:04d}", f"TEST-{index:04d}"
+        graph_lines.extend((f"  - id: {task_id}", f"    title: Task {index:04d}",
+                            "    outcome: Inspect scoped behavior", "    depends_on: []",
+                            f"    owned_paths: [src/module-{index:04d}.py]"))
+        plan["task_scopes"].append({"task_id": task_id, "test_ids": [test_id]})
+        plan["tests"].append({"id": test_id, "criterion_ids": ["C1"], "type": "unit",
+                              "case_id": f"test_scale.Cases.test_{index:04d}",
+                              "source_paths": ["test_scale.py"]})
+    docs = {
+        f"work/{work_id}/engineering-model.json": json.dumps(model, sort_keys=True).encode(),
+        f"work/{work_id}/test-plan.json": json.dumps(plan, sort_keys=True).encode(),
+        f"work/{work_id}/inner-loop/tasks.yaml": ("\n".join(graph_lines) + "\n").encode(),
+        f"specs/current/{work_id}.json": json.dumps(spec, sort_keys=True).encode(),
+        f"specs/current/{work_id}.md": b"# Structural workload\n",
+    }
+    snapshot = Snapshot(work_id, docs, {path: "present" for path in docs})
+    projection_samples, outline_samples = [], []
+    for _ in range(5):
+        started = time.perf_counter()
+        projected = project(snapshot, Path("."), include_evidence=False)
+        projection_samples.append((time.perf_counter() - started) * 1000)
+        started = time.perf_counter()
+        outline = build_outline(projected)
+        outline_samples.append((time.perf_counter() - started) * 1000)
+        assert len(projected["workbench"]["tasks"]) == task_count
+        assert len(projected["workbench"]["tests"]) == task_count
+        assert sum(entry["kind"] == "task" for entry in outline["entries"]) == task_count
+        assert sum(entry["kind"] == "test" for entry in outline["entries"]) == task_count
+    return {"task_count": task_count, "test_count": len(plan["tests"]),
+            "model_node_count": len(model["nodes"]), "graph_edge_count": len(model["edges"]),
+            "source_file_count": len({path for item in plan["tests"] for path in item["source_paths"]}),
+            "document_bytes": {path: len(raw) for path, raw in docs.items()},
+            "total_document_bytes": sum(map(len, docs.values())),
+            "projection_ms": projection_samples, "outline_ms": outline_samples}
 
 
 def digest_tree(root: Path, paths):
@@ -70,30 +132,19 @@ def await_http(process, url, timeout=20):
 
 
 def ready(page):
-    marker = page.locator("[data-workbench-ready][data-workbench-route][data-workbench-serial]")
-    try:
-        marker.wait_for(timeout=10000)
-    except Exception as exc:
-        if page.get_by_text("Engineering workbench", exact=True).count():
-            raise AssertionError("rendered workbench is missing its content-specific ready marker") from exc
-        raise
-    return page.locator("[data-workbench-ready]").get_attribute("data-workbench-serial")
+    page.get_by_role("heading", name="Engineering workbench", exact=True).wait_for(timeout=10000)
+    selected = page.locator(f'[class~="{_key_class("route:purpose")}"]').get_by_role("button")
+    selected.wait_for(timeout=10000)
+    expect(selected).to_have_attribute("kind", "primary", timeout=10000)
+    return selected
 
 
-def wait_changed(page, previous):
-    page.wait_for_function(
-        "previous => { const el = document.querySelector('[data-workbench-ready]'); "
-        "return el && el.getAttribute('data-workbench-serial') !== previous; }",
-        arg=previous, timeout=10000)
-
-
-def route_click(page, name):
-    button = page.get_by_role("button", name=name, exact=False).first
+def route_click(page, route_id):
+    button = page.locator(f'[class~="{_key_class("route:" + route_id)}"]').get_by_role("button")
     if not button.count():
-        raise AssertionError(f"required workbench route {name!r} is missing")
-    serial = ready(page)
+        raise AssertionError(f"required workbench route {route_id!r} is missing")
     button.click()
-    wait_changed(page, serial)
+    expect(button).to_have_attribute("kind", "primary", timeout=10000)
 
 
 def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
@@ -109,22 +160,50 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
         model_head = "gitless"
     model_paths = [f"work/{work_id}/engineering-model.json", f"work/{work_id}/test-plan.json"]
     model_digest, model_sizes = digest_tree(model_root, model_paths)
+    workload_paths = [*model_paths, f"work/{work_id}/inner-loop/tasks.yaml",
+                      f"specs/current/{work_id}.json", f"specs/current/{work_id}.md"]
+    workload_digest, workload_sizes = digest_tree(model_root, workload_paths)
+    model_document = json.loads((model_root / model_paths[0]).read_text(encoding="utf-8"))
+    plan_document = json.loads((model_root / model_paths[1]).read_text(encoding="utf-8"))
+    graph_path = model_root / workload_paths[2]
+    graph_document = (yaml.safe_load(graph_path.read_text(encoding="utf-8"))
+                      if graph_path.is_file() else {"tasks": []}) or {"tasks": []}
+    code_candidate_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+        capture_output=True, text=True, check=False).stdout.strip() or "unknown"
     try:
         browser_version = version("playwright")
         streamlit_version = version("streamlit")
     except PackageNotFoundError:
         browser_version = streamlit_version = "unknown"
-    data = {"code_candidate_sha": subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
-             capture_output=True, text=True, check=False).stdout.strip() or "unknown",
+    data = {"code_candidate_sha": code_candidate_sha,
             "code_source_sha256": sources, "model_root": str(model_root), "model_work_id": work_id,
             "model_git_sha": model_head, "model_input_sha256": model_digest,
             "code_file_bytes": sizes, "model_file_bytes": model_sizes,
             "environment": {"python": sys.version, "platform": platform.platform(),
-                            "playwright": browser_version, "streamlit": streamlit_version},
+                            "playwright": browser_version, "streamlit": streamlit_version,
+                            "browser_channel": os.environ.get("ASK_BROWSER_CHANNEL", "bundled-chromium")},
             "warm_ms": [], "cold_start_to_ready_ms": [], "limits_ms": {
-                "navigation": 1500, "filter": 500, "source_result": 1000, "cold": 4000}}
+                "overview": 1500, "metadata_navigation": 500, "filter": 500,
+                "source_result": 1000, "cold": 4000},
+            "workload": {"kind": "real-pilot", "code_candidate_sha": code_candidate_sha,
+                         "model_input_sha256": workload_digest,
+                         "document_bytes": workload_sizes,
+                         "total_document_bytes": sum(workload_sizes.values()),
+                         "task_count": len(graph_document.get("tasks", [])),
+                         "model_task_count": sum(node.get("type") == "task"
+                                                 for node in model_document.get("nodes", [])),
+                         "test_count": len(plan_document.get("tests", [])),
+                         "model_node_count": len(model_document.get("nodes", [])),
+                         "graph_edge_count": len(model_document.get("edges", []))},
+            "structural_workloads": [structural_workload(size) for size in (100, 1000)]}
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=True, args=["--no-sandbox"])
+        launch_options = {"headless": True, "args": ["--no-sandbox"]}
+        if os.environ.get("ASK_BROWSER_CHANNEL"):
+            launch_options["channel"] = os.environ["ASK_BROWSER_CHANNEL"]
+        elif os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE"):
+            launch_options["executable_path"] = os.environ["PLAYWRIGHT_CHROMIUM_EXECUTABLE"]
+        browser = pw.chromium.launch(**launch_options)
+        data["environment"]["browser_version"] = browser.version
         process, url, _ = start_server(model_root)
         try:
             await_http(process, url)
@@ -134,25 +213,32 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
                 started = time.perf_counter()
                 page.goto(url, wait_until="domcontentloaded")
                 ready(page)
-                navigation = (time.perf_counter() - started) * 1000
+                overview = (time.perf_counter() - started) * 1000
                 t = time.perf_counter()
-                route_click(page, "Uppercase behavior")
-                navigation = (time.perf_counter() - t) * 1000
-                route_click(page, "Build")
+                route_click(page, "scenario")
+                route_click(page, "purpose")
+                metadata_navigation = (time.perf_counter() - t) * 1000
+                t = time.perf_counter()
+                route_click(page, "build")
                 status_filter = page.get_by_label("Status filter")
                 if not status_filter.count():
                     raise AssertionError("selected task is missing its status filter")
-                before = ready(page)
                 t = time.perf_counter()
                 status_filter.click()
-                page.get_by_role("option", name="All", exact=True).click()
-                wait_changed(page, before)
+                options = [value.strip() for value in page.get_by_role("option").all_text_contents()]
+                alternative = next((value for value in options if value and value.casefold() != "all"), None)
+                if alternative is None:
+                    raise AssertionError("selected task exposes no concrete status to filter")
+                page.get_by_role("option", name=alternative, exact=True).click()
+                if alternative.casefold() not in status_filter.inner_text().casefold():
+                    raise AssertionError("task status filter did not select the requested value")
                 filter_ms = (time.perf_counter() - t) * 1000
                 t = time.perf_counter()
-                route_click(page, "Uppercase assertion")
-                route_click(page, "Result / evidence")
+                route_click(page, "test:U")
+                route_click(page, "result:U")
                 source_result = (time.perf_counter() - t) * 1000
-                data["warm_ms"].append({"sample": index, "navigation": navigation,
+                data["warm_ms"].append({"sample": index, "overview": overview,
+                                        "metadata_navigation": metadata_navigation,
                                         "filter": filter_ms, "source_result": source_result})
                 context.close()
         finally:

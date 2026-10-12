@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import socket
 import subprocess
 import sys
@@ -20,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from engineering_fixture import evidence_workbench, workbench_model
 from engineering_model.actions import edit
 from engineering_model.admission import load_published, validate_current
+from engineering_model.projection import inspect_evidence
 
 
 class WorkbenchBrowserJourney(unittest.TestCase):
@@ -52,6 +54,13 @@ class WorkbenchBrowserJourney(unittest.TestCase):
         button.click()
 
     @staticmethod
+    def open_result(page, test_id):
+        route_key = "st-key-" + re.sub(r"[^A-Za-z0-9_-]", "-", f"route:result:{test_id}")
+        button = page.locator(f'[class~="{route_key}"]').get_by_role("button")
+        expect(button).to_be_visible(timeout=7000)
+        button.click()
+
+    @staticmethod
     def choose_option(page, value):
         control = page.get_by_label("Option")
         control.click()
@@ -70,6 +79,20 @@ class WorkbenchBrowserJourney(unittest.TestCase):
         consumer, historical = evidence_workbench()
         self.addCleanup(consumer.close)
         root = consumer.root
+        current_sha = consumer.git("rev-parse", "HEAD")
+        historical_evidence = inspect_evidence(root, "w", historical)
+        current_evidence = inspect_evidence(root, "w", current_sha)
+        historical_case = next(test for scenario in historical_evidence["scenarios"]
+                               for test in scenario["evidence"]["tests"] if test["test_id"] == "U")
+        self.assertEqual(historical_case["final_execution"]["outcome"], "passed")
+        self.assertEqual(historical_case["final_execution"]["case_id"], "test_app.Cases.test_unit")
+        self.assertEqual(historical_evidence["status"], "historical")
+        self.assertEqual(current_evidence["status"], "unavailable")
+        self.assertEqual(historical_evidence["work_id"], "w")
+        self.assertEqual(historical_case["test_id"], "U")
+        self.assertEqual(historical_case["final_execution"]["source_sha"], historical)
+        self.assertTrue(historical_case["final_execution"]["execution_id"])
+        self.assertEqual(historical_case["final_execution"]["phase"], "final_green")
         server, url = self._server(root)
         try:
             with sync_playwright() as pw:
@@ -86,14 +109,26 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first.goto(url, wait_until="domcontentloaded")
                 expect(first.get_by_role("button", name="Uppercase behavior", exact=False)).to_be_visible()
 
-                # Preserve the specifically qualified result route before making the linked definition stale.
-                first.get_by_role("button", name="Result / evidence", exact=True).nth(1).click()
+                # E has a recorded historical pass; U has a current miss plus that historical run.
+                self.open_result(first, "E")
+                expect(first.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
+                expect(first.get_by_text("Passed", exact=False)).to_be_visible()
+                expect(first.get_by_text("Historical evidence", exact=False)).to_be_visible()
+                self.open_result(first, "U")
                 expect(first.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
+                expect(first.get_by_text("No recorded execution is attached to this selected test.", exact=True)).to_be_visible()
+                expect(first.get_by_text("Current evidence is unavailable", exact=False)).to_be_visible()
+                expect(first.get_by_text("Historical evidence", exact=False)).to_be_visible()
                 expect(first.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
-                expect(first.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
+                expect(first.get_by_text("Exact HELLO output", exact=True)).to_be_visible()
+                expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
+                debug = first.locator("summary").filter(has_text="Technical details and identifiers")
+                debug.click()
+                expect(first.get_by_text("Snapshot digest", exact=True)).to_be_visible()
+                expect(first.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
                 self.open_route(first, "Uppercase assertion")
                 expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
-                expect(first.get_by_text("assertEqual", exact=False)).to_be_visible()
+                expect(first.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
                 self.open_route(first, "Build")
                 expect(first.get_by_text("choice", exact=False)).to_be_visible()
                 expect(first.get_by_text("Blockers", exact=False)).to_be_visible()
@@ -103,6 +138,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
 
                 before, diagnostics = validate_current(root, "w")
                 self.assertEqual(diagnostics, [], diagnostics)
+                before_publication = load_published(root, "w").identity
                 spec = dict(consumer.spec)
                 spec["criteria"][0]["then"] = ["Reject invalid input"]
                 plan_path = root / "work/w/test-plan.json"
@@ -124,6 +160,8 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first.get_by_role("button", name="Resolve decision").click()
                 expect(first.get_by_text("No change was saved", exact=False)).to_be_visible()
                 unchanged = load_published(root, "w")
+                self.assertEqual(unchanged.identity, before_publication,
+                                 "stale submission does not change publication identity")
                 self.assertEqual({path: path.read_bytes() for path in definition_paths},
                                  stale_submission_bytes,
                                  "stale choice cannot publish model or linked definition bytes")
@@ -140,6 +178,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 resolved = load_published(root, "w")
                 choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
                 self.assertEqual(choice["lifecycle"], "resolved")
+                self.assertEqual(choice["history"][-1]["option_id"], "one")
                 self.assertEqual(choice["history"][-1]["actor"], "Browser developer")
                 self.assertEqual(choice["history"][-1]["rationale"], "Use the amended requirement")
 
@@ -175,12 +214,20 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     page.goto(url, wait_until="domcontentloaded")
                     self.open_route(page, "Behavior assertion")
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
-                    debug = page.get_by_text("Technical details and identifiers", exact=True)
+                    self.open_route(page, "Result / evidence")
+                    expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
+                    debug = page.locator("summary").filter(has_text="Technical details and identifiers")
                     expect(debug).to_be_visible()
-                    debug.click()
+                    debug.focus()
+                    page.keyboard.press("Enter")
+                    expect(debug.locator("xpath=..")).to_have_attribute("open", "")
                     expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                     expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
-                    expect(page.get_by_text("unavailable", exact=True).last).to_be_visible()
+                    expect(page.get_by_text(
+                        "Git evidence inspection is unavailable because the configured model root is not a Git checkout.",
+                        exact=True)).to_be_visible()
+                    expect(page.get_by_text("git show", exact=False)).to_be_visible()
+                    expect(page.get_by_text("./ask model show", exact=False)).to_be_visible()
                     self.assertNotIn("fatal: not a git repository", page.locator("body").inner_text())
                     browser.close()
             finally:

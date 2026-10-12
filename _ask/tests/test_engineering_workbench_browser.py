@@ -6,6 +6,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import re
 import socket
 import subprocess
 import sys
@@ -22,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
 sys.path.insert(0, str(Path(__file__).parent))
 from engineering_fixture import evidence_workbench
-from engineering_model.admission import load_published
+from engineering_model.admission import admit, load_published
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -50,12 +51,37 @@ class WorkbenchTests(unittest.TestCase):
         self.fail("Streamlit did not start")
 
     @staticmethod
+    def _key_class(key):
+        # Streamlit 1.59 normalizes widget-key punctuation in its wrapper class.
+        return "st-key-" + re.sub(r"[^A-Za-z0-9_-]", "-", key)
+
+    @staticmethod
     def _open(page, route):
-        names = {"scenario": "Uppercase behavior", "test:U": "Uppercase assertion",
-                 "result:U": "Result / evidence", "decision": "Decision"}
-        button = page.get_by_role("button", name=names.get(route, route), exact=False).first
+        routes = {"Purpose": "purpose", "Render uppercase text": "story",
+                  "Uppercase behavior": "scenario", "Uppercase assertion": "test:U",
+                  "scenario": "scenario", "test:U": "test:U", "result:U": "result:U",
+                  "Build": "build", "Review build": "review-build", "Decision": "decision"}
+        route_id = routes.get(route, route)
+        wrapper = page.locator(f'[class~="{WorkbenchTests._key_class(f"route:{route_id}")}"]')
+        button = wrapper.get_by_role("button")
         expect(button).to_be_visible(timeout=5000)
         button.click()
+
+    @staticmethod
+    def _assert_filter_ids(page, kind, expected, metric_label, metric_count):
+        classes = [WorkbenchTests._key_class(f"overview:filter:open:{kind}:{identity}")
+                   for identity in expected]
+        actual = {identity for identity, classname in zip(expected, classes)
+                  if page.locator(f'[class~="{classname}"]').count() == 1}
+        assert set(actual) == set(expected), f"{kind} summary opened {actual}, expected {sorted(expected)}"
+        expect(page.get_by_role("button", name="Clear filter", exact=True)).to_be_visible()
+        metric = page.locator("[data-testid='stMetric']").filter(has_text=metric_label)
+        expect(metric).to_have_count(1)
+        assert metric.inner_text().splitlines()[-1].strip() == str(metric_count), (
+            f"{metric_label} metric must match its opened records")
+        for identity in expected:
+            expect(page.locator(f'[class~="{WorkbenchTests._key_class(f"overview:filter:open:{kind}:{identity}")}"]')
+                   .get_by_role("button", name="Open record", exact=True)).to_be_visible()
 
     @staticmethod
     def _tab_to(page, target):
@@ -95,6 +121,34 @@ class WorkbenchTests(unittest.TestCase):
           const a = luminance(text), b = luminance(background);
           return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
         }""")
+
+    @staticmethod
+    def _assert_focus(page, target, label):
+        measurement = target.evaluate("""el => {
+          const parse = value => { const values=value.match(/[\\d.]+/g)||[0,0,0,1];
+            return [Number(values[0]),Number(values[1]),Number(values[2]),values.length>3?Number(values[3]):1]; };
+          const blend = (front, back) => front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
+          const chain = element => { const values=[]; for(let n=element;n;n=n.parentElement) values.unshift(n); return values; };
+          const background = element => { let value=[255,255,255]; for(const n of chain(element)) {
+            const color=parse(getComputedStyle(n).backgroundColor); if(color[3]>0) value=blend(color,value); } return value; };
+          const style=getComputedStyle(el);
+          const outline=parseFloat(style.outlineWidth)>0 && style.outlineStyle!=='none';
+          const shadow=style.boxShadow.match(/rgba?\\([^)]*\\)/g)||[];
+          const indicator=outline ? parse(style.outlineColor) : shadow.map(parse).find(color=>color[3]>0);
+          if(!indicator) return {visible:false};
+          const luminance=color=>color.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;})
+            .reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+          const ratio=(a,b)=>(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+          const inside=background(el);
+          const outside=background(el.parentElement?.parentElement||el.parentElement||el);
+          const colorInside=blend(indicator,inside), colorOutside=blend(indicator,outside);
+          return {visible:true, contrast:Math.min(ratio(luminance(colorInside),luminance(inside)),
+            ratio(luminance(colorOutside),luminance(outside)))};
+        }""")
+        assert measurement["visible"], f"{label} exposes a visible keyboard focus indicator"
+        assert measurement["contrast"] >= 3, (
+            f"{label} focus indicator contrasts at least 3:1 with both adjacent backgrounds; "
+            f"got {measurement['contrast']:.3f}:1")
 
     @staticmethod
     def _select(page, label, value):
@@ -137,7 +191,7 @@ class WorkbenchTests(unittest.TestCase):
         plan_path = root / "work/w/test-plan.json"
         plan = json.loads(plan_path.read_text())
         plan["task_scopes"] = [{"task_id": "build", "test_ids": ["U"]},
-                               {"task_id": "review-build", "test_ids": ["E"]}]
+                               {"task_id": "review-build", "test_ids": ["U", "E"]}]
         graph = {"schema": "ask-inner-loop-tasks/v1", "work_id": "w", "tasks": [
             {"id": "build", "title": "Build", "outcome": "Render the promised uppercase output",
              "depends_on": [], "owned_paths": ["app.py"]},
@@ -150,7 +204,7 @@ class WorkbenchTests(unittest.TestCase):
         consumer.write("work/w/inner-loop/state.json", {
             "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
             "tasks": {
-                "build": {"status": "integrated", "result_path": "work/w/inner-loop/results/WB-001.json"},
+                "build": {"status": "integrated", "result_path": "work/w/inner-loop/results/build.json"},
                 "review-build": {"status": "pending", "result_path": ""},
             },
         })
@@ -198,11 +252,26 @@ class WorkbenchTests(unittest.TestCase):
         self.addCleanup(consumer.close)
         self._recorded_hierarchy(consumer)
         root = consumer.root
+        admitted, diagnostics = admit(root, "w")
+        self.assertEqual(diagnostics, [], diagnostics)
+        self.assertIsNotNone(admitted)
         before_head = consumer.git("rev-parse", "HEAD")
         before_refs = consumer.git("for-each-ref", "--format=%(refname) %(objectname)")
-        definition_paths = [root / "work/w/engineering-model.json", root / "work/w/test-plan.json",
-                            root / "work/w-alt/engineering-model.json", root / "work/w-alt/test-plan.json"]
+        definition_paths = [root / path for path in (
+            "work/w/engineering-model.json", "work/w/test-plan.json",
+            "work/w/inner-loop/tasks.yaml", "work/w/inner-loop/state.json",
+            "work/w/inner-loop/results/build.json", "specs/current/w.json", "specs/current/w.md",
+            "work/w-alt/engineering-model.json", "work/w-alt/test-plan.json",
+            "work/w-alt/inner-loop/tasks.yaml", "work/w-alt/inner-loop/state.json",
+            "specs/current/w-alt.json", "specs/current/w-alt.md", "test_app.py")]
         before_definitions = {path: path.read_bytes() for path in definition_paths}
+        state_dir = root / "work/w/traceability/model-state"
+        pointer_path = state_dir / "current.json"
+        pointer_before = pointer_path.read_bytes()
+        generation_id = json.loads(pointer_before)["generation"]
+        generation_manifest = state_dir / "generations" / generation_id / "manifest.json"
+        generation_before = generation_manifest.read_bytes()
+        before_publication = load_published(root, "w").identity
         server, url = self._server(root)
         try:
             with sync_playwright() as pw:
@@ -219,20 +288,33 @@ class WorkbenchTests(unittest.TestCase):
 
                 # Every summary opens the exact records represented by its count.
                 page.get_by_role("button", name="View scenarios", exact=True).click()
-                expect(page.get_by_role("button", name="Uppercase behavior", exact=True)).to_be_visible()
-                expect(page.get_by_role("button", name="Second canonical behavior", exact=True)).to_be_visible()
+                self._assert_filter_ids(page, "scenarios", {"scenario", "scenario-other"}, "Scenarios", 2)
+                expect(page.get_by_role("heading", name="Scenarios", exact=True)).to_be_visible()
+                scenario_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
+                expect(scenario_panel.get_by_text("Uppercase behavior", exact=True)).to_be_visible()
+                expect(scenario_panel.get_by_text("Second canonical behavior", exact=True)).to_be_visible()
+                expect(scenario_panel.get_by_text("Uppercase assertion", exact=True)).to_have_count(0)
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View tasks", exact=True).click()
-                expect(page.get_by_text("build · completed", exact=False)).to_be_visible()
-                expect(page.get_by_text("review-build · planned", exact=False)).to_be_visible()
+                self._assert_filter_ids(page, "tasks", {"build", "review-build"}, "Tasks", 2)
+                expect(page.get_by_role("heading", name="Tasks", exact=True)).to_be_visible()
+                tasks_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
+                expect(tasks_panel.get_by_text("build · completed", exact=False)).to_be_visible()
+                expect(tasks_panel.get_by_text("review-build · planned", exact=False)).to_be_visible()
+                self.assertEqual(tasks_panel.get_by_text("build · completed", exact=False).count(), 1)
+                self.assertEqual(tasks_panel.get_by_text("review-build · planned", exact=False).count(), 1)
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View blocked tasks", exact=True).click()
-                expect(page.get_by_text("review-build · planned", exact=False)).to_be_visible()
-                expect(page.get_by_text("build · completed", exact=False)).to_have_count(0)
+                self._assert_filter_ids(page, "blocked", {"review-build"}, "Blocked tasks", 1)
+                blocked_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
+                expect(blocked_panel.get_by_text("review-build · planned", exact=False)).to_be_visible()
+                expect(blocked_panel.get_by_text("build · completed", exact=False)).to_have_count(0)
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View open decisions", exact=True).click()
-                expect(page.get_by_text("choice · open", exact=False)).to_be_visible()
-                expect(page.get_by_text("Choose", exact=True)).to_be_visible()
+                self._assert_filter_ids(page, "decisions", {"choice"}, "Open decisions", 1)
+                decisions_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
+                expect(decisions_panel.get_by_text("choice · open", exact=False)).to_be_visible()
+                expect(decisions_panel.get_by_text("Choose", exact=True)).to_be_visible()
 
                 self._open(page, "Render uppercase text")
                 expect(page.get_by_role("heading", name="Render uppercase text")).to_be_visible()
@@ -244,32 +326,44 @@ class WorkbenchTests(unittest.TestCase):
                 self._open(page, "Build")
                 expect(page.get_by_role("heading", name="Build")).to_be_visible()
                 expect(page.get_by_text("Render the promised uppercase output", exact=False)).to_be_visible()
+                expect(page.get_by_text("Recorded result: work/w/inner-loop/results/build.json", exact=True)).to_be_visible()
+                self.assertEqual(json.loads((root / "work/w/inner-loop/results/build.json").read_text())[
+                    "candidate_sha"], historical_sha)
+                expect(page.get_by_text("U", exact=True)).to_be_visible()
+                self._open(page, "Review build")
+                expect(page.get_by_role("heading", name="Review build")).to_be_visible()
+                expect(page.get_by_text("U", exact=True)).to_be_visible()
+                expect(page.get_by_text("E", exact=True)).to_be_visible()
                 self._open(page, "Uppercase assertion")
                 expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
-                expect(page.get_by_text("test_behavior", exact=False)).to_be_visible()
+                expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
                 self._open(page, "scenario")
                 expect(page.get_by_role("heading", name="Uppercase behavior")).to_be_visible()
                 self._open(page, "test:U")
                 expect(page.get_by_text("test_app.py", exact=False)).to_be_visible()
-                page.get_by_role("button", name="Result / evidence", exact=True).nth(1).click()
-                expect(page.get_by_text("Evidence candidate", exact=False)).to_be_visible()
-                page.get_by_role("button", name="Load test results").click()
-                expect(page.get_by_text("Passed", exact=False)).to_be_visible(timeout=10000)
-                expect(page.get_by_text("test U", exact=False)).to_be_visible()
-                page.get_by_label("Evidence candidate").fill(historical_sha)
-                page.get_by_role("button", name="Inspect candidate").click()
-                expect(page.get_by_text("(historical)", exact=False)).to_be_visible()
+                self._open(page, "result:E")
+                expect(page.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
+                expect(page.get_by_text("Passed", exact=False)).to_be_visible()
+                expect(page.get_by_text("Historical evidence", exact=False)).to_be_visible()
+                self._open(page, "result:U")
+                expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
+                expect(page.get_by_text("No recorded execution is attached to this selected test.", exact=True)).to_be_visible()
+                expect(page.get_by_text("Current evidence is unavailable", exact=False)).to_be_visible()
+                expect(page.get_by_text("Historical evidence", exact=False)).to_be_visible()
+                self.assertEqual(page.get_by_text(historical_sha, exact=False).count(), 0,
+                                 "debug/provenance does not expose raw commit hashes")
 
                 # The selected alternate work is read from its other branch and remains read-only.
                 self._select(page, "Workstream", "w-alt")
                 expect(page.get_by_text("Workstream: w-alt", exact=False)).to_be_visible()
                 expect(page.get_by_text("Committed · agent/w-alt", exact=False)).to_be_visible()
                 self._open(page, "Uppercase assertion")
+                expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("Source revision unique to agent/w-alt", exact=False)).to_be_visible()
                 expect(page.get_by_text("test_app.py", exact=False)).to_be_visible()
-                self._open(page, "Result / evidence")
-                expect(page.get_by_text("w-alt", exact=False)).to_be_visible()
-                expect(page.get_by_text("No recorded execution", exact=False)).to_be_visible()
+                self._open(page, "result:U")
+                expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
+                expect(page.get_by_text("No recorded execution is attached to this selected test.", exact=True)).to_be_visible()
                 self._open(page, "Decision")
                 expect(page.get_by_text("This source is read-only", exact=False)).to_be_visible()
                 self.assertEqual(page.get_by_role("button", name="Resolve decision").count(), 0)
@@ -277,6 +371,10 @@ class WorkbenchTests(unittest.TestCase):
                 self.assertEqual(consumer.git("rev-parse", "HEAD"), before_head)
                 self.assertEqual(consumer.git("for-each-ref", "--format=%(refname) %(objectname)"), before_refs)
                 self.assertEqual({path: path.read_bytes() for path in definition_paths}, before_definitions)
+                self.assertEqual(load_published(root, "w").identity, before_publication)
+                self.assertEqual(pointer_path.read_bytes(), pointer_before)
+                self.assertEqual(json.loads(pointer_path.read_bytes())["generation"], generation_id)
+                self.assertEqual(generation_manifest.read_bytes(), generation_before)
                 fresh_context = browser.new_context()
                 fresh = fresh_context.new_page()
                 fresh.goto(url, wait_until="domcontentloaded")
@@ -307,27 +405,7 @@ class WorkbenchTests(unittest.TestCase):
                     route = page.get_by_role("button", name="Uppercase behavior", exact=False).first
                     expect(route).to_be_visible()
                     self._tab_to(page, route)
-                    focus_style = route.evaluate("el => { const s=getComputedStyle(el); return s.outlineStyle !== 'none' && parseFloat(s.outlineWidth) >= 1 || s.boxShadow !== 'none'; }")
-                    self.assertTrue(focus_style, "keyboard-focused route exposes a visible focus indicator")
-                    focus_ratio = route.evaluate("""el => {
-                      const style = getComputedStyle(el);
-                      const color = style.outlineStyle !== 'none' ? style.outlineColor :
-                        ((style.boxShadow.match(/rgba?\\([^)]*\\)/) || [])[0] || style.color);
-                      const rgba = value => { const p=value.match(/[\\d.]+/g)||[0,0,0,1];
-                        return [Number(p[0]),Number(p[1]),Number(p[2]),p.length>3?Number(p[3]):1]; };
-                      const blend = (front, back) => front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
-                      const background = element => { const chain=[]; for(let n=element;n;n=n.parentElement) chain.unshift(n);
-                        let value=[255,255,255]; for(const n of chain){const bg=rgba(getComputedStyle(n).backgroundColor);
-                          if(bg[3]>0) value=blend(bg,value);} return value; };
-                      const base = background(el.parentElement || el);
-                      const foreground = blend(rgba(color), base);
-                      const rgb = value => value.slice(0,3);
-                      const lum = values => values.map(value => { value /= 255; return value <= .04045 ? value/12.92 : ((value+.055)/1.055)**2.4; })
-                        .reduce((sum, value, index) => sum + value * [.2126,.7152,.0722][index], 0);
-                      const a=lum(rgb(foreground)), b=lum(rgb(base));
-                      return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
-                    }""")
-                    self.assertGreaterEqual(focus_ratio, 3, "focus indicator contrasts with its control background")
+                    self._assert_focus(page, route, "scenario route")
                     self.assertGreaterEqual(self._contrast(page, route), 4.5,
                                             "normal-size route label meets text contrast")
                     large_text = page.get_by_role("heading", name="Engineering workbench")
@@ -337,29 +415,42 @@ class WorkbenchTests(unittest.TestCase):
                     expect(page.get_by_role("heading", name="Uppercase behavior")).to_be_visible()
                     task = page.get_by_role("button", name="Build", exact=False).first
                     self._tab_to(page, task)
+                    self._assert_focus(page, task, "task route")
                     page.keyboard.press("Enter")
                     expect(page.get_by_text("Blockers", exact=False)).to_be_visible()
                     expect(page.get_by_text("choice", exact=False)).to_be_visible()
                     test = page.get_by_role("button", name="Uppercase assertion", exact=False).first
                     self._tab_to(page, test)
+                    self._assert_focus(page, test, "test route")
                     page.keyboard.press("Enter")
                     expect(page.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
                     expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
-                    expect(page.get_by_text("assertEqual", exact=False)).to_be_visible()
+                    expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
                     debug = page.locator("summary").filter(has_text="Technical details and identifiers")
                     expect(debug).to_be_visible()
+                    if debug.evaluate("el => el.parentElement.open"):
+                        self._tab_to(page, debug)
+                        page.keyboard.press("Enter")
+                        self.assertFalse(debug.evaluate("el => el.parentElement.open"))
                     self._tab_to(page, debug)
+                    self._assert_focus(page, debug, "debug expander")
                     page.keyboard.press("Enter")
+                    self.assertTrue(debug.evaluate("el => el.parentElement.open"),
+                                    "keyboard opens debug details at each viewport")
                     expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                     expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
                     expect(page.get_by_text("Selected source: test_app.py", exact=False)).to_be_visible()
                     status = page.get_by_text("No recorded execution is attached to this selected test.", exact=False)
-                    if status.count():
-                        self.assertGreaterEqual(self._contrast(page, status.first), 4.5,
-                                                "written execution state meets normal-text contrast")
+                    expect(status).to_be_visible()
+                    self.assertGreaterEqual(self._contrast(page, status.first), 4.5,
+                                            "written execution state meets normal-text contrast")
+                    self.assertLessEqual(page.locator("body").evaluate("el => el.scrollWidth"), width,
+                                         f"page has no horizontal overflow at {width}px")
 
+                page.set_viewport_size({"width": 390, "height": 844})
                 decision = page.get_by_role("button", name="Decision", exact=False).first
                 self._tab_to(page, decision)
+                self._assert_focus(page, decision, "decision route")
                 page.keyboard.press("Enter")
                 expect(page.get_by_role("button", name="Resolve decision")).to_be_visible()
                 option = page.get_by_role("combobox", name="Option")
@@ -379,6 +470,7 @@ class WorkbenchTests(unittest.TestCase):
 
                 resolved = load_published(root, "w")
                 choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
+                self.assertEqual(choice["history"][-1]["option_id"], "two")
                 self.assertEqual(choice["history"][-1]["actor"], "Keyboard developer")
                 self.assertEqual(choice["history"][-1]["rationale"], "Accessible option labels persist")
                 page.set_viewport_size({"width": 390, "height": 844})
