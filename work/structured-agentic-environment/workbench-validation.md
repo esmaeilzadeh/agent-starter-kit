@@ -50,6 +50,15 @@ samples; outline construction took 108–117 ms. These large-fixture numbers are
 diagnostics, not an SLA. The required full candidate run will archive its raw
 structural measurements.
 
+Profiling `MV-valid` detail loading found that cache identity hashed 1668 files,
+including generated publication blobs and static verification logs. Cache
+identity now hashes the runtime evidence inputs used by this view: completion,
+execution ledger, retained runs and reviews. The selected-detail integrity test
+still proves that retained log and review edits invalidate the cache. A direct
+call on the real pilot fell from 608 ms to 204 ms, with identity hashing falling
+from 429 ms to 59 ms. The full browser measurement must confirm the practical
+effect.
+
 ## Verification state and remaining evidence
 
 `./ask verify` on candidate `72da8f1f` passed the repository shell and

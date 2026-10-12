@@ -158,11 +158,19 @@ def _accepted_source_digests(root: Path, test: dict,
 
 
 def _traceability_fingerprint(root: Path, work_id: str) -> dict:
+    """Fingerprint runtime evidence, excluding generated admission and static logs."""
     base = root / "work" / work_id / "traceability"
     values = {}
     if base.is_symlink() or not base.is_dir():
         return values
-    for path in sorted(base.rglob("*"), key=lambda item: item.as_posix()):
+    paths = [base / "completion.json", base / "executions.json"]
+    for directory in (base / "runs", base / "reviews"):
+        if directory.is_symlink():
+            values[directory.relative_to(root).as_posix()] = "unsafe-symlink"
+            continue
+        if directory.is_dir():
+            paths.extend(directory.rglob("*"))
+    for path in sorted(paths, key=lambda item: item.as_posix()):
         try:
             if path.is_symlink() or not path.is_file():
                 continue
