@@ -1,0 +1,120 @@
+{
+  "code_candidate_sha": "d6a6b8536dace1c46834cea2fadb7f6f51eb484d",
+  "code_file_bytes": {
+    "_ask/scripts/engineering_model/workbench.py": 10632,
+    "_ask/ui/streamlit_app.py": 48960,
+    "_ask/ui/workbench_loading.py": 10892,
+    "_ask/ui/workbench_navigation.py": 10200,
+    "_ask/ui/workbench_tasks.py": 6145,
+    "_ask/ui/workbench_tests.py": 4683
+  },
+  "code_source_sha256": "6677150404641091425d28bf4914eec7d8f20a763926be84ebd31e28149017ae",
+  "cold_start_to_ready_ms": [],
+  "environment": {
+    "browser_channel": "chrome",
+    "browser_version": "142.0.7444.162",
+    "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
+    "playwright": "1.63.0",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "streamlit": "1.59.2"
+  },
+  "error": {
+    "message": "Locator expected to have count '2'\nActual value: 0 \nCall log:\n  - Expect \"to_have_count\" get_by_text(\"Recorded outcome: Passed\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Recorded outcome: Passed\", exact=True)\n    14 \u00d7 locator resolved to 0 elements\n       - unexpected value \"0\"\n",
+    "type": "AssertionError"
+  },
+  "limits_ms": {
+    "cold": 4000,
+    "filter": 500,
+    "metadata_navigation": 500,
+    "overview": 1500,
+    "source_result": 1000
+  },
+  "model_file_bytes": {
+    "work/w/engineering-model.json": 2742,
+    "work/w/test-plan.json": 1561
+  },
+  "model_git_sha": "15ef02a3a12fb1a1290fbbf27f6a7b57916efc71",
+  "model_input_sha256": "0aa1e75ee7e16ae0ea06d12adce1d63ac6ce5dca95eb2a4f69940cb75460555d",
+  "model_root": "/tmp/tmpw1jn2f_q",
+  "model_work_id": "w",
+  "run_status": "failed",
+  "structural_workloads": [
+    {
+      "document_bytes": {
+        "specs/current/scale-100.json": 180,
+        "specs/current/scale-100.md": 22,
+        "work/scale-100/engineering-model.json": 408,
+        "work/scale-100/inner-loop/tasks.yaml": 13358,
+        "work/scale-100/test-plan.json": 19182
+      },
+      "graph_edge_count": 1,
+      "model_node_count": 2,
+      "outline_ms": [
+        1.4111189993855078,
+        1.4835960000709747,
+        1.406002000294393,
+        1.3574200002040016,
+        1.3444449996313779
+      ],
+      "projection_ms": [
+        20.97766099996079,
+        9.521189999759372,
+        8.579932000429835,
+        8.523540999703982,
+        8.643295999718248
+      ],
+      "source_file_count": 1,
+      "task_count": 100,
+      "test_count": 100,
+      "total_document_bytes": 33150
+    },
+    {
+      "document_bytes": {
+        "specs/current/scale-1000.json": 181,
+        "specs/current/scale-1000.md": 22,
+        "work/scale-1000/engineering-model.json": 410,
+        "work/scale-1000/inner-loop/tasks.yaml": 133059,
+        "work/scale-1000/test-plan.json": 191083
+      },
+      "graph_edge_count": 1,
+      "model_node_count": 2,
+      "outline_ms": [
+        109.99846100003197,
+        108.87793200072338,
+        110.13721299968893,
+        112.61311300040688,
+        109.2765879993749
+      ],
+      "projection_ms": [
+        793.3235640002749,
+        853.8805930002127,
+        832.3615940007585,
+        873.1898210007785,
+        829.1345640000145
+      ],
+      "source_file_count": 1,
+      "task_count": 1000,
+      "test_count": 1000,
+      "total_document_bytes": 324755
+    }
+  ],
+  "warm_ms": [],
+  "workload": {
+    "code_candidate_sha": "d6a6b8536dace1c46834cea2fadb7f6f51eb484d",
+    "document_bytes": {
+      "specs/current/w.json": 294,
+      "specs/current/w.md": 26,
+      "work/w/engineering-model.json": 2742,
+      "work/w/test-plan.json": 1561
+    },
+    "graph_edge_count": 9,
+    "kind": "isolated-consumer-fixture",
+    "model_input_sha256": "2443d2aa6519f30f3d58b9660f9ab5d27f2d301c17417b07f10f427fc3e68dff",
+    "model_node_count": 9,
+    "model_task_count": 2,
+    "synthetic_model": true,
+    "task_count": 0,
+    "test_count": 2,
+    "total_document_bytes": 4623
+  }
+}
