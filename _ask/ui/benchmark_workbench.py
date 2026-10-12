@@ -139,15 +139,17 @@ def ready(page):
     return selected
 
 
-def route_click(page, route_id):
+def route_click(page, route_id, detail_heading):
     button = page.locator(f'[class~="{_key_class("route:" + route_id)}"]').get_by_role("button")
     if not button.count():
         raise AssertionError(f"required workbench route {route_id!r} is missing")
     button.click()
     expect(button).to_have_attribute("kind", "primary", timeout=10000)
+    expect(page.get_by_role("heading", name=detail_heading, exact=True)).to_be_visible(timeout=10000)
 
 
-def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
+def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
+        output_path: Path | None = None):
     sources, sizes = digest_tree(ROOT, [
         "_ask/ui/streamlit_app.py", "_ask/ui/workbench_loading.py",
         "_ask/ui/workbench_navigation.py", "_ask/ui/workbench_tests.py",
@@ -185,7 +187,8 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
             "warm_ms": [], "cold_start_to_ready_ms": [], "limits_ms": {
                 "overview": 1500, "metadata_navigation": 500, "filter": 500,
                 "source_result": 1000, "cold": 4000},
-            "workload": {"kind": "real-pilot", "code_candidate_sha": code_candidate_sha,
+            "workload": {"kind": "isolated-consumer-fixture", "synthetic_model": True,
+                         "code_candidate_sha": code_candidate_sha,
                          "model_input_sha256": workload_digest,
                          "document_bytes": workload_sizes,
                          "total_document_bytes": sum(workload_sizes.values()),
@@ -195,7 +198,19 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
                          "test_count": len(plan_document.get("tests", [])),
                          "model_node_count": len(model_document.get("nodes", [])),
                          "graph_edge_count": len(model_document.get("edges", []))},
-            "structural_workloads": [structural_workload(size) for size in (100, 1000)]}
+            "structural_workloads": [structural_workload(size) for size in (100, 1000)],
+            "run_status": "running"}
+
+    def persist_partial():
+        if output_path is None:
+            return
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = output_path.with_suffix(output_path.suffix + ".tmp")
+        temporary.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        temporary.replace(output_path)
+
+    persist_partial()
     with sync_playwright() as pw:
         launch_options = {"headless": True, "args": ["--no-sandbox"]}
         if os.environ.get("ASK_BROWSER_CHANNEL"):
@@ -204,6 +219,7 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
             launch_options["executable_path"] = os.environ["PLAYWRIGHT_CHROMIUM_EXECUTABLE"]
         browser = pw.chromium.launch(**launch_options)
         data["environment"]["browser_version"] = browser.version
+        persist_partial()
         process, url, _ = start_server(model_root)
         try:
             await_http(process, url)
@@ -213,13 +229,21 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
                 started = time.perf_counter()
                 page.goto(url, wait_until="domcontentloaded")
                 ready(page)
+                expect(page.get_by_role("heading", name="Purpose", exact=True)).to_be_visible()
+                for label in ("Stories and scenarios", "Task progress", "Needs attention",
+                              "Scenarios", "Tasks", "Blocked tasks", "Open decisions"):
+                    expect(page.get_by_text(label, exact=True)).to_be_visible()
                 overview = (time.perf_counter() - started) * 1000
                 t = time.perf_counter()
-                route_click(page, "scenario")
-                route_click(page, "purpose")
+                route_click(page, "scenario", "Uppercase behavior")
+                expect(page.get_by_text("lowercase text", exact=True)).to_be_visible()
+                expect(page.get_by_text("uppercase text is returned", exact=True)).to_be_visible()
+                route_click(page, "purpose", "Purpose")
+                expect(page.get_by_text("Results are not loaded", exact=False)).to_be_visible()
                 metadata_navigation = (time.perf_counter() - t) * 1000
                 t = time.perf_counter()
-                route_click(page, "build")
+                route_click(page, "build", "Build")
+                expect(page.get_by_text("Task status", exact=True)).to_be_visible()
                 status_filter = page.get_by_label("Status filter")
                 if not status_filter.count():
                     raise AssertionError("selected task is missing its status filter")
@@ -230,16 +254,24 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
                 if alternative is None:
                     raise AssertionError("selected task exposes no concrete status to filter")
                 page.get_by_role("option", name=alternative, exact=True).click()
-                if alternative.casefold() not in status_filter.inner_text().casefold():
-                    raise AssertionError("task status filter did not select the requested value")
+                status_filter.click()
+                selected_option = page.get_by_role("option", name=alternative, exact=True)
+                expect(selected_option).to_have_attribute("aria-selected", "true")
+                page.keyboard.press("Escape")
                 filter_ms = (time.perf_counter() - t) * 1000
                 t = time.perf_counter()
-                route_click(page, "test:U")
-                route_click(page, "result:U")
+                route_click(page, "test:U", "Uppercase assertion")
+                expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
+                expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
+                route_click(page, "result:U", "Uppercase assertion")
+                expect(page.get_by_text("Selected test: U · revision-bound planned identity",
+                                        exact=True)).to_be_visible()
+                expect(page.get_by_role("heading", name="Recorded execution", exact=True)).to_be_visible()
                 source_result = (time.perf_counter() - t) * 1000
                 data["warm_ms"].append({"sample": index, "overview": overview,
                                         "metadata_navigation": metadata_navigation,
                                         "filter": filter_ms, "source_result": source_result})
+                persist_partial()
                 context.close()
         finally:
             process.terminate()
@@ -253,11 +285,14 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5):
                 ready(page)
                 data["cold_start_to_ready_ms"].append({"sample": index,
                     "elapsed": (time.perf_counter() - started) * 1000})
+                persist_partial()
                 page.close()
             finally:
                 process.terminate()
                 process.wait(timeout=5)
         browser.close()
+    data["run_status"] = "complete"
+    persist_partial()
     return data
 
 
@@ -270,7 +305,19 @@ def main():
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     work_id = args.work_id or os.environ.get("ASK_WORK_ID") or "structured-agentic-environment"
-    result = run(args.model_root.resolve(), work_id, args.warm_samples, args.cold_samples)
+    try:
+        result = run(args.model_root.resolve(), work_id, args.warm_samples, args.cold_samples,
+                     output_path=args.output)
+    except Exception as exc:
+        if args.output and args.output.is_file():
+            partial = json.loads(args.output.read_text(encoding="utf-8"))
+            partial["run_status"] = "failed"
+            partial["error"] = {"type": type(exc).__name__, "message": str(exc)}
+            temporary = args.output.with_suffix(args.output.suffix + ".tmp")
+            temporary.write_text(json.dumps(partial, indent=2, sort_keys=True) + "\n",
+                                 encoding="utf-8")
+            temporary.replace(args.output)
+        raise
     raw = json.dumps(result, indent=2, sort_keys=True)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

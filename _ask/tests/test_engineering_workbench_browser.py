@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT / "_ask/scripts"))
 sys.path.insert(0, str(Path(__file__).parent))
 from engineering_fixture import evidence_workbench
 from engineering_model.admission import admit, load_published
+from engineering_model.projection import project
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -69,10 +70,11 @@ class WorkbenchTests(unittest.TestCase):
 
     @staticmethod
     def _assert_filter_ids(page, kind, expected, metric_label, metric_count):
-        classes = [WorkbenchTests._key_class(f"overview:filter:open:{kind}:{identity}")
-                   for identity in expected]
-        actual = {identity for identity, classname in zip(expected, classes)
-                  if page.locator(f'[class~="{classname}"]').count() == 1}
+        prefix = WorkbenchTests._key_class(f"overview:filter:open:{kind}:")
+        actual = page.locator("[class*='st-key-overview-filter-open-']").evaluate_all(
+            "(els, prefix) => [...new Set(els.flatMap(el => [...el.classList]"
+            ".filter(name => name.startsWith(prefix)).map(name => name.slice(prefix.length))))]",
+            prefix)
         assert set(actual) == set(expected), f"{kind} summary opened {actual}, expected {sorted(expected)}"
         expect(page.get_by_role("button", name="Clear filter", exact=True)).to_be_visible()
         metric = page.locator("[data-testid='stMetric']").filter(has_text=metric_label)
@@ -82,6 +84,7 @@ class WorkbenchTests(unittest.TestCase):
         for identity in expected:
             expect(page.locator(f'[class~="{WorkbenchTests._key_class(f"overview:filter:open:{kind}:{identity}")}"]')
                    .get_by_role("button", name="Open record", exact=True)).to_be_visible()
+        expect(page.get_by_role("button", name="Open record", exact=True)).to_have_count(len(expected))
 
     @staticmethod
     def _tab_to(page, target):
@@ -191,7 +194,7 @@ class WorkbenchTests(unittest.TestCase):
         plan_path = root / "work/w/test-plan.json"
         plan = json.loads(plan_path.read_text())
         plan["task_scopes"] = [{"task_id": "build", "test_ids": ["U"]},
-                               {"task_id": "review-build", "test_ids": ["U", "E"]}]
+                               {"task_id": "review-build", "test_ids": ["E"]}]
         graph = {"schema": "ask-inner-loop-tasks/v1", "work_id": "w", "tasks": [
             {"id": "build", "title": "Build", "outcome": "Render the promised uppercase output",
              "depends_on": [], "owned_paths": ["app.py"]},
@@ -255,6 +258,14 @@ class WorkbenchTests(unittest.TestCase):
         admitted, diagnostics = admit(root, "w")
         self.assertEqual(diagnostics, [], diagnostics)
         self.assertIsNotNone(admitted)
+        projection = project(admitted, root, include_evidence=False)
+        tests_by_id = {item["id"]: item for item in projection["workbench"]["tests"]}
+        self.assertEqual(len([item for item in projection["workbench"]["tests"]
+                              if item["id"] == "U"]), 1)
+        self.assertEqual(tests_by_id["U"]["owner_task_id"], "build")
+        self.assertEqual(tests_by_id["U"]["ownership_status"], "owned")
+        self.assertEqual(tests_by_id["U"]["related_tasks"],
+                         [{"task_id": "review-build", "via": "scenario-coverage"}])
         before_head = consumer.git("rev-parse", "HEAD")
         before_refs = consumer.git("for-each-ref", "--format=%(refname) %(objectname)")
         definition_paths = [root / path for path in (
@@ -332,7 +343,6 @@ class WorkbenchTests(unittest.TestCase):
                 expect(page.get_by_text("U", exact=True)).to_be_visible()
                 self._open(page, "Review build")
                 expect(page.get_by_role("heading", name="Review build")).to_be_visible()
-                expect(page.get_by_text("U", exact=True)).to_be_visible()
                 expect(page.get_by_text("E", exact=True)).to_be_visible()
                 self._open(page, "Uppercase assertion")
                 expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()

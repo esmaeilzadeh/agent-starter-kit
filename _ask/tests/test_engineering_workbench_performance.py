@@ -4,9 +4,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-import statistics
 import sys
-import tempfile
 import time
 import unittest
 from collections import OrderedDict
@@ -222,19 +220,29 @@ class WorkbenchTests(unittest.TestCase):
     def test_measured_pilot_latency_budgets(self):
         consumer, _ = evidence_workbench()
         self.addCleanup(consumer.close)
-        with tempfile.TemporaryDirectory(prefix="ask-wb009-benchmark-") as temporary:
-            output = Path(temporary) / "pilot.json"
-            env = dict(os.environ, ASK_BROWSER_CHANNEL=os.environ.get("ASK_BROWSER_CHANNEL", "chrome"))
-            completed = __import__("subprocess").run([
-                sys.executable, str(ROOT / "_ask/ui/benchmark_workbench.py"),
-                "--model-root", str(consumer.root), "--work-id", "w",
-                "--warm-samples", "20", "--cold-samples", "5", "--output", str(output),
-            ], cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
-            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-            self.assertTrue(output.is_file(), "benchmark CLI persists candidate-bound raw samples")
-            report = json.loads(output.read_text(encoding="utf-8"))
-            self.assertEqual(json.loads(completed.stdout), report,
-                             "persisted raw report matches exact CLI output")
+        candidate_sha = __import__("subprocess").run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+            text=True, check=True).stdout.strip()
+        evidence_dir = Path(os.environ.get("ASK_WB009_EVIDENCE_DIR", ROOT /
+            "work/structured-agentic-environment/inner-loop/evidence"))
+        output = evidence_dir / f"WB-009-latency-{candidate_sha}.json"
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.unlink(missing_ok=True)
+        env = dict(os.environ, ASK_BROWSER_CHANNEL=os.environ.get("ASK_BROWSER_CHANNEL", "chrome"))
+        completed = __import__("subprocess").run([
+            sys.executable, str(ROOT / "_ask/ui/benchmark_workbench.py"),
+            "--model-root", str(consumer.root), "--work-id", "w",
+            "--warm-samples", "20", "--cold-samples", "5", "--output", str(output),
+        ], cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
+        self.assertTrue(output.is_file(), "raw benchmark report survives pass, budget miss or browser failure")
+        report = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(report["code_candidate_sha"], candidate_sha)
+        self.assertEqual(report["workload"]["kind"], "isolated-consumer-fixture")
+        self.assertTrue(report["workload"]["synthetic_model"])
+        self.assertEqual(report["run_status"], "complete", report.get("error"))
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+        self.assertEqual(json.loads(completed.stdout), report,
+                         "persisted raw report matches exact CLI output")
         self.assertEqual(len(report["warm_ms"]), 20)
         self.assertEqual(len(report["cold_start_to_ready_ms"]), 5)
         limits = report["limits_ms"]
@@ -253,7 +261,6 @@ class WorkbenchTests(unittest.TestCase):
         self.assertTrue(all(value <= limits["cold"] for value in cold),
                         f"each cold start <= {limits['cold']}ms; samples={cold}")
         self.assertEqual([item["task_count"] for item in report["structural_workloads"]], [100, 1000])
-        self.assertEqual(report["workload"]["kind"], "real-pilot")
         self.assertEqual(report["code_candidate_sha"], report["workload"]["code_candidate_sha"])
 
 

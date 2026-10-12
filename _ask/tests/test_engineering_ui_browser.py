@@ -138,7 +138,6 @@ class WorkbenchBrowserJourney(unittest.TestCase):
 
                 before, diagnostics = validate_current(root, "w")
                 self.assertEqual(diagnostics, [], diagnostics)
-                before_publication = load_published(root, "w").identity
                 spec = dict(consumer.spec)
                 spec["criteria"][0]["then"] = ["Reject invalid input"]
                 plan_path = root / "work/w/test-plan.json"
@@ -151,6 +150,14 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                               "work/w/test-plan.json": json.dumps(plan)},
                 })
                 self.assertTrue(changed["valid"], changed)
+                stale_baseline = load_published(root, "w")
+                self.assertIsNotNone(stale_baseline)
+                state_dir = root / "work/w/traceability/model-state"
+                pointer_path = state_dir / "current.json"
+                stale_pointer = pointer_path.read_bytes()
+                stale_generation_id = json.loads(stale_pointer)["generation"]
+                stale_generation_path = state_dir / "generations" / stale_generation_id / "manifest.json"
+                stale_generation = stale_generation_path.read_bytes()
                 definition_paths = [root / "work/w/engineering-model.json",
                                     root / "specs/current/w.json", plan_path]
                 stale_submission_bytes = {path: path.read_bytes() for path in definition_paths}
@@ -160,8 +167,13 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first.get_by_role("button", name="Resolve decision").click()
                 expect(first.get_by_text("No change was saved", exact=False)).to_be_visible()
                 unchanged = load_published(root, "w")
-                self.assertEqual(unchanged.identity, before_publication,
+                self.assertEqual(unchanged.identity, stale_baseline.identity,
                                  "stale submission does not change publication identity")
+                self.assertEqual(pointer_path.read_bytes(), stale_pointer,
+                                 "stale submission leaves the publication pointer unchanged")
+                self.assertEqual(json.loads(pointer_path.read_bytes())["generation"], stale_generation_id)
+                self.assertEqual(stale_generation_path.read_bytes(), stale_generation,
+                                 "stale submission leaves selected generation bytes unchanged")
                 self.assertEqual({path: path.read_bytes() for path in definition_paths},
                                  stale_submission_bytes,
                                  "stale choice cannot publish model or linked definition bytes")
