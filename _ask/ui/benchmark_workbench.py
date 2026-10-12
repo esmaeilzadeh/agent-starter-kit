@@ -369,7 +369,7 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 t = time.perf_counter()
                 test_title = projected_test.get("title") or test_id
                 route_click(page, f"test:{test_id}", str(test_title))
-                expect(page.get_by_text(case_id, exact=False)).to_be_visible()
+                expect(page.get_by_text(case_id, exact=False).first).to_be_visible()
                 expect(page.get_by_text("Selected source path: " + source_path,
                                         exact=False)).to_be_visible()
                 route_click(page, f"result:{test_id}", str(test_title))
