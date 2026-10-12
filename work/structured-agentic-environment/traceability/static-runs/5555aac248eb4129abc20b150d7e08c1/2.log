@@ -1,0 +1,9 @@
+/home/mohammadesmailzade/.profile: line 31: /home/mohammadesmailzade/.deno/env___MY_VMOPTIONS_SHELL_FILE=/home/mohammadesmailzade/.jetbrains.vmoptions.sh: No such file or directory
+sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.yh5up3IKFi
+status: no live agent/* branches; no archived work/* on master
+PASS: first-run askit gates on git + confirm, then overlays

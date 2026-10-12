@@ -1,0 +1,6 @@
+/home/mohammadesmailzade/.profile: line 31: /home/mohammadesmailzade/.deno/env___MY_VMOPTIONS_SHELL_FILE=/home/mohammadesmailzade/.jetbrains.vmoptions.sh: No such file or directory
+PASS: eleven Codex skills match Cursor stage bodies and overlays; sync is idempotent
+PASS: stale ASK skills cleaned; unrelated, unmarked and symlink skills protected
+PASS: reserved preparation names rejected before any installer runs
+PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages
+PASS: install and upgrade fail clearly on blocking consumer ignore rules without deleting them

@@ -1,0 +1,18 @@
+/home/mohammadesmailzade/.profile: line 31: /home/mohammadesmailzade/.deno/env___MY_VMOPTIONS_SHELL_FILE=/home/mohammadesmailzade/.jetbrains.vmoptions.sh: No such file or directory
+check-clean-worktree: clean
+start-work: work-id=smoke-demo
+start-work: branch=agent/smoke-demo
+start-work: HEAD=ca3f73050e230bbc22eb8637e3d79fab77cff36a
+start-work: workstream=work/smoke-demo
+handoff ok
+Recorded confirmation for work/smoke-demo/intent.md
+check-clean-worktree: clean
+intent-confirmation: valid work-id=smoke-demo
+check-workstream: ok work-id=smoke-demo branch=agent/smoke-demo
+{
+  "work_id": "smoke-demo",
+  "commit_sha": "35ffaccc8aba1fa5975f2d72f79974ea34b735e0",
+  "result": "handoff-checked",
+  "notes": ""
+}
+PASS: workstream smoke Explore handoff to verify SHA
