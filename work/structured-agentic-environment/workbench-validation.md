@@ -1,32 +1,66 @@
 # WB-009 workbench validation
 
-## Legacy UI continuity
+This file records candidate-bound evidence for WB-009. A browser or latency
+result from one candidate does not establish another candidate's result.
 
-The AppTest cases keep their existing `case_id` methods and behavioral scope while moving navigation from the removed `workbench_section` selector to the connected Epic → Story → Scenario → Task → Test → Result / Evidence outline.
+## Browser journeys
 
-| Existing journey | Current route and preserved behavior |
-| --- | --- |
-| Historical/current evidence candidate | `result:U`; inspect a current unavailable candidate and a retained historical candidate without presenting either SHA as the result identity |
-| Planned test source | `test:CASE-1`; show qualified test identity, planned assertion, source path and source assertion in the selected detail |
-| Decision from overview | Open the originating decision from the Epic attention list and retain the guarded decision form |
-| Overview hierarchy | Keep source and evidence lazy at the Epic; show delivery counts and linked Test/Result routes, then show source after opening the Test route |
-| Result loading/debug | Keep overview evidence scans deferred; load selected Result evidence explicitly and explain Git revision versus snapshot digest |
-| Nested evidence warnings | Load selected Result details and keep repeated nested controls addressable; migration diagnostics remain warnings |
-| Empty collections | Show clear no-task/no-scenario states from the Epic and an empty filtered summary |
-| Gitless evidence | Keep the model usable and show an actionable unavailable-evidence state without Git fatal output |
-| Decision persistence | Submit through captured decision form keys; preserve actor/rationale and unblock state across a new AppTest session |
-| Stale decision form | Reject incomplete input and a form captured before a referenced-spec-only change without changing the published decision; explicit refresh permits the valid resolution |
+The accepted browser cases remain mapped to their existing test IDs. The stale
+decision journey verifies a linked-spec edit is rejected without changing the
+published model, an explicit refresh captures the new inputs, and the valid
+resolution persists with actor and rationale in a new browser session. The
+workbench journey reads historical evidence, selected source, tasks and branch
+snapshots, then confirms a read-only branch disables decision submission.
 
-Browser case IDs remain assigned to `test_engineering_ui_browser.py`; their route and accessible-control migration is pending the WB-009 production ownership amendment. No case IDs or planned outcomes were removed here.
+At candidate `ef4f78fa`, the exact 16-case WB-009 traceability run collected all
+cases. Fifteen passed; `WB-latency-budget` failed on `source_result` p95 at
+1058.8 ms against the 1000 ms limit. The browser journeys passed. The raw report
+and runner output are retained under `traceability/runs/229be985...`.
 
-## AppTest red checkpoint
+At candidate `72da8f1f`, a separate workstream-wide run collected 58 cases. The
+historical contract selector journey failed because its second selection used
+an unstable keyboard interaction; the focused repair now selects the exact
+visible option. The latency case still measured the synthetic fixture and
+failed the overview budget. That run is retained under
+`traceability/runs/fc0568...`; it is not a final WB-009 pass.
 
-At the red revision before production repair, the targeted command was:
+## Latency and structural workload
 
-```text
-PYTHONPATH=_ask/tests python3 -m unittest -v test_engineering_ui
-```
+Latency acceptance now targets the admitted workstream
+`structured-agentic-environment` and selected case `MV-valid`
+(`test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs`).
+It derives the scenario, source path and expected recorded outcomes from the
+current model and retained history. The runner records the exact model/source
+digests and a screenshot of the initial overview. Isolated consumer fixtures
+remain useful diagnostics and are labeled synthetic.
 
-Result: 10 tests collected, 2 passed, 8 failed with assertion failures. The two passing cases cover empty hierarchy states and opening a decision from overview attention. The Epic overview already exposes Test and Result route buttons, task/scenario counts, and keeps source content lazy. The failures are current behavior gaps reached through successfully loaded AppTest sessions: the selected Result has no evidence-candidate control or lazy result-load action; selected Test details lack qualified source/assertion data; selected Result details do not expose loaded migration-warning or Gitless evidence states; and resolved decisions disappear from the outline after persistence, preventing history inspection in a new session. The stale-form case performs a linked-spec-only change, confirms the model and decision stay unchanged and the stale submission makes no write, then confirms the valid post-refresh resolution; its remaining assertion failure is the missing resolved-history route.
+A one-warm/one-cold real-pilot smoke sample on the workstream model completed
+against candidate `72da8f1f`: overview 1628.9 ms, metadata navigation 263.9 ms,
+filter 300.9 ms, selected source/result 1375.9 ms, and cold start 2383.9 ms.
+These single samples are diagnostic only and exceed the overview and
+source/result budgets. The required 20 warm/5 cold real-pilot run is still
+needed for acceptance.
 
-The first combined baseline attempt also entered the old browser test and stalled waiting for its obsolete `Workstream in current branch` selector; it was interrupted before browser behavior ran. This is setup evidence only and is not counted as a browser regression result. Browser migration and its own red capture remain pending.
+The scale fixtures now contain admitted canonical model, task graph, test
+scope, source files and test nodes. Both `validate_current` and `admit` must
+succeed before projection timings are recorded. The 1000-task fixture contains
+1000 tasks, 1000 tests, 2003 model nodes, 2002 model edges and 1000 source files.
+Its measured evidence-free projection took 10.36–13.34 seconds across five
+samples; outline construction took 108–117 ms. These large-fixture numbers are
+diagnostics, not an SLA. The required full candidate run will archive its raw
+structural measurements.
+
+## Verification state and remaining evidence
+
+`./ask verify` on candidate `72da8f1f` passed the repository shell and
+traceability checks when run with an isolated Git config. Its final candidate
+check failed because the mapped test runner appended an execution record while
+verification was checking the candidate source/CheckPlan for changes. The exact
+run is archived under `traceability/static-runs/5555...` and the corresponding
+traceability run above. This verification failure remains unresolved.
+
+WB-009 is not complete. Remaining work is the exact 20-warm/5-cold real-pilot
+measurement, a passing 16-case WB-009 run on one committed candidate, an
+independent final candidate review, and resolution or explicit disposition of
+the verification immutability failure. Earlier WB-006–008 historical red gaps
+remain outside this candidate's pass claim.

@@ -413,8 +413,6 @@ render_test(%r, %r, detail=%r)
                                "explicit refresh revalidates retained evidence")
 
     def test_measured_pilot_latency_budgets(self):
-        consumer, _ = evidence_workbench()
-        self.addCleanup(consumer.close)
         candidate_sha = __import__("subprocess").run(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
             text=True, check=True).stdout.strip()
@@ -426,14 +424,18 @@ render_test(%r, %r, detail=%r)
         env = dict(os.environ, ASK_BROWSER_CHANNEL=os.environ.get("ASK_BROWSER_CHANNEL", "chrome"))
         completed = __import__("subprocess").run([
             sys.executable, str(ROOT / "_ask/ui/benchmark_workbench.py"),
-            "--model-root", str(consumer.root), "--work-id", "w",
+            "--model-root", str(ROOT), "--work-id", "structured-agentic-environment",
+            "--test-id", "MV-valid",
             "--warm-samples", "20", "--cold-samples", "5", "--output", str(output),
         ], cwd=ROOT, env=env, capture_output=True, text=True, timeout=300)
         self.assertTrue(output.is_file(), "raw benchmark report survives pass, budget miss or browser failure")
         report = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(report["code_candidate_sha"], candidate_sha)
-        self.assertEqual(report["workload"]["kind"], "isolated-consumer-fixture")
-        self.assertTrue(report["workload"]["synthetic_model"])
+        self.assertEqual(report["workload"]["kind"], "real-pilot")
+        self.assertFalse(report["workload"]["synthetic_model"])
+        self.assertEqual(report["workload"]["selected_test_id"], "MV-valid")
+        self.assertEqual(report["workload"]["selected_case_id"],
+                         "test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs")
         self.assertEqual(report["run_status"], "complete", report.get("error"))
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertEqual(json.loads(completed.stdout), report,
@@ -456,7 +458,16 @@ render_test(%r, %r, detail=%r)
         cold = [row["elapsed"] for row in report["cold_start_to_ready_ms"]]
         self.assertTrue(all(value <= limits["cold"] for value in cold),
                         f"each cold start <= {limits['cold']}ms; samples={cold}")
-        self.assertEqual([item["task_count"] for item in report["structural_workloads"]], [100, 1000])
+        workloads = report["structural_workloads"]
+        self.assertEqual([item["task_count"] for item in workloads], [100, 1000])
+        for item in workloads:
+            count = item["task_count"]
+            self.assertTrue(item["admitted"])
+            self.assertFalse(item["evidence_included"])
+            self.assertEqual(item["test_count"], count)
+            self.assertEqual(item["model_node_count"], 3 + 2 * count)
+            self.assertEqual(item["graph_edge_count"], 2 + 2 * count)
+            self.assertEqual(item["source_file_count"], count)
         self.assertEqual(report["code_candidate_sha"], report["workload"]["code_candidate_sha"])
 
 

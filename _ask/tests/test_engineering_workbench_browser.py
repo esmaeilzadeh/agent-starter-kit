@@ -375,7 +375,7 @@ class WorkbenchTests(unittest.TestCase):
                 candidate_selector.click()
                 candidate_selector.fill(candidate_label)
                 candidate_selector.press("ArrowDown")
-                candidate_selector.press("Enter")
+                page.get_by_role("option", name=candidate_label, exact=True).click()
                 expect(candidate_selector).to_have_value(candidate_label)
                 page.get_by_role("button", name="Inspect candidate", exact=True).click()
                 expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
@@ -393,7 +393,8 @@ class WorkbenchTests(unittest.TestCase):
                 expect(page.get_by_text("No recorded execution is attached to this selected test.", exact=True)).to_be_visible()
                 self._open(page, "Decision")
                 expect(page.get_by_text("This source is read-only", exact=False)).to_be_visible()
-                self.assertEqual(page.get_by_role("button", name="Resolve decision").count(), 0)
+                resolve = page.locator('[class~="st-key-decision-submit"]').get_by_role("button")
+                expect(resolve).to_be_disabled()
 
                 self.assertEqual(consumer.git("rev-parse", "HEAD"), before_head)
                 self.assertEqual(consumer.git("for-each-ref", "--format=%(refname) %(objectname)"), before_refs)
