@@ -342,6 +342,7 @@ class WorkbenchTests(unittest.TestCase):
                 self._open(page, "result:E")
                 expect(page.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
+                page.get_by_label("Historical contract candidate").select_option(historical_sha)
                 page.get_by_role("button", name="Inspect candidate", exact=True).click()
                 expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
                 expect(page.get_by_text("They do not verify the current contract.", exact=True)).to_be_visible()
@@ -349,6 +350,7 @@ class WorkbenchTests(unittest.TestCase):
                 expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("No retained execution matches the current test contract.", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
+                page.get_by_label("Historical contract candidate").select_option(historical_sha)
                 page.get_by_role("button", name="Inspect candidate", exact=True).click()
                 expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
                 self.assertGreater(page.get_by_text(historical_sha, exact=True).count(), 0,
@@ -442,7 +444,8 @@ class WorkbenchTests(unittest.TestCase):
                     expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                     expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
                     expect(page.get_by_text("Selected source: test_app.py", exact=False)).to_be_visible()
-                    status = page.get_by_text("No recorded execution is attached to this selected test.", exact=True)
+                    status = page.get_by_text(
+                        "No current recorded execution is attached to this selected revision.", exact=True)
                     expect(status).to_be_visible()
                     self.assertGreaterEqual(self._contrast(page, status.first), 4.5,
                                             "written execution state meets normal-text contrast")
