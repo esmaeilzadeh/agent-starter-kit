@@ -66,7 +66,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
             server.wait(timeout=5)
 
     def test_stale_spec_then_refresh_and_persist_in_new_browser_session(self):
-        consumer, _historical = evidence_workbench()
+        consumer, historical = evidence_workbench()
         self.addCleanup(consumer.close)
         root = consumer.root
         server, url = self._server(root)
@@ -82,6 +82,25 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first = first_context.new_page()
                 first.goto(url, wait_until="domcontentloaded")
                 expect(first.get_by_role("button", name="Uppercase behavior", exact=False)).to_be_visible()
+
+                # Preserve the result journey before making the linked definition stale.
+                self.open_route(first, "Result / evidence")
+                expect(first.get_by_role("button", name="Load test results")).to_be_visible()
+                first.get_by_role("button", name="Load test results").click()
+                expect(first.get_by_text("Passed", exact=False)).to_be_visible(timeout=10000)
+                first.get_by_label("Evidence candidate").fill(consumer.git("rev-parse", "HEAD"))
+                first.get_by_role("button", name="Inspect candidate").click()
+                expect(first.get_by_text("unavailable evidence", exact=False)).to_be_visible()
+                first.get_by_label("Evidence candidate").fill(historical)
+                first.get_by_role("button", name="Inspect candidate").click()
+                expect(first.get_by_text("(historical)", exact=False)).to_be_visible()
+                self.open_route(first, "Uppercase assertion")
+                expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
+                expect(first.get_by_text("assertEqual", exact=False)).to_be_visible()
+                self.open_route(first, "Build")
+                expect(first.get_by_text("choice", exact=False)).to_be_visible()
+                expect(first.get_by_text("Blockers", exact=False)).to_be_visible()
+
                 self.open_route(first, "Decision")
                 expect(first.get_by_role("button", name="Resolve decision")).to_be_visible()
 
@@ -99,12 +118,18 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                               "work/w/test-plan.json": json.dumps(plan)},
                 })
                 self.assertTrue(changed["valid"], changed)
+                definition_paths = [root / "work/w/engineering-model.json",
+                                    root / "specs/current/w.json", plan_path]
+                stale_submission_bytes = {path: path.read_bytes() for path in definition_paths}
                 self.choose_option(first, "one")
                 first.get_by_label("Actor").fill("Browser developer")
                 first.get_by_label("Rationale").fill("Use the amended requirement")
                 first.get_by_role("button", name="Resolve decision").click()
                 expect(first.get_by_text("No change was saved", exact=False)).to_be_visible()
                 unchanged = load_published(root, "w")
+                self.assertEqual({path: path.read_bytes() for path in definition_paths},
+                                 stale_submission_bytes,
+                                 "stale choice cannot publish model or linked definition bytes")
                 choice = next(node for node in unchanged.document["nodes"] if node["id"] == "choice")
                 self.assertEqual(choice["lifecycle"], "open")
                 self.assertEqual(choice["history"], [])
@@ -126,6 +151,9 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 self.open_route(fresh, "Decision")
                 expect(fresh.get_by_text("Browser developer", exact=False)).to_be_visible()
                 expect(fresh.get_by_text("Use the amended requirement", exact=False)).to_be_visible()
+                self.open_route(fresh, "Build")
+                expect(fresh.get_by_text("No blockers are recorded.", exact=False)).to_be_visible()
+                expect(fresh.get_by_text("no completed result is attached", exact=False)).to_be_visible()
                 first.screenshot(path="/tmp/wb009-browser-current.png", full_page=True)
                 browser.close()
         finally:
