@@ -136,6 +136,10 @@ def ready(page):
     selected = page.locator(f'[class~="{_key_class("route:purpose")}"]').get_by_role("button")
     selected.wait_for(timeout=10000)
     expect(selected).to_have_attribute("kind", "primary", timeout=10000)
+    expect(page.get_by_role("heading", name="Purpose", exact=True)).to_be_visible(timeout=10000)
+    for label in ("Stories and scenarios", "Task progress", "Needs attention",
+                  "Scenarios", "Tasks", "Blocked tasks", "Open decisions"):
+        expect(page.get_by_text(label, exact=True)).to_be_visible(timeout=10000)
     return selected
 
 
@@ -204,11 +208,11 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
     def persist_partial():
         if output_path is None:
             return
-        output_path = Path(output_path)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = output_path.with_suffix(output_path.suffix + ".tmp")
+        destination = Path(output_path)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        temporary = destination.with_suffix(destination.suffix + ".tmp")
         temporary.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        temporary.replace(output_path)
+        temporary.replace(destination)
 
     persist_partial()
     with sync_playwright() as pw:
@@ -242,31 +246,33 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 expect(page.get_by_text("Results are not loaded", exact=False)).to_be_visible()
                 metadata_navigation = (time.perf_counter() - t) * 1000
                 t = time.perf_counter()
-                route_click(page, "build", "Build")
-                expect(page.get_by_text("Task status", exact=True)).to_be_visible()
-                status_filter = page.get_by_label("Status filter")
-                if not status_filter.count():
-                    raise AssertionError("selected task is missing its status filter")
-                t = time.perf_counter()
-                status_filter.click()
-                options = [value.strip() for value in page.get_by_role("option").all_text_contents()]
-                alternative = next((value for value in options if value and value.casefold() != "all"), None)
-                if alternative is None:
-                    raise AssertionError("selected task exposes no concrete status to filter")
-                page.get_by_role("option", name=alternative, exact=True).click()
-                status_filter.click()
-                selected_option = page.get_by_role("option", name=alternative, exact=True)
-                expect(selected_option).to_have_attribute("aria-selected", "true")
-                page.keyboard.press("Escape")
+                page.get_by_role("button", name="View scenarios", exact=True).click()
+                expect(page.get_by_role("button", name="Clear filter", exact=True)).to_be_visible()
+                expected_scenarios = {"scenario", "scenario-other"}
+                prefix = _key_class("overview:filter:open:scenarios:")
+                actual_scenarios = page.locator("[class*='st-key-overview-filter-open-scenarios-']").evaluate_all(
+                    "(els, prefix) => [...new Set(els.flatMap(el => [...el.classList]"
+                    ".filter(name => name.startsWith(prefix)).map(name => name.slice(prefix.length))))]",
+                    prefix)
+                if set(actual_scenarios) != expected_scenarios:
+                    raise AssertionError(f"scenario filter opened {actual_scenarios}, expected {sorted(expected_scenarios)}")
+                expect(page.get_by_role("button", name="Open record", exact=True)).to_have_count(2)
+                for identity in expected_scenarios:
+                    expect(page.locator(
+                        f'[class~="{_key_class(f"overview:filter:open:scenarios:{identity}")}"]'
+                    ).get_by_role("button", name="Open record", exact=True)).to_be_visible()
                 filter_ms = (time.perf_counter() - t) * 1000
+                page.get_by_role("button", name="Clear filter", exact=True).click()
                 t = time.perf_counter()
-                route_click(page, "test:U", "Uppercase assertion")
-                expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
+                route_click(page, "test:E", "E")
+                expect(page.get_by_text("test_app.Cases.test_cli", exact=False)).to_be_visible()
                 expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
-                route_click(page, "result:U", "Uppercase assertion")
-                expect(page.get_by_text("Selected test: U · revision-bound planned identity",
+                route_click(page, "result:E", "E")
+                expect(page.get_by_text("Selected test: E · revision-bound planned identity",
                                         exact=True)).to_be_visible()
                 expect(page.get_by_role("heading", name="Recorded execution", exact=True)).to_be_visible()
+                expect(page.get_by_text("Passed", exact=False)).to_be_visible()
+                expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                 source_result = (time.perf_counter() - t) * 1000
                 data["warm_ms"].append({"sample": index, "overview": overview,
                                         "metadata_navigation": metadata_navigation,
