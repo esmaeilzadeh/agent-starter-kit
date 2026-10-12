@@ -50,6 +50,16 @@ class UiIntegrationTests(unittest.TestCase):
     def test_historical_evidence_candidate_is_inspectable_without_being_current(self):
         consumer, historical_sha = evidence_workbench()
         self.addCleanup(consumer.close)
+        plan_path = consumer.root / "work/w/test-plan.json"
+        current_plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        current_plan["task_scopes"] = [{"task_id": "build", "test_ids": ["U"]},
+                                       {"task_id": "review-build", "test_ids": ["E"]}]
+        consumer.write("work/w/test-plan.json", current_plan)
+        consumer.write("work/w/inner-loop/tasks.yaml",
+                       "schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n"
+                       "  - id: build\n    depends_on: []\n    owned_paths: [app.py]\n"
+                       "  - id: review-build\n    depends_on: [build]\n    owned_paths: [app.py]\n")
+        consumer.commit("change current test ownership while retaining prior contract evidence")
         current_sha = consumer.git("rev-parse", "HEAD")
         with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=20)
@@ -60,11 +70,13 @@ class UiIntegrationTests(unittest.TestCase):
             rendered = text(app)
             self.assertIn("Selected test: U", rendered)
             self.assertIn("Exact HELLO output", rendered)
-            self.assertIn("Current evidence is unavailable", rendered)
-            self.assertIn("Historical evidence", rendered)
-            self.assertIn("passed", rendered.casefold())
+            self.assertIn("No retained execution matches the current test contract.", rendered)
+            self.assertIn("Historical contract evidence", rendered)
+            self.assertIn("Recorded historical outcome: Passed", rendered)
+            self.assertIn("They do not verify the current contract.", rendered)
             self.assertNotIn(current_sha, rendered)
-            self.assertNotIn(historical_sha, rendered)
+            self.assertIn(historical_sha, rendered,
+                          "retained historical run identifies its candidate without implying current verification")
             self.assertEqual(len(app.json), 0)
 
     def test_planned_test_shows_its_source_in_the_detail_panel(self):
@@ -144,7 +156,11 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertIn("Output integrity: valid", rendered)
             self.assertIn("Source currency: historical", rendered)
             self.assertIn("Historical evidence", rendered)
-            self.assertIn("Execution ID:", rendered)
+            self.assertIn("Runner (validated against selected test):", rendered)
+            self.assertIn("Phase: final_green", rendered)
+            self.assertIn("Source revision: " + _historical, rendered)
+            self.assertIn("Execution ID: unavailable (not exposed by retained history)", rendered)
+            self.assertIn("Output artifact: work/w/traceability/runs/", rendered)
             self.assertIn("Timestamp: unavailable", rendered)
             self.assertIn("Duration: unavailable", rendered)
             self.assertIn("Snapshot digest", rendered)

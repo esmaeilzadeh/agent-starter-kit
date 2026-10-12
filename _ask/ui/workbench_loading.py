@@ -126,9 +126,10 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
     """Hash selected definitions, exact source bytes, authority refs, and evidence bytes."""
     root = Path(root).resolve()
     work_id = str(snapshot.work_id)
+    current = _git(root, "rev-parse", "HEAD")
+    current_head = current.decode("ascii", "replace") if current else None
     if candidate_sha is None:
-        current = _git(root, "rev-parse", "HEAD")
-        candidate_sha = current.decode("ascii", "replace") if current else None
+        candidate_sha = current_head
     plan_path = f"work/{work_id}/test-plan.json"
     plan_raw = snapshot.files.get(plan_path) or b""
     plan = {}
@@ -159,11 +160,66 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
         "plan_digest": _json_digest(plan),
         "source_context": source_context,
         "candidate_sha": candidate_sha,
+        "current_head": current_head,
         "working_source_bytes": source_items if source_context.get("kind") == "working-tree" else {},
         "accepted_ref": authority.decode("ascii", "replace") if authority else None,
         "all_accepted_refs": _sha(refs) if refs else None,
         "traceability_bytes": _traceability_fingerprint(root, work_id),
     })
+
+
+def _historical_contract_evidence(root: Path, work_id: str, test: dict) -> list[dict]:
+    """Inspect prior accepted contracts for the exact selected test identity."""
+    ledger_path = _confined_file(root, f"work/{work_id}/traceability/executions.json")
+    if ledger_path is None or not ledger_path.is_file():
+        return []
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError, TypeError):
+        return []
+    if not isinstance(ledger, list):
+        return []
+    candidates = sorted({entry.get("candidate_sha") for entry in ledger
+                         if isinstance(entry, dict) and entry.get("work_id", work_id) == work_id
+                         and isinstance(entry.get("candidate_sha"), str)
+                         and len(entry["candidate_sha"]) == 40})
+    records = []
+    for candidate in candidates:
+        try:
+            inspected = inspect_workstream_evidence(root, work_id, candidate)
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+        if inspected.get("status") != "historical":
+            continue
+        completion = inspected.get("completion", {})
+        for scenario in inspected.get("scenarios", []):
+            evidence = scenario.get("evidence") or {}
+            matching_plan_tests = [planned for planned in scenario.get("tests", [])
+                                   if planned.get("id") == test.get("id")
+                                   and planned.get("case_id") == test.get("case_id")
+                                   and planned.get("runner_id") == test.get("runner_id")]
+            if len(matching_plan_tests) != 1:
+                continue
+            for historical_test in evidence.get("tests", []):
+                if (historical_test.get("test_id") != test.get("id")
+                        or historical_test.get("case_id") != test.get("case_id")):
+                    continue
+                for phase, key in (("red", "red"), ("final_green", "final_execution")):
+                    outcomes = historical_test.get(key, []) if key == "red" else [historical_test.get(key)]
+                    for outcome in outcomes:
+                        if not isinstance(outcome, dict):
+                            continue
+                        records.append({
+                            "candidate_sha": candidate,
+                            "criterion_id": scenario.get("criterion_id", "unavailable"),
+                            "spec_digest": completion.get("input_digests", {}).get("spec", "unavailable"),
+                            "plan_digest": completion.get("input_digests", {}).get("plan", "unavailable"),
+                            "phase": outcome.get("phase", phase),
+                            "execution": outcome,
+                        })
+    records.sort(key=lambda item: (item["candidate_sha"], item["phase"],
+                                   item["execution"].get("execution_id", "")))
+    return records
 
 
 def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
@@ -173,12 +229,12 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     root = Path(root).resolve()
     context_kind = source_context.get("kind", "working-tree")
     current_head = _git(root, "rev-parse", "HEAD")
-    chosen_commit = source_context.get("commit") if context_kind == "git-commit" else candidate_sha
-    if chosen_commit is None and current_head:
-        chosen_commit = current_head.decode("ascii", "replace")
-    if isinstance(chosen_commit, bytes):
-        chosen_commit = chosen_commit.decode("ascii", "replace")
-    selected_candidate = chosen_commit
+    evidence_candidate = source_context.get("commit") if context_kind == "git-commit" else candidate_sha
+    if evidence_candidate is None and current_head:
+        evidence_candidate = current_head.decode("ascii", "replace")
+    if isinstance(evidence_candidate, bytes):
+        evidence_candidate = evidence_candidate.decode("ascii", "replace")
+    selected_candidate = evidence_candidate
     key = detail_identity(root, snapshot, test, source_context=source_context,
                           candidate_sha=selected_candidate)
     cache = cache if cache is not None else OrderedDict()
@@ -186,8 +242,8 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
         cache.move_to_end(key)
         return cache[key]
 
-    if chosen_commit:
-        source = qualified_source(root, test, str(chosen_commit),
+    if context_kind == "git-commit" and selected_candidate:
+        source = qualified_source(root, test, str(selected_candidate),
                                   current_sha=current_head.decode("ascii", "replace") if current_head else None)
     else:
         source = _working_source(root, test)
@@ -240,8 +296,10 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     except (OSError, ValueError, KeyError, TypeError) as exc:
         history = {"status": "unavailable", "completion": "not_evaluated", "runs": [],
                    "diagnostic": str(exc)}
+    historical_contracts = _historical_contract_evidence(root, snapshot.work_id, test) if not history.get("runs") else []
     value = {"identity": key, "source": source, "evidence_projection": evidence_projection,
              "evidence": evidence_set, "execution_history": history,
+             "historical_contracts": historical_contracts,
              "candidate_sha": selected_candidate, "context_kind": context_kind}
     cache[key] = value
     cache.move_to_end(key)

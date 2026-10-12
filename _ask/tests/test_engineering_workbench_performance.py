@@ -149,9 +149,11 @@ render_test(%r, %r, detail=%r)
         # evidence inspection is explicitly pinned to a historical candidate.
         source_path = root / test["source_paths"][0]
         source_before = source_path.read_bytes()
-        marker = b"\n# working-tree-only-marker\n"
+        source_marker = b"# working-tree-only-marker\n        "
+        assertion = b"self.assertEqual(render('hello'),'HELLO')"
         try:
-            source_path.write_bytes(source_before + marker)
+            self.assertIn(assertion, source_before, "fixture contains the selected source assertion")
+            source_path.write_bytes(source_before.replace(assertion, source_marker + assertion, 1))
             working_detail = workbench_loading.load_selected_detail(
                 root, snapshot, test, node_id="case", source_context=context,
                 candidate_sha=historical, cache=cache)
@@ -299,8 +301,8 @@ st.write(st.session_state.get("_engineering_route"))
     def test_overview_is_lazy_and_selected_details_are_cached(self):
         consumer, _ = evidence_workbench()
         self.addCleanup(consumer.close)
-        source_reads = patch.object(workbench_loading, "qualified_source",
-                                    wraps=workbench_loading.qualified_source)
+        source_reads = patch.object(workbench_loading, "_working_source",
+                                    wraps=workbench_loading._working_source)
         history_reads = patch.object(workbench_loading, "execution_history",
                                      wraps=workbench_loading.execution_history)
         evidence_reads = patch("engineering_model.projection.inspect_evidence",

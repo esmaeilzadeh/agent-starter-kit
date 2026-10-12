@@ -1,7 +1,6 @@
 """Selected test, source, execution and related-work detail."""
 from __future__ import annotations
 
-from pathlib import PurePosixPath
 import streamlit as st
 
 from workbench_debug import render_debug
@@ -56,6 +55,7 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
     history = detail.get("execution_history", {}) if isinstance(detail, dict) else {}
     runs = history.get("runs", []) if isinstance(history, dict) else []
     evidence_state = detail.get("evidence", {}) if isinstance(detail, dict) else {}
+    historical_contracts = detail.get("historical_contracts", []) if isinstance(detail, dict) else []
     if evidence_state.get("status") == "historical" or any(
             run.get("source_status") == "historical" for run in runs if isinstance(run, dict)):
         st.caption("Historical evidence")
@@ -70,6 +70,8 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
                     and run.get("output_status") == "valid"]
     if runs and not current_runs:
         st.info("No current recorded execution is attached to this selected revision.")
+    elif not runs and historical_contracts:
+        st.info("No retained execution matches the current test contract.")
     elif not runs:
         st.info("No recorded execution is attached to this selected test.")
     for run in runs:
@@ -92,10 +94,15 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
             st.caption(f"Work: {run.get('work_id', projection.get('work_id', 'unknown'))} · "
                        f"Test: {run.get('test_id', test_id)} · Case: {run.get('case_id', test.get('case_id', 'unavailable'))}")
             st.caption("Run ID: " + run_id)
+            st.caption("Runner (validated against selected test): " + str(test.get("runner_id", "unavailable")))
+            st.caption("Phase: " + str(run.get("phase", "unavailable")) +
+                       " · Scope: " + str(run.get("scope", "unavailable")) +
+                       " · Task: " + str(run.get("task_id", "unavailable")))
             artifact = run.get("output_artifact")
-            if artifact:
-                st.caption("Execution ID: " + PurePosixPath(str(artifact)).stem)
+            st.caption("Execution ID: unavailable (not exposed by retained history)")
+            st.caption("Output artifact: " + str(artifact or "unavailable"))
             st.caption("Candidate: " + str(run.get("candidate_sha", "unavailable")))
+            st.caption("Source revision: " + str(run.get("source_sha", "unavailable")))
             st.caption("Contract: spec " + str(run.get("spec_digest", "unavailable")) +
                        " · plan " + str(run.get("plan_digest", "unavailable")))
             st.write("Timestamp: " + str(run.get("recorded_at") or "unavailable"))
@@ -110,6 +117,24 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
             st.warning(str(history["diagnostic"]))
         else:
             st.info(str(history["diagnostic"]))
+    if historical_contracts:
+        st.markdown("#### Historical contract evidence")
+        st.caption("These records were inspected against their retained historical test plan. They do not verify the current contract.")
+        for index, record in enumerate(historical_contracts):
+            execution = record.get("execution", {})
+            st.caption(f"Historical candidate: {record.get('candidate_sha', 'unavailable')} · "
+                       f"Criterion: {record.get('criterion_id', 'unavailable')}")
+            st.caption("Historical contract: spec " + str(record.get("spec_digest", "unavailable")) +
+                       " · plan " + str(record.get("plan_digest", "unavailable")))
+            st.caption("Execution ID: " + str(execution.get("execution_id", "unavailable")))
+            st.caption("Runner: " + str(execution.get("runner_id", test.get("runner_id", "unavailable"))) +
+                       " · Phase: " + str(record.get("phase", "unavailable")))
+            st.write("Recorded historical outcome: " +
+                     str(execution.get("outcome", "unavailable")).replace("_", " ").title())
+            st.caption("Source revision: " + str(execution.get("source_sha", "unavailable")))
+            st.caption("Output artifact: " + str(execution.get("output_artifact", "unavailable")))
+            if execution.get("failure_kind"):
+                st.write("Failure detail: " + str(execution["failure_kind"]).replace("_", " "))
     evidence = test.get("evidence")
     if detail is None and not evidence:
         st.info("No recorded execution is attached to this selected test.")
