@@ -86,7 +86,8 @@ def _detail(row: dict, *, on_open=None, context: str = "tasks") -> None:
         st.caption("No implementation paths are recorded.")
 
 
-def render_tasks(projection: dict, *, context: str = "tasks", on_open=None) -> None:
+def render_tasks(projection: dict, *, context: str = "tasks", on_open=None,
+                 selected_id: str | None = None) -> None:
     """Render filterable task rows and a complete selected-task detail panel."""
     rows = task_rows(projection)
     st.subheader("Tasks")
@@ -112,9 +113,12 @@ def render_tasks(projection: dict, *, context: str = "tasks", on_open=None) -> N
     options = [row["id"] for row in filtered]
     labels = {row["id"]: f"{row['id']} · {row['title']} · {row.get('status', 'not recorded')}"
               for row in filtered}
-    selected_id = st.selectbox("Selected task", options,
-                               format_func=lambda identity: labels[identity],
-                               key=f"tasks:selected:{context}")
-    selected = next(row for row in filtered if row["id"] == selected_id)
+    selection_key = f"tasks:selected:{context}"
+    if st.session_state.get(selection_key) not in options:
+        st.session_state[selection_key] = selected_id if selected_id in options else options[0]
+    selected_task_id = st.selectbox("Selected task", options,
+                                    format_func=lambda identity: labels[identity],
+                                    key=selection_key)
+    selected = next(row for row in filtered if row["id"] == selected_task_id)
     with st.container(border=True):
         _detail(selected, on_open=on_open, context=context)

@@ -95,7 +95,7 @@ def _structural_workload(task_count: int) -> dict:
 
 class WorkbenchTests(unittest.TestCase):
     def test_lazy_work_and_integrity_bound_cache_invalidation(self):
-        consumer, _ = evidence_workbench()
+        consumer, historical = evidence_workbench()
         self.addCleanup(consumer.close)
         root = consumer.root
         snapshot, diagnostics = admit(root, "w")
@@ -111,18 +111,20 @@ class WorkbenchTests(unittest.TestCase):
         context = {"kind": "working-tree"}
         self.assertEqual(len(cache), 0, "overview projection leaves selected detail cache empty")
         original_identity = workbench_loading.detail_identity(
-            root, snapshot, test, source_context=context)
+            root, snapshot, test, source_context=context, candidate_sha=historical)
         first = workbench_loading.load_selected_detail(
-            root, snapshot, test, node_id="case", source_context=context, cache=cache)
+            root, snapshot, test, node_id="case", source_context=context,
+            candidate_sha=historical, cache=cache)
         same = workbench_loading.load_selected_detail(
-            root, snapshot, test, node_id="case", source_context=context, cache=cache)
+            root, snapshot, test, node_id="case", source_context=context,
+            candidate_sha=historical, cache=cache)
         self.assertIs(first, same, "revisiting unchanged selected detail uses its integrity-bound cache")
         self.assertEqual(len(cache), 1)
         self.assertEqual(first["identity"], original_identity)
 
         # Exercise the real retained run log and review record instead of a synthetic probe file.
         log_path = next((root / "work/w/traceability/runs").glob("*/*.log"), None)
-        review_path = root / "work/w/traceability/reviews" / f"{consumer.sha}.json"
+        review_path = root / "work/w/traceability/reviews" / f"{historical}.json"
         self.assertIsNotNone(log_path, "fixture retains a real execution log")
         self.assertTrue(review_path.is_file(), "fixture retains a candidate-bound review")
         log_before = log_path.read_bytes()
@@ -131,11 +133,13 @@ class WorkbenchTests(unittest.TestCase):
         accepted_before = consumer.git("rev-parse", ref)
         try:
             log_path.write_bytes(log_before + b"tampered")
-            log_identity = workbench_loading.detail_identity(root, snapshot, test, source_context=context)
+            log_identity = workbench_loading.detail_identity(
+                root, snapshot, test, source_context=context, candidate_sha=historical)
             self.assertNotEqual(original_identity, log_identity,
                                 "a retained execution-log mutation invalidates selected detail")
             changed_log = workbench_loading.load_selected_detail(
-                root, snapshot, test, node_id="case", source_context=context, cache=cache)
+                root, snapshot, test, node_id="case", source_context=context,
+                candidate_sha=historical, cache=cache)
             self.assertIsNot(first, changed_log)
             self.assertNotEqual(first["evidence"], changed_log["evidence"])
             self.assertIn(changed_log["evidence"].get("status"), {"invalid", "unavailable"})
@@ -144,16 +148,19 @@ class WorkbenchTests(unittest.TestCase):
             review_doc = json.loads(review_before)
             review_doc["candidate_sha"] = "0" * 40
             review_path.write_text(json.dumps(review_doc), encoding="utf-8")
-            review_identity = workbench_loading.detail_identity(root, snapshot, test, source_context=context)
+            review_identity = workbench_loading.detail_identity(
+                root, snapshot, test, source_context=context, candidate_sha=historical)
             self.assertNotEqual(original_identity, review_identity,
                                 "a retained semantic-review mutation invalidates selected detail")
 
             consumer.git("update-ref", ref, consumer.red_sha)
-            ref_identity = workbench_loading.detail_identity(root, snapshot, test, source_context=context)
+            ref_identity = workbench_loading.detail_identity(
+                root, snapshot, test, source_context=context, candidate_sha=historical)
             self.assertNotEqual(review_identity, ref_identity,
                                 "the accepted authority ref participates in selected-detail identity")
             changed_authority = workbench_loading.load_selected_detail(
-                root, snapshot, test, node_id="case", source_context=context, cache=cache)
+                root, snapshot, test, node_id="case", source_context=context,
+                candidate_sha=historical, cache=cache)
             self.assertIn(changed_authority["evidence"].get("status"), {"invalid", "unavailable"})
 
             # Stale displayed identity still cannot authorize a guarded mutation.
@@ -174,7 +181,7 @@ class WorkbenchTests(unittest.TestCase):
             source_path.write_bytes(source_before + b"\n# changed source bytes\n")
             os.utime(source_path, ns=(source_stat.st_atime_ns, source_stat.st_mtime_ns))
             self.assertNotEqual(original_identity, workbench_loading.detail_identity(
-                root, snapshot, test, source_context=context),
+                root, snapshot, test, source_context=context, candidate_sha=historical),
                 "guaranteed same-mtime source mutation invalidates selected detail")
         finally:
             source_path.write_bytes(source_before)

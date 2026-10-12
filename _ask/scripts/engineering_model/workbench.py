@@ -176,6 +176,14 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             "id": test_id,
             "title": next((node.get("title") for node in test_node_by_case.get(test_id, [])), test_id),
             "type": test.get("type"),
+            "case_id": test.get("case_id"),
+            "runner_id": test.get("runner_id"),
+            "source_paths": list(test.get("source_paths", []))
+            if isinstance(test.get("source_paths", []), list) else [],
+            "criterion_ids": list(test.get("criterion_ids", []))
+            if isinstance(test.get("criterion_ids", []), list) else [],
+            "expected_assertions": list(test.get("expected_assertions", []))
+            if isinstance(test.get("expected_assertions", []), list) else [],
             "scenario_ids": scenario_ids,
             "owner_task_id": owner,
             "ownership_status": "owned" if owner else "unowned-or-ambiguous",

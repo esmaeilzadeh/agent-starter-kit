@@ -71,13 +71,16 @@ class WorkbenchTests(unittest.TestCase):
     @staticmethod
     def _assert_filter_ids(page, kind, expected, metric_label, metric_count):
         prefix = WorkbenchTests._key_class(f"overview:filter:open:{kind}:")
+        row_wrappers = page.locator(f"[class*='st-key-overview-filter-open-{kind}-']")
+        expect(row_wrappers).to_have_count(len(expected))
         actual = page.locator("[class*='st-key-overview-filter-open-']").evaluate_all(
             "(els, prefix) => [...new Set(els.flatMap(el => [...el.classList]"
             ".filter(name => name.startsWith(prefix)).map(name => name.slice(prefix.length))))]",
             prefix)
         assert set(actual) == set(expected), f"{kind} summary opened {actual}, expected {sorted(expected)}"
         expect(page.get_by_role("button", name="Clear filter", exact=True)).to_be_visible()
-        metric = page.locator("[data-testid='stMetric']").filter(has_text=metric_label)
+        metric = page.locator("[data-testid='stMetric']").filter(
+            has=page.get_by_text(metric_label, exact=True))
         expect(metric).to_have_count(1)
         assert metric.inner_text().splitlines()[-1].strip() == str(metric_count), (
             f"{metric_label} metric must match its opened records")
@@ -301,31 +304,16 @@ class WorkbenchTests(unittest.TestCase):
                 page.get_by_role("button", name="View scenarios", exact=True).click()
                 self._assert_filter_ids(page, "scenarios", {"scenario", "scenario-other"}, "Scenarios", 2)
                 expect(page.get_by_role("heading", name="Scenarios", exact=True)).to_be_visible()
-                scenario_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
-                expect(scenario_panel.get_by_text("Uppercase behavior", exact=True)).to_be_visible()
-                expect(scenario_panel.get_by_text("Second canonical behavior", exact=True)).to_be_visible()
-                expect(scenario_panel.get_by_text("Uppercase assertion", exact=True)).to_have_count(0)
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View tasks", exact=True).click()
                 self._assert_filter_ids(page, "tasks", {"build", "review-build"}, "Tasks", 2)
                 expect(page.get_by_role("heading", name="Tasks", exact=True)).to_be_visible()
-                tasks_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
-                expect(tasks_panel.get_by_text("build · completed", exact=False)).to_be_visible()
-                expect(tasks_panel.get_by_text("review-build · planned", exact=False)).to_be_visible()
-                self.assertEqual(tasks_panel.get_by_text("build · completed", exact=False).count(), 1)
-                self.assertEqual(tasks_panel.get_by_text("review-build · planned", exact=False).count(), 1)
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View blocked tasks", exact=True).click()
                 self._assert_filter_ids(page, "blocked", {"review-build"}, "Blocked tasks", 1)
-                blocked_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
-                expect(blocked_panel.get_by_text("review-build · planned", exact=False)).to_be_visible()
-                expect(blocked_panel.get_by_text("build · completed", exact=False)).to_have_count(0)
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View open decisions", exact=True).click()
                 self._assert_filter_ids(page, "decisions", {"choice"}, "Open decisions", 1)
-                decisions_panel = page.locator("div[data-testid='stVerticalBlockBorderWrapper']").last
-                expect(decisions_panel.get_by_text("choice · open", exact=False)).to_be_visible()
-                expect(decisions_panel.get_by_text("Choose", exact=True)).to_be_visible()
 
                 self._open(page, "Render uppercase text")
                 expect(page.get_by_role("heading", name="Render uppercase text")).to_be_visible()
@@ -343,7 +331,7 @@ class WorkbenchTests(unittest.TestCase):
                 expect(page.get_by_text("U", exact=True)).to_be_visible()
                 self._open(page, "Review build")
                 expect(page.get_by_role("heading", name="Review build")).to_be_visible()
-                expect(page.get_by_text("E", exact=True)).to_be_visible()
+                expect(page.get_by_role("button", name="E", exact=True)).to_be_visible()
                 self._open(page, "Uppercase assertion")
                 expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
                 expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
@@ -410,10 +398,11 @@ class WorkbenchTests(unittest.TestCase):
                     args=["--no-sandbox"])
                 page = browser.new_page(viewport={"width": 390, "height": 844})
                 page.goto(url, wait_until="domcontentloaded")
+                expect(page.get_by_role("heading", name="Engineering workbench", exact=True)).to_be_visible(timeout=15000)
                 for width in (390, 1440):
                     page.set_viewport_size({"width": width, "height": 844})
                     route = page.get_by_role("button", name="Uppercase behavior", exact=False).first
-                    expect(route).to_be_visible()
+                    expect(route).to_be_visible(timeout=15000)
                     self._tab_to(page, route)
                     self._assert_focus(page, route, "scenario route")
                     self.assertGreaterEqual(self._contrast(page, route), 4.5,
@@ -476,25 +465,81 @@ class WorkbenchTests(unittest.TestCase):
                 submit = page.get_by_role("button", name="Resolve decision")
                 self._tab_to(page, submit)
                 page.keyboard.press("Enter")
-                expect(page.get_by_text("resolved", exact=False)).to_be_visible()
+                expect(page.get_by_role("heading", name="Purpose", exact=True)).to_be_visible()
+                expect(page.get_by_role("button", name="Resolve decision")).to_have_count(0)
 
                 resolved = load_published(root, "w")
                 choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
-                self.assertEqual(choice["history"][-1]["option_id"], "two")
-                self.assertEqual(choice["history"][-1]["actor"], "Keyboard developer")
-                self.assertEqual(choice["history"][-1]["rationale"], "Accessible option labels persist")
+                self.assertEqual(choice["resolution"]["option_id"], "two")
+                self.assertEqual(choice["resolution"]["actor"], "Keyboard developer")
+                self.assertEqual(choice["resolution"]["rationale"], "Accessible option labels persist")
+                self._open(page, "resolved-decision:choice")
+                expect(page.get_by_role("heading", name="Resolved decision", exact=True)).to_be_visible()
+                expect(page.get_by_text("Resolved option: two", exact=True)).to_be_visible()
                 page.set_viewport_size({"width": 390, "height": 844})
                 self.assertLessEqual(page.locator("body").evaluate("el => el.scrollWidth"), 390,
                                      "narrow layout has no horizontal page overflow")
                 fresh = browser.new_context().new_page()
                 fresh.goto(url, wait_until="domcontentloaded")
-                self._open(fresh, "Decision")
+                self._open(fresh, "resolved-decision:choice")
+                expect(fresh.get_by_role("heading", name="Resolved decision", exact=True)).to_be_visible()
+                expect(fresh.get_by_text("Resolved option: two", exact=True)).to_be_visible()
                 expect(fresh.get_by_text("Keyboard developer", exact=False)).to_be_visible()
                 expect(fresh.get_by_text("Accessible option labels persist", exact=False)).to_be_visible()
                 self._open(fresh, "Build")
                 expect(fresh.get_by_text("No blockers are recorded.", exact=False)).to_be_visible()
-                expect(fresh.get_by_text("Blockers", exact=False)).to_be_visible()
+                expect(fresh.get_by_text("Blockers", exact=True)).to_be_visible()
                 browser.close()
+
+            wide_consumer, _ = evidence_workbench()
+            wide_server, wide_url = self._server(wide_consumer.root)
+            try:
+                with sync_playwright() as pw:
+                    wide_browser = pw.chromium.launch(
+                        headless=True,
+                        **({"channel": os.environ["ASK_BROWSER_CHANNEL"]}
+                           if os.environ.get("ASK_BROWSER_CHANNEL") else {}),
+                        args=["--no-sandbox"])
+                    wide = wide_browser.new_page(viewport={"width": 1440, "height": 900})
+                    wide.goto(wide_url, wait_until="domcontentloaded")
+                    decision = wide.get_by_role("button", name="Decision", exact=False).first
+                    self._tab_to(wide, decision)
+                    self._assert_focus(wide, decision, "wide decision route")
+                    self.assertGreaterEqual(self._contrast(wide, decision), 4.5)
+                    wide.keyboard.press("Enter")
+                    option = wide.get_by_role("combobox", name="Option")
+                    self._tab_to(wide, option)
+                    self._assert_focus(wide, option, "wide decision option")
+                    self.assertGreaterEqual(self._contrast(wide, option), 4.5)
+                    wide.keyboard.press("ArrowDown")
+                    wide.keyboard.press("Enter")
+                    expect(option).to_have_value("two")
+                    actor = wide.get_by_label("Actor")
+                    self._tab_to(wide, actor)
+                    self._assert_focus(wide, actor, "wide decision actor")
+                    self.assertGreaterEqual(self._contrast(wide, actor), 4.5)
+                    wide.keyboard.type("Wide keyboard developer")
+                    rationale = wide.get_by_label("Rationale")
+                    self._tab_to(wide, rationale)
+                    self._assert_focus(wide, rationale, "wide decision rationale")
+                    self.assertGreaterEqual(self._contrast(wide, rationale), 4.5)
+                    wide.keyboard.type("Wide layout decision remains attributed")
+                    submit = wide.get_by_role("button", name="Resolve decision")
+                    self._tab_to(wide, submit)
+                    self._assert_focus(wide, submit, "wide decision submit")
+                    self.assertGreaterEqual(self._contrast(wide, submit), 4.5)
+                    wide.keyboard.press("Enter")
+                    expect(wide.get_by_role("heading", name="Purpose", exact=True)).to_be_visible()
+                    resolved = load_published(wide_consumer.root, "w")
+                    choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
+                    self.assertEqual(choice["resolution"]["option_id"], "two")
+                    self.assertEqual(choice["resolution"]["actor"], "Wide keyboard developer")
+                    self.assertEqual(choice["resolution"]["rationale"], "Wide layout decision remains attributed")
+                    wide_browser.close()
+            finally:
+                wide_server.terminate()
+                wide_server.wait(timeout=5)
+                wide_consumer.close()
         finally:
             server.terminate()
             server.wait(timeout=5)

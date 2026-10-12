@@ -8,6 +8,7 @@ import ast
 import json
 import subprocess
 import sys
+from collections import OrderedDict
 from types import MappingProxyType
 
 import pandas as pd
@@ -38,6 +39,7 @@ from workbench_scenarios import render_scenario
 from workbench_stories import render_story
 from workbench_tasks import render_tasks
 from workbench_tests import render_test
+import workbench_loading
 
 
 STATE_VIEW = "_engineering_displayed_view"
@@ -48,6 +50,7 @@ STATE_EVIDENCE_PROJECTION = "_engineering_evidence_projection"
 STATE_BRANCH = "_engineering_branch"
 STATE_OVERVIEW_RESULTS = "_engineering_overview_results"
 STATE_OVERVIEW_FILTER = "_engineering_overview_filter"
+STATE_DETAIL_CACHE = "_engineering_selected_detail_cache"
 
 
 def _set_overview_filter(kind: str, ids: list[str], work_id: str) -> None:
@@ -671,7 +674,20 @@ def _render_evidence(projection: dict, root: Path, context: str) -> None:
 
 
 def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view: dict) -> None:
-    if node.get("type") != "decision" or node.get("lifecycle") != "open":
+    if node.get("type") != "decision":
+        return
+    if node.get("lifecycle") != "open":
+        resolution = node.get("resolution", {})
+        option_id = resolution.get("option_id")
+        option = next((item for item in node.get("options", [])
+                       if item.get("id") == option_id), None)
+        st.subheader("Resolved decision")
+        st.write(f"Resolved option: {option_id or 'unavailable'}")
+        if option:
+            st.write(f"Choice: {option.get('label', option_id)}")
+        st.write(f"Actor: {resolution.get('actor', 'unavailable')}")
+        st.write(f"Rationale: {resolution.get('rationale', 'unavailable')}")
+        st.write(f"Resolved at: {resolution.get('timestamp', 'unavailable')}")
         return
     st.subheader("Resolve decision")
     options = node.get("options", [])
@@ -726,6 +742,20 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
 
 
 st.set_page_config(page_title="Engineering workbench", page_icon=":material/schema:", layout="wide")
+st.markdown("""
+<style>
+button:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #005e60 !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
 st.title("Engineering workbench")
 st.caption("Follow promised work through delivery tasks, tests, and recorded results.")
 
@@ -857,6 +887,20 @@ projection = view["projection"]
 navigation_col, detail_col = st.columns([1, 2], gap="large")
 with navigation_col:
     outline = render_outline(projection)
+    for decision in projection.get("model", {}).get("nodes", []):
+        if decision.get("type") != "decision" or decision.get("lifecycle") != "resolved":
+            continue
+        route = f"resolved-decision:{decision['id']}"
+        label = "Decision · " + (decision.get("title") or decision["id"])
+        st.button(label, key=f"route:{route}", on_click=route_to,
+                  args=(st.session_state, route))
+        entry = {"route_id": route, "label": label, "kind": "decision",
+                 "node_id": decision["id"], "indent": 1}
+        outline["entries"].append(entry)
+        root_id = outline["roots"][0] if outline["roots"] else ""
+        root_title = next((node.get("title") or root_id for node in projection.get("model", {}).get("nodes", [])
+                           if node.get("id") == root_id), root_id)
+        outline["ancestors"][route] = [(root_id, root_title), (route, label)]
 route_id = st.session_state.get(STATE_ROUTE)
 if route_id not in outline["ancestors"]:
     route_id = outline["roots"][0] if outline["roots"] else ""
@@ -872,14 +916,31 @@ with detail_col:
             selected_node = _node_map(projection).get(selected["node_id"])
             if selected_node:
                 _render_decision(selected_node, view["editable"], root, work_id, view)
-        elif selected["kind"] == "result":
-            render_test(projection, selected["node_id"],
-                        context=f"result:{selected['route_id']}", on_open=_open_related_route)
-        elif selected["kind"] == "test":
-            render_test(projection, selected["node_id"],
-                        context=f"test:{selected['route_id']}", on_open=_open_related_route)
+        elif selected["kind"] in {"result", "test"}:
+            test_id = str(selected["node_id"])
+            test = next((item for item in projection.get("workbench", {}).get("tests", [])
+                         if str(item.get("id")) == test_id), None)
+            detail = None
+            captured = view.get("captured")
+            if test is not None and captured is not None:
+                plan_path = f"work/{work_id}/test-plan.json"
+                test_node_id = next((node.get("id") for node in projection.get("model", {}).get("nodes", [])
+                                     if node.get("type") == "test"
+                                     and node.get("reference", {}).get("path") == plan_path
+                                     and node.get("reference", {}).get("id") == test_id), test_id)
+                detail_cache = st.session_state.setdefault(STATE_DETAIL_CACHE, OrderedDict())
+                detail = workbench_loading.load_selected_detail(
+                    root, captured, test, node_id=test_node_id,
+                    source_context=source_context,
+                    candidate_sha=source_context.get("commit"),
+                    cache=detail_cache,
+                )
+            render_test(projection, test_id, detail=detail,
+                        context=f"{selected['kind']}:{selected['route_id']}",
+                        on_open=_open_related_route)
         elif selected["kind"] == "task":
-            render_tasks(projection, context=f"route:{selected['route_id']}", on_open=_open_related_route)
+            render_tasks(projection, context=f"route:{selected['route_id']}",
+                         on_open=_open_related_route, selected_id=selected["node_id"])
         elif selected["kind"] == "scenario":
             render_scenario(projection, selected["node_id"], on_open=_open_related_route)
         elif selected["kind"] == "story":

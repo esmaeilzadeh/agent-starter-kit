@@ -196,18 +196,27 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
         evidence_projection = None
         evidence_set = {"status": "unavailable", "diagnostic": str(exc)}
 
-    spec_path = next((path for path in snapshot.files
-                      if path.startswith("specs/current/") and path.endswith(".json")), None)
-    spec = snapshot.files.get(spec_path) if spec_path else None
     plan_raw = snapshot.files.get(f"work/{snapshot.work_id}/test-plan.json")
-    try:
-        spec_doc = json.loads(spec.decode("utf-8")) if spec else {}
-    except (UnicodeError, ValueError, TypeError):
-        spec_doc = {}
     try:
         plan_doc = json.loads(plan_raw.decode("utf-8")) if plan_raw else {}
     except (UnicodeError, ValueError, TypeError):
         plan_doc = {}
+    expected_spec_digest = plan_doc.get("spec_digest") if isinstance(plan_doc, dict) else None
+    spec_doc = {}
+    canonical_path = f"specs/current/{snapshot.work_id}.json"
+    candidates = [canonical_path, *(path for path in sorted(snapshot.files)
+                                    if path.startswith("specs/current/") and path.endswith(".json")
+                                    and path != canonical_path)]
+    for spec_path in candidates:
+        raw = snapshot.files.get(spec_path)
+        try:
+            candidate = json.loads(raw.decode("utf-8")) if raw else {}
+        except (UnicodeError, ValueError, TypeError):
+            continue
+        if (isinstance(candidate, dict) and candidate.get("schema") == "ask-spec/v1"
+                and (not expected_spec_digest or _json_digest(candidate) == expected_spec_digest)):
+            spec_doc = candidate
+            break
     try:
         history = execution_history(root, snapshot.work_id, test,
                                    spec_digest=_json_digest(spec_doc),
