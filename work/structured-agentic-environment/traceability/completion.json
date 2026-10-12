@@ -3,12 +3,12 @@
   "status": "fail",
   "scope": "workstream",
   "task_id": null,
-  "candidate_sha": "f76170981496d14d7d1512705e1f0d61aa8000ea",
+  "candidate_sha": "990dba2c93494bad96117f39790e5319b4e672df",
   "input_digests": {},
   "criterion_evidence": [],
   "missing_evidence": [],
   "errors": [
-    "candidate source/CheckPlan changed during verification"
+    "required candidate verification failed"
   ],
   "execution_artifacts": []
 }
