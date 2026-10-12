@@ -34,21 +34,22 @@ current model and retained history. The runner records the exact model/source
 digests and a screenshot of the initial overview. Isolated consumer fixtures
 remain useful diagnostics and are labeled synthetic.
 
-A one-warm/one-cold real-pilot smoke sample on the workstream model completed
-against candidate `72da8f1f`: overview 1628.9 ms, metadata navigation 263.9 ms,
-filter 300.9 ms, selected source/result 1375.9 ms, and cold start 2383.9 ms.
-These single samples are diagnostic only and exceed the overview and
-source/result budgets. The required 20 warm/5 cold real-pilot run is still
-needed for acceptance.
+A full 20-warm/5-cold real-pilot run completed against candidate `8bf82acc`.
+Nearest-rank p95 was 1586.9 ms for overview (limit 1500 ms), 323.8 ms for
+metadata navigation (limit 500 ms), 336.9 ms for filtering (limit 500 ms), and
+1350.3 ms for selected source/result (limit 1000 ms). Cold starts ranged from
+2334 to 2396 ms (limit 4000 ms). The overview and source/result budgets failed.
+The raw report and actual overview screenshot are archived as
+`traceability/real-pilot-8bf82ac.json` and
+`traceability/real-pilot-8bf82ac.overview.png`.
 
 The scale fixtures now contain admitted canonical model, task graph, test
 scope, source files and test nodes. Both `validate_current` and `admit` must
 succeed before projection timings are recorded. The 1000-task fixture contains
 1000 tasks, 1000 tests, 2003 model nodes, 2002 model edges and 1000 source files.
-Its measured evidence-free projection took 10.36–13.34 seconds across five
-samples; outline construction took 108–117 ms. These large-fixture numbers are
-diagnostics, not an SLA. The required full candidate run will archive its raw
-structural measurements.
+In the archived 100/1,000 structural run, evidence-free projection took
+73.8–79.9 ms / 9.74–13.16 s across five samples; outline construction took
+1.4–2 ms / 102–145 ms. These large-fixture numbers are diagnostics, not an SLA.
 
 Profiling `MV-valid` detail loading found that cache identity hashed 1668 files,
 including generated publication blobs and static verification logs. Cache
@@ -56,8 +57,9 @@ identity now hashes the runtime evidence inputs used by this view: completion,
 execution ledger, retained runs and reviews. The selected-detail integrity test
 still proves that retained log and review edits invalidate the cache. A direct
 call on the real pilot fell from 608 ms to 204 ms, with identity hashing falling
-from 429 ms to 59 ms. The full browser measurement must confirm the practical
-effect.
+from 429 ms to 59 ms. The full browser run reduced selected source/result p95
+from the earlier 1469.5 ms to 1350.3 ms, still above budget. Overview also
+missed by 86.9 ms in the full sample.
 
 ## Verification state and remaining evidence
 
@@ -68,8 +70,8 @@ verification was checking the candidate source/CheckPlan for changes. The exact
 run is archived under `traceability/static-runs/5555...` and the corresponding
 traceability run above. This verification failure remains unresolved.
 
-WB-009 is not complete. Remaining work is the exact 20-warm/5-cold real-pilot
-measurement, a passing 16-case WB-009 run on one committed candidate, an
-independent final candidate review, and resolution or explicit disposition of
-the verification immutability failure. Earlier WB-006–008 historical red gaps
-remain outside this candidate's pass claim.
+WB-009 is not complete. Remaining work is a passing 16-case WB-009 run on one
+committed candidate, an independent final candidate review, and resolution or
+explicit disposition of the remaining real-pilot budget misses and verification
+immutability failure. Earlier WB-006–008 historical red gaps remain outside
+this candidate's pass claim.
