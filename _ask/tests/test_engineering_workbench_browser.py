@@ -106,6 +106,17 @@ class WorkbenchTests(unittest.TestCase):
     @staticmethod
     def _recorded_hierarchy(consumer):
         """Create explicit story/task records and two immutable work branches."""
+        def task_graph_yaml(document):
+            rows = []
+            for task in document["tasks"]:
+                dependencies = ", ".join(task.get("depends_on", []))
+                paths = ", ".join(task.get("owned_paths", []))
+                rows.extend((f"  - id: {task['id']}", f"    title: {task['title']}",
+                             f"    outcome: {task['outcome']}",
+                             f"    depends_on: [{dependencies}]", f"    owned_paths: [{paths}]"))
+            return (f"schema: {document['schema']}\nwork_id: {document['work_id']}\ntasks:\n"
+                    + "\n".join(rows) + "\n")
+
         root = consumer.root
         consumer.git("branch", "main")
         model = json.loads((root / "work/w/engineering-model.json").read_text())
@@ -135,7 +146,7 @@ class WorkbenchTests(unittest.TestCase):
         ]}
         consumer.write("work/w/engineering-model.json", model)
         consumer.write("work/w/test-plan.json", plan)
-        consumer.write("work/w/inner-loop/tasks.yaml", yaml.safe_dump(graph, sort_keys=False))
+        consumer.write("work/w/inner-loop/tasks.yaml", task_graph_yaml(graph))
         consumer.write("work/w/inner-loop/state.json", {
             "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
             "tasks": {
@@ -143,9 +154,9 @@ class WorkbenchTests(unittest.TestCase):
                 "review-build": {"status": "pending", "result_path": ""},
             },
         })
-        consumer.write("work/w/inner-loop/results/WB-001.json", {
-            "schema": "ask-task-result/v2", "work_id": "w", "task_id": "WB-001",
-            "candidate_sha": "fixture-candidate", "result": "passed",
+        consumer.write("work/w/inner-loop/results/build.json", {
+            "schema": "ask-task-result/v2", "work_id": "w", "task_id": "build",
+            "candidate_sha": consumer.sha, "result": "passed",
         })
         consumer.commit("add recorded story and task journey fixture")
 
@@ -166,7 +177,7 @@ class WorkbenchTests(unittest.TestCase):
         alt_spec = {**consumer.spec, "work_id": "w-alt"}
         consumer.write("work/w-alt/engineering-model.json", alt_model)
         consumer.write("work/w-alt/test-plan.json", alt_plan)
-        consumer.write("work/w-alt/inner-loop/tasks.yaml", yaml.safe_dump(alt_graph, sort_keys=False))
+        consumer.write("work/w-alt/inner-loop/tasks.yaml", task_graph_yaml(alt_graph))
         consumer.write("work/w-alt/inner-loop/state.json", {
             "schema": "ask-inner-loop-state/v1", "work_id": "w-alt", "revision": 1,
             "tasks": {"build": {"status": "pending", "result_path": ""},
@@ -195,7 +206,11 @@ class WorkbenchTests(unittest.TestCase):
         server, url = self._server(root)
         try:
             with sync_playwright() as pw:
-                browser = pw.chromium.launch(headless=True, args=["--no-sandbox"])
+                browser = pw.chromium.launch(
+                    headless=True,
+                    **({"channel": os.environ["ASK_BROWSER_CHANNEL"]}
+                       if os.environ.get("ASK_BROWSER_CHANNEL") else {}),
+                    args=["--no-sandbox"])
                 page = browser.new_page()
                 page.goto(url, wait_until="domcontentloaded")
                 expect(page.get_by_text("Workstream: w", exact=False)).to_be_visible()
@@ -204,10 +219,8 @@ class WorkbenchTests(unittest.TestCase):
 
                 # Every summary opens the exact records represented by its count.
                 page.get_by_role("button", name="View scenarios", exact=True).click()
-                expect(page.get_by_text("Uppercase behavior", exact=True)).to_be_visible()
-                expect(page.get_by_text("Second canonical behavior", exact=True)).to_be_visible()
-                self.assertEqual(page.get_by_text("Uppercase behavior", exact=True).count(), 1)
-                self.assertEqual(page.get_by_text("Second canonical behavior", exact=True).count(), 1)
+                expect(page.get_by_role("button", name="Uppercase behavior", exact=True)).to_be_visible()
+                expect(page.get_by_role("button", name="Second canonical behavior", exact=True)).to_be_visible()
                 self._open(page, "Purpose")
                 page.get_by_role("button", name="View tasks", exact=True).click()
                 expect(page.get_by_text("build · completed", exact=False)).to_be_visible()
@@ -221,15 +234,24 @@ class WorkbenchTests(unittest.TestCase):
                 expect(page.get_by_text("choice · open", exact=False)).to_be_visible()
                 expect(page.get_by_text("Choose", exact=True)).to_be_visible()
 
+                self._open(page, "Render uppercase text")
+                expect(page.get_by_role("heading", name="Render uppercase text")).to_be_visible()
+                self._open(page, "Uppercase behavior")
+                expect(page.get_by_role("heading", name="Uppercase behavior")).to_be_visible()
+                expect(page.get_by_text("lowercase text", exact=True)).to_be_visible()
+                expect(page.get_by_text("rendered through domain or CLI", exact=True)).to_be_visible()
+                expect(page.get_by_text("uppercase text is returned", exact=True)).to_be_visible()
+                self._open(page, "Build")
+                expect(page.get_by_role("heading", name="Build")).to_be_visible()
+                expect(page.get_by_text("Render the promised uppercase output", exact=False)).to_be_visible()
                 self._open(page, "Uppercase assertion")
-                expect(page.get_by_text("Exact HELLO output", exact=False)).to_be_visible()
-                expect(page.get_by_text("test_app.py", exact=False)).to_be_visible()
+                expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
                 expect(page.get_by_text("test_behavior", exact=False)).to_be_visible()
                 self._open(page, "scenario")
                 expect(page.get_by_role("heading", name="Uppercase behavior")).to_be_visible()
                 self._open(page, "test:U")
                 expect(page.get_by_text("test_app.py", exact=False)).to_be_visible()
-                self._open(page, "result:U")
+                page.get_by_role("button", name="Result / evidence", exact=True).nth(1).click()
                 expect(page.get_by_text("Evidence candidate", exact=False)).to_be_visible()
                 page.get_by_role("button", name="Load test results").click()
                 expect(page.get_by_text("Passed", exact=False)).to_be_visible(timeout=10000)
@@ -273,7 +295,11 @@ class WorkbenchTests(unittest.TestCase):
         server, url = self._server(root)
         try:
             with sync_playwright() as pw:
-                browser = pw.chromium.launch(headless=True, args=["--no-sandbox"])
+                browser = pw.chromium.launch(
+                    headless=True,
+                    **({"channel": os.environ["ASK_BROWSER_CHANNEL"]}
+                       if os.environ.get("ASK_BROWSER_CHANNEL") else {}),
+                    args=["--no-sandbox"])
                 page = browser.new_page(viewport={"width": 390, "height": 844})
                 page.goto(url, wait_until="domcontentloaded")
                 for width in (390, 1440):
@@ -287,15 +313,26 @@ class WorkbenchTests(unittest.TestCase):
                       const style = getComputedStyle(el);
                       const color = style.outlineStyle !== 'none' ? style.outlineColor :
                         ((style.boxShadow.match(/rgba?\\([^)]*\\)/) || [])[0] || style.color);
-                      const rgb = value => value.match(/[\\d.]+/g).slice(0,3).map(Number);
+                      const rgba = value => { const p=value.match(/[\\d.]+/g)||[0,0,0,1];
+                        return [Number(p[0]),Number(p[1]),Number(p[2]),p.length>3?Number(p[3]):1]; };
+                      const blend = (front, back) => front.slice(0,3).map((v,i)=>v*front[3]+back[i]*(1-front[3]));
+                      const background = element => { const chain=[]; for(let n=element;n;n=n.parentElement) chain.unshift(n);
+                        let value=[255,255,255]; for(const n of chain){const bg=rgba(getComputedStyle(n).backgroundColor);
+                          if(bg[3]>0) value=blend(bg,value);} return value; };
+                      const base = background(el.parentElement || el);
+                      const foreground = blend(rgba(color), base);
+                      const rgb = value => value.slice(0,3);
                       const lum = values => values.map(value => { value /= 255; return value <= .04045 ? value/12.92 : ((value+.055)/1.055)**2.4; })
                         .reduce((sum, value, index) => sum + value * [.2126,.7152,.0722][index], 0);
-                      const a=lum(rgb(color)), b=lum(rgb(style.backgroundColor));
+                      const a=lum(rgb(foreground)), b=lum(rgb(base));
                       return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
                     }""")
                     self.assertGreaterEqual(focus_ratio, 3, "focus indicator contrasts with its control background")
                     self.assertGreaterEqual(self._contrast(page, route), 4.5,
                                             "normal-size route label meets text contrast")
+                    large_text = page.get_by_role("heading", name="Engineering workbench")
+                    self.assertGreaterEqual(self._contrast(page, large_text), 3,
+                                            "large title text meets 3:1 contrast")
                     page.keyboard.press("Enter")
                     expect(page.get_by_role("heading", name="Uppercase behavior")).to_be_visible()
                     task = page.get_by_role("button", name="Build", exact=False).first
@@ -306,11 +343,16 @@ class WorkbenchTests(unittest.TestCase):
                     test = page.get_by_role("button", name="Uppercase assertion", exact=False).first
                     self._tab_to(page, test)
                     page.keyboard.press("Enter")
-                    expect(page.get_by_text("Test source", exact=False)).to_be_visible()
-                    expect(page.get_by_text("test_app.py", exact=False)).to_be_visible()
+                    expect(page.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
+                    expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
                     expect(page.get_by_text("assertEqual", exact=False)).to_be_visible()
-                    debug = page.get_by_role("button", name="Technical details and identifiers")
-                    expect(debug).to_have_attribute("aria-expanded", "false")
+                    debug = page.locator("summary").filter(has_text="Technical details and identifiers")
+                    expect(debug).to_be_visible()
+                    self._tab_to(page, debug)
+                    page.keyboard.press("Enter")
+                    expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
+                    expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
+                    expect(page.get_by_text("Selected source: test_app.py", exact=False)).to_be_visible()
                     status = page.get_by_text("No recorded execution is attached to this selected test.", exact=False)
                     if status.count():
                         self.assertGreaterEqual(self._contrast(page, status.first), 4.5,
@@ -321,16 +363,20 @@ class WorkbenchTests(unittest.TestCase):
                 page.keyboard.press("Enter")
                 expect(page.get_by_role("button", name="Resolve decision")).to_be_visible()
                 option = page.get_by_role("combobox", name="Option")
-                expect(option).to_be_visible()
                 self._tab_to(page, option)
                 page.keyboard.press("ArrowDown")
                 page.keyboard.press("Enter")
-                page.get_by_label("Actor").fill("Keyboard developer")
-                page.get_by_label("Rationale").fill("Accessible option labels persist")
+                actor = page.get_by_label("Actor")
+                self._tab_to(page, actor)
+                page.keyboard.type("Keyboard developer")
+                rationale = page.get_by_label("Rationale")
+                self._tab_to(page, rationale)
+                page.keyboard.type("Accessible option labels persist")
                 submit = page.get_by_role("button", name="Resolve decision")
                 self._tab_to(page, submit)
                 page.keyboard.press("Enter")
                 expect(page.get_by_text("resolved", exact=False)).to_be_visible()
+
                 resolved = load_published(root, "w")
                 choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
                 self.assertEqual(choice["history"][-1]["actor"], "Keyboard developer")

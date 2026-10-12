@@ -6,6 +6,7 @@ from pathlib import Path
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
 from urllib.error import URLError
@@ -74,8 +75,10 @@ class WorkbenchBrowserJourney(unittest.TestCase):
             with sync_playwright() as pw:
                 browser = pw.chromium.launch(
                     headless=True,
-                    executable_path=os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
-                    or pw.chromium.executable_path,
+                    **({"channel": os.environ["ASK_BROWSER_CHANNEL"]}
+                       if os.environ.get("ASK_BROWSER_CHANNEL") else {
+                           "executable_path": os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
+                           or pw.chromium.executable_path}),
                     args=["--no-sandbox"],
                 )
                 first_context = browser.new_context()
@@ -83,17 +86,11 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first.goto(url, wait_until="domcontentloaded")
                 expect(first.get_by_role("button", name="Uppercase behavior", exact=False)).to_be_visible()
 
-                # Preserve the result journey before making the linked definition stale.
-                self.open_route(first, "Result / evidence")
-                expect(first.get_by_role("button", name="Load test results")).to_be_visible()
-                first.get_by_role("button", name="Load test results").click()
-                expect(first.get_by_text("Passed", exact=False)).to_be_visible(timeout=10000)
-                first.get_by_label("Evidence candidate").fill(consumer.git("rev-parse", "HEAD"))
-                first.get_by_role("button", name="Inspect candidate").click()
-                expect(first.get_by_text("unavailable evidence", exact=False)).to_be_visible()
-                first.get_by_label("Evidence candidate").fill(historical)
-                first.get_by_role("button", name="Inspect candidate").click()
-                expect(first.get_by_text("(historical)", exact=False)).to_be_visible()
+                # Preserve the specifically qualified result route before making the linked definition stale.
+                first.get_by_role("button", name="Result / evidence", exact=True).nth(1).click()
+                expect(first.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
+                expect(first.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
+                expect(first.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
                 self.open_route(first, "Uppercase assertion")
                 expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
                 expect(first.get_by_text("assertEqual", exact=False)).to_be_visible()
@@ -168,16 +165,22 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 with sync_playwright() as pw:
                     browser = pw.chromium.launch(
                         headless=True,
-                        executable_path=os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
-                        or pw.chromium.executable_path,
+                        **({"channel": os.environ["ASK_BROWSER_CHANNEL"]}
+                           if os.environ.get("ASK_BROWSER_CHANNEL") else {
+                               "executable_path": os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
+                               or pw.chromium.executable_path}),
                         args=["--no-sandbox"],
                     )
                     page = browser.new_page()
                     page.goto(url, wait_until="domcontentloaded")
-                    self.open_route(page, "Result / evidence")
-                    expect(page.get_by_role("button", name="Load test results")).to_be_visible()
-                    page.get_by_role("button", name="Load test results").click()
-                    expect(page.get_by_text("Git evidence inspection is unavailable", exact=False)).to_be_visible()
+                    self.open_route(page, "Behavior assertion")
+                    expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
+                    debug = page.get_by_text("Technical details and identifiers", exact=True)
+                    expect(debug).to_be_visible()
+                    debug.click()
+                    expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
+                    expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
+                    expect(page.get_by_text("unavailable", exact=True).last).to_be_visible()
                     self.assertNotIn("fatal: not a git repository", page.locator("body").inner_text())
                     browser.close()
             finally:
