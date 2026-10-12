@@ -98,11 +98,48 @@ def _working_source(root: Path, test: dict) -> dict:
         start = min([selected.lineno, *(node.lineno for node in selected.decorator_list)])
         result.update(status="working-tree", source_sha="working-tree:" + _sha(raw),
                       source_path=candidates[0],
+                      source_file_digest=_sha(raw),
                       source="\n".join(source.splitlines()[start - 1:selected.end_lineno]),
                       diagnostic=None)
     except (OSError, UnicodeError, ValueError, TypeError, SyntaxError) as exc:
         result["diagnostic"] = str(exc)
     return result
+
+
+def _source_file_digest(root: Path, test: dict, revision: str | None = None) -> str | None:
+    """Hash the exact declared source file from the working tree or one Git commit."""
+    selector = test.get("case_id") if isinstance(test, dict) else None
+    paths = test.get("source_paths") if isinstance(test, dict) else None
+    if not isinstance(selector, str) or not isinstance(paths, list):
+        return None
+    module = selector.split(".", 1)[0]
+    candidates = [path for path in paths if _safe_relative(path)
+                  and PurePosixPath(path).stem == module]
+    if not candidates and len(paths) == 1 and _safe_relative(paths[0]):
+        candidates = list(paths)
+    if len(candidates) != 1:
+        return None
+    if revision is None:
+        path = _confined_file(root, candidates[0])
+        if path is None:
+            return None
+        try:
+            return _sha(path.read_bytes()) if path.is_file() else None
+        except OSError:
+            return None
+    try:
+        checked = subprocess.run(["git", "rev-parse", "--verify", f"{revision}^{{commit}}"],
+                                 cwd=root, capture_output=True, timeout=3, check=False)
+        if checked.returncode:
+            return None
+        commit = checked.stdout.decode("ascii").strip()
+        blob = subprocess.run(["git", "cat-file", "blob", f"{commit}:{candidates[0]}"],
+                             cwd=root, capture_output=True, timeout=3, check=False)
+        if blob.returncode:
+            return None
+        return _sha(blob.stdout)
+    except (OSError, UnicodeError, subprocess.TimeoutExpired):
+        return None
 
 
 def _traceability_fingerprint(root: Path, work_id: str) -> dict:
@@ -168,7 +205,25 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
     })
 
 
-def _historical_contract_evidence(root: Path, work_id: str, test: dict) -> list[dict]:
+def historical_contract_candidates(root: Path, work_id: str) -> list[str]:
+    """Return retained candidate identities without inspecting their full evidence."""
+    ledger_path = _confined_file(root, f"work/{work_id}/traceability/executions.json")
+    if ledger_path is None or not ledger_path.is_file():
+        return []
+    try:
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError, TypeError):
+        return []
+    if not isinstance(ledger, list):
+        return []
+    return sorted({entry.get("candidate_sha") for entry in ledger
+                   if isinstance(entry, dict) and entry.get("work_id", work_id) == work_id
+                   and isinstance(entry.get("candidate_sha"), str)
+                   and len(entry["candidate_sha"]) == 40})
+
+
+def _historical_contract_evidence(root: Path, work_id: str, test: dict,
+                                  candidate_shas: list[str] | None = None) -> list[dict]:
     """Inspect prior accepted contracts for the exact selected test identity."""
     ledger_path = _confined_file(root, f"work/{work_id}/traceability/executions.json")
     if ledger_path is None or not ledger_path.is_file():
@@ -179,11 +234,10 @@ def _historical_contract_evidence(root: Path, work_id: str, test: dict) -> list[
         return []
     if not isinstance(ledger, list):
         return []
-    candidates = sorted({entry.get("candidate_sha") for entry in ledger
-                         if isinstance(entry, dict) and entry.get("work_id", work_id) == work_id
-                         and isinstance(entry.get("candidate_sha"), str)
-                         and len(entry["candidate_sha"]) == 40})
-    records = []
+    candidates = historical_contract_candidates(root, work_id)
+    if candidate_shas is not None:
+        candidates = [candidate for candidate in candidates if candidate in set(candidate_shas)]
+    records = {}
     for candidate in candidates:
         try:
             inspected = inspect_workstream_evidence(root, work_id, candidate)
@@ -204,22 +258,32 @@ def _historical_contract_evidence(root: Path, work_id: str, test: dict) -> list[
                 if (historical_test.get("test_id") != test.get("id")
                         or historical_test.get("case_id") != test.get("case_id")):
                     continue
+                record = records.setdefault(candidate, {
+                    "candidate_sha": candidate,
+                    "criterion_id": scenario.get("criterion_id", "unavailable"),
+                    "spec_digest": completion.get("input_digests", {}).get("spec", "unavailable"),
+                    "plan_digest": completion.get("input_digests", {}).get("plan", "unavailable"),
+                    "executions": [],
+                })
                 for phase, key in (("red", "red"), ("final_green", "final_execution")):
                     outcomes = historical_test.get(key, []) if key == "red" else [historical_test.get(key)]
                     for outcome in outcomes:
                         if not isinstance(outcome, dict):
                             continue
-                        records.append({
-                            "candidate_sha": candidate,
-                            "criterion_id": scenario.get("criterion_id", "unavailable"),
-                            "spec_digest": completion.get("input_digests", {}).get("spec", "unavailable"),
-                            "plan_digest": completion.get("input_digests", {}).get("plan", "unavailable"),
+                        record["executions"].append({
                             "phase": outcome.get("phase", phase),
                             "execution": outcome,
                         })
-    records.sort(key=lambda item: (item["candidate_sha"], item["phase"],
-                                   item["execution"].get("execution_id", "")))
-    return records
+    for record in records.values():
+        record["executions"].sort(key=lambda item: (item["phase"],
+                                                    item["execution"].get("execution_id", "")))
+    return [records[candidate] for candidate in sorted(records)]
+
+
+def inspect_historical_contract_candidate(root: Path, work_id: str, test: dict,
+                                          candidate_sha: str) -> list[dict]:
+    """Inspect one explicitly selected retained candidate through the authority service."""
+    return _historical_contract_evidence(root, work_id, test, [candidate_sha])
 
 
 def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
@@ -296,10 +360,26 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     except (OSError, ValueError, KeyError, TypeError) as exc:
         history = {"status": "unavailable", "completion": "not_evaluated", "runs": [],
                    "diagnostic": str(exc)}
-    historical_contracts = _historical_contract_evidence(root, snapshot.work_id, test) if not history.get("runs") else []
+    # Backend source currency is evaluated against the selected Git candidate.
+    # Keep that verdict separate from whether the retained source bytes match
+    # the exact test method currently shown in this detail panel.
+    selected_source_digest = _source_file_digest(
+        root, test, str(selected_candidate) if context_kind == "git-commit" and selected_candidate else None)
+    for run in history.get("runs", []):
+        applicability = "unavailable"
+        retained_sha = run.get("source_sha") if isinstance(run, dict) else None
+        retained_source_digest = _source_file_digest(root, test, retained_sha) if retained_sha else None
+        if selected_source_digest and retained_source_digest:
+            applicability = ("matches selected source" if retained_source_digest == selected_source_digest
+                             else "differs from selected source")
+        if isinstance(run, dict):
+            run["working_source_applicability"] = applicability
+    historical_candidates = (historical_contract_candidates(root, snapshot.work_id)
+                             if not history.get("runs") else [])
     value = {"identity": key, "source": source, "evidence_projection": evidence_projection,
              "evidence": evidence_set, "execution_history": history,
-             "historical_contracts": historical_contracts,
+             "historical_candidates": historical_candidates,
+             "historical_contracts": [],
              "candidate_sha": selected_candidate, "context_kind": context_kind}
     cache[key] = value
     cache.move_to_end(key)

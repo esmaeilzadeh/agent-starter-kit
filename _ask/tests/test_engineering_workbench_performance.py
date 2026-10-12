@@ -180,6 +180,28 @@ render_test(%r, %r, detail=%r)
         finally:
             source_path.write_bytes(source_before)
 
+        # A module import/helper change can alter selected-test behavior even
+        # when the method body itself is byte-for-byte unchanged.
+        helper_import = b"from app import render\n"
+        helper_alias = b"from app import render as render\n"
+        accepted_method = workbench_loading.qualified_source(
+            root, test, current_candidate, current_sha=current_candidate).get("source")
+        try:
+            self.assertIn(helper_import, source_before)
+            source_path.write_bytes(source_before.replace(helper_import, helper_alias, 1))
+            helper_detail = workbench_loading.load_selected_detail(
+                root, snapshot, test, node_id="case", source_context=context,
+                candidate_sha=current_candidate, cache=cache)
+            self.assertEqual(helper_detail["source"].get("source"), accepted_method,
+                             "the helper-only fixture leaves the selected method snippet unchanged")
+            helper_green = next(run for run in helper_detail["execution_history"].get("runs", [])
+                                if run.get("output_artifact") == current_green.get("output_artifact"))
+            self.assertEqual(helper_green.get("working_source_applicability"),
+                             "differs from selected source",
+                             "full accepted source-file bytes include helper/import behavior")
+        finally:
+            source_path.write_bytes(source_before)
+
         # Exercise the exact retained final-green artifact selected by this fixture.
         green_execution = next(item for item in consumer.green["executions"]
                                if item.get("phase") == "final_green")

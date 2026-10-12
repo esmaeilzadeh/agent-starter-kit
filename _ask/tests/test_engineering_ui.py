@@ -72,11 +72,25 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertIn("Exact HELLO output", rendered)
             self.assertIn("No retained execution matches the current test contract.", rendered)
             self.assertIn("Historical contract evidence", rendered)
-            self.assertIn("Recorded historical outcome: Passed", rendered)
-            self.assertIn("They do not verify the current contract.", rendered)
+            self.assertIn("These records do not verify the current contract.", rendered)
             self.assertNotIn(current_sha, rendered)
-            self.assertIn(historical_sha, rendered,
-                          "retained historical run identifies its candidate without implying current verification")
+            self.assertNotIn(historical_sha, rendered,
+                             "candidate hashes remain hidden until explicit inspection")
+            candidate = required_widget(app.selectbox,
+                                        lambda item: item.label == "Historical contract candidate",
+                                        "historical contract candidate selector")
+            candidate.select(historical_sha).run(timeout=20)
+            self.assertNotIn(historical_sha, text(app),
+                             "selecting a candidate does not reveal identifiers before inspection")
+            inspect = required_widget(app.button, lambda item: item.label == "Inspect candidate",
+                                      "explicit historical candidate inspection")
+            inspect.click().run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
+            inspected = text(app)
+            self.assertIn("Recorded historical outcome: Passed", inspected)
+            self.assertIn(historical_sha, inspected,
+                          "explicit inspection identifies the historical candidate")
+            self.assertNotIn(current_sha, inspected)
             self.assertEqual(len(app.json), 0)
 
     def test_planned_test_shows_its_source_in_the_detail_panel(self):
@@ -154,7 +168,7 @@ class UiIntegrationTests(unittest.TestCase):
             rendered = text(app)
             self.assertIn("Recorded outcome: Passed", rendered)
             self.assertIn("Output integrity: valid", rendered)
-            self.assertIn("Source currency: historical", rendered)
+            self.assertIn("Git candidate currency: historical", rendered)
             self.assertIn("Historical evidence", rendered)
             self.assertIn("Runner (validated against selected test):", rendered)
             self.assertIn("Phase: final_green", rendered)

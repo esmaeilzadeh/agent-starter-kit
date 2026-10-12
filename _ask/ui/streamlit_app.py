@@ -923,7 +923,7 @@ with detail_col:
                 )
             render_test(projection, test_id, detail=detail,
                         context=f"{selected['kind']}:{selected['route_id']}",
-                        on_open=_open_related_route)
+                        on_open=_open_related_route, root=root)
         elif selected["kind"] == "task":
             render_tasks(projection, context=f"route:{selected['route_id']}",
                          on_open=_open_related_route, selected_id=selected["node_id"])

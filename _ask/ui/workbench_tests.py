@@ -4,6 +4,7 @@ from __future__ import annotations
 import streamlit as st
 
 from workbench_debug import render_debug
+from workbench_loading import inspect_historical_contract_candidate
 
 
 def test_records(projection: dict) -> list[dict]:
@@ -11,7 +12,7 @@ def test_records(projection: dict) -> list[dict]:
 
 
 def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
-                context: str = "test", on_open=None) -> None:
+                context: str = "test", on_open=None, root=None) -> None:
     tests = {str(item.get("id")): item for item in test_records(projection)}
     test = tests.get(str(test_id))
     if test is None:
@@ -55,7 +56,7 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
     history = detail.get("execution_history", {}) if isinstance(detail, dict) else {}
     runs = history.get("runs", []) if isinstance(history, dict) else []
     evidence_state = detail.get("evidence", {}) if isinstance(detail, dict) else {}
-    historical_contracts = detail.get("historical_contracts", []) if isinstance(detail, dict) else []
+    historical_candidates = detail.get("historical_candidates", []) if isinstance(detail, dict) else []
     if evidence_state.get("status") == "historical" or any(
             run.get("source_status") == "historical" for run in runs if isinstance(run, dict)):
         st.caption("Historical evidence")
@@ -70,7 +71,7 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
                     and run.get("output_status") == "valid"]
     if runs and not current_runs:
         st.info("No current recorded execution is attached to this selected revision.")
-    elif not runs and historical_contracts:
+    elif not runs and historical_candidates:
         st.info("No retained execution matches the current test contract.")
     elif not runs:
         st.info("No recorded execution is attached to this selected test.")
@@ -82,7 +83,12 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
         output_status = run.get("output_status", "unavailable")
         source_status = run.get("source_status", "unavailable")
         st.write("Output integrity: " + str(output_status))
-        st.write("Source currency: " + str(source_status))
+        st.write("Git candidate currency: " + str(source_status))
+        applicability = run.get("working_source_applicability", "unavailable")
+        applicability_label = ("Working source applicability" if
+                                detail.get("context_kind") == "working-tree" else
+                                "Selected source applicability")
+        st.write(f"{applicability_label}: {applicability}")
         if output_status != "valid" or source_status not in {"current", "historical"}:
             st.error("Untrusted execution evidence; this recorded outcome is not a verified pass.")
         elif source_status == "historical":
@@ -117,24 +123,44 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
             st.warning(str(history["diagnostic"]))
         else:
             st.info(str(history["diagnostic"]))
-    if historical_contracts:
+    if historical_candidates and root is not None:
         st.markdown("#### Historical contract evidence")
-        st.caption("These records were inspected against their retained historical test plan. They do not verify the current contract.")
-        for index, record in enumerate(historical_contracts):
-            execution = record.get("execution", {})
+        st.caption("Inspect a retained contract candidate to view its recorded outcomes. These records do not verify the current contract.")
+        detail_identity = str(detail.get("identity", "selected-detail"))
+        candidate_key = f"historical-candidate:{detail_identity}"
+        selected_candidate = st.selectbox(
+            "Historical contract candidate",
+            options=historical_candidates,
+            format_func=lambda _candidate, index_map={value: index + 1 for index, value in
+                                                       enumerate(historical_candidates)}:
+                f"Retained candidate {index_map[_candidate]}",
+            key=candidate_key,
+        )
+        inspected_key = f"historical-inspection:{detail_identity}:{selected_candidate}"
+        if st.button("Inspect candidate", key=f"historical-inspect:{detail_identity}"):
+            st.session_state[inspected_key] = inspect_historical_contract_candidate(
+                root, str(projection.get("work_id", "")), test, selected_candidate)
+        historical_contracts = st.session_state.get(inspected_key)
+        if historical_contracts is None:
+            st.caption("No candidate has been inspected for this selected work, source and test.")
+        elif not historical_contracts:
+            st.info("This retained candidate has no outcome matching the exact selected test identity.")
+        for index, record in enumerate(historical_contracts or []):
             st.caption(f"Historical candidate: {record.get('candidate_sha', 'unavailable')} · "
                        f"Criterion: {record.get('criterion_id', 'unavailable')}")
             st.caption("Historical contract: spec " + str(record.get("spec_digest", "unavailable")) +
                        " · plan " + str(record.get("plan_digest", "unavailable")))
-            st.caption("Execution ID: " + str(execution.get("execution_id", "unavailable")))
-            st.caption("Runner: " + str(execution.get("runner_id", test.get("runner_id", "unavailable"))) +
-                       " · Phase: " + str(record.get("phase", "unavailable")))
-            st.write("Recorded historical outcome: " +
-                     str(execution.get("outcome", "unavailable")).replace("_", " ").title())
-            st.caption("Source revision: " + str(execution.get("source_sha", "unavailable")))
-            st.caption("Output artifact: " + str(execution.get("output_artifact", "unavailable")))
-            if execution.get("failure_kind"):
-                st.write("Failure detail: " + str(execution["failure_kind"]).replace("_", " "))
+            for retained in record.get("executions", []):
+                execution = retained.get("execution", {})
+                st.caption("Execution ID: " + str(execution.get("execution_id", "unavailable")))
+                st.caption("Runner: " + str(execution.get("runner_id", test.get("runner_id", "unavailable"))) +
+                           " · Phase: " + str(retained.get("phase", "unavailable")))
+                st.write("Recorded historical outcome: " +
+                         str(execution.get("outcome", "unavailable")).replace("_", " ").title())
+                st.caption("Source revision: " + str(execution.get("source_sha", "unavailable")))
+                st.caption("Output artifact: " + str(execution.get("output_artifact", "unavailable")))
+                if execution.get("failure_kind"):
+                    st.write("Failure detail: " + str(execution["failure_kind"]).replace("_", " "))
     evidence = test.get("evidence")
     if detail is None and not evidence:
         st.info("No recorded execution is attached to this selected test.")
