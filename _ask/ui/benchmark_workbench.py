@@ -183,8 +183,17 @@ def await_http(process, url, timeout=20):
     raise TimeoutError("Streamlit HTTP startup exceeded the harness timeout")
 
 
-def ready(page, root_route="purpose", root_title="Purpose"):
+def ready(page, root_route="purpose", root_title="Purpose", work_id=None):
     page.get_by_role("heading", name="Engineering workbench", exact=True).wait_for(timeout=10000)
+    if work_id:
+        selector = page.get_by_label("Workstream")
+        selector.wait_for(timeout=10000)
+        if selector.input_value() != work_id:
+            selector.click()
+            selector.fill(work_id)
+            selector.press("ArrowDown")
+            page.get_by_role("option", name=work_id, exact=True).click()
+            expect(selector).to_have_value(work_id, timeout=10000)
     selected = page.locator(f'[class~="{_key_class("route:" + root_route)}"]').get_by_role("button")
     selected.wait_for(timeout=10000)
     expect(selected).to_have_attribute("kind", "primary", timeout=10000)
@@ -324,7 +333,7 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 page = context.new_page()
                 started = time.perf_counter()
                 page.goto(url, wait_until="domcontentloaded")
-                ready(page, root_route, root_title)
+                ready(page, root_route, root_title, work_id)
                 expect(page.get_by_role("heading", name=root_title, exact=True)).to_be_visible()
                 for label in ("Stories and scenarios", "Task progress", "Needs attention",
                               "Scenarios", "Tasks", "Blocked tasks", "Open decisions"):
@@ -397,7 +406,7 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 await_http(process, url)
                 page = browser.new_page()
                 page.goto(url, wait_until="domcontentloaded")
-                ready(page, root_route, root_title)
+                ready(page, root_route, root_title, work_id)
                 data["cold_start_to_ready_ms"].append({"sample": index,
                     "elapsed": (time.perf_counter() - started) * 1000})
                 persist_partial()
