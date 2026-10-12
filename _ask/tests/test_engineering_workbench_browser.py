@@ -342,13 +342,15 @@ class WorkbenchTests(unittest.TestCase):
                 self._open(page, "result:E")
                 expect(page.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
-                expect(page.get_by_text("Recorded historical outcome: Passed", exact=True)).to_be_visible()
+                page.get_by_role("button", name="Inspect candidate", exact=True).click()
+                expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
                 expect(page.get_by_text("They do not verify the current contract.", exact=True)).to_be_visible()
                 self._open(page, "result:U")
                 expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("No retained execution matches the current test contract.", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
-                expect(page.get_by_text("Recorded historical outcome: Passed", exact=True)).to_be_visible()
+                page.get_by_role("button", name="Inspect candidate", exact=True).click()
+                expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
                 self.assertGreater(page.get_by_text(historical_sha, exact=True).count(), 0,
                                    "historical contract inspection identifies its retained candidate")
 
@@ -425,7 +427,7 @@ class WorkbenchTests(unittest.TestCase):
                     page.keyboard.press("Enter")
                     expect(page.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
                     expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
-                    expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
+                    expect(page.get_by_text("test_app.Cases.test_unit", exact=True)).to_be_visible()
                     debug = page.locator("summary").filter(has_text="Technical details and identifiers")
                     expect(debug).to_be_visible()
                     if debug.evaluate("el => el.parentElement.open"):

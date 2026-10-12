@@ -27,6 +27,8 @@ sys.path.insert(0, str(ROOT / "_ask/scripts"))
 
 from engineering_model.projection import project
 from engineering_model.snapshot import Snapshot
+from engineering_model.admission import validate_current
+from engineering_model.workbench_evidence import execution_history
 from workbench_navigation import build_outline
 
 
@@ -171,6 +173,25 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
     workload_digest, workload_sizes = digest_tree(model_root, workload_paths)
     model_document = json.loads((model_root / model_paths[0]).read_text(encoding="utf-8"))
     plan_document = json.loads((model_root / model_paths[1]).read_text(encoding="utf-8"))
+    admitted_snapshot, admission_errors = validate_current(model_root, work_id)
+    if admission_errors:
+        raise ValueError("benchmark requires an admitted workstream: " + "; ".join(
+            str(item.get("message", item)) for item in admission_errors))
+    current_spec = json.loads(admitted_snapshot.files[f"specs/current/{work_id}.json"])
+    current_plan = json.loads(admitted_snapshot.files[model_paths[1]])
+    canonical = lambda value: hashlib.sha256(json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+    pilot_test = next((item for item in current_plan.get("tests", []) if item.get("id") == "E"), None)
+    if pilot_test is None:
+        raise ValueError("benchmark fixture has no canonical E test case")
+    expected_history = execution_history(
+        model_root, work_id, pilot_test, spec_digest=canonical(current_spec),
+        plan_digest=canonical(current_plan), candidate_sha=model_head)
+    if expected_history.get("status") != "available":
+        raise ValueError("benchmark fixture retained history is unavailable: " +
+                         str(expected_history.get("diagnostic")))
+    expected_outcomes = [str(item.get("outcome", "unavailable")).replace("_", " ").title()
+                         for item in expected_history.get("runs", [])]
     graph_path = model_root / workload_paths[2]
     graph_document = (yaml.safe_load(graph_path.read_text(encoding="utf-8"))
                       if graph_path.is_file() else {"tasks": []}) or {"tasks": []}
@@ -265,15 +286,18 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 page.get_by_role("button", name="Clear filter", exact=True).click()
                 t = time.perf_counter()
                 route_click(page, "test:E", "E")
-                expect(page.get_by_text("test_app.Cases.test_cli", exact=False)).to_be_visible()
+                expect(page.get_by_text("test_app.Cases.test_cli", exact=True)).to_be_visible()
                 expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
                 route_click(page, "result:E", "E")
                 expect(page.get_by_text("Selected test: E · revision-bound planned identity",
                                         exact=True)).to_be_visible()
                 expect(page.get_by_role("heading", name="Recorded execution", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical evidence", exact=True)).to_be_visible()
-                expect(page.get_by_text("Recorded outcome: Passed", exact=True)).to_have_count(2)
-                expect(page.get_by_text("Output integrity: valid", exact=True)).to_have_count(2)
+                for outcome in sorted(set(expected_outcomes)):
+                    expect(page.get_by_text("Recorded outcome: " + outcome, exact=True)).to_have_count(
+                        expected_outcomes.count(outcome))
+                expect(page.get_by_text("Output integrity: valid", exact=True)).to_have_count(
+                    len(expected_outcomes))
                 source_result = (time.perf_counter() - t) * 1000
                 data["warm_ms"].append({"sample": index, "overview": overview,
                                         "metadata_navigation": metadata_navigation,

@@ -114,6 +114,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 expect(first.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(first.get_by_text("Recorded outcome: Passed", exact=True).first).to_be_visible()
                 expect(first.get_by_text("Historical evidence", exact=True).first).to_be_visible()
+                first.locator("summary").filter(has_text="Execution details").first.click()
                 expect(first.get_by_text("Source revision: " + historical, exact=True).first).to_be_visible()
                 self.open_result(first, "U")
                 expect(first.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
