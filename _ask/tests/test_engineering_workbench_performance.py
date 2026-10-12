@@ -145,6 +145,23 @@ render_test(%r, %r, detail=%r)
         self.assertEqual(len(cache), 1)
         self.assertEqual(first["identity"], original_identity)
 
+        # A working-tree source selection must show exact local bytes even when
+        # evidence inspection is explicitly pinned to a historical candidate.
+        source_path = root / test["source_paths"][0]
+        source_before = source_path.read_bytes()
+        marker = b"\n# working-tree-only-marker\n"
+        try:
+            source_path.write_bytes(source_before + marker)
+            working_detail = workbench_loading.load_selected_detail(
+                root, snapshot, test, node_id="case", source_context=context,
+                candidate_sha=historical, cache=cache)
+            require(working_detail["source"].get("status") == "working-tree",
+                    "working-tree selection silently switches to a Git revision source")
+            require("working-tree-only-marker" in working_detail["source"].get("source", ""),
+                    "selected working-tree source omits exact uncommitted bytes")
+        finally:
+            source_path.write_bytes(source_before)
+
         # Exercise the exact retained final-green artifact selected by this fixture.
         green_execution = next(item for item in consumer.green["executions"]
                                if item.get("phase") == "final_green")
@@ -242,8 +259,14 @@ render_test(%r, %r, detail=%r)
         # A new HEAD changes current-candidate identity even when selected files are unchanged.
         current_identity = workbench_loading.detail_identity(
             root, snapshot, test, source_context=context, candidate_sha=None)
+        pinned_identity = workbench_loading.detail_identity(
+            root, snapshot, test, source_context=context, candidate_sha=historical)
         consumer.git("commit", "--allow-empty", "-m", "advance current candidate identity")
         advanced_head = consumer.git("rev-parse", "HEAD")
+        pinned_after_advance = workbench_loading.detail_identity(
+            root, snapshot, test, source_context=context, candidate_sha=historical)
+        require(pinned_identity != pinned_after_advance,
+                "current HEAD is missing from cache identity when an evidence candidate is explicitly pinned")
         advanced = workbench_loading.load_selected_detail(
             root, snapshot, test, node_id="case", source_context=context,
             candidate_sha=None, cache=cache)
