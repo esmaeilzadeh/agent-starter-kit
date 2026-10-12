@@ -91,24 +91,35 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertIn(historical_sha, inspected,
                           "explicit inspection identifies the historical candidate")
             self.assertNotIn(current_sha, inspected)
-            historical_green = next(run for run in consumer.green["cases"]
-                                    if run.get("test_id") == "U"
-                                    and run.get("phase") == "final_green")
-            artifact = consumer.root / historical_green["output_artifact"]
-            artifact_before = artifact.read_bytes()
+            ledger = json.loads((consumer.root / "work/w/traceability/executions.json").read_text())
+            historical_finals = [entry for entry in ledger
+                                 if entry.get("candidate_sha") == historical_sha
+                                 and entry.get("phase") == "final_green"
+                                 and entry.get("scope") == "workstream"]
+            self.assertTrue(historical_finals, "fixture retains the exact historical final-green run")
+            selected_run = historical_finals[-1]
+            report_path = (consumer.root / "work/w/traceability/runs"
+                           / selected_run["run_id"] / "results.json")
+            report_before = report_path.read_bytes()
             try:
-                artifact.write_bytes(artifact_before + b"tampered historical output")
+                report_path.write_bytes(report_before + b"tampered historical report")
+                app.run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                refreshed_candidate = required_widget(
+                    app.selectbox, lambda item: item.label == "Historical contract candidate",
+                    "historical candidate after retained evidence changes")
+                refreshed_candidate.select(historical_sha).run(timeout=20)
                 required_widget(app.button, lambda item: item.label == "Inspect candidate",
                                 "candidate reinspection").click().run(timeout=20)
                 self.assertFalse(app.exception, app.exception)
                 tampered = text(app)
                 self.assertIn("Historical candidate inspection: invalid", tampered,
                               "tampered candidate is reported as invalid, not as an identity mismatch")
-                self.assertIn("Output artifact", tampered)
+                self.assertIn("Inspection diagnostic: migration_required: missing/invalid JSON", tampered)
                 self.assertNotIn("Recorded historical outcome: Passed", tampered,
                                  "invalid history is not rendered as a verified pass")
             finally:
-                artifact.write_bytes(artifact_before)
+                report_path.write_bytes(report_before)
             self.assertEqual(len(app.json), 0)
 
     def test_planned_test_shows_its_source_in_the_detail_panel(self):
