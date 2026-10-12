@@ -271,8 +271,9 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 expect(page.get_by_text("Selected test: E · revision-bound planned identity",
                                         exact=True)).to_be_visible()
                 expect(page.get_by_role("heading", name="Recorded execution", exact=True)).to_be_visible()
-                expect(page.get_by_text("Passed", exact=False)).to_be_visible()
-                expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
+                expect(page.get_by_text("Historical evidence", exact=True)).to_be_visible()
+                expect(page.get_by_text("Recorded outcome: Passed", exact=True)).to_have_count(2)
+                expect(page.get_by_text("Output integrity: valid", exact=True)).to_have_count(2)
                 source_result = (time.perf_counter() - t) * 1000
                 data["warm_ms"].append({"sample": index, "overview": overview,
                                         "metadata_navigation": metadata_navigation,

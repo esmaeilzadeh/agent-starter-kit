@@ -112,6 +112,12 @@ render_test(%r, %r, detail=%r)
             app.success, app.text, app.code) for item in group)
 
     def test_lazy_work_and_integrity_bound_cache_invalidation(self):
+        new_reds = []
+
+        def require(condition, message):
+            if not condition:
+                new_reds.append(message)
+
         consumer, historical = evidence_workbench()
         self.addCleanup(consumer.close)
         root = consumer.root
@@ -170,11 +176,12 @@ render_test(%r, %r, detail=%r)
             self.assertEqual(tampered_green["output_status"], "invalid",
                              "reload marks this exact selected final-green artifact invalid")
             rendered = self._render_test_text(projection, "U", changed_log)
-            with self.subTest("tampered selected result has explicit integrity state"):
-                self.assertIn("Output integrity: invalid", rendered)
-                self.assertIn("Untrusted execution evidence", rendered)
-                self.assertIn("Recorded outcome: Passed", rendered,
-                              "the actual recorded outcome remains visible as a separate fact")
+            require("Output integrity: invalid" in rendered,
+                    "tampered selected output is missing its explicit invalid-integrity label")
+            require("Untrusted execution evidence" in rendered,
+                    "tampered selected output is missing its untrusted-state label")
+            require("Recorded outcome: Passed" in rendered,
+                    "actual recorded outcome is not presented separately from integrity state")
             log_path.write_bytes(log_before)
 
             review_doc = json.loads(review_before)
@@ -215,9 +222,8 @@ render_test(%r, %r, detail=%r)
             root, snapshot, plan_only, node_id="E", source_context=context,
             candidate_sha=historical)
         self.assertEqual(authoritative["status"], "historical")
-        with self.subTest("plan-only result resolves evidence without a model node"):
-            self.assertEqual(plan_only_detail["evidence"]["status"], "historical",
-                             "plan-only test resolves workstream evidence by canonical ID")
+        require(plan_only_detail["evidence"]["status"] == "historical",
+                "plan-only test does not resolve canonical workstream evidence")
         self.assertEqual(plan_only_detail["execution_history"]["runs"][-1]["test_id"], "E")
 
         source_path = root / test["source_paths"][0]
@@ -241,10 +247,10 @@ render_test(%r, %r, detail=%r)
         advanced = workbench_loading.load_selected_detail(
             root, snapshot, test, node_id="case", source_context=context,
             candidate_sha=None, cache=cache)
-        with self.subTest("implicit current candidate follows HEAD"):
-            self.assertNotEqual(current_identity, advanced["identity"],
-                                "current HEAD participates in cache identity when no SHA is supplied")
-            self.assertEqual(advanced["candidate_sha"], advanced_head)
+        require(current_identity != advanced["identity"],
+                "current HEAD is missing from cache identity when no SHA is supplied")
+        require(advanced["candidate_sha"] == advanced_head,
+                "detail loading did not resolve an omitted candidate to current HEAD")
 
         # Resolved decision routes must be available from the same outline used by related links.
         resolved_projection = copy.deepcopy(projection)
@@ -263,9 +269,9 @@ st.write(st.session_state.get("_engineering_route"))
         route_app = AppTest.from_string(route_script).run(timeout=30)
         self.assertFalse(route_app.exception, route_app.exception)
         route_text = "\n".join(str(item.value) for item in route_app.markdown)
-        with self.subTest("resolved decision shared route index"):
-            self.assertIn("resolved-decision:choice", route_text,
-                          "resolved decisions are reachable through the shared related-route index")
+        require("resolved-decision:choice" in route_text,
+                "resolved decision cannot be opened by the shared related-route helper")
+        self.assertEqual(new_reds, [], "new workbench defects:\n- " + "\n- ".join(new_reds))
 
     def test_overview_is_lazy_and_selected_details_are_cached(self):
         consumer, _ = evidence_workbench()
@@ -320,8 +326,8 @@ st.write(st.session_state.get("_engineering_route"))
         candidate_sha = __import__("subprocess").run(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
             text=True, check=True).stdout.strip()
-        evidence_dir = Path(os.environ.get("ASK_WB009_EVIDENCE_DIR", ROOT /
-            "work/structured-agentic-environment/inner-loop/evidence"))
+        evidence_dir = Path(os.environ.get("ASK_WB009_EVIDENCE_DIR", Path(
+            __import__("tempfile").gettempdir()) / "ask-wb009-evidence" / "structured-agentic-environment"))
         output = evidence_dir / f"WB-009-latency-{candidate_sha}.json"
         output.parent.mkdir(parents=True, exist_ok=True)
         output.unlink(missing_ok=True)
@@ -354,6 +360,7 @@ st.write(st.session_state.get("_engineering_route"))
         self.assertEqual(limits["metadata_navigation"], 500)
         self.assertEqual(limits["filter"], 500)
         self.assertEqual(limits["source_result"], 1000)
+        self.assertEqual(limits["cold"], 4000)
         cold = [row["elapsed"] for row in report["cold_start_to_ready_ms"]]
         self.assertTrue(all(value <= limits["cold"] for value in cold),
                         f"each cold start <= {limits['cold']}ms; samples={cold}")
