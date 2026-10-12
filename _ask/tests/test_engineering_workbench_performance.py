@@ -118,7 +118,18 @@ render_test(%r, %r, detail=%r)
             if not condition:
                 new_reds.append(message)
 
-        consumer, historical = evidence_workbench()
+        from traceability_fixture import Consumer
+        original_write = Consumer.write
+
+        def include_helper_source(consumer, name, document):
+            if name == "work/w/test-plan.json" and isinstance(document, dict):
+                for accepted_test in document.get("tests", []):
+                    if "app.py" not in accepted_test["source_paths"]:
+                        accepted_test["source_paths"].append("app.py")
+            return original_write(consumer, name, document)
+
+        with patch.object(Consumer, "write", include_helper_source):
+            consumer, historical = evidence_workbench()
         self.addCleanup(consumer.close)
         root = consumer.root
         snapshot, diagnostics = admit(root, "w")
@@ -179,6 +190,28 @@ render_test(%r, %r, detail=%r)
                     "current Git evidence is incorrectly applicable to different working-tree test bytes")
         finally:
             source_path.write_bytes(source_before)
+
+        # A second accepted helper file can change the test's behavior while
+        # its selected test module and method remain unchanged.
+        helper_path = root / "app.py"
+        helper_before = helper_path.read_bytes()
+        helper_after = b"def render(value): return value.lower()\n"
+        try:
+            helper_path.write_bytes(helper_after)
+            helper_detail = workbench_loading.load_selected_detail(
+                root, snapshot, test, node_id="case", source_context=context,
+                candidate_sha=current_candidate, cache=cache)
+            self.assertEqual(helper_detail["source"].get("source"),
+                             workbench_loading.qualified_source(
+                                 root, test, current_candidate,
+                                 current_sha=current_candidate).get("source"),
+                             "only a declared helper file changed; the test method is unchanged")
+            helper_green = next(run for run in helper_detail["execution_history"].get("runs", [])
+                                if run.get("output_artifact") == current_green.get("output_artifact"))
+            require(helper_green.get("working_source_applicability") == "differs from selected source",
+                    "changed accepted helper bytes are incorrectly reported as matching the selected source")
+        finally:
+            helper_path.write_bytes(helper_before)
 
         # A module import/helper change can alter selected-test behavior even
         # when the method body itself is byte-for-byte unchanged.
