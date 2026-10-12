@@ -25,6 +25,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from engineering_fixture import evidence_workbench
 from engineering_model.admission import admit, load_published
 from engineering_model.projection import project
+from workbench_loading import historical_contract_candidates
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -161,7 +162,10 @@ class WorkbenchTests(unittest.TestCase):
         control = page.get_by_label(label)
         expect(control).to_be_visible()
         control.click()
-        page.get_by_role("option", name=value, exact=True).click()
+        control.fill(value)
+        control.press("ArrowDown")
+        control.press("Enter")
+        expect(control).to_have_value(value)
 
     @staticmethod
     def _recorded_hierarchy(consumer):
@@ -249,7 +253,13 @@ class WorkbenchTests(unittest.TestCase):
         consumer.git("branch", "agent/w-alt")
         consumer.git("switch", "agent/w-alt")
         source = root / "test_app.py"
-        source.write_text(source.read_text() + "\n# Source revision unique to agent/w-alt.\n")
+        source_text = source.read_text()
+        source_text = source_text.replace(
+            " def test_unit(self): self.assertEqual(render('hello'),'HELLO')",
+            " def test_unit(self):\n  # Source revision unique to agent/w-alt.\n"
+            "  self.assertEqual(render('hello'),'HELLO')")
+        assert "Source revision unique to agent/w-alt" in source_text
+        source.write_text(source_text)
         consumer.commit("change selected source on the alternate branch")
         consumer.git("switch", "agent/w")
 
@@ -342,19 +352,33 @@ class WorkbenchTests(unittest.TestCase):
                 self._open(page, "result:E")
                 expect(page.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
-                page.get_by_label("Historical contract candidate").select_option(historical_sha)
+                candidates = historical_contract_candidates(root, "w")
+                self.assertIn(historical_sha, candidates)
+                candidate_number = candidates.index(historical_sha) + 1
+                candidate_selector = page.get_by_label("Historical contract candidate")
+                candidate_label = f"Retained candidate {candidate_number}"
+                candidate_selector.click()
+                candidate_selector.fill(candidate_label)
+                candidate_selector.press("ArrowDown")
+                page.get_by_role("option", name=candidate_label, exact=True).click()
+                expect(candidate_selector).to_have_value(candidate_label)
                 page.get_by_role("button", name="Inspect candidate", exact=True).click()
                 expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
-                expect(page.get_by_text("They do not verify the current contract.", exact=True)).to_be_visible()
+                expect(page.get_by_text(
+                    "Inspect a retained contract candidate to view its recorded outcomes. "
+                    "These records do not verify the current contract.", exact=True)).to_be_visible()
                 self._open(page, "result:U")
                 expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
                 expect(page.get_by_text("No retained execution matches the current test contract.", exact=True)).to_be_visible()
                 expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
-                page.get_by_label("Historical contract candidate").select_option(historical_sha)
+                candidate_selector = page.get_by_label("Historical contract candidate")
+                candidate_selector.click()
+                candidate_selector.fill(candidate_label)
+                candidate_selector.press("ArrowDown")
+                candidate_selector.press("Enter")
+                expect(candidate_selector).to_have_value(candidate_label)
                 page.get_by_role("button", name="Inspect candidate", exact=True).click()
                 expect(page.get_by_text("Recorded historical outcome: Passed", exact=True).first).to_be_visible()
-                self.assertGreater(page.get_by_text(historical_sha, exact=True).count(), 0,
-                                   "historical contract inspection identifies its retained candidate")
 
                 # The selected alternate work is read from its other branch and remains read-only.
                 self._select(page, "Workstream", "w-alt")

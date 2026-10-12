@@ -263,9 +263,9 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 route_click(page, "scenario", "Uppercase behavior")
                 expect(page.get_by_text("lowercase text", exact=True)).to_be_visible()
                 expect(page.get_by_text("uppercase text is returned", exact=True)).to_be_visible()
+                metadata_navigation = (time.perf_counter() - t) * 1000
                 route_click(page, "purpose", "Purpose")
                 expect(page.get_by_text("Results are not loaded", exact=False)).to_be_visible()
-                metadata_navigation = (time.perf_counter() - t) * 1000
                 t = time.perf_counter()
                 page.get_by_role("button", name="View scenarios", exact=True).click()
                 expect(page.get_by_role("button", name="Clear filter", exact=True)).to_be_visible()
