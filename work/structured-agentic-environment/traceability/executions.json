@@ -1368,5 +1368,15 @@
     "candidate_sha": "9cd9c2c8cd0cdc1ae9075923115aa06cd1c388ae",
     "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
     "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
+  },
+  {
+    "run_id": "229be985b9d64bdda180857e0a6d4768",
+    "digest": "31f518845e2481d1586eb980ec6a57509bd226cf4f599b99fc9f63f6fb2e4fd7",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "WB-009",
+    "candidate_sha": "ef4f78faee591b25fe419cbfe0042e72da5e763a",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
   }
 ]
