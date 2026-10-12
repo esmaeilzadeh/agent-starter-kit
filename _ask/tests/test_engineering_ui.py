@@ -91,6 +91,24 @@ class UiIntegrationTests(unittest.TestCase):
             self.assertIn(historical_sha, inspected,
                           "explicit inspection identifies the historical candidate")
             self.assertNotIn(current_sha, inspected)
+            historical_green = next(run for run in consumer.green["cases"]
+                                    if run.get("test_id") == "U"
+                                    and run.get("phase") == "final_green")
+            artifact = consumer.root / historical_green["output_artifact"]
+            artifact_before = artifact.read_bytes()
+            try:
+                artifact.write_bytes(artifact_before + b"tampered historical output")
+                required_widget(app.button, lambda item: item.label == "Inspect candidate",
+                                "candidate reinspection").click().run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                tampered = text(app)
+                self.assertIn("Historical candidate inspection: invalid", tampered,
+                              "tampered candidate is reported as invalid, not as an identity mismatch")
+                self.assertIn("Output artifact", tampered)
+                self.assertNotIn("Recorded historical outcome: Passed", tampered,
+                                 "invalid history is not rendered as a verified pass")
+            finally:
+                artifact.write_bytes(artifact_before)
             self.assertEqual(len(app.json), 0)
 
     def test_planned_test_shows_its_source_in_the_detail_panel(self):

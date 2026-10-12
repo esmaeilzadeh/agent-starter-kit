@@ -348,25 +348,21 @@ render_test(%r, %r, detail=%r)
         require(advanced["candidate_sha"] == advanced_head,
                 "detail loading did not resolve an omitted candidate to current HEAD")
 
-        # Resolved decision routes must be available from the same outline used by related links.
-        resolved_projection = copy.deepcopy(projection)
-        choice = next(node for node in resolved_projection["model"]["nodes"]
-                      if node.get("id") == "choice")
-        choice["lifecycle"] = "resolved"
-        route_script = """
-import sys
-sys.path[:0] = [%r, %r]
-import streamlit as st
-from streamlit_app import _open_related_route
-st.session_state["_engineering_displayed_view"] = {"projection": %r}
-_open_related_route("decision", "choice")
-st.write(st.session_state.get("_engineering_route"))
-""" % (str(ROOT / "_ask/ui"), str(ROOT / "_ask/scripts"), resolved_projection)
-        route_app = AppTest.from_string(route_script).run(timeout=30)
-        self.assertFalse(route_app.exception, route_app.exception)
-        route_text = "\n".join(str(item.value) for item in route_app.markdown)
-        require("resolved-decision:choice" in route_text,
-                "resolved decision cannot be opened by the shared related-route helper")
+        # Exercise related-route navigation in the real app under this valid fixture root.
+        with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+            route_app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=30)
+            self.assertFalse(route_app.exception, route_app.exception)
+            displayed = route_app.session_state["_engineering_displayed_view"]
+            resolved_projection = copy.deepcopy(displayed["projection"])
+            choice = next(node for node in resolved_projection["model"]["nodes"]
+                          if node.get("id") == "choice")
+            choice["lifecycle"] = "resolved"
+            displayed["projection"] = resolved_projection
+            route_app.session_state["_engineering_displayed_view"] = displayed
+            route_app.button(key="overview:attention:decision:choice").click().run(timeout=30)
+            self.assertFalse(route_app.exception, route_app.exception)
+            require(route_app.session_state["_engineering_route"] == "resolved-decision:choice",
+                    "resolved decision cannot be opened by the shared related-route helper")
         self.assertEqual(new_reds, [], "new workbench defects:\n- " + "\n- ".join(new_reds))
 
     def test_overview_is_lazy_and_selected_details_are_cached(self):
