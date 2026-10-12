@@ -171,6 +171,16 @@ def build_outline(projection: dict) -> dict:
                     [*epic_path, (decision_route, decision_label)], node_id=decision_id,
                     indent=1)
 
+    for decision in sorted((node for node in nodes.values()
+                            if node.get("type") == "decision" and node.get("lifecycle") == "resolved"),
+                           key=lambda node: str(node.get("id"))):
+        identity = str(decision["id"])
+        route_id = f"resolved-decision:{identity}"
+        label = "Decision · " + (decision.get("title") or identity)
+        root_id = root_routes[0] if root_routes else ""
+        root_title = nodes.get(root_id, {}).get("title") or root_id
+        _append(entries, ancestors, route_id, label, "decision",
+                [(root_id, root_title), (route_id, label)], node_id=identity, indent=1)
     return {"entries": entries, "ancestors": ancestors, "roots": root_routes}
 
 

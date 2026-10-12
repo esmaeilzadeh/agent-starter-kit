@@ -30,6 +30,8 @@ def reset_for_work(session, work_id: str, view: dict, epic_id: str,
     for key in ("_engineering_candidate_projection", "_engineering_evidence_projection",
                 "_engineering_overview_results", "_engineering_feedback"):
         session[key] = None if key != "_engineering_feedback" else []
+    # A refreshed/work-switched snapshot must re-evaluate selected source and evidence.
+    session.pop("_engineering_selected_detail_cache", None)
     for key in ("option_id", "actor", "rationale"):
         session.pop(key, None)
 

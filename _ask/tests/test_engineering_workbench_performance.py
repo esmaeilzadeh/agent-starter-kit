@@ -276,8 +276,8 @@ st.write(st.session_state.get("_engineering_route"))
     def test_overview_is_lazy_and_selected_details_are_cached(self):
         consumer, _ = evidence_workbench()
         self.addCleanup(consumer.close)
-        source_reads = patch.object(workbench_loading, "_working_source",
-                                    wraps=workbench_loading._working_source)
+        source_reads = patch.object(workbench_loading, "qualified_source",
+                                    wraps=workbench_loading.qualified_source)
         history_reads = patch.object(workbench_loading, "execution_history",
                                      wraps=workbench_loading.execution_history)
         evidence_reads = patch("engineering_model.projection.inspect_evidence",

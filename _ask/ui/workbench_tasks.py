@@ -24,7 +24,8 @@ def task_rows(projection: dict) -> list[dict]:
             "runtime_status": item.get("runtime_status", state.get("runtime_status")),
             "blockers": state.get("blockers", item.get("blockers", [])),
             "result_path": item.get("result_path") or state.get("result_path"),
-            "verified": bool(item.get("result_path") or state.get("result_path")) and status == "completed",
+            "verified": False,
+            "result_reference_recorded": bool(item.get("result_path") or state.get("result_path")),
         })
     return sorted(rows, key=lambda row: row["id"])
 
@@ -36,10 +37,10 @@ def _detail(row: dict, *, on_open=None, context: str = "tasks") -> None:
     st.write(str(row.get("status", "not recorded")).replace("_", " ").title())
     runtime = row.get("runtime_status")
     st.caption("Runtime record: " + (str(runtime) if runtime else "not recorded"))
-    if row.get("verified"):
-        st.success("This task has a recorded completed result.")
+    if row.get("result_reference_recorded"):
+        st.info("A task result reference is recorded; this view does not verify its contents.")
     else:
-        st.info("Lifecycle status is separate from verified completion; no completed result is attached to this task.")
+        st.info("Lifecycle status is separate from result evidence; no result reference is recorded for this task.")
     if row.get("outcome"):
         st.markdown("**Outcome**")
         st.write(row["outcome"])
@@ -104,7 +105,7 @@ def render_tasks(projection: dict, *, context: str = "tasks", on_open=None,
     table = [{"ID": row["id"], "Task": row["title"],
               "Status": str(row.get("status", "not recorded")).replace("_", " "),
               "Lifecycle": row.get("lifecycle", "not recorded"),
-              "Verified completion": "Yes" if row.get("verified") else "No"}
+              "Result reference": "Recorded" if row.get("result_reference_recorded") else "Unavailable"}
              for row in filtered]
     st.dataframe(table, hide_index=True, width="stretch")
     if not filtered:

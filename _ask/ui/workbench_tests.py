@@ -1,6 +1,7 @@
 """Selected test, source, execution and related-work detail."""
 from __future__ import annotations
 
+from pathlib import PurePosixPath
 import streamlit as st
 
 from workbench_debug import render_debug
@@ -60,22 +61,55 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
         st.caption("Historical evidence")
     if evidence_state.get("status") == "unavailable":
         st.info("Current evidence is unavailable for this selected test.")
+        if evidence_state.get("diagnostic"):
+            st.caption(str(evidence_state["diagnostic"]))
+    elif evidence_state.get("status") == "invalid" and evidence_state.get("diagnostic"):
+        st.warning(str(evidence_state["diagnostic"]))
     current_runs = [run for run in runs if isinstance(run, dict)
                     and run.get("source_status") == "current"
                     and run.get("output_status") == "valid"]
-    if not current_runs:
+    if runs and not current_runs:
+        st.info("No current recorded execution is attached to this selected revision.")
+    elif not runs:
         st.info("No recorded execution is attached to this selected test.")
     for run in runs:
         if not isinstance(run, dict):
             continue
         if run.get("outcome"):
-            st.write("Outcome: " + str(run["outcome"]).replace("_", " ").title())
-        if run.get("recorded_at"):
-            st.write("Timestamp: " + str(run["recorded_at"]))
-        if run.get("duration") is not None:
-            st.write("Duration: " + str(run["duration"]))
-        if run.get("diagnostic"):
-            st.caption(str(run["diagnostic"]))
+            st.write("Recorded outcome: " + str(run["outcome"]).replace("_", " ").title())
+        output_status = run.get("output_status", "unavailable")
+        source_status = run.get("source_status", "unavailable")
+        st.write("Output integrity: " + str(output_status))
+        st.write("Source currency: " + str(source_status))
+        if output_status != "valid" or source_status not in {"current", "historical"}:
+            st.error("Untrusted execution evidence; this recorded outcome is not a verified pass.")
+        elif source_status == "historical":
+            st.caption("This retained outcome belongs to a historical source revision.")
+        run_id = str(run.get("run_id", "unavailable"))
+        execution_label = f"Execution details · {run_id}"
+        with st.expander(execution_label, expanded=False,
+                         key=f"execution:{context}:{test_id}:{run_id}"):
+            st.caption(f"Work: {run.get('work_id', projection.get('work_id', 'unknown'))} · "
+                       f"Test: {run.get('test_id', test_id)} · Case: {run.get('case_id', test.get('case_id', 'unavailable'))}")
+            st.caption("Run ID: " + run_id)
+            artifact = run.get("output_artifact")
+            if artifact:
+                st.caption("Execution ID: " + PurePosixPath(str(artifact)).stem)
+            st.caption("Candidate: " + str(run.get("candidate_sha", "unavailable")))
+            st.caption("Contract: spec " + str(run.get("spec_digest", "unavailable")) +
+                       " · plan " + str(run.get("plan_digest", "unavailable")))
+            st.write("Timestamp: " + str(run.get("recorded_at") or "unavailable"))
+            st.write("Duration: " + (str(run["duration"]) if run.get("duration") is not None
+                                      else "unavailable"))
+            if run.get("failure_kind"):
+                st.write("Failure detail: " + str(run["failure_kind"]).replace("_", " "))
+            if run.get("diagnostic"):
+                st.caption(str(run["diagnostic"]))
+    if not runs and isinstance(history, dict) and history.get("diagnostic"):
+        if history.get("status") == "invalid":
+            st.warning(str(history["diagnostic"]))
+        else:
+            st.info(str(history["diagnostic"]))
     evidence = test.get("evidence")
     if detail is None and not evidence:
         st.info("No recorded execution is attached to this selected test.")

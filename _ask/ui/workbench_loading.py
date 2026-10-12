@@ -10,6 +10,7 @@ import subprocess
 from collections import OrderedDict
 
 from engineering_model.projection import project
+from engineering_model.evidence import inspect as inspect_workstream_evidence
 from engineering_model.workbench_evidence import execution_history, qualified_source
 
 
@@ -125,6 +126,9 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
     """Hash selected definitions, exact source bytes, authority refs, and evidence bytes."""
     root = Path(root).resolve()
     work_id = str(snapshot.work_id)
+    if candidate_sha is None:
+        current = _git(root, "rev-parse", "HEAD")
+        candidate_sha = current.decode("ascii", "replace") if current else None
     plan_path = f"work/{work_id}/test-plan.json"
     plan_raw = snapshot.files.get(plan_path) or b""
     plan = {}
@@ -167,27 +171,30 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                          cache: OrderedDict | None = None) -> dict:
     """Load one test's qualified source and retained evidence after explicit selection."""
     root = Path(root).resolve()
+    context_kind = source_context.get("kind", "working-tree")
+    current_head = _git(root, "rev-parse", "HEAD")
+    chosen_commit = source_context.get("commit") if context_kind == "git-commit" else candidate_sha
+    if chosen_commit is None and current_head:
+        chosen_commit = current_head.decode("ascii", "replace")
+    if isinstance(chosen_commit, bytes):
+        chosen_commit = chosen_commit.decode("ascii", "replace")
+    selected_candidate = chosen_commit
     key = detail_identity(root, snapshot, test, source_context=source_context,
-                          candidate_sha=candidate_sha)
+                          candidate_sha=selected_candidate)
     cache = cache if cache is not None else OrderedDict()
     if key in cache:
         cache.move_to_end(key)
         return cache[key]
 
-    context_kind = source_context.get("kind", "working-tree")
-    chosen_commit = source_context.get("commit") if context_kind == "git-commit" else candidate_sha
-    current_head = _git(root, "rev-parse", "HEAD")
     if chosen_commit:
         source = qualified_source(root, test, str(chosen_commit),
                                   current_sha=current_head.decode("ascii", "replace") if current_head else None)
     else:
         source = _working_source(root, test)
 
-    selected_candidate = candidate_sha or (chosen_commit.decode("ascii", "replace")
-                                            if isinstance(chosen_commit, bytes) else chosen_commit)
-    if selected_candidate is None and current_head:
-        selected_candidate = current_head.decode("ascii", "replace")
     try:
+        if selected_candidate is None:
+            raise ValueError("Git candidate is unavailable")
         evidence_projection = project(snapshot, root, node_id=node_id,
                                       candidate_sha=selected_candidate, include_evidence=True)
         evidence_set = evidence_projection.get("evidence", {}).get("by_workstream", {}).get(
@@ -195,6 +202,14 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     except (OSError, ValueError, KeyError, TypeError) as exc:
         evidence_projection = None
         evidence_set = {"status": "unavailable", "diagnostic": str(exc)}
+    if evidence_projection is None:
+        try:
+            evidence_set = inspect_workstream_evidence(root, snapshot.work_id, selected_candidate)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            evidence_set = {"status": "unavailable", "diagnostic": str(exc)}
+    if selected_candidate is None and evidence_set.get("status") == "unavailable":
+        evidence_set = dict(evidence_set)
+        evidence_set["diagnostic"] = "Git evidence inspection is unavailable because this model root has no resolvable Git candidate."
 
     plan_raw = snapshot.files.get(f"work/{snapshot.work_id}/test-plan.json")
     try:

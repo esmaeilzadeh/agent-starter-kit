@@ -18,6 +18,8 @@ def render_debug(*, work_id: str, snapshot_digest: str, candidate_sha: str | Non
         st.code(candidate_sha or "unavailable")
         st.markdown("**Inspect commands**")
         commit = candidate_sha or "<commit-sha>"
-        st.code(f"git show {commit}\n./ask model show --work-id {work_id} --candidate {commit}", language="bash")
+        st.code(f"git show {commit}\n./ask model show --work-id {work_id} --candidate {commit}\n"
+                f"./ask traceability check-completion {work_id} --candidate-sha {commit}",
+                language="bash")
         if source_path:
             st.caption(f"Selected source: `{source_path}`")

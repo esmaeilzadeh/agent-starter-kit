@@ -78,7 +78,8 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertIn("test_behavior", text(app))
                 self.assertIn("test_fixture.py", text(app))
                 self.assertIn("self.assertEqual(actual, 'accepted')", text(app))
-                self.assertIn("Planned assertions for C1", text(app))
+                self.assertIn("Expected assertions", text(app))
+                self.assertIn("P-001", text(app))
                 self.assertIn("Test source", text(app))
 
     def test_overview_keeps_decision_resolution_in_the_objects_section(self):
@@ -117,62 +118,60 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertNotRegex(rendered, r"\b[0-9a-f]{40}\b")
 
     def test_overview_loads_results_on_demand_and_explains_debug_identifiers(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            workbench_model(root)
-            evidence = {
-                "schema": "ask-engineering-evidence/v1", "work_id": "pilot",
-                "status": "valid", "candidate_sha": "a" * 40,
-                "current_sha": "a" * 40, "historical": False,
-                "current_completion": True,
-                "scenarios": [{
-                    "criterion_id": "P-001",
-                    "reference": {"path": "specs/current/pilot.json", "id": "P-001"},
-                    "evidence": {"criterion_id": "P-001", "tests": [{
-                        "test_id": "CASE-1", "tdd": "red_green", "red": [],
-                        "final_execution": {"outcome": "passed"},
-                    }]},
-                }],
-                "completion": {"status": "pass", "errors": [], "criterion_evidence": []},
-            }
-            original_expander = st.expander
+        consumer, _historical = evidence_workbench()
+        self.addCleanup(consumer.close)
+        original_expander = st.expander
 
-            def expand_debug(*args, **kwargs):
-                if "Technical details and identifiers" in str(args[:1]):
-                    kwargs["expanded"] = True
-                return original_expander(*args, **kwargs)
+        def expand_debug(*args, **kwargs):
+            if "Technical details and identifiers" in str(args[:1]):
+                kwargs["expanded"] = True
+            return original_expander(*args, **kwargs)
 
-            with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
-                  patch.object(projection_module, "inspect_evidence", return_value=evidence) as inspect,
-                  patch.object(st, "expander", expand_debug)):
-                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
-                self.assertFalse(app.exception, app.exception)
-                inspect.assert_not_called()
-                self.assertIn("Purpose", text(app))
-                open_route(app, "result:CASE-1")
-                self.assertFalse(app.exception, app.exception)
-                inspect.assert_called_once()
-                rendered = text(app)
-                self.assertIn("Passed", rendered)
-                self.assertIn("Snapshot digest", rendered)
-                self.assertIn("Git revision", rendered)
-                self.assertIn("git show", rendered)
-                self.assertIn("./ask model show", rendered)
-                self.assertIn("./ask traceability check-completion", rendered)
+        with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}),
+              patch.object(projection_module, "inspect_evidence",
+                           wraps=projection_module.inspect_evidence) as inspect,
+              patch.object(st, "expander", expand_debug)):
+            app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+            self.assertFalse(app.exception, app.exception)
+            inspect.assert_not_called()
+            self.assertIn("Purpose", text(app))
+            open_route(app, "result:U")
+            self.assertFalse(app.exception, app.exception)
+            self.assertTrue(any(args[1] == "w" for args, _kwargs in inspect.call_args_list),
+                            "selected result route triggers workstream evidence inspection")
+            rendered = text(app)
+            self.assertIn("Recorded outcome: Passed", rendered)
+            self.assertIn("Output integrity: valid", rendered)
+            self.assertIn("Source currency: historical", rendered)
+            self.assertIn("Historical evidence", rendered)
+            self.assertIn("Execution ID:", rendered)
+            self.assertIn("Timestamp: unavailable", rendered)
+            self.assertIn("Duration: unavailable", rendered)
+            self.assertIn("Snapshot digest", rendered)
+            self.assertIn("Git revision", rendered)
+            self.assertIn("git show", rendered)
+            self.assertIn("./ask model show", rendered)
+            self.assertIn("./ask traceability check-completion", rendered)
 
     def test_repeated_nested_evidence_fields_do_not_duplicate_expanders(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workbench_model(root)
-            nested_evidence = {
-                "status": "invalid", "candidate_sha": "abc", "current_sha": "abc",
-                "historical": False, "current_completion": False,
-                "scenarios": [
-                    {"tests": [{"references": [{"id": "one"}]}]},
-                    {"tests": [{"references": [{"id": "two"}]}]},
-                ],
-                "completion": {"errors": ["migration_required: missing review JSON for candidate"]},
-            }
+            detail = {"candidate_sha": "abc", "source": {"status": "unavailable"},
+                      "evidence": {"status": "invalid", "diagnostic":
+                                   "migration_required: missing review JSON for candidate"},
+                      "execution_history": {"status": "invalid", "runs": [
+                          {"work_id": "pilot", "test_id": "CASE-1", "case_id": "test_fixture.Cases.test_behavior",
+                           "run_id": "run-one", "phase": "red", "outcome": "failed",
+                           "output_status": "invalid", "source_status": "unavailable",
+                           "diagnostic": "migration_required: missing review JSON for candidate",
+                           "output_artifact": "work/pilot/traceability/runs/run-one/execution-one.log"},
+                          {"work_id": "pilot", "test_id": "CASE-1", "case_id": "test_fixture.Cases.test_behavior",
+                           "run_id": "run-two", "phase": "final_green", "outcome": "passed",
+                           "output_status": "invalid", "source_status": "unavailable",
+                           "diagnostic": "migration_required: missing review JSON for candidate",
+                           "output_artifact": "work/pilot/traceability/runs/run-two/execution-two.log"},
+                      ]}}
             original_expander = st.expander
 
             def expand_all(*args, **kwargs):
@@ -180,15 +179,18 @@ class UiIntegrationTests(unittest.TestCase):
                 return original_expander(*args, **kwargs)
 
             with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
-                  patch.object(projection_module, "inspect_evidence", return_value=nested_evidence),
+                  patch("streamlit_app.workbench_loading.load_selected_detail", return_value=detail),
                   patch.object(st, "expander", expand_all)):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 open_route(app, "result:CASE-1")
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("Selected test: CASE-1", text(app))
                 expanders = [str(item.label) for item in app.expander]
-                self.assertEqual(len(expanders), len(set(expanders)),
-                                 "selected nested detail controls remain uniquely labeled")
+                execution_expanders = [label for label in expanders if label.startswith("Execution details ·")]
+                self.assertEqual(len(execution_expanders), 2,
+                                 "each retained execution has its own visible detail control")
+                self.assertEqual(len(execution_expanders), len(set(execution_expanders)),
+                                 "repeated nested fields do not duplicate execution control labels")
                 self.assertTrue(any("migration_required" in str(item.value) for item in app.warning))
                 self.assertFalse(any("migration_required" in str(item.value) for item in app.error))
 
@@ -241,10 +243,11 @@ class UiIntegrationTests(unittest.TestCase):
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
                 self.assertIn("Ready", text(reloaded))
-                decision_route = next((item for item in reloaded.button if item.key == "route:decision"), None)
+                decision_route = next((item for item in reloaded.button
+                                       if item.key == "route:resolved-decision:choice"), None)
                 self.assertIsNotNone(decision_route, "resolved decision remains navigable in the hierarchy")
                 decision_route.click().run(timeout=15)
-                self.assertIn("resolved", text(reloaded))
+                self.assertIn("Resolved option", text(reloaded))
                 self.assertIn("Developer", text(reloaded))
                 self.assertIn("Measured fit for the pilot", text(reloaded))
 
@@ -348,8 +351,9 @@ class UiIntegrationTests(unittest.TestCase):
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
                 self.assertIn("Ready", text(reloaded))
-                decision_route = next((item for item in reloaded.button if item.key == "route:decision"), None)
+                decision_route = next((item for item in reloaded.button
+                                       if item.key == "route:resolved-decision:choice"), None)
                 self.assertIsNotNone(decision_route, "resolved decision remains navigable after refreshed resolution")
                 decision_route.click().run(timeout=15)
-                self.assertIn("resolved", text(reloaded))
+                self.assertIn("Resolved option", text(reloaded))
                 self.assertIn("Use the amended requirement", text(reloaded))

@@ -887,20 +887,6 @@ projection = view["projection"]
 navigation_col, detail_col = st.columns([1, 2], gap="large")
 with navigation_col:
     outline = render_outline(projection)
-    for decision in projection.get("model", {}).get("nodes", []):
-        if decision.get("type") != "decision" or decision.get("lifecycle") != "resolved":
-            continue
-        route = f"resolved-decision:{decision['id']}"
-        label = "Decision · " + (decision.get("title") or decision["id"])
-        st.button(label, key=f"route:{route}", on_click=route_to,
-                  args=(st.session_state, route))
-        entry = {"route_id": route, "label": label, "kind": "decision",
-                 "node_id": decision["id"], "indent": 1}
-        outline["entries"].append(entry)
-        root_id = outline["roots"][0] if outline["roots"] else ""
-        root_title = next((node.get("title") or root_id for node in projection.get("model", {}).get("nodes", [])
-                           if node.get("id") == root_id), root_id)
-        outline["ancestors"][route] = [(root_id, root_title), (route, label)]
 route_id = st.session_state.get(STATE_ROUTE)
 if route_id not in outline["ancestors"]:
     route_id = outline["roots"][0] if outline["roots"] else ""
