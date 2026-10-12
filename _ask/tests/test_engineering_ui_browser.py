@@ -109,23 +109,26 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first.goto(url, wait_until="domcontentloaded")
                 expect(first.get_by_role("button", name="Uppercase behavior", exact=False)).to_be_visible()
 
-                # E has a recorded historical pass; U has a current miss plus that historical run.
+                # The exact selected test retains historical outcomes, distinct from current evidence.
                 self.open_result(first, "E")
                 expect(first.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
-                expect(first.get_by_text("Passed", exact=False)).to_be_visible()
-                expect(first.get_by_text("Historical evidence", exact=False)).to_be_visible()
+                expect(first.get_by_text("Recorded outcome: Passed", exact=True).first).to_be_visible()
+                expect(first.get_by_text("Historical evidence", exact=True).first).to_be_visible()
+                expect(first.get_by_text("Source revision: " + historical, exact=True).first).to_be_visible()
                 self.open_result(first, "U")
                 expect(first.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
-                expect(first.get_by_text("No recorded execution is attached to this selected test.", exact=True)).to_be_visible()
+                expect(first.get_by_text("No current recorded execution is attached to this selected revision.", exact=True)).to_be_visible()
                 expect(first.get_by_text("Current evidence is unavailable", exact=False)).to_be_visible()
-                expect(first.get_by_text("Historical evidence", exact=False)).to_be_visible()
+                expect(first.get_by_text("Historical evidence", exact=True).first).to_be_visible()
                 expect(first.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
                 expect(first.get_by_text("Exact HELLO output", exact=True)).to_be_visible()
                 expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
                 debug = first.locator("summary").filter(has_text="Technical details and identifiers")
+                expect(first.locator('[class~="st-key-route-result-U"] button')).to_have_attribute("kind", "primary")
                 debug.click()
                 expect(first.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                 expect(first.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
+                expect(first.get_by_text("./ask traceability check-completion", exact=False)).to_be_visible()
                 self.open_route(first, "Uppercase assertion")
                 expect(first.get_by_text("test_app.py", exact=False)).to_be_visible()
                 expect(first.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
@@ -201,7 +204,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 expect(fresh.get_by_text("Use the amended requirement", exact=False)).to_be_visible()
                 self.open_route(fresh, "Build")
                 expect(fresh.get_by_text("No blockers are recorded.", exact=False)).to_be_visible()
-                expect(fresh.get_by_text("no completed result is attached", exact=False)).to_be_visible()
+                expect(fresh.get_by_text("A task result reference is recorded; this view does not verify its contents.", exact=True)).to_be_visible()
                 first.screenshot(path="/tmp/wb009-browser-current.png", full_page=True)
                 browser.close()
         finally:
@@ -228,6 +231,8 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
                     self.open_route(page, "Result / evidence")
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
+                    result_route = page.locator('[class~="st-key-route-result-CASE-1"]').get_by_role("button")
+                    expect(result_route).to_have_attribute("kind", "primary")
                     debug = page.locator("summary").filter(has_text="Technical details and identifiers")
                     expect(debug).to_be_visible()
                     debug.focus()
@@ -236,7 +241,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                     expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
                     expect(page.get_by_text(
-                        "Git evidence inspection is unavailable because the configured model root is not a Git checkout.",
+                        "Git evidence inspection is unavailable because this model root has no resolvable Git candidate.",
                         exact=True)).to_be_visible()
                     expect(page.get_by_text("git show", exact=False)).to_be_visible()
                     expect(page.get_by_text("./ask model show", exact=False)).to_be_visible()

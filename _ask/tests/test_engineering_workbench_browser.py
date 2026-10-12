@@ -341,15 +341,16 @@ class WorkbenchTests(unittest.TestCase):
                 expect(page.get_by_text("test_app.py", exact=False)).to_be_visible()
                 self._open(page, "result:E")
                 expect(page.get_by_text("Selected test: E · revision-bound planned identity", exact=True)).to_be_visible()
-                expect(page.get_by_text("Passed", exact=False)).to_be_visible()
-                expect(page.get_by_text("Historical evidence", exact=False)).to_be_visible()
+                expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
+                expect(page.get_by_text("Recorded historical outcome: Passed", exact=True)).to_be_visible()
+                expect(page.get_by_text("They do not verify the current contract.", exact=True)).to_be_visible()
                 self._open(page, "result:U")
                 expect(page.get_by_text("Selected test: U · revision-bound planned identity", exact=True)).to_be_visible()
-                expect(page.get_by_text("No recorded execution is attached to this selected test.", exact=True)).to_be_visible()
-                expect(page.get_by_text("Current evidence is unavailable", exact=False)).to_be_visible()
-                expect(page.get_by_text("Historical evidence", exact=False)).to_be_visible()
-                self.assertEqual(page.get_by_text(historical_sha, exact=False).count(), 0,
-                                 "debug/provenance does not expose raw commit hashes")
+                expect(page.get_by_text("No retained execution matches the current test contract.", exact=True)).to_be_visible()
+                expect(page.get_by_text("Historical contract evidence", exact=True)).to_be_visible()
+                expect(page.get_by_text("Recorded historical outcome: Passed", exact=True)).to_be_visible()
+                self.assertGreater(page.get_by_text(historical_sha, exact=True).count(), 0,
+                                   "historical contract inspection identifies its retained candidate")
 
                 # The selected alternate work is read from its other branch and remains read-only.
                 self._select(page, "Workstream", "w-alt")
@@ -439,7 +440,7 @@ class WorkbenchTests(unittest.TestCase):
                     expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
                     expect(page.get_by_text("Git revision", exact=True)).to_be_visible()
                     expect(page.get_by_text("Selected source: test_app.py", exact=False)).to_be_visible()
-                    status = page.get_by_text("No recorded execution is attached to this selected test.", exact=False)
+                    status = page.get_by_text("No recorded execution is attached to this selected test.", exact=True)
                     expect(status).to_be_visible()
                     self.assertGreaterEqual(self._contrast(page, status.first), 4.5,
                                             "written execution state meets normal-text contrast")

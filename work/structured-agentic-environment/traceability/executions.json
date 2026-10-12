@@ -1308,5 +1308,25 @@
     "candidate_sha": "88108898b89080fcc9bf4e969032ab2161ff0bbf",
     "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
     "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
+  },
+  {
+    "run_id": "201fb1f369084ba1854a9c079d0b0199",
+    "digest": "5cc0d36b32d8955a359f0e5b60a09332b3f54579bcddbeb9bd17f4aad2a2581a",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "WB-009",
+    "candidate_sha": "17cf34d1b94b1b69d62d93f9b21443d8a72db628",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
+  },
+  {
+    "run_id": "d09a38d6cb6443958365cc833c85697f",
+    "digest": "b0a3c2d7fc7f5772e2b77c6958b3a7eab72aea5205ce922139f2f000b98c79fe",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "WB-009",
+    "candidate_sha": "667771a06dfe3d33b9347ea33bf593d6a60be153",
+    "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+    "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b"
   }
 ]
