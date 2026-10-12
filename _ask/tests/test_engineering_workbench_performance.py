@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import copy
 from pathlib import Path
 import sys
 import time
@@ -25,6 +26,7 @@ from engineering_model.workbench import build_workbench
 import workbench_loading
 import benchmark_workbench
 from workbench_navigation import build_outline
+from workbench_tests import render_test
 
 
 def _nearest_rank(values, percentile=.95):
@@ -94,6 +96,21 @@ def _structural_workload(task_count: int) -> dict:
 
 
 class WorkbenchTests(unittest.TestCase):
+    @staticmethod
+    def _render_test_text(projection, test_id, detail):
+        script = """
+import sys
+sys.path.insert(0, %r)
+from workbench_tests import render_test
+render_test(%r, %r, detail=%r)
+""" % (str(ROOT / "_ask/ui"), projection, test_id, detail)
+        app = AppTest.from_string(script).run(timeout=30)
+        if app.exception:
+            raise AssertionError(app.exception)
+        return "\n".join(str(item.value) for group in (
+            app.subheader, app.markdown, app.caption, app.info, app.error, app.warning,
+            app.success, app.text, app.code) for item in group)
+
     def test_lazy_work_and_integrity_bound_cache_invalidation(self):
         consumer, historical = evidence_workbench()
         self.addCleanup(consumer.close)
@@ -122,11 +139,17 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(len(cache), 1)
         self.assertEqual(first["identity"], original_identity)
 
-        # Exercise the real retained run log and review record instead of a synthetic probe file.
-        log_path = next((root / "work/w/traceability/runs").glob("*/*.log"), None)
+        # Exercise the exact retained final-green artifact selected by this fixture.
+        green_execution = next(item for item in consumer.green["executions"]
+                               if item.get("phase") == "final_green")
+        log_path = root / green_execution["output_artifact"]
         review_path = root / "work/w/traceability/reviews" / f"{historical}.json"
-        self.assertIsNotNone(log_path, "fixture retains a real execution log")
+        self.assertTrue(log_path.is_file(), "selected final-green execution retains its exact output artifact")
         self.assertTrue(review_path.is_file(), "fixture retains a candidate-bound review")
+        green_run = next(run for run in first["execution_history"]["runs"]
+                         if run.get("output_artifact") == green_execution["output_artifact"]
+                         and run.get("test_id") == "U")
+        self.assertEqual(green_run["output_status"], "valid")
         log_before = log_path.read_bytes()
         review_before = review_path.read_bytes()
         ref = "refs/ask/accepted-tests/w"
@@ -141,8 +164,17 @@ class WorkbenchTests(unittest.TestCase):
                 root, snapshot, test, node_id="case", source_context=context,
                 candidate_sha=historical, cache=cache)
             self.assertIsNot(first, changed_log)
-            self.assertNotEqual(first["evidence"], changed_log["evidence"])
-            self.assertIn(changed_log["evidence"].get("status"), {"invalid", "unavailable"})
+            tampered_green = next(run for run in changed_log["execution_history"].get("runs", [])
+                                  if run.get("output_artifact") == green_execution["output_artifact"]
+                                  and run.get("test_id") == "U")
+            self.assertEqual(tampered_green["output_status"], "invalid",
+                             "reload marks this exact selected final-green artifact invalid")
+            rendered = self._render_test_text(projection, "U", changed_log)
+            with self.subTest("tampered selected result has explicit integrity state"):
+                self.assertIn("Output integrity: invalid", rendered)
+                self.assertIn("Untrusted execution evidence", rendered)
+                self.assertIn("Recorded outcome: Passed", rendered,
+                              "the actual recorded outcome remains visible as a separate fact")
             log_path.write_bytes(log_before)
 
             review_doc = json.loads(review_before)
@@ -152,11 +184,12 @@ class WorkbenchTests(unittest.TestCase):
                 root, snapshot, test, source_context=context, candidate_sha=historical)
             self.assertNotEqual(original_identity, review_identity,
                                 "a retained semantic-review mutation invalidates selected detail")
+            review_path.write_bytes(review_before)
 
             consumer.git("update-ref", ref, consumer.red_sha)
             ref_identity = workbench_loading.detail_identity(
                 root, snapshot, test, source_context=context, candidate_sha=historical)
-            self.assertNotEqual(review_identity, ref_identity,
+            self.assertNotEqual(original_identity, ref_identity,
                                 "the accepted authority ref participates in selected-detail identity")
             changed_authority = workbench_loading.load_selected_detail(
                 root, snapshot, test, node_id="case", source_context=context,
@@ -174,6 +207,19 @@ class WorkbenchTests(unittest.TestCase):
             review_path.write_bytes(review_before)
             consumer.git("update-ref", ref, accepted_before)
 
+        # Plan-only tests still have canonical workstream evidence without a model test node.
+        plan_only = next(item for item in projection["workbench"]["tests"] if item["id"] == "E")
+        from engineering_model.evidence import inspect as inspect_workstream_evidence
+        authoritative = inspect_workstream_evidence(root, "w", historical)
+        plan_only_detail = workbench_loading.load_selected_detail(
+            root, snapshot, plan_only, node_id="E", source_context=context,
+            candidate_sha=historical)
+        self.assertEqual(authoritative["status"], "historical")
+        with self.subTest("plan-only result resolves evidence without a model node"):
+            self.assertEqual(plan_only_detail["evidence"]["status"], "historical",
+                             "plan-only test resolves workstream evidence by canonical ID")
+        self.assertEqual(plan_only_detail["execution_history"]["runs"][-1]["test_id"], "E")
+
         source_path = root / test["source_paths"][0]
         source_before = source_path.read_bytes()
         source_stat = source_path.stat()
@@ -186,6 +232,40 @@ class WorkbenchTests(unittest.TestCase):
         finally:
             source_path.write_bytes(source_before)
             os.utime(source_path, ns=(source_stat.st_atime_ns, source_stat.st_mtime_ns))
+
+        # A new HEAD changes current-candidate identity even when selected files are unchanged.
+        current_identity = workbench_loading.detail_identity(
+            root, snapshot, test, source_context=context, candidate_sha=None)
+        consumer.git("commit", "--allow-empty", "-m", "advance current candidate identity")
+        advanced_head = consumer.git("rev-parse", "HEAD")
+        advanced = workbench_loading.load_selected_detail(
+            root, snapshot, test, node_id="case", source_context=context,
+            candidate_sha=None, cache=cache)
+        with self.subTest("implicit current candidate follows HEAD"):
+            self.assertNotEqual(current_identity, advanced["identity"],
+                                "current HEAD participates in cache identity when no SHA is supplied")
+            self.assertEqual(advanced["candidate_sha"], advanced_head)
+
+        # Resolved decision routes must be available from the same outline used by related links.
+        resolved_projection = copy.deepcopy(projection)
+        choice = next(node for node in resolved_projection["model"]["nodes"]
+                      if node.get("id") == "choice")
+        choice["lifecycle"] = "resolved"
+        route_script = """
+import sys
+sys.path[:0] = [%r, %r]
+import streamlit as st
+from streamlit_app import _open_related_route
+st.session_state["_engineering_displayed_view"] = {"projection": %r}
+_open_related_route("decision", "choice")
+st.write(st.session_state.get("_engineering_route"))
+""" % (str(ROOT / "_ask/ui"), str(ROOT / "_ask/scripts"), resolved_projection)
+        route_app = AppTest.from_string(route_script).run(timeout=30)
+        self.assertFalse(route_app.exception, route_app.exception)
+        route_text = "\n".join(str(item.value) for item in route_app.markdown)
+        with self.subTest("resolved decision shared route index"):
+            self.assertIn("resolved-decision:choice", route_text,
+                          "resolved decisions are reachable through the shared related-route index")
 
     def test_overview_is_lazy_and_selected_details_are_cached(self):
         consumer, _ = evidence_workbench()
@@ -223,6 +303,16 @@ class WorkbenchTests(unittest.TestCase):
             app.button(key="route:test:U").click().run(timeout=20)
             self.assertEqual((source.call_count, history.call_count, evidence.call_count), selected_counts,
                              "revisiting unchanged metadata and detail reuses the bounded cache")
+
+            app.button(key="refresh").click().run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
+            app.button(key="route:test:U").click().run(timeout=20)
+            self.assertGreater(source.call_count, selected_counts[0],
+                               "explicit refresh re-reads selected source bytes")
+            self.assertGreater(history.call_count, selected_counts[1],
+                               "explicit refresh re-evaluates retained execution history")
+            self.assertGreater(evidence.call_count, selected_counts[2],
+                               "explicit refresh revalidates retained evidence")
 
     def test_measured_pilot_latency_budgets(self):
         consumer, _ = evidence_workbench()
