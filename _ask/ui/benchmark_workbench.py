@@ -266,8 +266,10 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
     if expected_history.get("status") != "available":
         raise ValueError("benchmark fixture retained history is unavailable: " +
                          str(expected_history.get("diagnostic")))
-    expected_outcomes = [str(item.get("outcome", "unavailable")).replace("_", " ").title()
-                         for item in expected_history.get("runs", [])]
+    expected_rows = expected_history.get("runs", [])
+    expected_outcomes = [str(item["outcome"]).replace("_", " ").title()
+                         for item in expected_rows if item.get("outcome") is not None]
+    expected_valid_outputs = sum(item.get("output_status") == "valid" for item in expected_rows)
     graph_path = model_root / workload_paths[2]
     graph_document = (yaml.safe_load(graph_path.read_text(encoding="utf-8"))
                       if graph_path.is_file() else {"tasks": []}) or {"tasks": []}
@@ -390,7 +392,7 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                     expect(page.get_by_text("Recorded outcome: " + outcome, exact=True)).to_have_count(
                         expected_outcomes.count(outcome))
                 expect(page.get_by_text("Output integrity: valid", exact=True)).to_have_count(
-                    len(expected_outcomes))
+                    expected_valid_outputs)
                 source_result = (time.perf_counter() - t) * 1000
                 data["warm_ms"].append({"sample": index, "overview": overview,
                                         "metadata_navigation": metadata_navigation,
