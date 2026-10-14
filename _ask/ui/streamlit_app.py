@@ -743,6 +743,80 @@ def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view:
     st.rerun()
 
 
+@st.fragment
+def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
+                      source_context: dict) -> None:
+    navigation_col, detail_col = st.columns([1, 2], gap="large")
+    with navigation_col:
+        outline = render_outline(projection)
+    route_id = st.session_state.get(STATE_ROUTE)
+    if route_id not in outline["ancestors"]:
+        route_id = outline["roots"][0] if outline["roots"] else ""
+        route_to(st.session_state, route_id)
+    with detail_col:
+        with st.container(border=True):
+            render_breadcrumbs(outline, route_id)
+            selected = next((entry for entry in outline["entries"]
+                             if entry["route_id"] == route_id), None)
+            if selected is None:
+                st.info("This workstream has no epic record yet.")
+            elif selected["kind"] == "decision":
+                selected_node = _node_map(projection).get(selected["node_id"])
+                if selected_node:
+                    _render_decision(selected_node, view["editable"], root, work_id, view)
+            elif selected["kind"] in {"result", "test"}:
+                from collections import OrderedDict
+
+                import workbench_loading
+                from workbench_tests import render_test
+
+                test_id = str(selected["node_id"])
+                test = next((item for item in projection.get("workbench", {}).get("tests", [])
+                             if str(item.get("id")) == test_id), None)
+                detail = None
+                captured = view.get("captured")
+                if test is not None and captured is not None:
+                    plan_path = f"work/{work_id}/test-plan.json"
+                    test_node_id = next((node.get("id") for node in projection.get("model", {}).get("nodes", [])
+                                         if node.get("type") == "test"
+                                         and node.get("reference", {}).get("path") == plan_path
+                                         and node.get("reference", {}).get("id") == test_id), test_id)
+                    detail_cache = st.session_state.setdefault(STATE_DETAIL_CACHE, OrderedDict())
+                    detail = workbench_loading.load_selected_detail(
+                        root, captured, test, node_id=test_node_id,
+                        source_context=source_context,
+                        candidate_sha=source_context.get("commit"),
+                        cache=detail_cache,
+                    )
+                render_test(projection, test_id, detail=detail,
+                            context=f"{selected['kind']}:{selected['route_id']}",
+                            on_open=_open_related_route, root=root)
+            elif selected["kind"] == "task":
+                from workbench_tasks import render_tasks
+
+                render_tasks(projection, context=f"route:{selected['route_id']}",
+                             on_open=_open_related_route, selected_id=selected["node_id"])
+            elif selected["kind"] == "scenario":
+                from workbench_scenarios import render_scenario
+
+                render_scenario(projection, selected["node_id"], on_open=_open_related_route)
+            elif selected["kind"] == "story":
+                from workbench_stories import render_story
+
+                render_story(projection, selected["node_id"], on_open=_open_related_route)
+            elif selected["kind"] == "epic":
+                render_overview(
+                    projection, work_id=work_id,
+                    on_filter=_set_overview_filter,
+                    on_open=_open_related_route,
+                    on_clear=_clear_overview_filter,
+                    active_filter=st.session_state.get(STATE_OVERVIEW_FILTER),
+                )
+            else:
+                st.subheader(selected["label"])
+                st.info("Select a story, scenario, task, test, or result from this outline.")
+
+
 st.set_page_config(page_title="Engineering workbench", page_icon=":material/schema:", layout="wide")
 st.markdown("""
 <style>
@@ -886,77 +960,7 @@ if refresh_inputs:
     st.rerun()
 
 projection = view["projection"]
-navigation_col, detail_col = st.columns([1, 2], gap="large")
-with navigation_col:
-    outline = render_outline(projection)
-route_id = st.session_state.get(STATE_ROUTE)
-if route_id not in outline["ancestors"]:
-    route_id = outline["roots"][0] if outline["roots"] else ""
-    route_to(st.session_state, route_id)
-with detail_col:
-    with st.container(border=True):
-        render_breadcrumbs(outline, route_id)
-        selected = next((entry for entry in outline["entries"]
-                         if entry["route_id"] == route_id), None)
-        if selected is None:
-            st.info("This workstream has no epic record yet.")
-        elif selected["kind"] == "decision":
-            selected_node = _node_map(projection).get(selected["node_id"])
-            if selected_node:
-                _render_decision(selected_node, view["editable"], root, work_id, view)
-        elif selected["kind"] in {"result", "test"}:
-            from collections import OrderedDict
-
-            import workbench_loading
-            from workbench_tests import render_test
-
-            test_id = str(selected["node_id"])
-            test = next((item for item in projection.get("workbench", {}).get("tests", [])
-                         if str(item.get("id")) == test_id), None)
-            detail = None
-            captured = view.get("captured")
-            if test is not None and captured is not None:
-                plan_path = f"work/{work_id}/test-plan.json"
-                test_node_id = next((node.get("id") for node in projection.get("model", {}).get("nodes", [])
-                                     if node.get("type") == "test"
-                                     and node.get("reference", {}).get("path") == plan_path
-                                     and node.get("reference", {}).get("id") == test_id), test_id)
-                detail_cache = st.session_state.setdefault(STATE_DETAIL_CACHE, OrderedDict())
-                detail = workbench_loading.load_selected_detail(
-                    root, captured, test, node_id=test_node_id,
-                    source_context=source_context,
-                    candidate_sha=source_context.get("commit"),
-                    cache=detail_cache,
-                )
-            render_test(projection, test_id, detail=detail,
-                        context=f"{selected['kind']}:{selected['route_id']}",
-                        on_open=_open_related_route, root=root)
-        elif selected["kind"] == "task":
-            from workbench_tasks import render_tasks
-
-            render_tasks(projection, context=f"route:{selected['route_id']}",
-                         on_open=_open_related_route, selected_id=selected["node_id"])
-        elif selected["kind"] == "scenario":
-            from workbench_scenarios import render_scenario
-
-            render_scenario(projection, selected["node_id"], on_open=_open_related_route)
-        elif selected["kind"] == "story":
-            from workbench_stories import render_story
-
-            render_story(projection, selected["node_id"], on_open=_open_related_route)
-        else:
-            if selected["kind"] == "epic":
-                active_filter = st.session_state.get(STATE_OVERVIEW_FILTER)
-                render_overview(
-                    projection, work_id=work_id,
-                    on_filter=_set_overview_filter,
-                    on_open=_open_related_route,
-                    on_clear=_clear_overview_filter,
-                    active_filter=active_filter,
-                )
-            else:
-                st.subheader(selected["label"])
-                st.info("Select a story, scenario, task, test, or result from this outline.")
+_render_workbench(projection, view, root, work_id, source_context)
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
     st.error("The requested action or inspection did not succeed. The displayed snapshot was not refreshed.")
