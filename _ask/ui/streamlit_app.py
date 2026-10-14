@@ -790,7 +790,8 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                     )
                 render_test(projection, test_id, detail=detail,
                             context=f"{selected['kind']}:{selected['route_id']}",
-                            on_open=_open_related_route, root=root)
+                            on_open=_open_related_route, root=root,
+                            show_execution=selected["kind"] == "result")
             elif selected["kind"] == "task":
                 from workbench_tasks import render_tasks
 

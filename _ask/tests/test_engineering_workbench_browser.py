@@ -455,6 +455,11 @@ class WorkbenchTests(unittest.TestCase):
                     expect(page.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
                     expect(page.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
                     expect(page.get_by_text("test_app.Cases.test_unit", exact=True)).to_be_visible()
+                    result_route = page.get_by_role("button", name="Result / evidence", exact=True).last
+                    self._tab_to(page, result_route)
+                    self._assert_focus(page, result_route, "result route")
+                    page.keyboard.press("Enter")
+                    expect(page.get_by_role("heading", name="Recorded execution", exact=True)).to_be_visible()
                     debug = page.locator("summary").filter(has_text="Technical details and identifiers")
                     expect(debug).to_be_visible()
                     if debug.evaluate("el => el.parentElement.open"):

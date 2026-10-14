@@ -12,7 +12,8 @@ def test_records(projection: dict) -> list[dict]:
 
 
 def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
-                context: str = "test", on_open=None, root=None) -> None:
+                context: str = "test", on_open=None, root=None,
+                show_execution: bool = True) -> None:
     tests = {str(item.get("id")): item for item in test_records(projection)}
     test = tests.get(str(test_id))
     if test is None:
@@ -52,6 +53,8 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
                 st.caption(str(source["diagnostic"]))
     else:
         st.info("Test source is unavailable in this captured snapshot.")
+    if not show_execution:
+        return
     st.markdown("#### Recorded execution")
     history = detail.get("execution_history", {}) if isinstance(detail, dict) else {}
     runs = history.get("runs", []) if isinstance(history, dict) else []
