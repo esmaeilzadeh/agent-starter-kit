@@ -363,7 +363,9 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                 expect(page.get_by_role("button", name="Clear filter", exact=True)).to_be_visible()
                 expected_scenarios = {item["id"] for item in projection.get("scenarios", [])}
                 prefix = _key_class("overview:filter:open:scenarios:")
-                actual_scenarios = page.locator("[class*='st-key-overview-filter-open-scenarios-']").evaluate_all(
+                filter_rows = page.locator("[class*='st-key-overview-filter-open-scenarios-']")
+                expect(filter_rows).to_have_count(len(expected_scenarios))
+                actual_scenarios = filter_rows.evaluate_all(
                     "(els, prefix) => [...new Set(els.flatMap(el => [...el.classList]"
                     ".filter(name => name.startsWith(prefix)).map(name => name.slice(prefix.length))))]",
                     prefix)
