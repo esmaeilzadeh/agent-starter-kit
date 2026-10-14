@@ -4,14 +4,9 @@ from __future__ import annotations
 import os
 from pathlib import Path
 import re
-import ast
-import json
 import subprocess
 import sys
-from collections import OrderedDict
-from types import MappingProxyType
 
-import pandas as pd
 import streamlit as st
 
 
@@ -23,10 +18,8 @@ if str(UI_ROOT) not in sys.path:
 if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
-from engineering_model.actions import edit
-from engineering_model.admission import admit, load_published
+from engineering_model.admission import admit
 from engineering_model.projection import project
-from engineering_model.snapshot import Snapshot, decode, referenced_paths
 from engineering_model.workbench_sources import discover_work, read_snapshot
 from workbench_context import (
     STATE_COMMITTED_SOURCE_CACHE, STATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,
@@ -35,11 +28,6 @@ from workbench_context import (
 )
 from workbench_navigation import build_outline, render_breadcrumbs, render_outline
 from workbench_overview import render_overview
-from workbench_scenarios import render_scenario
-from workbench_stories import render_story
-from workbench_tasks import render_tasks
-from workbench_tests import render_test
-import workbench_loading
 
 
 STATE_VIEW = "_engineering_displayed_view"
@@ -117,6 +105,8 @@ def _capture_view(root: Path, work_id: str) -> dict:
         last_validated = False
         if diagnostics:
             try:
+                from engineering_model.admission import load_published
+
                 snapshot = load_published(root, work_id)
             except (OSError, ValueError, KeyError, TypeError) as exc:
                 diagnostics = [*diagnostics, _diagnostic(
@@ -136,6 +126,9 @@ def _capture_view(root: Path, work_id: str) -> dict:
 
 def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
     """Project a source resolved entirely from one immutable Git commit."""
+    from types import MappingProxyType
+    from engineering_model.snapshot import Snapshot, decode, referenced_paths
+
     try:
         initial = read_snapshot(root, ref, work_id)
         commit = initial.commit
@@ -314,6 +307,8 @@ def _overview_epics(nodes: dict[str, dict], model: dict) -> list[dict]:
 
 
 def _task_test_assignments(snapshot, work_id: str) -> dict[str, list[str]]:
+    import json
+
     path = f"work/{work_id}/test-plan.json"
     raw = snapshot.files.get(path)
     if raw is None:
@@ -517,6 +512,8 @@ def _render_objects(nodes: dict[str, dict], context: str) -> dict | None:
 
 def _render_nested(value: object, label: str, path: str = "root") -> None:
     """Show nested evidence in labeled fields and tables instead of an expanded JSON blob."""
+    import pandas as pd
+
     if isinstance(value, dict):
         simple = {key: item for key, item in value.items() if not isinstance(item, (dict, list))}
         if simple:
@@ -553,6 +550,8 @@ def _render_nested(value: object, label: str, path: str = "root") -> None:
 
 def _test_source(root: Path, case: dict) -> tuple[str, str] | None:
     """Find the named test method in the plan's repository-local source files."""
+    import ast
+
     method_name = str(case.get("case_id", "")).rsplit(".", 1)[-1]
     if not method_name:
         return None
@@ -674,6 +673,8 @@ def _render_evidence(projection: dict, root: Path, context: str) -> None:
 
 
 def _render_decision(node: dict, editable: bool, root: Path, work_id: str, view: dict) -> None:
+    from engineering_model.actions import edit
+
     if node.get("type") != "decision":
         return
     if node.get("lifecycle") != "open":
@@ -903,6 +904,11 @@ with detail_col:
             if selected_node:
                 _render_decision(selected_node, view["editable"], root, work_id, view)
         elif selected["kind"] in {"result", "test"}:
+            from collections import OrderedDict
+
+            import workbench_loading
+            from workbench_tests import render_test
+
             test_id = str(selected["node_id"])
             test = next((item for item in projection.get("workbench", {}).get("tests", [])
                          if str(item.get("id")) == test_id), None)
@@ -925,11 +931,17 @@ with detail_col:
                         context=f"{selected['kind']}:{selected['route_id']}",
                         on_open=_open_related_route, root=root)
         elif selected["kind"] == "task":
+            from workbench_tasks import render_tasks
+
             render_tasks(projection, context=f"route:{selected['route_id']}",
                          on_open=_open_related_route, selected_id=selected["node_id"])
         elif selected["kind"] == "scenario":
+            from workbench_scenarios import render_scenario
+
             render_scenario(projection, selected["node_id"], on_open=_open_related_route)
         elif selected["kind"] == "story":
+            from workbench_stories import render_story
+
             render_story(projection, selected["node_id"], on_open=_open_related_route)
         else:
             if selected["kind"] == "epic":
