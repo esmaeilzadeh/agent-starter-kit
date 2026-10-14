@@ -28,6 +28,7 @@ from workbench_context import (
 )
 from workbench_navigation import build_outline, render_breadcrumbs, render_outline
 from workbench_overview import render_overview
+import workbench_loading
 
 
 STATE_VIEW = "_engineering_displayed_view"
