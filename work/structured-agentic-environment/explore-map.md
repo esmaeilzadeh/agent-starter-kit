@@ -2,6 +2,44 @@
 
 ## Destination
 
+### Modeling correction continuation — 2026-10-14
+
+Current stage: **00 Explore — STILL FOGGY** for the correction described in
+`modeling-handoff-draft.md`. The earlier READY handoff below remains historical
+and does not resolve this amendment's open decisions.
+
+The human invoked kit-01-grill based on that handoff and replied `yes` to adding
+domain-modeling. The human subsequently instructed: `do not pin the skill get
+latest`. Its manifest pin has been removed; install from the current
+`mattpocock/skills` source as explicitly requested. This accepts the extra
+method only; it does not approve amended intent or implementation.
+
+Observed state: clean tree at entry, current coordinator branch
+`agent/structured-agentic-environment`, WB-001–008 integrated and WB-009 marked
+running. The runtime label does not establish a live writer.
+
+Open human decisions:
+
+- What outcome and scope the Epic promises, and to which intended user.
+- What constitutes a Story and how Features and Scenarios relate to it.
+- Essential UI inspection workflow and expected specification access.
+- Whether story completeness is a curated-pilot obligation or a global rule.
+- How the separate historical harness example belongs in the presentation.
+
+Next decision: choose whether the correction explains this workstream's
+delivered engineering environment, demonstrates a separate example product,
+or first establishes a reusable modeling contract across workstreams. No
+choice is inferred. Preserve canonical IDs and historical evidence; defer
+implementation and unrelated benchmarks while scope remains open.
+
+Preparation note: `./ask sync` succeeded. Initial `./ask prepare` attempts
+encountered npm registry DNS failure (`EAI_AGAIN`) under network restrictions.
+On 2026-10-15, after network access was enabled, registry DNS/TCP/HTTPS checks
+passed and `npx skills add mattpocock/skills --skill domain-modeling --agent
+cursor --yes` succeeded. The installed repository SKILL.md was inspected.
+The installer recorded source/content integrity in `skills-lock.json` without
+a version ref; no manifest version pin was added, as requested.
+
 Make the handoff's product direction clear enough to own What/Why for a bounded next experiment in the starter kit. Establish which uncertainty that experiment resolves, its authority boundary, its representative workstream, and what evidence would justify continuing, revising, or abandoning it.
 
 The human chose **broader model first, then interactive UI**, and authorized continuing after the model/effort prerequisite. The broader product thesis is a development environment organized around intent, behavior, decisions, work, implementation, and evidence, with the developer directing and challenging construction.
