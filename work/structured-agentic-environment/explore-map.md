@@ -57,6 +57,13 @@ is proposed; deployment/integration is not authorized. See `spec-gap-notes.md`
 for drafting findings and `intent.md` for updated assumptions. Earlier approval
 question no longer covers this revised intent; no approval was submitted.
 
+Later review instruction: the human selected `sol with high effort`, then
+after the same-family warning explicitly requested `store the spec start the
+spec challengar agent in separate clean context`. Store PROPOSED revision 4
+and challenge it with gpt-6.1-sol/high in a clean context. Stop after reporting
+findings. No full-intent approval, accepted-spec promotion or implementation
+authorization is inferred.
+
 Interpretation to confirm with complete intent: the phrase `maybe a user story
 have only single story` means a Story may have a single Scenario. Retain existing
 decision forms in this correction; no new decision interaction was selected.

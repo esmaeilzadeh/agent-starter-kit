@@ -8,9 +8,12 @@ questions are recorded in `explore-map.md`; explicit approval of this complete
 intent and assumptions is pending. Earlier confirmations do not approve this
 amendment. The previous intent remains recoverable at commit `9f9b6bd`.
 
-Explore ran for this amendment and handed off to Grill. This session stops after
-02 Spec: prepare a proposed specification and adjacent criterion metadata after
-intent approval. Do not advance to Challenge, Plan, implementation, or acceptance.
+Explore ran for this amendment and handed off to Grill. The original session
+stop was 02 Spec. The human subsequently explicitly requested `store the spec
+start the spec challengar agent in separate clean context`. This authorizes
+storing a PROPOSED draft and independent challenge now, without complete-intent
+approval or promotion. Stop after reporting that challenge; do not advance to
+Plan, implementation, or acceptance.
 Preserve the current accepted specification and its authority while proposing
 this semantic change.
 
