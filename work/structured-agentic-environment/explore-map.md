@@ -4,7 +4,8 @@
 
 ### Modeling correction continuation — 2026-10-14
 
-Current stage: **00 Explore — STILL FOGGY** for the correction described in
+Current stage: **00 Explore — READY FOR INTENT**, with the human decisions
+recorded on 2026-10-16 below, for the correction described in
 `modeling-handoff-draft.md`. The earlier READY handoff below remains historical
 and does not resolve this amendment's open decisions.
 
@@ -18,19 +19,43 @@ Observed state: clean tree at entry, current coordinator branch
 `agent/structured-agentic-environment`, WB-001–008 integrated and WB-009 marked
 running. The runtime label does not establish a live writer.
 
-Open human decisions:
+Human decisions (2026-10-16):
 
-- What outcome and scope the Epic promises, and to which intended user.
-- What constitutes a Story and how Features and Scenarios relate to it.
-- Essential UI inspection workflow and expected specification access.
-- Whether story completeness is a curated-pilot obligation or a global rule.
-- How the separate historical harness example belongs in the presentation.
+1. Epic describes this engineering environment (1A).
+2. Intended user is the human returning to their own work. Restore enough
+   context to remember the work, including the relevant main specification
+   passage and plan task. Cryptic compact summaries are unacceptable.
+3. Story describes an observable user outcome (3A). Scenarios are separate
+   flows of a Story. Tasks are explicit working units visible from Story and
+   Scenario contexts; one Task may support multiple Stories. Use established
+   terminology and avoid unnecessary simultaneous concepts. A short primary-
+   source terminology check was requested where useful.
+4. Features are capabilities linked to Stories, not exclusive containers (4B).
+5. Demonstrate one complete representative Story (5A); this workstream being
+   self-hosted is unimportant. Task relationships handled by Ask must work
+   generally across represented work, not only as bespoke demonstration links.
+6. Story membership remains optional everywhere, including the pilot (6C).
+7. Remove older harness-review from the main pilot presentation (7C), while
+   preserving historical records.
+8. Show relevant specification text in context, with source links (8B).
+9. Explain the promise first, then connect it to delivery/evidence (9C).
+10. Acceptance includes tracing a real Story through specification, Scenarios,
+    Tasks, Tests and actual evidence (10B). Prior demonstrations' evidence was
+    too vague to understand. Tests must be human-readable and relate to the
+    Scenario and Task. Helpers/globals are allowed, with comments/context that
+    make their role comprehensible.
 
-Next decision: choose whether the correction explains this workstream's
-delivered engineering environment, demonstrates a separate example product,
-or first establishes a reusable modeling contract across workstreams. No
-choice is inferred. Preserve canonical IDs and historical evidence; defer
-implementation and unrelated benchmarks while scope remains open.
+Session boundary: human instructed `stop at defining spec step`. Prepare
+amended intent and request its explicit approval; after approval prepare the
+proposed specification and stop at 02 Spec. No Challenge, Plan or implementation.
+
+Interpretation to confirm with complete intent: the phrase `maybe a user story
+have only single story` means a Story may have a single Scenario. Retain existing
+decision forms in this correction; no new decision interaction was selected.
+
+Preserve canonical IDs and historical evidence. The exact representative Story
+and test examples are to be proposed in the specification, not portrayed as
+historical records or already implemented behavior.
 
 Preparation note: `./ask sync` succeeded. Initial `./ask prepare` attempts
 encountered npm registry DNS failure (`EAI_AGAIN`) under network restrictions.
@@ -151,6 +176,22 @@ For current Explore labor: production implementation, changing completion/accept
 Candidate boundaries for a first pilot, pending the scope decision: multi-host orchestration, authentication infrastructure, production deployment, a graph database, broad test-runner support, points/badges, and a replacement IDE. Revisit only if essential to the owned experiment.
 
 ## Handoff to Intent
+
+### Current modeling correction — 2026-10-16
+
+**READY for 01 Grill confirmation.** Owned What: define this environment's
+Epic and demonstrate one meaningful user-outcome Story with its flows, shared
+delivery Tasks and understandable Tests/evidence. Navigation must restore
+the returning human's context using relevant specification and plan passages.
+Owned Why: the human cannot relate current terse definitions and opaque tests
+to what the work promises or delivers. Features remain related capabilities;
+Story membership remains optional; the older harness leaves the main view.
+See the ten recorded decisions at the top and the amended `intent.md`.
+This handoff is not intent approval. Stop after the proposed specification.
+Established terminology and its limits are summarized in
+`story-scenario-task-research.md`; agreed workbench terms are in root
+`GLOSSARY.md`. Single-Scenario interpretation remains an explicit intent
+assumption for human confirmation.
 
 **READY.** Owned What: add the missing broader Engineering Model and safe semantic mutation, then a local interactive work/evidence/decision view over that model. Owned Why: make technical direction inspectable and consequential while preserving accountable agent construction. The human explicitly selected option B first and the UI afterward, rather than the original option A recommendation.
 
