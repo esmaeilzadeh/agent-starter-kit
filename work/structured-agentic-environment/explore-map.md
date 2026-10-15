@@ -49,6 +49,14 @@ Session boundary: human instructed `stop at defining spec step`. Prepare
 amended intent and request its explicit approval; after approval prepare the
 proposed specification and stop at 02 Spec. No Challenge, Plan or implementation.
 
+Subsequent frontier: a chat/workstream may deliver or continue an existing
+Story or Task rather than an Epic. Resolve existing context without invented
+ancestors. The human challenged Jira duplication and moving engineering docs
+away from code. Repository-first inspection with optional tracker coordination
+is proposed; deployment/integration is not authorized. See `spec-gap-notes.md`
+for drafting findings and `intent.md` for updated assumptions. Earlier approval
+question no longer covers this revised intent; no approval was submitted.
+
 Interpretation to confirm with complete intent: the phrase `maybe a user story
 have only single story` means a Story may have a single Scenario. Retain existing
 decision forms in this correction; no new decision interaction was selected.

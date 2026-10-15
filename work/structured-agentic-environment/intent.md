@@ -16,6 +16,16 @@ this semantic change.
 
 ## What
 
+Distinguish the execution workstream from the product work it delivers. A new
+chat or plan does not automatically create an Epic: it may continue an existing
+Epic, Story or Task, or introduce bounded standalone work. Resolve available
+work identity and relationships from the prompt, repository records and any
+referenced tracker item/later card. Reuse established identities and explain
+the inferred scope; ask only when missing or conflicting context materially
+affects scope/ownership. Do not invent ancestors or force a complete hierarchy.
+Task and Story entry must restore surrounding known context without requiring
+the human to start from or create an Epic.
+
 Define an Epic for this engineering environment with a concrete intended user,
 purpose, promised outcome, scope, and completion conditions. Demonstrate one
 complete representative user Story grounded in the existing main specification.
@@ -60,6 +70,11 @@ new inline specification-authoring workflows are outside this correction.
 
 ## Why
 
+The human should not have to discover routine scope and entry-point omissions
+for Ask. During clarification and specification drafting, Ask must test its
+assumptions with concrete counterexamples instead of merely asking the human
+to refine an assumed hierarchy. Findings are in `spec-gap-notes.md`.
+
 The current Epic and sparse model do not help the human understand what was
 promised or how the displayed work relates to it. Previous evidence demos were
 too vague and depended on unexplained helpers/globals. The human must recover
@@ -68,6 +83,10 @@ behavioral claim through its delivery work and understandable evidence.
 
 ## Observable acceptance direction
 
+- A request referencing existing work reuses its identity and scope; an
+  existing Story/Task is a valid entry point, and no automatic Epic is created.
+- Missing/ambiguous work context is distinguished from a known relationship;
+  questions address material ambiguity rather than demand invented parents.
 - The Epic has a meaningful definition and scoped connection to the main spec.
 - One real representative Story has understandable flow(s), related Tasks,
   Tests and inspectable actual evidence or explicit evidence limitations.
@@ -116,6 +135,13 @@ or planning changes in this session.
    constrained by these outcomes, not permission to replace the architecture.
 8. Source/content integrity recorded by the skill installer is retained; the
    domain-modeling skill has no manifest version pin, as the human requested.
+9. Engineering definitions and their code/test relationships remain in the
+   versioned repository. The workbench is their inspection interface, not an
+   independent backlog database. A tracker can supply coordination and linked
+   work identity; Jira adoption/integration is not part of this session.
+10. Workstream execution ownership is distinct from the Stories/Scenarios a
+    shared Task supports. Navigation exposes available context without making
+    the full Epic-to-result chain compulsory.
 
 ## Open questions
 
@@ -125,6 +151,13 @@ established Story/Scenario/Task conventions informs the specification without
 turning one tool's hierarchy into a universal software engineering requirement.
 
 ## Human decisions
+
+Subsequent discussion identified Story/Task entry and existing tracker/later
+item reuse as missed scope cases. The human questioned duplication of Jira
+and emphasized retaining documentation and its code relationships in the repo.
+They stated Ask should discover these omissions instead of relying on them to
+surface them. The proposed repository-first boundary and updated assumptions
+remain subject to complete-intent confirmation.
 
 On 2026-10-16 the human selected 1A, 3A, 4B, 5A, 6C, 7C, 8B, 9C, 10B and
 identified themself as the user, requiring enough context to remember the work,
