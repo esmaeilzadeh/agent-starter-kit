@@ -27,6 +27,8 @@ class ContextResolverTests(unittest.TestCase):
                 "subject": {"work_id": "product", "node_id": "story"},
                 "revision": "snapshot", "contribution": "Implement parser",
                 "exclusions": ["UI redesign"], "execution_owner": {"work_id": "product", "task_id": "WB-003"},
+                "snapshot_digest": "a" * 64,
+                "history": [{"actor": "human", "rationale": "Confirmed subject", "timestamp": "2026-10-16T00:00:00Z"}],
             }
             doc_path = root / "work/product/engineering-model.json"
             document = json.loads(doc_path.read_text())
@@ -41,6 +43,9 @@ class ContextResolverTests(unittest.TestCase):
             self.assertEqual(recorded["contribution"], association["contribution"])
             self.assertEqual(recorded["exclusions"], association["exclusions"])
             self.assertEqual(recorded["execution_owner"], association["execution_owner"])
+            owner_conflict = resolve(root, "product", {"execution_owner": {"work_id": "other", "task_id": "WB-003"}})
+            self.assertEqual(owner_conflict["disposition"], "needs_clarification",
+                             "a matching task label cannot override the qualified recorded execution owner")
             conflict = resolve(root, "product", {"explicit_subjects": [
                 {"work_id": "product", "node_id": "story"},
                 {"work_id": "other", "node_id": "story"},
