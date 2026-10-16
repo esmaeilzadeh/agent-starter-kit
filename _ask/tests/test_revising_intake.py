@@ -543,4 +543,41 @@ class StageIntakeTests(unittest.TestCase):
                 uncovered.append("foreign owner save allowed local association bytes to publish")
             if load_published(root, "product") != stable_generation:
                 uncovered.append("foreign owner save published a new local generation")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            foreign_document = json.loads((root / "work/product/engineering-model.json").read_text())
+            foreign_document["work_id"] = "other"
+            _put(root, "work/other/engineering-model.json", foreign_document)
+            local, local_errors = validate_current(root, "product")
+            self.assertFalse(local_errors)
+            stable_local = (root / "work/product/engineering-model.json").read_bytes()
+            stable_generation = load_published(root, "product")
+            real_write = actions_module._write_target
+            raced_write = []
+            def save_foreign_after_local_write(*args, **kwargs):
+                result = real_write(*args, **kwargs)
+                if len(args) > 1 and args[1] == "work/product/engineering-model.json" and not raced_write:
+                    raced_write.append(True)
+                    updated = json.loads((root / "work/other/engineering-model.json").read_text())
+                    updated["nodes"][1]["title"] = "Changed after local recovery write"
+                    _put(root, "work/other/engineering-model.json", updated)
+                return result
+            with patch.object(actions_module, "_write_target", side_effect=save_foreign_after_local_write):
+                publication_race = associate_subject(
+                    root, "product", local.identity["digest"],
+                    subject={"work_id": "other", "node_id": "story"},
+                    contribution="Shared parser support", exclusions=["other UI"],
+                    execution_owner={"work_id": "product", "task_id": "WB-003"},
+                    actor="human", rationale="Foreign context must stay fresh through publication")
+            self.assertTrue(raced_write, "the real managed recovery write was exercised")
+            if publication_race["valid"] or not any(
+                    item["code"] in {"EM007_INPUT_CHANGED", "EM007_RECOVERY_CONFLICT"}
+                    for item in publication_race["diagnostics"]):
+                uncovered.append(f"foreign owner save after local write still published: {publication_race!r}")
+            if (root / "work/product/engineering-model.json").read_bytes() != stable_local:
+                uncovered.append("post-write foreign owner race did not restore local association bytes")
+            if load_published(root, "product") != stable_generation:
+                uncovered.append("post-write foreign owner race published a local generation")
         self.assertFalse(uncovered, "association boundary gaps: " + " | ".join(uncovered))
