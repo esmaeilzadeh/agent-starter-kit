@@ -77,6 +77,8 @@ class ContextResolverTests(unittest.TestCase):
             self.assertEqual(no_join["disposition"], "chooser",
                              "tracker IDs do not create subject or execution ownership")
             self.assertIsNone(no_join.get("execution_owner"))
+            self.assertEqual(no_join["external_context"]["state"], "supplied-unverified",
+                             "request data alone does not verify external tracker availability")
 
 
 class StageIntakeTests(unittest.TestCase):
