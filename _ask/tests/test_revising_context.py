@@ -671,6 +671,14 @@ class PassageAdmissionTests(unittest.TestCase):
                                                           "product", "WB-003"]), 0)
                     self.assertEqual(load_state(valid_root, "product")["tasks"]["WB-003"]["status"],
                                      "running", f"{route} explicit owner task start remains available")
+                    valid_publication = load_published(valid_root, "product")
+                    self.assertIsNotNone(valid_publication, f"{route} publishes its captured valid inputs")
+                    publication_files = list((valid_root / "work/product/traceability/model-state/publications").glob("*.json"))
+                    self.assertEqual(len(publication_files), 1,
+                                     f"{route} task start creates one admission publication")
+                    event = json.loads(publication_files[0].read_text())
+                    self.assertEqual(event["result_digest"], valid_publication.identity["digest"],
+                                     f"{route} publication binds the captured task-start input generation")
             finally:
                 sys.path.remove(start_scripts)
             sys.path.insert(0, candidate_scripts)
@@ -911,6 +919,41 @@ class PassageAdmissionTests(unittest.TestCase):
             cached, cached_errors = admit(root, "product")
             self.assertEqual(full_errors, cached_errors, "full and current validation agree")
             self.assertEqual(full.identity, cached.identity, "validation paths share captured dependency closure")
+
+            # A helper or linked-context edit after a selected pre-check makes
+            # the actual nested semantic action stale before its callback.
+            from _ask.scripts.engineering_model.workflow import workflow_admission
+            from _ask.scripts.engineering_model.actions import edit
+            for changed_path, changed_bytes in (
+                    ("docs/context.md", b"# Scope\nLate linked contract.\n"),
+                    ("tests/helpers.py", b"def assert_publish():\n    assert 'late'\n")):
+                stale_root = root / ("stale-action-" + Path(changed_path).stem)
+                stale_root.mkdir()
+                _repo(stale_root)
+                baseline, baseline_errors = admit(stale_root, "product")
+                self.assertEqual(baseline_errors, [])
+                prior_publication = load_published(stale_root, "product")
+                model_before = (stale_root / "work/product/engineering-model.json").read_bytes()
+                action_calls = []
+                try:
+                    with workflow_admission(stale_root, "product", selected_task_id="task") as selected:
+                        stale_source = stale_root / changed_path
+                        source_stat = stale_source.stat()
+                        stale_source.write_bytes(changed_bytes)
+                        os.utime(stale_source, ns=(source_stat.st_atime_ns, source_stat.st_mtime_ns))
+                        edit(stale_root, "product", selected.identity["digest"],
+                             lambda: action_calls.append("stale-action") or {"commands": []},
+                             selected_task_id="task")
+                except Exception as exc:
+                    self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM007_INPUT_CHANGED",
+                                     f"stale {changed_path} refuses before selected action: {exc!r}")
+                else:
+                    self.fail(f"selected action must refuse a late {changed_path} change")
+                self.assertEqual(action_calls, [], f"stale {changed_path} never reaches the action callback")
+                self.assertEqual((stale_root / "work/product/engineering-model.json").read_bytes(), model_before)
+                retained = load_published(stale_root, "product")
+                self.assertEqual(retained.identity, prior_publication.identity,
+                                 f"stale {changed_path} cannot publish a candidate generation")
 
             # A safe optional missing passage remains admitted; creating it
             # changes identity and the captured state from unavailable to unique.
