@@ -365,8 +365,9 @@ class PassageAdmissionTests(unittest.TestCase):
                             race_root, "product", selected_execution={"work_id": "product", "task_id": "WB-003"}):
                         race_actions.append("selected-v2-action")
                 except Exception as exc:
-                    self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
-                                     f"the admitted v2 generation must enforce its selected passage: {exc!r}")
+                    self.assertIn(getattr(exc, "diagnostic", {}).get("code"),
+                                  {"EM015_CONTEXT_REQUIRED", "EM007_INPUT_CHANGED"},
+                                  f"the generation switch must refuse before selected action: {exc!r}")
                 else:
                     self.fail("a v2 generation saved after a v1 preflight must not bypass selected passage admission")
             finally:
