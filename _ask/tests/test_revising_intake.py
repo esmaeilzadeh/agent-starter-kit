@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from _ask.tests.test_revising_context import _repo, _put
 
@@ -49,6 +50,17 @@ class ContextResolverTests(unittest.TestCase):
             self.assertEqual(explicit_details["contribution"], "Parser only")
             self.assertEqual(explicit_details["exclusions"], ["UI"])
             self.assertEqual(explicit_details["execution_owner"], {"work_id": "product", "task_id": "WB-003"})
+            malformed_bounds = [
+                {"contribution": []},
+                {"exclusions": None},
+                {"execution_owner": "not-qualified"},
+            ]
+            for bad_bounds in malformed_bounds:
+                malformed_request = {"explicit_subjects": [{"work_id": "product", "node_id": "story"}],
+                                     **bad_bounds}
+                malformed_result = resolve(root, "product", malformed_request)
+                self.assertEqual(malformed_result["disposition"], "needs_clarification",
+                                 f"malformed top-level bounds must refuse: {bad_bounds!r}")
             foreign_model = json.loads(doc_path.read_text())
             foreign_model.pop("subject_association", None)
             foreign_model["work_id"] = "other"
@@ -83,6 +95,16 @@ class ContextResolverTests(unittest.TestCase):
             later = resolve(root, "product", {"later_cards": [".later/new-parser.md"]})
             self.assertIn(later["disposition"], {"chooser", "needs_clarification"})
             self.assertEqual(later.get("proposal", {}).get("source"), "later-card")
+            bounded_later = resolve(root, "product", {
+                "later_cards": [".later/new-parser.md"],
+                "contribution": "Prototype parser only", "exclusions": ["UI"],
+            })
+            self.assertEqual(bounded_later["disposition"], "chooser")
+            self.assertIsNone(bounded_later["subject"])
+            self.assertEqual(bounded_later["proposal"], {"source": "later-card",
+                                                           "references": [".later/new-parser.md"]})
+            self.assertEqual(bounded_later["contribution"], "Prototype parser only")
+            self.assertEqual(bounded_later["exclusions"], ["UI"])
             chooser = resolve(root, "product", {"inspection_only": True})
             self.assertEqual(chooser["disposition"], "chooser")
             tracker = resolve(root, "product", {"tracker_context": {"id": "T-19", "available": False}})
@@ -159,12 +181,40 @@ class StageIntakeTests(unittest.TestCase):
                 self.assertIn("execution_owner", payload)
                 stage_doc = (root / ".agents/ask/stages" / (stage + ".md")).read_text()
                 self.assertIn("stage-intake", stage_doc, f"canonical {stage} instructions bind the caller before writes")
+                self.assertIn("Before choosing or creating execution work" if stage == "00-explore"
+                              else "Before selecting/creating execution work", stage_doc)
+                if stage == "01-grill":
+                    self.assertIn("record its bound subject context in intent.md", stage_doc)
                 project = Path(__file__).resolve().parents[2]
                 self.assertTrue((project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").is_file())
-                self.assertIn("stage-intake", (project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").read_text())
+                self.assertIn(stage_doc.strip(), (project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").read_text())
                 projection = ".cursor/commands" if stage == "00-explore" else ".cursor/commands"
                 cursor_doc = project / projection / f"{stage}.md"
-                self.assertIn("stage-intake", cursor_doc.read_text())
+                self.assertIn(stage_doc.strip(), cursor_doc.read_text())
+                known = root / "known.json"
+                known.write_text(json.dumps({"explicit_subjects": [{"work_id": "product", "node_id": "story"}],
+                                             "contribution": "Parser only", "exclusions": ["UI"],
+                                             "execution_owner": {"work_id": "product", "task_id": "WB-003"}}))
+                known_result = subprocess.run(["./ask", "stage-intake", "--stage", stage,
+                                                "--work-id", "product", "--request", str(known)],
+                                               cwd=root, text=True, capture_output=True, env=env)
+                self.assertEqual(known_result.returncode, 0, known_result.stderr)
+                known_payload = json.loads(known_result.stdout)
+                self.assertEqual(known_payload["disposition"], "resolved")
+                self.assertEqual(known_payload["contribution"], "Parser only")
+                self.assertEqual(known_payload["exclusions"], ["UI"])
+                self.assertEqual(known_payload["execution_owner"], {"work_id": "product", "task_id": "WB-003"})
+                later = root / "later.json"
+                later.write_text(json.dumps({"later_cards": [".later/parser.md"],
+                                             "contribution": "Prototype parser", "exclusions": ["UI"]}))
+                later_result = subprocess.run(["./ask", "stage-intake", "--stage", stage,
+                                               "--work-id", "product", "--request", str(later)],
+                                              cwd=root, text=True, capture_output=True, env=env)
+                self.assertEqual(later_result.returncode, 0, later_result.stderr)
+                later_payload = json.loads(later_result.stdout)
+                self.assertIsNone(later_payload["subject"])
+                self.assertEqual(later_payload["proposal"]["source"], "later-card")
+                self.assertEqual(later_payload["contribution"], "Prototype parser")
                 conflict = root / "conflict.json"
                 conflict.write_text(json.dumps({"explicit_subjects": [
                     {"work_id": "product", "node_id": "story-a"},
@@ -191,7 +241,8 @@ class StageIntakeTests(unittest.TestCase):
             root = self._copy_caller(Path(directory))
             _repo(root)
             request = root / "request.json"
-            request.write_text(json.dumps({"explicit_subjects": [{"work_id": "product", "node_id": "story-a"}]}))
+            request.write_text(json.dumps({"explicit_subjects": [{"work_id": "product", "node_id": "story"}],
+                                           "contribution": "Parser only", "exclusions": ["UI"]}))
             before = (root / "work/product/engineering-model.json").read_bytes()
             command = ["./ask", "model", "context", "--work-id", "product", "--request", str(request)]
             cli = subprocess.run(command, cwd=root, text=True, capture_output=True)
@@ -202,6 +253,23 @@ class StageIntakeTests(unittest.TestCase):
             self.assertEqual(stage.returncode, 0)
             self.assertEqual(json.loads(cli.stdout), json.loads(stage.stdout),
                              "CLI and adopted stage use the same resolver and structured snapshot")
+            local = json.loads(cli.stdout)
+            self.assertEqual(local["disposition"], "resolved")
+            self.assertEqual(local["purpose"], "Outcome")
+            self.assertEqual(local["contribution"], "Parser only")
+            self.assertTrue(local["snapshot"]["digest"])
+            foreign_document = json.loads((root / "work/product/engineering-model.json").read_text())
+            foreign_document["work_id"] = "other"
+            _put(root, "work/other/engineering-model.json", foreign_document)
+            request.write_text(json.dumps({"explicit_subjects": [{"work_id": "other", "node_id": "story"}]}))
+            foreign_cli = subprocess.run(command, cwd=root, text=True, capture_output=True)
+            self.assertEqual(foreign_cli.returncode, 0, foreign_cli.stderr)
+            foreign_payload = json.loads(foreign_cli.stdout)
+            self.assertEqual(foreign_payload["disposition"], "resolved")
+            self.assertEqual(foreign_payload["purpose"], "Outcome")
+            self.assertEqual(foreign_payload["external_context"]["state"], "available")
+            self.assertEqual(foreign_payload["external_context"]["snapshot"]["model"]["path"],
+                             "work/other/engineering-model.json")
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), before)
             malformed = root / "bad.json"
             malformed.write_text("{")
@@ -213,9 +281,11 @@ class StageIntakeTests(unittest.TestCase):
     def test_association_passage_admission_uses_existing_guard(self):
         try:
             from _ask.scripts.engineering_model.actions import associate_subject
+            from _ask.scripts.engineering_model import actions as actions_module, domain as domain_module
             from _ask.scripts.engineering_model.admission import validate_current, load_published
             from _ask.scripts.engineering_model.context import resolve
             from _ask.scripts.engineering_model.domain import apply_batch
+            from _ask.scripts.engineering_model.snapshot import Snapshot
         except ImportError:
             associate_subject = validate_current = load_published = resolve = apply_batch = None
         self.assertTrue(callable(associate_subject) and callable(apply_batch),
@@ -227,12 +297,36 @@ class StageIntakeTests(unittest.TestCase):
             _repo(root)
             captured, errors = validate_current(root, "product")
             self.assertFalse(errors)
-            result = associate_subject(root, "product", captured.identity["digest"],
-                                       subject={"work_id": "product", "node_id": "story"},
-                                       contribution="Implement parser", exclusions=["UI redesign"],
-                                       execution_owner={"work_id": "product", "task_id": "WB-003"},
-                                       actor="human", rationale="Confirmed association")
+            trace = []
+            real_validate = actions_module.validate_current
+            real_apply = domain_module.apply_batch
+            real_diagnostics = Snapshot.diagnostics
+            real_publish = actions_module._publish
+            def traced_validate(*args, **kwargs):
+                trace.append("pre")
+                return real_validate(*args, **kwargs)
+            def traced_apply(*args, **kwargs):
+                trace.append("action")
+                return real_apply(*args, **kwargs)
+            def traced_diagnostics(snapshot, *args, **kwargs):
+                if "action" in trace and "post" not in trace:
+                    trace.append("post")
+                return real_diagnostics(snapshot, *args, **kwargs)
+            def traced_publish(*args, **kwargs):
+                trace.append("publication")
+                return real_publish(*args, **kwargs)
+            with patch.object(actions_module, "validate_current", side_effect=traced_validate), \
+                 patch.object(domain_module, "apply_batch", side_effect=traced_apply), \
+                 patch.object(Snapshot, "diagnostics", traced_diagnostics), \
+                 patch.object(actions_module, "_publish", side_effect=traced_publish):
+                result = associate_subject(root, "product", captured.identity["digest"],
+                                           subject={"work_id": "product", "node_id": "story"},
+                                           contribution="Implement parser", exclusions=["UI redesign"],
+                                           execution_owner={"work_id": "product", "task_id": "WB-003"},
+                                           actor="human", rationale="Confirmed association")
             self.assertTrue(result["valid"], str(result))
+            self.assertEqual(trace, ["pre", "action", "post", "publication"],
+                             "real action boundaries run exactly once in guarded order")
             self.assertEqual(result["steps"], ["pre", "action", "post", "publication"])
             current = json.loads((root / "work/product/engineering-model.json").read_text())
             self.assertEqual(current["subject_association"]["subject"], {"work_id": "product", "node_id": "story"})
@@ -267,6 +361,31 @@ class StageIntakeTests(unittest.TestCase):
             self.assertFalse(stale["valid"])
             self.assertEqual(stale["diagnostics"][0]["code"], "EM007_STALE_INPUT")
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
+            uncovered = []
+            current_document = json.loads((root / "work/product/engineering-model.json").read_text())
+            current_document["nodes"][1]["context"] = [{
+                "role": "spec", "path": "docs/context.md", "revision": "snapshot",
+                "selector": {"kind": "heading", "path": ["Scope"]},
+            }]
+            _put(root, "work/product/engineering-model.json", current_document)
+            required_input, required_diagnostics = validate_current(root, "product")
+            self.assertFalse(required_diagnostics)
+            required_success = associate_subject(
+                root, "product", required_input.identity["digest"],
+                subject={"work_id": "product", "node_id": "story"},
+                contribution="Contracted parser support", exclusions=["UI redesign"],
+                actor="human", rationale="Confirmed from the unique spec passage",
+                required_roles=("spec",))
+            if not required_success["valid"]:
+                uncovered.append(f"unique required passage should permit association: {required_success!r}")
+            else:
+                self.assertEqual(required_success["input_snapshot"], required_input.identity)
+                self.assertEqual(required_success["steps"], ["pre", "action", "post", "publication"])
+                self.assertEqual(required_success["snapshot"], load_published(root, "product").identity)
+                required_record = json.loads((root / "work/product/engineering-model.json").read_text())["subject_association"]
+                self.assertEqual(required_record["snapshot_digest"], required_input.identity["digest"])
+                self.assertEqual(required_record["contribution"], "Contracted parser support")
+                self.assertEqual(required_record["exclusions"], ["UI redesign"])
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -314,19 +433,25 @@ class StageIntakeTests(unittest.TestCase):
             root = Path(directory)
             _repo(root)
             document = json.loads((root / "work/product/engineering-model.json").read_text())
-            document["subject_association"] = {"history": None}
-            _put(root, "work/product/engineering-model.json", document)
-            current, diagnostics = validate_current(root, "product")
-            self.assertFalse(diagnostics, "legacy structural admission currently allows this malformed optional field")
-            try:
-                malformed_history = associate_subject(
-                    root, "product", current.identity["digest"],
-                    subject={"work_id": "product", "node_id": "story"}, contribution="Parser only",
-                    exclusions=[], actor="human", rationale="Defend malformed history")
-            except Exception as exc:
-                self.fail(f"malformed prior association must return a diagnostic, not raise {type(exc).__name__}: {exc}")
-            self.assertFalse(malformed_history["valid"])
-            self.assertEqual(malformed_history["steps"], ["pre"])
+            malformed_prior_values = [None, 5, {}, [None],
+                                      [{"actor": "human", "rationale": "Old", "timestamp": []}]]
+            for prior_history in malformed_prior_values:
+                changed = json.loads(json.dumps(document))
+                changed["subject_association"] = {"history": prior_history}
+                _put(root, "work/product/engineering-model.json", changed)
+                current, diagnostics = validate_current(root, "product")
+                self.assertFalse(diagnostics)
+                stable_prior = (root / "work/product/engineering-model.json").read_bytes()
+                try:
+                    malformed_history = associate_subject(
+                        root, "product", current.identity["digest"],
+                        subject={"work_id": "product", "node_id": "story"}, contribution="Parser only",
+                        exclusions=[], actor="human", rationale="Defend malformed history")
+                except Exception as exc:
+                    self.fail(f"malformed prior history must diagnose, not raise {type(exc).__name__}: {exc}")
+                if malformed_history["valid"] or malformed_history["steps"] != ["pre"]:
+                    uncovered.append(f"malformed history accepted or invoked action: {prior_history!r} / {malformed_history!r}")
+                self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable_prior)
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -352,3 +477,33 @@ class StageIntakeTests(unittest.TestCase):
             current_foreign, current_foreign_errors = validate_current(root, "other")
             self.assertFalse(current_foreign_errors)
             self.assertEqual(resolved["external_context"]["snapshot"], current_foreign.identity)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            foreign_document = json.loads((root / "work/product/engineering-model.json").read_text())
+            foreign_document["work_id"] = "other"
+            _put(root, "work/other/engineering-model.json", foreign_document)
+            local, local_errors = validate_current(root, "product")
+            self.assertFalse(local_errors)
+            stable_local = (root / "work/product/engineering-model.json").read_bytes()
+            stable_generation = load_published(root, "product")
+            from _ask.scripts.engineering_model import domain
+            real_apply = domain.apply_batch
+            def save_foreign_after_action(*args, **kwargs):
+                proposal = real_apply(*args, **kwargs)
+                updated = json.loads((root / "work/other/engineering-model.json").read_text())
+                updated["nodes"][1]["title"] = "Changed during local association"
+                _put(root, "work/other/engineering-model.json", updated)
+                return proposal
+            with patch.object(domain, "apply_batch", side_effect=save_foreign_after_action):
+                raced = associate_subject(root, "product", local.identity["digest"],
+                                          subject={"work_id": "other", "node_id": "story"},
+                                          contribution="Shared parser support", exclusions=["other UI"],
+                                          execution_owner={"work_id": "product", "task_id": "WB-003"},
+                                          actor="human", rationale="Foreign owner must stay fresh")
+            if raced["valid"] or not any(item["code"] == "EM007_INPUT_CHANGED" for item in raced["diagnostics"]):
+                uncovered.append(f"foreign owner save did not stale association: {raced!r}")
+            self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable_local)
+            self.assertEqual(load_published(root, "product"), stable_generation)
+        self.assertFalse(uncovered, "association boundary gaps: " + " | ".join(uncovered))
