@@ -129,8 +129,9 @@ def inventory(root,base,sha,plan):
     return {'inspected_sources':inspected,'changed_cases':sorted(set(cases)),'unmapped_cases':sorted(unmapped),'behavior_changes':sorted(set(behavior_changes))}
 
 
-def _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by):
-    contracts=load_accepted(root,work_id,anchor_sha,candidate_sha);review=load(Path(root)/review_path)
+def _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,review_document=None):
+    contracts=load_accepted(root,work_id,anchor_sha,candidate_sha)
+    review=review_document if review_document is not None else load(Path(root)/review_path)
     if not text(recorded_by) or recorded_by==review.get('reviewer'):raise Invalid('independent reviewer and coordinator required')
     errors=review_errors(root,contracts,review,candidate_sha)
     if errors:raise Invalid('; '.join(errors))
@@ -142,9 +143,12 @@ def _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,record
     return record
 
 
-def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,*,selected_execution=None):
+def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,*,selected_execution=None,
+                       review_document=None):
     """Bind task-scoped review publication to the task named by its review body."""
-    review = load(Path(root)/review_path)
+    # Resolve identity, semantic checks, and persisted review from one captured
+    # document. The source file can change while the workflow guard is entered.
+    review = review_document if review_document is not None else load(Path(root)/review_path)
     scope = review.get('scope','workstream') if isinstance(review,dict) else None
     task_id = review.get('task_id') if isinstance(review,dict) else None
     if scope == 'task':
@@ -160,10 +164,10 @@ def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorde
     elif scope is not None:
         raise Invalid('review body has an unknown scope')
     if selected_execution is None:
-        return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by)
+        return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,review)
     from verification.run import workflow_context
     with workflow_context(root,work_id,selected_execution=selected_execution):
-        return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by)
+        return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,review)
 
 
 def review_errors(root,contracts,review,sha):

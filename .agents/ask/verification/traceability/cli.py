@@ -95,7 +95,7 @@ def execute(args,root):
             raise Invalid('CLI review scope/task must match the review body')
         selected=({'work_id':args.work_id,'task_id':body_task} if body_scope=='task' else None)
         doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by,
-                               selected_execution=selected)
+                               selected_execution=selected,review_document=review)
     elif args.command=='run':
         contracts=load_accepted(root,args.work_id,anchor)
         if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
