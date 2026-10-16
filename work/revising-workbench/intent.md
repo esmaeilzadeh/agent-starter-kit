@@ -43,8 +43,21 @@ understandable evidence let them assess progress and choose the next action.
 Mandatory Epic/Story membership; reconstructing all historical planning; an
 external backlog database or tracker API integration; changing evidence or
 acceptance authority; automatic test execution or acceptance; inline specification
-editing; replacing the frontend; deployment, merge or push. This task stops at
-preparing the specification and does not implement the product.
+editing; replacing the frontend; deployment, merge or push.
+
+## Execution scope
+
+Implement the revision-2 specification through the nine-task plan, RWB-101
+through RWB-109, after completing independent contract review and pinning.
+Continue through implementation, review, necessary fixes and verification.
+Use `gpt-6.1-sol` with high reasoning for independent review, as requested.
+Acceptance remains the final human decision; the representative human readability
+exercise requires actual human responses bound to the final candidate.
+
+Reconcile branch admission by renaming the existing `revising-workbench` branch
+to `agent/revising-workbench`, preserving its commits and workstream identity.
+This resolves the naming guard without changing the guard or creating a second
+related workstream.
 
 ## Known assumptions
 
@@ -68,20 +81,25 @@ preparing the specification and does not implement the product.
 
 ## Open questions
 
-The proposed specification defines the concrete behavior and representative
-example. Complete-intent confirmation and independent review of the revised
-specification remain pending before planning or implementation.
+The revision-2 specification defines the concrete behavior and representative
+example and has passed its independent challenge. Complete-intent confirmation,
+branch admission and a completed independent review/pin of the revised plan
+remain prerequisites to implementation. Genuine historical evidence and the
+final-candidate human exercise remain required execution evidence.
 
 ## Human decisions
 
 The human requested a fresh specification with the challenge corrections applied
 inside its requirements, in `work/revising-workbench/`, on `revising-workbench`.
 They required the intent to describe the product rather than file relocation or
-inherited workstream history. No product implementation is requested here.
+inherited workstream history. The human subsequently invoked Implement, selected
+Sol/high in place of Astra for review, and instructed: "go till finish the feature".
+That instruction extends execution beyond the earlier preparation-only stopping
+boundary. Explicit confirmation of this complete revised intent remains pending.
 
 ## E2E
 
-Applicability: applies to future product behavior.
+Applicability: applies to the implemented product behavior.
 
 Journeys: direct Story/Task entry; standalone records; shared Task navigation and
 Back; two concrete flows sharing a criterion; subject conflicts; spec/plan context
