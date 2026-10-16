@@ -86,6 +86,7 @@ class ProjectionTests(unittest.TestCase):
             tests = {item["id"]: item for item in view["workbench"]["tests"]}
             self.assertEqual(tasks["WB-003"].get("product_identity"), {"work_id": "product", "node_id": "task"})
             self.assertEqual(tasks["WB-003"].get("execution_identity"), {"work_id": "product", "task_id": "WB-003"})
+            self.assertEqual(tasks["WB-003"].get("execution_source"), "engineering-model-task-alias")
             self.assertEqual(tasks["standalone"].get("product_identity"), {"work_id": "product", "node_id": "standalone"})
             self.assertEqual(tasks["standalone"].get("execution_identity"), {"work_id": "delivery", "task_id": "shared-17"})
             self.assertEqual(len([row for row in tasks.values() if row["product_identity"] ==
@@ -112,7 +113,7 @@ class ProjectionTests(unittest.TestCase):
             self.assertIn("WB-003", plan_passage.get("text", ""))
             self.assertNotIn("WB-004", plan_passage.get("text", ""))
             self.assertEqual(tasks["WB-003"]["status"], "planned")
-            self.assertEqual(tasks["WB-003"].get("model_status"), "blocked")
+            self.assertEqual(tasks["WB-003"].get("readiness_status"), "blocked")
             self.assertEqual(tasks["WB-003"].get("readiness_source"), "engineering-model")
             self.assertEqual({item["id"] for item in view["attention"]}, {"choice", "task"})
             self.assertEqual(tasks["WB-003"].get("status_source"), "no-runtime-record")
