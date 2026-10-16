@@ -12,16 +12,15 @@ are factual interfaces and pilot inputs, not a second product contract or approv
 The independent [spec-challenge.md](spec-challenge.md) PASS binds those proposed
 bytes. It neither confirms intent nor authorizes implementation.
 
-The user's request authorizes preparing this proposed plan. Complete-intent
-confirmation remains pending. Before implementation, the coordinator must record
-that exact confirmation, promote/register the same reviewed specification through
-the kit, independently review and pin the exact TaskGraph/test-plan/delegation
-contract, and reconcile branch admission. Preserve the human-chosen current
-`revising-workbench` branch: `check-workstream.sh` currently requires
-`agent/revising-workbench`, so the naming override alone cannot make its check
-pass. Resolve that policy/tooling mismatch explicitly before execution; this plan
-does not weaken or modify the branch guard. No refs, runtime state, migration,
-implementation tests or accepted authority are initialized by preparing this plan.
+The human explicitly approved the complete implementation intent. Its exact reply
+is retained in `intent-confirmation.json`. The workstream branch is now
+`agent/revising-workbench`, satisfying branch admission while preserving history.
+Revision-2 product requirements are promoted to
+`specs/current/revising-workbench.md` and its byte-identical JSON companion.
+The original proposed specification and challenge remain historical inputs.
+Independent review of the exact revised TaskGraph/test-plan/delegation contract
+and coordinator pinning remain required before task execution. Independent review
+uses `gpt-6.1-sol` with high reasoning per the human's explicit selection.
 
 ## Approach
 
@@ -190,8 +189,9 @@ with `PYTHONPATH`/`PYTHONHOME` removed and imports checked against original-chec
 leakage. No test methods or setup ran. Totals: nine tasks, 56 cases (22 unchanged
 regressions and 34 new), 38 supported runners.
 The earlier independent review remains incomplete; these corrections create no
-APPROVED decision or accepted pin. Stop after preparing/checking this revised plan,
-as the human requested; no new review round or implementation begins here.
+APPROVED decision or accepted pin. The earlier preparation-only stopping boundary has been superseded by the
+human's complete-intent approval for feature implementation. Independent review
+and pinning remain required before implementation.
 
 ## Risks, escalation and scope
 
