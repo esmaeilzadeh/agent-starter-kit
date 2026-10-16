@@ -781,6 +781,7 @@ class PassageAdmissionTests(unittest.TestCase):
                     from inner_loop.driver import run_once as legacy_run_once, integrate_ready as legacy_integrate_ready
                     from inner_loop.state import load_state, cas_apply
                     from inner_loop.evidence import result_path, record_review as legacy_record_review, NotIntegrable
+                    from inner_loop.__main__ import main as legacy_inner_main
                     from verification.run import workflow_context as legacy_workflow_context
                     try:
                         legacy_start = legacy_run_once(legacy_routes, "pilot")
@@ -819,6 +820,10 @@ class PassageAdmissionTests(unittest.TestCase):
                         "_ask/policies/delegation.md", "work/pilot/legacy-review.md")
                     self.assertEqual(legacy_review["task_id"], "build",
                                      "direct coordinator review preserves the v1 task route")
+                    self.assertEqual(legacy_inner_main([
+                        "--root", str(legacy_routes), "record-review", "pilot", "build",
+                        "--reviewer", "fixture-reviewer", "--evidence", "work/pilot/legacy-review.md"]), 0,
+                        "CLI coordinator review preserves the v1 task route")
                 finally:
                     sys.path.remove(legacy_bridge)
                     sys.path.remove(legacy_scripts)
