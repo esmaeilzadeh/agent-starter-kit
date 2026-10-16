@@ -7,7 +7,8 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
-from engineering_model.workflow import adopted, guarded_workflow, workflow_admission
+from engineering_model.workflow import adopted, guarded_workflow, workflow_admission, _refuse
+from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
     NotIntegrable, check_integrable, git, read_candidate, result_path,
@@ -127,6 +128,12 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
 
 
 def run_once(root: Path, work_id: str) -> str:
+    # Validate current adopted definitions before interpreting coordinator state.
+    # A concrete ready Task is then admitted under its qualified execution
+    # identity before state initialization or writer admission can mutate.
+    if adopted(root, work_id):
+        _snapshot, diagnostics = validate_current(root, work_id)
+        _refuse(diagnostics)
     graph = load_graph(root, work_id)
     status = validate_graph(graph)
     if status != "ok":
@@ -141,11 +148,13 @@ def run_once(root: Path, work_id: str) -> str:
         if result_path(root, work_id, tid).is_file():
             integrate_ready(root, work_id, tid)
             return run_once(root, work_id)
-        return f"waiting={tid}"
+        with workflow_admission(root, work_id):
+            return f"waiting={tid}"
     ready = ready_ids(graph, doc)
     if not ready:
-        ensure_state(root, work_id)
-        return "quiescent"
+        with workflow_admission(root, work_id):
+            ensure_state(root, work_id)
+            return "quiescent"
     tid = ready[0]
     selected_execution = {"work_id": work_id, "task_id": tid}
     selection = selected_execution if adopted(root, work_id) else None
