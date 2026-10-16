@@ -95,7 +95,8 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
     if task_id is None:
         raise NotIntegrable('selected task identity is required before integration')
     selected_execution = {'work_id': work_id, 'task_id': task_id}
-    with workflow_admission(root, work_id, selected_execution=selected_execution), \
+    selection = selected_execution if adopted(root, work_id) else None
+    with workflow_admission(root, work_id, selected_execution=selection), \
             state_transaction(root, work_id) as doc:
         running = _running(doc)
         if len(running) != 1 or task_id not in running:
@@ -114,7 +115,7 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
         sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
-                            selected_execution=selected_execution)
+                            selected_execution=selection)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
             raise Escalate('integrated HEAD/tree differs from verified candidate')
         evidence['resulting_sha'] = sha
