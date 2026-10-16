@@ -104,8 +104,17 @@ class StageIntakeTests(unittest.TestCase):
             event_file = root / "probe-events.log"
             env = {**os.environ, "PYTHONPATH": f"{probe}:{root / '_ask/scripts'}",
                    "RWB_INTAKE_EVENTS": str(event_file)}
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "intake@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Intake Fixture"], cwd=root, check=True)
+            subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "fixture"], cwd=root, check=True)
             before_head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True,
-                                         capture_output=True).returncode
+                                         capture_output=True, check=True).stdout
+            before_refs = subprocess.run(["git", "for-each-ref", "--format=%(refname) %(objectname)"],
+                                         cwd=root, text=True, capture_output=True, check=True).stdout
+            before_tree = subprocess.run(["git", "write-tree"], cwd=root, text=True,
+                                         capture_output=True, check=True).stdout
             before_model = (root / "work/product/engineering-model.json").read_bytes()
             for stage in ("00-explore", "01-grill"):
                 request = root / "request.json"
@@ -148,8 +157,11 @@ class StageIntakeTests(unittest.TestCase):
             self.assertFalse((root / "work/product/intent.md").exists())
             self.assertFalse((root / "work/product/explore-map.md").exists())
             self.assertEqual(subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True,
-                                            capture_output=True).returncode, before_head)
-            self.assertFalse((root / ".git").exists(), "inspection does not initialize or transfer repository authority")
+                                            capture_output=True, check=True).stdout, before_head)
+            self.assertEqual(subprocess.run(["git", "for-each-ref", "--format=%(refname) %(objectname)"],
+                                            cwd=root, text=True, capture_output=True, check=True).stdout, before_refs)
+            self.assertEqual(subprocess.run(["git", "write-tree"], cwd=root, text=True,
+                                            capture_output=True, check=True).stdout, before_tree)
 
     def test_model_context_cli_matches_caller_without_writes(self):
         with tempfile.TemporaryDirectory() as directory:
