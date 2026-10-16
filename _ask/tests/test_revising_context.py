@@ -67,13 +67,18 @@ class PassageTests(unittest.TestCase):
 
         markdown = (b"# Work\n\n## Work breakdown\nIntro.\n### Detail\nText.\n"
                     b"\n# Other\n## Work breakdown\nSecond chain.\n")
-        unique_heading = resolve("work/plan.md", markdown,
-                                 {"kind": "heading", "path": ["Work breakdown"]})
-        self.assertEqual(unique_heading["state"], "ambiguous", "different full ancestor chains must not collapse")
+        short_heading = resolve("work/plan.md", markdown,
+                                {"kind": "heading", "path": ["Work breakdown"]})
+        self.assertEqual(short_heading["state"], "unavailable",
+                         "a selector must name the complete ancestor heading chain")
         unique_heading = resolve("work/plan.md", markdown,
                                  {"kind": "heading", "path": ["Work", "Work breakdown"]})
         self.assertEqual(unique_heading["state"], "available")
         self.assertEqual(unique_heading["text"], "## Work breakdown\nIntro.\n### Detail\nText.\n")
+        duplicate_chain = b"# Work\n## Work breakdown\nFirst.\n# Work\n## Work breakdown\nSecond.\n"
+        ambiguous_chain = resolve("work/plan.md", duplicate_chain,
+                                  {"kind": "heading", "path": ["Work", "Work breakdown"]})
+        self.assertEqual(ambiguous_chain["state"], "ambiguous")
         missing = resolve("work/missing.md", None, {"kind": "heading", "path": ["Work"]})
         self.assertEqual(missing["state"], "unavailable")
         zero = resolve("work/plan.md", markdown, {"kind": "heading", "path": ["Absent"]})
