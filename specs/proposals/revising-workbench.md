@@ -1,8 +1,17 @@
-# Specification: Engineering Model and local workbench
+# Specification: Revising the workbench
 
-Status: PROPOSED revision 4, 2026-10-16. Drafted at the human's explicit request to store the specification and start an independent challenger. This is not CURRENT or implementation permission. The accepted revision-3 specification and accepted test authority are unchanged. Adjacent JSON contains proposed criterion metadata; no new test-plan pin is authorized. This proposal replaces revision 3 only after the applicable confirmation, Spec Change and reviewed contract transition.
+Status: PROPOSED revision 1 for `revising-workbench`, 2026-10-16.
+Derived from the unapproved revision-4 proposal and independent challenge at
+`159f516`. Complete-intent confirmation and independent review of these new
+bytes are pending. No accepted pin, test plan or product authority is transferred.
 
-Baseline: `specs/current/structured-agentic-environment.md` and its JSON at commit `38870c2f6c4e34c12bbe7d535f3005aa53a1edf3`. Foundation behavior remains unless this proposal explicitly changes it. This file supersedes conflicting Epic-first navigation and pilot-example choices in `workbench-design.md`; that design and the execution plan have not yet been revised. Stop after this independent challenge; no Plan, implementation or integration.
+Source intent: `work/revising-workbench/intent.md`.
+Baseline: `specs/current/structured-agentic-environment.md` and adjacent JSON
+at source commit `159f516`. Preserve baseline behavior except the explicit
+amendments below. Existing criterion IDs retain their lineage; equality of IDs
+across the two work contracts does not imply equal digests or shared completion.
+Old design/plan/runtime records remain historical implementation context, not
+this workstream's execution plan. Stop at specification and initialization.
 
 ## Authority and scope
 
@@ -24,7 +33,7 @@ Each test still covers at least one Scenario via test→scenario `covers`; a sta
 
 V1 records remain historical/read-only under their original rules. Adoption of v2 requires an explicit reviewed migration that preserves existing IDs, references and evidence attribution. No automatic conversion during browsing and no relabeling a v1 snapshot as v2-valid. A future plan must specify the concrete migration and independently reviewed task/test-contract updates before any implementation; this proposal does not authorize them.
 
-Active requirement/scenario references select an existing canonical criterion; tests select an existing test-plan case. Implementation references are safe repository-relative source paths, optionally symbols. Evidence/run references are safe repository-relative JSON paths; unavailable runtime evidence is visible missing evidence, not a malformed engineering definition. Resolve paths inside the repository, including symlink checks. Reference-only test/evidence nodes carry no mutable outcome. Draft requirement/scenario nodes may await a canonical reference.
+Active requirement references select an existing canonical criterion. Active Scenarios additionally select a concrete canonical test-plan case by qualified work, plan revision/digest and case ID; that case's scenario owns their context/action/outcome. Tests select an existing test-plan case. Implementation references are safe repository-relative source paths, optionally symbols. Evidence/run references are safe repository-relative JSON paths; unavailable runtime evidence is visible missing evidence, not a malformed engineering definition. Resolve paths inside the repository, including symlink checks. Reference-only test/evidence nodes carry no mutable outcome. Draft requirement/scenario nodes may await a canonical reference.
 
 Decisions have at least two unique option IDs/labels. A resolution records option_id, nonempty actor/rationale, UTC timestamp. Resolved state requires a valid resolution; open state has none. History preserves prior resolutions/reopening/invalidation. Actor attribution is cooperative local input, not authentication.
 
@@ -84,9 +93,9 @@ The confirmed intent records the subject's qualified identity or explicit standa
 
 ## Definitions and source context
 
-An Epic detail states intended user, outcome, motivation, scope and completion conditions. A Story states user outcome, purpose and acceptance conditions. Scenario detail gives concrete context/action/expected outcome through canonical criterion references. Task detail states the work outcome, relevant Story/Scenario links, dependencies, plan entry and evidence limitations. Definitions use normal explanatory prose; title/ID/source-link-only displays do not meet these requirements.
+An Epic detail states intended user, outcome, motivation, scope and completion conditions. A Story states user outcome, purpose and acceptance conditions. Scenario detail gives concrete context/action/expected outcome from its selected canonical case; criterion references provide the broader obligation. Task detail states the work outcome, relevant Story/Scenario links, dependencies, plan entry and evidence limitations. Definitions use normal explanatory prose; title/ID/source-link-only displays do not meet these requirements.
 
-Repository model definitions can carry context references to specification and plan passages. A passage reference identifies a safe repository-relative path plus a unique heading path or a stable plan-task selector. Capture the selected file bytes and selector with the validated snapshot; reject unsafe paths and ambiguous selectors, and expose missing/renamed passages as unavailable context. Do not silently substitute a similarly titled section or current-file text into an older revision. Relevant referenced files participate in snapshot freshness/dependency identity, including linked-text-only changes. Passage-reference fields and their diagnostics belong to the v2 document contract, not UI-only heuristics.
+Repository model definitions can carry context references to specification and plan passages. A passage reference identifies a safe repository-relative path plus a unique heading path or a stable plan-task selector. Capture the selected file bytes and selector with the validated snapshot; reject unsafe paths and malformed selectors at admission. Well-formed zero-match or multiple-match selectors are admitted unavailable context, explicitly labeled missing or ambiguous. Expose renamed passages as unavailable; never choose the first match. Do not silently substitute a similarly titled section or current-file text into an older revision. Relevant referenced files participate in snapshot freshness/dependency identity, including linked-text-only changes. Passage-reference fields and their diagnostics belong to the v2 document contract, not UI-only heuristics.
 
 Selected details show the relevant specification passage and plan task/entry in context, with source path, section/task identity and inspected revision. Longer surrounding text is available on request. For an unplanned item, show that no plan entry is recorded; do not fabricate a plan or block ordinary inspection. Define multiple relevant passages when a Task genuinely spans them; clearly identify what each explains. The human must recover why this work exists and what it promises without reopening chat history.
 
@@ -96,17 +105,17 @@ Test detail explains the linked Scenario and Task, concrete setup/input, action,
 
 Result detail states the actual recorded outcome, source/candidate/run applicability and retained failure/output context when available. Separate explanation of what the assertion checks from observations actually retained by the run; never infer expected inputs were observed just because a test passed. Missing helper source, execution logs or runtime records are explicit limitations. Narrative explanations cannot override accepted test obligations, declared links cannot establish execution, and current completion still uses existing authority.
 
-Human readability is evaluated with a concrete review exercise: from the chosen Task, the human identifies its purpose, relevant spec/plan passage, supported Scenario, setup/action/expected behavior, assertion and actual outcome/applicability without assistance from chat. Record what could not be understood. Automated mapping/source checks complement this review and cannot substitute for it. Existing reviewer-only authority rules apply to any future review-only criterion.
+Human readability requires a successful candidate-bound review exercise: from the chosen Task, the human identifies its purpose, relevant spec/plan passage, supported Scenario, setup/action/expected behavior, assertion and actual outcome/applicability without assistance from chat. Record the candidate/snapshot, selected Task/Scenario/Test and all displayed helper/source revisions, each identification and its pass/fail disposition. Any failed identification blocks the representative demonstration until corrected and reviewed again or explicitly escalated for a scope decision. Relevant source/context edits invalidate the review. Automated mapping/source checks complement this review and cannot substitute for it. Existing reviewer-only authority rules apply to any future review-only criterion.
 
 ## Representative Story and counterexamples
 
 Proposed Story: “As the developer returning to my work, I can open a delivery Task and recover its behavioral promise and evidence so I can decide what remains to do.” This is newly authored modeling, not reconstructed historical planning.
 
-Main flow: open an existing Task linked to this Story -> read the matching spec passage and plan entry -> open its concrete Scenario -> inspect a Test and necessary helper context -> inspect a real retained outcome and its applicability. The real pilot uses records from this workstream; unavailable evidence is labeled unavailable and cannot pass the executed-result portion of the demonstration. Test-owned fixtures can exercise future behavior but are labeled fixtures and never presented as retained pilot delivery evidence.
+Main flow: open an existing Task linked to this Story -> read the matching spec passage and plan entry -> open its concrete Scenario -> inspect a Test and necessary helper context -> inspect a real retained outcome and its applicability. The real pilot inspects preserved records from `structured-agentic-environment`; unavailable evidence is labeled unavailable and cannot pass the executed-result portion of the demonstration. Test-owned fixtures can exercise future behavior but are labeled fixtures and never presented as retained pilot delivery evidence.
 
 Required counterexamples: start at an existing Story rather than Epic; start at a standalone Task with no parent; select a Scenario without a Story; reach one shared Task from two Stories/Scenarios and return to the original route; encounter two conflicting subject matches; inspect renamed/ambiguous spec passages; change only a linked plan/spec file; inspect a Test whose assertion depends on a helper/global; inspect historical or missing evidence. One representative Story bounds authored product coverage, not coverage of these relationship/entry rules.
 
-An execution plan, complete test-case inventory, exact real Task/Test selectors and evidence availability assessment are not yet authored for this amendment. Before implementation, a reviewed plan must bind these concrete examples and migration obligations to accepted task/test scopes. This proposal supplies intended behavior only and does not certify a live pilot result.
+The exact real selectors and preliminary availability assessment are below. A future reviewed plan must assign new work and test scopes; no old task or test-plan pin becomes a new execution assignment. This proposal does not certify a live pilot result.
 
 ## Observable acceptance
 
@@ -127,7 +136,7 @@ Canonical proposed Given/When/Then: adjacent JSON. EM-001–007 and EM-012 retai
 - EM-013: Reuse known identity and state the bounded contribution/exclusions without creating an Epic or inventing ancestors Material missing/conflicting scope is surfaced before work admission; unavailable external context does not silently become a known local item
 - EM-014: V2 accepts missing parents and the specified support edges while rejecting duplicate identities, illegal/multiple containment parents, broken links and cycles V1 remains interpreted under its original version; migration preserves identities/evidence and requires explicit reviewed adoption without automatic browsing writes
 - EM-015: Show the selected same-revision passages with source identity, or explicit missing/ambiguous context; do not silently substitute another passage Referenced text participates in snapshot identity and linked-only changes invalidate freshness; inspection remains read-only
-- EM-016: Expose readable setup, action, expected behavior and assertion with necessary helper/global context at the selected revision Actual recorded results and applicability are inspectable when available; missing evidence is explicitly incomplete and fixture runs are not mislabeled as pilot evidence
+- EM-016: Expose readable setup, action, expected behavior and assertion with necessary helper/global context at the selected revision Actual recorded results and applicability are inspectable; at least one genuine retained result must pass integrity/applicability checks for the complete real demonstration; missing evidence is explicitly incomplete and fixture runs are not mislabeled as pilot evidence
 - EM-017: The older harness is absent from the main pilot presentation while original records/evidence and explicit historical inspection are preserved
 - EM-018: Repository inspection does not require a third-party service or duplicate editable backlog; source revision governs engineering context Unavailable tracker information is labeled and no automatic API integration, synchronization or authority transfer occurs
 
@@ -147,3 +156,105 @@ The human readability exercise is recorded alongside automated checks, with
 existing authority for review-only criteria retained. Required test types and
 case mappings need independent review in a future plan; no plan or behavior
 execution is performed in this specification/challenge-only session.
+
+## Concrete resolutions of the previous challenge
+
+### F1: Flow authority and test association
+
+A Scenario's concrete flow is selected by `(source work_id, test-plan digest,
+case id)` and reads the canonical case's `scenario` Given/When/Then. Model
+descriptions can explain it but cannot override it. Distinct flows sharing one
+criterion use distinct case selectors. A test proves that flow only through an
+explicit `covers` link consistent with the selected case. Criterion overlap
+alone is labeled related obligation and creates neither flow coverage nor proof.
+Reject contradictory active case/coverage references. An unplanned flow remains
+draft with an explicit missing-case limitation until a reviewed case exists.
+Counterexample: successful publication and stale rejection both concern EM-007;
+the success test must not appear as proving the stale-rejection flow.
+
+### F2: Passage classification and action admission
+
+Unsafe/escaping/symlink targets and malformed selector shapes invalidate document
+admission. Missing optional references, safe missing files, well-formed zero
+matches and multiple matches are admitted context limitations, not structural
+corruption. They never silently resolve to an alternative passage. Capture
+existing target bytes and selector plus absence/match state in snapshot identity;
+creation, deletion, rename or changed match count invalidates freshness.
+
+A safe unresolved context reference alone does not block unrelated guarded
+actions. An action requiring that passage to establish its contract refuses
+admission until it resolves uniquely; incomplete representative context blocks
+the demonstration. Invalid current documents permit only read-only diagnostic
+inspection of raw untrusted input and a labeled last-validated snapshot. Their
+ordinary mutations/workflow actions stay blocked; repair/import is explicit.
+Exercise inspection and action admission against each classification, including
+missing-to-present and unique-to-ambiguous transitions.
+
+### F3: Owning request-entry caller
+
+The adopted workflow's agent/coordinator intake calls the shared context resolver
+before branch creation, recording intent or admitting delivery. Expose the same
+read-only resolution through proposed `./ask model context` for inspectable
+evidence; a resolver unit test alone cannot verify coordinator invocation.
+Explicit request subject wins over a prior recorded association. A referenced
+repository/later/supplied tracker item resolves that explicit subject; conflicting
+explicit identities stop for clarification. Then use a recorded subject if valid.
+The branch locates execution records and never invents a product subject. If none
+is known, present standalone scope or a chooser. An explicit subject differing
+from the branch is shown with the bounded contribution and execution owner;
+clarify ownership conflict before writes. Inspection-only entry returns context
+without branches, intent writes or assignments. Test actual coordinator intake in
+a fresh context with no association, an explicit override and conflicting items.
+
+### F4: Identity and status authority
+
+Repository product identity is `(owning model work_id, node_id)`. An execution
+Task is separately `(execution work_id, task_id)`; later-card paths and supplied
+tracker identifiers are references to resolve, never implicit equality joins.
+Within one model, at most one Task node aliases a given execution Task. Duplicate
+aliases reject. Definition lifecycle expresses modeling state; execution state,
+integration and verification are projected from their existing authorities and
+are displayed separately, never overwritten by lifecycle. Support edges are
+local to one model for this version. A foreign product resolves to its owning
+revision for read-only navigation; no cloned local alias or cross-model support
+edge is created. Missing/conflicting targets require visible resolution; no
+cross-workstream writes or tracker API integration is implied.
+
+### F5: Required real example and retained evidence
+
+Select historical execution Task `(structured-agentic-environment, WB-003)`.
+Its canonical plan entry is table row WB-003 under `Work breakdown` in
+`work/structured-agentic-environment/plan.md` (resolve by task ID, not title).
+Its relevant main-spec passages are `Projections and evidence` and `Interactive
+UI` in `specs/current/structured-agentic-environment.md`, bound to the inspected
+revision. Concrete flow: canonical case `WB-evidence-identity` in that work's
+`test-plan.json`; test selector
+`test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract`
+in `_ask/tests/test_engineering_workbench_evidence.py`.
+
+Retained task record:
+`work/structured-agentic-environment/inner-loop/results/WB-003.json`.
+Candidate: `70dd295aacff869857081a94870d02fcbf4d640c`.
+Red run: `111e0f24d5e448c387cd1558b864b18e`;
+final-green run: `799924ec199b4717a3eabf4fb39a1bdc`.
+Both declared output log paths exist in the original local checkout. These
+ignored local runtime artifacts are not copied into the new Git workstream;
+the isolated clone can therefore display unavailable evidence. The committed
+record contains output excerpts, which are not substitutes for missing required
+run/authority artifacts. Full report/log digests and accepted applicability must
+be evaluated through the existing read-only evidence authority before claiming
+the demonstration succeeds. Require at least one genuine retained result, not
+only fixture outcomes. If local authority/artifacts cannot establish it, report
+the exact prerequisite as blocked; do not weaken the criterion automatically.
+
+### F6: Successful readability disposition
+
+For the selected candidate, the returning human must correctly identify purpose,
+spec/plan context, concrete flow, setup, action, expected observation, assertion,
+actual retained outcome and applicability. Store each result with candidate and
+snapshot identity and selected test/helper/global source revisions. An unresolved
+comprehension failure blocks demonstration completion. Changes to relevant
+definitions, selected source, fixtures/helpers or evidence invalidate this review.
+Curated explicit helper references are permitted; a whole-program analyzer is
+not required. Automation remains required, and this specification grants no
+review-only authority or independent approval.

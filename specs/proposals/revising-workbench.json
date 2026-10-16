@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
-  "work_id": "structured-agentic-environment",
-  "revision": 4,
+  "work_id": "revising-workbench",
+  "revision": 1,
   "criteria": [
     {
       "id": "EM-001",
@@ -75,7 +75,8 @@
       "when": "The developer navigates connected records from Epic, Story, Scenario or Task entry",
       "then": [
         "Known context and qualified identities are preserved without requiring a complete hierarchy; shared Tasks/Tests have one canonical identity and missing links are visible without fabricated containment",
-        "Relevant purpose is explained before delivery/evidence; support relationships do not alter execution ownership or completion authority"
+        "Relevant purpose is explained before delivery/evidence; support relationships do not alter execution ownership or completion authority",
+        "Product and execution identities remain distinct; duplicate execution aliases reject, local support edges preserve one product identity, and foreign items resolve read-only in their owning model"
       ],
       "verification_mode": "tests"
     },
@@ -129,7 +130,8 @@
       "when": "Adopted work context is resolved and presented",
       "then": [
         "Reuse known identity and state the bounded contribution/exclusions without creating an Epic or inventing ancestors",
-        "Material missing/conflicting scope is surfaced before work admission; unavailable external context does not silently become a known local item"
+        "Material missing/conflicting scope is surfaced before work admission; unavailable external context does not silently become a known local item",
+        "The adopted agent/coordinator request intake invokes context resolution before branch creation, intent recording or work admission; explicit subject precedes recorded context, conflicts require clarification and inspection-only entry writes nothing"
       ],
       "verification_mode": "tests"
     },
@@ -139,7 +141,8 @@
       "when": "Definitions are validated or explicitly migrated",
       "then": [
         "V2 accepts missing parents and the specified support edges while rejecting duplicate identities, illegal/multiple containment parents, broken links and cycles",
-        "V1 remains interpreted under its original version; migration preserves identities/evidence and requires explicit reviewed adoption without automatic browsing writes"
+        "V1 remains interpreted under its original version; migration preserves identities/evidence and requires explicit reviewed adoption without automatic browsing writes",
+        "Unsafe paths and malformed selectors invalidate admission; safe missing or ambiguous passages are context limitations, required-passage actions block, and invalid current state permits diagnostics and explicit repair only"
       ],
       "verification_mode": "tests"
     },
@@ -149,7 +152,8 @@
       "when": "Context is inspected at a captured revision or referenced files change",
       "then": [
         "Show the selected same-revision passages with source identity, or explicit missing/ambiguous context; do not silently substitute another passage",
-        "Referenced text participates in snapshot identity and linked-only changes invalidate freshness; inspection remains read-only"
+        "Referenced text participates in snapshot identity and linked-only changes invalidate freshness; inspection remains read-only",
+        "Concrete Scenario flow selects a canonical test-plan case at an exact digest; shared criteria alone never establish flow coverage; unique-to-ambiguous and missing-to-present passage changes invalidate freshness"
       ],
       "verification_mode": "tests"
     },
@@ -159,7 +163,8 @@
       "when": "The human follows the representative Story from Task to Test and outcome",
       "then": [
         "Expose readable setup, action, expected behavior and assertion with necessary helper/global context at the selected revision",
-        "Actual recorded results and applicability are inspectable when available; missing evidence is explicitly incomplete and fixture runs are not mislabeled as pilot evidence"
+        "Actual recorded results and applicability are inspectable; missing evidence is explicitly incomplete and fixture runs are not mislabeled as pilot evidence",
+        "The specified historical WB-003 example must include at least one genuine integrity-checked retained result and a successful candidate-bound readability disposition; relevant source/context changes invalidate the review and unresolved failures block the demonstration"
       ],
       "verification_mode": "tests"
     },
