@@ -327,16 +327,34 @@ def associate_subject(root, work_id, expected, *, subject, contribution, exclusi
     from .domain import apply_batch
 
     required_roles = tuple(required_roles)
+    subject_snapshot = None
 
     def precondition(snapshot):
+        nonlocal subject_snapshot
         if snapshot.document.get("schema") != "ask-engineering-model/v2":
             raise Refused("EM018_ASSOCIATION_SCHEMA", "subject associations require a v2 Engineering Model")
         if (not isinstance(subject, dict) or set(subject) != {"work_id", "node_id"}
-                or subject.get("work_id") != work_id or not isinstance(subject.get("node_id"), str)):
-            raise Refused("EM018_SUBJECT_ID", "subject must be qualified in the selected owning model")
-        node_ids = {node.get("id") for node in snapshot.document.get("nodes", []) if isinstance(node, dict)}
+                or not isinstance(subject.get("work_id"), str) or not subject["work_id"]
+                or not isinstance(subject.get("node_id"), str) or not subject["node_id"]):
+            raise Refused("EM018_SUBJECT_ID", "subject must be a qualified work and node identity")
+        if subject["work_id"] == work_id:
+            subject_snapshot = snapshot
+        else:
+            from .validation import SLUG
+            if not SLUG.fullmatch(subject["work_id"]):
+                raise Refused("EM018_SUBJECT_ID", "foreign subject owner must be a work ID")
+            subject_snapshot = capture(root, subject["work_id"])
+            foreign_errors = subject_snapshot.diagnostics(root)
+            if foreign_errors:
+                raise Refused("EM018_SUBJECT_UNAVAILABLE", "foreign subject owner is not valid/current",
+                              subject_snapshot.model_path)
+        subject_document = subject_snapshot.document
+        node_ids = {node.get("id") for node in subject_document.get("nodes", []) if isinstance(node, dict)}
         if subject.get("node_id") not in node_ids:
-            raise Refused("EM018_SUBJECT_MISSING", "associated subject does not exist in the captured model")
+            raise Refused("EM018_SUBJECT_MISSING", "associated subject does not exist in its captured owning model")
+        prior = snapshot.document.get("subject_association")
+        if prior is not None and (not isinstance(prior, dict) or not isinstance(prior.get("history"), list)):
+            raise Refused("EM018_ASSOCIATION_HISTORY", "prior association history must be an array")
         if not isinstance(contribution, str) or not contribution.strip():
             raise Refused("EM018_CONTRIBUTION", "association contribution must be nonempty")
         if (not isinstance(exclusions, list)
@@ -353,7 +371,7 @@ def associate_subject(root, work_id, expected, *, subject, contribution, exclusi
                        if isinstance(node, dict)):
                 raise Refused("EM018_OWNER_UNRESOLVED", "execution owner must resolve by an explicit Task alias")
         for role in required_roles:
-            matches = [passage for passage in snapshot.passages.values()
+            matches = [passage for passage in subject_snapshot.passages.values()
                        if passage.get("node_id") == subject["node_id"] and passage.get("role") == role]
             if len(matches) != 1 or matches[0].get("state") != "available":
                 raise Refused("EM018_CONTEXT_REQUIRED",
@@ -362,6 +380,7 @@ def associate_subject(root, work_id, expected, *, subject, contribution, exclusi
     def action(snapshot):
         command = {"op": "associate_subject", "subject": subject, "revision": "snapshot",
                    "snapshot_digest": snapshot.identity["digest"], "contribution": contribution,
+                   "subject_snapshot_digest": subject_snapshot.identity["digest"],
                    "exclusions": exclusions, "execution_owner": execution_owner,
                    "actor": actor, "rationale": rationale}
         result = apply_batch(snapshot.document, [command])

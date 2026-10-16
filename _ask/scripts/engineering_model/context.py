@@ -13,6 +13,27 @@ def _qualified(value):
             and isinstance(value.get("node_id"), str) and bool(value["node_id"]))
 
 
+def _valid_execution_owner(value):
+    return (isinstance(value, dict) and set(value) == {"work_id", "task_id"}
+            and all(isinstance(item, str) and item for item in value.values()))
+
+
+def _explicit_subject(value):
+    if not isinstance(value, dict) or set(value) - {
+            "work_id", "node_id", "contribution", "exclusions", "execution_owner"}:
+        return False
+    if not _qualified({"work_id": value.get("work_id"), "node_id": value.get("node_id")}):
+        return False
+    if "contribution" in value and (not isinstance(value["contribution"], str) or not value["contribution"].strip()):
+        return False
+    if "exclusions" in value and (not isinstance(value["exclusions"], list)
+                                   or any(not isinstance(item, str) or not item.strip() for item in value["exclusions"])):
+        return False
+    if "execution_owner" in value and value["execution_owner"] is not None and not _valid_execution_owner(value["execution_owner"]):
+        return False
+    return True
+
+
 def _recorded_association(value):
     if (not isinstance(value, dict) or not _qualified(value.get("subject"))
             or value.get("revision") != "snapshot"
@@ -61,13 +82,23 @@ def resolve(root, work_id, request, *, branch=None):
         result["diagnostics"] = [{"code": "EM018_SUBJECT_REQUEST", "message": "explicit_subjects must be an array"}]
         return result
     identities = []
+    explicit_details = {}
     for item in explicit:
-        if not _qualified(item):
+        if not _explicit_subject(item):
             result["disposition"] = "needs_clarification"
             result["diagnostics"] = [{"code": "EM018_SUBJECT_ID", "message": "subject IDs must be qualified by work_id and node_id"}]
             return result
-        if item not in identities:
-            identities.append({"work_id": item["work_id"], "node_id": item["node_id"]})
+        identity = {"work_id": item["work_id"], "node_id": item["node_id"]}
+        if identity not in identities:
+            identities.append(identity)
+        for key in ("contribution", "exclusions", "execution_owner"):
+            if key in item:
+                if key in explicit_details and explicit_details[key] != item[key]:
+                    result["disposition"] = "needs_clarification"
+                    result["diagnostics"] = [{"code": "EM018_SUBJECT_CONFLICT",
+                                              "message": f"explicit subject {key} details conflict"}]
+                    return result
+                explicit_details[key] = item[key]
     if len(identities) > 1:
         result["disposition"] = "needs_clarification"
         result["diagnostics"] = [{"code": "EM018_SUBJECT_CONFLICT", "message": "explicit subject identities conflict"}]
@@ -75,13 +106,24 @@ def resolve(root, work_id, request, *, branch=None):
     if identities:
         subject = identities[0]
         result["source"] = "explicit-request"
+        for key in ("contribution", "exclusions", "execution_owner"):
+            if key in request:
+                if key in explicit_details and explicit_details[key] != request[key]:
+                    result["disposition"] = "needs_clarification"
+                    result["diagnostics"] = [{"code": "EM018_SUBJECT_CONFLICT",
+                                              "message": f"request {key} conflicts with explicit subject details"}]
+                    return result
+                explicit_details[key] = request[key]
+        result["contribution"] = explicit_details.get("contribution")
+        result["exclusions"] = explicit_details.get("exclusions", [])
+        result["execution_owner"] = explicit_details.get("execution_owner")
     elif _recorded_association(association):
         subject = association["subject"]
         result["source"] = "recorded-association"
     else:
         subject = None
     if subject is not None:
-        requested_owner = request.get("execution_owner")
+        requested_owner = explicit_details.get("execution_owner", request.get("execution_owner"))
         recorded_owner = association.get("execution_owner") if _recorded_association(association) else None
         if (requested_owner is not None and recorded_owner is not None
                 and requested_owner != recorded_owner):
@@ -133,12 +175,14 @@ def resolve(root, work_id, request, *, branch=None):
     elif request.get("later_cards"):
         cards = request["later_cards"]
         result["proposal"] = {"source": "later-card", "references": cards if isinstance(cards, list) else []}
-    result["external_context"] = None
     tracker = request.get("tracker_context")
     if isinstance(tracker, dict):
         tracker_state = "unavailable" if tracker.get("available") is False else "supplied-unverified"
-        result["external_context"] = {"state": tracker_state,
-                                      "reference": tracker.get("id")}
+        tracker_context = {"state": tracker_state, "reference": tracker.get("id")}
+        if isinstance(result.get("external_context"), dict):
+            result["external_context"]["tracker"] = tracker_context
+        else:
+            result["external_context"] = tracker_context
         if tracker_state == "unavailable" and result["disposition"] == "resolved":
             result["disposition"] = "unavailable"
     if subject is None and result["disposition"] != "needs_clarification":

@@ -86,18 +86,25 @@ def apply_batch(document, commands, *, timestamp=None, changed_references=()):
             op = command.get("op")
             if op == "associate_subject":
                 allowed = {"op", "subject", "revision", "snapshot_digest", "contribution",
-                           "exclusions", "execution_owner", "actor", "rationale"}
+                           "subject_snapshot_digest", "exclusions", "execution_owner", "actor", "rationale"}
                 if set(command) != allowed:
                     raise ValueError("associate_subject requires a qualified subject, captured revision, bounded intent and attribution")
                 actor, reason = _attribution(command)
                 subject = command["subject"]
                 if (not isinstance(subject, dict) or set(subject) != {"work_id", "node_id"}
-                        or subject.get("work_id") != candidate.get("work_id")
-                        or not isinstance(subject.get("node_id"), str)
-                        or subject["node_id"] not in nodes):
-                    raise ValueError("associate_subject must select an existing node in the selected workstream")
+                        or not isinstance(subject.get("work_id"), str) or not subject["work_id"]
+                        or not isinstance(subject.get("node_id"), str) or not subject["node_id"]):
+                    raise ValueError("associate_subject requires a qualified subject identity")
+                # Foreign pointers are validated against their owning captured
+                # model by the guarded action before this semantic batch.
+                if subject["work_id"] == candidate.get("work_id") and subject["node_id"] not in nodes:
+                    raise ValueError("associate_subject must select an existing node")
                 if command.get("revision") != "snapshot" or not isinstance(command.get("snapshot_digest"), str):
                     raise ValueError("association must bind the captured model snapshot")
+                subject_digest = command.get("subject_snapshot_digest")
+                if (not isinstance(subject_digest, str) or len(subject_digest) != 64
+                        or any(char not in "0123456789abcdef" for char in subject_digest)):
+                    raise ValueError("association must bind the captured subject owner snapshot")
                 if not isinstance(command.get("contribution"), str) or not command["contribution"].strip():
                     raise ValueError("association contribution must be nonempty")
                 exclusions = command.get("exclusions")
@@ -111,11 +118,15 @@ def apply_batch(document, commands, *, timestamp=None, changed_references=()):
                                                  for node in nodes.values()):
                     raise ValueError("execution_owner must resolve through an explicit Task execution alias")
                 prior = candidate.get("subject_association")
+                if prior is not None and (not isinstance(prior, dict)
+                                          or not isinstance(prior.get("history"), list)):
+                    raise ValueError("prior subject association history must be an array")
                 history = deepcopy(prior.get("history", [])) if isinstance(prior, dict) else []
                 history.append({"actor": actor, "rationale": reason, "timestamp": timestamp})
                 candidate["subject_association"] = {
                     "subject": deepcopy(subject), "revision": "snapshot",
                     "snapshot_digest": command["snapshot_digest"],
+                    "subject_snapshot_digest": subject_digest,
                     "contribution": command["contribution"].strip(),
                     "exclusions": deepcopy(exclusions), "execution_owner": deepcopy(owner),
                     "history": history,
