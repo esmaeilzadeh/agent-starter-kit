@@ -3,8 +3,12 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
+import shutil
+from contextlib import redirect_stderr
+from io import StringIO
 
 from _ask.scripts.engineering_model.snapshot import capture, is_current
 from _ask.tests.revising_fixture import digest, model
@@ -137,16 +141,28 @@ class PassageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _repo(root)
+            from _ask.scripts.engineering_model.admission import admit
+            baseline, diagnostics = admit(root, "product")
+            self.assertEqual(diagnostics, [])
+            identity = baseline.identity
+            self.assertEqual(identity["dependency_discovery_version"], "engineering-input-closure/v2")
+            self.assertTrue(identity["passage_rules_version"])
+            self.assertTrue(identity["heading_discovery_version"])
+            self.assertTrue(identity["plan_task_discovery_version"])
             path = root / "docs/context.md"
             path.unlink()
             path.symlink_to(root / "work/product/plan.md")
             linked = capture(root, "product")
             self.assertNotEqual(linked.statuses["docs/context.md"], "present",
                                 "symlink components cannot be treated as safe passage sources")
-            from _ask.scripts.engineering_model.admission import admit
             _published, diagnostics = admit(root, "product")
             self.assertTrue(any(item["code"] == "EM001_CONTEXT_REFERENCE" for item in diagnostics),
                             "terminal symlink must refuse captured admission")
+            from _ask.scripts.engineering_model.observer import observe_once
+            observation = observe_once(root, "product")
+            self.assertFalse(observation["valid"], "unsafe current selector state remains diagnosable")
+            self.assertTrue(observation["last_validated"], "invalid current input retains last valid inspection")
+            self.assertEqual(observation["snapshot"]["digest"], baseline.identity["digest"])
             path.unlink()
             (root / "docs").rename(root / "docs-real")
             (root / "docs").symlink_to(root / "docs-real", target_is_directory=True)
@@ -200,8 +216,40 @@ class PassageAdmissionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _repo(root, spec_text=None, plan_text="# Work breakdown\n")
+            project = Path(__file__).resolve().parents[2]
+            shutil.copytree(project / "_ask/scripts", root / "_ask/scripts")
             captured = capture(root, "product")
             calls = []
+            bridge_path = str(project / ".agents/ask")
+            sys.path.insert(0, bridge_path)
+            try:
+                from verification.traceability.cli import main as traceability_main
+                error_output = StringIO()
+                with redirect_stderr(error_output):
+                    traceability_status = traceability_main([
+                        "--root", str(root), "run", "product", "--scope", "task", "--task-id", "task"])
+                self.assertNotEqual(traceability_status, 0,
+                                    "task-scoped traceability refuses a Task with missing selected passages")
+                self.assertIn("EM015_CONTEXT_REQUIRED", error_output.getvalue())
+            finally:
+                sys.path.remove(bridge_path)
+            from _ask.scripts.inner_loop.evidence import record_review
+            try:
+                record_review(root, "product", "task", "reviewer", "_ask/policies/delegation.md",
+                              "work/product/review.json", selected_task_id="task")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"direct coordinator review helper must guard selected Task: {exc!r}")
+            else:
+                self.fail("direct review helper must refuse before review side effects for missing Task context")
+            from _ask.scripts.inner_loop.driver import integrate_ready
+            try:
+                integrate_ready(root, "product", "task")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"driver integration must guard its explicit Task: {exc!r}")
+            else:
+                self.fail("driver integration must refuse before candidate reads for missing Task context")
             try:
                 receipt = edit(root, "product", captured.identity["digest"],
                                lambda: calls.append("selected-task-action") or {"commands": [
@@ -220,7 +268,10 @@ class PassageAdmissionTests(unittest.TestCase):
                 with workflow_admission(root, "product", selected_task_id="task"):
                     calls.append("selected-workflow-action")
             except Exception as exc:
-                self.fail(f"selected Task workflow must refuse through admission: {exc}")
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"selected Task must refuse for its missing passages, got {exc!r}")
+            else:
+                self.fail("selected Task missing required passages must refuse before yielding")
             self.assertNotIn("selected-workflow-action", calls,
                              "missing required passages block only the selected Task action")
 
@@ -234,6 +285,78 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.fail(f"selected Task contract admission must succeed after passages resolve: {exc}")
             self.assertEqual(calls[-1], "selected-task-action")
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
+
+            from _ask.scripts.engineering_model.admission import load_published
+            before = capture(root, "product")
+            action_calls = []
+            receipt = edit(root, "product", before.identity["digest"],
+                           lambda: action_calls.append("semantic-batch") or {"commands": [
+                               {"op": "revise_node", "id": "story", "changes": {"title": "Revised"}}]},
+                           selected_task_id="task")
+            self.assertTrue(receipt["valid"], "selected Task semantic batch succeeds with both exact passages")
+            self.assertEqual(receipt["steps"], ["pre", "action", "post", "publication"])
+            self.assertEqual(action_calls, ["semantic-batch"], "semantic proposal executes exactly once")
+            self.assertEqual(receipt["input_snapshot"]["digest"], before.identity["digest"])
+            self.assertEqual(receipt["snapshot"]["digest"], load_published(root, "product").identity["digest"])
+
+            published_generation = load_published(root, "product")
+            sys.path.insert(0, bridge_path)
+            try:
+                from verification.run import workflow_context
+                with workflow_context(root, "product", selected_task_id="task") as bridged:
+                    self.assertEqual(bridged.identity["digest"], published_generation.identity["digest"])
+            finally:
+                sys.path.remove(bridge_path)
+
+            # Exercise the shipped model admit-with-action CLI, not a mocked
+            # callback. Its subprocess writes a marker only after admission.
+            from _ask.scripts.engineering_model.__main__ import main as model_main
+            previous = Path.cwd()
+            try:
+                os.chdir(root)
+                exit_code = model_main(["admit", "--work-id", "product", "--task-node", "task",
+                                        "--action", "selected-task", "--", sys.executable, "-c",
+                                        "from pathlib import Path; Path('cli-action-ran').write_text('yes')"])
+            finally:
+                os.chdir(previous)
+            self.assertEqual(exit_code, 0, "real model admit-with-action wrapper accepts selected context")
+            self.assertEqual((root / "cli-action-ran").read_text(), "yes")
+
+        # The actual candidate/integration boundary receives a qualified task
+        # selector and refuses missing passages before moving the ref; once the
+        # passages are committed, a real FF integration preserves the SHA.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root, spec_text=None)
+            project = Path(__file__).resolve().parents[2]
+            shutil.copytree(project / "_ask/scripts", root / "_ask/scripts")
+            subprocess.run(["git", "init", "-q", "-b", "agent/product"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "canonical fixture"], cwd=root, check=True)
+            original_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                          capture_output=True, text=True).stdout.strip()
+            from _ask.scripts.inner_loop.integrate import integrate
+            try:
+                integrate(root, original_sha, work_id="product", selected_task_id="task")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"candidate integration must refuse missing selected passages: {exc!r}")
+            else:
+                self.fail("real candidate integration must refuse missing selected passages")
+            still_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                       capture_output=True, text=True).stdout.strip()
+            self.assertEqual(still_sha, original_sha, "refusal leaves the integration ref unchanged")
+            _put(root, "docs/context.md", b"# Scope\nCommitted context.\n")
+            _put(root, "work/product/plan.md",
+                 b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "selected context"], cwd=root, check=True)
+            ready_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                       capture_output=True, text=True).stdout.strip()
+            result_sha = integrate(root, ready_sha, work_id="product", selected_task_id="task")
+            self.assertEqual(result_sha, ready_sha, "valid selected context passes candidate and FF integration")
 
     def test_missing_linked_and_ambiguous_changes_invalidate_snapshot(self):
         from _ask.scripts.engineering_model.admission import admit, load_published
@@ -279,6 +402,13 @@ class PassageAdmissionTests(unittest.TestCase):
             observation = observe_once(root, "product")
             self.assertTrue(observation["valid"], "startup/read recaptures helper changes before publication")
             self.assertEqual(observation["snapshot"]["digest"], after_helper.identity["digest"])
+            self.assertEqual(observation["snapshot"]["digest"], observation["current_input"]["digest"],
+                             "observer reads one current published generation")
+            from _ask.scripts.engineering_model.admission import validate_current
+            full, full_errors = validate_current(root, "product")
+            cached, cached_errors = admit(root, "product")
+            self.assertEqual(full_errors, cached_errors, "full and current validation agree")
+            self.assertEqual(full.identity, cached.identity, "validation paths share captured dependency closure")
 
             # A safe optional missing passage remains admitted; creating it
             # changes identity and the captured state from unavailable to unique.
