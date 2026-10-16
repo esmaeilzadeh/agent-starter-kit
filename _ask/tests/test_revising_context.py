@@ -316,6 +316,7 @@ class PassageAdmissionTests(unittest.TestCase):
             with workflow_admission(root, "product"):
                 calls.append("unrelated-decision")
             self.assertEqual(calls, ["unrelated-decision"])
+            unrelated_publication = load_published(root, "product")
             try:
                 with workflow_admission(root, "product", selected_task_id="task"):
                     calls.append("selected-workflow-action")
@@ -335,6 +336,17 @@ class PassageAdmissionTests(unittest.TestCase):
                                  f"wrong qualified owner must not join by task label: {exc!r}")
             else:
                 self.fail("execution task identity cannot join by an equal-looking task label alone")
+            try:
+                with workflow_admission(root, "product", selected_task_id="story",
+                                        selected_execution={"work_id": "product", "task_id": "WB-003"}):
+                    calls.append("contradictory-selection")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_TASK_ID",
+                                 f"contradictory product and execution identities refuse: {exc!r}")
+            else:
+                self.fail("contradictory product and execution selectors must refuse before action")
+            self.assertEqual(load_published(root, "product"), unrelated_publication,
+                             "contradictory selected identities cannot publish")
 
             # A resolvable neighboring plan row is not this Task's contract;
             # plan selector identity must match the captured execution alias.
@@ -354,6 +366,24 @@ class PassageAdmissionTests(unittest.TestCase):
             else:
                 self.fail("selected Task cannot borrow an unrelated plan-task row")
 
+            unowned = root / "unowned"
+            unowned.mkdir()
+            _repo(unowned)
+            unowned_doc = json.loads((unowned / "work/product/engineering-model.json").read_text())
+            unowned_doc["nodes"][3].pop("execution")
+            unowned_doc["nodes"][3]["context"][1]["selector"]["task_id"] = "task"
+            _put(unowned, "work/product/engineering-model.json", unowned_doc)
+            _put(unowned, "work/product/plan.md",
+                 b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| task | Product task label |\n")
+            try:
+                with workflow_admission(unowned, "product", selected_task_id="task"):
+                    calls.append("implicit-equal-id-join")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"matching product label cannot invent an execution binding: {exc!r}")
+            else:
+                self.fail("plan row equality with product Task ID cannot invent execution ownership")
+
             _put(root, "docs/context.md", b"# Scope\nCurrent contract.\n")
             _put(root, "work/product/plan.md",
                  b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n")
@@ -363,6 +393,11 @@ class PassageAdmissionTests(unittest.TestCase):
             except Exception as exc:
                 self.fail(f"selected Task contract admission must succeed after passages resolve: {exc}")
             self.assertEqual(calls[-1], "selected-task-action")
+            with workflow_admission(root, "product", selected_task_id="task",
+                                    selected_execution={"work_id": "product", "task_id": "WB-003"}):
+                calls.append("consistent-dual-identity")
+            self.assertEqual(calls[-1], "consistent-dual-identity",
+                             "product and qualified execution selectors resolve to the same Task")
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
 
             before = capture(root, "product")
@@ -433,11 +468,16 @@ class PassageAdmissionTests(unittest.TestCase):
                  b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n")
             subprocess.run(["git", "add", "."], cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "selected context"], cwd=root, check=True)
-            ready_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
-                                       capture_output=True, text=True).stdout.strip()
-            result_sha = integrate(root, ready_sha, work_id="product", selected_execution={
+            subprocess.run(["git", "switch", "-qc", "task/selected"], cwd=root, check=True)
+            _put(root, "task-result.md", b"Selected task result.\n")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "task result"], cwd=root, check=True)
+            candidate_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                          capture_output=True, text=True).stdout.strip()
+            subprocess.run(["git", "switch", "-q", "agent/product"], cwd=root, check=True)
+            result_sha = integrate(root, candidate_sha, work_id="product", selected_execution={
                 "work_id": "product", "task_id": "WB-003"})
-            self.assertEqual(result_sha, ready_sha, "valid selected context passes candidate and FF integration")
+            self.assertEqual(result_sha, candidate_sha, "valid selected context passes candidate and FF integration")
 
     def test_missing_linked_and_ambiguous_changes_invalidate_snapshot(self):
         from _ask.scripts.engineering_model.admission import admit, load_published
