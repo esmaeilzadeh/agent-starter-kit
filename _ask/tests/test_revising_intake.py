@@ -85,6 +85,21 @@ class StageIntakeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = self._copy_caller(Path(directory))
             _repo(root)
+            probe = root / "probe"
+            probe.mkdir()
+            (probe / "sitecustomize.py").write_text(
+                "import os\n"
+                "from engineering_model import context\n"
+                "_resolve = context.resolve\n"
+                "def _observed(*args, **kwargs):\n"
+                "    with open(os.environ['RWB_INTAKE_EVENTS'], 'a') as stream: stream.write('resolver-enter\\n')\n"
+                "    result = _resolve(*args, **kwargs)\n"
+                "    with open(os.environ['RWB_INTAKE_EVENTS'], 'a') as stream: stream.write('resolver-exit\\n')\n"
+                "    return result\n"
+                "context.resolve = _observed\n")
+            event_file = root / "probe-events.log"
+            env = {**os.environ, "PYTHONPATH": f"{probe}:{root / '_ask/scripts'}",
+                   "RWB_INTAKE_EVENTS": str(event_file)}
             before_head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True,
                                          capture_output=True).returncode
             before_model = (root / "work/product/engineering-model.json").read_bytes()
@@ -93,11 +108,11 @@ class StageIntakeTests(unittest.TestCase):
                 request.write_text(json.dumps({"inspection_only": True}))
                 result = subprocess.run(["./ask", "stage-intake", "--stage", stage,
                                          "--work-id", "product", "--request", str(request)],
-                                        cwd=root, text=True, capture_output=True)
+                                        cwd=root, text=True, capture_output=True, env=env)
                 self.assertEqual(result.returncode, 0, f"adopted {stage} caller should resolve read-only: {result.stderr}")
                 payload = json.loads(result.stdout)
-                self.assertEqual(payload["trace"], ["stage-caller", "resolver"],
-                                 "the actual adopted command reports caller-before-resolver ordering")
+                self.assertEqual(event_file.read_text().splitlines(), ["resolver-enter", "resolver-exit"],
+                                 "the actual adopted caller invokes the shared resolver exactly once")
                 self.assertEqual(payload["disposition"], "chooser")
                 self.assertIn("snapshot", payload)
                 self.assertIn("source", payload)
@@ -119,9 +134,11 @@ class StageIntakeTests(unittest.TestCase):
                     {"work_id": "foreign", "node_id": "story-a"}]}))
                 refused = subprocess.run(["./ask", "stage-intake", "--stage", stage,
                                           "--work-id", "product", "--request", str(conflict)],
-                                         cwd=root, text=True, capture_output=True)
+                                         cwd=root, text=True, capture_output=True, env=env)
                 self.assertEqual(refused.returncode, 0)
                 self.assertEqual(json.loads(refused.stdout)["disposition"], "needs_clarification")
+                self.assertEqual(event_file.read_text().splitlines(),
+                                 ["resolver-enter", "resolver-exit", "resolver-enter", "resolver-exit"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), before_model)
             self.assertFalse((root / "work/product/intent.md").exists())
             self.assertFalse((root / "work/product/explore-map.md").exists())
