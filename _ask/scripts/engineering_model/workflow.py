@@ -16,7 +16,7 @@ import tempfile
 from .actions import Refused
 from . import admission as publications
 from .admission import admit, load_published, validate_current
-from .validation import SLUG
+from .validation import SCHEMA_V2, SLUG
 from .passages import required_task_passages, selected_task_node
 
 
@@ -224,7 +224,10 @@ def validate_candidate(root, work_id, revision, *, selected_task_id=None, select
     """Run candidate checks within the same explicit selected-task guard."""
     if selected_task_id is None and selected_execution is None:
         if adopted(root, work_id):
-            raise Refused('EM015_TASK_ID', 'adopted Task candidate validation requires explicit selected identity')
+            current, diagnostics = validate_current(root, work_id)
+            _refuse(diagnostics)
+            if current.document.get('schema') == SCHEMA_V2:
+                raise Refused('EM015_TASK_ID', 'adopted v2 Task candidate validation requires explicit selected identity')
         return _validate_candidate(root, work_id, revision)
     with workflow_admission(root, work_id, selected_task_id=selected_task_id,
                             selected_execution=selected_execution):
