@@ -263,6 +263,7 @@ class PassageAdmissionTests(unittest.TestCase):
     def test_required_passages_block_only_dependent_actions(self):
         from _ask.scripts.engineering_model.workflow import workflow_admission
         from _ask.scripts.engineering_model.actions import edit
+        from _ask.scripts.engineering_model.admission import admit, load_published
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -270,7 +271,25 @@ class PassageAdmissionTests(unittest.TestCase):
             project = Path(__file__).resolve().parents[2]
             shutil.copytree(project / "_ask/scripts", root / "_ask/scripts")
             captured = capture(root, "product")
-            from _ask.scripts.engineering_model.admission import load_published
+
+            # Persisted passage text must remain bound to captured source bytes
+            # and the immutable generation identity, including on reload.
+            tamper_root = root / "tampered-generation"
+            tamper_root.mkdir()
+            _repo(tamper_root)
+            admitted, diagnostics = admit(tamper_root, "product")
+            self.assertEqual(diagnostics, [], "valid captured input publishes a generation")
+            generation_manifest = (tamper_root / "work/product/traceability/model-state/generations"
+                                  / admitted.identity["digest"] / "manifest.json")
+            manifest = json.loads(generation_manifest.read_text())
+            passage = next(item for item in manifest["passages"].values()
+                           if item.get("kind") == "context" and item.get("role") == "spec")
+            passage["resolution"]["text"] = "Forged text outside captured source bytes."
+            generation_manifest.write_text(json.dumps(manifest, sort_keys=True))
+            with self.assertRaises((ValueError, OSError),
+                                   msg="published derived passage text cannot be forged independently"):
+                load_published(tamper_root, "product")
+
             publication_before = load_published(root, "product")
             calls = []
             bridge_path = str(project / ".agents/ask")
@@ -341,6 +360,37 @@ class PassageAdmissionTests(unittest.TestCase):
                                  f"wrong qualified owner must not join by task label: {exc!r}")
             else:
                 self.fail("execution task identity cannot join by an equal-looking task label alone")
+
+            # An execution alias for another work cannot borrow this work's
+            # same-named plan row. Its own qualified plan source remains valid.
+            foreign = root / "foreign-execution"
+            foreign.mkdir()
+            _repo(foreign)
+            foreign_doc = json.loads((foreign / "work/product/engineering-model.json").read_text())
+            foreign_doc["nodes"][3]["execution"]["work_id"] = "other"
+            foreign_doc["nodes"][3]["context"][1]["path"] = "work/product/plan.md"
+            _put(foreign, "work/product/engineering-model.json", foreign_doc)
+            try:
+                with workflow_admission(foreign, "product", selected_execution={
+                        "work_id": "other", "task_id": "WB-003"}):
+                    calls.append("foreign-owner-borrowed-plan")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"plan passage from another owner cannot satisfy execution: {exc!r}")
+            else:
+                self.fail("a same-ID plan row from product cannot satisfy other/WB-003")
+            _put(foreign, "work/other/plan.md",
+                 b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Other-owned contract |\n")
+            foreign_doc["nodes"][3]["context"][1]["path"] = "work/other/plan.md"
+            _put(foreign, "work/product/engineering-model.json", foreign_doc)
+            try:
+                with workflow_admission(foreign, "product", selected_execution={
+                        "work_id": "other", "task_id": "WB-003"}):
+                    calls.append("foreign-owner-own-plan")
+            except Exception as exc:
+                self.fail(f"qualified execution's own plan passage must admit: {exc}")
+            self.assertEqual(calls[-1], "foreign-owner-own-plan")
+
             try:
                 with workflow_admission(root, "product", selected_task_id="story",
                                         selected_execution={"work_id": "product", "task_id": "WB-003"}):
@@ -481,7 +531,42 @@ class PassageAdmissionTests(unittest.TestCase):
                  ]) + "))"], cwd=review_root, env=env, capture_output=True, text=True)
             self.assertEqual(record_review_run.returncode, 0,
                              f"real task-scoped traceability review wrapper accepts selected context: {record_review_run.stderr}")
+            review_record = review_root / "work/product/traceability/reviews" / (candidate_sha + ".json")
+            prior_review_bytes = review_record.read_bytes()
+            omitted_scope = subprocess.run(
+                [sys.executable, "-c",
+                 "from verification.traceability.cli import main; raise SystemExit(main(" + repr([
+                     "--root", str(review_root), "record-review", "product", "--candidate-sha", candidate_sha,
+                     "--anchor-sha", review_sha, "--recorded-by", "fixture-coordinator",
+                     "--evidence", "work/product/traceability/review-input.json"
+                 ]) + "))"], cwd=review_root, env=env, capture_output=True, text=True)
+            self.assertNotEqual(omitted_scope.returncode, 0,
+                                "CLI workstream default cannot accept task-scoped review body")
+            self.assertEqual(review_record.read_bytes(), prior_review_bytes,
+                             "CLI/body scope mismatch refuses before review publication")
+
+            # Direct review API derives the actual task from its body instead of
+            # letting omission of the optional selector disable task context.
             candidate_scripts = str(review_root / "_ask/scripts")
+            candidate_bridge = str(review_root / ".agents/ask")
+            sys.path[:0] = [candidate_scripts, candidate_bridge]
+            try:
+                from verification.traceability.evidence import record_test_review as candidate_record_test_review
+                (review_root / "docs/context.md").unlink()
+                try:
+                    candidate_record_test_review(review_root, "product", candidate_sha, review_sha,
+                                                "work/product/traceability/review-input.json",
+                                                "fixture-coordinator")
+                except Exception as exc:
+                    self.assertIn("EM015_CONTEXT_REQUIRED", str(exc),
+                                  f"direct API derives task identity and refuses missing context: {exc!r}")
+                else:
+                    self.fail("direct task review cannot bypass required context by omitting selected_execution")
+                self.assertEqual(review_record.read_bytes(), prior_review_bytes,
+                                 "missing-context direct review does not replace the retained review")
+            finally:
+                sys.path.remove(candidate_bridge)
+                sys.path.remove(candidate_scripts)
             sys.path.insert(0, candidate_scripts)
             try:
                 from inner_loop.state import cas_init, cas_apply
