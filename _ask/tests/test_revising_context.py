@@ -134,6 +134,16 @@ class PassageTests(unittest.TestCase):
         self.assertEqual(fenced_lookalike["state"], "available",
                          "fenced lookalikes do not make a real heading ambiguous")
         self.assertEqual(fenced_lookalike["start_line"], 2)
+        nested_fence_marker = resolve("work/plan.md",
+                                       b"# Work\n```text\n```python\n## Work breakdown\nExample still inside.\n```\n",
+                                       {"kind": "heading", "path": ["Work", "Work breakdown"]})
+        self.assertEqual(nested_fence_marker["state"], "unavailable",
+                         "a marker with trailing info text is content, not a closing fence")
+        tilde_fence_marker = resolve("work/plan.md",
+                                     b"# Work\n~~~~text\n~~~~python\n## Work breakdown\nExample still inside.\n~~~~\n",
+                                     {"kind": "heading", "path": ["Work", "Work breakdown"]})
+        self.assertEqual(tilde_fence_marker["state"], "unavailable",
+                         "tilde fences also require whitespace-only closing lines")
 
         table = b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n| WB-004 | Review safely |\n"
         selected = resolve("work/plan.md", table,
@@ -746,6 +756,93 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.assertEqual(legacy_integrate.returncode, 0,
                                  f"valid v1 direct integration remains compatible: {legacy_integrate.stderr}")
                 self.assertEqual((legacy_root / ".git/refs/heads/agent/pilot").read_text().strip(), legacy_candidate)
+
+                # Adopted v1 documents have no execution-alias field. Shared
+                # callers that know a Task ID must keep their legacy behavior.
+                legacy_routes = root / "legacy-v1-routes"
+                legacy_routes.mkdir()
+                workbench_model(legacy_routes)
+                shutil.copytree(project / "_ask/scripts", legacy_routes / "_ask/scripts",
+                                ignore=shutil.ignore_patterns("__pycache__"))
+                shutil.copytree(project / ".agents/ask/verification", legacy_routes / ".agents/ask/verification",
+                                ignore=shutil.ignore_patterns("__pycache__"))
+                shutil.copytree(project / "_ask/policies", legacy_routes / "_ask/policies",
+                                ignore=shutil.ignore_patterns("__pycache__"))
+                _put(legacy_routes, ".gitignore", b"**/__pycache__/\n*.pyc\nwork/pilot/traceability/\n")
+                subprocess.run(["git", "init", "-q", "-b", "agent/pilot"], cwd=legacy_routes, check=True)
+                subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=legacy_routes, check=True)
+                subprocess.run(["git", "config", "user.name", "Test"], cwd=legacy_routes, check=True)
+                subprocess.run(["git", "add", "."], cwd=legacy_routes, check=True)
+                subprocess.run(["git", "commit", "-qm", "valid legacy v1 model"], cwd=legacy_routes, check=True)
+                legacy_scripts = str(legacy_routes / "_ask/scripts")
+                legacy_bridge = str(legacy_routes / ".agents/ask")
+                sys.path[:0] = [legacy_scripts, legacy_bridge]
+                try:
+                    from inner_loop.driver import run_once as legacy_run_once, integrate_ready as legacy_integrate_ready
+                    from inner_loop.state import load_state, cas_apply
+                    from inner_loop.evidence import result_path, record_review as legacy_record_review, NotIntegrable
+                    from verification.run import workflow_context as legacy_workflow_context
+                    try:
+                        legacy_start = legacy_run_once(legacy_routes, "pilot")
+                    except Exception as exc:
+                        self.fail(f"legacy v1 driver must start its planned Task without an execution alias: {exc!r}")
+                    self.assertEqual(legacy_start, "running=build",
+                                     "legacy v1 driver starts its planned Task without an execution alias")
+                    try:
+                        legacy_integrate_ready(legacy_routes, "pilot", "build")
+                    except Exception as exc:
+                        self.assertIsInstance(exc, NotIntegrable,
+                                              f"legacy integration proceeds past context admission: {exc!r}")
+                        self.assertIn("TaskResult", str(exc),
+                                      "legacy integration proceeds past context admission to result validation")
+                    else:
+                        self.fail("integration must require a TaskResult after legacy context admission")
+                    with legacy_workflow_context(legacy_routes, "pilot", selected_execution={
+                            "work_id": "pilot", "task_id": "build"}) as legacy_snapshot:
+                        self.assertEqual(legacy_snapshot.document["schema"], "ask-engineering-model/v1",
+                                         "verification bridge preserves selected task calls for v1")
+                    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=legacy_routes, check=True,
+                                          capture_output=True, text=True).stdout.strip()
+                    task_state = load_state(legacy_routes, "pilot")
+                    cas_apply(legacy_routes, "pilot", task_state["revision"], lambda state: state["tasks"]["build"].update(
+                        base_sha=head, task_branch="agent/pilot"))
+                    result_path(legacy_routes, "pilot", "build").parent.mkdir(parents=True, exist_ok=True)
+                    _put(legacy_routes, "work/pilot/inner-loop/results/build.json", {
+                        "schema": "ask-task-result/v2", "work_id": "pilot", "task_id": "build",
+                        "base_sha": head, "candidate_sha": head,
+                        "tdd": {"seam": "legacy route", "red": {"command": "red", "output": "FAIL", "exit_code": 1},
+                                "green": {"command": "green", "output": "PASS", "exit_code": 0}},
+                        "exemption": None})
+                    _put(legacy_routes, "work/pilot/legacy-review.md", b"Legacy review evidence.\n")
+                    legacy_review = legacy_record_review(
+                        legacy_routes, "pilot", "build", "fixture-reviewer",
+                        "_ask/policies/delegation.md", "work/pilot/legacy-review.md")
+                    self.assertEqual(legacy_review["task_id"], "build",
+                                     "direct coordinator review preserves the v1 task route")
+                finally:
+                    sys.path.remove(legacy_bridge)
+                    sys.path.remove(legacy_scripts)
+
+                legacy_spawn = root / "legacy-v1-spawn"
+                legacy_spawn.mkdir()
+                workbench_model(legacy_spawn)
+                shutil.copytree(project / "_ask/scripts", legacy_spawn / "_ask/scripts",
+                                ignore=shutil.ignore_patterns("__pycache__"))
+                legacy_sys_path = str(legacy_spawn / "_ask/scripts")
+                sys.path.insert(0, legacy_sys_path)
+                try:
+                    from inner_loop.state import cas_init as legacy_cas_init, load_state as legacy_load_state
+                    from inner_loop.__main__ import main as legacy_inner_main
+                    legacy_cas_init(legacy_spawn, "pilot", ["build"])
+                    try:
+                        legacy_spawn_status = legacy_inner_main(["--root", str(legacy_spawn), "spawn-writer", "pilot", "build"])
+                    except Exception as exc:
+                        self.fail(f"legacy v1 CLI writer admission must remain available: {exc!r}")
+                    self.assertEqual(legacy_spawn_status, 0,
+                                     "legacy v1 CLI writer admission remains available")
+                    self.assertEqual(legacy_load_state(legacy_spawn, "pilot")["tasks"]["build"]["status"], "running")
+                finally:
+                    sys.path.remove(legacy_sys_path)
             finally:
                 sys.path.remove(candidate_scripts)
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
