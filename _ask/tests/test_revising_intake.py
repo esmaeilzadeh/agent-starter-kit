@@ -349,4 +349,6 @@ class StageIntakeTests(unittest.TestCase):
             self.assertEqual(stored["subject_snapshot_digest"], foreign.identity["digest"])
             resolved = resolve(root, "product", {})
             self.assertEqual(resolved["disposition"], "resolved")
-            self.assertEqual(resolved["external_context"]["snapshot"], foreign.identity)
+            current_foreign, current_foreign_errors = validate_current(root, "other")
+            self.assertFalse(current_foreign_errors)
+            self.assertEqual(resolved["external_context"]["snapshot"], current_foreign.identity)
