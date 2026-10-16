@@ -568,6 +568,7 @@ class PassageAdmissionTests(unittest.TestCase):
                     review_failures.append("direct task review bypassed required context without selected_execution")
                 self.assertEqual(review_record.read_bytes(), prior_review_bytes,
                                  "missing-context direct review does not replace the retained review")
+                _put(review_root, "docs/context.md", b"# Scope\nCurrent contract.\n")
             finally:
                 sys.path.remove(candidate_bridge)
                 sys.path.remove(candidate_scripts)
