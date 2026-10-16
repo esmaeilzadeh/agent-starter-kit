@@ -24,7 +24,7 @@ class ContextResolverTests(unittest.TestCase):
             root = Path(directory)
             _repo(root)
             association = {
-                "subject": {"work_id": "product", "node_id": "story-a"},
+                "subject": {"work_id": "product", "node_id": "story"},
                 "revision": "snapshot", "contribution": "Implement parser",
                 "exclusions": ["UI redesign"], "execution_owner": {"work_id": "product", "task_id": "WB-003"},
             }
@@ -42,8 +42,8 @@ class ContextResolverTests(unittest.TestCase):
             self.assertEqual(recorded["exclusions"], association["exclusions"])
             self.assertEqual(recorded["execution_owner"], association["execution_owner"])
             conflict = resolve(root, "product", {"explicit_subjects": [
-                {"work_id": "product", "node_id": "story-a"},
-                {"work_id": "other", "node_id": "story-a"},
+                {"work_id": "product", "node_id": "story"},
+                {"work_id": "other", "node_id": "story"},
             ]})
             self.assertEqual(conflict["disposition"], "needs_clarification",
                              "qualified owner conflicts cannot be joined by a matching node ID")
@@ -55,8 +55,13 @@ class ContextResolverTests(unittest.TestCase):
             tracker = resolve(root, "product", {"tracker_context": {"id": "T-19", "available": False}})
             self.assertIn(tracker["disposition"], {"resolved", "unavailable"})
             self.assertEqual(tracker.get("external_context", {}).get("state"), "unavailable")
-            self.assertIsNone(tracker.get("execution_owner") if not association else None,
-                              "external tracker IDs do not create ownership")
+            no_join_doc = json.loads(doc_path.read_text())
+            no_join_doc.pop("subject_association")
+            _put(root, "work/product/engineering-model.json", no_join_doc)
+            no_join = resolve(root, "product", {"tracker_context": {"id": "T-19", "available": True}})
+            self.assertEqual(no_join["disposition"], "chooser",
+                             "tracker IDs do not create subject or execution ownership")
+            self.assertIsNone(no_join.get("execution_owner"))
 
 
 class StageIntakeTests(unittest.TestCase):
@@ -147,22 +152,21 @@ class StageIntakeTests(unittest.TestCase):
             _repo(root)
             captured, errors = validate_current(root, "product")
             self.assertFalse(errors)
-            proposal = [{"op": "associate_subject", "subject": {"work_id": "product", "node_id": "story-a"},
+            proposal = {"subject": {"work_id": "product", "node_id": "story"},
                          "revision": "snapshot", "contribution": "Implement parser",
                          "exclusions": ["UI redesign"], "execution_owner": {"work_id": "product", "task_id": "WB-003"},
-                         "actor": "human", "rationale": "Confirmed association"}]
-            result = edit(root, "product", captured.identity["digest"], lambda: apply_batch(captured.document, proposal))
+                         "actor": "human", "rationale": "Confirmed association"}
+            result = edit(root, "product", captured.identity["digest"], {"commands": [{"op": "associate_subject", **proposal}]})
             self.assertTrue(result["valid"], str(result))
             self.assertEqual(result["steps"], ["pre", "action", "post", "publication"])
             current = json.loads((root / "work/product/engineering-model.json").read_text())
-            self.assertEqual(current["subject_association"]["subject"], {"work_id": "product", "node_id": "story-a"})
-            self.assertEqual(current["subject_association"]["intent_context"]["contribution"], "Implement parser")
+            self.assertEqual(current["subject_association"]["subject"], {"work_id": "product", "node_id": "story"})
+            self.assertEqual(current["subject_association"]["contribution"], "Implement parser")
             stable = (root / "work/product/engineering-model.json").read_bytes()
-            invalid = [{"op": "associate_subject", "subject": {"work_id": "product", "node_id": "missing"},
-                        "revision": "snapshot", "contribution": "", "exclusions": [],
-                        "actor": "human", "rationale": "Bad required contract"}]
-            refused = edit(root, "product", result["snapshot"]["digest"], lambda: apply_batch(current, invalid))
+            invalid = {"op": "associate_subject", "subject": {"work_id": "product", "node_id": "missing"},
+                       "revision": "snapshot", "contribution": "", "exclusions": [],
+                       "actor": "human", "rationale": "Bad required contract"}
+            refused = edit(root, "product", result["snapshot"]["digest"], {"commands": [invalid]})
             self.assertFalse(refused["valid"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
             self.assertEqual(refused["steps"], ["pre"])
-
