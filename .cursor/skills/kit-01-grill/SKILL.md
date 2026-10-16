@@ -11,6 +11,22 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Output artifact: `work/<work-id>/intent.md` (from `_ask/templates/intent.md`).
 
+## Adopted subject intake
+
+Before selecting/creating execution work or recording intent, invoke the shared
+read-only intake for this request:
+
+```sh
+./ask stage-intake --stage 01-grill --work-id <work-id> --request <request.json>
+```
+
+Supply explicit subject IDs as `{ "work_id": "…", "node_id": "…" }` entries
+in `explicit_subjects` when the user names a subject. Explicit subjects override
+a recorded association. Conflicting qualified owners require clarification;
+parked later cards remain proposals and tracker IDs remain external references.
+The returned `execution_owner` is context only and never assigns work. This
+inspection must not create a branch, node, intent, or delivery admission.
+
 ## 15.1 01 Grill Agent
 
 Purpose:

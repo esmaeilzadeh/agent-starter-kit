@@ -84,6 +84,44 @@ def apply_batch(document, commands, *, timestamp=None, changed_references=()):
             if not isinstance(command, dict):
                 raise ValueError("command must be an object")
             op = command.get("op")
+            if op == "associate_subject":
+                allowed = {"op", "subject", "revision", "snapshot_digest", "contribution",
+                           "exclusions", "execution_owner", "actor", "rationale"}
+                if set(command) != allowed:
+                    raise ValueError("associate_subject requires a qualified subject, captured revision, bounded intent and attribution")
+                actor, reason = _attribution(command)
+                subject = command["subject"]
+                if (not isinstance(subject, dict) or set(subject) != {"work_id", "node_id"}
+                        or subject.get("work_id") != candidate.get("work_id")
+                        or not isinstance(subject.get("node_id"), str)
+                        or subject["node_id"] not in nodes):
+                    raise ValueError("associate_subject must select an existing node in the selected workstream")
+                if command.get("revision") != "snapshot" or not isinstance(command.get("snapshot_digest"), str):
+                    raise ValueError("association must bind the captured model snapshot")
+                if not isinstance(command.get("contribution"), str) or not command["contribution"].strip():
+                    raise ValueError("association contribution must be nonempty")
+                exclusions = command.get("exclusions")
+                if not isinstance(exclusions, list) or any(not isinstance(item, str) or not item.strip() for item in exclusions):
+                    raise ValueError("association exclusions must be nonempty strings")
+                owner = command.get("execution_owner")
+                if owner is not None and (not isinstance(owner, dict) or set(owner) != {"work_id", "task_id"}
+                                          or any(not isinstance(v, str) or not v for v in owner.values())):
+                    raise ValueError("execution_owner must be a qualified execution identity")
+                if owner is not None and not any(execution_identity(node) == (owner["work_id"], owner["task_id"])
+                                                 for node in nodes.values()):
+                    raise ValueError("execution_owner must resolve through an explicit Task execution alias")
+                prior = candidate.get("subject_association")
+                history = deepcopy(prior.get("history", [])) if isinstance(prior, dict) else []
+                history.append({"actor": actor, "rationale": reason, "timestamp": timestamp})
+                candidate["subject_association"] = {
+                    "subject": deepcopy(subject), "revision": "snapshot",
+                    "snapshot_digest": command["snapshot_digest"],
+                    "contribution": command["contribution"].strip(),
+                    "exclusions": deepcopy(exclusions), "execution_owner": deepcopy(owner),
+                    "history": history,
+                }
+                effects.append({"op": op, "id": subject["node_id"]})
+                continue
             if op == "add_node":
                 node = command.get("node")
                 if set(command) != {"op", "node"} or not isinstance(node, dict) or not isinstance(node.get("id"), str):

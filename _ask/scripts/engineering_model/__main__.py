@@ -37,11 +37,28 @@ def main(argv: list[str] | None = None) -> int:
     watch_parser = commands.add_parser("watch", help="validate external saves with native observation and freshness fallback")
     watch_parser.add_argument("--work-id", required=True)
     watch_parser.add_argument("--once", action="store_true")
+    context_parser = commands.add_parser("context", help="resolve a subject read-only for initial stage intake")
+    context_parser.add_argument("--work-id", required=True)
+    context_parser.add_argument("--request", required=True, help="structured request JSON file")
+    context_parser.add_argument("--branch", help="execution locator only")
     args = parser.parse_args(argv)
 
     root = Path.cwd().resolve()
     if not SLUG.fullmatch(args.work_id):
         parser.error("--work-id must be a lowercase hyphenated slug")
+    if args.command == "context":
+        try:
+            request = json.loads(Path(args.request).read_bytes())
+            if not isinstance(request, dict):
+                raise ValueError("request JSON must be an object")
+            from .context import resolve
+            result = resolve(root, args.work_id, request, branch=args.branch)
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            print(json.dumps({"valid": False, "diagnostics": [{"code": "EM018_REQUEST", "message": str(exc)}]}),
+                  file=sys.stderr)
+            return 1
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0
     if args.command == "admit" and (args.action or args.action_command):
         if not args.action or not args.action_command:
             parser.error("--action requires an action command after --")

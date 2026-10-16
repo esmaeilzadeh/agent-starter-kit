@@ -32,6 +32,19 @@ Run `./ask model --help` and each subcommand's `--help` for arguments.
 - `watch` observes external saves with the optional native `watchfiles` backend.
   `--once` needs only the core dependencies. Full read/action-entry validation
   remains the fallback for missed events.
+- `context` resolves an explicit qualified subject or a confirmed recorded
+  association for read-only initial-stage intake. It labels later cards and
+  tracker references as proposals/external context; neither creates execution
+  ownership.
+
+The adopted Explore and Grill stages call `./ask stage-intake` before selecting
+or creating execution work, intent, or delivery admission. The stage adapter
+and `./ask model context` use the same resolver and write no state. When a human
+confirms an association, the guarded semantic `associate_subject` action records
+the qualified subject, bounded contribution/exclusions, optional execution
+owner and attributable history against the captured snapshot. Required
+contribution roles must resolve uniquely from that subject's captured context;
+unspecified optional context does not block standalone proposals.
 
 Batch shape:
 

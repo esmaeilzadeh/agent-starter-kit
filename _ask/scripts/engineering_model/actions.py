@@ -16,6 +16,7 @@ from .admission import (_durable_write, _publish, _state_directory, _sync_direct
                         _writer, load_published, validate_current)
 from .snapshot import capture, is_current, read_input, safe_relative
 from .domain import apply_batch
+from .identities import execution_identity
 from .passages import required_task_passages, selected_task_node
 
 
@@ -193,7 +194,8 @@ def recover_locked(root, work_id, state, *, validated=None):
         raise Refused("EM007_RECOVERY_CONFLICT", str(exc)) from exc
 
 
-def run_action(root, work_id, expected, action, *, selected_task_id=None, selected_execution=None):
+def run_action(root, work_id, expected, action, *, selected_task_id=None, selected_execution=None,
+               precondition=None):
     """Call action once on validated captured bytes; publish only its valid result.
 
     action returns a map of repository-relative document paths to bytes (or None
@@ -223,6 +225,8 @@ def run_action(root, work_id, expected, action, *, selected_task_id=None, select
                     raise Refused("EM015_CONTEXT_REQUIRED",
                                   "selected Task requires unique captured spec and plan passages: "
                                   + ", ".join(missing), base.model_path)
+            if precondition is not None:
+                precondition(base)
             published = load_published(root, work_id)
             generation = published.identity["digest"] if published is not None else None
             steps.append("action")
@@ -286,6 +290,9 @@ def edit(root, work_id, expected, proposal, *, selected_task_id=None, selected_e
         if not isinstance(batch, dict) or set(batch) - {"commands", "files"}:
             raise Refused("EM002_ACTION", "batch supports only commands and files")
         files, commands = batch.get("files", {}), batch.get("commands", [])
+        if any(isinstance(command, dict) and command.get("op") == "associate_subject"
+               for command in commands):
+            raise Refused("EM018_ASSOCIATION_ENTRY", "subject associations must use the guarded associate_subject entry")
         if not isinstance(files, dict) or (not files and not commands):
             raise Refused("EM002_ACTION", "batch must contain semantic commands or document changes")
         allowed = {f"specs/current/{work_id}.json", f"specs/current/{work_id}.md", f"work/{work_id}/test-plan.json"}
@@ -308,3 +315,60 @@ def edit(root, work_id, expected, proposal, *, selected_task_id=None, selected_e
         return changes
     return run_action(root, work_id, expected, action, selected_task_id=selected_task_id,
                       selected_execution=selected_execution)
+
+
+def associate_subject(root, work_id, expected, *, subject, contribution, exclusions,
+                      execution_owner=None, actor, rationale, required_roles=()):
+    """Record an explicit subject association through the common action guard.
+
+    Required roles are resolved from the selected subject's captured context
+    records before the semantic action runs; optional context remains optional.
+    """
+    from .domain import apply_batch
+
+    required_roles = tuple(required_roles)
+
+    def precondition(snapshot):
+        if snapshot.document.get("schema") != "ask-engineering-model/v2":
+            raise Refused("EM018_ASSOCIATION_SCHEMA", "subject associations require a v2 Engineering Model")
+        if (not isinstance(subject, dict) or set(subject) != {"work_id", "node_id"}
+                or subject.get("work_id") != work_id or not isinstance(subject.get("node_id"), str)):
+            raise Refused("EM018_SUBJECT_ID", "subject must be qualified in the selected owning model")
+        node_ids = {node.get("id") for node in snapshot.document.get("nodes", []) if isinstance(node, dict)}
+        if subject.get("node_id") not in node_ids:
+            raise Refused("EM018_SUBJECT_MISSING", "associated subject does not exist in the captured model")
+        if not isinstance(contribution, str) or not contribution.strip():
+            raise Refused("EM018_CONTRIBUTION", "association contribution must be nonempty")
+        if (not isinstance(exclusions, list)
+                or any(not isinstance(item, str) or not item.strip() for item in exclusions)):
+            raise Refused("EM018_EXCLUSIONS", "association exclusions must be an array of nonempty strings")
+        if not isinstance(actor, str) or not actor.strip() or not isinstance(rationale, str) or not rationale.strip():
+            raise Refused("EM018_ATTRIBUTION", "association requires actor and rationale")
+        if execution_owner is not None:
+            if (not isinstance(execution_owner, dict) or set(execution_owner) != {"work_id", "task_id"}
+                    or any(not isinstance(value, str) or not value for value in execution_owner.values())):
+                raise Refused("EM018_OWNER_ID", "execution owner must be a qualified identity")
+            identity = (execution_owner["work_id"], execution_owner["task_id"])
+            if not any(execution_identity(node) == identity for node in snapshot.document.get("nodes", [])
+                       if isinstance(node, dict)):
+                raise Refused("EM018_OWNER_UNRESOLVED", "execution owner must resolve by an explicit Task alias")
+        for role in required_roles:
+            matches = [passage for passage in snapshot.passages.values()
+                       if passage.get("node_id") == subject["node_id"] and passage.get("role") == role]
+            if len(matches) != 1 or matches[0].get("state") != "available":
+                raise Refused("EM018_CONTEXT_REQUIRED",
+                              f"required {role} contribution context must resolve uniquely", snapshot.model_path)
+
+    def action(snapshot):
+        command = {"op": "associate_subject", "subject": subject, "revision": "snapshot",
+                   "snapshot_digest": snapshot.identity["digest"], "contribution": contribution,
+                   "exclusions": exclusions, "execution_owner": execution_owner,
+                   "actor": actor, "rationale": rationale}
+        result = apply_batch(snapshot.document, [command])
+        if not result["valid"]:
+            diagnostic = result["diagnostics"][0]
+            raise Refused(diagnostic["code"], diagnostic["message"], diagnostic["path"])
+        return {snapshot.model_path: json.dumps(result["model"], ensure_ascii=False,
+                                                 sort_keys=True, indent=2).encode() + b"\n"}
+
+    return run_action(root, work_id, expected, action, precondition=precondition)
