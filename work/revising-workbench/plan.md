@@ -234,10 +234,14 @@ changes. `test-plan.json` and the canonical specification remain byte-identical.
 The writer stopped before editing those previously unowned paths. Partial work is
 preserved at `f964094bf54882258ee9b9472043b2a6b94c781b`, without a TaskResult or
 semantic approval. RWB-102's original recorded base is
-`c3c148c4d483d9b8cc9ad50915c81e60ea07abb5`. After independent amendment review and
-coordinator pinning, record a new admission base under the state CAS lock, retain
-the original base and reason in runtime evidence, and verify the whole task diff
-from that original base during final semantic/ownership review. WIP already in
+`c3c148c4d483d9b8cc9ad50915c81e60ea07abb5`. After independent amendment review, use the state CAS lock to move RWB-102
+from running to blocked specifically for contract amendment; retain its original
+base, WIP SHA and reason, and permit no other writer. The accept-plan operation
+must retain its refusal to amend while any task is running. Pin and commit the
+reviewed contract only after that audited non-running transition. Then use CAS
+to record the new coordinator/task admission base, preserve the original-base
+history, and restore this same task to running. Verify the whole task diff from
+that original base during final semantic/ownership review. WIP already in
 the new base is not exempt from review. The pin and base update authorize resumed
 labor, not task integration or completion. Existing RWB-101 integration evidence
 remains historical; final workstream evidence must bind the final candidate and
