@@ -595,6 +595,27 @@ class PassageAdmissionTests(unittest.TestCase):
                                         capture_output=True, text=True).stdout.strip()
             env = dict(os.environ, PYTHONPATH=str(review_root / ".agents/ask") + os.pathsep
                        + str(review_root / "_ask/scripts"))
+            # The traceability CLI must inspect the actual review body before
+            # publishing generic workstream admission. A default workstream
+            # option cannot publish a task-scoped review against missing
+            # required task context and only then report the scope mismatch.
+            from _ask.scripts.engineering_model.admission import load_published as load_review_publication
+            (review_root / "docs/context.md").unlink()
+            self.assertIsNone(load_review_publication(review_root, "product"),
+                              "scope-mismatch fixture starts without a publication")
+            _put(review_root, "work/product/traceability/review-input-mismatch.json",
+                 {"schema": "ask-test-review/v2", "scope": "task", "task_id": "WB-003"})
+            mismatch_cli = subprocess.run(
+                [sys.executable, "-c",
+                 "from verification.traceability.cli import main; raise SystemExit(main(" + repr([
+                     "--root", str(review_root), "record-review", "product", "--candidate-sha", review_sha,
+                     "--anchor-sha", review_sha, "--recorded-by", "fixture-coordinator",
+                     "--evidence", "work/product/traceability/review-input-mismatch.json"
+                 ]) + "))"], cwd=review_root, env=env, capture_output=True, text=True)
+            self.assertNotEqual(mismatch_cli.returncode, 0, "default workstream scope rejects a task review body")
+            self.assertIsNone(load_review_publication(review_root, "product"),
+                              "scope-mismatched task review must not publish a generic generation")
+            _put(review_root, "docs/context.md", b"# Scope\nCurrent contract.\n")
             red_run = subprocess.run(
                 [sys.executable, "-c",
                  "from verification.traceability.cli import main; raise SystemExit(main(" + repr([
