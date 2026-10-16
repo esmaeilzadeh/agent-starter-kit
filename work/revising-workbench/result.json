@@ -1,6 +1,6 @@
 {
   "work_id": "revising-workbench",
-  "commit_sha": "6f615b24af1bcc196c49777fef112aa086a555a8",
-  "result": "spec-challenge-pass",
-  "notes": "Independent gpt-6-astra/high challenge of proposed revision 2: PASS with no blocking specification gaps. Exact intent/spec/JSON digests and required future evidence classes recorded in spec-challenge.md. No promotion, plan approval, implementation, accepted-ref change or product-completion claim."
+  "commit_sha": "1534211457d65e555895e3ea485050c85c5e507a",
+  "result": "plan-default-configured",
+  "notes": "User-directed permanent repository Codex Plan default: gpt-6.1-sol with high reasoning effort, persisted in _ask/bindings/models.yaml and regenerated agent. Existing sync/effort tests and all 37 repository Verify checks passed. Specification revision 2 remains independently challenged PASS; no implementation plan or product implementation was created."
 }

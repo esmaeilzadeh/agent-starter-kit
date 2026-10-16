@@ -1,6 +1,6 @@
 # Specification verification
 
-Latest `./ask verify`: PASS, 37 checks at `ebe288983b7aa5e72885a0a9e9b624074e3fb57d`.
+Latest `./ask verify`: PASS, 37 checks at `1534211457d65e555895e3ea485050c85c5e507a`.
 The candidate remained fixed throughout the run. This verifies repository checks;
 it does not establish implementation of the proposed product behavior.
 
@@ -20,3 +20,7 @@ administration. The fresh sources remain `spec.md` and `spec.json` here.
 The branch is `revising-workbench`. Complete-intent confirmation remains pending.
 No specification promotion, execution plan approval, product implementation,
 migration, accepted-ref advancement or workstream acceptance was performed.
+
+The persistent repository overlay `_ask/bindings/models.yaml` now selects
+`gpt-6.1-sol` / high for Codex Plan. Binding regeneration and existing sync/effort
+checks passed; the generated Plan agent retains that model and effort.
