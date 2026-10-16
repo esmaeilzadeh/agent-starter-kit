@@ -122,6 +122,18 @@ class PassageTests(unittest.TestCase):
         ambiguous = resolve("work/plan.md", markdown,
                             {"kind": "heading", "path": ["Other", "Work breakdown"]})
         self.assertEqual(ambiguous["state"], "available")
+        fenced_only = resolve("work/plan.md",
+                              b"# Work\n```text\n## Work breakdown\nExample contract.\n```\n",
+                              {"kind": "heading", "path": ["Work", "Work breakdown"]})
+        self.assertEqual(fenced_only["state"], "unavailable",
+                         "fenced examples are not selectable Markdown headings")
+        fenced_lookalike = resolve("work/plan.md",
+                                   b"# Work\n## Work breakdown\nActual contract.\n```text\n"
+                                   b"## Work breakdown\nExample contract.\n```\n",
+                                   {"kind": "heading", "path": ["Work", "Work breakdown"]})
+        self.assertEqual(fenced_lookalike["state"], "available",
+                         "fenced lookalikes do not make a real heading ambiguous")
+        self.assertEqual(fenced_lookalike["start_line"], 2)
 
         table = b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n| WB-004 | Review safely |\n"
         selected = resolve("work/plan.md", table,
@@ -129,6 +141,22 @@ class PassageTests(unittest.TestCase):
         self.assertEqual(selected["state"], "available")
         self.assertEqual(selected["text"], "| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n")
         self.assertNotIn("WB-004", selected["text"], "selection excludes adjacent plan rows")
+        fenced_table = resolve("work/plan.md",
+                               b"# Work breakdown\n```markdown\n| Task ID | Outcome |\n| --- | --- |\n"
+                               b"| WB-003 | Example row |\n```\n",
+                               {"kind": "plan-task", "heading_path": ["Work breakdown"],
+                                "task_id": "WB-003"})
+        self.assertEqual(fenced_table["state"], "unavailable",
+                         "fenced example tables are not plan task rows")
+        fenced_row = resolve("work/plan.md",
+                             b"# Work breakdown\n| Task ID | Outcome |\n| --- | --- |\n"
+                             b"| WB-003 | Actual row |\n```markdown\n| Task ID | Outcome |\n| --- | --- |\n"
+                             b"| WB-003 | Example row |\n```\n",
+                             {"kind": "plan-task", "heading_path": ["Work breakdown"],
+                              "task_id": "WB-003"})
+        self.assertEqual(fenced_row["state"], "available")
+        self.assertIn("Actual row", fenced_row["text"])
+        self.assertNotIn("Example row", fenced_row["text"])
         for path, selector in [
             ("../outside.md", {"kind": "heading", "path": ["Work"]}),
             ("C:\\outside.md", {"kind": "heading", "path": ["Work"]}),
@@ -236,8 +264,22 @@ class PassageTests(unittest.TestCase):
             document["nodes"][3]["context"][0]["revision"] = missing_revision
             _put(root, "work/product/engineering-model.json", document)
             missing_blob = capture(root, "product")
-            self.assertEqual(missing_blob.resolve_passage("task", "spec")["state"], "error",
-                             "a missing historical blob cannot fall back to current bytes")
+            self.assertEqual(missing_blob.resolve_passage("task", "spec")["state"], "unavailable",
+                             "a safe missing historical passage remains unavailable")
+            self.assertIsNone(missing_blob.resolve_passage("task", "spec")["text"],
+                              "current bytes cannot substitute for an absent committed blob")
+            _published, missing_diagnostics = admit(root, "product")
+            self.assertEqual(missing_diagnostics, [],
+                             "a safe missing optional historical context does not invalidate the model")
+            from _ask.scripts.engineering_model.workflow import workflow_admission
+            with workflow_admission(root, "product"):
+                pass
+            try:
+                with workflow_admission(root, "product", selected_task_id="task"):
+                    self.fail("dependent Task admission must require the missing historical passage")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"dependent actions remain gated by the unavailable passage: {exc!r}")
             self.assertNotIn("Uncommitted fallback", str(missing_blob.resolve_passage("task", "spec")["text"]))
 
         with tempfile.TemporaryDirectory() as directory:
@@ -768,6 +810,8 @@ class PassageAdmissionTests(unittest.TestCase):
             result_sha = integrate(root, candidate_sha, work_id="product", selected_execution={
                 "work_id": "product", "task_id": "WB-003"})
             self.assertEqual(result_sha, candidate_sha, "valid selected context passes candidate and FF integration")
+
+        self.assertEqual(review_failures, [], "each review finding must be independently rejected")
 
     def test_missing_linked_and_ambiguous_changes_invalidate_snapshot(self):
         from _ask.scripts.engineering_model.admission import admit, load_published
