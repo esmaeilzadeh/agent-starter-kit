@@ -512,6 +512,41 @@ class PassageAdmissionTests(unittest.TestCase):
                 integrated = json.loads((review_root / "work/product/inner-loop/state.json").read_text())
                 self.assertEqual(integrated["tasks"]["WB-003"]["status"], "integrated")
                 self.assertEqual(integrated["coordinator_sha"], candidate_sha)
+
+                # Preserve the v1 direct integration API, which has no
+                # execution-alias field to select.
+                legacy_root = root / "legacy-v1"
+                legacy_root.mkdir()
+                from _ask.tests.engineering_fixture import workbench_model
+                workbench_model(legacy_root)
+                _put(legacy_root, "specs/current/pilot.md", b"# Pilot requirements\n")
+                shutil.copytree(project / "_ask/scripts", legacy_root / "_ask/scripts",
+                                ignore=shutil.ignore_patterns("__pycache__"))
+                shutil.copytree(project / ".agents/ask/verification", legacy_root / ".agents/ask/verification",
+                                ignore=shutil.ignore_patterns("__pycache__"))
+                _put(legacy_root, ".gitignore", b"**/__pycache__/\n*.pyc\nwork/pilot/traceability/\n")
+                subprocess.run(["git", "init", "-q", "-b", "agent/pilot"], cwd=legacy_root, check=True)
+                subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=legacy_root, check=True)
+                subprocess.run(["git", "config", "user.name", "Test"], cwd=legacy_root, check=True)
+                subprocess.run(["git", "add", "."], cwd=legacy_root, check=True)
+                subprocess.run(["git", "commit", "-qm", "valid v1 base"], cwd=legacy_root, check=True)
+                subprocess.run(["git", "switch", "-qc", "task/legacy"], cwd=legacy_root, check=True)
+                _put(legacy_root, "legacy-result.txt", b"v1 task output\n")
+                subprocess.run(["git", "add", "legacy-result.txt"], cwd=legacy_root, check=True)
+                subprocess.run(["git", "commit", "-qm", "v1 candidate"], cwd=legacy_root, check=True)
+                legacy_candidate = subprocess.run(["git", "rev-parse", "HEAD"], cwd=legacy_root, check=True,
+                                                  capture_output=True, text=True).stdout.strip()
+                subprocess.run(["git", "switch", "-q", "agent/pilot"], cwd=legacy_root, check=True)
+                legacy_env = dict(os.environ, PYTHONPATH=str(legacy_root / "_ask/scripts") + os.pathsep
+                                  + str(legacy_root / ".agents/ask"))
+                legacy_integrate = subprocess.run(
+                    [sys.executable, "-c",
+                     "from inner_loop.__main__ import main; raise SystemExit(main(" + repr([
+                         "--root", str(legacy_root), "integrate", "--task-ref", "task/legacy"
+                     ]) + "))"], cwd=legacy_root, env=legacy_env, capture_output=True, text=True)
+                self.assertEqual(legacy_integrate.returncode, 0,
+                                 f"valid v1 direct integration remains compatible: {legacy_integrate.stderr}")
+                self.assertEqual((legacy_root / ".git/refs/heads/agent/pilot").read_text().strip(), legacy_candidate)
             finally:
                 sys.path.remove(candidate_scripts)
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
