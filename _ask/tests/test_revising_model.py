@@ -179,6 +179,10 @@ class FlowTests(unittest.TestCase):
         wrong_digest["nodes"][2]["case"]["plan_digest"] = "0" * 64
         self.assertIn("EM001_FLOW_CASE", {item["code"] for item in validate(
             wrong_digest, ".", "product", reference_bytes=refs)})
+        wrong_work = copy.deepcopy(document)
+        wrong_work["nodes"][2]["case"]["work_id"] = "other"
+        self.assertIn("EM001_FLOW_CASE", {item["code"] for item in validate(
+            wrong_work, ".", "product", reference_bytes=refs)})
 
         missing_active = copy.deepcopy(document)
         del missing_active["nodes"][2]["case"]
@@ -255,6 +259,17 @@ class FlowTests(unittest.TestCase):
         external["nodes"][2]["case"]["plan_digest"] = digest(selected_plan)
         self.assertEqual(validate(external, ".", "product", reference_bytes=refs), [],
                          "an external canonical test keeps its owning work and immutable plan digest")
+
+        bad_target_digest = copy.deepcopy(selected_plan)
+        bad_target_digest["flow_mappings"][0]["test_case"]["plan_digest"] = "f" * 64
+        bad_body = {key: bad_target_digest["flow_mappings"][0][key]
+                    for key in ("scenario_case", "test_case")}
+        bad_target_digest["flow_mappings"][0]["review"]["body_digest"] = digest(bad_body)
+        refs["work/product/test-plan.json"] = __import__("json").dumps(bad_target_digest).encode()
+        external["nodes"][2]["case"]["plan_digest"] = digest(bad_target_digest)
+        self.assertIn("EM001_FLOW_MAPPING", {item["code"] for item in validate(
+            external, ".", "product", reference_bytes=refs)},
+            "an external mapping cannot substitute a different immutable target-plan digest")
 
         changed = copy.deepcopy(selected_plan)
         changed["flow_mappings"][0]["test_case"]["case_id"] = "missing"
