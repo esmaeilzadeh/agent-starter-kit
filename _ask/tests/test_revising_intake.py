@@ -37,7 +37,10 @@ class ContextResolverTests(unittest.TestCase):
             explicit = resolve(root, "product", {"explicit_subjects": [{"work_id": "other", "node_id": "story-x"}]})
             self.assertEqual(explicit["subject"], {"work_id": "other", "node_id": "story-x"},
                              "an explicit qualified subject overrides recorded association")
-            self.assertEqual(explicit["disposition"], "resolved")
+            self.assertEqual(explicit["source"], "explicit-request")
+            self.assertEqual(explicit["disposition"], "unavailable",
+                             "a foreign owner is not claimed resolved without its captured owning model")
+            self.assertEqual(explicit["external_context"]["state"], "unavailable")
             recorded = resolve(root, "product", {})
             self.assertEqual(recorded["subject"], association["subject"])
             self.assertEqual(recorded["contribution"], association["contribution"])
