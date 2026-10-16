@@ -326,3 +326,26 @@ class StageIntakeTests(unittest.TestCase):
                 self.fail(f"malformed prior association must return a diagnostic, not raise {type(exc).__name__}: {exc}")
             self.assertFalse(malformed_history["valid"])
             self.assertEqual(malformed_history["steps"], ["pre"])
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            foreign_document = json.loads((root / "work/product/engineering-model.json").read_text())
+            foreign_document["work_id"] = "other"
+            _put(root, "work/other/engineering-model.json", foreign_document)
+            local, local_errors = validate_current(root, "product")
+            foreign, foreign_errors = validate_current(root, "other")
+            self.assertFalse(local_errors)
+            self.assertFalse(foreign_errors)
+            linked = associate_subject(root, "product", local.identity["digest"],
+                                       subject={"work_id": "other", "node_id": "story"},
+                                       contribution="Shared parser support", exclusions=["other product work"],
+                                       execution_owner={"work_id": "product", "task_id": "WB-003"},
+                                       actor="human", rationale="Confirmed foreign subject pointer")
+            self.assertTrue(linked["valid"], str(linked))
+            stored = json.loads((root / "work/product/engineering-model.json").read_text())["subject_association"]
+            self.assertEqual(stored["subject"], {"work_id": "other", "node_id": "story"})
+            self.assertEqual(stored["subject_snapshot_digest"], foreign.identity["digest"])
+            resolved = resolve(root, "product", {})
+            self.assertEqual(resolved["disposition"], "resolved")
+            self.assertEqual(resolved["external_context"]["snapshot"], foreign.identity)
