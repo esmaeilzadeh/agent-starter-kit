@@ -1,0 +1,146 @@
+schema: ask-inner-loop-tasks/v1
+work_id: revising-workbench
+tasks:
+  - id: RWB-101
+    title: "Admit v2 relationships and qualified concrete flows"
+    outcome: "Version-dispatched validation, separate product/execution identities and canonical flow coverage; preserved v1 rules"
+    depends_on: []
+    owned_paths:
+      - _ask/scripts/engineering_model/validation.py
+      - _ask/scripts/engineering_model/identities.py
+      - _ask/scripts/engineering_model/flows.py
+      - _ask/scripts/engineering_model/canonical.py
+      - _ask/scripts/engineering_model/domain.py
+      - _ask/tests/test_revising_model.py
+      - _ask/tests/revising_fixture.py
+      - _ask/docs/engineering-model.md
+    completion_evidence: "Current v1 regression executions and new assertion red/final green for v2 graph, alias, lifecycle and selected-flow counterexamples; independent semantic review of version dispatch"
+    test_ids: [RWB-V2-GRAPH, RWB-QUALIFIED-ID, RWB-FLOW-SELECTION, RWB-V1-VALID, RWB-V1-GRAPH, RWB-V1-FIELDS, RWB-V1-REFS, RWB-V1-DECISION, RWB-V1-REVISE, RWB-V1-STALE, RWB-V1-CAS]
+  - id: RWB-102
+    title: "Capture passages and enforce action dependencies"
+    outcome: "Safe selector resolution and dependency-bound snapshots across existing guarded actions"
+    depends_on: [RWB-101]
+    owned_paths:
+      - _ask/scripts/engineering_model/passages.py
+      - _ask/scripts/engineering_model/snapshot.py
+      - _ask/scripts/engineering_model/canonical.py
+      - _ask/scripts/engineering_model/actions.py
+      - _ask/scripts/engineering_model/admission.py
+      - _ask/scripts/engineering_model/workflow.py
+      - _ask/scripts/engineering_model/observer.py
+      - _ask/tests/test_revising_context.py
+    completion_evidence: "Selector/admission matrix and every public guard entry pass; action spy proves exactly pre/action/post/publication with identical captured lineage; linked-only and missing/ambiguous transitions invalidate"
+    test_ids: [RWB-SELECTORS, RWB-PASSAGE-ACTIONS, RWB-CONTEXT-FRESHNESS, RWB-GUARD-PRE, RWB-GUARD-POST, RWB-GUARD-REFS, RWB-GUARD-EVENTS, RWB-GUARD-PARITY, RWB-GUARD-PUBLISH, RWB-GUARD-BOOTSTRAP, RWB-GUARD-BATCH, RWB-GUARD-ORDER, RWB-GUARD-ENTRYPOINTS]
+  - id: RWB-103
+    title: "Resolve subjects at actual stage intake"
+    outcome: "Shared read-only resolver invoked by the adopted initial Explore/Grill coordinator caller before existing writes"
+    depends_on: [RWB-102]
+    owned_paths:
+      - _ask/scripts/engineering_model/context.py
+      - _ask/scripts/stage-intake.py
+      - _ask/scripts/engineering_model/__main__.py
+      - _ask/scripts/model.sh
+      - ask
+      - .agents/ask/stages/00-explore.md
+      - .agents/ask/stages/01-grill.md
+      - .agents/skills/kit-00-explore/SKILL.md
+      - .agents/skills/kit-01-grill/SKILL.md
+      - .cursor/commands/00-explore.md
+      - .cursor/commands/01-grill.md
+      - .cursor/skills/kit-00-explore/SKILL.md
+      - .cursor/skills/kit-01-grill/SKILL.md
+      - _ask/tests/test_revising_intake.py
+      - _ask/docs/engineering-model.md
+      - _ask/scripts/engineering_model/domain.py
+      - _ask/scripts/engineering_model/actions.py
+      - _ask/scripts/engineering_model/workflow.py
+    completion_evidence: "Fresh-context adopted caller trace invokes the resolver before branch/intent/delivery operations; conflicting or inspection-only requests produce no writes/assignments; generated projections agree"
+    test_ids: [RWB-SUBJECT-RULES, RWB-FRESH-INTAKE, RWB-CONTEXT-CLI]
+  - id: RWB-104
+    title: "Project contextual work and preserve historical sources"
+    outcome: "Qualified support graph, exact plan/spec passages, route data and read-only foreign revisions"
+    depends_on: [RWB-103]
+    owned_paths:
+      - _ask/scripts/engineering_model/workbench.py
+      - _ask/scripts/engineering_model/projection.py
+      - _ask/scripts/engineering_model/workbench_sources.py
+      - _ask/tests/test_revising_projection.py
+    completion_evidence: "Standalone/shared work retains one identity; concrete flow scopes avoid criterion joins; source inspection leaves checkout/refs untouched; JSON/Markdown and CLI guarded reload regressions execute"
+    test_ids: [RWB-PROJECTION, RWB-HISTORICAL, RWB-CLI-PROJECTION, RWB-CLI-JOURNEY, RWB-V1-PROJECTIONS]
+  - id: RWB-105
+    title: "Read helper context and trustworthy observations"
+    outcome: "Same-revision explicit source context and existing authority-bound retained result inspection"
+    depends_on: [RWB-104]
+    owned_paths:
+      - _ask/scripts/engineering_model/workbench_evidence.py
+      - _ask/scripts/engineering_model/readable_tests.py
+      - _ask/tests/test_revising_evidence.py
+    completion_evidence: "Selected test and necessary same-revision helpers are readable; adversarial report/log/candidate/source/contract joins reject and retained states remain distinct; unchanged evaluator regressions execute"
+    test_ids: [RWB-SOURCE-HELPERS, RWB-EVIDENCE-JOINS, RWB-EVIDENCE-STATES, RWB-V1-EVIDENCE-REAL, RWB-V1-EVIDENCE-MISSING]
+  - id: RWB-106
+    title: "Open subjects and contextual Task routes in Streamlit"
+    outcome: "Direct Story/Task entry, chooser, shared Back routes, exact summaries and readable Task context"
+    depends_on: [RWB-105]
+    owned_paths:
+      - _ask/ui/streamlit_app.py
+      - _ask/ui/workbench_context.py
+      - _ask/ui/workbench_navigation.py
+      - _ask/ui/workbench_overview.py
+      - _ask/ui/workbench_stories.py
+      - _ask/ui/workbench_scenarios.py
+      - _ask/ui/workbench_tasks.py
+      - _ask/tests/test_revising_ui.py
+    completion_evidence: "AppTest assertions prove direct routes and returned route ancestry, summary record sets, complete contextual Task detail and historical read-only action restrictions"
+    test_ids: [RWB-APP-ENTRY, RWB-APP-TASK]
+  - id: RWB-107
+    title: "Present readable test/results and guarded decisions"
+    outcome: "Lazy helper/source/observation detail, explained collapsed provenance and stale-safe reasoned forms"
+    depends_on: [RWB-106]
+    owned_paths:
+      - _ask/ui/workbench_tests.py
+      - _ask/ui/workbench_debug.py
+      - _ask/ui/workbench_attention.py
+      - _ask/ui/workbench_loading.py
+      - _ask/tests/test_revising_detail.py
+    completion_evidence: "AppTest proves flow-specific readable source/results, all honest states and collapsed identifiers; current decision persistence and invalid/stale/historical no-write cases pass; zero eager scans and tamper refresh asserted"
+    test_ids: [RWB-APP-EVIDENCE, RWB-APP-DECISIONS, RWB-LAZY-CACHE]
+  - id: RWB-108
+    title: "Adopt new pilot without rewriting historical authority"
+    outcome: "Explicit reviewed v1 to v2 migration, new-work model/contract registration, genuine WB-003 inspection and bound comprehension format"
+    depends_on: [RWB-107]
+    owned_paths:
+      - _ask/scripts/engineering_model/migration.py
+      - _ask/scripts/engineering_model/readability.py
+      - _ask/scripts/engineering_model/__main__.py
+      - _ask/scripts/model.sh
+      - _ask/tests/test_revising_pilot.py
+      - work/revising-workbench/engineering-model.json
+      - work/revising-workbench/representative-story.md
+      - work/revising-workbench/migration-review.md
+      - _ask/docs/engineering-model.md
+      - _ask/scripts/engineering_model/actions.py
+      - _ask/scripts/engineering_model/workflow.py
+    completion_evidence: "Explicit migration review and ID/reference/evidence-preservation diff; genuine authority-evaluated historical result and exact helper/spec/plan selections; failure/staleness-sensitive comprehension validation; no old record rewritten"
+    test_ids: [RWB-MIGRATION, RWB-NEW-CONTRACT, RWB-READABILITY-BINDING, RWB-GENUINE-WB003]
+  - id: RWB-109
+    title: "Prove real journeys, browser budgets and human understanding"
+    outcome: "Browser E2E, accessibility/performance samples and successful candidate-bound representative human exercise"
+    depends_on: [RWB-108]
+    owned_paths:
+      - _ask/tests/test_revising_browser.py
+      - _ask/tests/test_revising_performance.py
+      - _ask/tests/revising_browser_support.py
+      - _ask/ui/benchmark_workbench.py
+      - _ask/ui/requirements-test.txt
+      - _ask/ui/.streamlit/config.toml
+      - _ask/ui/streamlit_app.py
+      - _ask/ui/workbench_context.py
+      - _ask/ui/workbench_navigation.py
+      - _ask/ui/workbench_tasks.py
+      - _ask/ui/workbench_attention.py
+      - _ask/ui/workbench_tests.py
+      - _ask/ui/workbench_debug.py
+      - _ask/ui/workbench_loading.py
+      - work/revising-workbench/workbench-validation.md
+    completion_evidence: "Real browser traces/screenshots, keyboard/narrow/contrast assertions, raw 20 warm and five cold measurements, genuine representative journey and independent attributable ten-answer successful human record bound to final candidate; final workstream Verify/semantic review remain required"
+    test_ids: [RWB-BROWSER-NAV, RWB-BROWSER-GUARD, RWB-BROWSER-EVIDENCE, RWB-BROWSER-ACCESS, RWB-BROWSER-PILOT, RWB-BROWSER-BUDGETS, RWB-HUMAN-COMPLETION]
