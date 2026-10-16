@@ -161,16 +161,20 @@ class StageIntakeTests(unittest.TestCase):
             before_tree = subprocess.run(["git", "write-tree"], cwd=root, text=True,
                                          capture_output=True, check=True).stdout
             before_model = (root / "work/product/engineering-model.json").read_bytes()
+            from _ask.scripts.engineering_model.admission import load_published
+            self.assertIsNone(load_published(root, "product"), "fixture starts without a published admission")
             for stage in ("00-explore", "01-grill"):
                 request = root / "request.json"
                 request.write_text(json.dumps({"inspection_only": True}))
-                event_file.write_text("")
+                event_file.write_text("adopted-caller-enter\n")
                 result = subprocess.run(["./ask", "stage-intake", "--stage", stage,
                                          "--work-id", "product", "--request", str(request)],
                                         cwd=root, text=True, capture_output=True, env=env)
                 self.assertEqual(result.returncode, 0, f"adopted {stage} caller should resolve read-only: {result.stderr}")
                 payload = json.loads(result.stdout)
-                self.assertEqual(event_file.read_text().splitlines(), ["resolver-enter", "resolver-exit"],
+                event_file.write_text(event_file.read_text() + "adopted-caller-exit\n")
+                self.assertEqual(event_file.read_text().splitlines(), ["adopted-caller-enter", "resolver-enter",
+                                                                       "resolver-exit", "adopted-caller-exit"],
                                  "the actual adopted caller invokes the shared resolver exactly once")
                 self.assertEqual(payload["disposition"], "chooser")
                 self.assertIn("snapshot", payload)
@@ -184,10 +188,13 @@ class StageIntakeTests(unittest.TestCase):
                 self.assertIn("Before choosing or creating execution work" if stage == "00-explore"
                               else "Before selecting/creating execution work", stage_doc)
                 if stage == "01-grill":
-                    self.assertIn("record its bound subject context in intent.md", stage_doc)
+                    self.assertIn("source revision, bounded contribution, exclusions and execution owner into",
+                                  stage_doc)
+                    self.assertIn("intent.md` before presenting the complete intent for approval", stage_doc)
                 project = Path(__file__).resolve().parents[2]
                 self.assertTrue((project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").is_file())
                 self.assertIn(stage_doc.strip(), (project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").read_text())
+                self.assertIn(stage_doc.strip(), (project / ".cursor/skills" / f"kit-{stage}" / "SKILL.md").read_text())
                 projection = ".cursor/commands" if stage == "00-explore" else ".cursor/commands"
                 cursor_doc = project / projection / f"{stage}.md"
                 self.assertIn(stage_doc.strip(), cursor_doc.read_text())
@@ -229,6 +236,7 @@ class StageIntakeTests(unittest.TestCase):
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), before_model)
             self.assertFalse((root / "work/product/intent.md").exists())
             self.assertFalse((root / "work/product/explore-map.md").exists())
+            self.assertIsNone(load_published(root, "product"), "inspection and proposal paths do not admit a generation")
             self.assertEqual(subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True,
                                             capture_output=True, check=True).stdout, before_head)
             self.assertEqual(subprocess.run(["git", "for-each-ref", "--format=%(refname) %(objectname)"],
