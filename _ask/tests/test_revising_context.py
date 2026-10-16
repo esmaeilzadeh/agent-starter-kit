@@ -2,10 +2,11 @@
 import json
 import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 
-from _ask.tests.revising_fixture import model, plan, reference_bytes
+from _ask.tests.revising_fixture import model, reference_bytes
 from _ask.scripts.engineering_model.snapshot import capture, is_current
 
 
@@ -22,14 +23,14 @@ def _document(*, context=True, source_context=True):
     task = document["nodes"][3]
     if context:
         task["context"] = [
-            {"role": "spec", "path": "specs/current/product.md", "revision": "spec-r1",
+            {"role": "spec", "path": "specs/current/product.md", "revision": "snapshot",
              "selector": {"kind": "heading", "path": ["Scope"]}},
-            {"role": "plan", "path": "work/product/plan.md", "revision": "plan-r1",
+            {"role": "plan", "path": "work/product/plan.md", "revision": "snapshot",
              "selector": {"kind": "plan-task", "heading_path": ["Work breakdown"], "task_id": "WB-003"}},
         ]
     if source_context:
         document["nodes"][4]["source_context"] = [
-            {"path": "tests/helpers.py", "revision": "helper-r1", "qualified_name": "tests.helpers.assert_publish",
+            {"path": "tests/helpers.py", "revision": "snapshot", "qualified_name": "tests.helpers.assert_publish",
              "role": "helper", "explanation": "Shared assertion helper"}
         ]
     return document
@@ -101,14 +102,51 @@ class PassageTests(unittest.TestCase):
             ("work/a.md", {"kind": "heading", "path": ["Work"], "fallback": True}),
             ("work/a.md", {"kind": "plan-task", "heading_path": ["Work"], "task_id": []}),
         ]:
-            with self.subTest(path=path, selector=selector):
-                with self.assertRaises((ValueError, TypeError)):
-                    resolve(path, markdown, selector)
+            with self.assertRaises((ValueError, TypeError), msg=f"unsafe selector must reject: {path} {selector!r}"):
+                resolve(path, markdown, selector)
+
+        duplicate_rows = b"# Work breakdown\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | First |\n| WB-003 | Duplicate |\n"
+        duplicate_task = resolve("work/plan.md", duplicate_rows,
+                                 {"kind": "plan-task", "heading_path": ["Work breakdown"], "task_id": "WB-003"})
+        self.assertEqual(duplicate_task["state"], "ambiguous")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            path = root / "specs/current/product.md"
+            path.unlink()
+            path.symlink_to(root / "work/product/plan.md")
+            linked = capture(root, "product")
+            self.assertNotEqual(linked.statuses["specs/current/product.md"], "present",
+                                "symlink components cannot be treated as safe passage sources")
+
+        # An explicit committed revision is read from that revision even when
+        # the working file now contains different bytes; no current-file fallback.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root, spec_text="# Scope\nHistorical contract.\n")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "capture source"], cwd=root, check=True)
+            revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                      capture_output=True, text=True).stdout.strip()
+            _put(root, "specs/current/product.md", b"# Scope\nCurrent but not selected.\n")
+            document = json.loads((root / "work/product/engineering-model.json").read_text())
+            document["nodes"][3]["context"][0]["revision"] = revision
+            _put(root, "work/product/engineering-model.json", document)
+            historical = capture(root, "product")
+            passage_reader = getattr(historical, "resolve_passage", None)
+            self.assertTrue(callable(passage_reader), "historical selectors resolve through captured commits")
+            if callable(passage_reader):
+                self.assertIn("Historical contract", passage_reader("task", "spec")["text"])
+                self.assertNotIn("Current but not selected", passage_reader("task", "spec")["text"])
 
 class PassageAdmissionTests(unittest.TestCase):
     def test_required_passages_block_only_dependent_actions(self):
         from _ask.scripts.engineering_model.workflow import workflow_admission
-        from _ask.scripts.engineering_model.actions import Refused
+        from _ask.scripts.engineering_model.actions import edit
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -116,11 +154,13 @@ class PassageAdmissionTests(unittest.TestCase):
             captured = capture(root, "product")
             calls = []
             try:
-                with self.assertRaises(Refused):
-                    with workflow_admission(root, "product", task_node_id="task"):
-                        calls.append("selected-task-action")
+                receipt = edit(root, "product", captured.identity["digest"],
+                               lambda: calls.append("selected-task-action") or {"commands": [
+                                   {"op": "revise_node", "id": "story", "changes": {"title": "Changed"}}]},
+                               task_node_id="task")
             except TypeError as exc:
-                self.fail(f"selected Task contract admission must be supported, not rejected by the API: {exc}")
+                self.fail(f"the semantic edit entry must enforce selected Task context: {exc}")
+            self.assertFalse(receipt["valid"], "required unresolved Task passages block the real edit entry")
             self.assertEqual(calls, [], "required unresolved Task passages must block before action")
             # The same unavailable context remains an admitted limitation for an
             # unrelated action; generic workflow admission must not make it global.
@@ -135,7 +175,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 with workflow_admission(root, "product", task_node_id="task"):
                     calls.append("selected-task-action")
             except TypeError as exc:
-                self.fail(f"selected Task contract admission must be supported, not rejected by the API: {exc}")
+                self.fail(f"selected Task contract admission must be supported: {exc}")
             self.assertEqual(calls[-1], "selected-task-action")
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
 
@@ -170,6 +210,12 @@ class PassageAdmissionTests(unittest.TestCase):
             second = capture(root, "product")
             self.assertNotEqual(first_identity["digest"], second.identity["digest"])
             self.assertIn("A contract", historical_text["text"], "published passage remains historical")
+
+            helper_path = root / "tests/helpers.py"
+            helper_stat = helper_path.stat()
+            helper_path.write_bytes(b"def assert_publish():\n    assert False\n")
+            os.utime(helper_path, ns=(helper_stat.st_atime_ns, helper_stat.st_mtime_ns))
+            self.assertFalse(is_current(second, root), "captured source_context helper bytes are dependencies")
             _snapshot, errors = admit(root, "product")
             self.assertEqual(errors, [])
             self.assertEqual(observe_once(root, "product")["snapshot"]["digest"], second.identity["digest"])
