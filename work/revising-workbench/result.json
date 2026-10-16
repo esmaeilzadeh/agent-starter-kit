@@ -1,6 +1,6 @@
 {
   "work_id": "revising-workbench",
-  "commit_sha": "eadc5d1e7a6b3ded89bd8a0119abf2726ca6c044",
+  "commit_sha": "60546c0fc6422377f9a049594a2752b74960b9b6",
   "result": "spec-rewritten",
-  "notes": "Fresh spec.md and spec.json authored directly in work/revising-workbench with F1-F6 integrated into requirements and coherent criterion clauses. Removed copied source challenge and correction supplement. Historical authority stays in its original workstream. No product implementation or new independent approval claimed."
+  "notes": "Fresh spec.md/spec.json integrate all six challenge corrections. Intent describes product outcomes with no old-workstream reference. Removed copied challenge and correction appendix; overview points to current artifacts. All 37 Verify checks passed after the spec rewrite; subsequent editorial intent/overview edits passed link and formatting checks. Product remains proposed."
 }

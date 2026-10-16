@@ -1,21 +1,19 @@
-# Initialization verification
+# Specification verification
 
-Verified candidate: `1166584694561cbd6a4c951504d7bc185cfd4edf`.
-`./ask verify`: PASS, 37 checks, fixed candidate throughout the run.
-The first run passed its checks but rejected a changed candidate; it is superseded
-by this complete fixed-candidate rerun. Initialization-only verification makes no
-claim that proposed product behavior is implemented or independently approved.
+`./ask verify`: PASS, 37 checks at `86f80954a8ae28301adabd9977feca71049c69d1` after the
+fresh specification/criteria rewrite. The subsequent product-intent and overview
+edit at `60546c0` passed local document-link checks and `git diff --check`.
+These results verify the prepared repository artifacts, not implementation of the
+proposed product behavior or independent approval of the specification.
 
-Additional checks passed: exact branch ancestry from `159f516`; JSON work identity,
-revision and 18 unique criterion IDs; unchanged foundation criterion metadata;
-byte-identical source challenge; exact existing plan heading selector; no inherited
-intent approval, execution state or Explore artifact; `git diff --check`.
+Additional checks passed: revision/work identity and 18 unique criterion IDs;
+unchanged accepted foundation criteria EM-001–007 and EM-012; representative
+Test/helper selectors at their recorded candidate; local source links; removal
+of the copied challenge report and correction supplement; absence of the old
+workstream name from the current intent and overview.
 
-`./ask sync` passed. Full skill preparation encountered npm DNS EAI_AGAIN errors
-and was interrupted; `SKIP_INSTALL=1 ./ask prepare` passed pin validation only.
-No missing community skill tree was vendored or version advanced.
-
-Original repository Git metadata remains read-only. The original checkout was
-left clean at `159f516`; new branch and commits exist in the isolated clone.
-Import the exported `/tmp/revising-workbench.bundle` when Git writes are available.
-Complete-intent confirmation and a new independent challenge are still pending.
+The authoritative draft sources are `spec.md` and `spec.json` in this directory.
+The proposal index points here. The original repository is on `revising-workbench`;
+no clone import is pending. Existing historical evidence retains its source
+identity. Complete-intent confirmation and independent review remain pending;
+no product implementation, migration or acceptance was performed.
