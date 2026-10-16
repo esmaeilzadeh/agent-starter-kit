@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from .snapshot import decode
+from .identities import execution_identity, product_identity
 from inner_loop.yaml_lite import parse_yaml
 
 
@@ -71,13 +72,17 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
         case_id = ref["id"]
         test_node_by_case.setdefault(case_id, []).append(node)
         scenario_ids_by_case.setdefault(case_id, set())
-    for case_id, test in test_definitions.items():
-        scenario_ids_by_case.setdefault(case_id, set()).update(
-            scenario_id
-            for criterion_id in test.get("criterion_ids", [])
-            if isinstance(criterion_id, str)
-            for scenario_id in scenarios_by_criterion.get(criterion_id, set())
-        )
+    # V1 workbench views retain their historical criterion association. V2
+    # scenarios select one canonical case, so criterion overlap cannot create
+    # a concrete flow edge; only an explicit covers relation can do that.
+    if model.get("schema") != "ask-engineering-model/v2":
+        for case_id, test in test_definitions.items():
+            scenario_ids_by_case.setdefault(case_id, set()).update(
+                scenario_id
+                for criterion_id in test.get("criterion_ids", [])
+                if isinstance(criterion_id, str)
+                for scenario_id in scenarios_by_criterion.get(criterion_id, set())
+            )
     for edge in model.get("edges", []):
         if not isinstance(edge, dict):
             continue
@@ -106,6 +111,17 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
 
     runtime_tasks = (runtime_state.get("tasks", {}) if isinstance(runtime_state, dict)
                      and runtime_state.get("work_id") == work_id else {})
+    model_task_by_execution = {}
+    model_task_by_id = {}
+    for node in nodes.values():
+        if node.get("type") != "task":
+            continue
+        model_task_by_id[node["id"]] = node
+        alias = execution_identity(node)
+        if alias is not None:
+            model_task_by_execution.setdefault(alias, []).append(node)
+    model_task_states_by_id = {item.get("id"): item for item in model_task_states
+                               if isinstance(item, dict) and isinstance(item.get("id"), str)}
     task_rows = []
     for task_id, definition in sorted(task_definitions.items()):
         record = runtime_tasks.get(task_id) if isinstance(runtime_tasks, dict) else None
@@ -119,7 +135,7 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
                             for scenario in scenario_ids_by_case.get(test_id, set())}
         explicit_scenarios = explicit_scenarios_by_task.get(task_id, set())
         scenarios = sorted(mapped_scenarios | explicit_scenarios)
-        task_rows.append({
+        row = {
             "id": task_id,
             "title": definition.get("title", task_id),
             "outcome": definition.get("outcome", ""),
@@ -136,14 +152,38 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             "record_source": "task-graph",
             "runtime_status": state,
             "result_path": record.get("result_path") if isinstance(record, dict) else None,
-        })
+        }
+        if model.get("schema") == "ask-engineering-model/v2":
+            identity = (work_id, task_id)
+            products = model_task_by_execution.get(identity, [])
+            product_node = products[0] if len(products) == 1 else None
+            model_state = model_task_states_by_id.get(product_node.get("id")) if product_node else None
+            row.update(
+                product_identity=(product_identity(work_id, product_node["id"]) if product_node else None),
+                execution_identity={"work_id": identity[0], "task_id": identity[1]},
+                identity_source="task-graph-execution-alias",
+                product_node_id=product_node.get("id") if product_node else None,
+                model_lifecycle=product_node.get("lifecycle") if product_node else None,
+                model_status=model_state.get("status") if isinstance(model_state, dict) else None,
+                readiness_source=("engineering-model" if model_state is not None else "unavailable"),
+                verification_status=None,
+                verification_source="no-verification-record",
+            )
+            related_stories = sorted({edge.get("target") for edge in model.get("edges", [])
+                                      if isinstance(edge, dict) and edge.get("type") == "contributes_to"
+                                      and product_node is not None and edge.get("source") == product_node.get("id")
+                                      and nodes.get(edge.get("target"), {}).get("type") == "story"})
+            row["related_stories"] = [
+                {"id": story_id, "via": "contributes-to"} for story_id in related_stories
+            ]
+        task_rows.append(row)
     known_task_ids = set(task_definitions)
     for task in model_task_states:
         task_id = task.get("id")
         if task_id in known_task_ids:
             continue
         node = nodes.get(task_id, {})
-        task_rows.append({
+        row = {
             "id": task_id, "title": node.get("title", task_id), "outcome": "",
             "dependencies": [], "owned_paths": [], "owned_test_ids": [],
             "related_scenarios": [
@@ -153,7 +193,23 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             "status_source": "no-task-record", "record_source": "engineering-model",
             "runtime_status": None, "result_path": None,
             "lifecycle": task.get("lifecycle"), "model_status": task.get("status"),
-        })
+        }
+        if model.get("schema") == "ask-engineering-model/v2":
+            row.update(product_identity=task.get("product_identity"),
+                       execution_identity=task.get("execution_identity"),
+                       identity_source="engineering-model",
+                       product_node_id=task_id,
+                       model_lifecycle=task.get("lifecycle"),
+                       readiness_source="engineering-model",
+                       verification_status=None,
+                       verification_source="no-verification-record",
+                       related_stories=[
+                           {"id": edge["target"], "via": "contributes-to"}
+                           for edge in model.get("edges", [])
+                           if edge.get("type") == "contributes_to" and edge.get("source") == task_id
+                           and nodes.get(edge.get("target"), {}).get("type") == "story"
+                       ])
+        task_rows.append(row)
     task_rows.sort(key=lambda item: item["id"])
 
     owner_by_test = {}

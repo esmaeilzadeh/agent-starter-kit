@@ -134,6 +134,30 @@ def _scenario_views(snapshot, model, evidence_by_reference):
     return result
 
 
+def _task_context(snapshot, node_id):
+    selected = {"spec": [], "plan": []}
+    for record in snapshot.passages.values():
+        if record.get("node_id") != node_id or record.get("kind") != "context":
+            continue
+        role = record.get("role")
+        if role not in selected:
+            continue
+        resolution = record.get("resolution")
+        resolution = resolution if isinstance(resolution, dict) else {}
+        selected[role].append({
+            "path": record.get("path"),
+            "revision": record.get("revision"),
+            "selector": record.get("selector"),
+            "state": resolution.get("state", "unavailable"),
+            "text": resolution.get("text"),
+            "match_count": resolution.get("match_count"),
+            "start_line": resolution.get("start_line"),
+            "end_line": resolution.get("end_line"),
+            "source_sha256": record.get("sha256"),
+        })
+    return selected
+
+
 def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidence=True):
     """Project one immutable snapshot and a read-only evidence inspection."""
     model = snapshot.document
@@ -141,6 +165,8 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
     if node_id is not None and node_id not in nodes:
         raise ValueError(f"unknown Engineering Model node: {node_id}")
     tasks = task_states(model)
+    for task in tasks:
+        task["context"] = _task_context(snapshot, task["id"])
     runtime_state = None
     try:
         runtime_state = json.loads((Path(root) / "work" / snapshot.work_id / "inner-loop" / "state.json")
@@ -148,6 +174,10 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
     except (OSError, UnicodeError, ValueError):
         pass
     workbench = build_workbench(snapshot, model, tasks, runtime_state)
+    for task in workbench.get("tasks", []):
+        product_node_id = task.get("product_node_id")
+        if product_node_id is not None:
+            task["context"] = _task_context(snapshot, product_node_id)
     evidence_work_ids = {snapshot.work_id}
     if include_evidence:
         for node in model.get("nodes", []):
@@ -226,10 +256,32 @@ def markdown(projection):
     for root in projection["hierarchy"]["roots"]:
         render_branch(root)
     lines.extend(["", "## Tasks"])
-    for task in projection["tasks"]:
-        lines.append(f"- `{task['id']}`: {task['status']} (lifecycle: {task['lifecycle']})")
-        for blocker in task["blockers"]:
-            lines.append(f"  - Blocked by `{blocker['id']}`: {blocker['reason']}")
+    projected_work = projection.get("workbench", {}).get("tasks", [])
+    if projected_work:
+        for task in projected_work:
+            execution = task.get("execution_identity")
+            execution_label = (f"{execution.get('work_id')}:{execution.get('task_id')}"
+                               if isinstance(execution, dict) else "unbound")
+            product = task.get("product_identity")
+            product_label = (f"{product.get('work_id')}:{product.get('node_id')}"
+                             if isinstance(product, dict) else "unbound")
+            lines.append(f"- `{task['id']}`: {task['status']} (product `{product_label}`, execution `{execution_label}`)")
+            if task.get("outcome"):
+                lines.append(f"  - Outcome: {task['outcome']}")
+            if task.get("dependencies"):
+                lines.append("  - Depends on: " + ", ".join(f"`{item}`" for item in task["dependencies"]))
+            if task.get("owned_test_ids"):
+                lines.append("  - Scoped tests: " + ", ".join(f"`{item}`" for item in task["owned_test_ids"]))
+            for role, passages in task.get("context", {}).items():
+                for passage in passages:
+                    lines.append(f"  - {role.title()} passage ({passage['state']}): `{passage['path']}`")
+                    if passage.get("text"):
+                        lines.extend("    " + line for line in passage["text"].rstrip().splitlines())
+    else:
+        for task in projection["tasks"]:
+            lines.append(f"- `{task['id']}`: {task['status']} (lifecycle: {task['lifecycle']})")
+            for blocker in task["blockers"]:
+                lines.append(f"  - Blocked by `{blocker['id']}`: {blocker['reason']}")
     lines.extend(["", "## Attention"])
     for item in projection["attention"]:
         lines.append(f"- `{item['id']}` ({item['type']}): {item['reason']}")
