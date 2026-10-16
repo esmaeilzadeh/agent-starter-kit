@@ -27,6 +27,46 @@ class V2ModelTests(unittest.TestCase):
             self.fail(f"malformed decision history must produce diagnostics, not raise {type(exc).__name__}")
         self.assertIn("EM001_DECISION_HISTORY", {item["code"] for item in history_errors})
 
+        # Treat decision history as untrusted JSON at the public boundary. Keep
+        # the malformed shape matrix in one mapped case so traceability records
+        # assertion failures, never runner exceptions or collection errors.
+        history_options = [None, 5, True, "options", [], {}, [None], [5],
+                           [{"id": [], "label": "A"}], [{"id": "a", "label": []}]]
+        history_events = [None, 5, True, [], {}, "unknown"]
+        history_option_ids = [None, 5, True, [], {}]
+        resolutions = [None, 5, True, "resolution", [], ["x"],
+                       {"option_id": [], "actor": "reviewer", "rationale": "reason",
+                        "timestamp": "2026-01-01T00:00:00Z"},
+                       {"option_id": {"bad": "id"}, "actor": "reviewer", "rationale": "reason",
+                        "timestamp": "2026-01-01T00:00:00Z"}]
+        history_cases = (
+            [("options", value) for value in history_options]
+            + [("event", value) for value in history_events]
+            + [("resolution", value) for value in resolutions]
+            + [("resolution.option_id", value) for value in history_option_ids]
+        )
+        for field, value in history_cases:
+            candidate = copy.deepcopy(document)
+            entry = {"event": "resolved", "actor": "reviewer", "rationale": "reason",
+                     "timestamp": "2026-01-01T00:00:00Z",
+                     "options": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}],
+                     "resolution": {"option_id": "a", "actor": "reviewer", "rationale": "reason",
+                                    "timestamp": "2026-01-01T00:00:00Z"}}
+            if field == "resolution.option_id":
+                entry["resolution"]["option_id"] = value
+            else:
+                entry[field] = value
+            candidate["nodes"].append({"id": "history-check", "type": "decision", "title": "Choice",
+                                        "lifecycle": "open", "options": [
+                                            {"id": "a", "label": "A"}, {"id": "b", "label": "B"}],
+                                        "history": [entry]})
+            try:
+                diagnostics = validate(candidate, ".", "product", reference_bytes=refs)
+            except Exception as exc:
+                self.fail(f"malformed history {field}={value!r} raised {type(exc).__name__}")
+            self.assertIn("EM001_DECISION_HISTORY", {item["code"] for item in diagnostics},
+                          f"malformed history {field}={value!r} needs a diagnostic")
+
         errors = validate(document, ".", "product", reference_bytes=refs)
         self.assertEqual(errors, [], "v2 permits optional intent and zero-or-one legal containment")
         task = task_states(document)[0]
