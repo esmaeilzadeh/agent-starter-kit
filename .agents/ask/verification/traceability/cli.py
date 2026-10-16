@@ -33,9 +33,39 @@ def main(argv=None):
         if not slug(args.work_id):raise Invalid('invalid work_id')
         managed=args.command not in {'validate-plan','record-result'} or (args.command=='record-result' and args.result=='pass')
         selected_execution=None
+        if args.command=='record-review':
+            # Refuse invalid adopted definitions before reporting an input
+            # scope mismatch, but do not publish a workflow generation until
+            # the actual review target has been resolved.
+            scripts=root/'_ask/scripts'
+            if scripts.is_dir():sys.path.insert(0,str(scripts))
+            try:
+                from engineering_model.workflow import adopted
+                from engineering_model.admission import validate_current
+            except ModuleNotFoundError as exc:
+                if exc.name not in {'engineering_model','engineering_model.workflow','engineering_model.admission'}:raise
+            else:
+                if adopted(root,args.work_id):
+                    _snapshot, diagnostics=validate_current(root,args.work_id)
+                    if diagnostics:
+                        first=diagnostics[0]
+                        failure=Invalid(first['code'], '; '.join(
+                            item['code']+': '+item.get('message','document admission refused')
+                            for item in diagnostics))
+                        failure.diagnostic=first;failure.diagnostics=diagnostics
+                        raise failure
+            review=load(root/args.evidence)
+            body_scope=review.get('scope','workstream') if isinstance(review,dict) else None
+            body_task=review.get('task_id') if isinstance(review,dict) else None
+            if body_scope not in {'task','workstream'} or body_scope!=args.scope or (body_scope=='task' and (not isinstance(body_task,str) or body_task!=args.task_id)):
+                raise Invalid('CLI review scope/task must match the review body')
+            args._review_document=review
+            if body_scope=='task':
+                selected_execution={'work_id':args.work_id,'task_id':body_task}
         if getattr(args,'scope',None)=='task':
             if not getattr(args,'task_id',None):raise Invalid('task-scoped operation requires --task-id')
-            selected_execution={'work_id':args.work_id,'task_id':args.task_id}
+            if args.command!='record-review':
+                selected_execution={'work_id':args.work_id,'task_id':args.task_id}
         with workflow_context(root,args.work_id,selected_execution=selected_execution) if managed else nullcontext():
             document,status=execute(args,root)
         print(json.dumps(document,indent=2))
@@ -57,7 +87,8 @@ def execute(args,root):
     if args.command=='validate-plan':doc=contracts_at(root,args.work_id,args.revision)
     elif args.command=='accept-plan':doc=accept_plan(root,args.work_id,args.revision,args.reviewer,args.recorded_by,args.evidence)
     elif args.command=='record-review':
-        review=load(root/args.evidence)
+        review=getattr(args,'_review_document',None)
+        if review is None:review=load(root/args.evidence)
         body_scope=review.get('scope','workstream') if isinstance(review,dict) else None
         body_task=review.get('task_id') if isinstance(review,dict) else None
         if body_scope!=args.scope or (args.scope=='task' and body_task!=args.task_id):

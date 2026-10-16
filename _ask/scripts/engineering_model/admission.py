@@ -14,7 +14,7 @@ import tempfile
 from types import MappingProxyType
 
 from .snapshot import Snapshot, capture, is_current, safe_relative
-from .validation import RULES_VERSION
+from .validation import RULES_VERSION, SCHEMA_V2
 from .passages import required_task_passages, selected_task_node
 
 
@@ -233,6 +233,11 @@ def validate_current(root, work_id, *, allow_pending=False):
 
 
 def _selected_diagnostics(snapshot, selected_task_id=None, selected_execution=None):
+    # Execution aliases belong to v2 documents. Decide from this exact
+    # validated snapshot so a generation change cannot switch schemas between
+    # a compatibility preflight and publication.
+    if snapshot.document.get("schema") != SCHEMA_V2:
+        selected_execution = None
     try:
         selected = selected_task_node(snapshot, selected_task_id=selected_task_id,
                                       selected_execution=selected_execution)
