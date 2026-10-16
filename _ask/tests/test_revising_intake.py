@@ -214,9 +214,10 @@ class StageIntakeTests(unittest.TestCase):
         try:
             from _ask.scripts.engineering_model.actions import associate_subject
             from _ask.scripts.engineering_model.admission import validate_current, load_published
+            from _ask.scripts.engineering_model.context import resolve
             from _ask.scripts.engineering_model.domain import apply_batch
         except ImportError:
-            associate_subject = validate_current = load_published = apply_batch = None
+            associate_subject = validate_current = load_published = resolve = apply_batch = None
         self.assertTrue(callable(associate_subject) and callable(apply_batch),
                         "subject association must be an attributable semantic operation through the real guard")
         if not callable(associate_subject):
