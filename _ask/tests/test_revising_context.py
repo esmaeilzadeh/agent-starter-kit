@@ -28,7 +28,7 @@ def _canonical():
                           "then": ["Only captured sources are used"], "verification_mode": "tests"}]}
     plan = {"schema": "ask-test-plan/v1", "work_id": "product", "spec_digest": digest(spec),
             "obligations": [{"criterion_id": "EM-007", "required_types": ["unit"]}],
-            "task_scopes": [],
+            "task_scopes": [{"task_id": "WB-003", "test_ids": ["WB-publish"]}],
             "runners": [{"id": "fixture", "adapter": "unittest",
                          "argv": ["python3", "-m", "unittest", "test_fixture.Cases.test_behavior"]}],
             "tests": [{"id": "WB-publish", "criterion_ids": ["EM-007"], "type": "unit",
@@ -69,7 +69,12 @@ def _repo(root, *, context=True, source_context=True, spec_text="# Scope\nCurren
     _put(root, "specs/current/product.json", spec)
     _put(root, "work/product/test-plan.json", plan)
     _put(root, "work/product/engineering-model.json", _document(context=context, source_context=source_context))
+    _put(root, "work/product/inner-loop/tasks.yaml",
+         b"schema: ask-inner-loop-tasks/v1\nwork_id: product\ntasks:\n"
+         b"  - id: WB-003\n    depends_on: []\n    owned_paths: [task-result.md]\n")
     _put(root, "specs/current/product.md", b"# Product requirements\nCanonical specification companion.\n")
+    _put(root, "test_fixture.py", b"from pathlib import Path\nimport unittest\nclass Cases(unittest.TestCase):\n"
+         b"    def test_behavior(self):\n        self.assertTrue(Path('task-result.md').is_file())\n")
     if context and spec_text is not None:
         _put(root, "docs/context.md", spec_text.encode())
     else:
@@ -398,6 +403,117 @@ class PassageAdmissionTests(unittest.TestCase):
                 calls.append("consistent-dual-identity")
             self.assertEqual(calls[-1], "consistent-dual-identity",
                              "product and qualified execution selectors resolve to the same Task")
+
+            # The actual coordinator review helper succeeds with a candidate
+            # bound to the selected execution identity and captured passages.
+            review_root = root / "review-success"
+            review_root.mkdir()
+            _repo(review_root)
+            shutil.copytree(project / "_ask/scripts", review_root / "_ask/scripts",
+                            ignore=shutil.ignore_patterns("__pycache__"))
+            _put(review_root, ".gitignore",
+                 b"work/product/traceability/\nwork/product/inner-loop/state.*\n"
+                 b"work/product/inner-loop/results/\nwork/product/inner-loop/evidence/\n"
+                 b"**/__pycache__/\n*.pyc\n")
+            _put(review_root, ".agents/verification.yaml",
+                 b"schema: ask-checkplan/v1\nno_production_datastore: true\n"
+                 b"checks:\n  - id: fixture\n    tier: mandatory\n    command: 'true'\n")
+            _put(review_root, "_ask/policies/delegation.md", b"Independent coordinator review policy.\n")
+            _put(review_root, "work/product/review.md", b"Reviewed candidate and its task boundary.\n")
+            subprocess.run(["git", "init", "-q", "-b", "agent/product"], cwd=review_root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=review_root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=review_root, check=True)
+            subprocess.run(["git", "add", "."], cwd=review_root, check=True)
+            subprocess.run(["git", "commit", "-qm", "review fixture base"], cwd=review_root, check=True)
+            from _ask.tests.traceability_support import accept as accept_traceability
+            accept_traceability(review_root, "product")
+            review_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=review_root, check=True,
+                                        capture_output=True, text=True).stdout.strip()
+            env = dict(os.environ, PYTHONPATH=str(review_root / ".agents/ask") + os.pathsep
+                       + str(review_root / "_ask/scripts"))
+            red_run = subprocess.run(
+                [sys.executable, "-c",
+                 "from verification.traceability.cli import main; raise SystemExit(main(" + repr([
+                     "--root", str(review_root), "run", "product", "--candidate-sha", review_sha,
+                     "--anchor-sha", review_sha, "--scope", "task", "--task-id", "WB-003", "--phase", "red"
+                 ]) + "))"], cwd=review_root, env=env, capture_output=True, text=True)
+            self.assertEqual(red_run.returncode, 0,
+                             f"task-scoped red command records the genuine missing-result assertion: {red_run.stderr}")
+            subprocess.run(["git", "switch", "-qc", "task/selected"], cwd=review_root, check=True)
+            _put(review_root, "task-result.md", b"Candidate owned by WB-003.\n")
+            subprocess.run(["git", "add", "task-result.md"], cwd=review_root, check=True)
+            subprocess.run(["git", "commit", "-qm", "selected task candidate"], cwd=review_root, check=True)
+            candidate_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=review_root, check=True,
+                                           capture_output=True, text=True).stdout.strip()
+            subprocess.run(["git", "switch", "-q", "agent/product"], cwd=review_root, check=True)
+            from _ask.tests.traceability_support import digest as contract_digest
+            from verification.traceability.evidence import (inventory, load_accepted, source_digests,
+                                                            write_json)
+            contracts = load_accepted(review_root, "product", review_sha, candidate_sha)
+            selected_tests = ["WB-publish"]
+            inv = inventory(review_root, contracts["pin"]["contract_sha"], candidate_sha, contracts["plan"])
+            review_input = {
+                "schema": "ask-test-review/v2", "reviewer": "fixture-reviewer",
+                "candidate_sha": candidate_sha, "base_sha": contracts["pin"]["contract_sha"],
+                "spec_digest": contract_digest(contracts["spec"]),
+                "plan_digest": contract_digest(contracts["plan"]), "scope": "task",
+                "task_id": "WB-003", "test_ids": selected_tests, "criterion_ids": ["EM-007"],
+                "source_digests": source_digests(review_root, candidate_sha, contracts["plan"], selected_tests),
+                "inspected_sources": inv["inspected_sources"], "changed_cases": inv["changed_cases"],
+                "inventory_exclusions": {name: "Disposable integration fixture." for name in inv["unmapped_cases"]},
+                "criteria": [{"id": "EM-007", "coverage_decision": "APPROVED",
+                              "assessment": "Selected passage integration check covers the obligation.",
+                              "type_adequacy": {"unit": {"decision": "APPROVED", "assessment": "The unit case checks the selection boundary."}}}],
+                "tests": [{"id": "WB-publish", "decision": "APPROVED",
+                           "assertion_assessment": "The fixture asserts the selected result.",
+                           "counterexample": "A different selected result fails.",
+                           "tdd_continuity_assessment": "Red and green execution are bound to the accepted test."}],
+            }
+            write_json(review_root / "work/product/traceability/review-input.json", review_input)
+            env = dict(os.environ, PYTHONPATH=str(review_root / ".agents/ask") + os.pathsep
+                       + str(review_root / "_ask/scripts"))
+            record_review_run = subprocess.run(
+                [sys.executable, "-c",
+                 "from verification.traceability.cli import main; raise SystemExit(main(" + repr([
+                     "--root", str(review_root), "record-review", "product", "--candidate-sha", candidate_sha,
+                     "--anchor-sha", review_sha, "--recorded-by", "fixture-coordinator",
+                     "--evidence", "work/product/traceability/review-input.json", "--scope", "task", "--task-id", "WB-003"
+                 ]) + "))"], cwd=review_root, env=env, capture_output=True, text=True)
+            self.assertEqual(record_review_run.returncode, 0,
+                             f"real task-scoped traceability review wrapper accepts selected context: {record_review_run.stderr}")
+            candidate_scripts = str(review_root / "_ask/scripts")
+            sys.path.insert(0, candidate_scripts)
+            try:
+                from inner_loop.state import cas_init, cas_apply
+                from inner_loop.evidence import record_review as candidate_record_review
+                cas_init(review_root, "product", ["WB-003"], coordinator_sha=review_sha)
+                cas_apply(review_root, "product", 0, lambda state: state["tasks"]["WB-003"].update(
+                    status="running", base_sha=review_sha, task_branch="task/selected"))
+                _put(review_root, "work/product/inner-loop/results/WB-003.json", {
+                    "schema": "ask-task-result/v2", "work_id": "product", "task_id": "WB-003",
+                    "base_sha": review_sha, "candidate_sha": candidate_sha,
+                    "tdd": {"seam": "task", "red": {"command": "red", "output": "FAIL", "exit_code": 1},
+                            "green": {"command": "green", "output": "PASS", "exit_code": 0}},
+                    "exemption": None,
+                })
+                review = candidate_record_review(
+                    review_root, "product", "WB-003", "independent-reviewer",
+                    "_ask/policies/delegation.md", "work/product/review.md",
+                    selected_execution={"work_id": "product", "task_id": "WB-003"})
+                self.assertEqual(review["candidate_sha"], candidate_sha)
+                self.assertEqual(review["task_id"], "WB-003")
+                self.assertEqual(review["verdict"], "APPROVED")
+                from inner_loop.driver import integrate_ready as candidate_integrate_ready
+                from inner_loop.evidence import source_changes as candidate_source_changes
+                self.assertEqual(candidate_source_changes(review_root, "product"), [],
+                                 "fixture runtime evidence stays outside coordinator source changes")
+                self.assertEqual(candidate_integrate_ready(review_root, "product", "WB-003"), candidate_sha,
+                                 "actual driver validates, reviews, verifies and fast-forwards selected candidate")
+                integrated = json.loads((review_root / "work/product/inner-loop/state.json").read_text())
+                self.assertEqual(integrated["tasks"]["WB-003"]["status"], "integrated")
+                self.assertEqual(integrated["coordinator_sha"], candidate_sha)
+            finally:
+                sys.path.remove(candidate_scripts)
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
 
             before = capture(root, "product")
