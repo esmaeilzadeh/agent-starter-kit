@@ -471,7 +471,8 @@ def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
                                           "historical options must have unique nonempty IDs and labels", node_id))
             resolution = entry["resolution"]
             if resolution != {}:
-                historical_option_ids = {option.get("id") for option in historical_options
+                safe_historical_options = historical_options if isinstance(historical_options, list) else []
+                historical_option_ids = {option.get("id") for option in safe_historical_options
                                           if isinstance(option, dict) and isinstance(option.get("id"), str)}
                 if (not isinstance(resolution, dict)
                         or set(resolution) != {"option_id", "actor", "rationale", "timestamp"}
