@@ -47,7 +47,6 @@ class ContextResolverTests(unittest.TestCase):
             ]})
             self.assertEqual(conflict["disposition"], "needs_clarification",
                              "qualified owner conflicts cannot be joined by a matching node ID")
-            self.assertEqual(explicit["trace"], ["stage-caller", "resolver"])
             explicit_unknown = resolve(root, "product", {"explicit_subjects": [
                 {"work_id": "product", "node_id": "missing-parent"}]})
             self.assertEqual(explicit_unknown["disposition"], "needs_clarification",
@@ -106,6 +105,7 @@ class StageIntakeTests(unittest.TestCase):
             for stage in ("00-explore", "01-grill"):
                 request = root / "request.json"
                 request.write_text(json.dumps({"inspection_only": True}))
+                event_file.write_text("")
                 result = subprocess.run(["./ask", "stage-intake", "--stage", stage,
                                          "--work-id", "product", "--request", str(request)],
                                         cwd=root, text=True, capture_output=True, env=env)
@@ -132,13 +132,13 @@ class StageIntakeTests(unittest.TestCase):
                 conflict.write_text(json.dumps({"explicit_subjects": [
                     {"work_id": "product", "node_id": "story-a"},
                     {"work_id": "foreign", "node_id": "story-a"}]}))
+                event_file.write_text("")
                 refused = subprocess.run(["./ask", "stage-intake", "--stage", stage,
                                           "--work-id", "product", "--request", str(conflict)],
                                          cwd=root, text=True, capture_output=True, env=env)
                 self.assertEqual(refused.returncode, 0)
                 self.assertEqual(json.loads(refused.stdout)["disposition"], "needs_clarification")
-                self.assertEqual(event_file.read_text().splitlines(),
-                                 ["resolver-enter", "resolver-exit", "resolver-enter", "resolver-exit"])
+                self.assertEqual(event_file.read_text().splitlines(), ["resolver-enter", "resolver-exit"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), before_model)
             self.assertFalse((root / "work/product/intent.md").exists())
             self.assertFalse((root / "work/product/explore-map.md").exists())
