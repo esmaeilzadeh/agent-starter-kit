@@ -64,7 +64,7 @@ class ContextResolverTests(unittest.TestCase):
             self.assertEqual(tracker["disposition"], "chooser")
             self.assertEqual(tracker.get("external_context", {}).get("state"), "unavailable")
             no_join_doc = json.loads(doc_path.read_text())
-            no_join_doc.pop("subject_association")
+            no_join_doc.pop("subject_association", None)
             _put(root, "work/product/engineering-model.json", no_join_doc)
             no_join = resolve(root, "product", {"tracker_context": {"id": "T-19", "available": True}})
             self.assertEqual(no_join["disposition"], "chooser",
