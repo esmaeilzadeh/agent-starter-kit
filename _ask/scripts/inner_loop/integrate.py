@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 from engineering_model.workflow import adopted, branch_work_id, validate_candidate, workflow_admission
+from engineering_model.admission import validate_current
 from engineering_model.actions import Refused
 
 
@@ -22,6 +23,14 @@ def integrate(root: Path, task_ref: str, method: str = "ff-only", *, work_id=Non
               selected_task_id=None, selected_execution=None) -> str:
     selected_work = work_id or branch_work_id(root)
     if adopted(root, selected_work) and selected_task_id is None and selected_execution is None:
+        _snapshot, diagnostics = validate_current(root, selected_work)
+        if diagnostics:
+            first = diagnostics[0]
+            refusal = Refused(first['code'], '; '.join(
+                item['code'] + ': ' + item.get('message', 'document admission refused')
+                for item in diagnostics), first.get('path', '$'))
+            refusal.diagnostics = diagnostics
+            raise refusal
         raise Refused('EM015_TASK_ID', 'adopted Task integration requires an explicit selected Task identity')
     with workflow_admission(root, selected_work, selected_task_id=selected_task_id,
                             selected_execution=selected_execution):
