@@ -162,6 +162,15 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(validate(alternate, ".", "product", reference_bytes=refs), [],
                          "an independently reviewed local mapping explicitly relates the cases")
 
+        self_reference = copy.deepcopy(alternate_plan)
+        self_reference["flow_mappings"][0]["scenario_case"]["plan_digest"] = digest(self_reference)
+        body = {key: self_reference["flow_mappings"][0][key] for key in ("scenario_case", "test_case")}
+        self_reference["flow_mappings"][0]["review"]["body_digest"] = digest(body)
+        refs["work/product/test-plan.json"] = __import__("json").dumps(self_reference).encode()
+        alternate["nodes"][2]["case"]["plan_digest"] = digest(self_reference)
+        self.assertIn("EM001_FLOW_MAPPING", {item["code"] for item in validate(
+            alternate, ".", "product", reference_bytes=refs)})
+
         unreviewed_plan = copy.deepcopy(alternate_plan)
         unreviewed_plan["flow_mappings"][0]["review"]["decision"]["decision"] = "PENDING"
         refs["work/product/test-plan.json"] = __import__("json").dumps(unreviewed_plan).encode()
