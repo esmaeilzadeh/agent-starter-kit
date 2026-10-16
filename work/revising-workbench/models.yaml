@@ -1,0 +1,6 @@
+# Human override: use Sol/high for this workstream's independent reviews.
+codex:
+  07-review: gpt-6.1-sol
+reasoning_effort:
+  codex:
+    07-review: high
