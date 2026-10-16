@@ -44,7 +44,7 @@ def _document(*, context=True, source_context=True):
     spec, plan = _canonical()
     document["nodes"][2]["case"]["plan_digest"] = digest(plan)
     task = document["nodes"][3]
-    task["execution"] = {"work_id": "product", "task_id": "task"}
+    task["execution"] = {"work_id": "product", "task_id": "WB-003"}
     if context:
         task["context"] = [
             {"role": "spec", "path": "docs/context.md", "revision": "snapshot",
@@ -62,6 +62,9 @@ def _document(*, context=True, source_context=True):
 
 def _repo(root, *, context=True, source_context=True, spec_text="# Scope\nCurrent contract.\n",
           plan_text="# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n"):
+    project = Path(__file__).resolve().parents[2]
+    shutil.copytree(project / ".agents/ask/verification", root / ".agents/ask/verification",
+                    dirs_exist_ok=True)
     spec, plan = _canonical()
     _put(root, "specs/current/product.json", spec)
     _put(root, "work/product/test-plan.json", plan)
@@ -207,6 +210,49 @@ class PassageTests(unittest.TestCase):
             if callable(passage_reader):
                 self.assertIn("Historical contract", passage_reader("task", "spec")["text"])
                 self.assertNotIn("Current but not selected", passage_reader("task", "spec")["text"])
+                (root / "docs/context.md").unlink()
+                historical_missing = capture(root, "product")
+                self.assertEqual(historical_missing.resolve_passage("task", "spec")["state"], "available",
+                                 "committed revision remains readable when the working target is missing")
+                self.assertIn("Historical contract", historical_missing.resolve_passage("task", "spec")["text"])
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root, spec_text=None)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "commit without passage"], cwd=root, check=True)
+            missing_revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                              capture_output=True, text=True).stdout.strip()
+            _put(root, "docs/context.md", b"# Scope\nUncommitted fallback must not appear.\n")
+            document = json.loads((root / "work/product/engineering-model.json").read_text())
+            document["nodes"][3]["context"][0]["revision"] = missing_revision
+            _put(root, "work/product/engineering-model.json", document)
+            missing_blob = capture(root, "product")
+            self.assertEqual(missing_blob.resolve_passage("task", "spec")["state"], "error",
+                             "a missing historical blob cannot fall back to current bytes")
+            self.assertNotIn("Uncommitted fallback", str(missing_blob.resolve_passage("task", "spec")["text"]))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            (root / "docs/context.md").unlink()
+            (root / "docs/context.md").symlink_to(root / "work/product/plan.md")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "symlink source"], cwd=root, check=True)
+            symlink_revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                              capture_output=True, text=True).stdout.strip()
+            document = json.loads((root / "work/product/engineering-model.json").read_text())
+            document["nodes"][3]["context"][0]["revision"] = symlink_revision
+            _put(root, "work/product/engineering-model.json", document)
+            committed_symlink = capture(root, "product")
+            self.assertEqual(committed_symlink.resolve_passage("task", "spec")["state"], "error",
+                             "a committed symlink is not an admissible historical source")
 
 class PassageAdmissionTests(unittest.TestCase):
     def test_required_passages_block_only_dependent_actions(self):
@@ -219,6 +265,8 @@ class PassageAdmissionTests(unittest.TestCase):
             project = Path(__file__).resolve().parents[2]
             shutil.copytree(project / "_ask/scripts", root / "_ask/scripts")
             captured = capture(root, "product")
+            from _ask.scripts.engineering_model.admission import load_published
+            publication_before = load_published(root, "product")
             calls = []
             bridge_path = str(project / ".agents/ask")
             sys.path.insert(0, bridge_path)
@@ -227,7 +275,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 error_output = StringIO()
                 with redirect_stderr(error_output):
                     traceability_status = traceability_main([
-                        "--root", str(root), "run", "product", "--scope", "task", "--task-id", "task"])
+                        "--root", str(root), "run", "product", "--scope", "task", "--task-id", "WB-003"])
                 self.assertNotEqual(traceability_status, 0,
                                     "task-scoped traceability refuses a Task with missing selected passages")
                 self.assertIn("EM015_CONTEXT_REQUIRED", error_output.getvalue())
@@ -235,7 +283,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 sys.path.remove(bridge_path)
             from _ask.scripts.inner_loop.evidence import record_review
             try:
-                record_review(root, "product", "task", "reviewer", "_ask/policies/delegation.md",
+                record_review(root, "product", "WB-003", "reviewer", "_ask/policies/delegation.md",
                               "work/product/review.json", selected_task_id="task")
             except Exception as exc:
                 self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
@@ -244,7 +292,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.fail("direct review helper must refuse before review side effects for missing Task context")
             from _ask.scripts.inner_loop.driver import integrate_ready
             try:
-                integrate_ready(root, "product", "task")
+                integrate_ready(root, "product", "WB-003")
             except Exception as exc:
                 self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
                                  f"driver integration must guard its explicit Task: {exc!r}")
@@ -259,6 +307,10 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.fail(f"semantic edit must guard selected Task without API/runtime failure: {exc}")
             self.assertFalse(receipt["valid"], "required unresolved Task passages block the real edit entry")
             self.assertEqual(calls, [], "required unresolved Task passages must block before action")
+            self.assertEqual(receipt["steps"], ["pre"], "selected Task refusal stops after one pre-check")
+            self.assertEqual(receipt["validation_counts"], {"pre": 1, "post": 0})
+            self.assertEqual(load_published(root, "product"), publication_before,
+                             "selected Task refusal does not publish a generation")
             # The same unavailable context remains an admitted limitation for an
             # unrelated action; generic workflow admission must not make it global.
             with workflow_admission(root, "product"):
@@ -274,6 +326,33 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.fail("selected Task missing required passages must refuse before yielding")
             self.assertNotIn("selected-workflow-action", calls,
                              "missing required passages block only the selected Task action")
+            try:
+                with workflow_admission(root, "product", selected_execution={
+                        "work_id": "other", "task_id": "WB-003"}):
+                    calls.append("misjoined-execution")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_TASK_ID",
+                                 f"wrong qualified owner must not join by task label: {exc!r}")
+            else:
+                self.fail("execution task identity cannot join by an equal-looking task label alone")
+
+            # A resolvable neighboring plan row is not this Task's contract;
+            # plan selector identity must match the captured execution alias.
+            misbound = root / "misbound"
+            misbound.mkdir()
+            _repo(misbound, plan_text=("# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n"
+                                       "| WB-003 | Selected |\n| WB-004 | Neighbor |\n"))
+            model_doc = json.loads((misbound / "work/product/engineering-model.json").read_text())
+            model_doc["nodes"][3]["context"][1]["selector"]["task_id"] = "WB-004"
+            _put(misbound, "work/product/engineering-model.json", model_doc)
+            try:
+                with workflow_admission(misbound, "product", selected_task_id="task"):
+                    calls.append("unrelated-plan-row")
+            except Exception as exc:
+                self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                 f"resolved neighboring row must not satisfy selected execution: {exc!r}")
+            else:
+                self.fail("selected Task cannot borrow an unrelated plan-task row")
 
             _put(root, "docs/context.md", b"# Scope\nCurrent contract.\n")
             _put(root, "work/product/plan.md",
@@ -286,7 +365,6 @@ class PassageAdmissionTests(unittest.TestCase):
             self.assertEqual(calls[-1], "selected-task-action")
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
 
-            from _ask.scripts.engineering_model.admission import load_published
             before = capture(root, "product")
             action_calls = []
             receipt = edit(root, "product", before.identity["digest"],
@@ -303,7 +381,8 @@ class PassageAdmissionTests(unittest.TestCase):
             sys.path.insert(0, bridge_path)
             try:
                 from verification.run import workflow_context
-                with workflow_context(root, "product", selected_task_id="task") as bridged:
+                with workflow_context(root, "product", selected_execution={
+                        "work_id": "product", "task_id": "WB-003"}) as bridged:
                     self.assertEqual(bridged.identity["digest"], published_generation.identity["digest"])
             finally:
                 sys.path.remove(bridge_path)
@@ -339,7 +418,8 @@ class PassageAdmissionTests(unittest.TestCase):
                                           capture_output=True, text=True).stdout.strip()
             from _ask.scripts.inner_loop.integrate import integrate
             try:
-                integrate(root, original_sha, work_id="product", selected_task_id="task")
+                integrate(root, original_sha, work_id="product", selected_execution={
+                    "work_id": "product", "task_id": "WB-003"})
             except Exception as exc:
                 self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
                                  f"candidate integration must refuse missing selected passages: {exc!r}")
@@ -355,7 +435,8 @@ class PassageAdmissionTests(unittest.TestCase):
             subprocess.run(["git", "commit", "-qm", "selected context"], cwd=root, check=True)
             ready_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
                                        capture_output=True, text=True).stdout.strip()
-            result_sha = integrate(root, ready_sha, work_id="product", selected_task_id="task")
+            result_sha = integrate(root, ready_sha, work_id="product", selected_execution={
+                "work_id": "product", "task_id": "WB-003"})
             self.assertEqual(result_sha, ready_sha, "valid selected context passes candidate and FF integration")
 
     def test_missing_linked_and_ambiguous_changes_invalidate_snapshot(self):
