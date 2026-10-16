@@ -600,10 +600,10 @@ class PassageAdmissionTests(unittest.TestCase):
                             review_failures.append(f"{route} task start refused with wrong diagnostic: {exc!r}")
                     else:
                         review_failures.append(f"{route} task start bypassed missing selected context")
-                    self.assertEqual(load_state(start_root, "product"), state_before,
-                                     f"{route} missing-context refusal leaves writer state unchanged")
-                    self.assertEqual(load_published(start_root, "product"), publication_before_start,
-                                     f"{route} missing-context refusal publishes no candidate")
+                    if load_state(start_root, "product") != state_before:
+                        review_failures.append(f"{route} missing-context refusal changed writer state")
+                    if load_published(start_root, "product") != publication_before_start:
+                        review_failures.append(f"{route} missing-context refusal published a candidate")
 
                     valid_root = root / ("valid-context-start-" + route)
                     valid_root.mkdir()
