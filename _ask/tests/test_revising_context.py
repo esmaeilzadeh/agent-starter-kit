@@ -573,6 +573,19 @@ class PassageAdmissionTests(unittest.TestCase):
             review_root = root / "review-success"
             review_root.mkdir()
             _repo(review_root)
+            # Keep a second valid, empty task scope so the review-file race can
+            # switch from a captured WB-003 target to a distinct WB-004 target.
+            review_plan_path = review_root / "work/product/test-plan.json"
+            review_plan = json.loads(review_plan_path.read_text())
+            review_plan["task_scopes"].append({"task_id": "WB-004", "test_ids": []})
+            _put(review_root, "work/product/test-plan.json", review_plan)
+            review_model = json.loads((review_root / "work/product/engineering-model.json").read_text())
+            review_model["nodes"][2]["case"]["plan_digest"] = digest(review_plan)
+            _put(review_root, "work/product/engineering-model.json", review_model)
+            _put(review_root, "work/product/inner-loop/tasks.yaml",
+                 b"schema: ask-inner-loop-tasks/v1\nwork_id: product\ntasks:\n"
+                 b"  - id: WB-003\n    depends_on: []\n    owned_paths: [task-result.md]\n"
+                 b"  - id: WB-004\n    depends_on: []\n    owned_paths: [other-task-result.md]\n")
             shutil.copytree(project / "_ask/scripts", review_root / "_ask/scripts",
                             ignore=shutil.ignore_patterns("__pycache__"))
             _put(review_root, ".gitignore",
@@ -655,6 +668,10 @@ class PassageAdmissionTests(unittest.TestCase):
                            "tdd_continuity_assessment": "Red and green execution are bound to the accepted test."}],
             }
             write_json(review_root / "work/product/traceability/review-input.json", review_input)
+            race_review = dict(review_input, task_id="WB-004", test_ids=[], criterion_ids=[],
+                               source_digests={}, criteria=[], tests=[])
+            race_review_path = review_root / "work/product/traceability/review-input-race.json"
+            write_json(race_review_path, review_input)
             env = dict(os.environ, PYTHONPATH=str(review_root / ".agents/ask") + os.pathsep
                        + str(review_root / "_ask/scripts"))
             record_review_run = subprocess.run(
@@ -667,6 +684,61 @@ class PassageAdmissionTests(unittest.TestCase):
             self.assertEqual(record_review_run.returncode, 0,
                              f"real task-scoped traceability review wrapper accepts selected context: {record_review_run.stderr}")
             review_record = review_root / "work/product/traceability/reviews" / (candidate_sha + ".json")
+            accepted_review_record = review_record.read_bytes()
+
+            # The target, semantic validation and persisted review must all use
+            # one captured review document even if the input file changes
+            # between the caller's first read and publication.
+            candidate_scripts = str(review_root / "_ask/scripts")
+            candidate_bridge = str(review_root / ".agents/ask")
+            sys.path[:0] = [candidate_scripts, candidate_bridge]
+            try:
+                from unittest.mock import patch
+                import verification.traceability.evidence as candidate_evidence
+                import verification.traceability.cli as candidate_cli
+                from verification.traceability.evidence import record_test_review as candidate_record_test_review
+
+                original_evidence_load = candidate_evidence.load
+                direct_swap = {"done": False}
+                def swap_after_direct_read(path):
+                    result = original_evidence_load(path)
+                    if Path(path).resolve() == race_review_path.resolve() and not direct_swap["done"]:
+                        direct_swap["done"] = True
+                        write_json(race_review_path, race_review)
+                    return result
+                write_json(race_review_path, review_input)
+                with patch.object(candidate_evidence, "load", side_effect=swap_after_direct_read):
+                    direct_race = candidate_record_test_review(
+                        review_root, "product", candidate_sha, review_sha,
+                        "work/product/traceability/review-input-race.json", "fixture-coordinator")
+                if direct_race.get("review", {}).get("task_id") != "WB-003":
+                    review_failures.append("direct review recorded the replacement WB-004 body under WB-003 admission")
+
+                original_cli_load = candidate_cli.load
+                cli_swap = {"done": False}
+                def swap_after_cli_read(path):
+                    result = original_cli_load(path)
+                    if Path(path).resolve() == race_review_path.resolve() and not cli_swap["done"]:
+                        cli_swap["done"] = True
+                        write_json(race_review_path, race_review)
+                    return result
+                write_json(race_review_path, review_input)
+                with patch.object(candidate_cli, "load", side_effect=swap_after_cli_read):
+                    cli_race_status = candidate_cli.main([
+                        "--root", str(review_root), "record-review", "product",
+                        "--candidate-sha", candidate_sha, "--anchor-sha", review_sha,
+                        "--recorded-by", "fixture-coordinator", "--evidence",
+                        "work/product/traceability/review-input-race.json", "--scope", "task", "--task-id", "WB-003"])
+                if cli_race_status != 0:
+                    review_failures.append("CLI changed-body race refused instead of using its captured WB-003 review")
+                recorded_race = json.loads(review_record.read_text())
+                if recorded_race.get("review", {}).get("task_id") != "WB-003":
+                    review_failures.append("CLI persisted replacement WB-004 review under WB-003 admission")
+                review_record.write_bytes(accepted_review_record)
+            finally:
+                sys.path.remove(candidate_bridge)
+                sys.path.remove(candidate_scripts)
+
             prior_review_bytes = review_record.read_bytes()
             omitted_scope = subprocess.run(
                 [sys.executable, "-c",
@@ -682,8 +754,6 @@ class PassageAdmissionTests(unittest.TestCase):
 
             # Direct review API derives the actual task from its body instead of
             # letting omission of the optional selector disable task context.
-            candidate_scripts = str(review_root / "_ask/scripts")
-            candidate_bridge = str(review_root / ".agents/ask")
             sys.path[:0] = [candidate_scripts, candidate_bridge]
             try:
                 from verification.traceability.evidence import record_test_review as candidate_record_test_review
