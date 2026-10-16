@@ -131,6 +131,7 @@ class StageIntakeTests(unittest.TestCase):
         return root
 
     def test_adopted_explore_and_grill_call_resolver_before_any_write(self):
+        stage_gaps = []
         with tempfile.TemporaryDirectory() as directory:
             root = self._copy_caller(Path(directory))
             _repo(root)
@@ -138,12 +139,20 @@ class StageIntakeTests(unittest.TestCase):
             probe.mkdir()
             (probe / "sitecustomize.py").write_text(
                 "import os\n"
+                "import sys\n"
+                "def _event(value):\n"
+                "    with open(os.environ['RWB_INTAKE_EVENTS'], 'a') as stream: stream.write(value + '\\n')\n"
+                "def _profile(frame, event, arg):\n"
+                "    if frame.f_code.co_name == 'main' and frame.f_code.co_filename.endswith('/stage-intake.py'):\n"
+                "        if event == 'call': _event('adopted-caller-enter')\n"
+                "        elif event == 'return': _event('adopted-caller-exit')\n"
+                "sys.setprofile(_profile)\n"
                 "from engineering_model import context\n"
                 "_resolve = context.resolve\n"
                 "def _observed(*args, **kwargs):\n"
-                "    with open(os.environ['RWB_INTAKE_EVENTS'], 'a') as stream: stream.write('resolver-enter\\n')\n"
+                "    _event('resolver-enter')\n"
                 "    result = _resolve(*args, **kwargs)\n"
-                "    with open(os.environ['RWB_INTAKE_EVENTS'], 'a') as stream: stream.write('resolver-exit\\n')\n"
+                "    _event('resolver-exit')\n"
                 "    return result\n"
                 "context.resolve = _observed\n")
             event_file = root / "probe-events.log"
@@ -166,13 +175,12 @@ class StageIntakeTests(unittest.TestCase):
             for stage in ("00-explore", "01-grill"):
                 request = root / "request.json"
                 request.write_text(json.dumps({"inspection_only": True}))
-                event_file.write_text("adopted-caller-enter\n")
+                event_file.write_text("")
                 result = subprocess.run(["./ask", "stage-intake", "--stage", stage,
                                          "--work-id", "product", "--request", str(request)],
                                         cwd=root, text=True, capture_output=True, env=env)
                 self.assertEqual(result.returncode, 0, f"adopted {stage} caller should resolve read-only: {result.stderr}")
                 payload = json.loads(result.stdout)
-                event_file.write_text(event_file.read_text() + "adopted-caller-exit\n")
                 self.assertEqual(event_file.read_text().splitlines(), ["adopted-caller-enter", "resolver-enter",
                                                                        "resolver-exit", "adopted-caller-exit"],
                                  "the actual adopted caller invokes the shared resolver exactly once")
@@ -185,19 +193,24 @@ class StageIntakeTests(unittest.TestCase):
                 self.assertIn("execution_owner", payload)
                 stage_doc = (root / ".agents/ask/stages" / (stage + ".md")).read_text()
                 self.assertIn("stage-intake", stage_doc, f"canonical {stage} instructions bind the caller before writes")
-                self.assertIn("Before choosing or creating execution work" if stage == "00-explore"
-                              else "Before selecting/creating execution work", stage_doc)
+                required_prefix = ("Before choosing or creating execution work" if stage == "00-explore"
+                                   else "Before selecting/creating execution work")
+                if required_prefix not in stage_doc:
+                    stage_gaps.append(f"{stage} canonical binding misses its pre-operation resolver boundary")
                 if stage == "01-grill":
-                    self.assertIn("source revision, bounded contribution, exclusions and execution owner into",
-                                  stage_doc)
-                    self.assertIn("intent.md` before presenting the complete intent for approval", stage_doc)
+                    if ("source revision, bounded contribution, exclusions and execution owner into" not in stage_doc
+                            or "intent.md` before presenting the complete intent for approval" not in stage_doc):
+                        stage_gaps.append("01-grill does not bind confirmed subject context into intent approval")
                 project = Path(__file__).resolve().parents[2]
                 self.assertTrue((project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").is_file())
-                self.assertIn(stage_doc.strip(), (project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").read_text())
-                self.assertIn(stage_doc.strip(), (project / ".cursor/skills" / f"kit-{stage}" / "SKILL.md").read_text())
+                if stage_doc.strip() not in (project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").read_text():
+                    stage_gaps.append(f"{stage} generated skill omits its canonical stage text")
+                if stage_doc.strip() not in (project / ".cursor/skills" / f"kit-{stage}" / "SKILL.md").read_text():
+                    stage_gaps.append(f"{stage} Cursor skill omits its canonical stage text")
                 projection = ".cursor/commands" if stage == "00-explore" else ".cursor/commands"
                 cursor_doc = project / projection / f"{stage}.md"
-                self.assertIn(stage_doc.strip(), cursor_doc.read_text())
+                if stage_doc.strip() not in cursor_doc.read_text():
+                    stage_gaps.append(f"{stage} generated command omits its canonical stage text")
                 known = root / "known.json"
                 known.write_text(json.dumps({"explicit_subjects": [{"work_id": "product", "node_id": "story"}],
                                              "contribution": "Parser only", "exclusions": ["UI"],
@@ -221,7 +234,8 @@ class StageIntakeTests(unittest.TestCase):
                 later_payload = json.loads(later_result.stdout)
                 self.assertIsNone(later_payload["subject"])
                 self.assertEqual(later_payload["proposal"]["source"], "later-card")
-                self.assertEqual(later_payload["contribution"], "Prototype parser")
+                if later_payload["contribution"] != "Prototype parser":
+                    stage_gaps.append(f"{stage} later-only bounded proposal loses contribution details")
                 conflict = root / "conflict.json"
                 conflict.write_text(json.dumps({"explicit_subjects": [
                     {"work_id": "product", "node_id": "story-a"},
@@ -232,7 +246,8 @@ class StageIntakeTests(unittest.TestCase):
                                          cwd=root, text=True, capture_output=True, env=env)
                 self.assertEqual(refused.returncode, 0)
                 self.assertEqual(json.loads(refused.stdout)["disposition"], "needs_clarification")
-                self.assertEqual(event_file.read_text().splitlines(), ["resolver-enter", "resolver-exit"])
+                self.assertEqual(event_file.read_text().splitlines(), ["adopted-caller-enter", "resolver-enter",
+                                                                       "resolver-exit", "adopted-caller-exit"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), before_model)
             self.assertFalse((root / "work/product/intent.md").exists())
             self.assertFalse((root / "work/product/explore-map.md").exists())
@@ -243,6 +258,7 @@ class StageIntakeTests(unittest.TestCase):
                                             cwd=root, text=True, capture_output=True, check=True).stdout, before_refs)
             self.assertEqual(subprocess.run(["git", "write-tree"], cwd=root, text=True,
                                             capture_output=True, check=True).stdout, before_tree)
+        self.assertFalse(stage_gaps, "stage intake gaps: " + " | ".join(stage_gaps))
 
     def test_model_context_cli_matches_caller_without_writes(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -430,12 +446,20 @@ class StageIntakeTests(unittest.TestCase):
             (root / "docs/unsafe.md").symlink_to(root / "docs/context.md")
             current, diagnostics = validate_current(root, "product")
             self.assertTrue(diagnostics, "unsafe context symlinks fail the captured pre-check")
-            unsafe = associate_subject(root, "product", current.identity["digest"],
-                                       subject={"work_id": "product", "node_id": "story"},
-                                       contribution="Unsafe context", exclusions=[], actor="human",
-                                       rationale="Reject symlink", required_roles=("spec",))
+            action_calls = []
+            real_apply = domain_module.apply_batch
+            def count_action(*args, **kwargs):
+                action_calls.append("action")
+                return real_apply(*args, **kwargs)
+            with patch.object(domain_module, "apply_batch", side_effect=count_action):
+                unsafe = associate_subject(root, "product", current.identity["digest"],
+                                           subject={"work_id": "product", "node_id": "story"},
+                                           contribution="Unsafe context", exclusions=[], actor="human",
+                                           rationale="Reject symlink", required_roles=("spec",))
             self.assertFalse(unsafe["valid"])
             self.assertNotIn("action", unsafe["steps"])
+            self.assertEqual(action_calls, [], "invalid current context never invokes the semantic action")
+            self.assertIsNone(unsafe["snapshot"], "invalid current input never publishes a result candidate")
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -459,7 +483,10 @@ class StageIntakeTests(unittest.TestCase):
                     self.fail(f"malformed prior history must diagnose, not raise {type(exc).__name__}: {exc}")
                 if malformed_history["valid"] or malformed_history["steps"] != ["pre"]:
                     uncovered.append(f"malformed history accepted or invoked action: {prior_history!r} / {malformed_history!r}")
-                self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable_prior)
+                if (root / "work/product/engineering-model.json").read_bytes() != stable_prior:
+                    uncovered.append(f"malformed prior history changed source bytes: {prior_history!r}")
+                if load_published(root, "product") is not None:
+                    uncovered.append(f"malformed prior history published a generation: {prior_history!r}")
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -512,6 +539,8 @@ class StageIntakeTests(unittest.TestCase):
                                           actor="human", rationale="Foreign owner must stay fresh")
             if raced["valid"] or not any(item["code"] == "EM007_INPUT_CHANGED" for item in raced["diagnostics"]):
                 uncovered.append(f"foreign owner save did not stale association: {raced!r}")
-            self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable_local)
-            self.assertEqual(load_published(root, "product"), stable_generation)
+            if (root / "work/product/engineering-model.json").read_bytes() != stable_local:
+                uncovered.append("foreign owner save allowed local association bytes to publish")
+            if load_published(root, "product") != stable_generation:
+                uncovered.append("foreign owner save published a new local generation")
         self.assertFalse(uncovered, "association boundary gaps: " + " | ".join(uncovered))
