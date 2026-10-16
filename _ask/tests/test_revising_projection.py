@@ -32,6 +32,11 @@ def _projection_repo(root):
         {"id": "story-two", "type": "story", "title": "Second outcome", "lifecycle": "active"},
     ])
     model["nodes"][2]["case"]["plan_digest"] = "pending"
+    model["nodes"].append({"id": "choice", "type": "decision", "title": "Publish decision",
+                          "lifecycle": "open", "options": [{"id": "yes", "label": "Yes"},
+                                                               {"id": "no", "label": "No"}],
+                          "history": []})
+    model["edges"].append({"type": "depends_on", "source": "task", "target": "choice"})
     model["edges"].extend([
         {"type": "covers", "source": "test-stale", "target": "scenario-stale"},
         {"type": "contributes_to", "source": "standalone", "target": "story"},
@@ -107,6 +112,9 @@ class ProjectionTests(unittest.TestCase):
             self.assertIn("WB-003", plan_passage.get("text", ""))
             self.assertNotIn("WB-004", plan_passage.get("text", ""))
             self.assertEqual(tasks["WB-003"]["status"], "planned")
+            self.assertEqual(tasks["WB-003"].get("model_status"), "blocked")
+            self.assertEqual(tasks["WB-003"].get("readiness_source"), "engineering-model")
+            self.assertEqual({item["id"] for item in view["attention"]}, {"choice", "task"})
             self.assertEqual(tasks["WB-003"].get("status_source"), "no-runtime-record")
             self.assertIsNone(tasks["WB-003"].get("verification_status"))
             self.assertEqual(tasks["WB-003"].get("verification_source"), "no-verification-record")
@@ -183,13 +191,21 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(markdown_result.returncode, 0, markdown_result.stderr)
             self.assertIn(json_view["snapshot"]["digest"], markdown_result.stdout)
             self.assertEqual(json_view["work_id"], "product")
-            self.assertEqual(next(row for row in json_view["workbench"]["tasks"] if row["id"] == "WB-003")["status"], "planned")
+            planned = next(row for row in json_view["workbench"]["tasks"] if row["id"] == "WB-003")
+            self.assertEqual(planned["status"], "planned")
+            self.assertEqual(planned.get("model_status"), "blocked")
+            self.assertEqual({item["id"] for item in json_view["attention"]}, {"choice", "task"})
             self.assertIn("WB-003", markdown_result.stdout)
+            self.assertIn("choice", markdown_result.stdout)
             before = (root / "work/product/engineering-model.json").read_bytes()
             (root / "work/product/inner-loop/tasks.yaml").write_text("schema: broken\n", encoding="utf-8")
             refused = model_command(root, "show", "--work-id", "product", "--format", "json")
             self.assertNotEqual(refused.returncode, 0)
-            self.assertTrue(json.loads(refused.stdout)["diagnostics"])
+            refused_view = json.loads(refused.stdout)
+            self.assertTrue(refused_view["diagnostics"])
+            self.assertFalse(refused_view["editable"])
+            self.assertTrue(refused_view["last_validated"])
+            self.assertEqual(refused_view["snapshot"]["digest"], json_view["snapshot"]["digest"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), before)
 
 
