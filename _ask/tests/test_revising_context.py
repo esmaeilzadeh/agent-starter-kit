@@ -181,7 +181,7 @@ class PassageTests(unittest.TestCase):
             baseline, diagnostics = admit(root, "product")
             self.assertEqual(diagnostics, [])
             identity = baseline.identity
-            self.assertEqual(identity["dependency_discovery_version"], "engineering-input-closure/v2")
+            self.assertEqual(identity["dependency_discovery_version"], "engineering-input-closure/v3")
             self.assertTrue(identity["passage_rules_version"])
             self.assertTrue(identity["heading_discovery_version"])
             self.assertTrue(identity["plan_task_discovery_version"])
@@ -637,11 +637,21 @@ class PassageAdmissionTests(unittest.TestCase):
                         if route == "driver":
                             run_once(start_root, "product")
                         else:
-                            inner_loop_main(["--root", str(start_root), "spawn-writer", "product", "WB-003"])
+                            cli_error = StringIO()
+                            with redirect_stderr(cli_error):
+                                cli_status = inner_loop_main(["--root", str(start_root), "spawn-writer",
+                                                              "product", "WB-003"])
+                            if cli_status == 0:
+                                review_failures.append("cli task start bypassed missing selected context")
+                            elif "EM015_CONTEXT_REQUIRED" not in cli_error.getvalue():
+                                review_failures.append("cli task start refused with wrong diagnostic")
                     except Exception as exc:
-                        if "EM015_CONTEXT_REQUIRED" not in str(exc):
+                        if getattr(exc, "diagnostic", {}).get("code") != "EM015_CONTEXT_REQUIRED":
                             review_failures.append(f"{route} task start refused with wrong diagnostic: {exc!r}")
                     else:
+                        if route == "driver":
+                            review_failures.append(f"{route} task start bypassed missing selected context")
+                    if route == "driver" and load_state(start_root, "product")["tasks"]["WB-003"]["status"] == "running":
                         review_failures.append(f"{route} task start bypassed missing selected context")
                     if load_state(start_root, "product") != state_before:
                         review_failures.append(f"{route} missing-context refusal changed writer state")
@@ -828,19 +838,24 @@ class PassageAdmissionTests(unittest.TestCase):
             # filesystem validation can see them already.
             document = json.loads((root / "work/product/engineering-model.json").read_text())
             product_plan = json.loads((root / "work/product/test-plan.json").read_text())
-            foreign_plan = {"schema": "ask-test-plan/v1", "work_id": "foreign", "tests": [
-                {"id": "WB-foreign", "scenario": {"given": "Given", "when": "When", "then": ["Then"]}}
-            ]}
+            foreign_spec = json.loads((root / "specs/current/product.json").read_text())
+            foreign_spec["work_id"] = "foreign"
+            foreign_plan = dict(product_plan)
+            foreign_plan["work_id"] = "foreign"
+            foreign_plan["spec_digest"] = digest(foreign_spec)
+            foreign_plan["task_scopes"] = []
             foreign_plan["flow_mappings"] = [reviewed_mapping(
-                {"scope": "local", "case_id": "WB-foreign"},
+                {"scope": "local", "case_id": "WB-publish"},
                 {"scope": "external", "work_id": "product", "plan_digest": digest(product_plan),
                  "case_id": "WB-publish"})]
             document["nodes"][2]["case"] = {"work_id": "foreign", "plan_digest": digest(foreign_plan),
-                                             "case_id": "WB-foreign"}
+                                             "case_id": "WB-publish"}
             document["nodes"][4]["reference"] = {"path": "work/product/test-plan.json", "id": "WB-publish",
                                                   "work_id": "product", "plan_digest": digest(product_plan)}
             _put(root, "work/product/engineering-model.json", document)
             _put(root, "work/foreign/test-plan.json", foreign_plan)
+            _put(root, "specs/current/foreign.json", foreign_spec)
+            _put(root, "specs/current/foreign.md", b"# Foreign requirements\nSame validated scope.\n")
             self.assertEqual(validate(document, root, "product"), [],
                              "direct source resolution accepts the reviewed foreign-to-local relation")
             foreign_capture = capture(root, "product")
