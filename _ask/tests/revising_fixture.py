@@ -40,6 +40,13 @@ def plan():
     return result
 
 
+def reviewed_mapping(scenario_case, test_case):
+    body = {"scenario_case": scenario_case, "test_case": test_case}
+    return {**body, "review": {"body_digest": digest(body),
+                                "decision": {"decision": "APPROVED", "reviewer": "independent-reviewer",
+                                             "independent": True}}}
+
+
 def reference_bytes():
     spec = {"schema": "ask-spec/v1", "work_id": "product", "revision": 1,
             "criteria": [{"id": "EM-007", "given": "A proposal", "when": "Published", "then": ["Result"]}]}
