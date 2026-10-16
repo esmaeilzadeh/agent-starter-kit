@@ -34,8 +34,8 @@ Run `./ask model --help` and each subcommand's `--help` for arguments.
   remains the fallback for missed events.
 - `context` resolves an explicit qualified subject or a confirmed recorded
   association for read-only initial-stage intake. It labels later cards and
-  tracker references as proposals/external context; neither creates execution
-  ownership.
+  tracker references as proposals/external context; supplied tracker data stays
+  unverified without an authoritative read, and neither creates execution ownership.
 
 The adopted Explore and Grill stages call `./ask stage-intake` before selecting
 or creating execution work, intent, or delivery admission. The stage adapter

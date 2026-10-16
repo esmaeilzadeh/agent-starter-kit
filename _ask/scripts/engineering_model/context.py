@@ -136,9 +136,10 @@ def resolve(root, work_id, request, *, branch=None):
     result["external_context"] = None
     tracker = request.get("tracker_context")
     if isinstance(tracker, dict):
-        result["external_context"] = {"state": "available" if tracker.get("available") is True else "unavailable",
+        tracker_state = "unavailable" if tracker.get("available") is False else "supplied-unverified"
+        result["external_context"] = {"state": tracker_state,
                                       "reference": tracker.get("id")}
-        if tracker.get("available") is not True and result["disposition"] == "resolved":
+        if tracker_state == "unavailable" and result["disposition"] == "resolved":
             result["disposition"] = "unavailable"
     if subject is None and result["disposition"] != "needs_clarification":
         result["disposition"] = "chooser"
