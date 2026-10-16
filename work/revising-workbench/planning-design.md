@@ -204,3 +204,41 @@ workstream completion. Relevant definition/context/source/helper/fixture/evidenc
 changes invalidate it and require a new exercise. Escalate an unresolved failure
 for a scope decision only through Spec Change, without silently marking it pass.
 Runtime evidence archival cites the tested source SHA and does not redefine it.
+
+## RWB-102 explicit caller wiring amendment
+
+Keep one shared guard. Extend its admission inputs with an explicit selected
+product Task or qualified execution Task, validated against the captured model.
+Execution aliases resolve only by the declared `(work_id, task_id)` pair; equal
+node IDs, branch names, labels, tracker references and an ambient running task do
+not establish an association. Reject contradictory or malformed supplied
+identities before action. A caller with an explicit selected Task cannot opt out
+of its required spec and plan-task passages by relabeling its action. Generic
+unrelated semantic/decision operations retain their own admission semantics and
+remain possible despite safe optional context gaps.
+
+Thread selected task inputs where the real caller already possesses them:
+inner-loop driver selection/integration, integration and review CLI/direct
+boundaries, task-scoped traceability run/completion/review, the verification
+workflow bridge and explicit model admit-with-action. Add explicit CLI arguments
+only where the public operation needs a subject input it previously lacked.
+Retain backward compatibility for v1 and truly unselected inspection/unrelated
+actions. Current generic contract-review operations continue validating full
+canonical inputs without manufacturing a product-task association.
+
+Tests enumerate actual adopted foundation entrypoints and execute their success,
+invalid/stale and required-context refusal paths through temporary owned repos.
+The trace binds ordered pre-check/action/post-check/publication to captured input
+and result identities; nested validation must preserve one logical outer action
+and publication. Caller labels, fake traces, mocked actions standing in for real
+entrypoints, call-stack introspection and global running-task inference cannot
+satisfy this registry. Existing explicit recovery boundaries retain their own
+replacement validation; no nonexistent import command is introduced.
+
+The verification runner change is limited to carrying the explicit selected
+identity through `workflow_context`; immutable-base candidate verification,
+coordinator authority, case instrumentation, CheckPlan execution, integrity and
+FF-only integration remain enforced. Direct coordinator evidence/review helpers
+must retain the same task identity and guard semantics as their CLI wrappers.
+Independent review must assess both this scoped tooling amendment and the
+resulting actual caller tests before task integration.

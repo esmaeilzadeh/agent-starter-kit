@@ -28,6 +28,14 @@ tasks:
       - _ask/scripts/engineering_model/admission.py
       - _ask/scripts/engineering_model/workflow.py
       - _ask/scripts/engineering_model/observer.py
+      - _ask/scripts/engineering_model/__main__.py
+      - _ask/scripts/inner_loop/driver.py
+      - _ask/scripts/inner_loop/integrate.py
+      - _ask/scripts/inner_loop/__main__.py
+      - _ask/scripts/inner_loop/evidence.py
+      - .agents/ask/verification/run.py
+      - .agents/ask/verification/traceability/cli.py
+      - .agents/ask/verification/traceability/evidence.py
       - _ask/tests/test_revising_context.py
     completion_evidence: "Selector/admission matrix and all already-existing foundation guard entries pass; real actions prove exactly pre/action/post/publication with captured lineage; linked-only and missing/ambiguous transitions invalidate; later introducing tasks extend registry coverage"
     test_ids: [RWB-SELECTORS, RWB-PASSAGE-ACTIONS, RWB-CONTEXT-FRESHNESS, RWB-GUARD-PRE, RWB-GUARD-POST, RWB-GUARD-REFS, RWB-GUARD-EVENTS, RWB-GUARD-PARITY, RWB-GUARD-PUBLISH, RWB-GUARD-BOOTSTRAP, RWB-GUARD-BATCH, RWB-GUARD-ORDER, RWB-GUARD-ENTRYPOINTS]
