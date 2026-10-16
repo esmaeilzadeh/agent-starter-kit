@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
+  "contract_sha": "bdffffd4540ada236c30603fcda125575e479d97",
   "work_id": "revising-workbench",
   "reviewer": "/root/review_revising_plan",
   "recorded_by": "/root",
@@ -15,41 +15,34 @@
     "model": "gpt-6.1-sol",
     "reasoning_effort": "high",
     "runtime": "codex",
-    "reviewed_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
-    "amendment_origin_sha": "02ca789cc8ce567d22b622767c1bbdb9c5bd363e",
+    "reviewed_sha": "bdffffd4540ada236c30603fcda125575e479d97",
     "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
     "plan_digest": "936e4cb9a06d550476170c299c9a64e337cd6c9c833da3ce5952c871f87a2e7b",
-    "graph_digest": "e691e26e2865f165d3a59f57d4d2144675fb48f1c16ded0804aff6dbb3f6160a",
+    "graph_digest": "80a61d7e6c0c510de1d12ea48419d60f2c7650aa8e9a163e8b7abca1a3825c71",
     "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
-    "assessment": "APPROVED plan ownership/procedure amendment only. Eight concrete existing caller/bridge paths are necessary to thread explicit qualified task identity through shared admission; spec, canonical test-plan, cases/types/runners/scopes/order unchanged. Corrected audited running\u2192blocked\u2192pin/commit\u2192new-base/running procedure retains accept-plan refusal and complete original-base final review.",
+    "assessment": "APPROVED narrow RWB-103 ownership/completion-evidence amendment only. Adds required admission.py final publication helper; no spec/test-plan/case/type/runner/task-scope/order/dependency or unrelated task changes. Exact source remains previously semantically reviewed b215. Original task history and current accepted-authority/evidence gates remain mandatory; no state/ref/source mutation or integration approval.",
     "added_owned_paths": [
-      "_ask/scripts/engineering_model/__main__.py",
-      "_ask/scripts/inner_loop/driver.py",
-      "_ask/scripts/inner_loop/integrate.py",
-      "_ask/scripts/inner_loop/__main__.py",
-      "_ask/scripts/inner_loop/evidence.py",
-      ".agents/ask/verification/run.py",
-      ".agents/ask/verification/traceability/cli.py",
-      ".agents/ask/verification/traceability/evidence.py"
+      "_ask/scripts/engineering_model/admission.py"
     ],
-    "state_procedure_decision": "APPROVED",
-    "original_task_base_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
-    "preserved_wip_sha": "f964094bf54882258ee9b9472043b2a6b94c781b",
-    "required_procedure": [
-      "Audited coordinator CAS from running to blocked-for-contract-amendment, preserving original base/WIP/reason; permit no second writer.",
-      "Use unchanged accept-plan operation only after no task is running, against this exact reviewed revision/graph; commit the accepted pin.",
-      "Audited CAS refreshes coordinator_sha and RWB-102 base_sha to new accepted-pin commit, preserves original base/history/reason and restores same task running.",
-      "Final task semantic/ownership review covers full original-base-to-final diff, including WIP now in admission base; no source/test evidence exemption. Current final candidate must pass current accepted contract and immutable-base checks."
+    "changed_task_fields": [
+      "RWB-103.owned_paths",
+      "RWB-103.completion_evidence"
     ],
+    "previous_contract_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
+    "original_task_base_sha": "ec1c2d614e014ade18a54fbfa13c970f77cb0322",
+    "implementation_source_sha": "b215ab9af93fb2fc8e8be08c319d5576f8c5cdcc",
+    "implementation_semantic_review": "work/revising-workbench/inner-loop/evidence/RWB-103-review-b215ab9.md",
+    "boundary_assessment": "The sole prior glob_too_narrow publication helper is necessary and minimally added. _publish observations API/checks and recovery rollback remain one shared guard; existing verification authority/instrumentation is unchanged. Dependency chain serializes shared admission.py with RWB102 and later tasks.",
+    "completion_evidence_assessment": "Clarifies existing accepted EM002/EM007/EM015 freshness/publication responsibilities and RWB-ASSOCIATION-PASSAGES assertions: required context, intent handoff, post-write foreign stale detection, rollback and no publication. Does not replace or weaken canonical tests or their real-entry/no-stub requirements.",
     "blocking_findings": [],
     "limitations": [
-      "This approves plan amendment and state procedure, not WIP source or any future implementation.",
-      "No refs/state/source/commits changed by reviewer. Coordinator executes and records subsequent operations.",
-      "Earlier RWB-102 fixture/assertion review remains applicable. Added verification paths allow explicit identity wiring only; immutable runner authority, instrumentation, integrity, CheckPlan and FF-only gates remain mandatory."
+      "Plan amendment approval only; previous task rejection remains historically correct under old ownership.",
+      "Coordinator must use normal accept-plan authority and audited writer/base transitions, preserving originalec1 task base/history and complete original-base source review; no refusal bypass or WIP exemption.",
+      "Future task review/evidence must bind resulting candidate/current accepted contract. No source/state/ref/commits changed by reviewer."
     ]
   },
-  "plan_review_digest": "41ebffe195badcfa9da0859ea2b8776c24a7d7e66697cd28ad9746baa6ff16d5",
+  "plan_review_digest": "72cb93046ddb00f9d5cb6548db26f855f0721ac4c3364fa55a3dd3f56795a330",
   "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
   "plan_digest": "936e4cb9a06d550476170c299c9a64e337cd6c9c833da3ce5952c871f87a2e7b",
-  "graph_digest": "e691e26e2865f165d3a59f57d4d2144675fb48f1c16ded0804aff6dbb3f6160a"
+  "graph_digest": "80a61d7e6c0c510de1d12ea48419d60f2c7650aa8e9a163e8b7abca1a3825c71"
 }
