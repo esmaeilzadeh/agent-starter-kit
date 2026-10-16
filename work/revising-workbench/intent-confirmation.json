@@ -1,0 +1,10 @@
+{
+  "schema": "ask-intent-confirmation/v2",
+  "work_id": "revising-workbench",
+  "scope": "complete-intent-and-assumptions",
+  "prompt": "Do you approve the complete intent and every listed assumption as written?",
+  "intent_sha256": "b1e054d56a3317225e1d356206f64ec580f57383d34bda87f44009b1c89e5d26",
+  "human_choice": "approve",
+  "human_response": "I approve the complete intent and assumptions",
+  "response_recording": "Explicit textual approval recorded through the approve choice; exact reply retained because the text validator rejects this wording."
+}
