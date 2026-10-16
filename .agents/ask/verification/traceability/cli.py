@@ -56,9 +56,15 @@ def execute(args,root):
     if os.environ.get('ASK_INNER_LOOP_ROLE')=='worker' and args.command in {'accept-plan','record-review','record-result'}:raise Invalid('coordinator operation cannot be performed by worker')
     if args.command=='validate-plan':doc=contracts_at(root,args.work_id,args.revision)
     elif args.command=='accept-plan':doc=accept_plan(root,args.work_id,args.revision,args.reviewer,args.recorded_by,args.evidence)
-    elif args.command=='record-review':doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by,
-                                                              selected_execution=({'work_id':args.work_id,'task_id':args.task_id}
-                                                                                  if args.scope=='task' else None))
+    elif args.command=='record-review':
+        review=load(root/args.evidence)
+        body_scope=review.get('scope','workstream') if isinstance(review,dict) else None
+        body_task=review.get('task_id') if isinstance(review,dict) else None
+        if body_scope!=args.scope or (args.scope=='task' and body_task!=args.task_id):
+            raise Invalid('CLI review scope/task must match the review body')
+        selected=({'work_id':args.work_id,'task_id':body_task} if body_scope=='task' else None)
+        doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by,
+                               selected_execution=selected)
     elif args.command=='run':
         contracts=load_accepted(root,args.work_id,anchor)
         if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)

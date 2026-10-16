@@ -20,7 +20,8 @@ from .passages import (HEADING_DISCOVERY_VERSION, PLAN_TASK_DISCOVERY_VERSION,
                        RULES_VERSION as PASSAGE_RULES_VERSION, resolve)
 
 _COMMIT = re.compile(r"^[0-9a-f]{40,64}$")
-DEPENDENCY_DISCOVERY_VERSION = "engineering-input-closure/v2"
+DEPENDENCY_DISCOVERY_VERSION = "engineering-input-closure/v3"
+_MISSING_REVISION = object()
 
 
 def unique_objects(pairs):
@@ -86,6 +87,10 @@ def referenced_paths(document):
                 owner = execution["work_id"]
                 if SLUG.fullmatch(owner):
                     paths.add(f"work/{owner}/engineering-model.json")
+            case = node.get("case")
+            if (node.get("type") == "scenario" and isinstance(case, dict)
+                    and isinstance(case.get("work_id"), str) and SLUG.fullmatch(case["work_id"])):
+                paths.add(f"work/{case['work_id']}/test-plan.json")
     return paths
 
 
@@ -100,6 +105,8 @@ def _revision_bytes(root, relative, revision):
         raise ValueError("context revision is unavailable")
     records = [line.split("\t", 1)[0].split() for line in tree.stdout.splitlines()
                if "\t" in line and line.split("\t", 1)[1] == relative]
+    if not records:
+        return _MISSING_REVISION
     if len(records) != 1 or len(records[0]) != 3 or records[0][1] != "blob" or records[0][0] not in {"100644", "100755"}:
         raise ValueError("context revision must identify one regular committed blob")
     blob = records[0][2]
@@ -168,7 +175,10 @@ class Snapshot:
                  "state": value.get("resolution", {}).get("state"),
                  "match_count": value.get("resolution", {}).get("match_count"),
                  "start_line": value.get("resolution", {}).get("start_line"),
-                 "end_line": value.get("resolution", {}).get("end_line")}
+                 "end_line": value.get("resolution", {}).get("end_line"),
+                 "resolution_sha256": hashlib.sha256(json.dumps(
+                     value.get("resolution"), ensure_ascii=False, sort_keys=True,
+                     separators=(",", ":")).encode()).hexdigest()}
                 for key, value in sorted(self.passages.items())
             ],
         }
@@ -248,11 +258,14 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
                 if linked.get("task_scopes"):
                     pending.add(f"work/{linked_id}/inner-loop/tasks.yaml")
             for mapping in linked.get("flow_mappings", []) if isinstance(linked.get("flow_mappings"), list) else []:
-                target = mapping.get("test_case") if isinstance(mapping, dict) else None
-                if isinstance(target, dict) and target.get("scope") == "external":
-                    foreign = target.get("work_id")
-                    if isinstance(foreign, str) and SLUG.fullmatch(foreign):
-                        pending.add(f"work/{foreign}/test-plan.json")
+                if not isinstance(mapping, dict):
+                    continue
+                for selector_name in ("scenario_case", "test_case"):
+                    selector = mapping.get(selector_name)
+                    if isinstance(selector, dict) and selector.get("scope") == "external":
+                        foreign = selector.get("work_id")
+                        if isinstance(foreign, str) and SLUG.fullmatch(foreign):
+                            pending.add(f"work/{foreign}/test-plan.json")
         if pending:
             # Newly discovered plan or execution-owner dependencies are read in
             # the same deterministic closure loop.
@@ -268,23 +281,39 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
         if kind == "context":
             try:
                 historical = _revision_bytes(root, path, revision) if revision != "snapshot" else None
-                selected_raw = historical if historical is not None else raw
-                resolution = resolve(path, selected_raw, selector, status=status)
-                if historical is not None:
+                if historical is _MISSING_REVISION:
+                    selected_raw = None
+                    passage_status = status if status in {"unsafe", "outside-repository", "unresolvable", "unreadable"} else "missing"
+                else:
+                    selected_raw = historical if historical is not None else raw
+                    passage_status = status
+                resolution = resolve(path, selected_raw, selector, status=passage_status)
+                if historical is not None and historical is not _MISSING_REVISION:
                     sha = hashlib.sha256(historical).hexdigest()
+                if historical is _MISSING_REVISION:
+                    sha = None
+                    status = passage_status
             except (OSError, UnicodeError, ValueError, TypeError) as exc:
                 resolution = {"path": path, "selector": selector, "state": "error", "match_count": 0,
                               "text": None, "start_line": None, "end_line": None, "error": str(exc)}
         else:
             try:
                 historical = _revision_bytes(root, path, revision) if revision != "snapshot" else None
-                selected_raw = historical if historical is not None else raw
+                if historical is _MISSING_REVISION:
+                    selected_raw = None
+                    passage_status = status if status in {"unsafe", "outside-repository", "unresolvable", "unreadable"} else "missing"
+                else:
+                    selected_raw = historical if historical is not None else raw
+                    passage_status = status
                 selected_text = selected_raw.decode("utf-8") if selected_raw is not None else None
                 resolution = {"path": path, "state": "available" if selected_text is not None else "unavailable",
                               "text": selected_text, "qualified_name": reference.get("qualified_name"),
                               "error": None}
-                if historical is not None:
+                if historical is not None and historical is not _MISSING_REVISION:
                     sha = hashlib.sha256(historical).hexdigest()
+                if historical is _MISSING_REVISION:
+                    sha = None
+                    status = passage_status
             except (OSError, UnicodeError, ValueError, TypeError) as exc:
                 resolution = {"path": path, "state": "error", "text": None,
                               "qualified_name": reference.get("qualified_name"), "error": str(exc)}

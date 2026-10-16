@@ -143,7 +143,22 @@ def _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,record
 
 
 def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,*,selected_execution=None):
-    """Record review inside the explicit selected-task workflow when requested."""
+    """Bind task-scoped review publication to the task named by its review body."""
+    review = load(Path(root)/review_path)
+    scope = review.get('scope','workstream') if isinstance(review,dict) else None
+    task_id = review.get('task_id') if isinstance(review,dict) else None
+    if scope == 'task':
+        if not isinstance(task_id,str) or not task_id.strip():
+            raise Invalid('task-scoped review must name one task before publication')
+        body_execution = {'work_id':work_id,'task_id':task_id}
+        if selected_execution is not None and selected_execution != body_execution:
+            raise Invalid('selected execution does not match task-scoped review body')
+        selected_execution = body_execution
+    elif scope == 'workstream':
+        if selected_execution is not None:
+            raise Invalid('workstream review cannot be bound to a task execution')
+    elif scope is not None:
+        raise Invalid('review body has an unknown scope')
     if selected_execution is None:
         return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by)
     from verification.run import workflow_context

@@ -3,8 +3,8 @@ from pathlib import Path, PureWindowsPath
 import re
 
 
-RULES_VERSION = "engineering-passages/v1"
-HEADING_DISCOVERY_VERSION = "markdown-heading-chain/v1"
+RULES_VERSION = "engineering-passages/v2"
+HEADING_DISCOVERY_VERSION = "markdown-heading-chain/v2"
 PLAN_TASK_DISCOVERY_VERSION = "markdown-task-row/v1"
 
 _HEADING = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
@@ -56,6 +56,27 @@ def _headings(lines):
     return found
 
 
+def _without_fenced_code(lines):
+    """Mask fenced examples for discovery while preserving source line numbers."""
+    fence_char = None
+    fence_size = 0
+    result = []
+    for line in lines:
+        stripped = line.lstrip()
+        marker = re.match(r"(`{3,}|~{3,})", stripped)
+        if fence_char is None:
+            if marker:
+                fence_char, fence_size = marker.group(1)[0], len(marker.group(1))
+                result.append("\n" if line.endswith("\n") else "")
+            else:
+                result.append(line)
+            continue
+        if marker and marker.group(1)[0] == fence_char and len(marker.group(1)) >= fence_size:
+            fence_char, fence_size = None, 0
+        result.append("\n" if line.endswith("\n") else "")
+    return result
+
+
 def _section(lines, headings, heading):
     start, level, _chain, _text = heading
     end = len(lines)
@@ -91,24 +112,27 @@ def resolve(path, raw, selector, status=None):
     except UnicodeDecodeError as exc:
         raise ValueError("captured passage is not valid UTF-8") from exc
     lines = text.splitlines(keepends=True)
+    discovery_lines = _without_fenced_code(lines)
     if parsed[0] == "heading":
         expected = parsed[1]
-        matches = [item for item in _headings(lines) if item[2] == expected]
+        headings = _headings(discovery_lines)
+        matches = [item for item in headings if item[2] == expected]
         if not matches:
             return _result(path, selector, "unavailable")
         if len(matches) > 1:
             return _result(path, selector, "ambiguous", len(matches))
-        start, end, selected = _section(lines, _headings(lines), matches[0])
+        start, end, selected = _section(lines, headings, matches[0])
         return _result(path, selector, "available", 1, selected, start + 1, end)
 
     _kind, heading_path, task_id = parsed
-    heading_matches = [item for item in _headings(lines) if item[2] == heading_path]
+    headings = _headings(discovery_lines)
+    heading_matches = [item for item in headings if item[2] == heading_path]
     if not heading_matches:
         return _result(path, selector, "unavailable")
     if len(heading_matches) > 1:
         return _result(path, selector, "ambiguous", len(heading_matches))
-    start, end, _heading_text_value = _section(lines, _headings(lines), heading_matches[0])
-    section_lines = lines[start:end]
+    start, end, _heading_text_value = _section(lines, headings, heading_matches[0])
+    section_lines = discovery_lines[start:end]
     candidates = []
     index = 0
     while index + 1 < len(section_lines):
@@ -136,7 +160,8 @@ def resolve(path, raw, selector, status=None):
     if len(candidates) > 1:
         return _result(path, selector, "ambiguous", len(candidates))
     header_index, _separator_index, row_index = candidates[0]
-    selected = "".join(section_lines[header_index:header_index + 2] + [section_lines[row_index]])
+    selected = "".join(lines[start + index] for index in
+                       (header_index, header_index + 1, row_index))
     absolute_start = start + header_index + 1
     absolute_end = start + row_index + 1
     return _result(path, selector, "available", 1, selected, absolute_start, absolute_end)
@@ -162,10 +187,15 @@ def required_task_passages(snapshot, node_id):
         if role == "plan":
             execution = node.get("execution")
             expected_task_id = execution.get("task_id") if isinstance(execution, dict) else None
+            expected_owner = execution.get("work_id") if isinstance(execution, dict) else None
             selector = entries[0].get("resolution", {}).get("selector")
+            passage_path = entries[0].get("path")
             if (not isinstance(expected_task_id, str) or not expected_task_id.strip()
+                    or not isinstance(expected_owner, str) or not expected_owner.strip()
                     or not isinstance(selector, dict) or selector.get("kind") != "plan-task"
-                    or selector.get("task_id") != expected_task_id):
+                    or selector.get("task_id") != expected_task_id
+                    or not isinstance(passage_path, str)
+                    or not passage_path.startswith(f"work/{expected_owner}/")):
                 missing.append(role)
     return missing
 

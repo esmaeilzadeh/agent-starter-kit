@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
-from engineering_model.workflow import guarded_workflow, workflow_admission
+from engineering_model.workflow import adopted, guarded_workflow, workflow_admission
 
 from inner_loop.evidence import (
     NotIntegrable, check_integrable, git, read_candidate, result_path,
@@ -126,11 +126,15 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
     return sha
 
 
-@guarded_workflow
 def run_once(root: Path, work_id: str) -> str:
-    ensure_state(root, work_id)
     graph = load_graph(root, work_id)
-    doc = load_state(root, work_id)
+    status = validate_graph(graph)
+    if status != "ok":
+        raise ValueError(status)
+    try:
+        doc = load_state(root, work_id)
+    except FileNotFoundError:
+        doc = {"tasks": {}}
     running = _running(doc)
     if running:
         tid = running[0]
@@ -140,13 +144,17 @@ def run_once(root: Path, work_id: str) -> str:
         return f"waiting={tid}"
     ready = ready_ids(graph, doc)
     if not ready:
+        ensure_state(root, work_id)
         return "quiescent"
     tid = ready[0]
-    spawn_writer(root, work_id, tid)
+    selected_execution = {"work_id": work_id, "task_id": tid}
+    selection = selected_execution if adopted(root, work_id) else None
+    with workflow_admission(root, work_id, selected_execution=selection):
+        ensure_state(root, work_id)
+        spawn_writer(root, work_id, tid)
     return f"running={tid}"
 
 
-@guarded_workflow
 def run_until(root: Path, work_id: str) -> str:
     while True:
         out = run_once(root, work_id)

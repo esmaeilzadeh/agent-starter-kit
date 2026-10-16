@@ -78,9 +78,11 @@ def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
     return 0
 
 
-@guarded_workflow
 def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
-    doc = spawn_writer(root, work_id, task_id)
+    selected_execution = ({"work_id": work_id, "task_id": task_id}
+                          if adopted(root, work_id) else None)
+    with workflow_admission(root, work_id, selected_execution=selected_execution):
+        doc = spawn_writer(root, work_id, task_id)
     print(f"running={task_id} revision={doc['revision']}")
     return 0
 
