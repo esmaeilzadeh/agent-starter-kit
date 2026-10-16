@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 5,
-  "coordinator_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
+  "revision": 6,
+  "coordinator_sha": "c2635515f4f4643344b8483b86ea7d8e046d4bab",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
     "RWB-101": {
@@ -399,11 +399,11 @@
       }
     },
     "RWB-102": {
-      "status": "blocked",
-      "base_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
+      "status": "running",
+      "base_sha": "c2635515f4f4643344b8483b86ea7d8e046d4bab",
       "task_branch": "",
       "result_path": "",
-      "boundary_reject": "glob_too_narrow: reviewed caller ownership amendment pending pin",
+      "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
@@ -414,6 +414,13 @@
           "wip_sha": "f964094bf54882258ee9b9472043b2a6b94c781b",
           "reviewed_amendment_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
           "reason": "Thread explicit selected task identity through independently reviewed caller ownership; no WIP semantic approval."
+        },
+        {
+          "event": "readmitted-under-reviewed-contract",
+          "original_base_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
+          "new_base_sha": "c2635515f4f4643344b8483b86ea7d8e046d4bab",
+          "reviewed_amendment_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
+          "review_whole_task_from_original_base": true
         }
       ]
     },
