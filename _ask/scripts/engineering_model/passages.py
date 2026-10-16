@@ -63,7 +63,7 @@ def _without_fenced_code(lines):
     result = []
     for line in lines:
         stripped = line.lstrip()
-        marker = re.match(r"(`{3,}|~{3,})", stripped)
+        marker = re.match(r"(`{3,}|~{3,})(.*)$", stripped)
         if fence_char is None:
             if marker:
                 fence_char, fence_size = marker.group(1)[0], len(marker.group(1))
@@ -71,7 +71,8 @@ def _without_fenced_code(lines):
             else:
                 result.append(line)
             continue
-        if marker and marker.group(1)[0] == fence_char and len(marker.group(1)) >= fence_size:
+        if (marker and marker.group(1)[0] == fence_char
+                and len(marker.group(1)) >= fence_size and not marker.group(2).strip()):
             fence_char, fence_size = None, 0
         result.append("\n" if line.endswith("\n") else "")
     return result

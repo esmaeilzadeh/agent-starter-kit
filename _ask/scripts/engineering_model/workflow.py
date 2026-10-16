@@ -129,6 +129,15 @@ def workflow_admission(root, work_id, expected=None, *, selected_task_id=None, s
             _refuse(diagnostics)
             raise Refused('EM007_INPUT_CHANGED', 'workflow cannot implicitly adopt new canonical definitions')
         return
+    # Execution aliases were introduced by schema v2. Callers such as the
+    # inner-loop and verification bridges may know a task ID for older v1
+    # models, but that identifier was never a v1 model identity. Validate the
+    # document first (preserving its diagnostic precedence), then apply the
+    # qualified alias gate only to v2 models.
+    preflight, diagnostics = validate_current(root, work_id)
+    _refuse(diagnostics)
+    if preflight.document.get('schema') != SCHEMA_V2:
+        selected_execution = None
     key = (str(root), work_id)
     active = _active.get()
     nested = key in active
