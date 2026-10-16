@@ -816,9 +816,41 @@ class PassageAdmissionTests(unittest.TestCase):
     def test_missing_linked_and_ambiguous_changes_invalidate_snapshot(self):
         from _ask.scripts.engineering_model.admission import admit, load_published
         from _ask.scripts.engineering_model.observer import observe_once
+        from _ask.scripts.engineering_model.validation import validate
+        from _ask.tests.revising_fixture import digest, reviewed_mapping
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            _repo(root, spec_text="# Scope\nA contract.\n")
+
+            # A foreign Scenario source and both sides of its reviewed mapping
+            # belong to the captured dependency closure, even if direct
+            # filesystem validation can see them already.
+            document = json.loads((root / "work/product/engineering-model.json").read_text())
+            product_plan = json.loads((root / "work/product/test-plan.json").read_text())
+            foreign_plan = {"schema": "ask-test-plan/v1", "work_id": "foreign", "tests": [
+                {"id": "WB-foreign", "scenario": {"given": "Given", "when": "When", "then": ["Then"]}}
+            ]}
+            foreign_plan["flow_mappings"] = [reviewed_mapping(
+                {"scope": "local", "case_id": "WB-foreign"},
+                {"scope": "external", "work_id": "product", "plan_digest": digest(product_plan),
+                 "case_id": "WB-publish"})]
+            document["nodes"][2]["case"] = {"work_id": "foreign", "plan_digest": digest(foreign_plan),
+                                             "case_id": "WB-foreign"}
+            document["nodes"][4]["reference"] = {"path": "work/product/test-plan.json", "id": "WB-publish",
+                                                  "work_id": "product", "plan_digest": digest(product_plan)}
+            _put(root, "work/product/engineering-model.json", document)
+            _put(root, "work/foreign/test-plan.json", foreign_plan)
+            self.assertEqual(validate(document, root, "product"), [],
+                             "direct source resolution accepts the reviewed foreign-to-local relation")
+            foreign_capture = capture(root, "product")
+            self.assertIn("work/foreign/test-plan.json", foreign_capture.files,
+                          "foreign selected Scenario plan is part of the captured dependency closure")
+            self.assertEqual(foreign_capture.diagnostics(root), [],
+                             "captured validation uses the same foreign-plan bytes as direct validation")
+
+            # Restore the ordinary local fixture so the remaining freshness
+            # transitions stay isolated from this foreign-flow probe.
             _repo(root, spec_text="# Scope\nA contract.\n")
             first = capture(root, "product")
             first_identity = first.identity
