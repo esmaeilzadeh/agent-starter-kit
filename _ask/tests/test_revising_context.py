@@ -363,22 +363,23 @@ class PassageAdmissionTests(unittest.TestCase):
 
             workflow_module.validate_current = external_save_after_real_capture
             race_actions = []
+            race_refusal = None
             try:
                 try:
                     with workflow_module.workflow_admission(
                             race_root, "product", selected_execution={"work_id": "product", "task_id": "WB-003"}):
                         race_actions.append("selected-v2-action")
                 except Exception as exc:
-                    self.assertIn(getattr(exc, "diagnostic", {}).get("code"),
-                                  {"EM015_CONTEXT_REQUIRED", "EM007_INPUT_CHANGED"},
-                                  f"the generation switch must refuse before selected action: {exc!r}")
-                else:
-                    self.fail("a v2 generation saved after a v1 preflight must not bypass selected passage admission")
+                    race_refusal = exc
             finally:
                 workflow_module.validate_current = real_validate_current
             if changed_after_capture:
+                self.assertIn(getattr(race_refusal, "diagnostic", {}).get("code"),
+                              {"EM015_CONTEXT_REQUIRED", "EM007_INPUT_CHANGED"},
+                              f"the generation switch must refuse before selected action: {race_refusal!r}")
                 self.assertEqual(race_actions, [], "mixed-generation admission refuses before the dependent action")
             else:
+                self.assertIsNone(race_refusal, f"single-generation v1 admission remains valid: {race_refusal!r}")
                 self.assertEqual(race_actions, ["selected-v2-action"],
                                  "one captured valid v1 generation preserves the legacy action route")
 
