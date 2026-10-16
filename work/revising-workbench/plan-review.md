@@ -33,3 +33,15 @@ after the plan is revised. Record structural/collection validation and the exact
 revision result; a completed independent review and contract pin remain pending
 before implementation. The earlier Spec Challenge PASS remains about its original
 unchanged specification inputs, not this unfinished planning review.
+
+## Revision recorded by the coordinator
+
+The three observations are addressed in planning source commit
+`e0dead38a1e06fafe536f27461b558876d429e7e`: four candidate-local baseline discovery
+runners; passage cases assigned to the introducing tasks; and local flow selectors
+whose identity comes from the enclosing reviewed plan, without recursive hashes.
+Graph/coverage/scope checks passed for nine tasks, 56 cases and 38 runners. Isolated
+collection matched all 22 existing regression cases without executing test methods.
+This records the revision and its checks, not an independent final verdict.
+Per the human's instruction, stop after revision; further review and pinning remain
+pending before implementation.
