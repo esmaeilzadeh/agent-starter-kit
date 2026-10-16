@@ -4,6 +4,7 @@ import unittest
 
 from _ask.tests.revising_fixture import digest, model, plan, reference_bytes, reviewed_mapping
 from _ask.scripts.engineering_model.validation import validate
+from _ask.scripts.engineering_model.domain import task_states
 
 
 class V2ModelTests(unittest.TestCase):
@@ -13,6 +14,9 @@ class V2ModelTests(unittest.TestCase):
         document["nodes"][2]["case"]["plan_digest"] = digest(canonical_plan)
         errors = validate(document, ".", "product", reference_bytes=refs)
         self.assertEqual(errors, [], "v2 permits optional intent and zero-or-one legal containment")
+        task = task_states(document)[0]
+        self.assertEqual(task["product_identity"], {"work_id": "product", "node_id": "task"})
+        self.assertEqual(task["execution_identity"], {"work_id": "delivery", "task_id": "same-id"})
 
         invalid = copy.deepcopy(document)
         invalid["edges"].extend([
@@ -74,6 +78,10 @@ class V2ModelTests(unittest.TestCase):
         malformed["nodes"][1]["lifecycle"] = "not-a-state"
         self.assertIn("EM001_LIFECYCLE", {item["code"] for item in validate(
             malformed, ".", "product", reference_bytes=refs)})
+        malformed["nodes"][1]["lifecycle"] = []
+        malformed["nodes"][1]["type"] = []
+        self.assertTrue(validate(malformed, ".", "product", reference_bytes=refs),
+                        "malformed JSON values produce diagnostics rather than crashing validation")
 
     def test_execution_aliases_and_foreign_product_boundaries(self):
         document = model()
@@ -160,6 +168,33 @@ class FlowTests(unittest.TestCase):
         alternate["nodes"][2]["case"]["plan_digest"] = digest(unreviewed_plan)
         self.assertIn("EM001_FLOW_MAPPING_REVIEW", {item["code"] for item in validate(
             alternate, ".", "product", reference_bytes=refs)})
+
+        external = copy.deepcopy(document)
+        foreign_plan = {"schema": "ask-test-plan/v1", "work_id": "delivery", "tests": [
+            {"id": "WB-external", "scenario": {"given": "Given", "when": "When", "then": ["Then"]}}]}
+        selected_plan = plan()
+        selected_plan["flow_mappings"] = [reviewed_mapping(
+            {"scope": "local", "case_id": "WB-publish"},
+            {"scope": "external", "work_id": "delivery", "plan_digest": digest(foreign_plan),
+             "case_id": "WB-external"})]
+        external["nodes"].append({"id": "external-test", "type": "test", "title": "External assertion",
+                                  "lifecycle": "active", "reference": {
+                                      "path": "work/delivery/test-plan.json", "id": "WB-external",
+                                      "work_id": "delivery", "plan_digest": digest(foreign_plan)}})
+        external["edges"].append({"type": "covers", "source": "external-test", "target": "scenario"})
+        refs, _ = reference_bytes()
+        refs["work/product/test-plan.json"] = __import__("json").dumps(selected_plan).encode()
+        refs["work/delivery/test-plan.json"] = __import__("json").dumps(foreign_plan).encode()
+        external["nodes"][2]["case"]["plan_digest"] = digest(selected_plan)
+        self.assertEqual(validate(external, ".", "product", reference_bytes=refs), [],
+                         "an external canonical test keeps its owning work and immutable plan digest")
+
+        changed = copy.deepcopy(selected_plan)
+        changed["flow_mappings"][0]["test_case"]["case_id"] = "missing"
+        refs["work/product/test-plan.json"] = __import__("json").dumps(changed).encode()
+        external["nodes"][2]["case"]["plan_digest"] = digest(changed)
+        self.assertIn("EM001_FLOW_MAPPING_REVIEW", {item["code"] for item in validate(
+            external, ".", "product", reference_bytes=refs)})
 
 
 if __name__ == "__main__":
