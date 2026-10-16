@@ -325,6 +325,55 @@ class PassageAdmissionTests(unittest.TestCase):
             shutil.copytree(project / "_ask/scripts", root / "_ask/scripts")
             captured = capture(root, "product")
 
+            # The schema compatibility decision and the selected-task check
+            # must apply to one captured generation. Replace a valid v1 model
+            # with a valid v2 model after the real preflight capture returns.
+            race_root = root / "mixed-generation-race"
+            race_root.mkdir()
+            _repo(race_root, spec_text=None)
+            next_v2 = (race_root / "work/product/engineering-model.json").read_bytes()
+            legacy_seed = root / "legacy-seed"
+            legacy_seed.mkdir()
+            from _ask.tests.engineering_fixture import workbench_model
+            legacy_document, _legacy_spec = workbench_model(legacy_seed)
+            legacy_document["work_id"] = "product"
+            for legacy_node in legacy_document["nodes"]:
+                reference = legacy_node.get("reference") if isinstance(legacy_node, dict) else None
+                if not isinstance(reference, dict):
+                    continue
+                reference["path"] = reference["path"].replace("pilot", "product")
+                reference["id"] = "EM-007" if reference["path"].startswith("specs/") else "WB-publish"
+            _put(race_root, "work/product/engineering-model.json", legacy_document)
+            from _ask.scripts.engineering_model import workflow as workflow_module
+            real_validate_current = workflow_module.validate_current
+            _, legacy_diagnostics = real_validate_current(race_root, "product")
+            self.assertEqual(legacy_diagnostics, [], "the initial legacy generation is valid v1")
+            changed_after_capture = []
+
+            def external_save_after_real_capture(captured_root, captured_work_id):
+                snapshot, diagnostics = real_validate_current(captured_root, captured_work_id)
+                if not changed_after_capture:
+                    (race_root / "work/product/engineering-model.json").write_bytes(next_v2)
+                    changed_after_capture.append(True)
+                return snapshot, diagnostics
+
+            workflow_module.validate_current = external_save_after_real_capture
+            race_actions = []
+            try:
+                try:
+                    with workflow_module.workflow_admission(
+                            race_root, "product", selected_execution={"work_id": "product", "task_id": "WB-003"}):
+                        race_actions.append("selected-v2-action")
+                except Exception as exc:
+                    self.assertEqual(getattr(exc, "diagnostic", {}).get("code"), "EM015_CONTEXT_REQUIRED",
+                                     f"the admitted v2 generation must enforce its selected passage: {exc!r}")
+                else:
+                    self.fail("a v2 generation saved after a v1 preflight must not bypass selected passage admission")
+            finally:
+                workflow_module.validate_current = real_validate_current
+            self.assertTrue(changed_after_capture, "the race performs a real external model save after capture")
+            self.assertEqual(race_actions, [], "mixed-generation admission refuses before the dependent action")
+
             # Persisted passage text must remain bound to captured source bytes
             # and the immutable generation identity, including on reload.
             tamper_root = root / "tampered-generation"
