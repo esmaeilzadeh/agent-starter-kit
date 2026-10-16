@@ -170,86 +170,6 @@
       ]
     },
     {
-      "id": "rwb-v1-valid",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs"
-      ]
-    },
-    {
-      "id": "rwb-v1-graph",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelValidationTests.test_duplicate_missing_illegal_cardinality_and_cycles"
-      ]
-    },
-    {
-      "id": "rwb-v1-fields",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle"
-      ]
-    },
-    {
-      "id": "rwb-v1-refs",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelValidationTests.test_reference_escape_and_missing_criterion"
-      ]
-    },
-    {
-      "id": "rwb-v1-decision",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelEditTests.test_decision_history_and_dependency_propagation"
-      ]
-    },
-    {
-      "id": "rwb-v1-revise",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelEditTests.test_revise_invalidates_transitive_decisions"
-      ]
-    },
-    {
-      "id": "rwb-v1-stale",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelEditTests.test_invalid_and_stale_edits_preserve_bytes"
-      ]
-    },
-    {
-      "id": "rwb-v1-cas",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ModelEditTests.test_concurrent_compare_and_swap"
-      ]
-    },
-    {
       "id": "rwb-selectors",
       "adapter": "unittest",
       "argv": [
@@ -277,106 +197,6 @@
         "-m",
         "unittest",
         "_ask.tests.test_revising_context.PassageAdmissionTests.test_missing_linked_and_ambiguous_changes_invalidate_snapshot"
-      ]
-    },
-    {
-      "id": "rwb-guard-pre",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_invalid_prestate_prevents_action"
-      ]
-    },
-    {
-      "id": "rwb-guard-post",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_invalid_candidate_preserves_stable_generation"
-      ]
-    },
-    {
-      "id": "rwb-guard-refs",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_linked_spec_change_invalidates_admission"
-      ]
-    },
-    {
-      "id": "rwb-guard-events",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_external_changes_and_missed_events_fail_closed"
-      ]
-    },
-    {
-      "id": "rwb-guard-parity",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_cached_and_full_validation_agree"
-      ]
-    },
-    {
-      "id": "rwb-guard-publish",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_concurrent_multifile_publication_and_recovery"
-      ]
-    },
-    {
-      "id": "rwb-guard-bootstrap",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_bootstrap_admits_only_validated_state"
-      ]
-    },
-    {
-      "id": "rwb-guard-batch",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_atomic_node_edges_and_lifecycle_batch"
-      ]
-    },
-    {
-      "id": "rwb-guard-order",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_successful_guard_order_and_identities"
-      ]
-    },
-    {
-      "id": "rwb-guard-entrypoints",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_guard.DocumentGuardTests.test_public_mutators_cannot_bypass_admission"
       ]
     },
     {
@@ -440,26 +260,6 @@
       ]
     },
     {
-      "id": "rwb-cli-journey",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_cli.CliJourneyTests.test_cli_inspect_resolve_reload_and_invalid"
-      ]
-    },
-    {
-      "id": "rwb-v1-projections",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_model.ProjectionTests.test_json_markdown_same_ids_and_no_outcomes"
-      ]
-    },
-    {
       "id": "rwb-source-helpers",
       "adapter": "unittest",
       "argv": [
@@ -487,26 +287,6 @@
         "-m",
         "unittest",
         "_ask.tests.test_revising_evidence.EvidenceIdentityTests.test_all_observation_states_and_helper_changes_preserve_applicability"
-      ]
-    },
-    {
-      "id": "rwb-v1-evidence-real",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_evidence.EvidenceTests.test_real_evidence_and_tamper_is_read_only"
-      ]
-    },
-    {
-      "id": "rwb-v1-evidence-missing",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_engineering_evidence.EvidenceTests.test_missing_and_historical_evidence"
       ]
     },
     {
@@ -668,6 +448,92 @@
         "unittest",
         "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_demo_completion_requires_genuine_bound_successful_human_record"
       ]
+    },
+    {
+      "id": "rwb-baseline-model",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "rwb-baseline-guard",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "rwb-baseline-cli",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_cli.py"
+      ]
+    },
+    {
+      "id": "rwb-baseline-evidence",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_evidence.py"
+      ]
+    },
+    {
+      "id": "rwb-association-passages",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_intake.StageIntakeTests.test_association_passage_admission_uses_existing_guard"
+      ]
+    },
+    {
+      "id": "rwb-migration-passages",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.MigrationTests.test_migration_passage_dependencies_use_real_guarded_entry"
+      ]
+    },
+    {
+      "id": "rwb-demo-passages",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_passages_gate_demo_without_fabricated_success"
+      ]
     }
   ],
   "tests": [
@@ -762,9 +628,10 @@
       "change_kind": "new",
       "scenario": {
         "given": "Publication-success and stale-rejection cases share EM-007 but have distinct canonical case IDs",
-        "when": "Resolve a Scenario case and explicit Test covers edge, then change plan digest/flow identity",
+        "when": "Resolve Scenario/Test coverage and local or external canonical mappings, then change selected plan identity or normalized mapping body",
         "then": [
           "Selection requires source work, exact plan digest and case ID; active missing-case, wrong digest, contradictory coverage or unreviewed flow mapping rejects; unplanned draft reports missing case",
+          "Same-plan mapping selectors omit the enclosing digest and derive identity from its final independently reviewed plan; external selectors retain target digest; mapping review binds normalized body excluding its review envelope, and changed body or self-referential selectors reject",
           "Success Test appears as related criterion only for stale rejection and never as proving that flow; reviewed explicit canonical mapping is honored"
         ]
       },
@@ -772,7 +639,8 @@
         {
           "criterion_id": "EM-008",
           "checks": [
-            "Selection requires source work, exact plan digest and case ID; active missing-case, wrong digest, contradictory coverage or unreviewed flow mapping rejects; unplanned draft reports missing case"
+            "Selection requires source work, exact plan digest and case ID; active missing-case, wrong digest, contradictory coverage or unreviewed flow mapping rejects; unplanned draft reports missing case",
+            "Same-plan mapping selectors omit the enclosing digest and derive identity from its final independently reviewed plan; external selectors retain target digest; mapping review binds normalized body excluding its review envelope, and changed body or self-referential selectors reject"
           ]
         },
         {
@@ -810,8 +678,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-valid",
-      "case_id": "_ask.tests.test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -838,8 +706,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-graph",
-      "case_id": "_ask.tests.test_engineering_model.ModelValidationTests.test_duplicate_missing_illegal_cardinality_and_cycles",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_duplicate_missing_illegal_cardinality_and_cycles",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -866,8 +734,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-fields",
-      "case_id": "_ask.tests.test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -894,8 +762,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-refs",
-      "case_id": "_ask.tests.test_engineering_model.ModelValidationTests.test_reference_escape_and_missing_criterion",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_reference_escape_and_missing_criterion",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -922,8 +790,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-decision",
-      "case_id": "_ask.tests.test_engineering_model.ModelEditTests.test_decision_history_and_dependency_propagation",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_decision_history_and_dependency_propagation",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -950,8 +818,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-revise",
-      "case_id": "_ask.tests.test_engineering_model.ModelEditTests.test_revise_invalidates_transitive_decisions",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_revise_invalidates_transitive_decisions",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -978,8 +846,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-stale",
-      "case_id": "_ask.tests.test_engineering_model.ModelEditTests.test_invalid_and_stale_edits_preserve_bytes",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_invalid_and_stale_edits_preserve_bytes",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -1006,8 +874,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-cas",
-      "case_id": "_ask.tests.test_engineering_model.ModelEditTests.test_concurrent_compare_and_swap",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_concurrent_compare_and_swap",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -1058,31 +926,31 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "An admitted v2 model with unavailable context and a last-validated generation",
-        "when": "Attempt unrelated decision resolve, task admission, association write, migration, representative admission and explicit repair/import",
+        "given": "An admitted v2 model with unavailable context and a last-validated generation, using only foundation entrypoints already present at RWB-102",
+        "when": "Execute existing semantic edit/batch/resolve/revise, model admit-with-action, task workflow/candidate admission and integration, traceability contract/review wrappers and explicit repair/import boundaries",
         "then": [
-          "Semantic writes preserve attributable history and stable bytes on refusal",
-          "Every enumerated entry uses existing guard; invalid prestate invokes no action and failed poststate publishes nothing; successful guarded entry records exactly one ordered pre/action/post/publication",
-          "Unrelated decision resolve works with safe absent context; missing contract passage refuses only its dependent action; unsafe current documents permit labeled diagnostics/last-validated inspection plus explicit validated repair/import"
+          "Unrelated existing decision actions remain admissible despite safe optional context gaps",
+          "Selected Task admission refuses its missing required spec or plan passage without invoking its action",
+          "Every existing foundation entry preserves guarded ordering and stable state on invalid or stale input"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-002",
           "checks": [
-            "Semantic writes preserve attributable history and stable bytes on refusal"
+            "Existing semantic writes preserve attributable history and stable bytes on refusal"
           ]
         },
         {
           "criterion_id": "EM-007",
           "checks": [
-            "Every enumerated entry uses existing guard; invalid prestate invokes no action and failed poststate publishes nothing; successful guarded entry records exactly one ordered pre/action/post/publication"
+            "Execute the RWB-102 foundation entrypoint registry through real existing wrappers, with exactly one pre/action/post/publication on success and no action/publication after appropriate refusal; no future-function stubs count as evidence"
           ]
         },
         {
           "criterion_id": "EM-015",
           "checks": [
-            "Unrelated decision resolve works with safe absent context; missing contract passage refuses only its dependent action; unsafe current documents permit labeled diagnostics/last-validated inspection plus explicit validated repair/import"
+            "Safe optional gaps permit unrelated existing actions; selected Task contract gaps block only dependent admission; unsafe current input permits labeled diagnostics/last-validated inspection and explicit validated repair/import while ordinary actions refuse"
           ]
         }
       ],
@@ -1150,8 +1018,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-pre",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_invalid_prestate_prevents_action",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_invalid_prestate_prevents_action",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1178,8 +1046,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-post",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_invalid_candidate_preserves_stable_generation",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_invalid_candidate_preserves_stable_generation",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1206,8 +1074,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-refs",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_linked_spec_change_invalidates_admission",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_linked_spec_change_invalidates_admission",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1234,8 +1102,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-events",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_external_changes_and_missed_events_fail_closed",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_external_changes_and_missed_events_fail_closed",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1262,8 +1130,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-parity",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_cached_and_full_validation_agree",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_cached_and_full_validation_agree",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1290,8 +1158,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-publish",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_concurrent_multifile_publication_and_recovery",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_concurrent_multifile_publication_and_recovery",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1318,8 +1186,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-bootstrap",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_bootstrap_admits_only_validated_state",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_bootstrap_admits_only_validated_state",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1360,8 +1228,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-batch",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_atomic_node_edges_and_lifecycle_batch",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_atomic_node_edges_and_lifecycle_batch",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1388,8 +1256,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-order",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_successful_guard_order_and_identities",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_successful_guard_order_and_identities",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1416,8 +1284,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-guard-entrypoints",
-      "case_id": "_ask.tests.test_engineering_guard.DocumentGuardTests.test_public_mutators_cannot_bypass_admission",
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_public_mutators_cannot_bypass_admission",
       "source_paths": [
         "_ask/tests/test_engineering_guard.py"
       ]
@@ -1684,8 +1552,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-cli-journey",
-      "case_id": "_ask.tests.test_engineering_cli.CliJourneyTests.test_cli_inspect_resolve_reload_and_invalid",
+      "runner_id": "rwb-baseline-cli",
+      "case_id": "test_engineering_cli.CliJourneyTests.test_cli_inspect_resolve_reload_and_invalid",
       "source_paths": [
         "_ask/tests/test_engineering_cli.py"
       ]
@@ -1712,8 +1580,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-projections",
-      "case_id": "_ask.tests.test_engineering_model.ProjectionTests.test_json_markdown_same_ids_and_no_outcomes",
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ProjectionTests.test_json_markdown_same_ids_and_no_outcomes",
       "source_paths": [
         "_ask/tests/test_engineering_model.py"
       ]
@@ -1848,8 +1716,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-evidence-real",
-      "case_id": "_ask.tests.test_engineering_evidence.EvidenceTests.test_real_evidence_and_tamper_is_read_only",
+      "runner_id": "rwb-baseline-evidence",
+      "case_id": "test_engineering_evidence.EvidenceTests.test_real_evidence_and_tamper_is_read_only",
       "source_paths": [
         "_ask/tests/test_engineering_evidence.py"
       ]
@@ -1876,8 +1744,8 @@
           ]
         }
       ],
-      "runner_id": "rwb-v1-evidence-missing",
-      "case_id": "_ask.tests.test_engineering_evidence.EvidenceTests.test_missing_and_historical_evidence",
+      "runner_id": "rwb-baseline-evidence",
+      "case_id": "test_engineering_evidence.EvidenceTests.test_missing_and_historical_evidence",
       "source_paths": [
         "_ask/tests/test_engineering_evidence.py"
       ]
@@ -2576,6 +2444,138 @@
         "_ask/tests/test_revising_browser.py",
         "_ask/tests/revising_browser_support.py"
       ]
+    },
+    {
+      "id": "RWB-ASSOCIATION-PASSAGES",
+      "criterion_ids": [
+        "EM-002",
+        "EM-007",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The real associate_subject entry introduced by RWB-103 and an explicitly confirmed subject with optional or required contribution context",
+        "when": "Submit valid, missing-required, ambiguous, unsafe and stale association batches through its public guarded definition path",
+        "then": [
+          "Valid association preserves attributable semantic history and records its bound intent context; refused batches preserve stable bytes",
+          "Actual association entry extends the foundation registry; valid publication has exactly one ordered pre/action/post/publication with captured lineage; invalid/stale inputs invoke no action or publish no candidate",
+          "Only explicitly required contribution passages block association; standalone proposals need no ancestor passage; missing/ambiguous required or unsafe references refuse without substitute text"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Valid association preserves attributable semantic history and records its bound intent context; refused batches preserve stable bytes"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Actual association entry extends the foundation registry; valid publication has exactly one ordered pre/action/post/publication with captured lineage; invalid/stale inputs invoke no action or publish no candidate"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Only explicitly required contribution passages block association; standalone proposals need no ancestor passage; missing/ambiguous required or unsafe references refuse without substitute text"
+          ]
+        }
+      ],
+      "runner_id": "rwb-association-passages",
+      "case_id": "_ask.tests.test_revising_intake.StageIntakeTests.test_association_passage_admission_uses_existing_guard",
+      "source_paths": [
+        "_ask/tests/test_revising_intake.py"
+      ]
+    },
+    {
+      "id": "RWB-MIGRATION-PASSAGES",
+      "criterion_ids": [
+        "EM-007",
+        "EM-014",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The real reviewed migration entry introduced by RWB-108 with source/target bindings and optional or explicitly required context",
+        "when": "Execute accepted migration and required-missing, ambiguous, unsafe or stale proposals through its actual public entry",
+        "then": [
+          "Migration extends the registry with real calls; valid publication retains exactly one pre/action/post/publication and refuses invalid/stale source or target without writes",
+          "Independent source/target-bound review and preserved IDs/references/evidence attribution remain mandatory; browsing performs no migration",
+          "Unrelated optional gaps remain admitted, while a required migration contract passage must resolve uniquely; missing/ambiguous/unsafe targets cannot be replaced with similar text"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Migration extends the registry with real calls; valid publication retains exactly one pre/action/post/publication and refuses invalid/stale source or target without writes"
+          ]
+        },
+        {
+          "criterion_id": "EM-014",
+          "checks": [
+            "Independent source/target-bound review and preserved IDs/references/evidence attribution remain mandatory; browsing performs no migration"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Unrelated optional gaps remain admitted, while a required migration contract passage must resolve uniquely; missing/ambiguous/unsafe targets cannot be replaced with similar text"
+          ]
+        }
+      ],
+      "runner_id": "rwb-migration-passages",
+      "case_id": "_ask.tests.test_revising_pilot.MigrationTests.test_migration_passage_dependencies_use_real_guarded_entry",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-DEMO-PASSAGES",
+      "criterion_ids": [
+        "EM-007",
+        "EM-015",
+        "EM-016"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The real representative admission/completion gate introduced by RWB-108 with exact WB-003 spec/plan selectors and genuine-evidence/human prerequisites",
+        "when": "Invoke the gate with missing/ambiguous/unsafe/stale required passages, then with unique captured passages but remaining genuine evidence or human prerequisites",
+        "then": [
+          "Actual representative gate extends the entrypoint registry and uses captured admission identities; incomplete or stale prerequisite sets cannot publish demonstration completion",
+          "Both exact required baseline spec passages and WB-003 plan row must resolve uniquely; context refusal names each unresolved prerequisite and never selects fallback text",
+          "Unique context alone leaves genuine report/log/authority and successful candidate-bound human-record prerequisites explicit; this case asserts refusal/remaining requirements without fabricating successful comprehension; actual demonstration remains RWB-109"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Actual representative gate extends the entrypoint registry and uses captured admission identities; incomplete or stale prerequisite sets cannot publish demonstration completion"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Both exact required baseline spec passages and WB-003 plan row must resolve uniquely; context refusal names each unresolved prerequisite and never selects fallback text"
+          ]
+        },
+        {
+          "criterion_id": "EM-016",
+          "checks": [
+            "Unique context alone leaves genuine report/log/authority and successful candidate-bound human-record prerequisites explicit; this case asserts refusal/remaining requirements without fabricating successful comprehension; actual demonstration remains RWB-109"
+          ]
+        }
+      ],
+      "runner_id": "rwb-demo-passages",
+      "case_id": "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_passages_gate_demo_without_fabricated_success",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
     }
   ],
   "task_scopes": [
@@ -2618,7 +2618,8 @@
       "test_ids": [
         "RWB-SUBJECT-RULES",
         "RWB-FRESH-INTAKE",
-        "RWB-CONTEXT-CLI"
+        "RWB-CONTEXT-CLI",
+        "RWB-ASSOCIATION-PASSAGES"
       ]
     },
     {
@@ -2662,7 +2663,9 @@
         "RWB-MIGRATION",
         "RWB-NEW-CONTRACT",
         "RWB-READABILITY-BINDING",
-        "RWB-GENUINE-WB003"
+        "RWB-GENUINE-WB003",
+        "RWB-MIGRATION-PASSAGES",
+        "RWB-DEMO-PASSAGES"
       ]
     },
     {

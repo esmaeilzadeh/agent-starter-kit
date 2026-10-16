@@ -24,10 +24,18 @@ V2 adds optional containment, `contributes_to` (task→story/scenario), `enables
   case identity; criterion identity supplies only related-obligation information.
 - For an explicitly reviewed alternate flow mapping, use an optional canonical
   test-plan `flow_mappings` registry of `{scenario_case, test_case, review}` entries.
-  Both case keys carry work/digest/entry ID; `review` binds the mapping digest and
-  attributable independent APPROVED decision. Validate it in `flows.py` before
-  coverage projection. An unreviewed mapping rejects. This extension is data
-  consumed by model coverage, not a new traceability runner or test authority.
+  A case inside the containing plan uses `{scope:"local", case_id:<entry ID>}`
+  with no containing-plan digest. Derive its qualified identity from the final
+  externally reviewed enclosing plan's work ID and canonical digest. External
+  selectors use `{scope:"external", work_id, plan_digest, case_id}` with the
+  immutable target-plan digest. The mapping body is exactly `scenario_case` and
+  `test_case`; normalize it as sorted compact JSON and hash those bytes, excluding
+  the `review` envelope. `review` records that body digest and attributable
+  independent APPROVED decision. Validate it in `flows.py` before projection;
+  changed/unreviewed mappings or local selectors embedding their containing-plan
+  digest reject. The outer reviewed plan binds the final registry and envelope.
+  Neither containing-plan hashes nor review-including-itself hashes are embedded
+  inside the plan. This is model coverage data, not new execution authority.
 - Node `context` is a list of `{role, path, revision, selector}`. `role` is `spec`
   or `plan`; revision is an explicit commit or `snapshot` for captured current
   inputs. Record qualified source identity separately from execution identity.
@@ -75,11 +83,16 @@ must invalidate identity even with unchanged file mtime.
 ## Actions requiring passages
 
 Keep the existing mutation/workflow guard and last-validated inspection authority.
-Document the complete adopted entrypoint registry in the context integration test;
-cover semantic edit/batch/resolve/revise, model admit-with-action, migrated model
-publication, subject-association publication, task workflow admission, inner-loop
-candidate admission/integration, traceability contract/review operations and the
-UI decision submit path. Existing wrappers remain responsible for their own gates.
+Maintain a stage-local entrypoint registry and extend it in the introducing task.
+RWB-102's context integration test executes only already-existing foundation
+entries: semantic edit/batch/resolve/revise, model admit-with-action, task workflow
+admission, inner-loop candidate admission/integration, traceability contract/review
+operations and explicit repair/import boundaries. RWB-103 extends it with the real
+subject-association path. RWB-108 extends it with real migration and representative
+admission/completion gates. RWB-107/RWB-109 exercise the exposed UI decision path.
+Their final union covers every adopted public entrypoint. Earlier tasks do not
+require successor functions or synthetic future stubs for their final green;
+existing wrappers remain responsible for their own gates.
 
 | Action | Passage dependency |
 | --- | --- |
@@ -93,9 +106,13 @@ UI decision submit path. Existing wrappers remain responsible for their own gate
 
 Declare required context by action argument/contract, not by silently treating all
 context refs as globally mandatory. Never let a caller's label bypass pre/post
-checks. The action registry tests must execute each adopted public entry, compare
-full/cached validation, and assert one ordered pre/action/post/publication trace
-for each success and no action/publication on the appropriate failure.
+checks. The stage-owned registry tests execute each real entry available at that
+stage, compare full/cached validation, and assert one ordered pre/action/post/
+publication trace for each successful mutation and no action/publication on the
+appropriate failure. RWB-108's representative passage case proves context refusal
+and names remaining genuine-evidence/human prerequisites after context resolves;
+it does not fabricate successful comprehension. The mandatory successful real
+browser and human demonstration remains RWB-109.
 
 ## Actual fresh-context intake caller
 

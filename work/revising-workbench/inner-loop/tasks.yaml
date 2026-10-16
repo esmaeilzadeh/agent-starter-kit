@@ -29,7 +29,7 @@ tasks:
       - _ask/scripts/engineering_model/workflow.py
       - _ask/scripts/engineering_model/observer.py
       - _ask/tests/test_revising_context.py
-    completion_evidence: "Selector/admission matrix and every public guard entry pass; action spy proves exactly pre/action/post/publication with identical captured lineage; linked-only and missing/ambiguous transitions invalidate"
+    completion_evidence: "Selector/admission matrix and all already-existing foundation guard entries pass; real actions prove exactly pre/action/post/publication with captured lineage; linked-only and missing/ambiguous transitions invalidate; later introducing tasks extend registry coverage"
     test_ids: [RWB-SELECTORS, RWB-PASSAGE-ACTIONS, RWB-CONTEXT-FRESHNESS, RWB-GUARD-PRE, RWB-GUARD-POST, RWB-GUARD-REFS, RWB-GUARD-EVENTS, RWB-GUARD-PARITY, RWB-GUARD-PUBLISH, RWB-GUARD-BOOTSTRAP, RWB-GUARD-BATCH, RWB-GUARD-ORDER, RWB-GUARD-ENTRYPOINTS]
   - id: RWB-103
     title: "Resolve subjects at actual stage intake"
@@ -54,8 +54,8 @@ tasks:
       - _ask/scripts/engineering_model/domain.py
       - _ask/scripts/engineering_model/actions.py
       - _ask/scripts/engineering_model/workflow.py
-    completion_evidence: "Fresh-context adopted caller trace invokes the resolver before branch/intent/delivery operations; conflicting or inspection-only requests produce no writes/assignments; generated projections agree"
-    test_ids: [RWB-SUBJECT-RULES, RWB-FRESH-INTAKE, RWB-CONTEXT-CLI]
+    completion_evidence: "Fresh-context adopted caller trace invokes the resolver before branch/intent/delivery operations; conflicting or inspection-only requests produce no writes/assignments; generated projections agree; real association entry proves its passage dependencies and shared guard ordering without future-entrypoint stubs"
+    test_ids: [RWB-SUBJECT-RULES, RWB-FRESH-INTAKE, RWB-CONTEXT-CLI, RWB-ASSOCIATION-PASSAGES]
   - id: RWB-104
     title: "Project contextual work and preserve historical sources"
     outcome: "Qualified support graph, exact plan/spec passages, route data and read-only foreign revisions"
@@ -120,8 +120,8 @@ tasks:
       - _ask/docs/engineering-model.md
       - _ask/scripts/engineering_model/actions.py
       - _ask/scripts/engineering_model/workflow.py
-    completion_evidence: "Explicit migration review and ID/reference/evidence-preservation diff; genuine authority-evaluated historical result and exact helper/spec/plan selections; failure/staleness-sensitive comprehension validation; no old record rewritten"
-    test_ids: [RWB-MIGRATION, RWB-NEW-CONTRACT, RWB-READABILITY-BINDING, RWB-GENUINE-WB003]
+    completion_evidence: "Explicit migration review and ID/reference/evidence-preservation diff; genuine authority-evaluated historical result and exact helper/spec/plan selections; failure/staleness-sensitive comprehension validation; no old record rewritten; real migration and representative gates enforce stage-local passage dependencies, with remaining genuine-evidence/human prerequisites explicit rather than fabricated success"
+    test_ids: [RWB-MIGRATION, RWB-NEW-CONTRACT, RWB-READABILITY-BINDING, RWB-GENUINE-WB003, RWB-MIGRATION-PASSAGES, RWB-DEMO-PASSAGES]
   - id: RWB-109
     title: "Prove real journeys, browser budgets and human understanding"
     outcome: "Browser E2E, accessibility/performance samples and successful candidate-bound representative human exercise"
