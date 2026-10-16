@@ -871,6 +871,30 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.assertEqual(integrated["tasks"]["WB-003"]["status"], "integrated")
                 self.assertEqual(integrated["coordinator_sha"], candidate_sha)
 
+                # Inner-loop integration of kit TaskResults is legal for an
+                # unadopted workstream; no product execution alias exists to
+                # pass through the adopted-model guard.
+                unadopted_root = root / "unadopted-integrate-ready"
+                unadopted_root.mkdir()
+                _put(unadopted_root, "work/product/inner-loop/tasks.yaml",
+                     b"schema: ask-inner-loop-tasks/v1\nwork_id: product\ntasks:\n"
+                     b"  - id: WB-003\n    depends_on: []\n    owned_paths: [task-result.md]\n")
+                subprocess.run(["git", "init", "-q", "-b", "agent/product"], cwd=unadopted_root, check=True)
+                subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=unadopted_root, check=True)
+                subprocess.run(["git", "config", "user.name", "Test"], cwd=unadopted_root, check=True)
+                subprocess.run(["git", "add", "."], cwd=unadopted_root, check=True)
+                subprocess.run(["git", "commit", "-qm", "unadopted inner-loop fixture"], cwd=unadopted_root, check=True)
+                cas_init(unadopted_root, "product", ["WB-003"])
+                cas_apply(unadopted_root, "product", 0, lambda state: state["tasks"]["WB-003"].update(
+                    status="running", base_sha=review_sha, task_branch="task/selected"))
+                try:
+                    candidate_integrate_ready(unadopted_root, "product", "WB-003")
+                except Exception as exc:
+                    self.assertIn("missing or invalid TaskResult", str(exc),
+                                  "unadopted integration must reach task-result validation, not require a model alias")
+                else:
+                    self.fail("integration without the required TaskResult unexpectedly advanced")
+
                 # Preserve the v1 direct integration API, which has no
                 # execution-alias field to select.
                 legacy_root = root / "legacy-v1"
