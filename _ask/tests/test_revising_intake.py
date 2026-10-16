@@ -223,6 +223,13 @@ class StageIntakeTests(unittest.TestCase):
             self.assertFalse(refused["valid"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
             self.assertEqual(refused["steps"], ["pre"])
+            malformed = associate_subject(root, "product", result["snapshot"]["digest"],
+                                          subject={"work_id": "product", "node_id": "story"},
+                                          contribution="  ", exclusions=[], actor="human",
+                                          rationale="Reject malformed proposal")
+            self.assertFalse(malformed["valid"])
+            self.assertEqual(malformed["steps"], ["pre"], "invalid proposal data is rejected before semantic action")
+            self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
             required = associate_subject(root, "product", result["snapshot"]["digest"],
                                          subject={"work_id": "product", "node_id": "story"},
                                          contribution="Required contribution", exclusions=[], actor="human",
