@@ -1,0 +1,99 @@
+{
+  "schema": "ask-inner-loop-state/v1",
+  "work_id": "revising-workbench",
+  "revision": 1,
+  "coordinator_sha": "09fbcc3ab26c5e7f596073b394d43576ef3592a8",
+  "coordinator_branch": "agent/revising-workbench",
+  "tasks": {
+    "RWB-101": {
+      "status": "running",
+      "base_sha": "09fbcc3ab26c5e7f596073b394d43576ef3592a8",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-102": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-103": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-104": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-105": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-106": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-107": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-108": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "RWB-109": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    }
+  }
+}
