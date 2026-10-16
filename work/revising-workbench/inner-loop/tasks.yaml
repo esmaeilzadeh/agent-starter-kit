@@ -61,8 +61,9 @@ tasks:
       - _ask/docs/engineering-model.md
       - _ask/scripts/engineering_model/domain.py
       - _ask/scripts/engineering_model/actions.py
+      - _ask/scripts/engineering_model/admission.py
       - _ask/scripts/engineering_model/workflow.py
-    completion_evidence: "Fresh-context adopted caller trace invokes the resolver before branch/intent/delivery operations; conflicting or inspection-only requests produce no writes/assignments; generated projections agree; real association entry proves its passage dependencies and shared guard ordering without future-entrypoint stubs"
+    completion_evidence: "Fresh-context adopted caller trace invokes the resolver before branch/intent/delivery operations; conflicting or inspection-only requests produce no writes/assignments; generated projections agree; real association entry proves required passages and shared guard ordering, retains bound intent context, and rejects stale foreign inputs after recovery writes and at final publication without publishing"
     test_ids: [RWB-SUBJECT-RULES, RWB-FRESH-INTAKE, RWB-CONTEXT-CLI, RWB-ASSOCIATION-PASSAGES]
   - id: RWB-104
     title: "Project contextual work and preserve historical sources"

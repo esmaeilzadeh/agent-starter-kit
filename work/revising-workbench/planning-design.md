@@ -242,3 +242,16 @@ FF-only integration remain enforced. Direct coordinator evidence/review helpers
 must retain the same task identity and guard semantics as their CLI wrappers.
 Independent review must assess both this scoped tooling amendment and the
 resulting actual caller tests before task integration.
+
+## RWB-103 foreign-observation publication amendment
+
+The shared publication helper is part of the existing action safety boundary.
+For subject association, capture the foreign owning-model observations alongside
+the local snapshot and carry them through recovery and publication. Recheck them
+after local recovery writes, after generation staging, before publication event
+creation, and immediately before replacing the current pointer. If a foreign
+input changes after local writes, restore the prior local bytes, clear the
+recovery journal, and leave the current pointer unchanged. The real association
+test must inject a foreign save after the local write and assert refusal,
+rollback, and no publication. This is an ownership/completion-evidence
+amendment to RWB-103; it does not change the product criteria or test registry.
