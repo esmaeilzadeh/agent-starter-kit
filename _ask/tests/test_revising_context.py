@@ -40,7 +40,7 @@ def _document(*, context=True, source_context=True):
     spec, plan = _canonical()
     document["nodes"][2]["case"]["plan_digest"] = digest(plan)
     task = document["nodes"][3]
-    task["execution"] = {"work_id": "delivery", "task_id": "task"}
+    task["execution"] = {"work_id": "product", "task_id": "task"}
     if context:
         task["context"] = [
             {"role": "spec", "path": "docs/context.md", "revision": "snapshot",
@@ -153,6 +153,21 @@ class PassageTests(unittest.TestCase):
             ancestor = capture(root, "product")
             self.assertNotEqual(ancestor.statuses["docs/context.md"], "present",
                                 "an in-repository ancestor symlink is also unsafe")
+            _published, diagnostics = admit(root, "product")
+            self.assertTrue(any(item["code"] == "EM001_CONTEXT_REFERENCE" for item in diagnostics),
+                            "ancestor symlink must refuse captured admission")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            document = json.loads((root / "work/product/engineering-model.json").read_text())
+            document["nodes"][3]["context"][0]["selector"] = {
+                "kind": "heading", "path": ["Scope"], "fallback": True}
+            _put(root, "work/product/engineering-model.json", document)
+            from _ask.scripts.engineering_model.admission import admit
+            _published, diagnostics = admit(root, "product")
+            self.assertTrue(any(item["code"] == "EM001_CONTEXT_SELECTOR" for item in diagnostics),
+                            "malformed selectors reject actual model admission")
 
         # An explicit committed revision is read from that revision even when
         # the working file now contains different bytes; no current-file fallback.
@@ -191,9 +206,9 @@ class PassageAdmissionTests(unittest.TestCase):
                 receipt = edit(root, "product", captured.identity["digest"],
                                lambda: calls.append("selected-task-action") or {"commands": [
                                    {"op": "revise_node", "id": "story", "changes": {"title": "Changed"}}]},
-                               task_node_id="task")
-            except TypeError as exc:
-                self.fail(f"the semantic edit entry must enforce selected Task context: {exc}")
+                               selected_task_id="task")
+            except Exception as exc:
+                self.fail(f"semantic edit must guard selected Task without API/runtime failure: {exc}")
             self.assertFalse(receipt["valid"], "required unresolved Task passages block the real edit entry")
             self.assertEqual(calls, [], "required unresolved Task passages must block before action")
             # The same unavailable context remains an admitted limitation for an
@@ -201,15 +216,22 @@ class PassageAdmissionTests(unittest.TestCase):
             with workflow_admission(root, "product"):
                 calls.append("unrelated-decision")
             self.assertEqual(calls, ["unrelated-decision"])
+            try:
+                with workflow_admission(root, "product", selected_task_id="task"):
+                    calls.append("selected-workflow-action")
+            except Exception as exc:
+                self.fail(f"selected Task workflow must refuse through admission: {exc}")
+            self.assertNotIn("selected-workflow-action", calls,
+                             "missing required passages block only the selected Task action")
 
             _put(root, "docs/context.md", b"# Scope\nCurrent contract.\n")
             _put(root, "work/product/plan.md",
                  b"# Work breakdown\n\n| Task ID | Outcome |\n| --- | --- |\n| WB-003 | Publish safely |\n")
             try:
-                with workflow_admission(root, "product", task_node_id="task"):
+                with workflow_admission(root, "product", selected_task_id="task"):
                     calls.append("selected-task-action")
-            except TypeError as exc:
-                self.fail(f"selected Task contract admission must be supported: {exc}")
+            except Exception as exc:
+                self.fail(f"selected Task contract admission must succeed after passages resolve: {exc}")
             self.assertEqual(calls[-1], "selected-task-action")
             self.assertFalse(is_current(captured, root), "newly available passages invalidate old admission")
 
@@ -251,9 +273,33 @@ class PassageAdmissionTests(unittest.TestCase):
             os.utime(helper_path, ns=(helper_stat.st_atime_ns, helper_stat.st_mtime_ns))
             self.assertFalse(is_current(second, root), "captured source_context helper bytes are dependencies")
             after_helper = capture(root, "product")
-            _snapshot, errors = admit(root, "product")
+            fresh, errors = admit(root, "product")
             self.assertEqual(errors, [])
-            self.assertEqual(observe_once(root, "product")["snapshot"]["digest"], after_helper.identity["digest"])
+            self.assertIsNotNone(fresh, "fresh helper-bound admission returns a snapshot")
+            observation = observe_once(root, "product")
+            self.assertTrue(observation["valid"], "startup/read recaptures helper changes before publication")
+            self.assertEqual(observation["snapshot"]["digest"], after_helper.identity["digest"])
+
+            # A safe optional missing passage remains admitted; creating it
+            # changes identity and the captured state from unavailable to unique.
+            missing_root = root / "missing-target"
+            missing_root.mkdir()
+            _repo(missing_root, spec_text=None)
+            missing = capture(missing_root, "product")
+            self.assertEqual(missing.resolve_passage("task", "spec")["state"], "unavailable")
+            self.assertEqual(admit(missing_root, "product")[1], [])
+            _put(missing_root, "docs/context.md", b"# Scope\nCreated context.\n")
+            created = capture(missing_root, "product")
+            self.assertNotEqual(missing.identity["digest"], created.identity["digest"])
+            self.assertEqual(created.resolve_passage("task", "spec")["state"], "available")
+            self.assertFalse(is_current(missing, missing_root))
+
+            selected_only = json.loads((missing_root / "work/product/engineering-model.json").read_text())
+            selected_only["nodes"][3]["context"][0]["selector"]["path"] = ["Different"]
+            _put(missing_root, "work/product/engineering-model.json", selected_only)
+            selector_changed = capture(missing_root, "product")
+            self.assertNotEqual(created.identity["digest"], selector_changed.identity["digest"],
+                                "selector-only changes participate in snapshot identity")
 
             plan_path = root / "work/product/plan.md"
             _put(root, "work/product/plan.md",
