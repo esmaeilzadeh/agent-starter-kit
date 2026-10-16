@@ -1,6 +1,6 @@
 {
   "work_id": "revising-workbench",
-  "commit_sha": "cbc1b9ffe2adb67695478cea245e1967778e77c5",
-  "result": "draft-initialized",
-  "notes": "Fresh proposed specification and workstream initialized in isolated clone; intent confirmation and independent review of new bytes pending. Original repository Git metadata is read-only."
+  "commit_sha": "eadc5d1e7a6b3ded89bd8a0119abf2726ca6c044",
+  "result": "spec-rewritten",
+  "notes": "Fresh spec.md and spec.json authored directly in work/revising-workbench with F1-F6 integrated into requirements and coherent criterion clauses. Removed copied source challenge and correction supplement. Historical authority stays in its original workstream. No product implementation or new independent approval claimed."
 }
