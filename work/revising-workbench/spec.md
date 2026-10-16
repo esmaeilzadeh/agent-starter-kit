@@ -4,9 +4,8 @@
 
 PROPOSED, revision 2, 2026-10-16. Work: `revising-workbench`.
 Source intent: [intent.md](intent.md). Criterion contract: [spec.json](spec.json).
-This is the fresh specification for this workstream. It integrates the six
-findings in the [previous independent challenge](../structured-agentic-environment/spec-challenge.md);
-that report does not approve these revised bytes.
+The challenge corrections are integrated into the requirements below.
+Independent review of these revised bytes remains pending.
 
 ## Goal and scope
 

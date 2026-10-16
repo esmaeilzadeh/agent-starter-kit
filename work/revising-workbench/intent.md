@@ -1,76 +1,93 @@
-# Intent: Revise the workbench around readable work context
+# Intent: Understand work, its delivery and its evidence
 
-Status: PROPOSED. Complete-intent confirmation is pending.
+Status: PROPOSED.
 Explore skipped: destination already clear.
 
 ## What
 
-Separate the latest context-first workbench proposal from the accumulated
-`structured-agentic-environment` execution records. Apply findings F1–F6 from
-its independent revision-4 Spec Challenge to a fresh proposed specification.
-Initialize `work/revising-workbench/` on branch `revising-workbench`, based on
-the current branch tip `159f516`, as explicitly requested by the human.
+Build a repository workbench for the developer returning to their own work.
+Opening an Epic, Story, Scenario or Task restores enough context to understand
+its purpose, promised behavior, delivery work and evidence without chat history.
 
-The product change lets the returning developer start at existing Stories or
-Tasks, recover purpose and exact spec/plan context, follow shared relationships,
-and understand tests and genuine recorded results without reconstructing chat.
-Keep engineering definitions in the repository and preserve existing evidence,
-guard, historical attribution and acceptance authority.
+An existing Story or Task is a valid starting point. Resolve the subject from the
+request and known repository context before creating execution work. Reuse known
+identities, explain the bounded contribution and ask about material conflicts.
+A new chat or branch does not automatically create an Epic. Missing ancestors
+remain visible; the developer does not have to invent a hierarchy to inspect work.
+
+Define an Epic with a user, purpose, outcome, scope and completion conditions.
+Stories express user outcomes; Scenarios express concrete flows. Tasks are visible
+delivery units and can support several Stories or Scenarios through one identity.
+Features represent related capabilities without requiring another navigation tier.
+
+At each entry, show meaningful definitions and the relevant specification passage
+and plan entry in context. Preserve the initiating route while navigating shared
+work. From a concrete Scenario, show its actual Test coverage, understandable
+setup/action/assertion and necessary helper or fixture context. Show genuine
+recorded outcomes with their source, revision and applicability. Make missing,
+failed, stale and historical evidence explicit.
+
+Demonstrate one complete representative Story through a real Task, concrete
+flow, selected Test and genuine retained result, alongside a successful human
+readability exercise. Relationship and entry behavior must work generally.
 
 ## Why
 
-The existing work directory mixes previous implementations, reviews, evidence
-and the latest unapproved amendment. A bounded new workstream makes the current
-proposal and unresolved decisions discoverable without copying old execution
-state or treating historical results as completion of new work.
+The returning developer needs to remember what the work promises, why it exists
+and what remains to do. Titles, IDs, links and generic pass labels leave them
+reconstructing meaning from chat, source files and logs. Connected context and
+understandable evidence let them assess progress and choose the next action.
 
 ## Non-goals
 
-Product implementation, a new execution plan, specification promotion, automatic
-schema migration, tracker integration, historical evidence relocation, deletion
-of unrelated repository files, merge, push or acceptance.
+Mandatory Epic/Story membership; reconstructing all historical planning; an
+external backlog database or tracker API integration; changing evidence or
+acceptance authority; automatic test execution or acceptance; inline specification
+editing; replacing the frontend; deployment, merge or push. This task stops at
+preparing the specification and does not implement the product.
 
 ## Known assumptions
 
-1. “Apply your spec challenge” means revise using the existing independent
-   report, rather than silently label the revised bytes independently approved.
-2. The pending proposal is rewritten as a fresh specification; old plans, pins, runtime state and
-   results retain `structured-agentic-environment` identity and original paths.
-3. The branch name and base explicitly override the kit's develop/agent default.
-   The previous workstream is set aside; no overlapping implementation runs.
-4. F1–F6 corrections are integrated into `spec.md` and its `spec.json` criteria.
-   They await confirmation and an independent challenge of the new digests.
-5. A Story may have one Scenario. Missing parents remain legal; shared support
-   relationships preserve one identity and do not transfer execution ownership.
-6. At least one genuine, integrity-checked retained result and a successful
-   candidate-bound readability exercise are required for the real demonstration.
-7. The requested branch is now active in the original repository. The fresh
-   specification and criterion JSON live directly in this work directory.
+1. The intended user is the developer returning to their own repository.
+2. A Story may contain one or multiple concrete Scenarios. Optional containment
+   and shared support relationships remain distinct from execution ownership.
+3. Concrete flows select canonical case definitions; shared criterion identity
+   alone does not establish that a Test covers a particular flow.
+4. Product, execution and external-reference identities remain distinct. Definition
+   lifecycle cannot overwrite recorded execution or verified completion.
+5. Context references are revision-bound. Invalid paths/selectors block admission;
+   safe missing or ambiguous passages remain inspectable limitations and block
+   only actions that require those passages.
+6. Definitions and their code/test relationships remain versioned in the repository.
+   The workbench inspects those sources and existing evidence authorities.
+7. The representative journey requires a genuine retained result and successful
+   candidate-bound comprehension. Missing evidence or failed comprehension leaves
+   the demonstration incomplete; relevant changes invalidate its review.
+8. Existing guarded mutations, decision forms and historical inspection safeguards
+   remain in force. Future schema adoption needs explicit reviewed migration.
 
 ## Open questions
 
-Confirm this complete intent and its assumptions before Plan or implementation.
-No prior intent confirmation or challenge approval transfers to these bytes.
+The proposed specification defines the concrete behavior and representative
+example. Complete-intent confirmation and independent review of the revised
+specification remain pending before planning or implementation.
 
 ## Human decisions
 
-The human clarified: “I told you apply your spec challenge corrections into the
-spec and create a fresh spec in new work dir you copy them”. This requires a
-freshly authored spec with the corrections incorporated into its requirements;
-copying the old proposal/report or appending a correction supplement is insufficient.
-The actual specification sources are now `spec.md` and `spec.json` in this directory.
-
-
-Request: “there are a lot of unrelevent files stacked in current work directory,
-apply your spec challenge and move it as a fresh spec to new work (from current
-branch) also create an new branch (revising-workbench) from current branch and
-init that work on that branch”. This authorizes drafting and branch initialization;
-it is not recorded as approval of a subsequently authored complete intent.
+The human requested a fresh specification with the challenge corrections applied
+inside its requirements, in `work/revising-workbench/`, on `revising-workbench`.
+They required the intent to describe the product rather than file relocation or
+inherited workstream history. No product implementation is requested here.
 
 ## E2E
 
-Applicability: applies to future product behavior. Cover direct Story/Task entry,
-standalone and shared relationships, concrete flow-specific tests, missing or
-ambiguous passages, linked-source freshness, genuine retained results and human
-comprehension. Use test-owned temporary repositories/browser processes; preserve
-committed pilot/evidence. No product tests or UI changes belong to initialization.
+Applicability: applies to future product behavior.
+
+Journeys: direct Story/Task entry; standalone records; shared Task navigation and
+Back; two concrete flows sharing a criterion; subject conflicts; spec/plan context
+and missing/ambiguous passages; helper-dependent Test inspection; a genuine result
+and its applicability; successful human comprehension without chat assistance.
+
+Use test-owned temporary repositories, fixtures and browser/server processes with
+teardown. Preserve genuine committed pilot and historical evidence. Automated
+checks and a candidate-bound human readability exercise are both required.
