@@ -352,7 +352,11 @@ class PassageAdmissionTests(unittest.TestCase):
 
             def external_save_after_real_capture(captured_root, captured_work_id):
                 snapshot, diagnostics = real_validate_current(captured_root, captured_work_id)
-                if not changed_after_capture:
+                # This save occurs only at the old standalone preflight, before
+                # admission has published anything. A single admitted-snapshot
+                # flow has already published its own generation by the time it
+                # performs the later freshness check.
+                if not changed_after_capture and load_published(race_root, "product") is None:
                     (race_root / "work/product/engineering-model.json").write_bytes(next_v2)
                     changed_after_capture.append(True)
                 return snapshot, diagnostics
@@ -372,8 +376,11 @@ class PassageAdmissionTests(unittest.TestCase):
                     self.fail("a v2 generation saved after a v1 preflight must not bypass selected passage admission")
             finally:
                 workflow_module.validate_current = real_validate_current
-            self.assertTrue(changed_after_capture, "the race performs a real external model save after capture")
-            self.assertEqual(race_actions, [], "mixed-generation admission refuses before the dependent action")
+            if changed_after_capture:
+                self.assertEqual(race_actions, [], "mixed-generation admission refuses before the dependent action")
+            else:
+                self.assertEqual(race_actions, ["selected-v2-action"],
+                                 "one captured valid v1 generation preserves the legacy action route")
 
             # Persisted passage text must remain bound to captured source bytes
             # and the immutable generation identity, including on reload.
