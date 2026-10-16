@@ -267,7 +267,7 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
         resolution = None
         if kind == "context":
             try:
-                historical = _revision_bytes(root, path, revision) if status == "present" else None
+                historical = _revision_bytes(root, path, revision) if revision != "snapshot" else None
                 selected_raw = historical if historical is not None else raw
                 resolution = resolve(path, selected_raw, selector, status=status)
                 if historical is not None:
@@ -277,7 +277,7 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
                               "text": None, "start_line": None, "end_line": None, "error": str(exc)}
         else:
             try:
-                historical = _revision_bytes(root, path, revision) if status == "present" else None
+                historical = _revision_bytes(root, path, revision) if revision != "snapshot" else None
                 selected_raw = historical if historical is not None else raw
                 selected_text = selected_raw.decode("utf-8") if selected_raw is not None else None
                 resolution = {"path": path, "state": "available" if selected_text is not None else "unavailable",

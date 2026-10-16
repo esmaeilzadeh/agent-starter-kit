@@ -16,6 +16,7 @@ from .admission import (_durable_write, _publish, _state_directory, _sync_direct
                         _writer, load_published, validate_current)
 from .snapshot import capture, is_current, read_input, safe_relative
 from .domain import apply_batch
+from .passages import required_task_passages, selected_task_node
 
 
 class Refused(ValueError):
@@ -192,7 +193,7 @@ def recover_locked(root, work_id, state, *, validated=None):
         raise Refused("EM007_RECOVERY_CONFLICT", str(exc)) from exc
 
 
-def run_action(root, work_id, expected, action):
+def run_action(root, work_id, expected, action, *, selected_task_id=None, selected_execution=None):
     """Call action once on validated captured bytes; publish only its valid result.
 
     action returns a map of repository-relative document paths to bytes (or None
@@ -211,6 +212,17 @@ def run_action(root, work_id, expected, action):
                 return _result(base, None, diagnostics, steps)
             if base.identity["digest"] != expected:
                 raise Refused("EM007_STALE_INPUT", "displayed input snapshot is no longer current")
+            try:
+                selected = selected_task_node(base, selected_task_id=selected_task_id,
+                                              selected_execution=selected_execution)
+            except ValueError as exc:
+                raise Refused("EM015_TASK_ID", str(exc)) from exc
+            if selected is not None:
+                missing = required_task_passages(base, selected["id"])
+                if missing:
+                    raise Refused("EM015_CONTEXT_REQUIRED",
+                                  "selected Task requires unique captured spec and plan passages: "
+                                  + ", ".join(missing), base.model_path)
             published = load_published(root, work_id)
             generation = published.identity["digest"] if published is not None else None
             steps.append("action")
@@ -263,7 +275,7 @@ def _result(base, candidate, diagnostics, steps):
             "snapshot": candidate.identity if candidate is not None else None}
 
 
-def edit(root, work_id, expected, proposal):
+def edit(root, work_id, expected, proposal, *, selected_task_id=None, selected_execution=None):
     """Guard a semantic batch plus coordinated canonical document changes.
 
     A callable proposal loader is opened only after pre-validation, so even
@@ -294,4 +306,5 @@ def edit(root, work_id, expected, proposal):
             raise Refused(diagnostic["code"], diagnostic["message"], diagnostic["path"])
         changes[snapshot.model_path] = json.dumps(result["model"], ensure_ascii=False, sort_keys=True, indent=2).encode() + b"\n"
         return changes
-    return run_action(root, work_id, expected, action)
+    return run_action(root, work_id, expected, action, selected_task_id=selected_task_id,
+                      selected_execution=selected_execution)

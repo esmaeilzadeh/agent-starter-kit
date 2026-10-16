@@ -21,7 +21,9 @@ def main(argv=None):
         q=sub.add_parser(name);q.add_argument('work_id');q.add_argument('--candidate-sha');q.add_argument('--anchor-sha');q.add_argument('--revision',default='HEAD')
         if name=='accept-plan':
             q.add_argument('--reviewer',required=True);q.add_argument('--recorded-by',required=True);q.add_argument('--evidence',required=True)
-        if name=='record-review':q.add_argument('--recorded-by',required=True);q.add_argument('--evidence',required=True)
+        if name=='record-review':
+            q.add_argument('--recorded-by',required=True);q.add_argument('--evidence',required=True)
+            q.add_argument('--scope',choices=['task','workstream'],default='workstream');q.add_argument('--task-id')
         if name in {'run','check-completion'}:
             q.add_argument('--scope',choices=['task','workstream'],default='workstream');q.add_argument('--task-id')
         if name=='run':q.add_argument('--phase',choices=['red','final_green'],default='final_green')
@@ -30,7 +32,11 @@ def main(argv=None):
     try:
         if not slug(args.work_id):raise Invalid('invalid work_id')
         managed=args.command not in {'validate-plan','record-result'} or (args.command=='record-result' and args.result=='pass')
-        with workflow_context(root,args.work_id) if managed else nullcontext():
+        selected_execution=None
+        if getattr(args,'scope',None)=='task':
+            if not getattr(args,'task_id',None):raise Invalid('task-scoped operation requires --task-id')
+            selected_execution={'work_id':args.work_id,'task_id':args.task_id}
+        with workflow_context(root,args.work_id,selected_execution=selected_execution) if managed else nullcontext():
             document,status=execute(args,root)
         print(json.dumps(document,indent=2))
         return status
@@ -50,7 +56,9 @@ def execute(args,root):
     if os.environ.get('ASK_INNER_LOOP_ROLE')=='worker' and args.command in {'accept-plan','record-review','record-result'}:raise Invalid('coordinator operation cannot be performed by worker')
     if args.command=='validate-plan':doc=contracts_at(root,args.work_id,args.revision)
     elif args.command=='accept-plan':doc=accept_plan(root,args.work_id,args.revision,args.reviewer,args.recorded_by,args.evidence)
-    elif args.command=='record-review':doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by)
+    elif args.command=='record-review':doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by,
+                                                              selected_execution=({'work_id':args.work_id,'task_id':args.task_id}
+                                                                                  if args.scope=='task' else None))
     elif args.command=='run':
         contracts=load_accepted(root,args.work_id,anchor)
         if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)

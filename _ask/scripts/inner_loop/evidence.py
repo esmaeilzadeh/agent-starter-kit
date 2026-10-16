@@ -134,8 +134,8 @@ def artifact(root: Path, name: str) -> tuple[str, str]:
         raise NotIntegrable(f'review/policy artifact must exist inside repository: {name}') from exc
 
 
-def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
-                  evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok') -> dict:
+def _record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
+                   evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok') -> dict:
     """Coordinator records an attributable delegated decision, bound to result bytes."""
     if not reviewer.strip() or policy != POLICY:
         raise NotIntegrable(f'reviewer identity and canonical policy {POLICY} required')
@@ -155,6 +155,23 @@ def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy:
                                         if isinstance(candidate.result.get('exemption'), dict) else None))
         doc['tasks'][task_id]['evidence']['review'] = review
     return review
+
+
+def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
+                  evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok', *,
+                  selected_task_id=None, selected_execution=None) -> dict:
+    """Bind adopted task review to its explicit captured Task identity."""
+    try:
+        from engineering_model.workflow import adopted, workflow_admission
+    except ModuleNotFoundError:
+        from _ask.scripts.engineering_model.workflow import adopted, workflow_admission
+    if selected_task_id is None and selected_execution is None and adopted(root, work_id):
+        selected_execution = {"work_id": work_id, "task_id": task_id}
+    if selected_task_id is None and selected_execution is None:
+        return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+    with workflow_admission(root, work_id, selected_task_id=selected_task_id,
+                            selected_execution=selected_execution):
+        return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
 
 
 def validate_review(root: Path, task: dict, candidate: Candidate) -> dict:

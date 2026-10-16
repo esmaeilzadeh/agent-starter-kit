@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
-from engineering_model.workflow import guarded_workflow
+from engineering_model.workflow import guarded_workflow, workflow_admission
 
 from inner_loop.evidence import (
     NotIntegrable, check_integrable, git, read_candidate, result_path,
@@ -88,15 +88,17 @@ def ensure_state(root: Path, work_id: str) -> dict:
         return cas_init(root, work_id, ids, coordinator_sha=git_sha(root))
 
 
-@guarded_workflow
 def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str:
     # Hold the same process lock as cancellation/spawn through Git and evidence
     # side effects. A crash after FF leaves old valid state and is retryable.
-    with state_transaction(root, work_id) as doc:
+    if task_id is None:
+        raise NotIntegrable('selected task identity is required before integration')
+    selected_execution = {'work_id': work_id, 'task_id': task_id}
+    with workflow_admission(root, work_id, selected_execution=selected_execution), \
+            state_transaction(root, work_id) as doc:
         running = _running(doc)
-        if len(running) != 1:
-            raise Escalate("no running task to integrate")
-        task_id = task_id or running[0]
+        if len(running) != 1 or task_id not in running:
+            raise Escalate("explicit selected task is not the unique running task")
         candidate = read_candidate(root, work_id, task_id, doc)
         check_integrable(candidate.result)
         task = doc['tasks'][task_id]
@@ -110,7 +112,8 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         if current != candidate or source_changes(root, work_id):
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
-        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id)
+        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
+                            selected_execution=selected_execution)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
             raise Escalate('integrated HEAD/tree differs from verified candidate')
         evidence['resulting_sha'] = sha

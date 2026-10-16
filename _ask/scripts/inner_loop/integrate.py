@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
-from engineering_model.workflow import branch_work_id, validate_candidate, workflow_admission
+from engineering_model.workflow import adopted, branch_work_id, validate_candidate, workflow_admission
+from engineering_model.actions import Refused
 
 
 class Forbidden(RuntimeError):
@@ -17,15 +18,22 @@ def _run(root: Path, args: list[str], check: bool = True) -> subprocess.Complete
     return subprocess.run(args, cwd=root, check=check, capture_output=True, text=True)
 
 
-def integrate(root: Path, task_ref: str, method: str = "ff-only", *, work_id=None) -> str:
-    with workflow_admission(root, work_id or branch_work_id(root)):
-        return _integrate(root, task_ref, method, work_id or branch_work_id(root))
+def integrate(root: Path, task_ref: str, method: str = "ff-only", *, work_id=None,
+              selected_task_id=None, selected_execution=None) -> str:
+    selected_work = work_id or branch_work_id(root)
+    if adopted(root, selected_work) and selected_task_id is None and selected_execution is None:
+        raise Refused('EM015_TASK_ID', 'adopted Task integration requires an explicit selected Task identity')
+    with workflow_admission(root, selected_work, selected_task_id=selected_task_id,
+                            selected_execution=selected_execution):
+        return _integrate(root, task_ref, method, selected_work, selected_task_id, selected_execution)
 
 
-def _integrate(root: Path, task_ref: str, method: str, work_id) -> str:
+def _integrate(root: Path, task_ref: str, method: str, work_id, selected_task_id=None,
+               selected_execution=None) -> str:
     if method != "ff-only":
         raise Forbidden(f"{method} onto coordinator is forbidden")
-    candidate = validate_candidate(root, work_id, task_ref)
+    candidate = validate_candidate(root, work_id, task_ref, selected_task_id=selected_task_id,
+                                   selected_execution=selected_execution)
     _run(root, ["git", "merge", "--ff-only", candidate])
     sha = _run(root, ["git", "rev-parse", "HEAD"]).stdout.strip()
     return sha

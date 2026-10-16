@@ -158,4 +158,42 @@ def required_task_passages(snapshot, node_id):
         entries = by_role.get(role, [])
         if len(entries) != 1 or entries[0].get("resolution", {}).get("state") != "available":
             missing.append(role)
+            continue
+        if role == "plan":
+            execution = node.get("execution")
+            expected_task_id = execution.get("task_id") if isinstance(execution, dict) else None
+            selector = entries[0].get("resolution", {}).get("selector")
+            if (not isinstance(expected_task_id, str) or not expected_task_id.strip()
+                    or not isinstance(selector, dict) or selector.get("kind") != "plan-task"
+                    or selector.get("task_id") != expected_task_id):
+                missing.append(role)
     return missing
+
+
+def selected_task_node(snapshot, *, selected_task_id=None, selected_execution=None):
+    """Resolve only an explicit product Task ID or qualified execution pair."""
+    nodes = snapshot.document.get("nodes", [])
+    tasks = [item for item in nodes if isinstance(item, dict) and item.get("type") == "task"]
+    matches_by_product = None
+    matches_by_execution = None
+    if selected_task_id is not None:
+        if not isinstance(selected_task_id, str) or not selected_task_id.strip():
+            raise ValueError("selected Task ID must be nonempty text")
+        matches_by_product = [node for node in tasks if node.get("id") == selected_task_id]
+    if selected_execution is not None:
+        if (not isinstance(selected_execution, dict) or set(selected_execution) != {"work_id", "task_id"}
+                or not all(isinstance(selected_execution.get(key), str) and selected_execution[key].strip()
+                           for key in ("work_id", "task_id"))):
+            raise ValueError("selected execution must contain exact work_id and task_id strings")
+        matches_by_execution = [node for node in tasks if node.get("execution") == selected_execution]
+    if matches_by_product is None and matches_by_execution is None:
+        return None
+    if matches_by_product is not None and matches_by_execution is not None:
+        if (len(matches_by_product) != 1 or len(matches_by_execution) != 1
+                or matches_by_product[0] is not matches_by_execution[0]):
+            raise ValueError("product Task and qualified execution selectors conflict")
+        return matches_by_product[0]
+    matches = matches_by_product if matches_by_product is not None else matches_by_execution
+    if len(matches) != 1:
+        raise ValueError("selected identity must resolve to exactly one captured Task")
+    return matches[0]

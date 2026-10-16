@@ -15,6 +15,7 @@ from types import MappingProxyType
 
 from .snapshot import Snapshot, capture, is_current, safe_relative
 from .validation import RULES_VERSION
+from .passages import required_task_passages, selected_task_node
 
 
 def _state_directory(root, work_id):
@@ -129,7 +130,7 @@ def _publish(state, snapshot, root, *, guarded_base=None):
             if raw is not None:
                 _durable_write(blobs / hashlib.sha256(raw).hexdigest(), raw)
         manifest = {"schema": "ask-engineering-generation/v1", "work_id": snapshot.work_id,
-                    "snapshot": identity}
+                    "snapshot": identity, "passages": dict(snapshot.passages)}
         _durable_write(staged / "manifest.json", json.dumps(manifest, sort_keys=True).encode())
         _sync_directory(blobs)
         _sync_directory(staged)
@@ -203,7 +204,11 @@ def _load_generation(state, work_id, digest):
         files[path], statuses[path] = raw, status
     if files.get(model_path) is None:
         raise ValueError("generation has no model")
-    snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
+    passages = manifest.get("passages", {})
+    if not isinstance(passages, dict):
+        raise ValueError("published passage map is invalid")
+    snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
+                        MappingProxyType(passages))
     if snapshot.identity != identity or identity["digest"] != digest:
         raise ValueError("published generation identity has changed")
     return snapshot
@@ -227,7 +232,23 @@ def validate_current(root, work_id, *, allow_pending=False):
     return snapshot, diagnostics
 
 
-def admit(root, work_id, expected=None):
+def _selected_diagnostics(snapshot, selected_task_id=None, selected_execution=None):
+    try:
+        selected = selected_task_node(snapshot, selected_task_id=selected_task_id,
+                                      selected_execution=selected_execution)
+    except ValueError as exc:
+        return [{"code": "EM015_TASK_ID", "path": snapshot.model_path, "message": str(exc)}]
+    if selected is None:
+        return []
+    missing = required_task_passages(snapshot, selected["id"])
+    if missing:
+        return [{"code": "EM015_CONTEXT_REQUIRED", "path": snapshot.model_path,
+                 "message": "selected Task requires unique captured spec and plan passages: "
+                            + ", ".join(missing)}]
+    return []
+
+
+def admit(root, work_id, expected=None, *, selected_task_id=None, selected_execution=None):
     """Bootstrap/read admission; does not authorize or execute workflow actions."""
     snapshot, diagnostics = None, []
     try:
@@ -236,6 +257,8 @@ def admit(root, work_id, expected=None):
             from .actions import recover_locked
             recover_locked(Path(root).resolve(), work_id, state)
             snapshot, diagnostics = validate_current(root, work_id)
+            if not diagnostics:
+                diagnostics.extend(_selected_diagnostics(snapshot, selected_task_id, selected_execution))
             if not diagnostics and expected is not None and snapshot.identity["digest"] != expected:
                 diagnostics = [{"code": "EM007_STALE_INPUT", "path": snapshot.model_path,
                                 "message": "expected snapshot is no longer current"}]

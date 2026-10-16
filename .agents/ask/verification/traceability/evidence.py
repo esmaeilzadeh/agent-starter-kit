@@ -129,7 +129,7 @@ def inventory(root,base,sha,plan):
     return {'inspected_sources':inspected,'changed_cases':sorted(set(cases)),'unmapped_cases':sorted(unmapped),'behavior_changes':sorted(set(behavior_changes))}
 
 
-def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by):
+def _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by):
     contracts=load_accepted(root,work_id,anchor_sha,candidate_sha);review=load(Path(root)/review_path)
     if not text(recorded_by) or recorded_by==review.get('reviewer'):raise Invalid('independent reviewer and coordinator required')
     errors=review_errors(root,contracts,review,candidate_sha)
@@ -140,6 +140,15 @@ def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorde
             'scope':review.get('scope','workstream'),'task_id':review.get('task_id')}
     write_json(Path(root)/'work'/work_id/'traceability'/'reviews'/(candidate_sha+'.json'),record)
     return record
+
+
+def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,*,selected_execution=None):
+    """Record review inside the explicit selected-task workflow when requested."""
+    if selected_execution is None:
+        return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by)
+    from verification.run import workflow_context
+    with workflow_context(root,work_id,selected_execution=selected_execution):
+        return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by)
 
 
 def review_errors(root,contracts,review,sha):

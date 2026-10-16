@@ -23,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
     admit_parser.add_argument("--work-id", required=True)
     admit_parser.add_argument("--expected", help="refuse if the complete input digest has changed")
     admit_parser.add_argument("--action", help="label a cooperating implementation or review action")
+    admit_parser.add_argument("--task-node", help="explicit product Task node whose selected context is required")
     admit_parser.add_argument("action_command", nargs=argparse.REMAINDER, help="action argv after -- (no shell)")
     show_parser = commands.add_parser("show", help="read a validated generation; invalid working inputs are noneditable")
     show_parser.add_argument("--work-id", required=True)
@@ -51,7 +52,8 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("action command cannot be empty")
         from .workflow import workflow_admission
         try:
-            with workflow_admission(root, args.work_id, args.expected) as admitted:
+            with workflow_admission(root, args.work_id, args.expected,
+                                     selected_task_id=args.task_node) as admitted:
                 if admitted is None:
                     raise ValueError("action requires an adopted Engineering Model")
                 process = subprocess.run(action_command, cwd=root)
