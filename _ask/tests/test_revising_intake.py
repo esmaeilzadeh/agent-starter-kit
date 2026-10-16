@@ -47,13 +47,21 @@ class ContextResolverTests(unittest.TestCase):
             ]})
             self.assertEqual(conflict["disposition"], "needs_clarification",
                              "qualified owner conflicts cannot be joined by a matching node ID")
+            self.assertEqual(explicit["trace"], ["stage-caller", "resolver"])
+            explicit_unknown = resolve(root, "product", {"explicit_subjects": [
+                {"work_id": "product", "node_id": "missing-parent"}]})
+            self.assertEqual(explicit_unknown["disposition"], "needs_clarification",
+                             "missing ancestors are not invented or silently associated")
+            current_doc = json.loads(doc_path.read_text())
+            current_doc.pop("subject_association")
+            _put(root, "work/product/engineering-model.json", current_doc)
             later = resolve(root, "product", {"later_cards": [".later/new-parser.md"]})
             self.assertIn(later["disposition"], {"chooser", "needs_clarification"})
             self.assertEqual(later.get("proposal", {}).get("source"), "later-card")
             chooser = resolve(root, "product", {"inspection_only": True})
             self.assertEqual(chooser["disposition"], "chooser")
             tracker = resolve(root, "product", {"tracker_context": {"id": "T-19", "available": False}})
-            self.assertIn(tracker["disposition"], {"resolved", "unavailable"})
+            self.assertEqual(tracker["disposition"], "chooser")
             self.assertEqual(tracker.get("external_context", {}).get("state"), "unavailable")
             no_join_doc = json.loads(doc_path.read_text())
             no_join_doc.pop("subject_association")
@@ -138,35 +146,50 @@ class StageIntakeTests(unittest.TestCase):
 
     def test_association_passage_admission_uses_existing_guard(self):
         try:
-            from _ask.scripts.engineering_model.actions import edit
+            from _ask.scripts.engineering_model.actions import associate_subject
             from _ask.scripts.engineering_model.admission import validate_current, load_published
             from _ask.scripts.engineering_model.domain import apply_batch
         except ImportError:
-            edit = validate_current = load_published = apply_batch = None
-        self.assertTrue(callable(edit) and callable(apply_batch),
+            associate_subject = validate_current = load_published = apply_batch = None
+        self.assertTrue(callable(associate_subject) and callable(apply_batch),
                         "subject association must be an attributable semantic operation through the real guard")
-        if not callable(edit):
+        if not callable(associate_subject):
             return
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             _repo(root)
             captured, errors = validate_current(root, "product")
             self.assertFalse(errors)
-            proposal = {"subject": {"work_id": "product", "node_id": "story"},
-                         "revision": "snapshot", "contribution": "Implement parser",
-                         "exclusions": ["UI redesign"], "execution_owner": {"work_id": "product", "task_id": "WB-003"},
-                         "actor": "human", "rationale": "Confirmed association"}
-            result = edit(root, "product", captured.identity["digest"], {"commands": [{"op": "associate_subject", **proposal}]})
+            result = associate_subject(root, "product", captured.identity["digest"],
+                                       subject={"work_id": "product", "node_id": "story"},
+                                       contribution="Implement parser", exclusions=["UI redesign"],
+                                       execution_owner={"work_id": "product", "task_id": "WB-003"},
+                                       actor="human", rationale="Confirmed association")
             self.assertTrue(result["valid"], str(result))
             self.assertEqual(result["steps"], ["pre", "action", "post", "publication"])
             current = json.loads((root / "work/product/engineering-model.json").read_text())
             self.assertEqual(current["subject_association"]["subject"], {"work_id": "product", "node_id": "story"})
             self.assertEqual(current["subject_association"]["contribution"], "Implement parser")
+            self.assertEqual(current["subject_association"]["snapshot_digest"], captured.identity["digest"])
+            self.assertEqual(current["subject_association"]["history"][0]["actor"], "human")
             stable = (root / "work/product/engineering-model.json").read_bytes()
-            invalid = {"op": "associate_subject", "subject": {"work_id": "product", "node_id": "missing"},
-                       "revision": "snapshot", "contribution": "", "exclusions": [],
-                       "actor": "human", "rationale": "Bad required contract"}
-            refused = edit(root, "product", result["snapshot"]["digest"], {"commands": [invalid]})
+            refused = associate_subject(root, "product", result["snapshot"]["digest"],
+                                        subject={"work_id": "product", "node_id": "missing"},
+                                        contribution="Bad required contract", exclusions=[],
+                                        actor="human", rationale="Missing selected subject")
             self.assertFalse(refused["valid"])
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
             self.assertEqual(refused["steps"], ["pre"])
+            required = associate_subject(root, "product", result["snapshot"]["digest"],
+                                         subject={"work_id": "product", "node_id": "story"},
+                                         contribution="Required contribution", exclusions=[], actor="human",
+                                         rationale="Missing required spec", required_roles=("spec",))
+            self.assertFalse(required["valid"], "only an explicitly required subject context blocks publication")
+            self.assertEqual(required["steps"], ["pre"])
+            self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
+            stale = associate_subject(root, "product", "0" * 64,
+                                      subject={"work_id": "product", "node_id": "story"},
+                                      contribution="Stale", exclusions=[], actor="human", rationale="Stale")
+            self.assertFalse(stale["valid"])
+            self.assertEqual(stale["diagnostics"][0]["code"], "EM007_STALE_INPUT")
+            self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
