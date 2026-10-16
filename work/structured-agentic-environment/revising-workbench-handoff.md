@@ -2,8 +2,8 @@
 
 On 2026-10-16 the human requested a fresh workstream and branch from current
 commit `159f516d5fb81575b1f96a1f310ae66e3427c31f`. The pending revision-4 proposal now lives at
-`specs/proposals/revising-workbench.md` with adjacent JSON and
-`work/revising-workbench/intent.md`. Its proposed challenge resolutions are there.
+`work/revising-workbench/spec.md` with adjacent `spec.json` and
+`work/revising-workbench/intent.md`. Its requirements integrate the six challenge corrections. The old proposal path is a discovery pointer.
 
 Set this workstream aside. Existing intent/exploration, plans, design, accepted
 revision-3 contract, test pins, models and execution evidence remain historical

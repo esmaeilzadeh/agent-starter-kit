@@ -34,18 +34,18 @@ of unrelated repository files, merge, push or acceptance.
 
 1. “Apply your spec challenge” means revise using the existing independent
    report, rather than silently label the revised bytes independently approved.
-2. Only the pending proposal is transferred; old plans, pins, runtime state and
+2. The pending proposal is rewritten as a fresh specification; old plans, pins, runtime state and
    results retain `structured-agentic-environment` identity and original paths.
 3. The branch name and base explicitly override the kit's develop/agent default.
    The previous workstream is set aside; no overlapping implementation runs.
-4. Proposed F1–F6 resolutions are specified in the new spec and resolution map.
+4. F1–F6 corrections are integrated into `spec.md` and its `spec.json` criteria.
    They await confirmation and an independent challenge of the new digests.
 5. A Story may have one Scenario. Missing parents remain legal; shared support
    relationships preserve one identity and do not transfer execution ownership.
 6. At least one genuine, integrity-checked retained result and a successful
    candidate-bound readability exercise are required for the real demonstration.
-7. This environment's original `.git` is read-only. The branch and commits are
-   prepared in an isolated local clone, with a bundle for import into the original.
+7. The requested branch is now active in the original repository. The fresh
+   specification and criterion JSON live directly in this work directory.
 
 ## Open questions
 
@@ -53,6 +53,13 @@ Confirm this complete intent and its assumptions before Plan or implementation.
 No prior intent confirmation or challenge approval transfers to these bytes.
 
 ## Human decisions
+
+The human clarified: “I told you apply your spec challenge corrections into the
+spec and create a fresh spec in new work dir you copy them”. This requires a
+freshly authored spec with the corrections incorporated into its requirements;
+copying the old proposal/report or appending a correction supplement is insufficient.
+The actual specification sources are now `spec.md` and `spec.json` in this directory.
+
 
 Request: “there are a lot of unrelevent files stacked in current work directory,
 apply your spec challenge and move it as a fresh spec to new work (from current
