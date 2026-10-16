@@ -96,6 +96,8 @@ class StageIntakeTests(unittest.TestCase):
                                         cwd=root, text=True, capture_output=True)
                 self.assertEqual(result.returncode, 0, f"adopted {stage} caller should resolve read-only: {result.stderr}")
                 payload = json.loads(result.stdout)
+                self.assertEqual(payload["trace"], ["stage-caller", "resolver"],
+                                 "the actual adopted command reports caller-before-resolver ordering")
                 self.assertEqual(payload["disposition"], "chooser")
                 self.assertIn("snapshot", payload)
                 self.assertIn("source", payload)
@@ -105,6 +107,12 @@ class StageIntakeTests(unittest.TestCase):
                 self.assertIn("execution_owner", payload)
                 stage_doc = (root / ".agents/ask/stages" / (stage + ".md")).read_text()
                 self.assertIn("stage-intake", stage_doc, f"canonical {stage} instructions bind the caller before writes")
+                project = Path(__file__).resolve().parents[2]
+                self.assertTrue((project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").is_file())
+                self.assertIn("stage-intake", (project / ".agents/skills" / f"kit-{stage}" / "SKILL.md").read_text())
+                projection = ".cursor/commands" if stage == "00-explore" else ".cursor/commands"
+                cursor_doc = project / projection / f"{stage}.md"
+                self.assertIn("stage-intake", cursor_doc.read_text())
                 conflict = root / "conflict.json"
                 conflict.write_text(json.dumps({"explicit_subjects": [
                     {"work_id": "product", "node_id": "story-a"},
@@ -119,6 +127,7 @@ class StageIntakeTests(unittest.TestCase):
             self.assertFalse((root / "work/product/explore-map.md").exists())
             self.assertEqual(subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, text=True,
                                             capture_output=True).returncode, before_head)
+            self.assertFalse((root / ".git").exists(), "inspection does not initialize or transfer repository authority")
 
     def test_model_context_cli_matches_caller_without_writes(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -193,3 +202,45 @@ class StageIntakeTests(unittest.TestCase):
             self.assertFalse(stale["valid"])
             self.assertEqual(stale["diagnostics"][0]["code"], "EM007_STALE_INPUT")
             self.assertEqual((root / "work/product/engineering-model.json").read_bytes(), stable)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            model_path = root / "work/product/engineering-model.json"
+            document = json.loads(model_path.read_text())
+            document["nodes"][1]["context"] = [
+                {"role": "spec", "path": "docs/context.md", "revision": "snapshot",
+                 "selector": {"kind": "heading", "path": ["Scope"]}},
+                {"role": "spec", "path": "docs/context.md", "revision": "snapshot",
+                 "selector": {"kind": "heading", "path": ["Scope"]}},
+            ]
+            _put(root, "work/product/engineering-model.json", document)
+            current, diagnostics = validate_current(root, "product")
+            self.assertFalse(diagnostics)
+            ambiguous = associate_subject(root, "product", current.identity["digest"],
+                                          subject={"work_id": "product", "node_id": "story"},
+                                          contribution="Ambiguous context", exclusions=[], actor="human",
+                                          rationale="Do not guess", required_roles=("spec",))
+            self.assertFalse(ambiguous["valid"])
+            self.assertEqual(ambiguous["steps"], ["pre"])
+            self.assertIsNone(load_published(root, "product"), "refusal does not publish an association candidate")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            model_path = root / "work/product/engineering-model.json"
+            document = json.loads(model_path.read_text())
+            document["nodes"][1]["context"] = [
+                {"role": "spec", "path": "docs/unsafe.md", "revision": "snapshot",
+                 "selector": {"kind": "heading", "path": ["Scope"]}},
+            ]
+            _put(root, "work/product/engineering-model.json", document)
+            (root / "docs/unsafe.md").symlink_to(root / "docs/context.md")
+            current, diagnostics = validate_current(root, "product")
+            self.assertTrue(diagnostics, "unsafe context symlinks fail the captured pre-check")
+            unsafe = associate_subject(root, "product", current.identity["digest"],
+                                       subject={"work_id": "product", "node_id": "story"},
+                                       contribution="Unsafe context", exclusions=[], actor="human",
+                                       rationale="Reject symlink", required_roles=("spec",))
+            self.assertFalse(unsafe["valid"])
+            self.assertNotIn("action", unsafe["steps"])
