@@ -451,7 +451,7 @@ def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
                 errors.append(_diagnostic("EM001_DECISION_HISTORY", entry_path,
                                           "history entry has an invalid shape", node_id))
                 continue
-            if (entry["event"] not in allowed_events
+            if (not isinstance(entry["event"], str) or entry["event"] not in allowed_events
                     or not isinstance(entry["actor"], str) or not entry["actor"].strip()
                     or not isinstance(entry["rationale"], str) or not entry["rationale"].strip()
                     or not _utc_timestamp(entry["timestamp"])):
@@ -471,11 +471,12 @@ def _decision_diagnostics(node: dict, path: str, node_id: str) -> list[dict]:
                                           "historical options must have unique nonempty IDs and labels", node_id))
             resolution = entry["resolution"]
             if resolution != {}:
+                historical_option_ids = {option.get("id") for option in historical_options
+                                          if isinstance(option, dict) and isinstance(option.get("id"), str)}
                 if (not isinstance(resolution, dict)
                         or set(resolution) != {"option_id", "actor", "rationale", "timestamp"}
-                        or resolution.get("option_id") not in {
-                            option.get("id") for option in historical_options
-                            if isinstance(option, dict)}
+                        or not isinstance(resolution.get("option_id"), str)
+                        or resolution.get("option_id") not in historical_option_ids
                         or not isinstance(resolution.get("actor"), str) or not resolution["actor"].strip()
                         or not isinstance(resolution.get("rationale"), str) or not resolution["rationale"].strip()
                         or not _utc_timestamp(resolution.get("timestamp"))):
