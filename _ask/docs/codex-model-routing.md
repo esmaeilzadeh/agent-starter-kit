@@ -1,13 +1,14 @@
 # Codex task model selection
 
-Source: `.agents/ask/bindings/runtimes/codex.yaml`. Role/stage routing remains in `.agents/ask/bindings/models.defaults.yaml`; `./ask sync` generates the agent files. These defaults target task fit and cost, not maximum capability for every operation.
+Sources: `.agents/ask/bindings/runtimes/codex.yaml` and the persistent repository overlay `_ask/bindings/models.yaml`. Role/stage routing remains in `.agents/ask/bindings/models.defaults.yaml`; `./ask sync` generates the agent files. These defaults target task fit and cost, not maximum capability for every operation.
 
 ## Defaults
 
 | Job | Default | Effort | Use |
 | --- | --- | --- | --- |
 | Explore, Grill, Spec, Spec Change, Accept | `gpt-6.1-sol` | medium | General reasoning and engineering judgment. |
-| Plan, Implement, Refactor | `gpt-6-luna` | medium | Clear, bounded work with an established contract. |
+| Plan | `gpt-6.1-sol` | high | Repository-wide planning default, including future workstreams. |
+| Implement, Refactor | `gpt-6-luna` | medium | Clear, bounded work with an established contract. |
 | Verify | `gpt-6-luna` | low | Primarily executing deterministic checks. |
 | LOW/MEDIUM-risk Review | `gpt-6-luna` | medium | Routine review of scoped changes. |
 | Spec Challenge and HIGH/CRITICAL-risk Review | `gpt-6-astra` | high | Difficult counterexamples and consequential trade-offs. |
@@ -20,12 +21,10 @@ For a complex implementation, put this existing override shape in `work/<work-id
 
 ```yaml
 codex:
-  05-plan: gpt-6.1-sol
   06-implement: gpt-6.1-sol
   08-refactor: gpt-6.1-sol
 reasoning_effort:
   codex:
-    05-plan: high
     06-implement: high
     08-refactor: high
 ```
