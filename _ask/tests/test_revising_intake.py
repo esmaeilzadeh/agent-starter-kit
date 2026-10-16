@@ -41,6 +41,24 @@ class ContextResolverTests(unittest.TestCase):
             self.assertEqual(explicit["disposition"], "unavailable",
                              "a foreign owner is not claimed resolved without its captured owning model")
             self.assertEqual(explicit["external_context"]["state"], "unavailable")
+            explicit_details = resolve(root, "product", {
+                "explicit_subjects": [{"work_id": "product", "node_id": "story"}],
+                "contribution": "Parser only", "exclusions": ["UI"],
+                "execution_owner": {"work_id": "product", "task_id": "WB-003"},
+            })
+            self.assertEqual(explicit_details["contribution"], "Parser only")
+            self.assertEqual(explicit_details["exclusions"], ["UI"])
+            self.assertEqual(explicit_details["execution_owner"], {"work_id": "product", "task_id": "WB-003"})
+            foreign_model = json.loads(doc_path.read_text())
+            foreign_model.pop("subject_association", None)
+            foreign_model["work_id"] = "other"
+            _put(root, "work/other/engineering-model.json", foreign_model)
+            foreign = resolve(root, "product", {"explicit_subjects": [{"work_id": "other", "node_id": "story"}]})
+            self.assertEqual(foreign["disposition"], "resolved")
+            self.assertEqual(foreign["external_context"]["state"], "available")
+            from _ask.scripts.engineering_model.snapshot import capture
+            self.assertEqual(foreign["external_context"]["snapshot"], capture(root, "other").identity,
+                             "foreign context retains the captured owning revision")
             recorded = resolve(root, "product", {})
             self.assertEqual(recorded["subject"], association["subject"])
             self.assertEqual(recorded["contribution"], association["contribution"])
@@ -290,3 +308,21 @@ class StageIntakeTests(unittest.TestCase):
                                        rationale="Reject symlink", required_roles=("spec",))
             self.assertFalse(unsafe["valid"])
             self.assertNotIn("action", unsafe["steps"])
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            document = json.loads((root / "work/product/engineering-model.json").read_text())
+            document["subject_association"] = {"history": None}
+            _put(root, "work/product/engineering-model.json", document)
+            current, diagnostics = validate_current(root, "product")
+            self.assertFalse(diagnostics, "legacy structural admission currently allows this malformed optional field")
+            try:
+                malformed_history = associate_subject(
+                    root, "product", current.identity["digest"],
+                    subject={"work_id": "product", "node_id": "story"}, contribution="Parser only",
+                    exclusions=[], actor="human", rationale="Defend malformed history")
+            except Exception as exc:
+                self.fail(f"malformed prior association must return a diagnostic, not raise {type(exc).__name__}: {exc}")
+            self.assertFalse(malformed_history["valid"])
+            self.assertEqual(malformed_history["steps"], ["pre"])
