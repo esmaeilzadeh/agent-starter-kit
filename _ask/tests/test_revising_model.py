@@ -5,6 +5,7 @@ import unittest
 from _ask.tests.revising_fixture import digest, model, plan, reference_bytes, reviewed_mapping
 from _ask.scripts.engineering_model.validation import validate
 from _ask.scripts.engineering_model.domain import task_states
+from _ask.scripts.engineering_model.identities import execution_identity
 
 
 class V2ModelTests(unittest.TestCase):
@@ -103,6 +104,7 @@ class V2ModelTests(unittest.TestCase):
         document["nodes"][2]["case"]["plan_digest"] = digest(canonical_plan)
         other_plan = copy.deepcopy(canonical_plan)
         other_plan["work_id"] = "other"
+        other_plan["tests"][0]["scenario"]["then"] = ["Entirely different assertion"]
         refs["work/other/test-plan.json"] = __import__("json").dumps(other_plan).encode()
         wrong_owner_path = copy.deepcopy(document)
         wrong_owner_path["nodes"][4]["reference"] = {
@@ -133,6 +135,25 @@ class V2ModelTests(unittest.TestCase):
         distinct["nodes"][3]["execution"] = {"work_id": "other-delivery", "task_id": "task"}
         self.assertEqual(validate(distinct, ".", "product", reference_bytes=refs), [],
                          "a local product slug cannot implicitly join an execution task")
+
+        external_metadata = {"id": "task", "tracker_reference": {"system": "tracker", "id": "task",
+                                                                      "status": "done"},
+                             "later_path": ".later/task.md"}
+        before = copy.deepcopy(external_metadata)
+        self.assertIsNone(execution_identity(external_metadata),
+                          "tracker and later-card metadata do not create an execution alias")
+        self.assertEqual(external_metadata, before, "identity inspection retains supplied reference metadata")
+        external_metadata["execution"] = {"work_id": "delivery", "task_id": "task"}
+        self.assertEqual(execution_identity(external_metadata), ("delivery", "task"))
+
+        done = copy.deepcopy(distinct)
+        done_task = next(node for node in done["nodes"] if node["id"] == "task")
+        done_task["lifecycle"] = "done"
+        projected = task_states(done)[0]
+        self.assertEqual(projected["lifecycle"], "done")
+        self.assertEqual(set(projected), {"id", "lifecycle", "status", "blockers",
+                                          "product_identity", "execution_identity"},
+                         "declared done does not manufacture execution or verification evidence")
 
 
 class FlowTests(unittest.TestCase):
