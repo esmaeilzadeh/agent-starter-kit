@@ -13,7 +13,8 @@ from pathlib import Path, PureWindowsPath
 
 
 SCHEMA = "ask-engineering-model/v1"
-RULES_VERSION = "ask-engineering-validator-rules/v5"
+SCHEMA_V2 = "ask-engineering-model/v2"
+RULES_VERSION = "ask-engineering-validator-rules/v6"
 NODE_TYPES = {
     "intent", "requirement", "feature", "story", "scenario", "decision",
     "assumption", "task", "implementation", "test", "test_run", "risk",
@@ -93,6 +94,13 @@ def _acyclic(edges: list[tuple[str, str]], ids: set[str]) -> list[list[str]]:
 
 
 def validate(document: object, root: str | Path, work_id: str, *, reference_bytes=None) -> list[dict]:
+    """Dispatch the exact model version while retaining the original v1 rules."""
+    if isinstance(document, dict) and document.get("schema") == SCHEMA_V2:
+        return _validate_v2(document, root, work_id, reference_bytes=reference_bytes)
+    return _validate_v1(document, root, work_id, reference_bytes=reference_bytes)
+
+
+def _validate_v1(document: object, root: str | Path, work_id: str, *, reference_bytes=None) -> list[dict]:
     """Return deterministic diagnostics; never modify the document or files."""
     errors: list[dict] = []
     if not isinstance(document, dict):
@@ -225,6 +233,164 @@ def validate(document: object, root: str | Path, work_id: str, *, reference_byte
     for cycle in _acyclic(dependencies, set(by_id)):
         errors.append(_diagnostic("EM001_DEPENDENCY_CYCLE", "$.edges", "dependency cycle", *cycle))
     errors.sort(key=lambda item: (item["path"], item["code"], item.get("ids", []), item["message"]))
+    return errors
+
+
+def _validate_v2(document: object, root: str | Path, work_id: str, *, reference_bytes=None) -> list[dict]:
+    """Validate the v2 relationship graph and its qualified aliases."""
+    from .identities import identity_diagnostics
+    from .flows import flow_diagnostics
+
+    errors: list[dict] = []
+    if document.get("work_id") != work_id:
+        errors.append(_diagnostic("EM001_WORK_ID", "$.work_id", "work_id does not match selected workstream"))
+    if set(document) - {"schema", "work_id", "revision", "nodes", "edges", "subject_association"}:
+        for key in sorted(set(document) - {"schema", "work_id", "revision", "nodes", "edges", "subject_association"}):
+            errors.append(_diagnostic("EM001_FIELD", f"$.{key}", "unexpected model field"))
+    revision = document.get("revision")
+    if not isinstance(revision, int) or isinstance(revision, bool) or revision < 1:
+        errors.append(_diagnostic("EM001_REVISION", "$.revision", "revision must be a positive integer"))
+    nodes, edges = document.get("nodes"), document.get("edges")
+    if not isinstance(nodes, list):
+        errors.append(_diagnostic("EM001_SCHEMA", "$.nodes", "nodes must be an array")); nodes = []
+    if not isinstance(edges, list):
+        errors.append(_diagnostic("EM001_SCHEMA", "$.edges", "edges must be an array")); edges = []
+    by_id: dict[str, dict] = {}
+    id_paths: dict[str, str] = {}
+    for index, node in enumerate(nodes):
+        path = f"$.nodes[{index}]"
+        if not isinstance(node, dict):
+            errors.append(_diagnostic("EM001_NODE", path, "node must be an object")); continue
+        node_id = node.get("id")
+        if not isinstance(node_id, str) or not SLUG.fullmatch(node_id):
+            errors.append(_diagnostic("EM001_ID", f"{path}.id", "id must be a lowercase hyphenated slug")); continue
+        if node_id in by_id:
+            errors.append(_diagnostic("EM001_DUPLICATE_ID", f"{path}.id", "duplicate node id", node_id)); continue
+        by_id[node_id], id_paths[node_id] = node, path
+        node_type = node.get("type")
+        if not isinstance(node_type, str) or node_type not in NODE_TYPES:
+            errors.append(_diagnostic("EM001_NODE_TYPE", f"{path}.type", "unknown node type", node_id)); continue
+        allowed = {"id", "type", "title", "lifecycle", "description", "context", "source_context"}
+        if node_type in {"requirement", "scenario", "test", "test_run", "evidence", "implementation"}:
+            allowed.add("reference")
+        if node_type == "decision": allowed |= {"options", "resolution", "history"}
+        if node_type == "task": allowed.add("execution")
+        if node_type == "scenario": allowed.add("case")
+        if node_type == "intent": allowed.add("definition")
+        for key in sorted(set(node) - allowed):
+            errors.append(_diagnostic("EM001_FIELD", f"{path}.{key}", "unexpected model field", node_id))
+        if not isinstance(node.get("title"), str) or not node["title"].strip():
+            errors.append(_diagnostic("EM001_TITLE", f"{path}.title", "title must be nonempty", node_id))
+        if node.get("description") is not None and not isinstance(node["description"], str):
+            errors.append(_diagnostic("EM001_DESCRIPTION", f"{path}.description", "description must be text", node_id))
+        if not isinstance(node.get("lifecycle"), str) or node.get("lifecycle") not in LIFECYCLES[node_type]:
+            errors.append(_diagnostic("EM001_LIFECYCLE", f"{path}.lifecycle", "invalid lifecycle for node type", node_id))
+        if node_type == "decision": errors.extend(_decision_diagnostics(node, path, node_id))
+        errors.extend(_v2_metadata_diagnostics(node, path, node_id))
+        if node_type == "implementation":
+            _validate_reference(node, path, node_id, node_type, root, work_id, errors, reference_bytes)
+        elif node_type == "test" and isinstance(node.get("reference"), dict) and (
+                "work_id" in node["reference"] or "plan_digest" in node["reference"]):
+            reference = node["reference"]
+            if (set(reference) != {"path", "id", "work_id", "plan_digest"}
+                    or not isinstance(reference.get("work_id"), str)
+                    or not isinstance(reference.get("plan_digest"), str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", reference["plan_digest"])):
+                errors.append(_diagnostic("EM001_REFERENCE", f"{path}.reference", "qualified Test reference needs path, id, work_id, and plan_digest", node_id))
+            normalized = dict(node)
+            normalized["reference"] = {key: reference[key] for key in ("path", "id") if key in reference}
+            _validate_reference(normalized, path, node_id, node_type, root, work_id, errors, reference_bytes)
+        elif node_type in {"requirement", "scenario", "test", "test_run", "evidence"}:
+            # In v2 a draft Scenario can omit its canonical case/reference.
+            _validate_reference(node, path, node_id, node_type, root, work_id, errors, reference_bytes)
+
+    intents = [identity for identity, node in by_id.items() if node.get("type") == "intent"]
+    if len(intents) > 1:
+        errors.append(_diagnostic("EM001_INTENT_COUNT", "$.nodes", "model may contain at most one intent", *intents))
+    identity_errors = identity_diagnostics(by_id, id_paths)
+    errors.extend(identity_errors)
+
+    seen: set[tuple[str, str, str]] = set()
+    parents: dict[str, list[str]] = defaultdict(list)
+    containment: list[tuple[str, str]] = []
+    dependencies: list[tuple[str, str]] = []
+    for index, edge in enumerate(edges):
+        path = f"$.edges[{index}]"
+        if not isinstance(edge, dict) or set(edge) != {"type", "source", "target"}:
+            errors.append(_diagnostic("EM001_EDGE", path, "edge must contain exactly type, source, and target")); continue
+        kind, source, target = edge["type"], edge["source"], edge["target"]
+        if not all(isinstance(v, str) for v in (kind, source, target)):
+            errors.append(_diagnostic("EM001_EDGE", path, "edge fields must be strings")); continue
+        identity = (kind, source, target)
+        if identity in seen:
+            errors.append(_diagnostic("EM001_DUPLICATE_EDGE", path, "duplicate edge", source, target)); continue
+        seen.add(identity)
+        left, right = by_id.get(source), by_id.get(target)
+        if left is None or right is None:
+            errors.append(_diagnostic("EM001_DANGLING_EDGE", path, "edge refers to a missing node", source, target)); continue
+        lt, rt = left.get("type"), right.get("type")
+        valid = False
+        if kind == "contains":
+            valid = isinstance(lt, str) and isinstance(rt, str) and rt in CONTAINS.get(lt, set())
+            if valid: parents[target].append(source)
+            containment.append((source, target))
+        elif kind == "depends_on":
+            valid = isinstance(lt, str) and isinstance(rt, str) and rt in DEPENDENCIES.get(lt, set()); dependencies.append((source, target))
+        elif kind == "covers": valid = lt == "test" and rt == "scenario"
+        elif kind == "implements": valid = lt == "implementation" and isinstance(rt, str) and rt in {"scenario", "task"}
+        elif kind == "executes": valid = lt == "test_run" and rt == "test"
+        elif kind == "supports": valid = lt == "evidence" and isinstance(rt, str) and rt in {"test", "test_run"}
+        elif kind == "contributes_to": valid = lt == "task" and isinstance(rt, str) and rt in {"story", "scenario"}
+        elif kind == "enables": valid = lt == "feature" and rt == "story"
+        if not valid:
+            errors.append(_diagnostic("EM001_ILLEGAL_EDGE", path, "edge is not legal for its node types", source, target))
+    for node_id, node in sorted(by_id.items()):
+        if isinstance(node.get("type"), str) and node.get("type") in {"feature", "requirement", "story", "scenario", "task"}:
+            if len(parents[node_id]) > 1:
+                errors.append(_diagnostic("EM001_MULTIPLE_PARENTS", id_paths[node_id], "definition may have at most one containment parent", node_id))
+    for cycle in _acyclic(containment, set(by_id)):
+        errors.append(_diagnostic("EM001_CONTAINS_CYCLE", "$.edges", "containment cycle", *cycle))
+    for cycle in _acyclic(dependencies, set(by_id)):
+        errors.append(_diagnostic("EM001_DEPENDENCY_CYCLE", "$.edges", "dependency cycle", *cycle))
+    errors.extend(flow_diagnostics(document, by_id, seen, root, work_id, reference_bytes))
+    errors.sort(key=lambda item: (item["path"], item["code"], item.get("ids", []), item["message"]))
+    return errors
+
+
+def _v2_metadata_diagnostics(node, path, node_id):
+    errors = []
+    context = node.get("context", [])
+    if not isinstance(context, list):
+        errors.append(_diagnostic("EM001_CONTEXT", f"{path}.context", "context must be an array", node_id))
+    else:
+        for index, item in enumerate(context):
+            valid = (isinstance(item, dict) and set(item) == {"role", "path", "revision", "selector"}
+                     and isinstance(item.get("role"), str) and item.get("role") in {"spec", "plan"}
+                     and isinstance(item.get("path"), str) and bool(item["path"])
+                     and isinstance(item.get("revision"), str) and bool(item["revision"])
+                     and isinstance(item.get("selector"), dict))
+            if not valid:
+                errors.append(_diagnostic("EM001_CONTEXT", f"{path}.context[{index}]", "context entry has an invalid basic shape", node_id))
+    sources = node.get("source_context", [])
+    if not isinstance(sources, list):
+        errors.append(_diagnostic("EM001_SOURCE_CONTEXT", f"{path}.source_context", "source_context must be an array", node_id))
+    else:
+        fields = {"path", "revision", "qualified_name", "role", "explanation"}
+        for index, item in enumerate(sources):
+            if (not isinstance(item, dict) or set(item) != fields
+                    or any(not isinstance(item.get(key), str) or not item[key].strip() for key in fields)):
+                errors.append(_diagnostic("EM001_SOURCE_CONTEXT", f"{path}.source_context[{index}]", "source context entry has an invalid basic shape", node_id))
+    if node.get("type") == "intent" and "definition" in node:
+        definition = node["definition"]
+        fields = {"user", "purpose", "outcome", "scope", "completion_conditions"}
+        scalar_fields = fields - {"completion_conditions"}
+        if (not isinstance(definition, dict) or set(definition) != fields
+                or any(not isinstance(definition.get(key), str) or not definition[key].strip() for key in scalar_fields)
+                or not isinstance(definition.get("completion_conditions"), list)
+                or not definition["completion_conditions"]
+                or any(not isinstance(value, str) or not value.strip()
+                       for value in definition["completion_conditions"])):
+            errors.append(_diagnostic("EM001_DEFINITION", f"{path}.definition", "intent definition needs user, purpose, outcome, scope, and completion conditions", node_id))
     return errors
 
 

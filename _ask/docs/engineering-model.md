@@ -5,6 +5,16 @@ requirements, scenarios, decisions and work. Specifications/test plans remain
 canonical for behavior/assertions; existing traceability remains authoritative
 for execution and completion. A declared `done` task is not execution evidence.
 
+The validator dispatches by exact schema. Existing v1 definitions retain their
+required intent/parent, field, lifecycle and reference rules. V2 definitions may
+omit intent and containment, add `contributes_to` and `enables` support edges,
+and attach a Task's qualified `execution` identity separately from its product
+identity. Active Scenarios select a canonical plan case by source work, canonical
+plan digest and case ID; `covers` must select that same case or use a reviewed
+mapping recorded in the plan. A shared criterion alone does not establish flow
+coverage. Execution aliases remain distinct from product IDs, delivery state,
+verification and declared lifecycle state.
+
 ## Document operations
 
 Run `./ask model --help` and each subcommand's `--help` for arguments.

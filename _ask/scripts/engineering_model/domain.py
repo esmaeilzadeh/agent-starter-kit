@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 
 from .validation import LIFECYCLES
+from .identities import execution_identity
 
 
 def task_states(document):
@@ -23,7 +24,14 @@ def task_states(document):
                 blockers.append({"id": target, "type": prerequisite["type"], "lifecycle": prerequisite["lifecycle"],
                                  "reason": f"{target} is {prerequisite['lifecycle']}; requires {expected}"})
         status = node["lifecycle"] if node["lifecycle"] in ("done", "retired") else "blocked" if blockers else "ready"
-        result.append({"id": identity, "lifecycle": node["lifecycle"], "status": status, "blockers": blockers})
+        item = {"id": identity, "lifecycle": node["lifecycle"], "status": status, "blockers": blockers}
+        if document.get("schema") == "ask-engineering-model/v2":
+            from .identities import product_identity
+            item["product_identity"] = product_identity(document["work_id"], identity)
+            execution = execution_identity(node)
+            item["execution_identity"] = ({"work_id": execution[0], "task_id": execution[1]}
+                                           if execution is not None else None)
+        result.append(item)
     return result
 
 
