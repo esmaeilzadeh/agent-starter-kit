@@ -13,7 +13,7 @@ from pathlib import Path
 import tempfile
 from types import MappingProxyType
 
-from .snapshot import Snapshot, capture, is_current, safe_relative
+from .snapshot import Snapshot, capture, is_current, read_input, safe_relative
 from .validation import RULES_VERSION, SCHEMA_V2
 from .passages import required_task_passages, selected_task_node
 
@@ -114,7 +114,20 @@ def guarded_publication_chain(root, work_id, base_digest, result_digest, *, base
     return digest == base_digest and _publication(state, selected)["result_digest"] == base_digest
 
 
-def _publish(state, snapshot, root, *, guarded_base=None):
+def _publish(state, snapshot, root, *, guarded_base=None, guarded_observations=None):
+    root = Path(root).resolve()
+    guarded_observations = guarded_observations or {}
+
+    def inputs_current():
+        if not is_current(snapshot, root):
+            return False
+        for path, expected in guarded_observations.items():
+            status, raw = read_input(root, path)
+            digest = hashlib.sha256(raw).hexdigest() if raw is not None else None
+            if status != expected.get("status") or digest != expected.get("sha256"):
+                return False
+        return True
+
     identity = snapshot.identity
     digest = identity["digest"]
     generations = state / "generations"
@@ -137,7 +150,7 @@ def _publish(state, snapshot, root, *, guarded_base=None):
         os.replace(staged, destination)
         _sync_directory(generations)
     # Staging may take time. Recheck after it and immediately before publishing.
-    if not is_current(snapshot, root):
+    if not inputs_current():
         return False
     previous = _pointer(state)
     if previous is not None and previous["generation"] == digest and "publication" in previous:
@@ -157,13 +170,16 @@ def _publish(state, snapshot, root, *, guarded_base=None):
     else:
         _durable_write(event_path, raw)
         _sync_directory(publications)
-    if not is_current(snapshot, root):
+    if not inputs_current():
         return False
     descriptor, temporary = tempfile.mkstemp(prefix="pointer-", dir=state)
     with os.fdopen(descriptor, "wb") as stream:
         stream.write(json.dumps({"generation": digest, "publication": publication}, sort_keys=True).encode())
         stream.flush()
         os.fsync(stream.fileno())
+    if not inputs_current():
+        Path(temporary).unlink(missing_ok=True)
+        return False
     os.replace(temporary, state / "current.json")
     _sync_directory(state)
     return True

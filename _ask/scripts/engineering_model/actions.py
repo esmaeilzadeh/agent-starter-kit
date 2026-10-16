@@ -178,6 +178,12 @@ def recover_locked(root, work_id, state, *, validated=None):
             before, after = _decoded(record["before"]), _decoded(record["after"])
             _write_target(root, relative, _decoded(record["after"]),
                           expected=(before, after))
+        if not _observations_current(root, journal["observations"]):
+            conflicts = _rollback(root, journal)
+            if not conflicts:
+                _clear_journal(state)
+            raise Refused("EM007_RECOVERY_CONFLICT",
+                          "external input changed while managed recovery writes were applied")
         if validated is None:
             candidate, errors = validate_current(root, work_id, allow_pending=True)
         else:
@@ -189,7 +195,11 @@ def recover_locked(root, work_id, state, *, validated=None):
             if not conflicts:
                 _clear_journal(state)
             raise Refused("EM007_RECOVERY_CONFLICT", "interrupted candidate is no longer valid/current")
-        if not _publish(state, candidate, root, guarded_base=journal["base_digest"]):
+        if not _publish(state, candidate, root, guarded_base=journal["base_digest"],
+                        guarded_observations=journal["observations"]):
+            conflicts = _rollback(root, journal)
+            if not conflicts:
+                _clear_journal(state)
             raise Refused("EM007_RECOVERY_CONFLICT", "inputs changed during recovery publication")
         _clear_journal(state)
     except (KeyError, TypeError, UnicodeError, ValueError) as exc:
