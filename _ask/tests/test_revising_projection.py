@@ -96,8 +96,11 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(tests["WB-stale"]["scenario_ids"], ["scenario-stale"])
             task_detail = next(row for row in view["tasks"] if row["id"] == "task")
             context = task_detail.get("context", {})
-            spec_passage = context.get("spec", {})
-            plan_passage = context.get("plan", {})
+            spec_passages = context.get("spec", [])
+            plan_passages = context.get("plan", [])
+            self.assertEqual(len(spec_passages), 1)
+            self.assertEqual(len(plan_passages), 1)
+            spec_passage, plan_passage = spec_passages[0], plan_passages[0]
             self.assertEqual(spec_passage.get("state"), "available")
             self.assertEqual(spec_passage.get("text"), "# Scope\nCurrent contract.\n")
             self.assertEqual(plan_passage.get("state"), "available")
