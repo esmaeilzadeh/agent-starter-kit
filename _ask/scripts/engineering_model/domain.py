@@ -122,6 +122,11 @@ def apply_batch(document, commands, *, timestamp=None, changed_references=()):
                                           or not isinstance(prior.get("history"), list)):
                     raise ValueError("prior subject association history must be an array")
                 history = deepcopy(prior.get("history", [])) if isinstance(prior, dict) else []
+                if any(not isinstance(event, dict)
+                       or any(not isinstance(event.get(key), str) or not event[key].strip()
+                              for key in ("actor", "rationale", "timestamp"))
+                       for event in history):
+                    raise ValueError("prior subject association history entries require actor, rationale and timestamp")
                 history.append({"actor": actor, "rationale": reason, "timestamp": timestamp})
                 candidate["subject_association"] = {
                     "subject": deepcopy(subject), "revision": "snapshot",

@@ -18,20 +18,25 @@ def _valid_execution_owner(value):
             and all(isinstance(item, str) and item for item in value.values()))
 
 
+def _valid_bounded_detail(key, value):
+    if key == "contribution":
+        return isinstance(value, str) and bool(value.strip())
+    if key == "exclusions":
+        return (isinstance(value, list)
+                and all(isinstance(item, str) and item.strip() for item in value))
+    if key == "execution_owner":
+        return value is None or _valid_execution_owner(value)
+    return False
+
+
 def _explicit_subject(value):
     if not isinstance(value, dict) or set(value) - {
             "work_id", "node_id", "contribution", "exclusions", "execution_owner"}:
         return False
     if not _qualified({"work_id": value.get("work_id"), "node_id": value.get("node_id")}):
         return False
-    if "contribution" in value and (not isinstance(value["contribution"], str) or not value["contribution"].strip()):
-        return False
-    if "exclusions" in value and (not isinstance(value["exclusions"], list)
-                                   or any(not isinstance(item, str) or not item.strip() for item in value["exclusions"])):
-        return False
-    if "execution_owner" in value and value["execution_owner"] is not None and not _valid_execution_owner(value["execution_owner"]):
-        return False
-    return True
+    return all(_valid_bounded_detail(key, value[key]) for key in
+               ("contribution", "exclusions", "execution_owner") if key in value)
 
 
 def _recorded_association(value):
@@ -72,6 +77,14 @@ def resolve(root, work_id, request, *, branch=None):
     if diagnostics:
         result["disposition"] = "unavailable"
         return result
+    for key in ("contribution", "exclusions", "execution_owner"):
+        if key in request and not _valid_bounded_detail(key, request[key]):
+            result["disposition"] = "needs_clarification"
+            result["diagnostics"] = [{"code": "EM018_BOUNDED_CONTEXT",
+                                      "message": f"{key} must have its qualified bounded-context shape"}]
+            return result
+        if key in request:
+            result[key] = request[key]
     document = snapshot.document
     nodes = {node["id"]: node for node in document.get("nodes", []) if isinstance(node, dict)
              and isinstance(node.get("id"), str)}

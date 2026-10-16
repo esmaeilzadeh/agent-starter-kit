@@ -117,12 +117,16 @@ def _clear_journal(state):
     _sync_directory(state)
 
 
-def _observe(root, snapshot, changes, candidate):
+def _observe(root, snapshot, changes, candidate, additional_snapshots=()):
     observations = {path: _signature(snapshot.statuses[path], raw)
                     for path, raw in snapshot.files.items() if path not in changes}
     for path, raw in candidate.files.items():
         if path not in changes:
             observations[path] = _signature(candidate.statuses[path], raw)
+    for external in additional_snapshots:
+        for path, raw in external.files.items():
+            if path not in changes:
+                observations[path] = _signature(external.statuses[path], raw)
     return observations
 
 
@@ -195,7 +199,7 @@ def recover_locked(root, work_id, state, *, validated=None):
 
 
 def run_action(root, work_id, expected, action, *, selected_task_id=None, selected_execution=None,
-               precondition=None):
+               precondition=None, additional_snapshots=None):
     """Call action once on validated captured bytes; publish only its valid result.
 
     action returns a map of repository-relative document paths to bytes (or None
@@ -227,6 +231,10 @@ def run_action(root, work_id, expected, action, *, selected_task_id=None, select
                                   + ", ".join(missing), base.model_path)
             if precondition is not None:
                 precondition(base)
+            external_snapshots = additional_snapshots() if callable(additional_snapshots) else ()
+            for external in external_snapshots:
+                if not is_current(external, root):
+                    raise Refused("EM007_INPUT_CHANGED", "an external subject input changed before the action")
             published = load_published(root, work_id)
             generation = published.identity["digest"] if published is not None else None
             steps.append("action")
@@ -248,7 +256,7 @@ def run_action(root, work_id, expected, action, *, selected_task_id=None, select
                 return _result(base, candidate, diagnostics, steps)
             if any(path not in base.files and path not in candidate.files for path in changes):
                 raise Refused("EM002_ACTION", "change is outside the definition/reference closure")
-            observations = _observe(root, base, changes, candidate)
+            observations = _observe(root, base, changes, candidate, external_snapshots)
             if not is_current(base, root) or not _observations_current(root, observations):
                 raise Refused("EM007_INPUT_CHANGED", "inputs changed while the action was staged")
             journal = {
@@ -353,8 +361,15 @@ def associate_subject(root, work_id, expected, *, subject, contribution, exclusi
         if subject.get("node_id") not in node_ids:
             raise Refused("EM018_SUBJECT_MISSING", "associated subject does not exist in its captured owning model")
         prior = snapshot.document.get("subject_association")
-        if prior is not None and (not isinstance(prior, dict) or not isinstance(prior.get("history"), list)):
-            raise Refused("EM018_ASSOCIATION_HISTORY", "prior association history must be an array")
+        if prior is not None:
+            history = prior.get("history") if isinstance(prior, dict) else None
+            if not isinstance(history, list):
+                raise Refused("EM018_ASSOCIATION_HISTORY", "prior association history must be an array")
+            if any(not isinstance(event, dict)
+                   or any(not isinstance(event.get(key), str) or not event[key].strip()
+                          for key in ("actor", "rationale", "timestamp"))
+                   for event in history):
+                raise Refused("EM018_ASSOCIATION_HISTORY", "prior association history entries require actor, rationale and timestamp")
         if not isinstance(contribution, str) or not contribution.strip():
             raise Refused("EM018_CONTRIBUTION", "association contribution must be nonempty")
         if (not isinstance(exclusions, list)
@@ -373,7 +388,8 @@ def associate_subject(root, work_id, expected, *, subject, contribution, exclusi
         for role in required_roles:
             matches = [passage for passage in subject_snapshot.passages.values()
                        if passage.get("node_id") == subject["node_id"] and passage.get("role") == role]
-            if len(matches) != 1 or matches[0].get("state") != "available":
+            if (len(matches) != 1
+                    or matches[0].get("resolution", {}).get("state") != "available"):
                 raise Refused("EM018_CONTEXT_REQUIRED",
                               f"required {role} contribution context must resolve uniquely", snapshot.model_path)
 
@@ -390,4 +406,5 @@ def associate_subject(root, work_id, expected, *, subject, contribution, exclusi
         return {snapshot.model_path: json.dumps(result["model"], ensure_ascii=False,
                                                  sort_keys=True, indent=2).encode() + b"\n"}
 
-    return run_action(root, work_id, expected, action, precondition=precondition)
+    return run_action(root, work_id, expected, action, precondition=precondition,
+                      additional_snapshots=lambda: [subject_snapshot] if subject_snapshot is not None else [])

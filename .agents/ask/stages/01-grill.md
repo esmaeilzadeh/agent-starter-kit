@@ -20,6 +20,12 @@ parked later cards remain proposals and tracker IDs remain external references.
 The returned `execution_owner` is context only and never assigns work. This
 inspection must not create a branch, node, intent, or delivery admission.
 
+When the human confirms a subject association, carry its qualified subject,
+source revision, bounded contribution, exclusions and execution owner into
+`work/<work-id>/intent.md` before presenting the complete intent for approval.
+The intake result is read-only; record the association through its guarded
+semantic action and preserve the resulting bound context in the intent.
+
 ## 15.1 01 Grill Agent
 
 Purpose:

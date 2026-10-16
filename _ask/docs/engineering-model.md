@@ -42,7 +42,10 @@ or creating execution work, intent, or delivery admission. The stage adapter
 and `./ask model context` use the same resolver and write no state. When a human
 confirms an association, the guarded semantic `associate_subject` action records
 the qualified subject, bounded contribution/exclusions, optional execution
-owner and attributable history against the captured snapshot. Required
+owner and attributable history against the captured snapshot. Before presenting
+the complete intent for approval, carry that bound subject, source revision,
+contribution, exclusions and execution owner into `work/<work-id>/intent.md`.
+Required
 contribution roles must resolve uniquely from that subject's captured context;
 unspecified optional context does not block standalone proposals.
 
