@@ -12,6 +12,20 @@ class V2ModelTests(unittest.TestCase):
         document = model()
         refs, canonical_plan = reference_bytes()
         document["nodes"][2]["case"]["plan_digest"] = digest(canonical_plan)
+
+        malformed_history = copy.deepcopy(document)
+        malformed_history["nodes"].append({"id": "decision", "type": "decision", "title": "Choice",
+                                            "lifecycle": "open", "options": [
+                                                {"id": "a", "label": "A"}, {"id": "b", "label": "B"}],
+                                            "history": [{"event": [], "actor": "reviewer", "rationale": "reason",
+                                                         "timestamp": "2026-01-01T00:00:00Z", "options": [],
+                                                         "resolution": {}}]})
+        try:
+            history_errors = validate(malformed_history, ".", "product", reference_bytes=refs)
+        except (TypeError, ValueError, KeyError) as exc:
+            self.fail(f"malformed decision history must produce diagnostics, not raise {type(exc).__name__}")
+        self.assertIn("EM001_DECISION_HISTORY", {item["code"] for item in history_errors})
+
         errors = validate(document, ".", "product", reference_bytes=refs)
         self.assertEqual(errors, [], "v2 permits optional intent and zero-or-one legal containment")
         task = task_states(document)[0]
@@ -87,6 +101,17 @@ class V2ModelTests(unittest.TestCase):
         document = model()
         refs, canonical_plan = reference_bytes()
         document["nodes"][2]["case"]["plan_digest"] = digest(canonical_plan)
+        other_plan = copy.deepcopy(canonical_plan)
+        other_plan["work_id"] = "other"
+        refs["work/other/test-plan.json"] = __import__("json").dumps(other_plan).encode()
+        wrong_owner_path = copy.deepcopy(document)
+        wrong_owner_path["nodes"][4]["reference"] = {
+            "path": "work/other/test-plan.json", "id": "WB-publish", "work_id": "product",
+            "plan_digest": digest(canonical_plan)}
+        path_errors = validate(wrong_owner_path, ".", "product", reference_bytes=refs)
+        self.assertIn("EM001_FLOW_COVERAGE", {item["code"] for item in path_errors},
+                      "a Test source path must agree with its explicit source work identity")
+
         other = copy.deepcopy(document["nodes"][3])
         other["id"] = "task-two"
         document["nodes"].append(other)
@@ -113,6 +138,18 @@ class V2ModelTests(unittest.TestCase):
 class FlowTests(unittest.TestCase):
     def test_shared_criterion_does_not_prove_another_concrete_flow(self):
         document = model()
+        refs, canonical_plan = reference_bytes()
+        document["nodes"][2]["case"]["plan_digest"] = digest(canonical_plan)
+
+        malformed_mapping = copy.deepcopy(plan())
+        malformed_mapping["flow_mappings"] = [reviewed_mapping(
+            {"scope": "local", "case_id": "WB-publish"},
+            {"scope": "local", "case_id": []})]
+        refs["work/product/test-plan.json"] = __import__("json").dumps(malformed_mapping).encode()
+        document["nodes"][2]["case"]["plan_digest"] = digest(malformed_mapping)
+        mapping_errors = validate(document, ".", "product", reference_bytes=refs)
+        self.assertIn("EM001_FLOW_MAPPING", {item["code"] for item in mapping_errors},
+                      "local mapping case IDs must be nonempty strings")
         refs, canonical_plan = reference_bytes()
         document["nodes"][2]["case"]["plan_digest"] = digest(canonical_plan)
         self.assertEqual(validate(document, ".", "product", reference_bytes=refs), [])
