@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 4,
+  "revision": 5,
   "coordinator_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -399,14 +399,23 @@
       }
     },
     "RWB-102": {
-      "status": "running",
+      "status": "blocked",
       "base_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
       "task_branch": "",
       "result_path": "",
-      "boundary_reject": null,
+      "boundary_reject": "glob_too_narrow: reviewed caller ownership amendment pending pin",
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {},
+      "admission_history": [
+        {
+          "event": "blocked-for-reviewed-contract-amendment",
+          "original_base_sha": "c3c148c4d483d9b8cc9ad50915c81e60ea07abb5",
+          "wip_sha": "f964094bf54882258ee9b9472043b2a6b94c781b",
+          "reviewed_amendment_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
+          "reason": "Thread explicit selected task identity through independently reviewed caller ownership; no WIP semantic approval."
+        }
+      ]
     },
     "RWB-103": {
       "status": "pending",
