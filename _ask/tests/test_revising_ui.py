@@ -242,6 +242,27 @@ class WorkbenchAppTests(unittest.TestCase):
             self.assertIn("Working-only surrounding text", current["surrounding_text"])
             self.assertNotIn("Working-only surrounding text", historical["surrounding_text"])
 
+    def test_committed_capture_includes_canonical_spec_for_base_test_plan(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _init_repository(root)
+            model_path = root / "work/product/engineering-model.json"
+            doc = json.loads(model_path.read_text())
+            doc["nodes"] = [node for node in doc["nodes"]
+                            if node.get("type") not in {"scenario", "test"}]
+            retained_ids = {node["id"] for node in doc["nodes"]}
+            doc["edges"] = [edge for edge in doc["edges"]
+                            if edge["source"] in retained_ids and edge["target"] in retained_ids]
+            _put(root, "work/product/engineering-model.json", doc)
+            _commit(root, "Remove optional scenario references")
+
+            app = _run(root)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app.selectbox(key="source_id").select("git:agent/product").run(timeout=30)
+            self.assertFalse(app.exception, app.exception)
+            self.assertNotIn("Current inputs could not be admitted", _text(app))
+            self.assertIn("Committed · agent/product", _text(app))
+
     def test_ambiguous_bare_task_subject_is_not_guessed(self):
         from workbench_context import resolve_subject_route
 

@@ -186,6 +186,9 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
         files = dict(initial.files)
         requested = set()
         pending = set(referenced_paths(decode(files[f"work/{work_id}/engineering-model.json"])))
+        # The workstream test plan is a base input rather than necessarily a
+        # model node reference, but canonical validation still needs its spec.
+        pending.add(f"specs/current/{work_id}.json")
         while pending:
             batch = sorted(pending - requested)
             if not batch:
