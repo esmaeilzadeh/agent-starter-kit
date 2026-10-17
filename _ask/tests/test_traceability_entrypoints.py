@@ -40,11 +40,42 @@ class EntrypointTests(unittest.TestCase):
                                     '--anchor-sha',candidate,'--scope','task','--task-id','a'))
 
         sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-        from inner_loop.evidence import Candidate,verify_candidate
+        from inner_loop.evidence import Candidate,NotIntegrable,verify_candidate
         result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':base,
                               'candidate_sha':candidate},'fixture-result-digest')
-        evidence=verify_candidate(c.root,result)
+        try:evidence=verify_candidate(c.root,result)
+        except NotIntegrable:evidence=None
+        self.assertIsNotNone(evidence,'authority-approved amended candidate must integrate')
         self.assertEqual(evidence['result'],'pass',evidence)
+        self.assertEqual(evidence['runner_sha'],base)
+
+        unamended=self.consumer(tasks=True)
+        unamended_base=unamended.sha
+        self.require_pass(unamended.command('traceability','run','w','--candidate-sha',unamended.red_sha,
+                                            '--anchor-sha',unamended_base,'--scope','task','--task-id','a',
+                                            '--phase','red'))
+        unamended_review=unamended.make_review();unamended_review.update(scope='task',task_id='a')
+        unamended.write('work/w/traceability/review-input.json',unamended_review)
+        self.require_pass(unamended.command('traceability','record-review','w','--candidate-sha',unamended_base,
+                                            '--anchor-sha',unamended_base,'--scope','task','--task-id','a',
+                                            '--evidence','work/w/traceability/review-input.json',
+                                            '--recorded-by','fixture-coordinator'))
+        self.require_pass(unamended.command('traceability','run','w','--candidate-sha',unamended_base,
+                                            '--anchor-sha',unamended_base,'--scope','task','--task-id','a'))
+        unamended_result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':unamended_base,
+                                        'candidate_sha':unamended_base},'fixture-result-digest')
+        self.assertEqual(verify_candidate(unamended.root,unamended_result)['result'],'pass')
+
+        untrusted=self.consumer()
+        untrusted_base=untrusted.sha
+        pin=json.loads((untrusted.root/'work/w/traceability-accepted.json').read_text())
+        pin['plan_review']['assessment']='candidate-only change'
+        untrusted.write('work/w/traceability-accepted.json',pin)
+        untrusted_candidate=untrusted.commit('attempt candidate-only acceptance change')
+        untrusted_result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':untrusted_base,
+                                       'candidate_sha':untrusted_candidate},'fixture-result-digest')
+        with self.assertRaisesRegex(NotIntegrable,'candidate acceptance document differs from coordinator authority'):
+            verify_candidate(untrusted.root,untrusted_result)
 
     def test_I05_all_normal_entrypoints_reject_omitted_e2e(self):
         c=self.consumer(omit_e2e=True,tasks=True)

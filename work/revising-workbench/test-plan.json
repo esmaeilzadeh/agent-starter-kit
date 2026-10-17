@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "revising-workbench",
-  "spec_digest": "2c5aa0488f080f6516b04a2bae6255e162aea1e086b2937eaf32451a6e841472",
+  "spec_digest": "eb887b8d8779f3b7e0a29274238b2f6dd619b4696ba3d4877a1d2eaf8e16d544",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -2588,22 +2588,24 @@
         "EM-019"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "new",
       "scenario": {
         "given": "A task base has the earlier accepted pin and a reviewed candidate carries a later coordinator-approved amendment",
         "when": "The coordinator runs normal detached integration verification",
         "then": [
-          "Verifier code is loaded from the task base",
-          "The candidate and coordinator authority pins agree and accepted checks pass",
-          "The existing unamended integration journey still passes"
+          "Verifier implementation and imports come from the task base",
+          "The CheckPlan comes from the candidate and candidate source changes match accepted obligations",
+          "A reviewed candidate contract amendment matching coordinator authority passes integration",
+          "Unamended integration passes and candidate-only contract changes are rejected"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-019",
           "checks": [
-            "Detached integration succeeds for the authority-matching amended candidate while retaining base-pinned verifier code",
-            "Unamended integration remains successful"
+            "Integration evidence runner_sha equals the task base and amended candidate passes",
+            "Unamended candidate passes the same verification entrypoint",
+            "Candidate-only accepted-contract mutation is rejected"
           ]
         }
       ],

@@ -9,10 +9,10 @@ to reject unreviewed changes to accepted obligations.
 ## Proposed change
 
 Add criterion EM-019: if the coordinator approves a contract amendment after a
-task's recorded base, integration must keep verifier code pinned to that base
-while checking the candidate's accepted-contract document against coordinator
-authority and validating the candidate against those approved obligations.
-Candidate-only contract changes remain rejected.
+task's recorded base, integration must keep verifier code and imports pinned to
+that base while deriving the CheckPlan and accepted obligations from the
+candidate. The candidate's accepted-contract document must match coordinator
+authority and candidate-only contract changes remain rejected.
 
 ## Why the change is needed
 
@@ -44,8 +44,9 @@ and exact-candidate review.
 ## Acceptance criteria for the change
 
 - A candidate with a reviewed post-base amendment matching coordinator authority
-  passes detached task verification.
-- Existing integration without an amendment still passes.
+  passes detached task verification with verifier code bound to the task base.
+- The CheckPlan remains candidate-derived, and ordinary unamended integration
+  passes.
 - Candidate-only obligation changes remain rejected by the existing authority
   checks.
 
