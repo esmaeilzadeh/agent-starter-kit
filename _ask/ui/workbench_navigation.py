@@ -73,7 +73,12 @@ def build_outline(projection: dict) -> dict:
                           link.get("task_id") == raw_id for link in test.get("related_tasks", []))))
 
     def unique_route(base, context):
-        return base if base not in ancestors else f"{base}@{context}"
+        candidate = base
+        suffix = 1
+        while candidate in ancestors:
+            suffix += 1
+            candidate = f"{base}@{context}" if suffix == 2 else f"{base}@{context}:{suffix - 1}"
+        return candidate
 
     def add_test(test_id, path, indent, scenario_id):
         test = tests[test_id]

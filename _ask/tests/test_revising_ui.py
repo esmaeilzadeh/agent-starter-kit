@@ -128,7 +128,12 @@ class WorkbenchAppTests(unittest.TestCase):
             doc = json.loads(model_path.read_text())
             doc["nodes"].append({"id": "capability-two", "type": "feature",
                                  "title": "Second capability", "lifecycle": "active"})
-            doc["edges"].append({"type": "enables", "source": "capability-two", "target": "story"})
+            doc["nodes"].append({"id": "capability-three", "type": "feature",
+                                 "title": "Third capability", "lifecycle": "active"})
+            doc["edges"].extend([
+                {"type": "enables", "source": "capability-two", "target": "story"},
+                {"type": "enables", "source": "capability-three", "target": "story"},
+            ])
             _put(root, "work/product/engineering-model.json", doc)
             app = _run(root)
             self.assertFalse(app.exception, app.exception)
@@ -140,8 +145,11 @@ class WorkbenchAppTests(unittest.TestCase):
             outline = build_outline(project(snapshot, root, include_evidence=False))
             story_routes = [entry["route_id"] for entry in outline["entries"]
                             if entry["kind"] == "story" and entry["node_id"] == "story"]
-            self.assertEqual(len(story_routes), 2)
-            self.assertEqual(len(set(story_routes)), 2)
+            self.assertEqual(len(story_routes), 3)
+            self.assertEqual(len(set(story_routes)), 3)
+            task_routes = [entry["route_id"] for entry in outline["entries"]
+                           if entry["kind"] == "task"]
+            self.assertEqual(len(task_routes), len(set(task_routes)))
 
     def test_task_summary_uses_displayed_qualified_rows(self):
         from workbench_overview import summary_records
@@ -224,6 +232,9 @@ class WorkbenchAppTests(unittest.TestCase):
             self.assertIn("Publish the selected result", _text(app))
             self.assertIn("product Task product:task", _text(app))
             self.assertIn("execution owner product:WB-003", _text(app))
+            displayed_view = app.session_state["_engineering_displayed_view"]
+            self.assertEqual(displayed_view["snapshot"]["digest"],
+                             displayed_view["projection"]["snapshot"]["digest"])
             _click(app, root, "route:back")
             self.assertEqual(app.session_state["_engineering_route"], "scenario-two")
 

@@ -168,7 +168,7 @@ def _capture_view(root: Path, work_id: str) -> dict:
             return {"snapshot": None, "projection": None, "captured": None,
                     "editable": False, "last_validated": False, "diagnostics": diagnostics}
         projection = project(snapshot, root, include_evidence=False)
-        _add_passage_surroundings(snapshot, projection)
+        _add_passage_surroundings(snapshot, projection, root)
         return {"snapshot": snapshot.identity, "projection": projection,
                 "captured": snapshot, "editable": editable, "last_validated": last_validated,
                 "diagnostics": diagnostics}
@@ -243,17 +243,19 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
                     raw = historical.files.get(path)
                     passage_status = "present" if raw is not None else "missing"
                 resolution = resolve(path, raw, selector, status=passage_status)
+                surrounding_text = None
                 if raw is not None and resolution.get("start_line") is not None:
                     lines = raw.decode("utf-8").splitlines()
                     start = max(0, resolution["start_line"] - 1 - 3)
                     end = min(len(lines), (resolution.get("end_line") or resolution["start_line"]) + 3)
-                    resolution["surrounding_text"] = "\n".join(lines[start:end])
+                    surrounding_text = "\n".join(lines[start:end])
                 key = f"{node.get('id')}\0context\0{index}"
                 passage_records[key] = {
                     "node_id": node.get("id"), "role": reference.get("role"), "kind": "context",
                     "path": path, "revision": revision, "selector": selector,
                     "status": passage_status,
                     "sha256": hashlib.sha256(raw).hexdigest() if raw is not None else None,
+                    "surrounding_text": surrounding_text,
                     "resolution": resolution,
                 }
         snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
@@ -264,7 +266,7 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
                     "editable": False, "last_validated": False, "diagnostics": diagnostics,
                     "source_context": {"ref": ref, "commit": commit}}
         projection = project(snapshot, root, include_evidence=False)
-        _add_passage_surroundings(snapshot, projection)
+        _add_passage_surroundings(snapshot, projection, root)
         # Runtime state is checkout-local. A historical source must not borrow it.
         for task in projection.get("workbench", {}).get("tasks", []):
             task.update(status="planned", status_source="no-runtime-record",
@@ -278,15 +280,22 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
                 "diagnostics": [_diagnostic("EM008_COMMITTED_READ", f"work/{work_id}/engineering-model.json", str(exc))]}
 
 
-def _add_passage_surroundings(snapshot, projection: dict) -> None:
+def _add_passage_surroundings(snapshot, projection: dict, root: Path) -> None:
     """Attach a small source window from the exact bytes used to resolve each passage."""
     for record in snapshot.passages.values():
         resolution = record.get("resolution") or {}
         path = record.get("path")
-        raw = snapshot.files.get(path)
         if record.get("kind") != "context" or resolution.get("start_line") is None:
             continue
-        surrounding = resolution.get("surrounding_text")
+        surrounding = record.get("surrounding_text")
+        raw = snapshot.files.get(path)
+        if record.get("revision") != "snapshot":
+            try:
+                historical = read_snapshot(root, record.get("revision"), snapshot.work_id,
+                                           paths=[path])
+                raw = historical.files.get(path)
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
         if not surrounding and raw is not None:
             try:
                 lines = raw.decode("utf-8").splitlines()
@@ -295,7 +304,6 @@ def _add_passage_surroundings(snapshot, projection: dict) -> None:
             start = max(0, resolution["start_line"] - 1 - 3)
             end = min(len(lines), (resolution.get("end_line") or resolution["start_line"]) + 3)
             surrounding = "\n".join(lines[start:end])
-            resolution["surrounding_text"] = surrounding
         for task in projection.get("workbench", {}).get("tasks", []):
             if str(task.get("product_node_id") or task.get("id")) != str(record.get("node_id")):
                 continue
