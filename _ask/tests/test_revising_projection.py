@@ -193,6 +193,16 @@ class ProjectionTests(unittest.TestCase):
                 self.assertEqual(product_row.get("status_source"), "inner-loop-state")
                 self.assertIsNone(product_row.get("verification_status"),
                                   "a foreign integrated result does not imply verified completion")
+                _put(collision_root, "work/delivery/inner-loop/state.json", {
+                    "schema": "ask-inner-loop-state/v1", "work_id": "delivery", "tasks": {},
+                })
+                without_record = project(capture(collision_root, "product"), collision_root,
+                                         include_evidence=False)
+                missing_runtime_row = next(row for row in without_record["workbench"]["tasks"]
+                                           if row.get("product_identity") ==
+                                           {"work_id": "product", "node_id": "standalone"})
+                self.assertEqual(missing_runtime_row.get("status_source"), "no-task-record",
+                                 "a readable owner state without this task must be distinguished from no state")
 
             with tempfile.TemporaryDirectory() as legacy_directory:
                 legacy_root = Path(legacy_directory)
