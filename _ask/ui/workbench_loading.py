@@ -537,7 +537,9 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
     from engineering_model.readable_tests import read_test
     from engineering_model.workbench_evidence import qualified_source
 
-    retained_root = Path(os.environ.get("ASK_RWB_RETAINED_ROOT", root)).resolve()
+    retained_root = Path(os.environ.get(
+        "ASK_RWB_RETAINED_ROOT", os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT", root)
+    )).resolve()
     reference = test.get("reference", {})
     work_id = reference.get("work_id")
     task_node_id = test.get("representative_task_node_id")

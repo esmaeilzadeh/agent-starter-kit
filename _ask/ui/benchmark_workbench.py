@@ -30,6 +30,8 @@ from engineering_model.projection import project
 from engineering_model.admission import admit, validate_current
 from engineering_model.workbench_evidence import execution_history
 from workbench_navigation import build_outline
+from workbench_tests import test_records
+from workbench_loading import load_selected_detail
 
 
 def _key_class(key: str) -> str:
@@ -244,17 +246,17 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
     current_plan = json.loads(admitted_snapshot.files[model_paths[1]])
     canonical = lambda value: hashlib.sha256(json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
-    pilot_test = next((item for item in current_plan.get("tests", [])
-                       if item.get("id") == test_id), None)
-    if pilot_test is None:
-        raise ValueError(f"benchmark workstream has no selected {test_id!r} test case")
     projection = project(admitted_snapshot, model_root, include_evidence=False)
     outline = build_outline(projection)
     root_route = outline["roots"][0]
     root_title = next(entry["label"] for entry in outline["entries"]
                       if entry["route_id"] == root_route)
-    projected_test = next(item for item in projection["workbench"]["tests"]
-                          if item.get("id") == test_id)
+    projected_test = next((item for item in test_records(projection)
+                           if item.get("id") == test_id), None)
+    if projected_test is None:
+        raise ValueError(f"benchmark workstream has no selected {test_id!r} test case")
+    pilot_test = next((item for item in current_plan.get("tests", [])
+                       if item.get("id") == test_id), projected_test)
     scenario_id = next(iter(projected_test.get("scenario_ids", [])), None)
     scenario = next((item for item in projection.get("scenarios", [])
                      if item.get("id") == scenario_id), None)
@@ -264,9 +266,17 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
     case_id = str(pilot_test.get("case_id", ""))
     source_paths = list(projected_test.get("source_paths", []))
     source_path = str(source_paths[0]) if source_paths else ""
-    expected_history = execution_history(
-        model_root, work_id, pilot_test, spec_digest=canonical(current_spec),
-        plan_digest=canonical(current_plan), candidate_sha=model_head)
+    if projected_test.get("reference", {}).get("work_id") not in (None, work_id):
+        node_id = projected_test.get("node_id", test_id)
+        selected_detail = load_selected_detail(
+            model_root, admitted_snapshot, projected_test, node_id=node_id,
+            source_context={"kind": "working-tree"}, candidate_sha=model_head,
+        )
+        expected_history = selected_detail.get("execution_history", {})
+    else:
+        expected_history = execution_history(
+            model_root, work_id, pilot_test, spec_digest=canonical(current_spec),
+            plan_digest=canonical(current_plan), candidate_sha=model_head)
     if expected_history.get("status") != "available":
         raise ValueError("benchmark fixture retained history is unavailable: " +
                          str(expected_history.get("diagnostic")))
