@@ -222,9 +222,14 @@ def route_click(page, route_id, detail_heading):
 def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
         output_path: Path | None = None, test_id: str = "E"):
     sources, sizes = digest_tree(ROOT, [
-        "_ask/ui/streamlit_app.py", "_ask/ui/workbench_loading.py",
-        "_ask/ui/workbench_navigation.py", "_ask/ui/workbench_tests.py",
-        "_ask/ui/workbench_tasks.py", "_ask/scripts/engineering_model/workbench.py",
+        "_ask/ui/streamlit_app.py", "_ask/ui/workbench_context.py",
+        "_ask/ui/workbench_loading.py", "_ask/ui/workbench_navigation.py",
+        "_ask/ui/workbench_scenarios.py", "_ask/ui/workbench_tests.py",
+        "_ask/ui/workbench_tasks.py", "_ask/ui/workbench_debug.py",
+        "_ask/scripts/engineering_model/workbench.py",
+        "_ask/scripts/engineering_model/readability.py",
+        "_ask/scripts/engineering_model/readable_tests.py",
+        "_ask/scripts/engineering_model/workbench_evidence.py",
     ])
     try:
         model_head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=model_root,
@@ -351,14 +356,18 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
         data["environment"]["browser_version"] = browser.version
         persist_partial()
         process, url, _ = start_server(model_root, work_id)
+        context = browser.new_context()
+        page = context.new_page()
         try:
             await_http(process, url)
+            initial_started = time.perf_counter()
+            page.goto(url, wait_until="domcontentloaded")
+            ready(page, root_route, root_title, work_id)
+            data["initial_ready_ms"] = (time.perf_counter() - initial_started) * 1000
+            persist_partial()
             for index in range(warm_samples):
-                context = browser.new_context()
-                page = context.new_page()
                 started = time.perf_counter()
-                page.goto(url, wait_until="domcontentloaded")
-                ready(page, root_route, root_title, work_id)
+                route_click(page, root_route, root_title)
                 expect(page.get_by_role("heading", name=root_title, exact=True)).to_be_visible()
                 for label in ("Stories and scenarios", "Task progress", "Needs attention",
                               "Scenarios", "Tasks", "Blocked tasks", "Open decisions"):
@@ -423,8 +432,8 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                                         "metadata_navigation": metadata_navigation,
                                         "filter": filter_ms, "source_result": source_result})
                 persist_partial()
-                context.close()
         finally:
+            context.close()
             process.terminate()
             process.wait(timeout=5)
         for index in range(cold_samples):

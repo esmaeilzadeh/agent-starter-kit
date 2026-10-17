@@ -6,6 +6,7 @@ import math
 import os
 from pathlib import Path
 import sys
+from datetime import datetime, timezone
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,8 +19,25 @@ class WorkbenchPerformanceTests(unittest.TestCase):
     def test_real_pilot_twenty_warm_five_cold_samples_respect_budgets(self):
         runtime = Path(os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT", ROOT)).resolve()
         output = runtime / "work/revising-workbench/traceability/rwb109/browser-benchmark.json"
-        result = run(ROOT, "revising-workbench", warm_samples=20, cold_samples=5,
-                     output_path=output, test_id="WB-evidence-identity")
+        try:
+            result = run(ROOT, "revising-workbench", warm_samples=20, cold_samples=5,
+                         output_path=output, test_id="WB-evidence-identity")
+        except Exception as exc:
+            partial = json.loads(output.read_text(encoding="utf-8")) if output.is_file() else {
+                "schema": "ask-workbench-browser-benchmark/v1",
+                "code_candidate_sha": __import__("subprocess").run(
+                    ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+                    text=True, check=False).stdout.strip(),
+                "model_work_id": "revising-workbench", "warm_ms": [],
+                "cold_start_to_ready_ms": [], "structural_workloads": [],
+            }
+            partial.update(run_status="failed", error={"type": type(exc).__name__,
+                                                         "message": str(exc)},
+                           failed_at=datetime.now(timezone.utc).isoformat())
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_text(json.dumps(partial, indent=2, sort_keys=True) + "\n",
+                              encoding="utf-8")
+            raise
         self.assertEqual(result["run_status"], "complete")
         self.assertEqual(len(result["warm_ms"]), 20)
         self.assertEqual(len(result["cold_start_to_ready_ms"]), 5)
