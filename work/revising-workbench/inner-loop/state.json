@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 41,
+  "revision": 45,
   "coordinator_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -2405,7 +2405,23 @@
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {
+        "review": {
+          "work_id": "revising-workbench",
+          "task_id": "RWB-107",
+          "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+          "candidate_sha": "767b83dd56b32ba155020a7996510cfea0233ec0",
+          "result_digest": "2d8706f19d54ef7c74eceda4679cdf480524f159ac1f3344aeadd727b20c653c",
+          "reviewer": "/root/review_rwb107",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/revising-workbench/inner-loop/evidence/RWB-107-review-767b83d.md",
+          "evidence_digest": "d68d71cfae3170f3e3e42ff506c129a5312f5aa796438630676bb967512aa4f0",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      }
     },
     "RWB-108": {
       "status": "pending",
@@ -2444,6 +2460,22 @@
       "reviewed_amendment_sha": "bdffffd4540ada236c30603fcda125575e479d97",
       "whole_task_review_from_original_base": true,
       "note": "Pre-amendment source remains in branch ancestry and is not exempt from final review; refresh TaskResult and green evidence under current accepted pin."
+    },
+    {
+      "event": "temporary-block-for-accepted-ref-recovery",
+      "task_id": "RWB-107",
+      "original_task_base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+      "wip_sha": "767b83dd56b32ba155020a7996510cfea0233ec0",
+      "contract_sha": "54ef012b0517758ee548a2a4ee79b28e698990ff",
+      "reason": "Restore this checkout\u2019s missing local authority ref for the already accepted contract. No obligation or pin content changes."
+    },
+    {
+      "event": "readmitted-after-accepted-ref-recovery",
+      "task_id": "RWB-107",
+      "original_task_base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+      "new_base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+      "contract_sha": "54ef012b0517758ee548a2a4ee79b28e698990ff",
+      "reason": "Resumed the same writer under the previously accepted, now locally restored contract authority; no contract bytes changed."
     }
   ]
 }
