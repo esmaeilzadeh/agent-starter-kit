@@ -36,8 +36,8 @@ class WorkbenchBrowserTests(unittest.TestCase):
     def _tab_to(page, text):
         for _ in range(120):
             focused = page.locator(":focus")
-            label = focused.evaluate("e => e.getAttribute('aria-label') || e.innerText || ''") \
-                if focused.count() else ""
+            button = focused.count() and focused.evaluate("e => e.tagName === 'BUTTON'")
+            label = focused.evaluate("e => e.getAttribute('aria-label') || e.innerText || ''") if button else ""
             if text in label:
                 focused.press("Enter")
                 return
