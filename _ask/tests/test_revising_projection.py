@@ -186,7 +186,7 @@ class ProjectionTests(unittest.TestCase):
                 self.assertFalse(legacy_errors, str(legacy_errors))
                 legacy_view = project(legacy_snapshot, legacy_root, include_evidence=False)
                 legacy_tasks = {row["id"]: row for row in legacy_view["tasks"]}
-                self.assertEqual(legacy_tasks["build"].get("readiness_status"), "blocked")
+                self.assertEqual(legacy_tasks["build"].get("status"), "blocked")
                 self.assertEqual(legacy_tasks["build"]["blockers"][0]["id"], "choice")
                 legacy_markdown = render_markdown(legacy_view)
                 self.assertIn("Readiness: blocked", legacy_markdown)
