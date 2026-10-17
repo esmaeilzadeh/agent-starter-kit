@@ -114,6 +114,7 @@ class ProjectionTests(unittest.TestCase):
         context = {item["selector"]: item for item in readable["context"]}
         self.assertIn("import unittest", context["<imports>"]["source"])
         self.assertIn('FIXTURE = {"input": BASE}', context["FIXTURE"]["source"])
+        self.assertIn("BASE", context, readable)
         self.assertIn('BASE = "old input"', context["BASE"]["source"])
         self.assertIn("return raw_input()", context["test_sample.make_input"]["source"])
         self.assertIn("return FIXTURE[\"input\"]", context["test_sample.raw_input"]["source"])
