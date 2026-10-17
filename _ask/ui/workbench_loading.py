@@ -9,7 +9,6 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 import subprocess
 from collections import OrderedDict
 
-from engineering_model.projection import project
 from engineering_model.evidence import inspect as inspect_workstream_evidence
 from engineering_model.workbench_evidence import execution_history, qualified_source
 from engineering_model.readable_tests import read_test
@@ -450,18 +449,10 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     try:
         if selected_candidate is None:
             raise ValueError("Git candidate is unavailable")
-        evidence_projection = project(snapshot, root, node_id=node_id,
-                                      candidate_sha=selected_candidate, include_evidence=True)
-        evidence_set = evidence_projection.get("evidence", {}).get("by_workstream", {}).get(
-            snapshot.work_id, {"status": "unavailable", "diagnostic": "selected evidence is unavailable"})
+        evidence_set = inspect_workstream_evidence(root, snapshot.work_id, selected_candidate)
     except (OSError, ValueError, KeyError, TypeError) as exc:
-        evidence_projection = None
         evidence_set = {"status": "unavailable", "diagnostic": str(exc)}
-    if evidence_projection is None:
-        try:
-            evidence_set = inspect_workstream_evidence(root, snapshot.work_id, selected_candidate)
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            evidence_set = {"status": "unavailable", "diagnostic": str(exc)}
+    evidence_projection = None
     if selected_candidate is None and evidence_set.get("status") == "unavailable":
         evidence_set = dict(evidence_set)
         evidence_set["diagnostic"] = "Git evidence inspection is unavailable because this model root has no resolvable Git candidate."
