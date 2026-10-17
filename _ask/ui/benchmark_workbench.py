@@ -189,20 +189,44 @@ def await_http(process, url, timeout=20):
     raise TimeoutError("Streamlit HTTP startup exceeded the harness timeout")
 
 
+def _select_model_option(page, label: str, value: str, timeout: int):
+    app = page.get_by_test_id("stApp")
+    expect(app).to_have_attribute("data-test-script-state", "notRunning", timeout=timeout)
+    selector = page.get_by_label(label, exact=True)
+    if selector.input_value() == value:
+        return
+    # Observe before clicking: a fast server rerun can finish before the next
+    # Playwright call, and the input value alone only confirms the client edit.
+    app.evaluate("""app => {
+        const state = {started: false, finished: false};
+        state.observer = new MutationObserver(records => {
+            const current = app.getAttribute('data-test-script-state');
+            if (records.some(record => record.oldValue && record.oldValue !== 'notRunning')
+                || current !== 'notRunning') state.started = true;
+            if (state.started && current === 'notRunning') state.finished = true;
+        });
+        state.observer.observe(app, {attributes: true, attributeOldValue: true,
+                                    attributeFilter: ['data-test-script-state']});
+        window.__askModelSelection = state;
+    }""")
+    try:
+        selector.click()
+        selector.fill(value)
+        selector.press("ArrowDown")
+        page.get_by_role("option", name=value, exact=True).click()
+        page.wait_for_function("window.__askModelSelection.finished", timeout=timeout)
+        expect(selector).to_have_value(value, timeout=timeout)
+    finally:
+        page.evaluate("""() => {
+            window.__askModelSelection?.observer.disconnect();
+            delete window.__askModelSelection;
+        }""")
+
+
 def select_working_model(page, work_id: str, timeout=10000):
     """Select the working snapshot used by the harness's admitted projection."""
-    selector = page.get_by_label("Workstream", exact=True)
-    selector.wait_for(timeout=timeout)
-    if selector.input_value() != work_id:
-        selector.click()
-        selector.fill(work_id)
-        selector.press("ArrowDown")
-        page.get_by_role("option", name=work_id, exact=True).click()
-        expect(selector).to_have_value(work_id, timeout=timeout)
-    source = page.get_by_label("Source", exact=True)
-    source.click()
-    page.get_by_role("option", name="working-tree", exact=True).click()
-    expect(source).to_have_value("working-tree", timeout=timeout)
+    _select_model_option(page, "Workstream", work_id, timeout)
+    _select_model_option(page, "Source", "working-tree", timeout)
 
 
 def ready(page, root_route="purpose", root_title="Purpose", work_id=None, timeout=10000):
