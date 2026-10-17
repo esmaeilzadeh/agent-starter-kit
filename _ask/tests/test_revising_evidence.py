@@ -373,7 +373,7 @@ class EvidenceIdentityTests(unittest.TestCase):
     def assert_existing_evaluator_rechecks_retained_authority(self):
         tests_root = Path(__file__).resolve().parent
         sys.path.insert(0, str(tests_root))
-        sys.path.insert(0, str(tests_root.parent / ".agents" / "ask"))
+        sys.path.insert(0, str(tests_root.parents[1] / ".agents" / "ask"))
         from traceability_fixture import Consumer
         from engineering_model.evidence import inspect
 
