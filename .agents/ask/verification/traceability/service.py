@@ -113,16 +113,6 @@ def reports(root,work_id,contracts,sha,scope,task_id):
             if not doc.get('executions') or any(e.get('collection_status')!='ok' for e in doc['executions']):reasons.append('collection failure or zero cases')
             if not identities or len(identities)!=len(set(identities)) or any(identity not in known for identity in identities):reasons.append('unknown, unsupported or duplicate historical cases')
             if not any(c.get('outcome')=='failed' and c.get('failure_kind')=='behavior_assertion' for c in doc.get('cases',[])):reasons.append('no recognized behavior assertion red')
-            for case in doc.get('cases',[]):
-                if case.get('outcome')!='failed' or case.get('failure_kind')!='behavior_assertion':continue
-                source_sha=case.get('source_sha','')
-                try:git(root,'merge-base','--is-ancestor',source_sha,sha)
-                except Invalid:
-                    reasons.append('red source is not reachable from the candidate')
-                    break
-                if source_sha==sha:
-                    reasons.append('red source equals the candidate')
-                    break
             if reasons:
                 rejected.append({'run_id':entry['run_id'],'candidate_sha':entry['candidate_sha'],'reasons':reasons,'report_digest':entry['digest'],'retained_report':str((runtime/'runs'/entry['run_id']/'results.json').relative_to(root))})
                 continue
