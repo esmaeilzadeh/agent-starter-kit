@@ -40,3 +40,12 @@ The earlier successful browser suite and pre-`68a1cea` benchmark described in
 - Complete the independent semantic review and final workstream verification.
 
 No human acceptance or successful RWB-109 validation is claimed here.
+
+## Kit verification
+
+`./ask verify` on `0dff0d5cd1a24c5f265354ada63d85cf372a4a3c` failed before running
+any checks with `candidate acceptance document differs from coordinator
+authority`. The branch's `traceability-accepted.json` contains a newer contract
+and plan review than `refs/ask/accepted-tests/revising-workbench`. The
+coordinator pin must be reconciled through its reviewed acceptance workflow
+before final verification can proceed; this validation record does not alter it.
