@@ -35,13 +35,14 @@ class WorkbenchBrowserTests(unittest.TestCase):
     @staticmethod
     def _tab_to(page, text):
         for _ in range(120):
-            focused = page.locator(":focus")
-            button = focused.count() and focused.evaluate("e => e.tagName === 'BUTTON'")
-            label = focused.evaluate("e => e.getAttribute('aria-label') || e.innerText || ''") if button else ""
-            if text in label:
-                focused.press("Enter")
-                return
             page.keyboard.press("Tab")
+            focused = page.evaluate("""() => {
+                const e = document.activeElement;
+                return {tag: e?.tagName, label: e?.getAttribute('aria-label') || e?.innerText || ''};
+            }""")
+            if focused.get("tag") == "BUTTON" and text in focused.get("label", ""):
+                page.keyboard.press("Enter")
+                return
         raise AssertionError(f"keyboard tab order did not reach {text!r}")
 
     def test_direct_story_task_standalone_shared_back_and_exact_counts(self):
