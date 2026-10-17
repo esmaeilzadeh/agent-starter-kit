@@ -4,6 +4,28 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Output artifact: `work/<work-id>/intent.md` (from `_ask/templates/intent.md`).
 
+## Adopted subject intake
+
+Before selecting/creating execution work or recording intent, invoke the shared
+read-only intake for this request:
+
+```sh
+./ask stage-intake --stage 01-grill --work-id <work-id> --request <request.json>
+```
+
+Supply explicit subject IDs as `{ "work_id": "…", "node_id": "…" }` entries
+in `explicit_subjects` when the user names a subject. Explicit subjects override
+a recorded association. Conflicting qualified owners require clarification;
+parked later cards remain proposals and tracker IDs remain external references.
+The returned `execution_owner` is context only and never assigns work. This
+inspection must not create a branch, node, intent, or delivery admission.
+
+When the human confirms a subject association, carry its qualified subject,
+source revision, bounded contribution, exclusions and execution owner into
+`work/<work-id>/intent.md` before presenting the complete intent for approval.
+The intake result is read-only; record the association through its guarded
+semantic action and preserve the resulting bound context in the intent.
+
 ## 15.1 01 Grill Agent
 
 Purpose:
@@ -23,7 +45,10 @@ do not ask facts already in the repo
 distinguish What from Why
 identify non-goals
 identify unresolved decisions
+for every user-facing deliverable, including a UI, grill its intended user, essential jobs/workflows, and interaction expectations when these are not already clear; approval of product direction or implementation order does not approve these design decisions
 stop when human judgment is required
+before advancing to Spec, present the complete intent and every assumption; ask “Do you approve the complete intent and every listed assumption as written?” using the runtime choice control with “Approve complete intent and assumptions” and “Request changes”; wait for the submitted choice (a preselected option is not approval)
+record a submitted approval choice with `./ask confirm-intent --work-id <id> --choice approve`; if choice controls are unavailable or the human replies in text, record their exact clear affirmative response (including “approve”) with `--response "<exact response>"`. Never infer approval from a request to implement or a preselected option
 never treat “all ok” as valid if a load-bearing question was never expanded
 ```
 
@@ -53,7 +78,7 @@ work/<work-id>/intent.md
 
 **Two blocks:** (1) expanded load-bearing questions; (2) short “I’ll assume…”. “Defaults OK” / “all recs” covers the assume-list. Only numbered questions need alternatives/tradeoffs/failure modes. Never auto-approve a real decision. Never treat “all ok” as valid if a **load-bearing** question was never expanded.
 
-A confirmed “I approve these defaults are OK” (or “all recs” after an expanded load-bearing frontier) is the **first on-path confirm**. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`. ADR: `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
+A confirmed “I approve these defaults are OK” (or “all recs” after an expanded load-bearing frontier) is the **first on-path confirm**. Prefer the runtime choice control for this confirmation and record the submitted choice with `./ask confirm-intent --work-id <id> --choice approve` against the exact `intent.md` digest. Use `--response` for an explicit text reply; do not ask the human to repeat a clear approval in special wording. Any edit to `intent.md` invalidates that confirmation; present the changed intent and obtain a new explicit response. `./ask check-workstream` is a hard implementation gate for a valid current confirmation. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`. ADR: `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
 

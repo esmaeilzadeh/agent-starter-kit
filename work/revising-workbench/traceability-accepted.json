@@ -1,0 +1,51 @@
+{
+  "schema": "ask-accepted-tests/v1",
+  "capability": "ask-traceability/v1",
+  "contract_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
+  "work_id": "revising-workbench",
+  "reviewer": "/root/review_rwb107",
+  "recorded_by": "/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "plan_review": {
+    "schema": "ask-test-plan-review/v1",
+    "work_id": "revising-workbench",
+    "decision": "APPROVED",
+    "reviewer": "/root/review_rwb107",
+    "runtime": "codex",
+    "model": "GPT-6 family; exact selectable identifier unavailable",
+    "configured_model": "gpt-6.1-sol",
+    "parent_model": "GPT-6 family; exact identifier unavailable",
+    "reviewed_sha": "5719f64b4440431a4ac80d9aac80c27bba8eb5d6",
+    "previous_contract_sha": "3d2949e85e8e08932db1fe2d6b7f333d7bec42fa",
+    "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+    "plan_digest": "5af89843427a100e5b90c164167217520ad33ba88ad1721cf91022e91ed6809d",
+    "graph_digest": "8effd240d9f62408e618831dd705b5ff806ec6f7ea5ae77f6fb62eae522483aa",
+    "boundary": "ok",
+    "blocking_findings": [],
+    "assessment": "APPROVED coherent revision-5 scope update. EM-020, canonical scenario/assertions/source list, TaskGraph ownership/completion, Markdown plan and amendment proposal agree on actual sync, first-run, binding-overlay and temporary-root canonical/off-path sync checks under inherited verifier environment. All previously accepted cleanup/failure and integrity obligations remain. The fix is constrained to binding writes to the repository each operation explicitly targets; candidate source and CheckPlan protection remain intact.",
+    "scope_assessment": "The added _ask/scripts/install-kit.sh path is needed to fix the shared target-install synchronization seam rather than patch only individual callers. The proposed change must bind only its synchronization subprocess to the explicit TARGET and clear the inherited work-specific override there. The two added shell test paths directly invoke sync in temporary roots and need explicit temporary ASK_ROOT binding. These three additions are minimal for the identified common leak; existing first-run/binding-overlay and integration paths are already owned. No unrelated installer behavior, shared verification authority or task scheduling expansion is approved. All five RWB-107 cases remain assigned to the same serialized task with unchanged dependencies.",
+    "authority_assessment": "The user's instruction to fix the main workflow first authorizes repairing required checks that write into the immutable verifier candidate. The proposal explains the discovered install-target and direct temporary-root leaks and keeps the normal integrity gate. Isolating an install's sync to its explicit consumer TARGET and direct tests to their TMP roots implements that authorized repair without treating inherited outer context as target authority.",
+    "mapping_assessment": "RWB-CANDIDATE-SYNC-CLEAN remains a new integration case with supported discovery and exact I09 selector. Its expected assertions require real checks under ASK_ROOT pointing at the asserted child candidate, successful exits, exact projection preservation and no tracked/untracked candidate changes, while retaining forced post-write failure cleanup. The source list includes Python, all actual changed shell checks and install-kit.sh, so source changes affect evidence freshness. The binding-overlay script must retain its real two-install consumer binding canary. Canonical-source and off-path scripts must retain their existing assertions that the requested content is generated inside the temporary root; a no-op success would not satisfy the mapped behavior. Integration is adequate for subprocess, explicit repository target and immutable worktree integrity boundaries.",
+    "validation": [
+      "contracts_at/validate_plan accepts exact candidate 5719f64b4440431a4ac80d9aac80c27bba8eb5d6 with the canonical digests above.",
+      "TaskGraph RWB-107.test_ids exactly equals canonical plan task_scope.test_ids; all five assigned cases and existing executable selectors remain unchanged.",
+      "Markdown RWB-107 ownership and completion evidence match the expanded TaskGraph and canonical test plan; proposal identifies the same additional source paths and target-binding behavior.",
+      "Read current install-kit target synchronization and both temporary-root shell test callers to confirm the new owned paths correspond to the actual inherited-root writes. No implementation edited or executed."
+    ],
+    "execution_requirements": [
+      "Contract-only approval. Commit the intended assertions before implementation and retain collected behavior-red for the added target/temp-root isolation behavior, with explicit expected temporary output and candidate-byte/cleanliness assertions.",
+      "Do not weaken existing sync cleanup, first-run, binding canary, canonical-source preference or off-path content assertions to obtain success.",
+      "Refresh recognized red history for all new task cases under this accepted spec/plan digest, then run exact final green and obtain fresh complete-task source/evidence review and normal executed integration.",
+      "The install fix must remain scoped to the explicit target synchronization subprocess; this amendment does not approve unrelated installation semantics or candidate integrity exceptions."
+    ],
+    "limitations": [
+      "No tests run and no implementation, state, TaskResult, source contract or accepted pin modified by reviewer. Only this runtime review artifact was written.",
+      "Independent amendment approval does not itself change coordinator acceptance authority or replace final semantic review, integration, outer Verify or human Accept."
+    ]
+  },
+  "plan_review_digest": "fd87315fbe301e62353208e56e1a4e90a9331388cc8fdc2c5510b255d09823fb",
+  "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+  "plan_digest": "5af89843427a100e5b90c164167217520ad33ba88ad1721cf91022e91ed6809d",
+  "graph_digest": "8effd240d9f62408e618831dd705b5ff806ec6f7ea5ae77f6fb62eae522483aa"
+}

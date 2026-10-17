@@ -1,0 +1,42 @@
+test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests) ... ok
+test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests) ... ok
+test_atomic_node_edges_and_lifecycle_batch (test_engineering_guard.DocumentGuardTests) ... ok
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_cached_and_full_validation_agree (test_engineering_guard.DocumentGuardTests) ... ok
+test_concurrent_multifile_publication_and_recovery (test_engineering_guard.DocumentGuardTests) ... ok
+test_external_changes_and_missed_events_fail_closed (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_candidate_preserves_stable_generation (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_public_mutators_cannot_bypass_admission (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_successful_guard_order_and_identities (test_engineering_guard.DocumentGuardTests) ... ok
+test_concurrent_compare_and_swap (test_engineering_model.ModelEditTests) ... ok
+test_decision_history_and_dependency_propagation (test_engineering_model.ModelEditTests) ... ok
+test_invalid_and_stale_edits_preserve_bytes (test_engineering_model.ModelEditTests) ... ok
+test_revise_invalidates_transitive_decisions (test_engineering_model.ModelEditTests) ... ok
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+FAIL: test_public_mutators_cannot_bypass_admission (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-oj2lbgxj/candidate/_ask/tests/test_engineering_guard.py", line 154, in test_public_mutators_cannot_bypass_admission
+    self.assertIn("EM001_INTENT_COUNT", process.stdout + process.stderr,
+AssertionError: 'EM001_INTENT_COUNT' not found in '{\n  "schema": "ask-verify-result/v1",\n  "commit_sha": "671a5316be7e8b94e166bb221b53a90082fbafda",\n  "result": "fail",\n  "checks": [],\n  "error": "migration_required: missing coordinator accepted-tests ref"\n}\nverify: commit_sha=671a5316be7e8b94e166bb221b53a90082fbafda\nverify: migration_required: missing coordinator accepted-tests ref\n' : ['verify'] bypassed shared document admission: {
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "671a5316be7e8b94e166bb221b53a90082fbafda",
+  "result": "fail",
+  "checks": [],
+  "error": "migration_required: missing coordinator accepted-tests ref"
+}
+verify: commit_sha=671a5316be7e8b94e166bb221b53a90082fbafda
+verify: migration_required: missing coordinator accepted-tests ref
+
+
+----------------------------------------------------------------------
+Ran 20 tests in 16.067s
+
+FAILED (failures=1)

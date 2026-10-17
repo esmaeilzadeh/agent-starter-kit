@@ -1,0 +1,8 @@
+test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_qualified_source_matches_selected_revision (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.628s
+
+OK

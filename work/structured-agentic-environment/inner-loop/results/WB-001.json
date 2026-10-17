@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "structured-agentic-environment",
+  "task_id": "WB-001",
+  "base_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+  "candidate_sha": "adf259305d38074e509fc0a5f05d6c967e45dd8c",
+  "tdd": {
+    "seam": "Join canonical scenario criteria, model relationships, task scopes, and current test ownership while preserving only genuine history.",
+    "red": {
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha c8d97cb89270da80bb8e34756745da7e9ac3e6b0 --anchor-sha adf259305d38074e509fc0a5f05d6c967e45dd8c --scope task --task-id WB-001 --phase red; ./ask traceability run structured-agentic-environment --candidate-sha 912e0599bcb079307512f3dbdcc7de13e31417bb --anchor-sha adf259305d38074e509fc0a5f05d6c967e45dd8c --scope task --task-id WB-001 --phase red",
+      "output": "Both genuine historical assertion-red runs were replayed under the current accepted spec/plan digests. Run c8d97cb failed WB-relations, WB-task-history, and WB-story-context by behavior assertions; run 912e059 failed WB-relations and WB-task-history by behavior assertions. No collection/runtime errors.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run structured-agentic-environment --candidate-sha HEAD --anchor-sha HEAD --scope task --task-id WB-001 --phase final_green",
+      "output": "Run f9a238a1b5db4473b0c7af44dd6d1b32 collected and passed all 25 WB-001 cases under the accepted current plan.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "The three WB-specific cases have genuine assertion-red history, replayed with current spec/plan digests. The 22 accepted foundation IDs listed in task_scoped_baseline_regression_exemptions are unchanged from the accepted source baseline; their reviewer-acknowledged task-only baseline-regression exemptions explicitly do not claim red history. Final workstream verification remains partial until that history exists. This fresh task candidate is the accepted coordinator base because the earlier reviewed WB-001 implementation is already in its ancestry."
+}

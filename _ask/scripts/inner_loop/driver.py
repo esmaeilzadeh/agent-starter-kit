@@ -7,6 +7,8 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from engineering_model.workflow import adopted, guarded_workflow, workflow_admission, _refuse
+from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
     NotIntegrable, check_integrable, git, read_candidate, result_path,
@@ -74,6 +76,7 @@ def ready_ids(graph: dict, doc: dict) -> list[str]:
     return ready
 
 
+@guarded_workflow
 def ensure_state(root: Path, work_id: str) -> dict:
     graph = load_graph(root, work_id)
     status = validate_graph(graph)
@@ -89,11 +92,13 @@ def ensure_state(root: Path, work_id: str) -> dict:
 def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str:
     # Hold the same process lock as cancellation/spawn through Git and evidence
     # side effects. A crash after FF leaves old valid state and is retryable.
-    with state_transaction(root, work_id) as doc:
+    if task_id is None:
+        raise NotIntegrable('selected task identity is required before integration')
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+            state_transaction(root, work_id) as doc:
         running = _running(doc)
-        if len(running) != 1:
-            raise Escalate("no running task to integrate")
-        task_id = task_id or running[0]
+        if len(running) != 1 or task_id not in running:
+            raise Escalate("explicit selected task is not the unique running task")
         candidate = read_candidate(root, work_id, task_id, doc)
         check_integrable(candidate.result)
         task = doc['tasks'][task_id]
@@ -107,7 +112,8 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         if current != candidate or source_changes(root, work_id):
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
-        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only')
+        sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
+                            delivery_task_id=task_id)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
             raise Escalate('integrated HEAD/tree differs from verified candidate')
         evidence['resulting_sha'] = sha
@@ -121,21 +127,37 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
 
 
 def run_once(root: Path, work_id: str) -> str:
-    ensure_state(root, work_id)
+    # Validate current adopted definitions before interpreting coordinator state.
+    # A concrete ready Task is then admitted under its qualified execution
+    # identity before state initialization or writer admission can mutate.
+    if adopted(root, work_id):
+        _snapshot, diagnostics = validate_current(root, work_id)
+        _refuse(diagnostics)
     graph = load_graph(root, work_id)
-    doc = load_state(root, work_id)
+    status = validate_graph(graph)
+    if status != "ok":
+        raise ValueError(status)
+    try:
+        doc = load_state(root, work_id)
+    except FileNotFoundError:
+        doc = {"tasks": {}}
     running = _running(doc)
     if running:
         tid = running[0]
         if result_path(root, work_id, tid).is_file():
             integrate_ready(root, work_id, tid)
             return run_once(root, work_id)
-        return f"waiting={tid}"
+        with workflow_admission(root, work_id):
+            return f"waiting={tid}"
     ready = ready_ids(graph, doc)
     if not ready:
-        return "quiescent"
+        with workflow_admission(root, work_id):
+            ensure_state(root, work_id)
+            return "quiescent"
     tid = ready[0]
-    spawn_writer(root, work_id, tid)
+    with workflow_admission(root, work_id, delivery_task_id=tid):
+        ensure_state(root, work_id)
+        spawn_writer(root, work_id, tid)
     return f"running={tid}"
 
 
@@ -149,6 +171,7 @@ def run_until(root: Path, work_id: str) -> str:
         return out
 
 
+@guarded_workflow
 def resume_from_state(root: Path, work_id: str) -> str:
     ensure_state(root, work_id)
     aborted = ""
@@ -161,13 +184,14 @@ def resume_from_state(root: Path, work_id: str) -> str:
             # Runtime result/state/evidence changes are expected. In particular,
             # do not reset a verified FF candidate back to its pre-task base.
             if source_changes(root, work_id) or in_progress:
-                aborted = git_resume(root, sha, preserve_paths=runtime_exclusions(work_id))
+                aborted = git_resume(root, sha, preserve_paths=runtime_exclusions(work_id), work_id=work_id)
     nxt = run_until(root, work_id)
     if aborted == "aborted":
         return f"aborted\n{nxt}"
     return nxt
 
 
+@guarded_workflow
 def cancel(root: Path, work_id: str, target: str) -> str:
     doc = ensure_state(root, work_id)
     ids = list(doc.get("tasks") or {})

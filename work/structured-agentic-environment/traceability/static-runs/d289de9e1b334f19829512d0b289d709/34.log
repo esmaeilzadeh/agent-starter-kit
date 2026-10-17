@@ -1,0 +1,5 @@
+verify-scaffold: wrote /tmp/tmp.qz8MlBzb4r/.agents/verification.yaml
+rollback ok
+verify-scaffold: /tmp/tmp.qz8MlBzb4r/.agents/verification.yaml exists; left in place (use --re-scaffold for a candidate)
+verify-scaffold: wrote /tmp/tmp.qz8MlBzb4r/.agents/verification.yaml.candidate
+PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops

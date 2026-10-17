@@ -1,0 +1,3 @@
+# Optional workbench and native document-save observer; core CLI is stdlib-only.
+streamlit==1.59.2
+watchfiles==1.1.1

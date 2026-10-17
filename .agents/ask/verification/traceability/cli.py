@@ -1,6 +1,7 @@
 """Structured traceability commands; shell dispatchers supply arguments only."""
 from __future__ import annotations
 import argparse
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
@@ -9,6 +10,7 @@ from .adapters import git,run_tests
 from .contracts import Invalid,load,slug
 from .evidence import (accept_plan,contracts_at,load_accepted,record_test_review,source_changes,write_json)
 from .service import check_completion
+from verification.run import workflow_context
 
 
 def main(argv=None):
@@ -19,45 +21,103 @@ def main(argv=None):
         q=sub.add_parser(name);q.add_argument('work_id');q.add_argument('--candidate-sha');q.add_argument('--anchor-sha');q.add_argument('--revision',default='HEAD')
         if name=='accept-plan':
             q.add_argument('--reviewer',required=True);q.add_argument('--recorded-by',required=True);q.add_argument('--evidence',required=True)
-        if name=='record-review':q.add_argument('--recorded-by',required=True);q.add_argument('--evidence',required=True)
+        if name=='record-review':
+            q.add_argument('--recorded-by',required=True);q.add_argument('--evidence',required=True)
+            q.add_argument('--scope',choices=['task','workstream'],default='workstream');q.add_argument('--task-id')
         if name in {'run','check-completion'}:
             q.add_argument('--scope',choices=['task','workstream'],default='workstream');q.add_argument('--task-id')
         if name=='run':q.add_argument('--phase',choices=['red','final_green'],default='final_green')
         if name=='record-result':q.add_argument('--result',required=True);q.add_argument('--notes',default='')
-    args=p.parse_args(argv);root=args.root.resolve()
+    args=p.parse_args(argv);root=args.root.resolve();document=None
     try:
         if not slug(args.work_id):raise Invalid('invalid work_id')
-        sha=git(root,'rev-parse','--verify',(args.candidate_sha or 'HEAD')+'^{commit}')
-        anchor=git(root,'rev-parse','--verify',(args.anchor_sha or 'HEAD')+'^{commit}')
-        if os.environ.get('ASK_INNER_LOOP_ROLE')=='worker' and args.command in {'accept-plan','record-review','record-result'}:raise Invalid('coordinator operation cannot be performed by worker')
-        if args.command=='validate-plan':doc=contracts_at(root,args.work_id,args.revision)
-        elif args.command=='accept-plan':doc=accept_plan(root,args.work_id,args.revision,args.reviewer,args.recorded_by,args.evidence)
-        elif args.command=='record-review':doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by)
-        elif args.command=='run':
-            contracts=load_accepted(root,args.work_id,anchor)
-            if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
-            doc=run_tests(root,contracts,sha,args.scope,args.task_id,args.phase)
-            expected=[t for t in contracts['plan']['tests'] if args.scope=='workstream' or t['id'] in next(s['test_ids'] for s in contracts['plan']['task_scopes'] if s['task_id']==args.task_id)]
-            if (any(r['collection_status']!='ok' for r in doc['executions'])
-                or (args.phase=='final_green' and len(doc['cases'])!=len(expected))
-                or (args.phase=='final_green' and (any(r['exit_code']!=0 for r in doc['executions']) or any(c['outcome']!='passed' for c in doc['cases'])))
-                or (args.phase=='red' and (not any(c['outcome']=='failed' and c['failure_kind']=='behavior_assertion' for c in doc['cases']) or any(c['outcome'] in {'error','unsupported_subtest'} for c in doc['cases'])))):
-                print(json.dumps(doc,indent=2));return 1
-        elif args.command=='record-result':
-            if args.result=='pass':
-                doc=check_completion(root,args.work_id,sha,anchor)
-                if doc['status']!='pass':print(json.dumps(doc,indent=2));return 1
-            doc={'work_id':args.work_id,'commit_sha':sha,'result':args.result,'notes':args.notes}
-            write_json(root/'work'/args.work_id/'result.json',doc)
-        elif args.command=='migrate':
-            spec=root/'specs/current'/f'{args.work_id}.json';plan=root/'work'/args.work_id/'test-plan.json'
-            if not spec.exists():
-                write_json(spec,{'schema':'ask-spec/v1','work_id':args.work_id,'revision':1,'criteria':[]})
-            if not plan.exists():write_json(plan,{'schema':'ask-test-plan/v1','work_id':args.work_id,'spec_digest':'REQUIRES_REVIEW','obligations':[],'tests':[],'runners':[],'task_scopes':[]})
-            doc={'status':'migration_required','reason':'Fill canonical criteria/test obligations, independently review, commit, then accept-plan. Historical reports and consumer YAML preserved.'}
-        else:doc=check_completion(root,args.work_id,sha,anchor,getattr(args,'scope','workstream'),getattr(args,'task_id',None))
-        print(json.dumps(doc,indent=2))
-        return 1 if doc.get('status') in {'fail','migration_required'} else 0
+        managed=args.command not in {'validate-plan','record-result'} or (args.command=='record-result' and args.result=='pass')
+        delivery_task_id=None
+        if args.command=='record-review':
+            # Refuse invalid adopted definitions before reporting an input
+            # scope mismatch, but do not publish a workflow generation until
+            # the actual review target has been resolved.
+            scripts=root/'_ask/scripts'
+            if scripts.is_dir():sys.path.insert(0,str(scripts))
+            try:
+                from engineering_model.workflow import adopted
+                from engineering_model.admission import validate_current
+            except ModuleNotFoundError as exc:
+                if exc.name not in {'engineering_model','engineering_model.workflow','engineering_model.admission'}:raise
+            else:
+                if adopted(root,args.work_id):
+                    _snapshot, diagnostics=validate_current(root,args.work_id)
+                    if diagnostics:
+                        first=diagnostics[0]
+                        failure=Invalid(first['code'], '; '.join(
+                            item['code']+': '+item.get('message','document admission refused')
+                            for item in diagnostics))
+                        failure.diagnostic=first;failure.diagnostics=diagnostics
+                        raise failure
+            review=load(root/args.evidence)
+            body_scope=review.get('scope','workstream') if isinstance(review,dict) else None
+            body_task=review.get('task_id') if isinstance(review,dict) else None
+            if body_scope not in {'task','workstream'} or body_scope!=args.scope or (body_scope=='task' and (not isinstance(body_task,str) or body_task!=args.task_id)):
+                raise Invalid('CLI review scope/task must match the review body')
+            args._review_document=review
+            if body_scope=='task':
+                delivery_task_id=body_task
+        if getattr(args,'scope',None)=='task':
+            if not getattr(args,'task_id',None):raise Invalid('task-scoped operation requires --task-id')
+            if args.command!='record-review':
+                delivery_task_id=args.task_id
+        with workflow_context(root,args.work_id,delivery_task_id=delivery_task_id) if managed else nullcontext():
+            document,status=execute(args,root)
+        print(json.dumps(document,indent=2))
+        return status
     except (Invalid,OSError,ValueError,KeyError,TypeError) as exc:
-        print(json.dumps({'status':'fail','error':str(exc)}),file=sys.stderr);return 1
+        diagnostic=getattr(exc,'diagnostic',None)
+        failure={'status':'fail','error':str(exc)}
+        if diagnostic:failure['diagnostics']=getattr(exc,'diagnostics',[diagnostic])
+        if diagnostic and document is not None and args.command=='record-result' and document.get('result')=='pass':
+            write_json(root/'work'/args.work_id/'result.json',
+                       dict(document,result='fail',notes=diagnostic['code']+': '+str(exc)))
+        print(json.dumps(failure),file=sys.stderr);return 1
+
+
+def execute(args,root):
+    sha=git(root,'rev-parse','--verify',(args.candidate_sha or 'HEAD')+'^{commit}')
+    anchor=git(root,'rev-parse','--verify',(args.anchor_sha or 'HEAD')+'^{commit}')
+    if os.environ.get('ASK_INNER_LOOP_ROLE')=='worker' and args.command in {'accept-plan','record-review','record-result'}:raise Invalid('coordinator operation cannot be performed by worker')
+    if args.command=='validate-plan':doc=contracts_at(root,args.work_id,args.revision)
+    elif args.command=='accept-plan':doc=accept_plan(root,args.work_id,args.revision,args.reviewer,args.recorded_by,args.evidence)
+    elif args.command=='record-review':
+        review=getattr(args,'_review_document',None)
+        if review is None:review=load(root/args.evidence)
+        body_scope=review.get('scope','workstream') if isinstance(review,dict) else None
+        body_task=review.get('task_id') if isinstance(review,dict) else None
+        if body_scope!=args.scope or (args.scope=='task' and body_task!=args.task_id):
+            raise Invalid('CLI review scope/task must match the review body')
+        doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by,
+                               delivery_task_id=body_task if body_scope=='task' else None,
+                               review_document=review)
+    elif args.command=='run':
+        contracts=load_accepted(root,args.work_id,anchor)
+        if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
+        doc=run_tests(root,contracts,sha,args.scope,args.task_id,args.phase)
+        expected=[t for t in contracts['plan']['tests'] if args.scope=='workstream' or t['id'] in next(s['test_ids'] for s in contracts['plan']['task_scopes'] if s['task_id']==args.task_id)]
+        if (any(r['collection_status']!='ok' for r in doc['executions'])
+            or (args.phase=='final_green' and len(doc['cases'])!=len(expected))
+            or (args.phase=='final_green' and (any(r['exit_code']!=0 for r in doc['executions']) or any(c['outcome']!='passed' for c in doc['cases'])))
+            or (args.phase=='red' and (not any(c['outcome']=='failed' and c['failure_kind']=='behavior_assertion' for c in doc['cases']) or any(c['outcome'] in {'error','unsupported_subtest'} for c in doc['cases'])))):
+            return doc,1
+    elif args.command=='record-result':
+        if args.result=='pass':
+            doc=check_completion(root,args.work_id,sha,anchor)
+            if doc['status']!='pass':return doc,1
+        doc={'work_id':args.work_id,'commit_sha':sha,'result':args.result,'notes':args.notes}
+        write_json(root/'work'/args.work_id/'result.json',doc)
+    elif args.command=='migrate':
+        spec=root/'specs/current'/f'{args.work_id}.json';plan=root/'work'/args.work_id/'test-plan.json'
+        if not spec.exists():
+            write_json(spec,{'schema':'ask-spec/v1','work_id':args.work_id,'revision':1,'criteria':[]})
+        if not plan.exists():write_json(plan,{'schema':'ask-test-plan/v1','work_id':args.work_id,'spec_digest':'REQUIRES_REVIEW','obligations':[],'tests':[],'runners':[],'task_scopes':[]})
+        doc={'status':'migration_required','reason':'Fill canonical criteria/test obligations, independently review, commit, then accept-plan. Historical reports and consumer YAML preserved.'}
+    else:doc=check_completion(root,args.work_id,sha,anchor,getattr(args,'scope','workstream'),getattr(args,'task_id',None))
+    return doc,1 if doc.get('status') in {'fail','migration_required'} else 0
 if __name__=='__main__':raise SystemExit(main())

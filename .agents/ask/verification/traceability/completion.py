@@ -8,6 +8,16 @@ from .evidence import (file_digest_bytes, git, read_at, review_errors, source_ch
                        source_digests,load_accepted)
 
 
+def evidence_state(error):
+    """Distinguish absent local evidence from present but invalid evidence."""
+    cause=error
+    while cause is not None:
+        if isinstance(cause,FileNotFoundError):return 'unavailable'
+        cause=cause.__cause__
+    if str(error)=='migration_required: missing coordinator accepted-tests ref':return 'unavailable'
+    return 'invalid'
+
+
 def evaluate_completion(contracts, review, executions, trusted_context):
     root=Path(trusted_context['root']).resolve();sha=trusted_context['candidate_sha']
     scope=trusted_context.get('scope','workstream');task_id=trusted_context.get('task_id')
@@ -22,12 +32,15 @@ def evaluate_completion(contracts, review, executions, trusted_context):
         selected=scoped_tests(plan,scope,task_id)
         if validate_plan(spec,plan,contracts['graph']):errors.append('invalid accepted plan')
         # Runtime evidence does not exempt changes to candidate source/contracts.
-        if not trusted_context.get('detached_candidate'):
+        historical=trusted_context.get('historical_candidate',False)
+        if not trusted_context.get('detached_candidate') and not historical:
             if git(root,'rev-parse','HEAD')!=sha:errors.append('candidate is not current HEAD')
             if source_changes(root,work_id):errors.append('dirty candidate source')
         retained_review=load(root/'work'/work_id/'traceability'/'reviews'/(sha+'.json'))
         if retained_review!=review:errors.append('review differs from coordinator record')
-        sources=source_digests(root,sha,plan)
+        selected=scoped_tests(plan,scope,task_id)
+        selected_ids=[t['id'] for t in selected]
+        sources=source_digests(root,sha,plan,None if scope=='workstream' else selected_ids)
         if (not isinstance(review,dict) or review.get('schema')!='ask-recorded-test-review/v1'
             or review.get('candidate_sha')!=sha or review.get('contract_digest')!=digest(pin)
             or review.get('policy')!=POLICY or review.get('policy_digest')!=pin['policy_digest']
@@ -36,11 +49,20 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             or review.get('recorded_by')==(review.get('review') or {}).get('reviewer')):
             errors.append('missing or stale coordinator-recorded semantic review')
         semantic=(review or {}).get('review') or {}
+        review_scope=semantic.get('scope','workstream')
+        review_task=semantic.get('task_id')
+        if review.get('scope')!=review_scope or review.get('task_id')!=review_task:
+            errors.append('recorded semantic-review scope differs from reviewed scope')
+        if scope=='workstream' and (review_scope!='workstream' or review_task is not None):errors.append('task-scoped semantic review cannot satisfy workstream completion')
+        if scope=='task' and review_scope not in {'workstream','task'}:errors.append('semantic review scope does not cover task completion')
+        if scope=='task' and review_scope=='task' and review_task!=task_id:errors.append('semantic review belongs to another task')
         errors.extend(review_errors(root,contracts,semantic,sha))
-        if file_digest(root/POLICY)!=pin['policy_digest']:errors.append('changed policy artifact')
+        policy_digest=file_digest_bytes(read_at(root,sha,POLICY)) if historical else file_digest(root/POLICY)
+        if policy_digest!=pin['policy_digest']:errors.append('changed policy artifact')
         finals={};reds={};seen_runs=set()
         runners={r['id']:r for r in plan['runners']};test_map={t['id']:t for t in plan['tests']}
-        expected_adapter=file_digest(Path(__file__).with_name('unittest_runner.py'))
+        expected_adapter=(file_digest_bytes(read_at(root,sha,'.agents/ask/verification/traceability/unittest_runner.py'))
+                          if historical else file_digest(Path(__file__).with_name('unittest_runner.py')))
         for execution_report in executions:
             run_id=execution_report.get('run_id')
             if not slug(run_id) or run_id in seen_runs:
@@ -113,6 +135,7 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                 evidence.append({'test_id':tid,'case_id':test['case_id'],'type':test['type'],'tdd':tdd,'red':red,'final_execution':green})
             rows.append({'criterion_id':cid,'verification_mode':criterion['verification_mode'],'required_types':obligations.get(cid,[]),'review':semantic_criteria.get(cid),'tests':evidence})
         if not errors and not missing:report['status']='pass'
-    except (Invalid,OSError,KeyError,TypeError,ValueError) as exc:
+    except (Invalid,OSError,KeyError,TypeError,ValueError,AttributeError) as exc:
         errors.append(str(exc))
+        report['evidence_state']=evidence_state(exc)
     return report

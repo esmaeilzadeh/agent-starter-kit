@@ -22,3 +22,4 @@ __pycache__/
 # Candidate-bound traceability outputs; archive reviewed evidence explicitly.
 work/*/traceability/
 work/*/inner-loop/state.lock
+_ask/.venv/

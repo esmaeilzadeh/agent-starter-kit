@@ -1,0 +1,38 @@
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:40:43.466 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ERROR
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:40:44.835 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+
+======================================================================
+ERROR: test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/state/session_state.py", line 727, in __getitem__
+    base_value = self._getitem(widget_id, key)
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/state/session_state.py", line 780, in _getitem
+    raise KeyError
+KeyError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/ask-cases-ffzsb89k/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 90, in test_navigation_does_not_refresh_stale_form_identity
+    captured = app.session_state["_engineering_form_identity"]
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/state/safe_session_state.py", line 104, in __getitem__
+    return self._state[key]
+  File "/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/state/session_state.py", line 734, in __getitem__
+    raise KeyError(_missing_key_error_message(key))
+KeyError: 'st.session_state has no key "_engineering_form_identity". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization'
+
+======================================================================
+FAIL: test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-ffzsb89k/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 59, in test_work_default_routes_and_context_reset
+    self.assertIn("Pilot story", _text(app))
+AssertionError: 'Pilot story' not found in 'Engineering workbench\nEpic\n:green-badge[:material/check_circle: Validated snapshot]\n### Purpose\n#### Scenarios\n**Canonical behavior**\n**Given**\nValid input\n**When**\nValidate\n**Then**\nAccept\n**Tests**\n**Behavior assertion**\nPlanned assertions for P-001\nExact accepted behavior\nTest source · `test_fixture.py`\n#### Tasks\n**Build**\n:orange-badge[Blocked]\n#### Results\nInspect model state, planned behavior, and verification evidence.\nBranch: `agent/pilot`. This view reads workstreams from this checkout only; use the selector to switch among workstreams on this branch. To inspect work from another branch, check out that branch and refresh the page.\nTest CASE-1 · unit\nResult not loaded\nRelated tests: CASE-1\nExecution results are shown with their related tests and loaded only when requested.\nFalse\nFalse'
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.561s
+
+FAILED (failures=1, errors=1)

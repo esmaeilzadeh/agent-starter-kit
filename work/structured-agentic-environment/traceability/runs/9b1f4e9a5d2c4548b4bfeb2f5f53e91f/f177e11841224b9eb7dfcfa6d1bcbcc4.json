@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "test_engineering_workbench_attention.WorkbenchTests.test_attention_links_blockers_decisions_and_evidence", "outcome": "failed", "failure_kind": "behavior_assertion"}, {"case_id": "test_engineering_workbench_attention.WorkbenchTests.test_reasoned_choice_persists_and_read_only_rejects", "outcome": "passed", "failure_kind": null}], "collection_status": "ok"}

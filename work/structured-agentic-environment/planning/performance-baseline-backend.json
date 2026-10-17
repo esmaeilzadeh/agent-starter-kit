@@ -1,0 +1,53 @@
+{
+  "source_sha": "48bc7e95806e645bd25a196d9e50c394278a9d64",
+  "python": "3.10.12",
+  "platform": "Linux-6.2.0-26-generic-x86_64-with-glibc2.35",
+  "cpu": "x86_64",
+  "nodes": 12,
+  "edges": 12,
+  "captured_files": 9,
+  "capture_validate": {
+    "samples_ms": [
+      20.053,
+      15.162,
+      14.795,
+      15.055,
+      13.725,
+      12.913,
+      14.95,
+      13.932,
+      14.845,
+      15.639
+    ],
+    "median_ms": 14.8975,
+    "p95_ms_nearest_rank": 20.053
+  },
+  "projection_without_evidence": {
+    "samples_ms": [
+      1.241,
+      1.158,
+      1.163,
+      1.206,
+      1.16,
+      1.526,
+      1.601,
+      2.02,
+      1.649,
+      1.345
+    ],
+    "median_ms": 1.2930000000000001,
+    "p95_ms_nearest_rank": 2.02
+  },
+  "projection_with_evidence": {
+    "samples_ms": [
+      150.615,
+      145.321,
+      138.679,
+      135.718,
+      132.448
+    ],
+    "median_ms": 138.679,
+    "p95_ms_nearest_rank": 150.615
+  },
+  "profile": "         42003 function calls (41987 primitive calls) in 0.154 seconds\n\n   Ordered by: cumulative time\n   List reduced from 233 to 12 due to restriction <12>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.154    0.154 /home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/scripts/engineering_model/projection.py:136(project)\n        1    0.000    0.000    0.152    0.152 /home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/scripts/engineering_model/projection.py:152(<dictcomp>)\n        2    0.000    0.000    0.152    0.076 /home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/scripts/engineering_model/evidence.py:14(inspect)\n        2    0.000    0.000    0.144    0.072 /home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/service.py:123(inspect_completion)\n       32    0.000    0.000    0.125    0.004 /usr/lib/python3.10/subprocess.py:461(run)\n        2    0.000    0.000    0.108    0.054 /home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/evidence.py:71(load_accepted)\n       32    0.000    0.000    0.080    0.002 /usr/lib/python3.10/subprocess.py:1110(communicate)\n       32    0.001    0.000    0.079    0.002 /usr/lib/python3.10/subprocess.py:1968(_communicate)\n       58    0.001    0.000    0.073    0.001 /usr/lib/python3.10/selectors.py:403(select)\n       58    0.072    0.001    0.072    0.001 {method 'poll' of 'select.poll' objects}\n        4    0.000    0.000    0.065    0.016 /home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/evidence.py:31(contracts_at)\n       14    0.000    0.000    0.054    0.004 /home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/evidence.py:14(read_at)\n\n\n"
+}

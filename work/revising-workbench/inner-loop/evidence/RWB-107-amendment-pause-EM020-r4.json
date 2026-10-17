@@ -1,0 +1,14 @@
+{
+  "schema": "ask-amendment-pause/v1",
+  "work_id": "revising-workbench",
+  "task_id": "RWB-107",
+  "reason": "Temporarily pause active writer because traceability accept-plan refuses while any task is running.",
+  "operation": "Accept independently reviewed EM-020 revision 4 at 4579303502aa31c813c3aa261e96d4d5075090b6; immediately restore running status and preserve original task base.",
+  "before_revision": 52,
+  "before_status": "running",
+  "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+  "coordinator_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+  "restored_revision": 54,
+  "restored_status": "running",
+  "restored_base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf"
+}

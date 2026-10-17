@@ -134,8 +134,8 @@ def artifact(root: Path, name: str) -> tuple[str, str]:
         raise NotIntegrable(f'review/policy artifact must exist inside repository: {name}') from exc
 
 
-def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
-                  evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok') -> dict:
+def _record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
+                   evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok') -> dict:
     """Coordinator records an attributable delegated decision, bound to result bytes."""
     if not reviewer.strip() or policy != POLICY:
         raise NotIntegrable(f'reviewer identity and canonical policy {POLICY} required')
@@ -155,6 +155,24 @@ def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy:
                                         if isinstance(candidate.result.get('exemption'), dict) else None))
         doc['tasks'][task_id]['evidence']['review'] = review
     return review
+
+
+def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
+                  evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok', *,
+                  selected_task_id=None, selected_execution=None, delivery_task_id=None) -> dict:
+    """Bind adopted task review to its explicit captured Task identity."""
+    try:
+        from engineering_model.workflow import adopted, workflow_admission
+    except ModuleNotFoundError:
+        from _ask.scripts.engineering_model.workflow import adopted, workflow_admission
+    if (selected_task_id is None and selected_execution is None
+            and delivery_task_id is None and adopted(root, work_id)):
+        delivery_task_id = task_id
+    if selected_task_id is None and selected_execution is None and delivery_task_id is None:
+        return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+    with workflow_admission(root, work_id, selected_task_id=selected_task_id,
+                            selected_execution=selected_execution, delivery_task_id=delivery_task_id):
+        return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
 
 
 def validate_review(root: Path, task: dict, candidate: Candidate) -> dict:
@@ -253,7 +271,10 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                 report['checkplan_digest'], expected = plan_identity(checkout, runner)
                 env = dict(os.environ, ASK_ROOT=str(checkout), VERIFY_JSON=str(out / 'verification.json'),
                            VERIFY_OUT_DIR=str(out), ASK_WORK_ID=identity['work_id'],
-                           ASK_TRACEABILITY_ANCHOR_SHA=identity['base_sha'],
+                           # Keep verifier code pinned to base, but load accepted
+                           # obligations from the candidate. A reviewed amendment
+                           # may be accepted after this task's original base.
+                           ASK_TRACEABILITY_ANCHOR_SHA=identity['candidate_sha'],
                            ASK_TRACEABILITY_RUNTIME_ROOT=str(root), ASK_TRACEABILITY_SCOPE='task',
                            ASK_TRACEABILITY_TASK_ID=identity['task_id'])
                 with (out / 'output.log').open('w') as log:

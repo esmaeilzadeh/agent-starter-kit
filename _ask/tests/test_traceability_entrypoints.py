@@ -1,7 +1,10 @@
 """Public completion journeys in a disposable consumer, including a real CLI app."""
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
+import tempfile
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from traceability_fixture import Consumer
@@ -10,6 +13,136 @@ class EntrypointTests(unittest.TestCase):
     def consumer(self,**kwargs):c=Consumer(**kwargs);self.addCleanup(c.close);return c
     def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
     def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
+    def test_I09_runtime_agent_sync_preserves_candidate_tree(self):
+        root=Path(__file__).resolve().parents[2]
+        head=subprocess.run(['git','rev-parse','HEAD'],cwd=root,text=True,
+                            capture_output=True,check=True).stdout.strip()
+        with tempfile.TemporaryDirectory(prefix='ask-sync-clean-') as directory:
+            candidate=Path(directory)/'candidate'
+            subprocess.run(['git','worktree','add','--detach',str(candidate),head],cwd=root,
+                           text=True,capture_output=True,check=True)
+            try:
+                env=os.environ.copy()
+                env['ASK_WORK_ID']='revising-workbench'
+                env['ASK_ROOT']=str(candidate)
+                env['GIT_CONFIG_COUNT']='1'
+                env['GIT_CONFIG_KEY_0']='init.defaultBranch'
+                env['GIT_CONFIG_VALUE_0']='main'
+                def projection_snapshot():
+                    snapshot={}
+                    for directory in ('.cursor/agents','.claude/agents','.codex/agents','.opencode/agents'):
+                        for path in (candidate/directory).rglob('*'):
+                            if path.is_file():
+                                snapshot[path.relative_to(candidate).as_posix()]=path.read_bytes()
+                    return snapshot
+                def require_clean():
+                    status=subprocess.run(['git','status','--porcelain','--untracked-files=all'],
+                                          cwd=candidate,text=True,capture_output=True,check=True)
+                    self.assertEqual(status.stdout,'',f'sync test dirtied candidate:\n{status.stdout}')
+
+                before=projection_snapshot()
+                failing_env=env.copy()
+                failing_env['ASK_SYNC_TEST_FORCE_FAILURE']='1'
+                failed=subprocess.run(['bash','_ask/tests/test-sync-runtime-agents.sh'],cwd=candidate,
+                                      env=failing_env,text=True,capture_output=True)
+                self.assertEqual(failed.returncode,97,failed.stdout+failed.stderr)
+                self.assertIn('forced post-sync failure',failed.stderr)
+                self.assertEqual(projection_snapshot(),before,'failed sync did not restore exact agent projections')
+                require_clean()
+
+                passed=subprocess.run(['bash','_ask/tests/test-sync-runtime-agents.sh'],cwd=candidate,
+                                      env=env,text=True,capture_output=True)
+                self.assertEqual(passed.returncode,0,passed.stdout+passed.stderr)
+                self.assertEqual(projection_snapshot(),before,'successful sync changed agent projections')
+                require_clean()
+
+                consumer_env=env.copy()
+                consumer_env['ASK_ROOT']=str(candidate)
+                consumer=subprocess.run(['bash','_ask/tests/test-askit-first-run.sh'],cwd=candidate,
+                                        env=consumer_env,text=True,capture_output=True)
+                self.assertEqual(consumer.returncode,0,consumer.stdout+consumer.stderr)
+                self.assertEqual(projection_snapshot(),before,'first-run consumer changed runtime agent projections')
+                require_clean()
+
+                for script in ('test-bindings-consumer-overlay.sh',
+                               'test-sync-canonical-ask.sh',
+                               'test-sync-off-path-command.sh'):
+                    checked=subprocess.run(['bash',f'_ask/tests/{script}'],cwd=candidate,
+                                            env=env,text=True,capture_output=True)
+                    self.assertEqual(checked.returncode,0,checked.stdout+checked.stderr)
+                    self.assertEqual(projection_snapshot(),before,
+                                     f'{script} changed runtime agent projections')
+                    require_clean()
+            finally:
+                subprocess.run(['git','worktree','remove','--force',str(candidate)],cwd=root,
+                               text=True,capture_output=True,check=False)
+    def test_I08_integration_accepts_reviewed_contract_amended_after_task_base(self):
+        c=self.consumer(tasks=True)
+        base=c.sha
+        plan_review={'decision':'APPROVED','reviewer':'fixture-independent',
+                     'spec_digest':c.contracts['pin']['spec_digest'],
+                     'plan_digest':c.contracts['pin']['plan_digest']}
+        c.write('work/w/traceability/plan-review-amendment.json',plan_review)
+        graph=(c.root/'work/w/inner-loop/tasks.yaml').read_text()
+        c.write('work/w/inner-loop/tasks.yaml',graph.replace('owned_paths: [app.py]',
+                                                              'owned_paths: [app.py, test_app.py]'))
+        graph_revision=c.commit('amend reviewed task ownership')
+        from verification.traceability.evidence import accept_plan,load_accepted
+        accept_plan(c.root,'w',graph_revision,'fixture-independent','fixture-coordinator',
+                    'work/w/traceability/plan-review-amendment.json')
+        candidate=c.commit('pin reviewed task amendment')
+        c.sha=candidate;c.contracts=load_accepted(c.root,'w',candidate,candidate)
+
+        self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,
+                                    '--anchor-sha',candidate,'--scope','task','--task-id','a',
+                                    '--phase','red'))
+        review=c.make_review();review.update(scope='task',task_id='a')
+        c.write('work/w/traceability/review-input.json',review)
+        self.require_pass(c.command('traceability','record-review','w','--candidate-sha',candidate,
+                                    '--anchor-sha',candidate,'--scope','task','--task-id','a',
+                                    '--evidence','work/w/traceability/review-input.json',
+                                    '--recorded-by','fixture-coordinator'))
+        self.require_pass(c.command('traceability','run','w','--candidate-sha',candidate,
+                                    '--anchor-sha',candidate,'--scope','task','--task-id','a'))
+
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+        from inner_loop.evidence import Candidate,NotIntegrable,verify_candidate
+        result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':base,
+                              'candidate_sha':candidate},'fixture-result-digest')
+        try:evidence=verify_candidate(c.root,result)
+        except NotIntegrable:evidence=None
+        self.assertIsNotNone(evidence,'authority-approved amended candidate must integrate')
+        self.assertEqual(evidence['result'],'pass',evidence)
+        self.assertEqual(evidence['runner_sha'],base)
+
+        unamended=self.consumer(tasks=True)
+        unamended_base=unamended.sha
+        self.require_pass(unamended.command('traceability','run','w','--candidate-sha',unamended.red_sha,
+                                            '--anchor-sha',unamended_base,'--scope','task','--task-id','a',
+                                            '--phase','red'))
+        unamended_review=unamended.make_review();unamended_review.update(scope='task',task_id='a')
+        unamended.write('work/w/traceability/review-input.json',unamended_review)
+        self.require_pass(unamended.command('traceability','record-review','w','--candidate-sha',unamended_base,
+                                            '--anchor-sha',unamended_base,'--scope','task','--task-id','a',
+                                            '--evidence','work/w/traceability/review-input.json',
+                                            '--recorded-by','fixture-coordinator'))
+        self.require_pass(unamended.command('traceability','run','w','--candidate-sha',unamended_base,
+                                            '--anchor-sha',unamended_base,'--scope','task','--task-id','a'))
+        unamended_result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':unamended_base,
+                                        'candidate_sha':unamended_base},'fixture-result-digest')
+        self.assertEqual(verify_candidate(unamended.root,unamended_result)['result'],'pass')
+
+        untrusted=self.consumer()
+        untrusted_base=untrusted.sha
+        pin=json.loads((untrusted.root/'work/w/traceability-accepted.json').read_text())
+        pin['plan_review']['assessment']='candidate-only change'
+        untrusted.write('work/w/traceability-accepted.json',pin)
+        untrusted_candidate=untrusted.commit('attempt candidate-only acceptance change')
+        untrusted_result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':untrusted_base,
+                                       'candidate_sha':untrusted_candidate},'fixture-result-digest')
+        with self.assertRaisesRegex(NotIntegrable,'candidate acceptance document differs from coordinator authority'):
+            verify_candidate(untrusted.root,untrusted_result)
+
     def test_I05_all_normal_entrypoints_reject_omitted_e2e(self):
         c=self.consumer(omit_e2e=True,tasks=True)
         self.require_fail(c.command('verify'))

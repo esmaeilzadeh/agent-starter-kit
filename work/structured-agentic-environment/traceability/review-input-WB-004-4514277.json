@@ -1,0 +1,195 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "structured-agentic-environment",
+  "reviewer": "/root/review_wb001",
+  "recorded_by": "codex-coordinator",
+  "model": "gpt-6-astra",
+  "runtime": "codex",
+  "parent_model": "gpt-6-luna",
+  "scope": "task",
+  "task_id": "WB-004",
+  "candidate_sha": "4514277c23465d375ad91a160908ad5e26eb9678",
+  "task_base_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+  "base_sha": "55c11fad3e0391f8a47236166c8d5941d824ef73",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "test_ids": [
+    "WB-navigation",
+    "WB-form-context"
+  ],
+  "criterion_ids": [
+    "EM-006",
+    "EM-008",
+    "EM-009"
+  ],
+  "source_digests": {
+    "_ask/tests/test_engineering_workbench_navigation.py": "44b693b83361d89c09963d46144bb4b7808093b6a7f6aa8d5548d1f402130c89"
+  },
+  "inspected_sources": [
+    "_ask/scripts/engineering_model/workbench_evidence.py",
+    "_ask/scripts/engineering_model/workbench_sources.py",
+    "_ask/tests/test_engineering_workbench_evidence.py",
+    "_ask/tests/test_engineering_workbench_navigation.py",
+    "_ask/tests/test_engineering_workbench_sources.py",
+    "_ask/ui/streamlit_app.py",
+    "_ask/ui/workbench_context.py",
+    "_ask/ui/workbench_navigation.py"
+  ],
+  "changed_cases": [
+    "WB-evidence-identity",
+    "WB-evidence-states",
+    "WB-form-context",
+    "WB-inventory",
+    "WB-navigation",
+    "WB-snapshot",
+    "WB-source-errors",
+    "WB-source-version"
+  ],
+  "inventory_exclusions": {},
+  "decision": "APPROVED",
+  "boundary": "ok",
+  "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-004.json",
+  "task_result_sha256": "c307354a0b0db52eb8c77a06db47729743cf733f94e4884e65d7c0e660cd9042",
+  "owned_source_digests": {
+    "_ask/tests/test_engineering_workbench_navigation.py": "44b693b83361d89c09963d46144bb4b7808093b6a7f6aa8d5548d1f402130c89",
+    "_ask/ui/.streamlit/config.toml": "4118213e373c3f93ce0f484656443566f07a789c72ae1b9b086f58cae588f2c6",
+    "_ask/ui/streamlit_app.py": "40b7ac81168ea9319148c318b8996e4b23b1ddf50232d52907e6618ce09ec377",
+    "_ask/ui/workbench_context.py": "48795174d0d8bbad7bc816488fc2e4a81bddf83798c270535709e38efee72e9c",
+    "_ask/ui/workbench_navigation.py": "f12971e89879984158f427c09ee7af2f64521a09a336e1f37f73c7af9caa39ee"
+  },
+  "findings": [],
+  "criteria": [
+    {
+      "id": "EM-006",
+      "coverage_decision": "APPROVED",
+      "assessment": "The assigned stale-edit slice still preserves captured identity through navigation, rejects a linked spec/plan stale submission through the shared guard without applying decision history, and explicitly recaptures on Refresh. Valid-choice/task-attention rendering remains later scope.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Actual AppTest form fields submit against changed linked inputs; digest and unchanged model decision history assertions discriminate stale rejection. The new Back assertion verifies rendered context as well."
+        }
+      }
+    },
+    {
+      "id": "EM-008",
+      "coverage_decision": "APPROVED",
+      "assessment": "The task navigator now retains distinct test/result paths for one task spanning two scenarios through context-specific task routes. Breadcrumbs retain story/scenario/task/test ancestry and callback-based Back restores visible detail in the same rerun. Later overview content and count navigation remain separately assigned.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The expanded real model/spec/plan fixture assigns CASE-1 and CASE-2 to the same task across two scenarios; AppTest opens second test/result and checks ancestor labels and rendered Back detail. Independent reproduction confirms both routes and same-rerun epic Back."
+        }
+      }
+    },
+    {
+      "id": "EM-009",
+      "coverage_decision": "APPROVED",
+      "assessment": "The task source selector distinguishes working-tree data from committed branch sources, pins a full immutable commit SHA, preserves checkout, resets context and disables committed edits. Complete captured committed inputs now pass the shared snapshot validator before projection; stale canonical bindings display the existing diagnostic and withhold the hierarchy. Moving refs retain the inspected revision until explicit Refresh.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "AppTest compares committed story bytes with a changed working draft, verifies exact selected commit/read-only form behavior, switches work without checkout changes, and commits an archive test plan with wrong spec_digest. Its retained validation assertions require EM001_CANONICAL_DEFINITION, spec_digest_mismatch and no canonical hierarchy. Independent stale-binding and moving-ref fixtures corroborate these behaviors."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "WB-navigation",
+      "decision": "APPROVED",
+      "assertion_assessment": "The expanded fixture follows one task across two canonical scenarios into distinct test/result routes and checks visible Back detail and ancestry. It distinguishes working-draft versus committed bytes, checks the full selected SHA and disabled committed decision submission, preserves checkout and resets selection. Its invalid committed archive requires both shared diagnostic code and precise stale-binding message while forbidding the normal hierarchy. The exact candidate and independent invalid-binding fixture pass.",
+      "counterexample": "Commit a test plan with an obsolete spec_digest while keeping all JSON readable. A read-only committed projection without shared validation omits EM001_CANONICAL_DEFINITION/spec_digest_mismatch and renders Canonical behavior. Replaying the final cleaned tests against the recorded red implementation fails all three of those checks, so removing the contradictory root-route assertion does not conceal the original bug.",
+      "tdd_continuity_assessment": "Accepted latest red ad6304527eaa488cbae9896c0f49abea at 3f4490723f8811f04877a707fea8f83a78dd3929 fails WB-navigation by behavior_assertion with all three committed validation failures. Final green 5189fe14c5954107a17ab65647326c86 passes at exact candidate 4514277c23465d375ad91a160908ad5e26eb9678. Red and final test-file bytes differ only by deleting one contradictory assertion that an invalid committed source selects purpose; all targeted validation checks are unchanged. Independent replay of final test bytes against the old red implementation still fails those exact three checks. Earlier 03333875786242e2bc771c816a81fbf7 supplies genuine Back/source regression red. This is reviewed test cleanup with retained behavior-red continuity, not an exemption or invented identical-source claim."
+    },
+    {
+      "id": "WB-form-context",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case preserves captured digest across scenario and Back navigation, now asserts that Back displays the epic immediately, changes linked spec/plan inputs, submits actual form fields, checks stale feedback and unchanged decision history, then explicitly refreshes and verifies a changed digest/root. Historical noneditability is additionally exercised by the sibling assigned navigation case and independent committed decision inspection; this case itself targets the captured working-tree form.",
+      "counterexample": "Silently recapturing a digest during navigation would authorize an old form against changed inputs and fail the unchanged-identity/stale-history assertions. Deferring Back rendering until another interaction fails its new Purpose subheader assertion.",
+      "tdd_continuity_assessment": "Accepted remediation red 03333875786242e2bc771c816a81fbf7 at 19d45be51e4b69f71083bc07a688d54229a20a6f fails this case by behavior_assertion on same-rerun Back detail. The entire form-context test method AST is unchanged from that red through this candidate. Latest validation-specific red ad6304527eaa488cbae9896c0f49abea passes this already fixed case; final green 5189fe14c5954107a17ab65647326c86 passes it at exact candidate 4514277c23465d375ad91a160908ad5e26eb9678. Independent final-tests/old-implementation replay also passes this unaffected case. Genuine prior red remains the continuity anchor; no exemption."
+    }
+  ],
+  "limitations": [
+    "Task scope only; this approval does not assert later UI renderer/accessibility/latency obligations or overall workstream completion.",
+    "Accepted-pin inventory lists inherited earlier task Python files/cases exactly; their prior reviews remain separate.",
+    "The required visual checkpoint occurs after integration and is not yet claimed.",
+    "The corrected TaskResult green summary matches the actual retained final-green log duration of 5.737s; verified log/report outcomes and digests are unchanged.",
+    "No implementation changes, coordinator recording, integration or commits. recorded_by identifies the intended coordinator only."
+  ],
+  "execution_evidence": {
+    "03333875786242e2bc771c816a81fbf7": {
+      "candidate_sha": "19d45be51e4b69f71083bc07a688d54229a20a6f",
+      "phase": "red",
+      "canonical_report_digest": "7cc45db6aefa7654a72eb8237f5892396209a6191c72078fc86c7059f9f7f641",
+      "report_file_sha256": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+      "output_digest": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        },
+        "WB-navigation": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        }
+      }
+    },
+    "ad6304527eaa488cbae9896c0f49abea": {
+      "candidate_sha": "3f4490723f8811f04877a707fea8f83a78dd3929",
+      "phase": "red",
+      "canonical_report_digest": "cc1afedb72a5113f21efa01fe1d51e3023d50f59a2ec3dbca0cc14739fb4fbb9",
+      "report_file_sha256": "c9a3d0f5db16a525c11f4dbccc597175de7dc88bc7350bf7564bc9977618803e",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/ad6304527eaa488cbae9896c0f49abea/54005e072b164858b1a396d4915123da.log",
+      "output_digest": "fd1826b55519792efbc7986c3a4b7966951431d35e59c46cf4fcbe453ea5f601",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "passed",
+          "failure_kind": null
+        },
+        "WB-navigation": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        }
+      }
+    },
+    "5189fe14c5954107a17ab65647326c86": {
+      "candidate_sha": "4514277c23465d375ad91a160908ad5e26eb9678",
+      "phase": "final_green",
+      "canonical_report_digest": "70a85a1aa61d8251cebb5ed69b72b9d2f20e2b53388534aa655e2813390995c2",
+      "report_file_sha256": "cc714b3a87f4a0fe9dff4625d95b4e68555f94baa837209d3c7dff9f21425c5d",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/5189fe14c5954107a17ab65647326c86/421b3990aaf1483a853b2fc8f2eab8a9.log",
+      "output_digest": "e0adb4821c2fc639b08dc3067e4015fcf3f7ec1391f3b882ef8326037df747d3",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "passed",
+          "failure_kind": null
+        },
+        "WB-navigation": {
+          "outcome": "passed",
+          "failure_kind": null
+        }
+      }
+    }
+  },
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "assessment": "Per-scenario task aliases and test/scenario emission keys retain CASE-1 and CASE-2 with distinct result routes for a shared task. The new AppTest follows the second test/result chain and checks context."
+    },
+    {
+      "id": "R2",
+      "assessment": "Outline and breadcrumb/Back mutations now use callbacks before page rendering. Independent scenario\u2192Back inspection produces route purpose and subheader Purpose in the same rerun."
+    },
+    {
+      "id": "R3",
+      "assessment": "Separate source selection pins full commit SHA, resets route/caches, preserves checkout and disables committed decision edits. The earlier missing-source journey is implemented; R4 now additionally validates that source."
+    },
+    {
+      "id": "R4",
+      "path": "_ask/ui/streamlit_app.py",
+      "line": 149,
+      "assessment": "The complete captured committed Snapshot now invokes the existing shared snapshot.diagnostics(root) before project. Any diagnostics return no projection and remain visible in the UI. Independent stale spec/plan reproduction returns EM001_CANONICAL_DEFINITION at work/pilot/test-plan.json, message spec_digest_mismatch: , and no normal hierarchy."
+    }
+  ]
+}

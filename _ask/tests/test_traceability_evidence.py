@@ -1,13 +1,14 @@
 """Shared completion behavior, including evidence and semantic-review mutations."""
 import copy
+import hashlib
 import json
 from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from verification.traceability.completion import evaluate_completion
-from verification.traceability.contracts import digest
-from verification.traceability.evidence import record_test_review,write_json
+from verification.traceability.contracts import Invalid,POLICY,digest
+from verification.traceability.evidence import record_test_review,review_errors,write_json
 from traceability_fixture import Consumer
 
 class EvidenceTests(unittest.TestCase):
@@ -89,5 +90,87 @@ class EvidenceTests(unittest.TestCase):
         result=evaluate_completion(c.contracts,c.record,[c.red,task_green],context)
         self.assertEqual(result['status'],'pass',result)
         self.assertEqual({case['test_id'] for case in task_green['cases']},{'U'})
+    def test_I05_task_review_ignores_unavailable_future_test_sources(self):
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        contracts=copy.deepcopy(c.contracts)
+        plan=contracts['plan']
+        future=next(test for test in plan['tests'] if test['id']=='E')
+        future['source_paths']=['future/test_cli.py']
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'],plan_digest=digest(plan))
+        review['source_digests']={'test_app.py':hashlib.sha256((c.root/'test_app.py').read_bytes()).hexdigest()}
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion calls the public render function with a fixed input and expected output.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        try:
+            errors=review_errors(c.root,contracts,review,c.sha)
+        except (Invalid,OSError) as exc:
+            errors=[f'task review attempted an unavailable future source: {exc}']
+        self.assertEqual(errors,[])
+    def test_I06_task_review_completes_only_its_task(self):
+        from verification.traceability.evidence import source_digests
+        from verification.traceability.adapters import run_tests
+        c=Consumer(tasks='split',split_failure=True);self.addCleanup(c.close)
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'])
+        review['source_digests']=source_digests(c.root,c.sha,c.contracts['plan'],['U'])
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion calls the public render function with a fixed input and expected output.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        c.write('work/w/traceability/review-input.json',review)
+        record=record_test_review(c.root,'w',c.sha,c.sha,'work/w/traceability/review-input.json','fixture-coordinator')
+        task_green=run_tests(c.root,c.contracts,c.sha,scope='task',task_id='a')
+        context=c.context();context.update(scope='task',task_id='a')
+        result=evaluate_completion(c.contracts,record,[c.red,task_green],context)
+        self.assertEqual(result['status'],'pass',result)
+        final=evaluate_completion(c.contracts,record,[c.red,c.green],c.context())
+        self.assertEqual(final['status'],'fail')
+        self.assertIn('task-scoped semantic review cannot satisfy workstream completion',final['errors'])
+    def test_I07_recorded_review_scope_cannot_be_relabelled(self):
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        record=copy.deepcopy(c.record)
+        record['scope']='task';record['task_id']='a'
+        context=c.context()
+        context.update(scope='task',task_id='a')
+        result=evaluate_completion(c.contracts,record,[c.red,c.green],context)
+        self.assertEqual(result['status'],'fail')
+        self.assertIn('recorded semantic-review scope differs from reviewed scope',result['errors'])
+    def test_I08_workstream_review_includes_review_only_criteria(self):
+        contracts=copy.deepcopy(self.c.contracts)
+        contracts['spec']['criteria'].append({'id':'R1','given':'A governance-only constraint','when':'The accepted plan is assessed','then':['The constraint is explicitly reviewed'],'verification_mode':'review','reason':'This is reviewed as configuration metadata, without executable behavior.','review_decision':{'decision':'APPROVED','reviewer':'fixture-reviewer','recorded_by':'fixture-coordinator','policy':POLICY}})
+        contracts['plan']['spec_digest']=digest(contracts['spec'])
+        from verification.traceability.coverage import validate_plan
+        self.assertEqual(validate_plan(contracts['spec'],contracts['plan'],contracts['graph']),[])
+        review=copy.deepcopy(self.c.review)
+        review['spec_digest']=digest(contracts['spec']);review['plan_digest']=digest(contracts['plan'])
+        review['criterion_ids'].append('R1')
+        review['criteria'].append({'id':'R1','coverage_decision':'APPROVED','assessment':'The governance constraint is explicitly accounted for.','type_adequacy':{}})
+        self.assertEqual(review_errors(self.c.root,contracts,review,self.c.sha),[])
+        review['criterion_ids'].remove('R1');review['criteria'].pop()
+        self.assertIn('missing per-criterion/test semantic review',review_errors(self.c.root,contracts,review,self.c.sha))
+    def test_I09_task_review_can_acknowledge_unchanged_baseline_regression(self):
+        from verification.traceability.evidence import source_digests
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        c.contracts=copy.deepcopy(c.contracts);c.contracts['plan']['task_scoped_baseline_regression_exemptions']={'a':['U']}
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'],plan_digest=digest(c.contracts['plan']))
+        review['source_digests']=source_digests(c.root,c.sha,c.contracts['plan'],['U'])
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion checks a fixed public-function result.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        review['tests'][0]['tdd_exemption']={'kind':'baseline-regression','reason':'This accepted test source predates the task baseline and is byte-identical; its green run is regression protection, not newly authored behavior.','reviewer_ack':True,'decision':'APPROVED'}
+        self.assertEqual(review_errors(c.root,c.contracts,review,c.sha),[])
+        workstream=copy.deepcopy(review);workstream.update(scope='workstream',task_id=None)
+        self.assertTrue(any('baseline regression exemption is task-scoped' in error for error in review_errors(c.root,c.contracts,workstream,c.sha)))
+    def test_I10_baseline_regression_exemption_rejects_changed_source(self):
+        from verification.traceability.evidence import source_digests
+        c=Consumer(tasks='split');self.addCleanup(c.close)
+        c.contracts=copy.deepcopy(c.contracts);c.contracts['plan']['task_scoped_baseline_regression_exemptions']={'a':['U']}
+        review=copy.deepcopy(c.review)
+        review.update(scope='task',task_id='a',test_ids=['U'],criterion_ids=['C1'],plan_digest=digest(c.contracts['plan']))
+        review['source_digests']=source_digests(c.root,c.sha,c.contracts['plan'],['U'])
+        review['criteria'][0]['type_adequacy']={'unit':{'decision':'APPROVED','assessment':'The assigned unit assertion checks a fixed public-function result.'}}
+        review['tests']=[test for test in review['tests'] if test['id']=='U']
+        review['tests'][0]['tdd_exemption']={'kind':'baseline-regression','reason':'This accepted test source predates the task baseline and is byte-identical; its green run is regression protection, not newly authored behavior.','reviewer_ack':True,'decision':'APPROVED'}
+        c.write('test_app.py',(c.root/'test_app.py').read_text()+'\n# changed after accepted baseline\n')
+        candidate=c.commit('change baseline regression source')
+        self.assertTrue(any('baseline regression exemption is task-scoped and requires sources unchanged from the accepted baseline' in error for error in review_errors(c.root,c.contracts,review,candidate)))
 
 if __name__=='__main__':unittest.main()

@@ -1,0 +1,673 @@
+test_empty_task_and_scenario_tables_show_clear_states (test_engineering_ui.UiIntegrationTests.test_empty_task_and_scenario_tables_show_clear_states) ... 2026-10-12 12:30:52.874 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_gitless_model_root_keeps_workbench_usable_without_git_fatal (test_engineering_ui.UiIntegrationTests.test_gitless_model_root_keeps_workbench_usable_without_git_fatal) ... 2026-10-12 12:30:53.512 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:53.688 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_historical_evidence_candidate_is_inspectable_without_being_current (test_engineering_ui.UiIntegrationTests.test_historical_evidence_candidate_is_inspectable_without_being_current) ... 2026-10-12 12:30:54.605 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_overview_keeps_decision_resolution_in_the_objects_section (test_engineering_ui.UiIntegrationTests.test_overview_keeps_decision_resolution_in_the_objects_section) ... 2026-10-12 12:30:55.030 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_overview_loads_results_on_demand_and_explains_debug_identifiers (test_engineering_ui.UiIntegrationTests.test_overview_loads_results_on_demand_and_explains_debug_identifiers) ... 2026-10-12 12:30:55.925 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes (test_engineering_ui.UiIntegrationTests.test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes) ... 2026-10-12 12:30:56.310 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_planned_test_shows_its_source_in_the_detail_panel (test_engineering_ui.UiIntegrationTests.test_planned_test_shows_its_source_in_the_detail_panel) ... 2026-10-12 12:30:56.580 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_referenced_spec_change_keeps_form_stale_until_refresh (test_engineering_ui.UiIntegrationTests.test_referenced_spec_change_keeps_form_stale_until_refresh) ... 2026-10-12 12:30:56.848 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:57.851 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_repeated_nested_evidence_fields_do_not_duplicate_expanders (test_engineering_ui.UiIntegrationTests.test_repeated_nested_evidence_fields_do_not_duplicate_expanders) ... 2026-10-12 12:30:58.118 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.118 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.118 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.118 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.119 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.119 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.119 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.119 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.119 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.119 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Session state does not function when running a script without `streamlit run`
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.122 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.123 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.137 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.138 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.140 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.141 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.142 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.143 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.144 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_resolution_survives_new_session (test_engineering_ui.UiIntegrationTests.test_resolution_survives_new_session) ... 2026-10-12 12:30:58.402 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:30:58.785 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_gitless_model_root_shows_actionable_evidence_unavailable_state (test_engineering_ui_browser.WorkbenchBrowserJourney.test_gitless_model_root_shows_actionable_evidence_unavailable_state) ... FAIL
+test_stale_spec_then_refresh_and_persist_in_new_browser_session (test_engineering_ui_browser.WorkbenchBrowserJourney.test_stale_spec_then_refresh_and_persist_in_new_browser_session) ... FAIL
+test_keyboard_narrow_layout_and_decision_journey (test_engineering_workbench_browser.WorkbenchTests.test_keyboard_narrow_layout_and_decision_journey) ... FAIL
+test_work_scenario_task_test_result_and_branch_journey (test_engineering_workbench_browser.WorkbenchTests.test_work_scenario_task_test_result_and_branch_journey) ... FAIL
+test_lazy_work_and_integrity_bound_cache_invalidation (test_engineering_workbench_performance.WorkbenchTests.test_lazy_work_and_integrity_bound_cache_invalidation) ... 2026-10-12 12:31:34.676 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:31:34.908 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:31:35.413 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_measured_pilot_latency_budgets (test_engineering_workbench_performance.WorkbenchTests.test_measured_pilot_latency_budgets) ... FAIL
+
+======================================================================
+FAIL: test_gitless_model_root_shows_actionable_evidence_unavailable_state (test_engineering_ui_browser.WorkbenchBrowserJourney.test_gitless_model_root_shows_actionable_evidence_unavailable_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yvtx3wgg/candidate/_ask/tests/test_engineering_ui_browser.py", line 236, in test_gitless_model_root_shows_actionable_evidence_unavailable_state
+    expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_text("Snapshot digest", exact=True) with timeout 5000ms
+  - waiting for get_by_text("Snapshot digest", exact=True)
+
+Aria snapshot:
+- banner:
+  - button "Deploy"
+  - button "Main menu"
+- heading "Engineering workbench" [level=1]:
+  - text: Engineering workbench
+  - link "Link to heading":
+    - /url: "#engineering-workbench"
+- paragraph: Follow promised work through delivery tasks, tests, and recorded results.
+- group:
+  - combobox "Workstream": pilot
+  - button "Open"
+- group:
+  - combobox "Source": working-tree
+  - button "Open"
+- button "refresh Refresh":
+  - text: refresh
+  - paragraph: Refresh
+- paragraph:
+  - img "source icon": source
+  - text: Working tree
+- paragraph:
+  - img "check_circle icon": check_circle
+  - text: Validated inputs
+- paragraph:
+  - text: "Checkout:"
+  - code: unknown branch
+  - text: "· Workstream:"
+  - code: pilot
+- paragraph:
+  - strong: Epic
+- button "Purpose":
+  - paragraph: Purpose
+- paragraph: Scenarios without a recorded story
+- button "Canonical behavior":
+  - paragraph: Canonical behavior
+- button "Build":
+  - paragraph: Build
+- button "Behavior assertion":
+  - paragraph: Behavior assertion
+- button "Result / evidence":
+  - paragraph: Result / evidence
+- button "Decision · Choose":
+  - paragraph: Decision · Choose
+- button "Purpose":
+  - paragraph: Purpose
+- paragraph: /
+- button "Scenarios without a recorded story":
+  - paragraph: Scenarios without a recorded story
+- paragraph: /
+- button "Canonical behavior":
+  - paragraph: Canonical behavior
+- paragraph: /
+- button "Build":
+  - paragraph: Build
+- paragraph: /
+- button "Behavior assertion":
+  - paragraph: Behavior assertion
+- paragraph: /
+- paragraph:
+  - strong: Result / evidence
+- button "arrow_back Back":
+  - text: arrow_back
+  - paragraph: Back
+- heading "Behavior assertion" [level=3]:
+  - text: Behavior assertion
+  - link "Link to heading":
+    - /url: "#purpose"
+- paragraph: "Selected test: CASE-1 · revision-bound planned identity"
+- paragraph:
+  - text: "Case:"
+  - code: test_fixture.Cases.test_behavior
+  - text: via
+  - code: fixture
+- heading "Expected assertions" [level=4]:
+  - text: Expected assertions
+  - link "Link to heading":
+    - /url: "#stories-and-scenarios"
+- paragraph:
+  - strong: P-001
+- paragraph: Exact accepted behavior
+- heading "Related scenarios" [level=4]:
+  - text: Related scenarios
+  - link "Link to heading":
+    - /url: "#related-scenarios"
+- button "Open scenario scenario":
+  - paragraph: Open scenario scenario
+- heading "Test source" [level=4]:
+  - text: Test source
+  - link "Link to heading":
+    - /url: "#test-source"
+- paragraph: "Selected source path: test_fixture.py"
+- code: "def test_behavior(self): actual = validate_input('valid') self.assertEqual(actual, 'accepted')"
+- heading "Recorded execution" [level=4]:
+  - text: Recorded execution
+  - link "Link to heading":
+    - /url: "#needs-attention"
+- status:
+  - paragraph: Current evidence is unavailable for this selected test.
+- paragraph: Git evidence inspection is unavailable because this model root has no resolvable Git candidate.
+- status:
+  - paragraph: No recorded execution is attached to this selected test.
+- status:
+  - paragraph: retained execution ledger is missing
+- group:
+  - text: keyboard_arrow_right
+  - paragraph: Technical details and identifiers
+
+======================================================================
+FAIL: test_stale_spec_then_refresh_and_persist_in_new_browser_session (test_engineering_ui_browser.WorkbenchBrowserJourney.test_stale_spec_then_refresh_and_persist_in_new_browser_session)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yvtx3wgg/candidate/_ask/tests/test_engineering_ui_browser.py", line 115, in test_stale_spec_then_refresh_and_persist_in_new_browser_session
+    expect(first.get_by_text("Passed", exact=False)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: strict mode violation: get_by_text("Passed") resolved to 2 elements:
+    1) <p>Recorded outcome: Passed</p> aka get_by_text("Recorded outcome: Passed").first
+    2) <p>Recorded outcome: Passed</p> aka get_by_text("Recorded outcome: Passed").nth(1)
+ 
+Call log:
+  - Expect "to_be_visible" get_by_text("Passed") with timeout 5000ms
+  - waiting for get_by_text("Passed")
+
+
+======================================================================
+FAIL: test_keyboard_narrow_layout_and_decision_journey (test_engineering_workbench_browser.WorkbenchTests.test_keyboard_narrow_layout_and_decision_journey)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yvtx3wgg/candidate/_ask/tests/test_engineering_workbench_browser.py", line 427, in test_keyboard_narrow_layout_and_decision_journey
+    expect(page.get_by_text("test_app.Cases.test_unit", exact=False)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: strict mode violation: get_by_text("test_app.Cases.test_unit") resolved to 4 elements:
+    1) <code class="st-emotion-cache-119tkyc e19xqh4f0">test_app.Cases.test_unit</code> aka get_by_text("test_app.Cases.test_unit", exact=True)
+    2) <p>Work: w · Test: U · Case: test_app.Cases.test_unit</p> aka get_by_text("Work: w · Test: U · Case:").first
+    3) <p>Work: w · Test: U · Case: test_app.Cases.test_unit</p> aka get_by_text("Work: w · Test: U · Case:").nth(1)
+    4) <p>Work: w · Test: U · Case: test_app.Cases.test_unit</p> aka get_by_text("Work: w · Test: U · Case:").nth(2)
+ 
+Call log:
+  - Expect "to_be_visible" get_by_text("test_app.Cases.test_unit") with timeout 5000ms
+  - waiting for get_by_text("test_app.Cases.test_unit")
+
+
+======================================================================
+FAIL: test_work_scenario_task_test_result_and_branch_journey (test_engineering_workbench_browser.WorkbenchTests.test_work_scenario_task_test_result_and_branch_journey)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yvtx3wgg/candidate/_ask/tests/test_engineering_workbench_browser.py", line 345, in test_work_scenario_task_test_result_and_branch_journey
+    expect(page.get_by_text("Historical evidence", exact=False)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_text("Historical evidence") with timeout 5000ms
+  - waiting for get_by_text("Historical evidence")
+
+Aria snapshot:
+- banner:
+  - button "Deploy"
+  - button "Main menu"
+- heading "Engineering workbench" [level=1]:
+  - text: Engineering workbench
+  - link "Link to heading":
+    - /url: "#engineering-workbench"
+- paragraph: Follow promised work through delivery tasks, tests, and recorded results.
+- group:
+  - combobox "Workstream": w
+  - button "Open"
+- group:
+  - combobox "Source": working-tree
+  - button "Open"
+- button "refresh Refresh":
+  - text: refresh
+  - paragraph: Refresh
+- paragraph:
+  - img "source icon": source
+  - text: Working tree
+- paragraph:
+  - img "check_circle icon": check_circle
+  - text: Validated inputs
+- paragraph:
+  - text: "Checkout:"
+  - code: agent/w
+  - text: "· Workstream:"
+  - code: w
+- paragraph:
+  - strong: Epic
+- button "Purpose":
+  - paragraph: Purpose
+- button "Render uppercase text":
+  - paragraph: Render uppercase text
+- button "Uppercase behavior":
+  - paragraph: Uppercase behavior
+- button "Build":
+  - paragraph: Build
+- button "E":
+  - paragraph: E
+- button "Result / evidence":
+  - paragraph: Result / evidence
+- button "Uppercase assertion":
+  - paragraph: Uppercase assertion
+- button "Result / evidence":
+  - paragraph: Result / evidence
+- button "Review build":
+  - paragraph: Review build
+- paragraph: Scenarios without a recorded story
+- button "Second canonical behavior":
+  - paragraph: Second canonical behavior
+- button "Decision · Choose":
+  - paragraph: Decision · Choose
+- button "Purpose":
+  - paragraph: Purpose
+- paragraph: /
+- button "Render uppercase text":
+  - paragraph: Render uppercase text
+- paragraph: /
+- button "Uppercase behavior":
+  - paragraph: Uppercase behavior
+- paragraph: /
+- button "Build":
+  - paragraph: Build
+- paragraph: /
+- button "E":
+  - paragraph: E
+- paragraph: /
+- paragraph:
+  - strong: Result / evidence
+- button "arrow_back Back":
+  - text: arrow_back
+  - paragraph: Back
+- heading "E" [level=3]:
+  - text: E
+  - link "Link to heading":
+    - /url: "#purpose"
+- paragraph: "Selected test: E · revision-bound planned identity"
+- paragraph:
+  - text: "Case:"
+  - code: test_app.Cases.test_cli
+  - text: via
+  - code: r
+- heading "Expected assertions" [level=4]:
+  - text: Expected assertions
+  - link "Link to heading":
+    - /url: "#expected-assertions"
+- paragraph:
+  - strong: C1
+- paragraph: Exact HELLO output
+- heading "Related scenarios" [level=4]:
+  - text: Related scenarios
+  - link "Link to heading":
+    - /url: "#related-scenarios"
+- button "Open scenario scenario":
+  - paragraph: Open scenario scenario
+- heading "Test source" [level=4]:
+  - text: Test source
+  - link "Link to heading":
+    - /url: "#test-source"
+- paragraph: "Selected source path: test_app.py"
+- code: "def test_cli(self): p=subprocess.run([sys.executable,'app.py','hello'],capture_output=True,text=True) self.assertEqual(p.returncode,0) self.assertEqual(p.stdout.strip(),'HELLO')"
+- heading "Recorded execution" [level=4]:
+  - text: Recorded execution
+  - link "Link to heading":
+    - /url: "#recorded-execution"
+- status:
+  - paragraph: No retained execution matches the current test contract.
+- status:
+  - paragraph: no retained execution matches this test and contract
+- heading "Historical contract evidence" [level=4]:
+  - text: Historical contract evidence
+  - link "Link to heading":
+    - /url: "#historical-contract-evidence"
+- paragraph: These records were inspected against their retained historical test plan. They do not verify the current contract.
+- paragraph: "Historical candidate: 5b56a344297216bd580ae0e8421f33020d108a4d · Criterion: C1"
+- paragraph: "Historical contract: spec 5052cd2db73c121106fb5f8816f2daa37982168c0273c8360b17a0f422b352ce · plan baf5d29587cb0731dc7157880a8add72a151b5967afe55c0730386936c045540"
+- paragraph: "Execution ID: dadc5c8739cf423aaa309a021600bd13"
+- paragraph: "Runner: r · Phase: final_green"
+- paragraph: "Recorded historical outcome: Passed"
+- paragraph: "Source revision: 5b56a344297216bd580ae0e8421f33020d108a4d"
+- paragraph: "Output artifact: work/w/traceability/runs/792698f98e034738a2ed216e754320a9/dadc5c8739cf423aaa309a021600bd13.log"
+- paragraph: "Historical candidate: 5b56a344297216bd580ae0e8421f33020d108a4d · Criterion: C1"
+- paragraph: "Historical contract: spec 5052cd2db73c121106fb5f8816f2daa37982168c0273c8360b17a0f422b352ce · plan baf5d29587cb0731dc7157880a8add72a151b5967afe55c0730386936c045540"
+- paragraph: "Execution ID: 663eca8895e2482892d00b1d5bcf9792"
+- paragraph: "Runner: r · Phase: red"
+- paragraph: "Recorded historical outcome: Failed"
+- paragraph: "Source revision: 6d6b0551eb195f216610c6df26a45d3626789367"
+- paragraph: "Output artifact: work/w/traceability/runs/a07f5c3ae8fb44e5a0d7099977d613da/663eca8895e2482892d00b1d5bcf9792.log"
+- paragraph: "Failure detail: behavior assertion"
+- group:
+  - text: keyboard_arrow_right
+  - paragraph: Technical details and identifiers
+
+======================================================================
+FAIL: test_lazy_work_and_integrity_bound_cache_invalidation (test_engineering_workbench_performance.WorkbenchTests.test_lazy_work_and_integrity_bound_cache_invalidation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yvtx3wgg/candidate/_ask/tests/test_engineering_workbench_performance.py", line 315, in test_lazy_work_and_integrity_bound_cache_invalidation
+    self.assertEqual(new_reds, [], "new workbench defects:\n- " + "\n- ".join(new_reds))
+AssertionError: Lists differ: ['recorded evidence does not state its cur[124 chars]tes'] != []
+
+First list contains 2 additional elements.
+First extra element 0:
+'recorded evidence does not state its currency against the selected Git candidate'
+
++ []
+- ['recorded evidence does not state its currency against the selected Git '
+-  'candidate',
+-  'current Git evidence is incorrectly applicable to different working-tree '
+-  'test bytes'] : new workbench defects:
+- recorded evidence does not state its currency against the selected Git candidate
+- current Git evidence is incorrectly applicable to different working-tree test bytes
+
+======================================================================
+FAIL: test_measured_pilot_latency_budgets (test_engineering_workbench_performance.WorkbenchTests.test_measured_pilot_latency_budgets)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-yvtx3wgg/candidate/_ask/tests/test_engineering_workbench_performance.py", line 386, in test_measured_pilot_latency_budgets
+    self.assertEqual(report["run_status"], "complete", report.get("error"))
+AssertionError: 'failed' != 'complete'
+- failed
++ complete
+ : {'message': 'Locator expected to have count \'2\'\nActual value: 3 \nCall log:\n  - Expect "to_have_count" get_by_text("Output integrity: valid", exact=True) with timeout 5000ms\n  - waiting for get_by_text("Output integrity: valid", exact=True)\n    14 × locator resolved to 3 elements\n       - unexpected value "3"\n', 'type': 'AssertionError'}
+
+----------------------------------------------------------------------
+Ran 16 tests in 58.717s
+
+FAILED (failures=6)

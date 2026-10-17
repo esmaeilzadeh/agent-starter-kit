@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
+from engineering_model.workflow import _refuse, adopted, branch_work_id, validate_candidate, workflow_admission
+from engineering_model.admission import validate_current
+from engineering_model.actions import Refused
+from engineering_model.validation import SCHEMA_V2
 
 
 class Forbidden(RuntimeError):
@@ -16,15 +20,38 @@ def _run(root: Path, args: list[str], check: bool = True) -> subprocess.Complete
     return subprocess.run(args, cwd=root, check=check, capture_output=True, text=True)
 
 
-def integrate(root: Path, task_ref: str, method: str = "ff-only") -> str:
+def integrate(root: Path, task_ref: str, method: str = "ff-only", *, work_id=None,
+              selected_task_id=None, selected_execution=None, delivery_task_id=None) -> str:
+    selected_work = work_id or branch_work_id(root)
+    if (adopted(root, selected_work) and selected_task_id is None
+            and selected_execution is None and delivery_task_id is None):
+        _snapshot, diagnostics = validate_current(root, selected_work)
+        _refuse(diagnostics)
+        if _snapshot.document.get('schema') == SCHEMA_V2:
+            raise Refused('EM015_TASK_ID', 'adopted v2 Task integration requires an explicit selected Task identity')
+    with workflow_admission(root, selected_work, selected_task_id=selected_task_id,
+                            selected_execution=selected_execution, delivery_task_id=delivery_task_id):
+        return _integrate(root, task_ref, method, selected_work, selected_task_id,
+                          selected_execution, delivery_task_id)
+
+
+def _integrate(root: Path, task_ref: str, method: str, work_id, selected_task_id=None,
+               selected_execution=None, delivery_task_id=None) -> str:
     if method != "ff-only":
         raise Forbidden(f"{method} onto coordinator is forbidden")
-    _run(root, ["git", "merge", "--ff-only", task_ref])
+    candidate = validate_candidate(root, work_id, task_ref, selected_task_id=selected_task_id,
+                                   selected_execution=selected_execution, delivery_task_id=delivery_task_id)
+    _run(root, ["git", "merge", "--ff-only", candidate])
     sha = _run(root, ["git", "rev-parse", "HEAD"]).stdout.strip()
     return sha
 
 
-def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = None) -> str:
+def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = None, *, work_id=None) -> str:
+    with workflow_admission(root, work_id or branch_work_id(root)):
+        return _resume(root, coordinator_sha, preserve_paths, work_id or branch_work_id(root))
+
+
+def _resume(root: Path, coordinator_sha: str, preserve_paths, work_id) -> str:
     porcelain = _run(root, ["git", "status", "--porcelain"]).stdout
     git_dir = Path(_run(root, ["git", "rev-parse", "--git-dir"]).stdout.strip())
     if not git_dir.is_absolute():
@@ -35,6 +62,7 @@ def resume(root: Path, coordinator_sha: str, preserve_paths: list[str] | None = 
     anc = _run(root, ["git", "merge-base", "--is-ancestor", coordinator_sha, "HEAD"], check=False)
     if anc.returncode != 0:
         raise Escalate("cannot abort to coordinator_sha; not an ancestor of HEAD")
+    validate_candidate(root, work_id, coordinator_sha)
     if preserve_paths:
         # Abort protocol work without letting a global reset rewind/remove the
         # tracked runtime state currently protected by the coordinator lock.

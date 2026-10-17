@@ -31,7 +31,7 @@ def accept(root,work_id):
 
 def review(root,work_id,sha):
     contracts=load_accepted(root,work_id,'HEAD',sha);pin=contracts['pin'];inv=inventory(root,pin['contract_sha'],sha,contracts['plan'])
-    doc={'schema':'ask-test-review/v1','reviewer':'fixture-reviewer','candidate_sha':sha,'base_sha':pin['contract_sha'],'spec_digest':pin['spec_digest'],'plan_digest':pin['plan_digest'],'source_digests':{},'inspected_sources':inv['inspected_sources'],'changed_cases':inv['changed_cases'],'inventory_exclusions':{n:'Existing harness fixture changes; reviewed by enclosing reliability suite' for n in inv['unmapped_cases']},'criteria':[{'id':'FIXTURE-CONFIG','coverage_decision':'APPROVED','assessment':'Disposable repository uses local isolated files; no production datastore','type_adequacy':{}}],'tests':[]}
+    doc={'schema':'ask-test-review/v2','reviewer':'fixture-reviewer','candidate_sha':sha,'base_sha':pin['contract_sha'],'spec_digest':pin['spec_digest'],'plan_digest':pin['plan_digest'],'scope':'workstream','task_id':None,'test_ids':[],'criterion_ids':['FIXTURE-CONFIG'],'source_digests':{},'inspected_sources':inv['inspected_sources'],'changed_cases':inv['changed_cases'],'inventory_exclusions':{n:'Existing harness fixture changes; reviewed by enclosing reliability suite' for n in inv['unmapped_cases']},'criteria':[{'id':'FIXTURE-CONFIG','coverage_decision':'APPROVED','assessment':'Disposable repository uses local isolated files; no production datastore','type_adequacy':{}}],'tests':[]}
     path=f'work/{work_id}/traceability/review-input.json';write_json(root/path,doc)
     record_test_review(root,work_id,sha,'HEAD',path,'fixture-coordinator')
 

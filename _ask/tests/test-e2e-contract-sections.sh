@@ -18,4 +18,15 @@ do
   grep -q 'not_applicable' "$f" || { echo "FAIL: $f missing not_applicable" >&2; exit 1; }
 done
 
-echo "PASS: E2E applicability or not_applicable+reason required in Grill/Spec/Plan/06/09"
+grep -qi 'decompose implementation into one or more reviewable tasks' .agents/ask/stages/05-plan.md \
+  || { echo "FAIL: Plan stage must require an implementation task breakdown" >&2; exit 1; }
+grep -q 'task_scopes' .agents/ask/stages/05-plan.md \
+  || { echo "FAIL: Plan stage must map tests to tasks" >&2; exit 1; }
+grep -q 'inner-loop/tasks.yaml' _ask/templates/plan.md \
+  || { echo "FAIL: plan template must point to the task graph" >&2; exit 1; }
+grep -q 'Completion evidence' _ask/templates/plan.md \
+  || { echo "FAIL: task breakdown must define completion evidence" >&2; exit 1; }
+grep -q 'accepted plan.s task graph' .agents/ask/stages/06-implement.md \
+  || { echo "FAIL: Implement stage must execute planned tasks" >&2; exit 1; }
+
+echo "PASS: E2E contract and plan-to-task/test breakdown required before implementation"

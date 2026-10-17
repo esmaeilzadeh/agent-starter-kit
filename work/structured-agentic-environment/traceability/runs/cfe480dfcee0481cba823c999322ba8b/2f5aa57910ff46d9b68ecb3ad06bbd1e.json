@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle", "outcome": "failed", "failure_kind": "behavior_assertion"}], "collection_status": "ok"}

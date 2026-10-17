@@ -1,0 +1,9 @@
+test_identifiers_have_explanations_and_copy_actions (test_engineering_workbench_tests.WorkbenchTests) ... 2026-10-10 06:25:50.188 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_selected_test_shows_source_results_and_related_work (test_engineering_workbench_tests.WorkbenchTests) ... 2026-10-10 06:25:50.860 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.240s
+
+OK

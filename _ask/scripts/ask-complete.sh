@@ -13,6 +13,7 @@ ask_complete_commands() {
   ask_complete_emit check-clean "refuse dirty worktree"
   ask_complete_emit start-work "branch agent/<work-id> + seed work/<work-id>/"
   ask_complete_emit check-workstream "preconditions before implement"
+  ask_complete_emit confirm-intent "record human confirmation of intent and assumptions"
   ask_complete_emit status "live/archived workstreams + later inbox"
   ask_complete_emit traceability "structured spec-to-test evidence"
   ask_complete_emit verify "run checks; print commit SHA"
@@ -59,6 +60,10 @@ ask_complete_flags_for() {
       ask_complete_emit --acceptance "validate final spec-to-test evidence"
       ask_complete_emit -h "help"
       ask_complete_emit --help "help"
+      ;;
+    confirm-intent)
+      ask_complete_emit --work-id "<id>  required"
+      ask_complete_emit --response "<exact human response>  required"
       ;;
     status)
       ask_complete_emit --work-id "<id>  one workstream"

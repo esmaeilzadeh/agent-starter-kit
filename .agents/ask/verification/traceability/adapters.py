@@ -40,7 +40,8 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 if runner['adapter']!='unittest' or len(argv)<4 or argv[1:3]!=['-m','unittest']:
                     raise Invalid('unsupported runner adapter/invocation')
                 eid=uuid.uuid4().hex;raw=directory/(eid+'.json');log=directory/(eid+'.log')
-                env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1')
+                env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',
+                         ASK_TRACEABILITY_RUNTIME_ROOT=str(root))
                 with log.open('w') as stream:
                     try:
                         selection=[t['case_id'] for t in expected] if scope=='task' else None

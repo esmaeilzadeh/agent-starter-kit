@@ -1,0 +1,2780 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "revising-workbench",
+  "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+  "obligations": [
+    {
+      "criterion_id": "EM-001",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "EM-002",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-003",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-004",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-005",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-006",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-007",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-008",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-009",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-010",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-011",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-012",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-013",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "EM-014",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "EM-015",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-016",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-017",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-018",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-019",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "EM-020",
+      "required_types": [
+        "integration"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "id": "rwb-v2-graph",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_model.V2ModelTests.test_optional_containment_support_and_graph_rejections"
+      ]
+    },
+    {
+      "id": "rwb-qualified-id",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_model.V2ModelTests.test_execution_aliases_and_foreign_product_boundaries"
+      ]
+    },
+    {
+      "id": "rwb-flow-selection",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_model.FlowTests.test_shared_criterion_does_not_prove_another_concrete_flow"
+      ]
+    },
+    {
+      "id": "rwb-selectors",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_context.PassageTests.test_selector_grammar_and_safe_resolution_matrix"
+      ]
+    },
+    {
+      "id": "rwb-passage-actions",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_context.PassageAdmissionTests.test_required_passages_block_only_dependent_actions"
+      ]
+    },
+    {
+      "id": "rwb-context-freshness",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_context.PassageAdmissionTests.test_missing_linked_and_ambiguous_changes_invalidate_snapshot"
+      ]
+    },
+    {
+      "id": "rwb-subject-rules",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_intake.ContextResolverTests.test_explicit_recorded_conflicting_and_unavailable_subjects"
+      ]
+    },
+    {
+      "id": "rwb-fresh-intake",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_intake.StageIntakeTests.test_adopted_explore_and_grill_call_resolver_before_any_write"
+      ]
+    },
+    {
+      "id": "rwb-context-cli",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_intake.StageIntakeTests.test_model_context_cli_matches_caller_without_writes"
+      ]
+    },
+    {
+      "id": "rwb-projection",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_projection.ProjectionTests.test_qualified_tasks_context_scopes_and_separate_status_authorities"
+      ]
+    },
+    {
+      "id": "rwb-historical",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only"
+      ]
+    },
+    {
+      "id": "rwb-cli-projection",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_projection.ProjectionTests.test_v2_json_markdown_ids_and_state_match"
+      ]
+    },
+    {
+      "id": "rwb-source-helpers",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_evidence.ReadableTestTests.test_same_revision_setup_helper_globals_and_assertion_context"
+      ]
+    },
+    {
+      "id": "rwb-evidence-joins",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_evidence.EvidenceIdentityTests.test_work_test_run_contract_candidate_and_integrity_must_all_agree"
+      ]
+    },
+    {
+      "id": "rwb-evidence-states",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_evidence.EvidenceIdentityTests.test_all_observation_states_and_helper_changes_preserve_applicability"
+      ]
+    },
+    {
+      "id": "rwb-app-entry",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_ui.WorkbenchAppTests.test_direct_subject_standalone_shared_back_and_revision_entry"
+      ]
+    },
+    {
+      "id": "rwb-app-task",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_ui.WorkbenchAppTests.test_task_purpose_passages_plan_and_exact_summary_records"
+      ]
+    },
+    {
+      "id": "rwb-app-evidence",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_detail.DetailAppTests.test_setup_action_assertion_helpers_observations_and_flow_specificity"
+      ]
+    },
+    {
+      "id": "rwb-app-decisions",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_detail.DetailAppTests.test_attributed_choice_reload_and_invalid_stale_historical_refusal"
+      ]
+    },
+    {
+      "id": "rwb-lazy-cache",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_detail.DetailAppTests.test_overview_has_no_source_evidence_reads_and_refresh_detects_tampering"
+      ]
+    },
+    {
+      "id": "rwb-migration",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.MigrationTests.test_reviewed_adoption_preserves_v1_identity_references_and_evidence"
+      ]
+    },
+    {
+      "id": "rwb-new-contract",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.MigrationTests.test_new_work_requires_own_spec_graph_review_and_accepted_contract"
+      ]
+    },
+    {
+      "id": "rwb-readability-binding",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.ReadabilityTests.test_each_answer_and_changed_dependency_control_comprehension_validity"
+      ]
+    },
+    {
+      "id": "rwb-genuine-wb003",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_retained_wb003_result_is_genuine_and_historically_applicable"
+      ]
+    },
+    {
+      "id": "rwb-browser-nav",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_direct_story_task_standalone_shared_back_and_exact_counts"
+      ]
+    },
+    {
+      "id": "rwb-browser-guard",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_reasoned_choice_stale_passage_conflict_and_historical_refusal"
+      ]
+    },
+    {
+      "id": "rwb-browser-evidence",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_helper_dependent_flows_outcomes_and_historical_limitations"
+      ]
+    },
+    {
+      "id": "rwb-browser-access",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_keyboard_narrow_layout_focus_contrast_and_text_status"
+      ]
+    },
+    {
+      "id": "rwb-browser-pilot",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_exact_representative_story_uses_genuine_wb003_evidence"
+      ]
+    },
+    {
+      "id": "rwb-browser-budgets",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_performance.WorkbenchPerformanceTests.test_real_pilot_twenty_warm_five_cold_samples_respect_budgets"
+      ]
+    },
+    {
+      "id": "rwb-human-completion",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_demo_completion_requires_genuine_bound_successful_human_record"
+      ]
+    },
+    {
+      "id": "rwb-baseline-model",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "rwb-baseline-guard",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "rwb-baseline-cli",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_cli.py"
+      ]
+    },
+    {
+      "id": "rwb-baseline-evidence",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_evidence.py"
+      ]
+    },
+    {
+      "id": "rwb-association-passages",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_intake.StageIntakeTests.test_association_passage_admission_uses_existing_guard"
+      ]
+    },
+    {
+      "id": "rwb-migration-passages",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.MigrationTests.test_migration_passage_dependencies_use_real_guarded_entry"
+      ]
+    },
+    {
+      "id": "rwb-demo-passages",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_passages_gate_demo_without_fabricated_success"
+      ]
+    },
+    {
+      "id": "rwb-inner-loop-amendment",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability_entrypoints.py"
+      ]
+    },
+    {
+      "id": "rwb-candidate-sync-clean",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability_entrypoints.py"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "RWB-V2-GRAPH",
+      "criterion_ids": [
+        "EM-001",
+        "EM-008",
+        "EM-014"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Explicit v1/v2 fixtures with standalone feature/requirement/Story/Scenario/Task and legal local support",
+        "when": "Validate each schema and adversarial edge/identity mutations",
+        "then": [
+          "Precise nonmutating diagnostics for duplicates, broken links, illegal pairs, multiple parents, containment/dependency cycles and contradictory lifecycle/resolution",
+          "Zero or one legal parent and many-to-many contributes_to/enables accepted without invented ancestry",
+          "V1 still rejects missing required parents or intent; v2 accepts optional intent and parents with at most one intent"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Precise nonmutating diagnostics for duplicates, broken links, illegal pairs, multiple parents, containment/dependency cycles and contradictory lifecycle/resolution"
+          ]
+        },
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Zero or one legal parent and many-to-many contributes_to/enables accepted without invented ancestry"
+          ]
+        },
+        {
+          "criterion_id": "EM-014",
+          "checks": [
+            "V1 still rejects missing required parents or intent; v2 accepts optional intent and parents with at most one intent"
+          ]
+        }
+      ],
+      "runner_id": "rwb-v2-graph",
+      "case_id": "_ask.tests.test_revising_model.V2ModelTests.test_optional_containment_support_and_graph_rejections",
+      "source_paths": [
+        "_ask/tests/test_revising_model.py",
+        "_ask/tests/revising_fixture.py"
+      ]
+    },
+    {
+      "id": "RWB-QUALIFIED-ID",
+      "criterion_ids": [
+        "EM-008",
+        "EM-018"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two owning model works and two execution works with equal-looking node/task IDs",
+        "when": "Resolve aliases, duplicate an alias, and propose a cross-model support edge",
+        "then": [
+          "Only explicit (execution_work_id, task_id) joins execution; duplicate aliases within a model and foreign support edges reject; definition done remains distinct from integration/readiness/verification",
+          "Tracker IDs and later paths remain labeled references and cannot join or own repository state"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Only explicit (execution_work_id, task_id) joins execution; duplicate aliases within a model and foreign support edges reject; definition done remains distinct from integration/readiness/verification"
+          ]
+        },
+        {
+          "criterion_id": "EM-018",
+          "checks": [
+            "Tracker IDs and later paths remain labeled references and cannot join or own repository state"
+          ]
+        }
+      ],
+      "runner_id": "rwb-qualified-id",
+      "case_id": "_ask.tests.test_revising_model.V2ModelTests.test_execution_aliases_and_foreign_product_boundaries",
+      "source_paths": [
+        "_ask/tests/test_revising_model.py"
+      ]
+    },
+    {
+      "id": "RWB-FLOW-SELECTION",
+      "criterion_ids": [
+        "EM-008",
+        "EM-011"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Publication-success and stale-rejection cases share EM-007 but have distinct canonical case IDs",
+        "when": "Resolve Scenario/Test coverage and local or external canonical mappings, then change selected plan identity or normalized mapping body",
+        "then": [
+          "Selection requires source work, exact plan digest and case ID; active missing-case, wrong digest, contradictory coverage or unreviewed flow mapping rejects; unplanned draft reports missing case",
+          "Same-plan mapping selectors omit the enclosing digest and derive identity from its final independently reviewed plan; external selectors retain target digest; mapping review binds normalized body excluding its review envelope, and changed body or self-referential selectors reject",
+          "Success Test appears as related criterion only for stale rejection and never as proving that flow; reviewed explicit canonical mapping is honored"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Selection requires source work, exact plan digest and case ID; active missing-case, wrong digest, contradictory coverage or unreviewed flow mapping rejects; unplanned draft reports missing case",
+            "Same-plan mapping selectors omit the enclosing digest and derive identity from its final independently reviewed plan; external selectors retain target digest; mapping review binds normalized body excluding its review envelope, and changed body or self-referential selectors reject"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Success Test appears as related criterion only for stale rejection and never as proving that flow; reviewed explicit canonical mapping is honored"
+          ]
+        }
+      ],
+      "runner_id": "rwb-flow-selection",
+      "case_id": "_ask.tests.test_revising_model.FlowTests.test_shared_criterion_does_not_prove_another_concrete_flow",
+      "source_paths": [
+        "_ask/tests/test_revising_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-VALID",
+      "criterion_ids": [
+        "EM-001"
+      ],
+      "type": "unit",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Accept broad v1 typed model and external references"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Accept broad v1 typed model and external references"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-GRAPH",
+      "criterion_ids": [
+        "EM-001"
+      ],
+      "type": "unit",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Reject duplicate/broken identities, illegal edges/cardinality and cycles with unchanged input"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Reject duplicate/broken identities, illegal edges/cardinality and cycles with unchanged input"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_duplicate_missing_illegal_cardinality_and_cycles",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-FIELDS",
+      "criterion_ids": [
+        "EM-001"
+      ],
+      "type": "unit",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Reject malformed required fields and lifecycle conflicts"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Reject malformed required fields and lifecycle conflicts"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-REFS",
+      "criterion_ids": [
+        "EM-001"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Reject escaping references and missing canonical criterion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Reject escaping references and missing canonical criterion"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelValidationTests.test_reference_escape_and_missing_criterion",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-DECISION",
+      "criterion_ids": [
+        "EM-002"
+      ],
+      "type": "unit",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Persist attributable decision history and task blocker propagation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Persist attributable decision history and task blocker propagation"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_decision_history_and_dependency_propagation",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-REVISE",
+      "criterion_ids": [
+        "EM-002"
+      ],
+      "type": "unit",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Invalidate transitive dependent decisions after revision"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Invalidate transitive dependent decisions after revision"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_revise_invalidates_transitive_decisions",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-STALE",
+      "criterion_ids": [
+        "EM-002"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Invalid or stale edits preserve exact stable bytes"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Invalid or stale edits preserve exact stable bytes"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_invalid_and_stale_edits_preserve_bytes",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-CAS",
+      "criterion_ids": [
+        "EM-002"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "The existing isolated v1 engineering fixture",
+        "when": "Run the unchanged public validation or semantic-edit regression",
+        "then": [
+          "Concurrent compare-and-swap publishes only one valid successor"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Concurrent compare-and-swap publishes only one valid successor"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ModelEditTests.test_concurrent_compare_and_swap",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-SELECTORS",
+      "criterion_ids": [
+        "EM-007",
+        "EM-015"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Optional context refs plus safe missing, duplicate headings/tasks, malformed selectors and symlink/escape paths",
+        "when": "Capture and resolve heading-path and plan-task selectors",
+        "then": [
+          "Dependency and selector-rule versions, captured bytes and match states participate in snapshot identity",
+          "Unsafe/all symlink targets or malformed selectors reject; absent/missing/zero/multiple matches remain labeled admitted limitations; unique matching returns exact captured passage without fallback"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Dependency and selector-rule versions, captured bytes and match states participate in snapshot identity"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Unsafe/all symlink targets or malformed selectors reject; absent/missing/zero/multiple matches remain labeled admitted limitations; unique matching returns exact captured passage without fallback"
+          ]
+        }
+      ],
+      "runner_id": "rwb-selectors",
+      "case_id": "_ask.tests.test_revising_context.PassageTests.test_selector_grammar_and_safe_resolution_matrix",
+      "source_paths": [
+        "_ask/tests/test_revising_context.py"
+      ]
+    },
+    {
+      "id": "RWB-PASSAGE-ACTIONS",
+      "criterion_ids": [
+        "EM-002",
+        "EM-007",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An admitted v2 model with unavailable context and a last-validated generation, using only foundation entrypoints already present at RWB-102",
+        "when": "Execute existing semantic edit/batch/resolve/revise, model admit-with-action, task workflow/candidate admission and integration, traceability contract/review wrappers and explicit repair/import boundaries",
+        "then": [
+          "Unrelated existing decision actions remain admissible despite safe optional context gaps",
+          "Selected Task admission refuses its missing required spec or plan passage without invoking its action",
+          "Every existing foundation entry preserves guarded ordering and stable state on invalid or stale input"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Existing semantic writes preserve attributable history and stable bytes on refusal"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Execute the RWB-102 foundation entrypoint registry through real existing wrappers, with exactly one pre/action/post/publication on success and no action/publication after appropriate refusal; no future-function stubs count as evidence"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Safe optional gaps permit unrelated existing actions; selected Task contract gaps block only dependent admission; unsafe current input permits labeled diagnostics/last-validated inspection and explicit validated repair/import while ordinary actions refuse"
+          ]
+        }
+      ],
+      "runner_id": "rwb-passage-actions",
+      "case_id": "_ask.tests.test_revising_context.PassageAdmissionTests.test_required_passages_block_only_dependent_actions",
+      "source_paths": [
+        "_ask/tests/test_revising_context.py"
+      ]
+    },
+    {
+      "id": "RWB-CONTEXT-FRESHNESS",
+      "criterion_ids": [
+        "EM-007",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A captured generation with linked-only context, missing target and a unique heading",
+        "when": "Create/delete/edit targets, introduce duplicate heading and miss an external-save event",
+        "then": [
+          "Cached admission equals full validation; startup/read/action recapture detects missed events and readers never combine generations",
+          "Missing-to-present, unique-to-ambiguous, selector or linked-only byte changes stale the exact identity and preserve previously captured historical passage"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Cached admission equals full validation; startup/read/action recapture detects missed events and readers never combine generations"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Missing-to-present, unique-to-ambiguous, selector or linked-only byte changes stale the exact identity and preserve previously captured historical passage"
+          ]
+        }
+      ],
+      "runner_id": "rwb-context-freshness",
+      "case_id": "_ask.tests.test_revising_context.PassageAdmissionTests.test_missing_linked_and_ambiguous_changes_invalidate_snapshot",
+      "source_paths": [
+        "_ask/tests/test_revising_context.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-PRE",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Action callback is never invoked for invalid current document"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Action callback is never invoked for invalid current document"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_invalid_prestate_prevents_action",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-POST",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Invalid candidate leaves stable generation and bytes unchanged"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Invalid candidate leaves stable generation and bytes unchanged"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_invalid_candidate_preserves_stable_generation",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-REFS",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Linked specification-only edit invalidates admission"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Linked specification-only edit invalidates admission"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_linked_spec_change_invalidates_admission",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-EVENTS",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "External saves and missed events fail closed through startup/action/read"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "External saves and missed events fail closed through startup/action/read"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_external_changes_and_missed_events_fail_closed",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-PARITY",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Cached and full validation return equivalent admissions"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Cached and full validation return equivalent admissions"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_cached_and_full_validation_agree",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-PUBLISH",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Concurrent multifile publication/recovery presents one valid stable generation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Concurrent multifile publication/recovery presents one valid stable generation"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_concurrent_multifile_publication_and_recovery",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-BOOTSTRAP",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Bootstrap admits only validated state"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Bootstrap admits only validated state"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_bootstrap_admits_only_validated_state",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-BATCH",
+      "criterion_ids": [
+        "EM-001",
+        "EM-002",
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Atomic node/edge/lifecycle batch preserves model and semantic invariants"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Atomic node/edge/lifecycle batch preserves model and semantic invariants"
+          ]
+        },
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Atomic node/edge/lifecycle batch preserves model and semantic invariants"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Atomic node/edge/lifecycle batch preserves model and semantic invariants"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_atomic_node_edges_and_lifecycle_batch",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-ORDER",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "Exactly one pre/action/post/publication succeeds in order against captured identities"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Exactly one pre/action/post/publication succeeds in order against captured identities"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_successful_guard_order_and_identities",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-GUARD-ENTRYPOINTS",
+      "criterion_ids": [
+        "EM-007"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated guarded v1 workflow fixture",
+        "when": "Exercise existing public guard regression",
+        "then": [
+          "All enumerated public mutation and workflow wrappers refuse bypass"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "All enumerated public mutation and workflow wrappers refuse bypass"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-guard",
+      "case_id": "test_engineering_guard.DocumentGuardTests.test_public_mutators_cannot_bypass_admission",
+      "source_paths": [
+        "_ask/tests/test_engineering_guard.py"
+      ]
+    },
+    {
+      "id": "RWB-SUBJECT-RULES",
+      "criterion_ids": [
+        "EM-013",
+        "EM-018"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Requests containing explicit qualified IDs, recorded association, material owner conflict, later card, supplied tracker context or no subject",
+        "when": "Resolve read-only with checkout execution context kept separate",
+        "then": [
+          "Explicit subject overrides valid prior association; conflicting explicit IDs/material ownership pause for clarification; missing ancestors need no invented hierarchy; no known subject returns labeled chooser/standalone proposal",
+          "Unavailable external context and later proposals stay labeled; network is unnecessary; repository identities/context revisions remain authoritative"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-013",
+          "checks": [
+            "Explicit subject overrides valid prior association; conflicting explicit IDs/material ownership pause for clarification; missing ancestors need no invented hierarchy; no known subject returns labeled chooser/standalone proposal"
+          ]
+        },
+        {
+          "criterion_id": "EM-018",
+          "checks": [
+            "Unavailable external context and later proposals stay labeled; network is unnecessary; repository identities/context revisions remain authoritative"
+          ]
+        }
+      ],
+      "runner_id": "rwb-subject-rules",
+      "case_id": "_ask.tests.test_revising_intake.ContextResolverTests.test_explicit_recorded_conflicting_and_unavailable_subjects",
+      "source_paths": [
+        "_ask/tests/test_revising_intake.py"
+      ]
+    },
+    {
+      "id": "RWB-FRESH-INTAKE",
+      "criterion_ids": [
+        "EM-013",
+        "EM-018"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Fresh process with only request and repository context, adopted 00/01 caller, no chat/session cache",
+        "when": "Drive the stage-intake coordinator entry for both stages, with resolver invocation/order probes and existing-operation boundaries",
+        "then": [
+          "Trace contains adopted caller then resolver before any branch/intent/admission event; inspect/conflicting/later-only inputs never create branch, intent, node or assignment; context output explains purpose, source, bounded contribution, exclusions and execution owner",
+          "No tracker API call, sync or authority transfer; HEAD/refs/model/tree hashes unchanged on inspection"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-013",
+          "checks": [
+            "Trace contains adopted caller then resolver before any branch/intent/admission event; inspect/conflicting/later-only inputs never create branch, intent, node or assignment; context output explains purpose, source, bounded contribution, exclusions and execution owner"
+          ]
+        },
+        {
+          "criterion_id": "EM-018",
+          "checks": [
+            "No tracker API call, sync or authority transfer; HEAD/refs/model/tree hashes unchanged on inspection"
+          ]
+        }
+      ],
+      "runner_id": "rwb-fresh-intake",
+      "case_id": "_ask.tests.test_revising_intake.StageIntakeTests.test_adopted_explore_and_grill_call_resolver_before_any_write",
+      "source_paths": [
+        "_ask/tests/test_revising_intake.py"
+      ]
+    },
+    {
+      "id": "RWB-CONTEXT-CLI",
+      "criterion_ids": [
+        "EM-004",
+        "EM-013"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "One revision-bound request read by the actual adopted caller and model context CLI",
+        "when": "Invoke public CLI in a subprocess and compare structured context output",
+        "then": [
+          "CLI preserves qualified IDs, snapshot digest and useful diagnostics; malformed input preserves data",
+          "Inspection parity uses the same resolver; this case does not stand in for actual-caller coverage"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-004",
+          "checks": [
+            "CLI preserves qualified IDs, snapshot digest and useful diagnostics; malformed input preserves data"
+          ]
+        },
+        {
+          "criterion_id": "EM-013",
+          "checks": [
+            "Inspection parity uses the same resolver; this case does not stand in for actual-caller coverage"
+          ]
+        }
+      ],
+      "runner_id": "rwb-context-cli",
+      "case_id": "_ask.tests.test_revising_intake.StageIntakeTests.test_model_context_cli_matches_caller_without_writes",
+      "source_paths": [
+        "_ask/tests/test_revising_intake.py"
+      ]
+    },
+    {
+      "id": "RWB-PROJECTION",
+      "criterion_ids": [
+        "EM-005",
+        "EM-008",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "V2 standalone/shared Tasks, unplanned items, explicit execution aliases, spec/plan refs and flow-specific test cases",
+        "when": "Project one admitted snapshot to detail, summaries and canonical test scopes",
+        "then": [
+          "Projection consumes one validated snapshot and canonical selected case with honest limitations",
+          "Product/support relations retain one qualified identity without changing execution ownership or creating ancestors",
+          "Task includes purpose/outcome, actual row, exact passages, dependencies, owned paths and scoped Tests; declared done and absent history never imply verified completion; summary record sets are exact"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Projection consumes one validated snapshot and canonical selected case with honest limitations"
+          ]
+        },
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Product/support relations retain one qualified identity without changing execution ownership or creating ancestors"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Task includes purpose/outcome, actual row, exact passages, dependencies, owned paths and scoped Tests; declared done and absent history never imply verified completion; summary record sets are exact"
+          ]
+        }
+      ],
+      "runner_id": "rwb-projection",
+      "case_id": "_ask.tests.test_revising_projection.ProjectionTests.test_qualified_tasks_context_scopes_and_separate_status_authorities",
+      "source_paths": [
+        "_ask/tests/test_revising_projection.py"
+      ]
+    },
+    {
+      "id": "RWB-HISTORICAL",
+      "criterion_ids": [
+        "EM-009"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "A workbench snapshot and its source blobs captured from a committed branch revision",
+        "when": "The branch moves and the captured historical snapshot is inspected",
+        "then": [
+          "Model, task graph, plan and requested source bytes remain bound to the selected commit",
+          "Inspection is read-only and leaves the checkout, refs and current source bytes unchanged"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Selected revision remains distinct from the current checkout; model, task graph, plan and requested source bytes are consistent and read-only"
+          ]
+        }
+      ],
+      "runner_id": "rwb-historical",
+      "case_id": "_ask.tests.test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only",
+      "source_paths": [
+        "_ask/tests/test_engineering_workbench_sources.py"
+      ]
+    },
+    {
+      "id": "RWB-CLI-PROJECTION",
+      "criterion_ids": [
+        "EM-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A v2 admitted model with Task attention and missing optional context",
+        "when": "Run public JSON/Markdown projections with same inspected identity",
+        "then": [
+          "Identical IDs/digest, readiness and attention state; useful errors preserve data and no outcome invented"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-004",
+          "checks": [
+            "Identical IDs/digest, readiness and attention state; useful errors preserve data and no outcome invented"
+          ]
+        }
+      ],
+      "runner_id": "rwb-cli-projection",
+      "case_id": "_ask.tests.test_revising_projection.ProjectionTests.test_v2_json_markdown_ids_and_state_match",
+      "source_paths": [
+        "_ask/tests/test_revising_projection.py"
+      ]
+    },
+    {
+      "id": "RWB-CLI-JOURNEY",
+      "criterion_ids": [
+        "EM-002",
+        "EM-003",
+        "EM-004"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing isolated CLI work model and evidence fixture",
+        "when": "Run unchanged public CLI decision/inspection/error/reload journey",
+        "then": [
+          "Guarded attributed choice persists across reload and invalid edit preserves stable bytes",
+          "CLI inspections retain evidence provenance and missing/invalid limitations without writes",
+          "JSON/Markdown identity and useful errors survive public CLI roundtrip"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Guarded attributed choice persists across reload and invalid edit preserves stable bytes"
+          ]
+        },
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "CLI inspections retain evidence provenance and missing/invalid limitations without writes"
+          ]
+        },
+        {
+          "criterion_id": "EM-004",
+          "checks": [
+            "JSON/Markdown identity and useful errors survive public CLI roundtrip"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-cli",
+      "case_id": "test_engineering_cli.CliJourneyTests.test_cli_inspect_resolve_reload_and_invalid",
+      "source_paths": [
+        "_ask/tests/test_engineering_cli.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-PROJECTIONS",
+      "criterion_ids": [
+        "EM-004"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing v1 projection fixture",
+        "when": "Execute unchanged JSON and Markdown parity test",
+        "then": [
+          "V1 IDs/digest and task/attention state agree without invented outcomes"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-004",
+          "checks": [
+            "V1 IDs/digest and task/attention state agree without invented outcomes"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-model",
+      "case_id": "test_engineering_model.ProjectionTests.test_json_markdown_same_ids_and_no_outcomes",
+      "source_paths": [
+        "_ask/tests/test_engineering_model.py"
+      ]
+    },
+    {
+      "id": "RWB-SOURCE-HELPERS",
+      "criterion_ids": [
+        "EM-011"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Selected case depends on setUp, helpers, imported boundary and module globals",
+        "when": "Read explicitly curated qualified definitions at selected commit and compare current helper edits",
+        "then": [
+          "Show setup/input/action/expected/assertion with exact same-revision helpers, fixture values and import boundary; missing helper stays explicit and current helper never substitutes historical bytes"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Show setup/input/action/expected/assertion with exact same-revision helpers, fixture values and import boundary; missing helper stays explicit and current helper never substitutes historical bytes"
+          ]
+        }
+      ],
+      "runner_id": "rwb-source-helpers",
+      "case_id": "_ask.tests.test_revising_evidence.ReadableTestTests.test_same_revision_setup_helper_globals_and_assertion_context",
+      "source_paths": [
+        "_ask/tests/test_revising_evidence.py"
+      ]
+    },
+    {
+      "id": "RWB-EVIDENCE-JOINS",
+      "criterion_ids": [
+        "EM-003",
+        "EM-011"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Foreign/contradictory work/test/run/contract/candidate records with valid-looking pass labels",
+        "when": "Inspect retained case history through existing authority adapter",
+        "then": [
+          "Reject false attribution and tampered report/log digests; preserve revision provenance without writes",
+          "Actual recorded observation and retained failure output/time/duration are separate from expected assertion; case pass does not imply workstream completion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Reject false attribution and tampered report/log digests; preserve revision provenance without writes"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Actual recorded observation and retained failure output/time/duration are separate from expected assertion; case pass does not imply workstream completion"
+          ]
+        }
+      ],
+      "runner_id": "rwb-evidence-joins",
+      "case_id": "_ask.tests.test_revising_evidence.EvidenceIdentityTests.test_work_test_run_contract_candidate_and_integrity_must_all_agree",
+      "source_paths": [
+        "_ask/tests/test_revising_evidence.py"
+      ]
+    },
+    {
+      "id": "RWB-EVIDENCE-STATES",
+      "criterion_ids": [
+        "EM-003",
+        "EM-011",
+        "EM-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Passed/failed/not-run/skipped/runtime-error/stale/historical/unavailable records and selected helper sources",
+        "when": "Use nonmutating evaluator and refresh after same-mtime helper/log/review/authority changes",
+        "then": [
+          "Underlying authority and accepted contract are evaluated instead of trusting display labels; inspection leaves refs/source/evidence unchanged",
+          "Each observation state, historical source applicability and absent duration remains explicit; fixture outcomes never presented as selected genuine execution",
+          "Dependency/content-bound detail cache detects helper, log, review, accepted-ref and source changes on refresh"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Underlying authority and accepted contract are evaluated instead of trusting display labels; inspection leaves refs/source/evidence unchanged"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Each observation state, historical source applicability and absent duration remains explicit; fixture outcomes never presented as selected genuine execution"
+          ]
+        },
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Dependency/content-bound detail cache detects helper, log, review, accepted-ref and source changes on refresh"
+          ]
+        }
+      ],
+      "runner_id": "rwb-evidence-states",
+      "case_id": "_ask.tests.test_revising_evidence.EvidenceIdentityTests.test_all_observation_states_and_helper_changes_preserve_applicability",
+      "source_paths": [
+        "_ask/tests/test_revising_evidence.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-EVIDENCE-REAL",
+      "criterion_ids": [
+        "EM-003"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing canonical evidence fixture",
+        "when": "Run unchanged nonmutating evidence regression",
+        "then": [
+          "Evaluator-backed evidence and tampered identity are inspected without writes"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Evaluator-backed evidence and tampered identity are inspected without writes"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-evidence",
+      "case_id": "test_engineering_evidence.EvidenceTests.test_real_evidence_and_tamper_is_read_only",
+      "source_paths": [
+        "_ask/tests/test_engineering_evidence.py"
+      ]
+    },
+    {
+      "id": "RWB-V1-EVIDENCE-MISSING",
+      "criterion_ids": [
+        "EM-003"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "Existing canonical evidence fixture",
+        "when": "Run unchanged nonmutating evidence regression",
+        "then": [
+          "Missing evidence and historical applicability remain explicit"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Missing evidence and historical applicability remain explicit"
+          ]
+        }
+      ],
+      "runner_id": "rwb-baseline-evidence",
+      "case_id": "test_engineering_evidence.EvidenceTests.test_missing_and_historical_evidence",
+      "source_paths": [
+        "_ask/tests/test_engineering_evidence.py"
+      ]
+    },
+    {
+      "id": "RWB-APP-ENTRY",
+      "criterion_ids": [
+        "EM-005",
+        "EM-008",
+        "EM-009"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Admitted v2 model and AppTest sessions opened by explicit Story/Task or recorded/no subject",
+        "when": "Enter directly, follow both supporting routes to same Task, Back and inspect committed foreign revision",
+        "then": [
+          "UI consumes snapshot canonical assertions/tests/revisions and limitations without independent validation rules",
+          "Standalone/missing ancestor state visible; shared identity/owner unchanged",
+          "Explicit subject takes precedence; otherwise context/chooser visible; Back restores initiating route; checkout and inspected revision distinct with historical decisions unavailable"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "UI consumes snapshot canonical assertions/tests/revisions and limitations without independent validation rules"
+          ]
+        },
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Standalone/missing ancestor state visible; shared identity/owner unchanged"
+          ]
+        },
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Explicit subject takes precedence; otherwise context/chooser visible; Back restores initiating route; checkout and inspected revision distinct with historical decisions unavailable"
+          ]
+        }
+      ],
+      "runner_id": "rwb-app-entry",
+      "case_id": "_ask.tests.test_revising_ui.WorkbenchAppTests.test_direct_subject_standalone_shared_back_and_revision_entry",
+      "source_paths": [
+        "_ask/tests/test_revising_ui.py"
+      ]
+    },
+    {
+      "id": "RWB-APP-TASK",
+      "criterion_ids": [
+        "EM-005",
+        "EM-010",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Planned, unplanned and safely incomplete Tasks with related concrete cases",
+        "when": "Open detail, surrounding source, each summary count and unresolved passage",
+        "then": [
+          "Source and canonical scoped Tests use one validated generation",
+          "Meaningful outcome/purpose, actual task row, owned work, dependencies and related Stories/Scenarios present; exact count membership, honest blockers and distinct completion authorities",
+          "Captured unique passage has path/selector/revision; missing/ambiguous optional context labeled; unrelated actions remain available; required demo gap blocks demo"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Source and canonical scoped Tests use one validated generation"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Meaningful outcome/purpose, actual task row, owned work, dependencies and related Stories/Scenarios present; exact count membership, honest blockers and distinct completion authorities"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Captured unique passage has path/selector/revision; missing/ambiguous optional context labeled; unrelated actions remain available; required demo gap blocks demo"
+          ]
+        }
+      ],
+      "runner_id": "rwb-app-task",
+      "case_id": "_ask.tests.test_revising_ui.WorkbenchAppTests.test_task_purpose_passages_plan_and_exact_summary_records",
+      "source_paths": [
+        "_ask/tests/test_revising_ui.py"
+      ]
+    },
+    {
+      "id": "RWB-APP-EVIDENCE",
+      "criterion_ids": [
+        "EM-003",
+        "EM-005",
+        "EM-011"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Selected success/stale-rejection flows, helper-dependent Tests and every retained result state",
+        "when": "Open Test/result detail in AppTest then initially collapsed provenance",
+        "then": [
+          "Display evaluated report/log/candidate/contract provenance with honest noncurrent or invalid status",
+          "Canonical selected flow assertions and revisions rendered from validated shared snapshot",
+          "Setup/action/expected/assertion/helpers visible with actual outcomes/failure output/duration separately; unrelated criterion Test is not proof; technical fields explained and initially collapsed"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Display evaluated report/log/candidate/contract provenance with honest noncurrent or invalid status"
+          ]
+        },
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Canonical selected flow assertions and revisions rendered from validated shared snapshot"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Setup/action/expected/assertion/helpers visible with actual outcomes/failure output/duration separately; unrelated criterion Test is not proof; technical fields explained and initially collapsed"
+          ]
+        }
+      ],
+      "runner_id": "rwb-app-evidence",
+      "case_id": "_ask.tests.test_revising_detail.DetailAppTests.test_setup_action_assertion_helpers_observations_and_flow_specificity",
+      "source_paths": [
+        "_ask/tests/test_revising_detail.py"
+      ]
+    },
+    {
+      "id": "RWB-APP-DECISIONS",
+      "criterion_ids": [
+        "EM-002",
+        "EM-006",
+        "EM-007",
+        "EM-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Open decision with options, task blockers and captured form identity",
+        "when": "Resolve valid choice then reload new session; attempt missing-rationale, stale and historical forms",
+        "then": [
+          "Attributable history persists and dependent state changes through existing semantic action",
+          "Valid choice changes attention; invalid/stale form writes nothing",
+          "Forms retain displayed generation across navigation and public mutations use shared guard",
+          "Blocker cause/options/actor/rationale remain meaningful in Task context"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Attributable history persists and dependent state changes through existing semantic action"
+          ]
+        },
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Valid choice changes attention; invalid/stale form writes nothing"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Forms retain displayed generation across navigation and public mutations use shared guard"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Blocker cause/options/actor/rationale remain meaningful in Task context"
+          ]
+        }
+      ],
+      "runner_id": "rwb-app-decisions",
+      "case_id": "_ask.tests.test_revising_detail.DetailAppTests.test_attributed_choice_reload_and_invalid_stale_historical_refusal",
+      "source_paths": [
+        "_ask/tests/test_revising_detail.py"
+      ]
+    },
+    {
+      "id": "RWB-LAZY-CACHE",
+      "criterion_ids": [
+        "EM-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Spies on actual source parsing/evidence evaluator with identity-bound detail cache",
+        "when": "Load initial overview, metadata routes, selected detail, revisit and refresh after source/helper/log mutations",
+        "then": [
+          "Zero initial test-source parsing/evidence scans; bounded lazy selected loading; unchanged revisit reuses cache; same-mtime and changed/tampered dependencies never remain hidden on refresh"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Zero initial test-source parsing/evidence scans; bounded lazy selected loading; unchanged revisit reuses cache; same-mtime and changed/tampered dependencies never remain hidden on refresh"
+          ]
+        }
+      ],
+      "runner_id": "rwb-lazy-cache",
+      "case_id": "_ask.tests.test_revising_detail.DetailAppTests.test_overview_has_no_source_evidence_reads_and_refresh_detects_tampering",
+      "source_paths": [
+        "_ask/tests/test_revising_detail.py"
+      ]
+    },
+    {
+      "id": "RWB-MIGRATION",
+      "criterion_ids": [
+        "EM-001",
+        "EM-008",
+        "EM-014",
+        "EM-017"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Committed v1 definitions, historical plans/pins/results and proposed v2 adoption",
+        "when": "Attempt browsing/unreviewed migration, then perform reviewed guarded migration in a temporary repo",
+        "then": [
+          "Migrated document passes complete validator and rejected proposal leaves stable input intact",
+          "Product IDs and qualified execution aliases preserve identity and keep lifecycle/readiness/execution/verification separate",
+          "V1 remains unchanged under browsing; migration requires matching independent decision and source/target digests; IDs/references/evidence attribution preserved",
+          "Original historical paths, contracts, accepted pins and runtime records remain byte-identical"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-001",
+          "checks": [
+            "Migrated document passes complete validator and rejected proposal leaves stable input intact"
+          ]
+        },
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "Product IDs and qualified execution aliases preserve identity and keep lifecycle/readiness/execution/verification separate"
+          ]
+        },
+        {
+          "criterion_id": "EM-014",
+          "checks": [
+            "V1 remains unchanged under browsing; migration requires matching independent decision and source/target digests; IDs/references/evidence attribution preserved"
+          ]
+        },
+        {
+          "criterion_id": "EM-017",
+          "checks": [
+            "Original historical paths, contracts, accepted pins and runtime records remain byte-identical"
+          ]
+        }
+      ],
+      "runner_id": "rwb-migration",
+      "case_id": "_ask.tests.test_revising_pilot.MigrationTests.test_reviewed_adoption_preserves_v1_identity_references_and_evidence",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-NEW-CONTRACT",
+      "criterion_ids": [
+        "EM-007",
+        "EM-014",
+        "EM-018"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "New revising-workbench identity with shared EM IDs and an existing old accepted pin",
+        "when": "Try new adoption/completion without new registration, then register independently reviewed exact new contracts in a disposable repository",
+        "then": [
+          "Candidate cannot advance accepted authority or replace pinned guard runner; missing/mismatched reviewed registration refuses admission/completion",
+          "New work never inherits old contract/completion/red history; accepted spec/graph/plan/delegation digests must match new identity",
+          "Registration leaves repository definitions authoritative and does not establish external ownership"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Candidate cannot advance accepted authority or replace pinned guard runner; missing/mismatched reviewed registration refuses admission/completion"
+          ]
+        },
+        {
+          "criterion_id": "EM-014",
+          "checks": [
+            "New work never inherits old contract/completion/red history; accepted spec/graph/plan/delegation digests must match new identity"
+          ]
+        },
+        {
+          "criterion_id": "EM-018",
+          "checks": [
+            "Registration leaves repository definitions authoritative and does not establish external ownership"
+          ]
+        }
+      ],
+      "runner_id": "rwb-new-contract",
+      "case_id": "_ask.tests.test_revising_pilot.MigrationTests.test_new_work_requires_own_spec_graph_review_and_accepted_contract",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-READABILITY-BINDING",
+      "criterion_ids": [
+        "EM-016"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Candidate-bound ten-answer comprehension record with selected Task/Scenario/Test, context/helpers/fixtures and evidence digests",
+        "when": "Validate success, each missing/failed answer and each changed dependency/candidate",
+        "then": [
+          "Every identification has attributable pass/fail disposition and required bindings; unresolved failure or changed context/source/helper/fixture/evidence invalidates completion; synthetic answers do not grant human approval"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-016",
+          "checks": [
+            "Every identification has attributable pass/fail disposition and required bindings; unresolved failure or changed context/source/helper/fixture/evidence invalidates completion; synthetic answers do not grant human approval"
+          ]
+        }
+      ],
+      "runner_id": "rwb-readability-binding",
+      "case_id": "_ask.tests.test_revising_pilot.ReadabilityTests.test_each_answer_and_changed_dependency_control_comprehension_validity",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-GENUINE-WB003",
+      "criterion_ids": [
+        "EM-003",
+        "EM-011",
+        "EM-016",
+        "EM-017"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Original WB-003 TaskResult plus exact red/green reports/logs and accepted authority in retained evidence root",
+        "when": "Evaluate through existing nonmutating authority, select WB-evidence-identity and declared revision sources",
+        "then": [
+          "Full retained reports/log digests, work/test/run/contract/candidate and semantic review checked; record availability alone cannot pass",
+          "Historical applicability, retained assertion failure/green observations and necessary same-revision helper context displayed separately from fixture data",
+          "At least one genuine exact selected execution required; unavailable record/authority fails with exact prerequisite, never fixture or TaskResult output-excerpt substitution",
+          "No record, accepted ref or original source path altered during genuine inspection"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Full retained reports/log digests, work/test/run/contract/candidate and semantic review checked; record availability alone cannot pass"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Historical applicability, retained assertion failure/green observations and necessary same-revision helper context displayed separately from fixture data"
+          ]
+        },
+        {
+          "criterion_id": "EM-016",
+          "checks": [
+            "At least one genuine exact selected execution required; unavailable record/authority fails with exact prerequisite, never fixture or TaskResult output-excerpt substitution"
+          ]
+        },
+        {
+          "criterion_id": "EM-017",
+          "checks": [
+            "No record, accepted ref or original source path altered during genuine inspection"
+          ]
+        }
+      ],
+      "runner_id": "rwb-genuine-wb003",
+      "case_id": "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_retained_wb003_result_is_genuine_and_historically_applicable",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-BROWSER-NAV",
+      "criterion_ids": [
+        "EM-005",
+        "EM-008",
+        "EM-009",
+        "EM-010"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Test-owned initialized repos and fresh desktop/narrow browser sessions",
+        "when": "Open direct Story/Task URL, standalone record, both shared-task routes, Back, count drilldowns and historical view",
+        "then": [
+          "Canonical snapshot assertions/test/revision content visible in actual browser",
+          "One identity/owner across supporting contexts and no invented ancestor",
+          "Explicit entry and initiating Back route survive navigation; foreign historical view read-only and checkout/refs untouched",
+          "Task purpose/passages/actual row/dependencies/owned work and exact count member sets readable"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-005",
+          "checks": [
+            "Canonical snapshot assertions/test/revision content visible in actual browser"
+          ]
+        },
+        {
+          "criterion_id": "EM-008",
+          "checks": [
+            "One identity/owner across supporting contexts and no invented ancestor"
+          ]
+        },
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Explicit entry and initiating Back route survive navigation; foreign historical view read-only and checkout/refs untouched"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Task purpose/passages/actual row/dependencies/owned work and exact count member sets readable"
+          ]
+        }
+      ],
+      "runner_id": "rwb-browser-nav",
+      "case_id": "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_direct_story_task_standalone_shared_back_and_exact_counts",
+      "source_paths": [
+        "_ask/tests/test_revising_browser.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-BROWSER-GUARD",
+      "criterion_ids": [
+        "EM-002",
+        "EM-006",
+        "EM-007",
+        "EM-015"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Actual decision form and safe context gaps in disposable current/historical repos",
+        "when": "Choose with reason, reopen session, modify linked passage between display and submit, refresh and retry",
+        "then": [
+          "Valid attributed semantic edit persists and invalidation propagates",
+          "New session sees chosen option/state; invalid, stale and historical writes refuse",
+          "Linked-only changes stale the captured form; successful action retains existing guard order/identity",
+          "Only required-passage-dependent action blocks on safe gap; unsafe input blocks all ordinary actions with labeled last-validated view"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Valid attributed semantic edit persists and invalidation propagates"
+          ]
+        },
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "New session sees chosen option/state; invalid, stale and historical writes refuse"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Linked-only changes stale the captured form; successful action retains existing guard order/identity"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Only required-passage-dependent action blocks on safe gap; unsafe input blocks all ordinary actions with labeled last-validated view"
+          ]
+        }
+      ],
+      "runner_id": "rwb-browser-guard",
+      "case_id": "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_reasoned_choice_stale_passage_conflict_and_historical_refusal",
+      "source_paths": [
+        "_ask/tests/test_revising_browser.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-BROWSER-EVIDENCE",
+      "criterion_ids": [
+        "EM-003",
+        "EM-011"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two flows sharing a criterion and helper-dependent tests with failure, skipped, runtime-error, stale, historical and unavailable evidence",
+        "when": "Inspect selected Test, helper definitions, assertions, actual result/failure output/time and collapsed provenance in browser",
+        "then": [
+          "Evidence provenance/integrity comes from evaluator and inspection writes nothing",
+          "Correct flow only, setup/action/expected/assertion/helper context readable, every actual state honest, recorded output separate from expected, historical source never silently current"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-003",
+          "checks": [
+            "Evidence provenance/integrity comes from evaluator and inspection writes nothing"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Correct flow only, setup/action/expected/assertion/helper context readable, every actual state honest, recorded output separate from expected, historical source never silently current"
+          ]
+        }
+      ],
+      "runner_id": "rwb-browser-evidence",
+      "case_id": "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_helper_dependent_flows_outcomes_and_historical_limitations",
+      "source_paths": [
+        "_ask/tests/test_revising_browser.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-BROWSER-ACCESS",
+      "criterion_ids": [
+        "EM-006",
+        "EM-012"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Real Chromium with desktop and 390px viewport plus keyboard-only interaction",
+        "when": "Navigate Task\u2192Test/result and complete reasoned decision using Tab/Enter; inspect focus and computed contrast",
+        "then": [
+          "Keyboard user can complete reasoned decision and verify persisted state",
+          "No clipped essential controls/content, accessible names, visible focus, normal text contrast >=4.5:1, large text >=3:1, focus >=3:1; statuses understandable without color"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-006",
+          "checks": [
+            "Keyboard user can complete reasoned decision and verify persisted state"
+          ]
+        },
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "No clipped essential controls/content, accessible names, visible focus, normal text contrast >=4.5:1, large text >=3:1, focus >=3:1; statuses understandable without color"
+          ]
+        }
+      ],
+      "runner_id": "rwb-browser-access",
+      "case_id": "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_keyboard_narrow_layout_focus_contrast_and_text_status",
+      "source_paths": [
+        "_ask/tests/test_revising_browser.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-BROWSER-PILOT",
+      "criterion_ids": [
+        "EM-009",
+        "EM-010",
+        "EM-011",
+        "EM-016",
+        "EM-017",
+        "EM-018"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Current candidate app with revising-workbench pilot and genuine retained WB-003 authority/root",
+        "when": "Open representative Task\u2192WB-evidence-identity\u2192qualified historical Test\u2192actual retained execution in a real browser",
+        "then": [
+          "Subject and inspected historical source revision remain explicit; refs/checkout unchanged",
+          "Exact meaningful purpose, selected main spec passages and WB-003 plan row available in context",
+          "Required same-revision helpers, fixtures, assertion and genuine actual observation visible with historical applicability",
+          "Exact specified candidate/run/test identities validated; unavailable real authority fails journey with prerequisite instead of substituting fixtures",
+          "Old harness excluded from main pilot but selectable historical inspection remains with original identity",
+          "Complete inspection operates with network/tracker API blocked and repository sources authoritative"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-009",
+          "checks": [
+            "Subject and inspected historical source revision remain explicit; refs/checkout unchanged"
+          ]
+        },
+        {
+          "criterion_id": "EM-010",
+          "checks": [
+            "Exact meaningful purpose, selected main spec passages and WB-003 plan row available in context"
+          ]
+        },
+        {
+          "criterion_id": "EM-011",
+          "checks": [
+            "Required same-revision helpers, fixtures, assertion and genuine actual observation visible with historical applicability"
+          ]
+        },
+        {
+          "criterion_id": "EM-016",
+          "checks": [
+            "Exact specified candidate/run/test identities validated; unavailable real authority fails journey with prerequisite instead of substituting fixtures"
+          ]
+        },
+        {
+          "criterion_id": "EM-017",
+          "checks": [
+            "Old harness excluded from main pilot but selectable historical inspection remains with original identity"
+          ]
+        },
+        {
+          "criterion_id": "EM-018",
+          "checks": [
+            "Complete inspection operates with network/tracker API blocked and repository sources authoritative"
+          ]
+        }
+      ],
+      "runner_id": "rwb-browser-pilot",
+      "case_id": "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_exact_representative_story_uses_genuine_wb003_evidence",
+      "source_paths": [
+        "_ask/tests/test_revising_browser.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-BROWSER-BUDGETS",
+      "criterion_ids": [
+        "EM-012"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Current candidate genuine representative pilot on recorded environment with raw benchmark output outside source tree",
+        "when": "Measure 20 warm samples and five cold process restarts through real browser using candidate code",
+        "then": [
+          "Nearest-rank p95 overview <=1500ms, metadata navigation/filter <=500ms, selected source/result <=1000ms; every cold start <=4000ms; raw samples/misses/environment/selected identity/candidate retained even on failure; deterministic 100/1000-task structural workloads recorded"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-012",
+          "checks": [
+            "Nearest-rank p95 overview <=1500ms, metadata navigation/filter <=500ms, selected source/result <=1000ms; every cold start <=4000ms; raw samples/misses/environment/selected identity/candidate retained even on failure; deterministic 100/1000-task structural workloads recorded"
+          ]
+        }
+      ],
+      "runner_id": "rwb-browser-budgets",
+      "case_id": "_ask.tests.test_revising_performance.WorkbenchPerformanceTests.test_real_pilot_twenty_warm_five_cold_samples_respect_budgets",
+      "source_paths": [
+        "_ask/tests/test_revising_performance.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-HUMAN-COMPLETION",
+      "criterion_ids": [
+        "EM-016"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Actual returning human exercise recorded independently against final candidate and exact selected source/context/evidence manifest",
+        "when": "Read the genuine external runtime comprehension record and apply demo completion guard",
+        "then": [
+          "All ten attributable identifications pass without chat help and match candidate/snapshot/Task/Scenario/Test/source/helpers/fixtures/evidence; absent/failed/stale record blocks; machine check validates binding only and never supplies human answers"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-016",
+          "checks": [
+            "All ten attributable identifications pass without chat help and match candidate/snapshot/Task/Scenario/Test/source/helpers/fixtures/evidence; absent/failed/stale record blocks; machine check validates binding only and never supplies human answers"
+          ]
+        }
+      ],
+      "runner_id": "rwb-human-completion",
+      "case_id": "_ask.tests.test_revising_browser.WorkbenchBrowserTests.test_demo_completion_requires_genuine_bound_successful_human_record",
+      "source_paths": [
+        "_ask/tests/test_revising_browser.py",
+        "_ask/tests/revising_browser_support.py"
+      ]
+    },
+    {
+      "id": "RWB-ASSOCIATION-PASSAGES",
+      "criterion_ids": [
+        "EM-002",
+        "EM-007",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The real associate_subject entry introduced by RWB-103 and an explicitly confirmed subject with optional or required contribution context",
+        "when": "Submit valid, missing-required, ambiguous, unsafe and stale association batches through its public guarded definition path",
+        "then": [
+          "Valid association preserves attributable semantic history and records its bound intent context; refused batches preserve stable bytes",
+          "Actual association entry extends the foundation registry; valid publication has exactly one ordered pre/action/post/publication with captured lineage; invalid/stale inputs invoke no action or publish no candidate",
+          "Only explicitly required contribution passages block association; standalone proposals need no ancestor passage; missing/ambiguous required or unsafe references refuse without substitute text"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-002",
+          "checks": [
+            "Valid association preserves attributable semantic history and records its bound intent context; refused batches preserve stable bytes"
+          ]
+        },
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Actual association entry extends the foundation registry; valid publication has exactly one ordered pre/action/post/publication with captured lineage; invalid/stale inputs invoke no action or publish no candidate"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Only explicitly required contribution passages block association; standalone proposals need no ancestor passage; missing/ambiguous required or unsafe references refuse without substitute text"
+          ]
+        }
+      ],
+      "runner_id": "rwb-association-passages",
+      "case_id": "_ask.tests.test_revising_intake.StageIntakeTests.test_association_passage_admission_uses_existing_guard",
+      "source_paths": [
+        "_ask/tests/test_revising_intake.py"
+      ]
+    },
+    {
+      "id": "RWB-MIGRATION-PASSAGES",
+      "criterion_ids": [
+        "EM-007",
+        "EM-014",
+        "EM-015"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The real reviewed migration entry introduced by RWB-108 with source/target bindings and optional or explicitly required context",
+        "when": "Execute accepted migration and required-missing, ambiguous, unsafe or stale proposals through its actual public entry",
+        "then": [
+          "Migration extends the registry with real calls; valid publication retains exactly one pre/action/post/publication and refuses invalid/stale source or target without writes",
+          "Independent source/target-bound review and preserved IDs/references/evidence attribution remain mandatory; browsing performs no migration",
+          "Unrelated optional gaps remain admitted, while a required migration contract passage must resolve uniquely; missing/ambiguous/unsafe targets cannot be replaced with similar text"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Migration extends the registry with real calls; valid publication retains exactly one pre/action/post/publication and refuses invalid/stale source or target without writes"
+          ]
+        },
+        {
+          "criterion_id": "EM-014",
+          "checks": [
+            "Independent source/target-bound review and preserved IDs/references/evidence attribution remain mandatory; browsing performs no migration"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Unrelated optional gaps remain admitted, while a required migration contract passage must resolve uniquely; missing/ambiguous/unsafe targets cannot be replaced with similar text"
+          ]
+        }
+      ],
+      "runner_id": "rwb-migration-passages",
+      "case_id": "_ask.tests.test_revising_pilot.MigrationTests.test_migration_passage_dependencies_use_real_guarded_entry",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-DEMO-PASSAGES",
+      "criterion_ids": [
+        "EM-007",
+        "EM-015",
+        "EM-016"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The real representative admission/completion gate introduced by RWB-108 with exact WB-003 spec/plan selectors and genuine-evidence/human prerequisites",
+        "when": "Invoke the gate with missing/ambiguous/unsafe/stale required passages, then with unique captured passages but remaining genuine evidence or human prerequisites",
+        "then": [
+          "Actual representative gate extends the entrypoint registry and uses captured admission identities; incomplete or stale prerequisite sets cannot publish demonstration completion",
+          "Both exact required baseline spec passages and WB-003 plan row must resolve uniquely; context refusal names each unresolved prerequisite and never selects fallback text",
+          "Unique context alone leaves genuine report/log/authority and successful candidate-bound human-record prerequisites explicit; this case asserts refusal/remaining requirements without fabricating successful comprehension; actual demonstration remains RWB-109"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-007",
+          "checks": [
+            "Actual representative gate extends the entrypoint registry and uses captured admission identities; incomplete or stale prerequisite sets cannot publish demonstration completion"
+          ]
+        },
+        {
+          "criterion_id": "EM-015",
+          "checks": [
+            "Both exact required baseline spec passages and WB-003 plan row must resolve uniquely; context refusal names each unresolved prerequisite and never selects fallback text"
+          ]
+        },
+        {
+          "criterion_id": "EM-016",
+          "checks": [
+            "Unique context alone leaves genuine report/log/authority and successful candidate-bound human-record prerequisites explicit; this case asserts refusal/remaining requirements without fabricating successful comprehension; actual demonstration remains RWB-109"
+          ]
+        }
+      ],
+      "runner_id": "rwb-demo-passages",
+      "case_id": "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_passages_gate_demo_without_fabricated_success",
+      "source_paths": [
+        "_ask/tests/test_revising_pilot.py"
+      ]
+    },
+    {
+      "id": "RWB-INNER-LOOP-AMENDMENT",
+      "criterion_ids": [
+        "EM-019"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A task base has the earlier accepted pin and a reviewed candidate carries a later coordinator-approved amendment",
+        "when": "The coordinator runs normal detached integration verification",
+        "then": [
+          "Verifier implementation and imports come from the task base",
+          "The CheckPlan comes from the candidate and candidate source changes match accepted obligations",
+          "A reviewed candidate contract amendment matching coordinator authority passes integration",
+          "Unamended integration passes and candidate-only contract changes are rejected"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-019",
+          "checks": [
+            "Integration evidence runner_sha equals the task base and amended candidate passes",
+            "Unamended candidate passes the same verification entrypoint",
+            "Candidate-only accepted-contract mutation is rejected"
+          ]
+        }
+      ],
+      "runner_id": "rwb-inner-loop-amendment",
+      "case_id": "test_traceability_entrypoints.EntrypointTests.test_I08_integration_accepts_reviewed_contract_amended_after_task_base",
+      "source_paths": [
+        "_ask/tests/test_traceability_entrypoints.py"
+      ]
+    },
+    {
+      "id": "RWB-CANDIDATE-SYNC-CLEAN",
+      "criterion_ids": [
+        "EM-020"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The candidate has a work-specific reviewer overlay and the verifier exports ASK_ROOT into sync, first-run, consumer-overlay, canonical-source sync, and off-path sync checks",
+        "when": "The forced-failure sync check, successful sync, first-run consumer test, binding-overlay install test, and temporary-root canonical/off-path sync tests execute in a disposable candidate worktree",
+        "then": [
+          "The failing sync check restores generated runtime-agent projections to exact pre-check bytes",
+          "All successful checks leave candidate source and projections unchanged and preserve consumer bindings"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-020",
+          "checks": [
+            "Force a failure after runtime projections change, require the expected nonzero status, compare all projection files with their pre-check snapshot, and assert the candidate is clean",
+            "Run sync, first-run, binding-overlay, canonical-source sync, and off-path sync checks with ASK_ROOT set to the child candidate; require success, exact projection preservation, and no candidate changes"
+          ]
+        }
+      ],
+      "runner_id": "rwb-candidate-sync-clean",
+      "case_id": "test_traceability_entrypoints.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree",
+      "source_paths": [
+        "_ask/tests/test_traceability_entrypoints.py",
+        "_ask/tests/test-sync-runtime-agents.sh",
+        "_ask/tests/test-askit-first-run.sh",
+        "_ask/tests/test-bindings-consumer-overlay.sh",
+        "_ask/tests/test-sync-canonical-ask.sh",
+        "_ask/tests/test-sync-off-path-command.sh",
+        "_ask/scripts/install-kit.sh"
+      ]
+    }
+  ],
+  "task_scopes": [
+    {
+      "task_id": "RWB-101",
+      "test_ids": [
+        "RWB-V2-GRAPH",
+        "RWB-QUALIFIED-ID",
+        "RWB-FLOW-SELECTION",
+        "RWB-V1-VALID",
+        "RWB-V1-GRAPH",
+        "RWB-V1-FIELDS",
+        "RWB-V1-REFS",
+        "RWB-V1-DECISION",
+        "RWB-V1-REVISE",
+        "RWB-V1-STALE",
+        "RWB-V1-CAS"
+      ]
+    },
+    {
+      "task_id": "RWB-102",
+      "test_ids": [
+        "RWB-SELECTORS",
+        "RWB-PASSAGE-ACTIONS",
+        "RWB-CONTEXT-FRESHNESS",
+        "RWB-GUARD-PRE",
+        "RWB-GUARD-POST",
+        "RWB-GUARD-REFS",
+        "RWB-GUARD-EVENTS",
+        "RWB-GUARD-PARITY",
+        "RWB-GUARD-PUBLISH",
+        "RWB-GUARD-BOOTSTRAP",
+        "RWB-GUARD-BATCH",
+        "RWB-GUARD-ORDER",
+        "RWB-GUARD-ENTRYPOINTS"
+      ]
+    },
+    {
+      "task_id": "RWB-103",
+      "test_ids": [
+        "RWB-SUBJECT-RULES",
+        "RWB-FRESH-INTAKE",
+        "RWB-CONTEXT-CLI",
+        "RWB-ASSOCIATION-PASSAGES"
+      ]
+    },
+    {
+      "task_id": "RWB-104",
+      "test_ids": [
+        "RWB-PROJECTION",
+        "RWB-HISTORICAL",
+        "RWB-CLI-PROJECTION",
+        "RWB-CLI-JOURNEY",
+        "RWB-V1-PROJECTIONS"
+      ]
+    },
+    {
+      "task_id": "RWB-105",
+      "test_ids": [
+        "RWB-SOURCE-HELPERS",
+        "RWB-EVIDENCE-JOINS",
+        "RWB-EVIDENCE-STATES",
+        "RWB-V1-EVIDENCE-REAL",
+        "RWB-V1-EVIDENCE-MISSING"
+      ]
+    },
+    {
+      "task_id": "RWB-106",
+      "test_ids": [
+        "RWB-APP-ENTRY",
+        "RWB-APP-TASK"
+      ]
+    },
+    {
+      "task_id": "RWB-107",
+      "test_ids": [
+        "RWB-APP-EVIDENCE",
+        "RWB-APP-DECISIONS",
+        "RWB-LAZY-CACHE",
+        "RWB-INNER-LOOP-AMENDMENT",
+        "RWB-CANDIDATE-SYNC-CLEAN"
+      ]
+    },
+    {
+      "task_id": "RWB-108",
+      "test_ids": [
+        "RWB-MIGRATION",
+        "RWB-NEW-CONTRACT",
+        "RWB-READABILITY-BINDING",
+        "RWB-GENUINE-WB003",
+        "RWB-MIGRATION-PASSAGES",
+        "RWB-DEMO-PASSAGES"
+      ]
+    },
+    {
+      "task_id": "RWB-109",
+      "test_ids": [
+        "RWB-BROWSER-NAV",
+        "RWB-BROWSER-GUARD",
+        "RWB-BROWSER-EVIDENCE",
+        "RWB-BROWSER-ACCESS",
+        "RWB-BROWSER-PILOT",
+        "RWB-BROWSER-BUDGETS",
+        "RWB-HUMAN-COMPLETION"
+      ]
+    }
+  ]
+}

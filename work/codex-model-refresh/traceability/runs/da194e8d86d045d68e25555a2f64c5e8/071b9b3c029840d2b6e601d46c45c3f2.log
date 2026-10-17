@@ -1,0 +1,10 @@
+test_default_journey (test_codex_effort.CodexEffortTests) ... ok
+test_effort_precedence (test_codex_effort.CodexEffortTests) ... ok
+test_high_risk_review (test_codex_effort.CodexEffortTests) ... ok
+test_inherit_and_unknown_model (test_codex_effort.CodexEffortTests) ... ok
+test_invalid_effort_preserves_outputs (test_codex_effort.CodexEffortTests) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.706s
+
+OK

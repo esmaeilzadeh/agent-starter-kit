@@ -1,0 +1,20 @@
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.ijzb5DGCoZ
+install-kit: skip existing .gitignore (use --force)
+install-kit: skip existing AGENTS.md (use --force)
+install-kit: skip existing ask (use --force)
+install-kit: skip existing ai-agent-engineering-guide.md (use --force)
+install-kit: skip existing ai-agent-starter-kit-spec.md (use --force)
+install-kit: skip existing .ask.env.example (use --force)
+install-kit: skip existing .ask/README.md (use --force)
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.claude/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.codex/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.cursor/agents
+sync-runtime-agents: wrote /tmp/ask-candidate-1cj4ng30/checkout/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.ijzb5DGCoZ
+PASS: install-kit does not clobber consumer bindings/models.yaml

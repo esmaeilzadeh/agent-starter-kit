@@ -1,0 +1,21 @@
+{
+  "schema": "ask-test-review/v2", "work_id": "structured-agentic-environment",
+  "reviewer": "codex-gpt6.1-sol-independent-review", "recorded_by": "codex-coordinator",
+  "model": "gpt-6.1-sol", "runtime": "codex", "parent_model": "gpt-6-luna",
+  "scope": "task", "task_id": "WB-007", "candidate_sha": "f1a01c3c4b05f8dbb3fcf90ae728e9ee9cfc5051",
+  "task_base_sha": "05dd6a1c29ea68df3f3d8ece933d0f3d832012a1", "base_sha": "dcae11d61c2b73745ba9f5b2187065792d84ac46",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb", "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "test_ids": ["WB-attention", "WB-decision-choice"], "criterion_ids": ["EM-006", "EM-010"],
+  "source_digests": {"_ask/tests/test_engineering_workbench_attention.py": "9b384eaf447000b481aed70143b2a0c0f9587c2d5e16135ab68a75d21db33880"},
+  "inspected_sources": ["_ask/tests/test_engineering_workbench_attention.py", "_ask/tests/test_engineering_workbench_overview.py", "_ask/tests/test_engineering_workbench_tasks.py", "_ask/ui/streamlit_app.py", "_ask/ui/workbench_attention.py", "_ask/ui/workbench_overview.py", "_ask/ui/workbench_scenarios.py", "_ask/ui/workbench_stories.py", "_ask/ui/workbench_tasks.py"],
+  "changed_cases": ["WB-attention", "WB-completed-tasks", "WB-decision-choice", "WB-overview", "WB-summary-links", "WB-task-detail"],
+  "inventory_exclusions": {}, "decision": "APPROVED", "boundary": "ok",
+  "criteria": [
+    {"id": "EM-006", "coverage_decision": "APPROVED", "assessment": "Attention records retain originating IDs, reasons, declared options and dependents without synthesizing consequences.", "type_adequacy": {"integration": {"decision": "APPROVED", "assessment": "The accepted attention AppTest exercises the normalized records and visible context."}}},
+    {"id": "EM-010", "coverage_decision": "APPROVED", "assessment": "Decision context is inspectable while the existing guarded form remains the edit authority.", "type_adequacy": {"integration": {"decision": "APPROVED", "assessment": "The decision-choice case verifies incomplete input and read-only context behavior."}}}
+  ],
+  "tests": [
+    {"id": "WB-attention", "decision": "APPROVED", "assertion_assessment": "The candidate test passes and retains blocker/decision identities, reasons, options and dependents.", "counterexample": "Dropping originating IDs or options removes the asserted attention context.", "tdd_continuity_assessment": "The genuine red run fails by behavior assertion with valid collection; final green passes after the attention surface is complete."},
+    {"id": "WB-decision-choice", "decision": "APPROVED", "assertion_assessment": "The candidate test passes and keeps incomplete/read-only decision context explicit.", "counterexample": "Treating the attention renderer as a mutation authority would violate the asserted read-only boundary.", "tdd_continuity_assessment": "The candidate-bound final green passes and the paired red run retains a valid behavior-red case."}
+  ]
+}

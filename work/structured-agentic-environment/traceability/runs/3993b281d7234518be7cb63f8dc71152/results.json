@@ -1,0 +1,81 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "3993b281d7234518be7cb63f8dc71152",
+  "scope": "task",
+  "task_id": "WB-004",
+  "candidate_sha": "fb540ca84c93b7b2fabf3db2da56ae0efe686ae7",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "c6de28e71cc04ef983acd51fa1e75783",
+      "runner_id": "engineering-model",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/structured-agentic-environment/traceability/runs/3993b281d7234518be7cb63f8dc71152/c6de28e71cc04ef983acd51fa1e75783.json",
+        "[\"test_engineering_workbench_navigation.WorkbenchTests.test_work_default_routes_and_context_reset\", \"test_engineering_workbench_navigation.WorkbenchTests.test_navigation_does_not_refresh_stale_form_identity\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "fb540ca84c93b7b2fabf3db2da56ae0efe686ae7",
+      "exit_code": 1,
+      "collection_status": "ok",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/3993b281d7234518be7cb63f8dc71152/c6de28e71cc04ef983acd51fa1e75783.log",
+      "output_digest": "6149d02268070d2a66384f1a291b7e84661fdeefd44555af7d97bf49b0ba9475"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_engineering_workbench_navigation.WorkbenchTests.test_navigation_does_not_refresh_stale_form_identity",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "WB-form-context",
+      "runner_id": "engineering-model",
+      "execution_id": "c6de28e71cc04ef983acd51fa1e75783",
+      "phase": "red",
+      "source_sha": "fb540ca84c93b7b2fabf3db2da56ae0efe686ae7",
+      "source_digests": {
+        "_ask/tests/test_engineering_workbench_navigation.py": "b3443cdfb779dc1543196b5990f161e489bbe679ec1e2abe9e68349ad7a32a31"
+      },
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/3993b281d7234518be7cb63f8dc71152/c6de28e71cc04ef983acd51fa1e75783.log",
+      "output_digest": "6149d02268070d2a66384f1a291b7e84661fdeefd44555af7d97bf49b0ba9475"
+    },
+    {
+      "case_id": "test_engineering_workbench_navigation.WorkbenchTests.test_work_default_routes_and_context_reset",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "WB-navigation",
+      "runner_id": "engineering-model",
+      "execution_id": "c6de28e71cc04ef983acd51fa1e75783",
+      "phase": "red",
+      "source_sha": "fb540ca84c93b7b2fabf3db2da56ae0efe686ae7",
+      "source_digests": {
+        "_ask/tests/test_engineering_workbench_navigation.py": "b3443cdfb779dc1543196b5990f161e489bbe679ec1e2abe9e68349ad7a32a31"
+      },
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/3993b281d7234518be7cb63f8dc71152/c6de28e71cc04ef983acd51fa1e75783.log",
+      "output_digest": "6149d02268070d2a66384f1a291b7e84661fdeefd44555af7d97bf49b0ba9475"
+    }
+  ]
+}

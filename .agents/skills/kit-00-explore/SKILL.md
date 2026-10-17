@@ -20,6 +20,23 @@ When the destination is foggy, chart decisions (and run research/prototypes)
 until What/Why can be owned — then hand off into Intent / 01 Grill.
 ```
 
+## Adopted subject intake
+
+Before choosing or creating execution work, recording intent, or admitting a
+delivery, resolve the request through the shared read-only subject context:
+
+```sh
+./ask stage-intake --stage 00-explore --work-id <work-id> --request <request.json>
+```
+
+The JSON request may contain explicit qualified `explicit_subjects`, a
+`tracker_context` reference, or parked `later_cards`. Treat `resolved`,
+`needs_clarification`, `chooser`, and `unavailable` as distinct outcomes. An
+explicit subject takes precedence over a recorded association; conflicting
+qualified owners require human clarification. A branch is only an execution
+locator. This command inspects context and does not create branches, nodes,
+intent, assignments, or delivery state.
+
 Must:
 
 ```text

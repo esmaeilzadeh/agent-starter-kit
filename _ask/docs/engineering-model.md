@@ -1,0 +1,170 @@
+# Engineering Model pilot
+
+The optional `work/<work-id>/engineering-model.json` sidecar organizes intent,
+requirements, scenarios, decisions and work. Specifications/test plans remain
+canonical for behavior/assertions; existing traceability remains authoritative
+for execution and completion. A declared `done` task is not execution evidence.
+
+The validator dispatches by exact schema. Existing v1 definitions retain their
+required intent/parent, field, lifecycle and reference rules. V2 definitions may
+omit intent and containment, add `contributes_to` and `enables` support edges,
+and attach a Task's qualified `execution` identity separately from its product
+identity. Active Scenarios select a canonical plan case by source work, canonical
+plan digest and case ID; `covers` must select that same case or use a reviewed
+mapping recorded in the plan. A shared criterion alone does not establish flow
+coverage. Execution aliases remain distinct from product IDs, delivery state,
+verification and declared lifecycle state.
+
+## Document operations
+
+Run `./ask model --help` and each subcommand's `--help` for arguments.
+
+- `validate` captures the model and reference closure, checks all rules, then
+  rechecks freshness. It writes no model or publication. `--full` currently
+  performs the same full check; no incremental validation cache is implemented.
+- `admit` validates working inputs before publishing an immutable generation.
+  It can recover an interrupted managed edit. Read admission grants no workflow
+  or acceptance authority.
+- `show` reads admitted bytes. Invalid working definitions produce diagnostics
+  and, when available, an explicitly last-validated noneditable generation.
+- `edit` requires the complete displayed digest with `--expected` and a JSON
+  batch. It stages, validates and publishes coordinated changes together.
+- `watch` observes external saves with the optional native `watchfiles` backend.
+  `--once` needs only the core dependencies. Full read/action-entry validation
+  remains the fallback for missed events.
+- `context` resolves an explicit qualified subject or a confirmed recorded
+  association for read-only initial-stage intake. It labels later cards and
+  tracker references as proposals/external context; supplied tracker data stays
+  unverified without an authoritative read, and neither creates execution ownership.
+
+The adopted Explore and Grill stages call `./ask stage-intake` before selecting
+or creating execution work, intent, or delivery admission. The stage adapter
+and `./ask model context` use the same resolver and write no state. When a human
+confirms an association, the guarded semantic `associate_subject` action records
+the qualified subject, bounded contribution/exclusions, optional execution
+owner and attributable history against the captured snapshot. Before presenting
+the complete intent for approval, carry that bound subject, source revision,
+contribution, exclusions and execution owner into `work/<work-id>/intent.md`.
+Required
+contribution roles must resolve uniquely from that subject's captured context;
+unspecified optional context does not block standalone proposals.
+
+Batch shape:
+
+```json
+{
+  "commands": [{
+    "op": "resolve_decision",
+    "id": "a-decision",
+    "option_id": "an-option",
+    "actor": "Developer",
+    "rationale": "Reason for this choice"
+  }],
+  "files": {"specs/current/example.md": "# Coordinated specification\n"}
+}
+```
+
+The selected workstream's spec JSON/Markdown and test plan may be staged in
+`files`; Engineering Model mutations use semantic commands. Add nodes and their
+required edges in one batch. IDs/types are immutable; retired definitions are
+terminal. Decisions resolve/reopen/retire through attributable operations, with
+prior choices/options retained in history. Other declared lifecycle transitions
+may use the type's allowed states; dependency edits reopen affected resolved
+decisions transitively. Only resolved decisions, confirmed assumptions and done
+tasks satisfy their respective prerequisites.
+
+## Cooperating workflow actions
+
+`./ask model admit --work-id <id> --action <label> -- <program> <args...>`
+checks documents before invoking the argv directly (no shell), checks afterward,
+and returns a failure if the document state is invalid/stale. The label is
+attribution, not permission. Existing worktree/coordinator/approval rules still
+apply. Use guarded `edit` for canonical changes inside such an action; raw
+definition writes cannot be made equivalent by a later read admission.
+
+Verify, review/completion recording, acceptance checks and inner-loop entry
+points use shared admission for adopted workstreams. Existing unadopted
+workstreams keep their policy and acquire no validated-state label. Adoption
+markers include the working model, tracked HEAD model and published pointer, so
+deleting the working file does not bypass admission.
+
+### Explicit v1 migration and representative evidence
+
+Opening or validating a v1 model never converts it. `./ask model migrate`
+requires the current admitted snapshot digest, a proposed v2 JSON document, and
+an `ask-engineering-migration-review/v1` approval bound to the canonical source,
+target, and preservation-diff digests. Removed IDs, changed historical node
+fields, references, or stale review digests refuse. The target passes the same
+pre/action/post/publication journal and generation-pointer guard as other model
+actions. If a Task is selected, its unique spec and plan passages are resolved
+from the exact proposed target snapshot before the migration action runs; the
+current v1 snapshot still receives the ordinary pre-check.
+
+`ask-workbench-comprehension/v1` records bind ten attributable human answers to
+the candidate, snapshot, selected Task/Scenario/Test and inspected dependency
+digests. Validation preserves failed assessments and marks changed bindings
+stale. It does not generate answers or certify the human. A resolved passage
+gate reports that genuine retained execution authority and an independent
+human exercise remain prerequisites; passage availability alone never marks a
+demo complete.
+
+## Publication and failure boundaries
+
+The publication unit is a complete captured generation selected by one atomic
+pointer. Readers use its stored bytes, not partially materialized working files.
+A durable journal recovers interrupted edits without replaying the semantic
+action; conflicting external saves are refused and preserved.
+
+This is a local cooperating POSIX pilot. File locks and hashed publication
+history provide serialization and provenance, not authentication. Raw editors
+do not honor those locks; their working files remain untrusted until validation.
+Several filesystem replacements are not one distributed transaction. An
+invalid external save requires explicit correction/import outside ordinary
+blocked actions; the UI does not repair domain documents.
+
+Core validation/editing uses Python standard-library JSON, hash indexes and
+iterative graph traversal. Optional UI/watcher dependencies are separate. The
+full-guard benchmark below measures actual staged actions; it does not select a
+technology or establish a performance target.
+
+## Interactive workbench
+
+Install the optional runtime dependencies and launch the local UI:
+
+```sh
+python -m pip install -r _ask/ui/requirements.txt
+./ask ui
+```
+
+Set `ASK_MODEL_ROOT` to a repository root when inspecting a different checkout.
+The default is this repository. The workbench displays admitted snapshots;
+decision forms use the shared expected-digest mutation path and stay bound to
+the snapshot shown until the user refreshes. Invalid working state is read-only
+and may show the last validated generation. No automatic execution or repair is
+performed.
+
+The browser integration test additionally needs the pinned Playwright test
+dependency and its Chromium browser:
+
+```sh
+python -m pip install -r _ask/ui/requirements.txt -r _ask/ui/requirements-test.txt
+python -m playwright install chromium
+PYTHONPATH=_ask/scripts:_ask/tests python -m unittest test_engineering_ui test_engineering_ui_browser
+```
+
+## Validator performance measurement
+
+The reproducible full-guard benchmark runs on disposable copies and emits JSON
+to stdout; it does not write repository runtime state:
+
+```sh
+PYTHONPATH=_ask/scripts python -m engineering_model.benchmark --guard --repeats 15
+```
+
+It measures actual pre/action/post/publication paths, rejected pre- and
+post-validation paths, component timings and process peak RSS across the pilot
+closure and synthetic closures. Results include source hashes and environment;
+timings include instrumentation overhead and do not imply cold OS caches or a
+performance target. The optional benchmark is evidence for deciding whether a
+different implementation technology is warranted, not a claim that Python is
+optimal.

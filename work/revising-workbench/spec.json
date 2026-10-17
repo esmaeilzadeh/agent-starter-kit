@@ -1,0 +1,196 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "revising-workbench",
+  "revision": 2,
+  "criteria": [
+    {
+      "id": "EM-001",
+      "given": "A broad typed model or malformed graph/reference/lifecycle",
+      "when": "Standalone validation runs",
+      "then": [
+        "Valid models are accepted and duplicate/broken identities, illegal edges/cardinality/cycles, malformed fields and lifecycle conflicts produce precise nonmutating diagnostics"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-002",
+      "given": "A valid Engineering Model with decisions and dependent tasks",
+      "when": "A digest-bound semantic edit or concurrent stale edit is submitted",
+      "then": [
+        "Through a pre/post-validated action, attributable history, revisions, blockers and transitive decision invalidation persist; invalid/stale changes cannot publish or overwrite the last stable state"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-003",
+      "given": "Canonical scenario/test references and coordinator evidence, possibly missing, tampered or historical",
+      "when": "Read-only scenario and evidence projection runs",
+      "then": [
+        "Assertions, actual outcomes and revision provenance are inspected through existing authority; missing/invalid/historical evidence is honest and inspection writes nothing"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-004",
+      "given": "One revisioned model used by agents and humans",
+      "when": "Public CLI validates, projects JSON/Markdown and performs a decision journey",
+      "then": [
+        "Both projections retain identical IDs/digest and task/attention state, useful errors preserve data and CLI edits survive reload"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-005",
+      "given": "A validated workstream snapshot and canonical evidence references",
+      "when": "Interactive work/scenario inspection runs",
+      "then": [
+        "UI displays canonical assertions/tests/revisions and honest evidence states, consuming the shared validated snapshot without duplicating domain-validation or repair rules"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-006",
+      "given": "An attention item, valid/invalid decision form or concurrently changed definition",
+      "when": "The developer records a reasoned choice then reloads, or submits a stale/invalid form",
+      "then": [
+        "A valid choice persists and changes task attention; stale or invalid submissions reject without writes"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-007",
+      "given": "Current and candidate document states, referenced specifications, external saves and concurrent changes",
+      "when": "Any state-changing engineering action or specification change is admitted and published",
+      "then": [
+        "Validate the current stable state before invoking the action and the complete resulting state afterward; failures or stale identities prevent publication",
+        "Every spec change invalidates affected validation, including linked-spec-only edits; startup/action/read checks recover from missed external-save events",
+        "Readers consume one validated generation, with content/dependency/rule-bound identity; incremental/cache behavior agrees with full validation and no broken or mixed state is actionable",
+        "Each enumerated public state-changing entry point uses the same guard; successful execution records exactly one pre-check, action, post-check and publication in order against captured input/result identities"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-008",
+      "given": "An admitted v2 model containing standalone items, local support links, shared Tasks and qualified execution aliases",
+      "when": "The human navigates known relationships or definitions are admitted",
+      "then": [
+        "Missing containment parents and Story membership remain legal and visible; support links never fabricate ancestors or change executable ownership",
+        "Each product has one qualified model identity; each execution Task has a separate qualified identity; duplicate aliases for one execution Task reject within a model",
+        "Definition lifecycle, readiness, execution/integration and verification remain separate authorities; foreign products open read-only in their owning model without cloned aliases or foreign support edges",
+        "Concrete Scenario flow selects a canonical test-plan case by source work, plan digest and case ID; explicit coverage must agree with that flow or a reviewed canonical mapping; criterion overlap alone never establishes flow coverage"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-009",
+      "given": "An explicit Story/Task subject, recorded context, live/archive refs and a selected source revision",
+      "when": "The workbench opens a subject or another committed revision",
+      "then": [
+        "Explicit valid subjects open directly; otherwise resolved context or a labeled chooser supplies the subject without inferring an Epic from the branch",
+        "Checkout, product subject and inspected revision remain distinct; committed foreign revisions use consistent model/source/evidence and remain read-only without checkout or ref changes",
+        "A shared Task retains identity across routes and Back restores the initiating context; unavailable records and ancestors remain explicit"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-010",
+      "given": "A selected Task with known purpose, plan/spec references, relationships, owned work, tests and evidence limitations",
+      "when": "The human opens Task detail, summary records or a decision form",
+      "then": [
+        "Readable outcome and purpose, relevant same-revision spec passages and actual plan entry, dependencies, supporting Stories/Scenarios and scoped Tests are shown in context; an unplanned item shows no recorded plan entry",
+        "Every summary count opens its exact underlying records; blockers name their cause and current guarded decision forms retain options, attribution, rationale and stale-form protection",
+        "Titles, IDs and links alone do not satisfy context recovery; absent history or declared done never establishes verified delivery"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-011",
+      "given": "A concrete Scenario selects a Test whose assertion depends on fixtures/helpers, with current or historical execution records",
+      "when": "The human inspects its behavior, source and outcome",
+      "then": [
+        "Show concrete setup/input, action, expected behavior and assertion with selected same-revision source and necessary fixture/helper/global definitions; explanation cannot override canonical assertions",
+        "Attach actual results only through existing nonmutating work/test/run/contract/candidate and report/log integrity authority; show retained failure output and recorded time/duration or explicit absence",
+        "Preserve passed, failed, not run, skipped, runtime error, stale, historical and unavailable meanings; expected narrative is distinct from retained observations, and case pass is distinct from workstream completion",
+        "Readable details expose the flow-specific association; criterion-related Tests are never represented as proving an unselected flow; technical provenance is explained in initially collapsed details"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-012",
+      "given": "The workbench and recorded local performance baseline, including narrow and keyboard-only usage",
+      "when": "The redesigned UI is exercised in a real browser with measured loading and navigation",
+      "then": [
+        "Responsive list-detail navigation, accessible labels/focus/contrast and non-color status text allow the primary inspection and decision journeys",
+        "Initial Overview performs no test-source or evidence scan; selected detail loads lazily and cache refresh or changed inputs cannot hide stale or tampered evidence",
+        "Pilot latency budgets are measured with documented samples and misses; a technology replacement requires observed limitations and a reviewed amendment"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-013",
+      "given": "Fresh adopted coordinator intake receives explicit, recorded, conflicting or unavailable work subjects",
+      "when": "Explore/Grill work selection establishes a bounded contribution before branch creation, intent recording or delivery admission",
+      "then": [
+        "The actual agent/coordinator intake invokes the shared read-only context resolver; tests drive that caller, not only a pure resolver or the proposed model context CLI",
+        "Explicit subjects precede valid recorded associations; conflicting explicit identities or material scope/ownership conflicts require clarification; branch identity alone never classifies a product subject",
+        "Reuse repository identities and explain source, contribution, exclusions, known relationships and execution owner; missing optional ancestors do not require invented parents",
+        "Unavailable tracker context stays unavailable and a later card alone proves neither live Task nor approved scope; inspection-only entry writes no branch, intent, node or assignment"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-014",
+      "given": "Historical v1 records and explicitly proposed v2 definitions with optional containment and local support relationships",
+      "when": "Validation or reviewed migration runs",
+      "then": [
+        "V2 permits optional containment and specified many-to-many support while rejecting duplicate identities/aliases, illegal edges, broken local links, multiple containment parents, cycles and contradictory lifecycle/resolution",
+        "V1 retains its original rules; explicit independently reviewed migration preserves IDs, references and evidence attribution, and browsing performs no conversion or writes"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-015",
+      "given": "Safe or unsafe spec/plan references with absent, malformed, zero-match, multiple-match or unique selectors",
+      "when": "Captured context is inspected, actions seek admission or source inputs change",
+      "then": [
+        "Unsafe or escaping/symlink targets and malformed selectors reject admission; invalid current documents permit only labeled untrusted diagnostics, last-validated inspection and explicit repair/import, with ordinary actions blocked",
+        "Absent optional references, safe missing files and well-formed zero/multiple matches admit labeled missing/ambiguous context without substitute passages or first-match selection",
+        "A missing required passage blocks its dependent action and the representative demonstration; unrelated guarded actions remain admissible on an otherwise valid document",
+        "Unique matches display captured text with path, section/task selector and inspected revision; bytes, selector, dependency/rule identity and missing/match state govern freshness, including linked-only, missing-to-present and unique-to-ambiguous changes"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-016",
+      "given": "The specified WB-003 Task, WB-evidence-identity flow, qualified Test, retained candidate/runs and necessary helper context",
+      "when": "The returning human completes the representative Story journey",
+      "then": [
+        "Show the exact spec/plan selections, concrete flow, selected Test and necessary same-revision helpers/fixtures, with at least one genuine retained result validated through existing authority",
+        "Fixture outcomes, committed output excerpts and unavailable labels cannot replace required real execution; missing records or authority name an exact blocked prerequisite",
+        "The human successfully identifies purpose, spec/plan context, flow, setup, action, expected observation, assertion, actual outcome and applicability without chat assistance",
+        "Each identification has a pass/fail disposition bound to candidate/snapshot, selected Task/Scenario/Test and source/helper/fixture revisions; unresolved failure blocks demonstration completion until correction/review or an explicit escalated scope decision",
+        "Relevant definitions, source, context or evidence changes invalidate the human review; automation and existing execution/semantic-review requirements remain mandatory"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-017",
+      "given": "The old harness example and its original historical definitions, plans, pins and evidence",
+      "when": "The main pilot or explicitly selected historical work is inspected",
+      "then": [
+        "The old harness is absent from the main pilot presentation; original records stay at their historical paths with unchanged identity and explicit historical inspection remains available"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-018",
+      "given": "Versioned repository engineering definitions and optional supplied external references",
+      "when": "Work is resolved or inspected",
+      "then": [
+        "Engineering definitions, spec/plan text and code/test relationships stay repository-owned and revision-bound; inspection requires no third-party service or separately editable backlog",
+        "External identity/coordination context is labeled by availability and never introduces automatic API integration, synchronization, status ownership or authority transfer"
+      ],
+      "verification_mode": "tests"
+    }
+  ]
+}

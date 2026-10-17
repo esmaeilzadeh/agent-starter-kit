@@ -43,5 +43,14 @@ class ContractTests(unittest.TestCase):
         plan['task_scopes'][0]['test_ids'].append('INV-E01')
         self.assertEqual(self.validate(spec,plan,{'tasks':[{'id':'a'}]}),[])
         self.assertTrue(self.validate(spec,plan,{'tasks':[{'id':'b'}]}))
+    def test_I04_baseline_regression_exemptions_are_task_scoped_and_assigned(self):
+        spec,plan=contracts();plan['task_scopes']=[{'task_id':'a','test_ids':['INV-U01','INV-E01']}]
+        graph={'tasks':[{'id':'a'}]}
+        plan['task_scoped_baseline_regression_exemptions']={'a':['INV-U01']}
+        self.assertEqual(self.validate(spec,plan,graph),[])
+        plan['task_scoped_baseline_regression_exemptions']={'a':['MISSING']}
+        self.assertTrue(self.validate(spec,plan,graph))
+        plan['task_scoped_baseline_regression_exemptions']={'unknown':['INV-U01']}
+        self.assertTrue(self.validate(spec,plan,graph))
 
 if __name__=='__main__': unittest.main()

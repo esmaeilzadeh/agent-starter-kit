@@ -1,0 +1,5 @@
+"""Archived empty UI sketch. Real UI work follows a validated model foundation."""
+import streamlit as st
+
+st.set_page_config(page_title="Engineering workbench", layout="wide")
+st.error("Engineering workbench is not implemented yet.")

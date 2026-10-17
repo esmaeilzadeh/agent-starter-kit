@@ -1,0 +1,215 @@
+# Explore Map: Structured, Interactive Agentic Development Environment
+
+## Destination
+
+### Modeling correction continuation — 2026-10-14
+
+Current stage: **00 Explore — READY FOR INTENT**, with the human decisions
+recorded on 2026-10-16 below, for the correction described in
+`modeling-handoff-draft.md`. The earlier READY handoff below remains historical
+and does not resolve this amendment's open decisions.
+
+The human invoked kit-01-grill based on that handoff and replied `yes` to adding
+domain-modeling. The human subsequently instructed: `do not pin the skill get
+latest`. Its manifest pin has been removed; install from the current
+`mattpocock/skills` source as explicitly requested. This accepts the extra
+method only; it does not approve amended intent or implementation.
+
+Observed state: clean tree at entry, current coordinator branch
+`agent/structured-agentic-environment`, WB-001–008 integrated and WB-009 marked
+running. The runtime label does not establish a live writer.
+
+Human decisions (2026-10-16):
+
+1. Epic describes this engineering environment (1A).
+2. Intended user is the human returning to their own work. Restore enough
+   context to remember the work, including the relevant main specification
+   passage and plan task. Cryptic compact summaries are unacceptable.
+3. Story describes an observable user outcome (3A). Scenarios are separate
+   flows of a Story. Tasks are explicit working units visible from Story and
+   Scenario contexts; one Task may support multiple Stories. Use established
+   terminology and avoid unnecessary simultaneous concepts. A short primary-
+   source terminology check was requested where useful.
+4. Features are capabilities linked to Stories, not exclusive containers (4B).
+5. Demonstrate one complete representative Story (5A); this workstream being
+   self-hosted is unimportant. Task relationships handled by Ask must work
+   generally across represented work, not only as bespoke demonstration links.
+6. Story membership remains optional everywhere, including the pilot (6C).
+7. Remove older harness-review from the main pilot presentation (7C), while
+   preserving historical records.
+8. Show relevant specification text in context, with source links (8B).
+9. Explain the promise first, then connect it to delivery/evidence (9C).
+10. Acceptance includes tracing a real Story through specification, Scenarios,
+    Tasks, Tests and actual evidence (10B). Prior demonstrations' evidence was
+    too vague to understand. Tests must be human-readable and relate to the
+    Scenario and Task. Helpers/globals are allowed, with comments/context that
+    make their role comprehensible.
+
+Session boundary: human instructed `stop at defining spec step`. Prepare
+amended intent and request its explicit approval; after approval prepare the
+proposed specification and stop at 02 Spec. No Challenge, Plan or implementation.
+
+Subsequent frontier: a chat/workstream may deliver or continue an existing
+Story or Task rather than an Epic. Resolve existing context without invented
+ancestors. The human challenged Jira duplication and moving engineering docs
+away from code. Repository-first inspection with optional tracker coordination
+is proposed; deployment/integration is not authorized. See `spec-gap-notes.md`
+for drafting findings and `intent.md` for updated assumptions. Earlier approval
+question no longer covers this revised intent; no approval was submitted.
+
+Later review instruction: the human selected `sol with high effort`, then
+after the same-family warning explicitly requested `store the spec start the
+spec challengar agent in separate clean context`. Store PROPOSED revision 4
+and challenge it with gpt-6.1-sol/high in a clean context. Stop after reporting
+findings. No full-intent approval, accepted-spec promotion or implementation
+authorization is inferred.
+
+Interpretation to confirm with complete intent: the phrase `maybe a user story
+have only single story` means a Story may have a single Scenario. Retain existing
+decision forms in this correction; no new decision interaction was selected.
+
+Preserve canonical IDs and historical evidence. The exact representative Story
+and test examples are to be proposed in the specification, not portrayed as
+historical records or already implemented behavior.
+
+Preparation note: `./ask sync` succeeded. Initial `./ask prepare` attempts
+encountered npm registry DNS failure (`EAI_AGAIN`) under network restrictions.
+On 2026-10-15, after network access was enabled, registry DNS/TCP/HTTPS checks
+passed and `npx skills add mattpocock/skills --skill domain-modeling --agent
+cursor --yes` succeeded. The installed repository SKILL.md was inspected.
+The installer recorded source/content integrity in `skills-lock.json` without
+a version ref; no manifest version pin was added, as requested.
+
+Make the handoff's product direction clear enough to own What/Why for a bounded next experiment in the starter kit. Establish which uncertainty that experiment resolves, its authority boundary, its representative workstream, and what evidence would justify continuing, revising, or abandoning it.
+
+The human chose **broader model first, then interactive UI**, and authorized continuing after the model/effort prerequisite. The broader product thesis is a development environment organized around intent, behavior, decisions, work, implementation, and evidence, with the developer directing and challenging construction.
+
+## Notes
+
+- Stage: **00 Explore — READY FOR INTENT**. Earlier frontier sections below are the historical exploration, superseded by the explicit resolution and handoff at the end. No product implementation existed before this continuation.
+- Validation of initial map commit `7146f80`: map whitespace check passed; the source copy preserves original Markdown hard-break spaces, which the default whitespace check flags. A whole-change check allowing those line endings passed. `./ask verify` refused before running any checks with `migration_required: missing coordinator accepted-tests ref`; this Explore workstream does not yet have approved criteria or test obligations. This is not an implementation verification pass.
+- Original input: `/home/mohamad/Downloads/Handoff — Structured, Interactive Agentic Development Environment.md`; durable copy: [source handoff](source-handoff.md). Original SHA-256: `fbd82c2e7b1eddbffb4670616c104cc56b8ebe623ab20cf3429cf51a440674dd`. The copy adds only a final newline; its text is otherwise unchanged.
+- Work branch: `agent/structured-agentic-environment`. Initial base was `develop` at `ed6fa62`; after the human clarified that completed harness-review belongs on both branches and main is latest, local `develop` was fast-forwarded to local `main` at `4a1967a`. This work branch then incorporated that baseline. No push occurred.
+- `./ask prepare` completed for the existing explicit manifest pins. `./ask sync` completed. Pinned wayfinder and grilling guide decision work; the kit overrides tracker authority and exhaustive question expansion. This file is canonical; a tracker mirror is optional and has not been created.
+- Extra skill proposed before decision questions: domain-modeling, to clarify requirement/scenario/evidence/authority terminology. Human choice is pending; it has not been added or invoked. Continue with existing pins unless accepted; accepted additions must receive an explicit repository pin before preparation.
+- Human product decisions, source observations, and agent recommendations are recorded separately below. A recommendation is not a resolved decision.
+
+## Tracker map (optional)
+
+No tracker mirror. Continue from this file and its decision sections.
+
+## Decisions so far
+
+- **Run Explore** — the human explicitly invoked kit-00-explore with the handoff. Do not infer permission to implement the eventual environment.
+- **Use the completed harness baseline** — the human confirmed harness-review is done and should be applied on main and develop, with main latest. Local branch reconciliation is complete; runtime locks were preserved.
+- **Broader model first, interactive UI second** — explicit human correction. First complete the model/effort prerequisite (verified at `6745afe`, merged into this work branch), then resume this sequence.
+
+## Direction supplied by the handoff
+
+These are input commitments to carry into the discussion, rather than newly approved implementation requirements.
+
+- One structured Engineering Model should support both machine use and human inspection. Markdown and UI are projections of that model.
+- Definition belongs with its code revision. Evidence retains provenance and revision binding. Runtime activity has a separate lifecycle.
+- Each fact has an authority: engineering definitions, actual code, executed test results, and runtime assignments need not share physical storage.
+- Semantic mutation and independently runnable validation should protect model invariants, including broken references and duplicate identities.
+- Progress should derive from inspectable evidence. A declared test link or passing process alone does not establish behavioral coverage.
+- Human navigation centers on persistent engineering work. Human attention centers on consequential decisions and uncertainty.
+- Prove value incrementally for both agents and developers. The handoff suggests one existing bounded workstream and a minimal human projection; it also offers a model-first phase sequence. Choosing how to balance these is still open.
+- Persistence format, full object taxonomy, UI architecture, assertion mapping, merge semantics, orchestration, and authorization details remain undecided.
+
+## Repository facts
+
+Observed by reading committed source at baseline `4a1967a`; source inspection is not a new execution or a comparative usability result.
+
+| Observation | Source | Implication for Explore |
+| --- | --- | --- |
+| Canonical criterion IDs and Given/When/Then already exist in JSON. | `specs/current/harness-review.json`, `_ask/docs/spec-test-traceability.md` | Assess reuse before defining a competing criterion registry. |
+| Plans link cases to criteria, required test types, scenarios, expected assertions, runners, and source paths. | `.agents/ask/verification/traceability/coverage.py` | Traceability is an existing substrate, not a completely missing capability. |
+| Completion reloads accepted contracts, recorded semantic review, source bindings, case outcomes, and execution logs for a candidate. | `.agents/ask/verification/traceability/completion.py`, `service.py` | A UI should preserve these authorities and reasons rather than infer success from links or arbitrary status fields. |
+| Independent review assesses assertion adequacy and counterexamples; validation enforces structure and provenance. | `_ask/docs/spec-test-traceability.md` | A generic validator cannot prove that an assertion captures the developer's intended behavior. Keep that judgment visible. |
+| The present runner supports explicit Python unittest cases and refuses unsupported evidence. | `.agents/ask/verification/traceability/coverage.py`, `cli.py` | A pilot can stay within current supported evidence; broader framework adapters would expand scope. |
+| The existing workstream inventory reads refs and exposes artifact stages. | `_ask/scripts/status.sh` | Investigate how work-centric views extend existing inventory before inventing another runtime authority. |
+| The earlier review refers to a companion decision-review note, but that note was not found in the inspected repository. | `work/harness-review/harness-reliability-review-handoff.md` | Use the supplied handoff as the available direction; do not invent details of the absent proposal. |
+
+The current completion graph is narrower than the handoff's proposed Engineering Model. The inspected files do not establish a general feature/story/decision model, semantic edit interface, or interactive Control Room. These are candidate gaps, subject to the selected experiment.
+
+### Coverage of the handoff's proposed phases
+
+The human prompted an explicit check for already completed parts of the plan. The following maps existing source to the handoff's phase sequence; partial coverage does not imply the broader product goal is complete.
+
+| Handoff phase | Already present | Remaining gap relevant to this direction |
+| --- | --- | --- |
+| Phase 1: Structured model and validation | Canonical JSON criteria, test-plan schemas, stable identities, reference/type validation, independently callable validation commands. | A broader model for intent/features/decisions and controlled semantic edits is not established by the existing traceability contract. Determine whether the pilot needs any of it. |
+| Phase 2: Traceability | Criteria-to-test obligations, declared per-criterion assertions, independent assertion review, actual case outcomes, revision/digest provenance, and rejection of stale or incomplete evidence. | Fine-grained implementation/symbol links and selective semantic dependency invalidation remain open. Existing assertion review is not automatic proof of behavior. |
+| Phase 3: Human projection | CLI inventory and machine-readable per-criterion completion reports provide source material. | No interactive scenario/evidence inspection interface was found in the inspected application/source paths. |
+| Phase 4: Attention and interaction | Defaults-OK, semantic-change escalation, and independent challenge/review already encode some human-authority rules. | No work-centric attention queue or predict/reveal-style interaction was found. R3-R5 comparative pilots are explicitly outside the accepted traceability feature. |
+| Phase 5: Multi-agent Control Room | TaskGraph, coordinator/task roles, single-writer integration, state locks, and candidate-bound task verification provide a runtime foundation. | Richer orchestration and human work-centric runtime views remain unproven; current single-writer rules must be respected. |
+
+**Agent inference:** the strongest new experiment may connect existing machine evidence to meaningful human supervision. Starting by rebuilding generic criteria/test validation would duplicate completed work. This inference informs the recommendation; the human still chooses the next proof.
+
+## Decision frontier
+
+The current human frontier contains **Choose the first proof**. Other precisely stated decisions are blocked until its answer narrows the destination.
+
+| Decision | Blocking decision | Resolution required |
+| --- | --- | --- |
+| [Choose the first proof](#choose-the-first-proof) | None | What uncertainty must the next experiment settle? |
+| Choose the representative workstream | Choose the first proof | Which existing bounded workstream exposes both useful evidence and realistic human judgments? |
+| Set the pilot authority boundary | Choose the first proof | Is the pilot isolated from normal gates, or does it replace a defined part of the existing workflow? |
+| Define the observable success and failure | Choose the representative workstream; Set the pilot authority boundary | What demonstrates agent reliability and developer supervision benefits, and what would count as failure? |
+
+### Choose the first proof
+
+Status: open; human decision. No answer has been inferred.
+
+**Question:** What should the first experiment primarily prove?
+
+**A — A small complete supervision loop (recommended).** Use one existing workstream to connect a small set of behaviors to real implementation, tests, revision-bound evidence, and unresolved decisions. Present them through a minimal interactive view so the developer can inspect a claim, challenge it, and understand the consequence. Reuse current traceability wherever it fits. This can test both benefits in the handoff, but it needs enough model and UI work to make the loop real. A polished view with no trustworthy evidence would fail.
+
+**B — The missing domain model first.** Extend beyond the completed criterion/test contracts toward explicit work, decisions, assumptions, and semantic mutation, with only the necessary new invariants and textual projections initially. This follows the handoff's Phase 1 ordering without rebuilding existing validation. It can reveal relationship and authority problems early, but leaves the central claim about the developer's experience untested until a later experiment.
+
+**C — The human interaction first.** Explore how the developer navigates work, inspects evidence, and answers consequential questions using an explicitly disposable interactive prototype. Existing records can supply examples; any mocked facts must be visibly identified. This is useful if the biggest uncertainty is whether technical direction feels engaging and effective, but it does not establish trustworthy model mutation or machine hardening.
+
+**Recommendation:** A, bounded tightly enough to demonstrate one inspection-and-challenge journey. The repository already contains substantial traceability machinery, making the connection between that evidence and human judgment a plausible next uncertainty to test. This is a recommendation, not a commitment to skip needed model validation.
+
+**I'll assume unless corrected:** local single-developer use in this repository for the first experiment; preserve Git and existing evidence/approval authority; defer database and multi-host infrastructure; defer framework and persistence choices until the experiment's purpose is chosen. These are reversible scope defaults and do not resolve the open decision.
+
+## Not yet specified
+
+- The exact minimum domain objects and whether Feature/Story/Scenario adds useful meaning beyond existing criteria and test scenarios.
+- How a human challenge becomes an attributable decision or proposed definition change, and which existing semantic-change gates apply.
+- The smallest scenario-to-implementation reference that is inspectable without overstating proof of satisfaction.
+- Which changes invalidate which evidence: whole revision checks are available today; selective semantic dependency invalidation is a separate question.
+- How an attention item explains its cause and becomes resolved without repeated approvals.
+- What a fair comparison with the current Markdown/CLI workflow looks like, including correctness of answers and human effort. No benefit has been measured.
+- Which unknowns need research or a disposable prototype after the first decision. No prototype has been commissioned yet.
+
+## Out of scope
+
+For current Explore labor: production implementation, changing completion/acceptance gates, migrating all existing workstreams, and choosing the full platform architecture. The eventual product may include broader capabilities; they are not authorized deliverables of this stage.
+
+Candidate boundaries for a first pilot, pending the scope decision: multi-host orchestration, authentication infrastructure, production deployment, a graph database, broad test-runner support, points/badges, and a replacement IDE. Revisit only if essential to the owned experiment.
+
+## Handoff to Intent
+
+### Current modeling correction — 2026-10-16
+
+**READY for 01 Grill confirmation.** Owned What: define this environment's
+Epic and demonstrate one meaningful user-outcome Story with its flows, shared
+delivery Tasks and understandable Tests/evidence. Navigation must restore
+the returning human's context using relevant specification and plan passages.
+Owned Why: the human cannot relate current terse definitions and opaque tests
+to what the work promises or delivers. Features remain related capabilities;
+Story membership remains optional; the older harness leaves the main view.
+See the ten recorded decisions at the top and the amended `intent.md`.
+This handoff is not intent approval. Stop after the proposed specification.
+Established terminology and its limits are summarized in
+`story-scenario-task-research.md`; agreed workbench terms are in root
+`GLOSSARY.md`. Single-Scenario interpretation remains an explicit intent
+assumption for human confirmation.
+
+**READY.** Owned What: add the missing broader Engineering Model and safe semantic mutation, then a local interactive work/evidence/decision view over that model. Owned Why: make technical direction inspectable and consequential while preserving accountable agent construction. The human explicitly selected option B first and the UI afterward, rather than the original option A recommendation.
+
+Reversible pilot defaults: one local repository/user, completed harness-review as the real evidence example, Git-revisioned JSON definitions, read-only reuse of current criterion/test/evidence authority, no gate replacement. Success requires invalid graph/edit rejection, attributable persisted decisions and derived task consequences, and scenario-to-assertion/evidence inspection through the same projection as agents. Failure includes duplicate authoritative criteria, stale evidence presented as current, session-only decisions, or edits bypassing validation. No measured usability advantage is claimed.
+
+Intent/spec will bound the first implemented slice; full IDE, production deployment, database/multi-host coordination and all-workstream migration remain out of scope. Existing domain-modeling skill proposal was not accepted and is not prepared or required.

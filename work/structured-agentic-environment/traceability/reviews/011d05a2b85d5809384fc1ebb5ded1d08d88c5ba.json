@@ -1,0 +1,330 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "codex-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+  "contract_digest": "d0aa15b1bf143c7570236a9222f40d427056a12382be802e3744dc34ae1c2187",
+  "review_digest": "90ec743b15fb8d4213b0f1562eb3f78e067d408ecc1dab400064da0c01393c35",
+  "review": {
+    "schema": "ask-test-review/v1",
+    "reviewer": "codex-gpt6-independent-semantic-review",
+    "recorded_by": "codex-coordinator",
+    "candidate_sha": "011d05a2b85d5809384fc1ebb5ded1d08d88c5ba",
+    "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
+    "plan_digest": "0ceb5850cd5b090defebe9b6d596c0dccf93ba91cae8ed563b5a907f0bc1082f",
+    "source_digests": {
+      "_ask/tests/test_engineering_model.py": "0fb779e150adacb58f89a73ff930e945aa383a86bbebbc7f6403409245768b31",
+      "_ask/tests/engineering_fixture.py": "71b22bab73b1572fea9c62dcf3b60e96f99c48e5fcae3f0f1d6b09919fe0fc59",
+      "_ask/tests/test_engineering_evidence.py": "a69e8486f8f5c496f71fffdb5949383e5cf214eef8f654f339d8a7055593b710",
+      "_ask/tests/test_engineering_cli.py": "5c0b537cfd45548531789e586f11799ccc52ccfcb8eb0c6b85faa9418f9f55fc",
+      "_ask/tests/test_engineering_ui.py": "8ec0dc0fe90f2c3e8d7bad03e83c49ba0a054e531f4bd29355278f16ef0e6313",
+      "_ask/tests/test_engineering_ui_browser.py": "f72c563c4767cec6248e8c209cb79042343e0258a42ffa4b48487996138c5b48",
+      "_ask/tests/test_engineering_guard.py": "5b796cbe5be4fef28eda53bfb789f01e69e5ca42d962fb8ae412a694408687e5"
+    },
+    "criteria": [
+      {
+        "id": "EM-001",
+        "coverage_decision": "APPROVED",
+        "assessment": "MV-valid accepts a broad typed graph and external references; MV-graph and MV-fields assert exact malformed, identity, edge, cardinality, cycle, lifecycle, history and nonmutation diagnostics; MV-refs exercises actual files, unsafe paths, canonical closure and concurrent input change. ME-batch adds actual guarded structural/lifecycle batch coverage.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Three direct validation tests exercise representative model acceptance and isolated schema/graph/lifecycle/reference invariants with exact error IDs, paths and affected IDs."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Filesystem-backed canonical references, transitive definition closure, path confinement and actual external edit during capture are exercised; guarded add-node/edge publication adds cross-file behavior."
+          }
+        }
+      },
+      {
+        "id": "EM-002",
+        "coverage_decision": "APPROVED",
+        "assessment": "ME-decision and ME-revise assert attributed resolution/history, revisions, blocker derivation, rejected/retired prerequisites, reopen behavior and transitive invalidation. ME-reject and ME-race prove rejected/stale writes preserve bytes and one compare-and-swap winner. ME-batch and the CLI journey cover guarded durable edits and reload.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "apply_batch is exercised directly for resolution, reopen/retire, transitive downstream invalidation, historical options, derived task states and immutability of input."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Public commands and actual published files/generations prove invalid/stale refusal, race behavior and atomic guarded batch semantics."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "The public CLI validates, admits, displays canonical scenario/test data, resolves a decision, reloads the ready task and rejects an invalid follow-up without changing bytes."
+          }
+        }
+      },
+      {
+        "id": "EM-003",
+        "coverage_decision": "APPROVED",
+        "assessment": "EV-real uses the shared completion evaluator on real disposable receipts/logs and asserts actual Given/When/Then, assertions, case/source identity, TDD, final outcomes and provenance while snapshotting files/mtimes. Tampering with behavior/static logs, receipts, runner identity, reviews, source and authority must not yield current completion. EV-missing covers absent/malformed/historical artifacts; the CLI journey inspects without promoting a link to completion.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Cross-file coordinator evidence and Git authority are checked read-only; tamper and missing/historical cases assert state and artifact invariants."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "The CLI journey exercises canonical assertion/test projection and decision flow with no current-completion inference from a test link; the integration evidence journey validates complete actual provenance."
+          }
+        }
+      },
+      {
+        "id": "EM-004",
+        "coverage_decision": "APPROVED",
+        "assessment": "MP-shared compares public JSON and Markdown IDs, snapshot digest, task/attention projections and absence of completion claims, and checks invalid focus plus last-validated noneditable output. MC-journey exercises public validate/admit/show/edit/reload and preserved data after an invalid edit.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Public commands consume admitted repository files and compare machine/human projections against the same snapshot and state."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "A complete subprocess CLI journey persists a reasoned decision and derived task state, reloads it, and rejects an invalid mutation without writes."
+          }
+        }
+      },
+      {
+        "id": "EM-005",
+        "coverage_decision": "APPROVED",
+        "assessment": "UI-inspect asserts scenario assertion/case content and unavailable/historical evidence without exposing hashes or expanded JSON. The AppTest suite checks scenario source, empty states, overview hierarchy and on-demand results; the browser journey inspects two scenarios, actual source, two evidence workstreams and honest candidate states. The UI consumes the admitted projection and does not implement graph validation/repair.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "AppTest checks actual rendered values and evidence states, candidate replacement, source details, and absence of eager evidence reads."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "A temporary real browser/server journey exercises scenario selection, source inspection, evidence candidate inspection and two-session freshness behavior."
+          }
+        }
+      },
+      {
+        "id": "EM-006",
+        "coverage_decision": "APPROVED",
+        "assessment": "UI-persist checks attributed decision history and ready task across a fresh AppTest session. UI-conflict checks blank actor/rationale refusal and unchanged snapshot/open decision, stale linked-spec submission without writes, explicit refresh, successful resolution and reload. UI-browser repeats stale-form rejection and refresh/resolution/reload in actual browser contexts.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "AppTest verifies both invalid and valid form paths against persisted model identity and task projection."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "Real two-context browser interaction proves stale-session refusal, explicit refresh, durable attributed resolution and task consequence after reload."
+          }
+        }
+      },
+      {
+        "id": "EM-007",
+        "coverage_decision": "APPROVED",
+        "assessment": "DG-pre proves invalid prestate stops before action; DG-post proves invalid candidate preserves stable generation; DG-refs checks stale linked inputs; DG-events exercises one-shot and native observer plus missed-event reads/actions; DG-parity compares cached/full results; DG-publish covers CAS, crash recovery and external-save interleaving; DG-bootstrap covers clean/invalid startup; DG-entrypoints probes public mutators; DG-success asserts exact step order and identities. ME-batch covers atomic publication/reopening.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Actual filesystem, process, concurrency, cache/full comparison, rollback/recovery and mutator entrypoints are exercised at the guard boundary."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "Public CLI watcher/bootstrap/success journeys assert fail-closed startup, missed-event freshness, and the exact pre/action/post/publication receipt."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "MV-valid",
+        "decision": "APPROVED",
+        "assertion_assessment": "Accepts a model containing all represented core node kinds and valid external references; asserts missing-intent and uncovered draft-test diagnostics with exact locations.",
+        "counterexample": "Removing the canonical intent or leaving a draft test uncovered would fail the exact diagnostic assertions.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; this source/case is unchanged from the accepted contract base."
+      },
+      {
+        "id": "MV-graph",
+        "decision": "APPROVED",
+        "assertion_assessment": "Separately asserts duplicate node/edge, dangling/illegal edge, missing/multiple parent and containment/dependency cycle diagnostics with exact paths and IDs.",
+        "counterexample": "Any duplicate/dangling/illegal relation accepted, or wrong cycle/cardinality path/ID returned, fails a direct assertion.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "MV-fields",
+        "decision": "APPROVED",
+        "assertion_assessment": "Asserts duplicate option labels, nonmutating validation, malformed node/revision/title/history/reference and illegal-edge diagnostics.",
+        "counterexample": "Duplicate labels, invalid lifecycle resolution, malformed history or bad reference accepted or input repaired would fail.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "MV-refs",
+        "decision": "APPROVED",
+        "assertion_assessment": "Uses repository files to assert missing criterion, traversal/absolute/drive path rejection, transitive canonical-definition escape and a concurrent spec change detected as EM007_INPUT_CHANGED.",
+        "counterexample": "A bad path/identity accepted or a concurrent edit receiving a valid receipt fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "ME-decision",
+        "decision": "APPROVED",
+        "assertion_assessment": "Direct batch assertions cover decision choice/actor/rationale/timestamp, revision, assumption blockers, confirmed/rejected/retired prerequisite states, decision reopen/history/options history and completed-task dependency semantics.",
+        "counterexample": "Dropping actor/history, unblocking rejected/retired prerequisites or treating a merely planned upstream task as done fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "ME-revise",
+        "decision": "APPROVED",
+        "assertion_assessment": "Revising a feature, reopening upstream decision and adding a dependency each reopen downstream resolved decisions transitively, preserve invalidated history and leave tasks blocked; edge removal does not silently resolve downstream work.",
+        "counterexample": "Failure to reopen any dependent decision or loss of prior resolution history fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "ME-reject",
+        "decision": "APPROVED",
+        "assertion_assessment": "Public edit rejects invalid raw resolution, ID/type mutation, unknown option and blank actor; then rejects stale linked-input identity, asserting useful diagnostics and unchanged model bytes.",
+        "counterexample": "Any refused proposal that mutates model bytes, or stale input that is accepted, fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "ME-race",
+        "decision": "APPROVED",
+        "assertion_assessment": "Two same-base public edits race; asserts exactly one succeeds, one gets EM007_STALE_INPUT and published revision/state are coherent.",
+        "counterexample": "Both edits succeeding, neither succeeding, or publishing a mixed/unresolved result fails.",
+        "tdd_continuity_assessment": "No behavior-assertion red was found; the historical red-phase run passed, so this case lacks demonstrated red/green continuity. Test source is unchanged since the accepted base."
+      },
+      {
+        "id": "EV-real",
+        "decision": "APPROVED",
+        "assertion_assessment": "Asserts exact canonical scenario, test/case/source identity, planned assertions, required types, recognized red-green and passing final outcome/provenance, while checking no artifact/ref/mtime writes. Tampering with execution/static logs, receipts, runner, review, source or accepted authority is rejected.",
+        "counterexample": "A tampered log/receipt/source or missing authority still reported as current pass, or inspection writing any file/ref, fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "EV-missing",
+        "decision": "APPROVED",
+        "assertion_assessment": "Asserts absent ledger/case evidence is unavailable, malformed artifacts are invalid, a past candidate remains historical/non-current with old inputs, and historical tampering is detected.",
+        "counterexample": "Missing or altered evidence yielding current completion fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "MP-shared",
+        "decision": "APPROVED",
+        "assertion_assessment": "Public JSON and Markdown share snapshot digest and node IDs, include implementation reference/task state, omit current-completion claims, and handle invalid focus/last validated read-only projection.",
+        "counterexample": "Different IDs/digests, a mutable completion claim or an invalid focus returning editable success fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "MC-journey",
+        "decision": "APPROVED",
+        "assertion_assessment": "Public CLI validates/admit/shows canonical Given/When/Then and test ID, resolves a decision, reloads a ready task, then rejects invalid option and preserves bytes.",
+        "counterexample": "A missing scenario/test, non-durable decision, blocked task after resolution or write on invalid edit fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "UI-inspect",
+        "decision": "APPROVED",
+        "assertion_assessment": "AppTest checks scenario case/assertion content, missing/current/historical evidence states, no current-completion promotion, no visible SHA/raw JSON by default, and candidate-specific selector identity.",
+        "counterexample": "A historical candidate shown as current, raw JSON expanded, or canonical case/assertion absent fails.",
+        "tdd_continuity_assessment": "Candidate final-green exists; no behavior-assertion red was found for this mapped case. Implementation status records that some UI tests post-date production behavior; no continuity claim is made. Source unchanged from accepted base."
+      },
+      {
+        "id": "UI-persist",
+        "decision": "APPROVED",
+        "assertion_assessment": "AppTest resolves an open decision with option/actor/rationale, checks resolution/history and ready task, then confirms those survive a new session.",
+        "counterexample": "Failure to persist attribution/resolution or task remaining blocked after valid choice fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "UI-conflict",
+        "decision": "APPROVED",
+        "assertion_assessment": "AppTest submits blank actor/rationale and verifies explicit error, identical published identity and open lifecycle; then submits against changed referenced spec and verifies no write, refreshes, resolves and reloads ready state.",
+        "counterexample": "Blank or stale form mutating state, or refreshed valid form remaining rejected, fails.",
+        "tdd_continuity_assessment": "Candidate final-green exists; no behavior-assertion red was found for this mapped case. Implementation status records chronology gaps; no continuity claim is made. Source unchanged from accepted base."
+      },
+      {
+        "id": "UI-browser",
+        "decision": "APPROVED",
+        "assertion_assessment": "Real browser/two contexts select scenarios/evidence, inspect actual test source and missing/historical evidence, reject linked-spec stale decision without write, refresh, resolve and observe task/history after reload.",
+        "counterexample": "Wrong scenario/evidence details, stale session write, lost attribution or missing task consequence in the second session fails.",
+        "tdd_continuity_assessment": "No candidate-bound browser case was collected by the coordinator run because system Python could not import the mismatched Playwright/pyee pair. The complete 34-case suite passed independently in the pinned Playwright venv; no behavior-red record was found for this mapped case."
+      },
+      {
+        "id": "DG-pre",
+        "decision": "APPROVED",
+        "assertion_assessment": "Invalid current model plus nonexistent proposal must fail at pre-step, report intent error, omit action diagnostic and preserve bytes.",
+        "counterexample": "Action/proposal read occurring before prevalidation, or any state change, fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-post",
+        "decision": "APPROVED",
+        "assertion_assessment": "Orphan candidate fails postvalidation; asserts pre/action/post steps, exact diagnostic, unchanged files and prior published projection.",
+        "counterexample": "Publishing the orphan or replacing the stable snapshot fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-refs",
+        "decision": "APPROVED",
+        "assertion_assessment": "Valid linked Markdown-only change invalidates expected digest; JSON schema change, deletion and restoration exercise canonical linked input validation and refreshed identities.",
+        "counterexample": "Old identity accepted after linked-only edit, malformed/deleted spec admitted, or valid restored spec not admitted fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-events",
+        "decision": "APPROVED",
+        "assertion_assessment": "One-shot observer catches invalid external spec save; missed event is caught by show/action admission with action callback not invoked; native subscription emits valid/invalid/restored snapshots and terminates.",
+        "counterexample": "Stale read/action accepted or subscriber missing invalid/restored update fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-parity",
+        "decision": "APPROVED",
+        "assertion_assessment": "For valid, duplicate, missing and restored input states, ordinary and full validate commands must return same code and identical diagnostics/results.",
+        "counterexample": "Any cached-path disagreement or stale valid result after mutation fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-publish",
+        "decision": "APPROVED",
+        "assertion_assessment": "Concurrent compare-and-swap admits one winner with matching model/file; process interruption after replacement recovers only a complete validated generation; external save interleaving is preserved and prevents publication.",
+        "counterexample": "Two winners, mixed generation, lost external edit or corrupt recovery fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-bootstrap",
+        "decision": "APPROVED",
+        "assertion_assessment": "Valid bootstrap/show returns matching editable snapshot; invalid external spec retains prior noneditable last-valid view; corrupted generation bytes are not trusted; invalid initial graph blocks launch/show.",
+        "counterexample": "Invalid/corrupt bootstrap becoming editable or replacing last stable snapshot fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "ME-batch",
+        "decision": "APPROVED",
+        "assertion_assessment": "Guarded command batch creates node plus required edges in one revision, invalid rename/lifecycle resurrection/raw decision-history injection preserve state; linked spec amendment reopens dependent resolution with history.",
+        "counterexample": "Orphan intermediate publication, forbidden lifecycle transition or missed decision invalidation fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-success",
+        "decision": "APPROVED",
+        "assertion_assessment": "Public edit receipt asserts exact pre/action/post/publication order, one pre/post count, captured input/result identity and coordinated files; workflow admission accepts guarded edit chains and rejects raw definition writes.",
+        "counterexample": "Duplicate/omitted validation, wrong identity or raw writes admitted as a guarded workflow fail.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      },
+      {
+        "id": "DG-entrypoints",
+        "decision": "APPROVED",
+        "assertion_assessment": "Disposable repository probes verify/record-result/acceptance/inner-loop/traceability/model mutators all refuse invalid admission before marker execution and preserve stable identity.",
+        "counterexample": "Any enumerated public mutator bypassing admission, reading the forbidden payload or invoking the marker fails.",
+        "tdd_continuity_assessment": "Historical behavior-red and final-green executions exist; unchanged from the accepted contract base."
+      }
+    ],
+    "base_sha": "8edc2618e5055e0854ea618d6d3475dd392fe86a",
+    "inspected_sources": [],
+    "changed_cases": [],
+    "inventory_exclusions": {},
+    "review_notes": [
+      "All 26 mapped assertion implementations were inspected. Every EM-001..EM-007 criterion is covered and every pinned required test type is represented with an adequate seam.",
+      "TDD continuity is not claimed for ME-race, UI-inspect, UI-conflict, or UI-browser due the specific evidence gaps recorded per test. work/structured-agentic-environment/implementation-status.md discloses test chronology gaps.",
+      "The candidate-bound coordinator suite recorded 33 passing cases and a Playwright/pyee import collection error; the complete 34-case engineering suite passes under /tmp/ask-tabular-ui-venv. This environment failure is separate from assertion adequacy."
+    ]
+  },
+  "candidate_sha": "011d05a2b85d5809384fc1ebb5ded1d08d88c5ba"
+}

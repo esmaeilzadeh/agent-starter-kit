@@ -1,0 +1,133 @@
+{
+  "code_candidate_sha": "346ff3755e0ea5edc3d5d44fd46e5aea8833aa30",
+  "code_file_bytes": {
+    "_ask/scripts/engineering_model/workbench.py": 10632,
+    "_ask/ui/streamlit_app.py": 48055,
+    "_ask/ui/workbench_loading.py": 20915,
+    "_ask/ui/workbench_navigation.py": 10866,
+    "_ask/ui/workbench_tasks.py": 6240,
+    "_ask/ui/workbench_tests.py": 11576
+  },
+  "code_source_sha256": "b0a89dc94143916dcdce37a785fa5766d58b35406bc033193fd419c33bbf85ae",
+  "cold_start_to_ready_ms": [],
+  "environment": {
+    "browser_channel": "chrome",
+    "browser_version": "142.0.7444.162",
+    "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.39",
+    "playwright": "1.63.0",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "streamlit": "1.59.2"
+  },
+  "error": {
+    "message": "Locator expected to have count '1'\nActual value: 0 \nCall log:\n  - Expect \"to_have_count\" get_by_text(\"Recorded outcome: None\", exact=True) with timeout 5000ms\n  - waiting for get_by_text(\"Recorded outcome: None\", exact=True)\n    13 \u00d7 locator resolved to 0 elements\n       - unexpected value \"0\"\n",
+    "type": "AssertionError"
+  },
+  "limits_ms": {
+    "cold": 4000,
+    "filter": 500,
+    "metadata_navigation": 500,
+    "overview": 1500,
+    "source_result": 1000
+  },
+  "model_file_bytes": {
+    "work/structured-agentic-environment/engineering-model.json": 4534,
+    "work/structured-agentic-environment/test-plan.json": 72133
+  },
+  "model_git_sha": "346ff3755e0ea5edc3d5d44fd46e5aea8833aa30",
+  "model_input_sha256": "d6c6db2b597603a4bb430d5e7bafb1cec9f3d1832a8409e161b73255f7829825",
+  "model_root": "/tmp/ask-cases-_77ldga8/candidate",
+  "model_work_id": "structured-agentic-environment",
+  "pilot_screenshot": {
+    "bytes": 88769,
+    "path": "/tmp/ask-wb009-evidence/structured-agentic-environment/WB-009-latency-346ff3755e0ea5edc3d5d44fd46e5aea8833aa30.overview.png",
+    "sha256": "3aeb7366e7c7ca1e26ac062673ec5f174894e7db7761beedae0bd655a93445be"
+  },
+  "run_status": "failed",
+  "structural_workloads": [
+    {
+      "admitted": true,
+      "document_bytes": {
+        "specs/current/scale-100.json": 180,
+        "specs/current/scale-100.md": 22,
+        "work/scale-100/engineering-model.json": 37740,
+        "work/scale-100/inner-loop/tasks.yaml": 13358,
+        "work/scale-100/test-plan.json": 38640
+      },
+      "evidence_included": false,
+      "graph_edge_count": 202,
+      "model_node_count": 203,
+      "outline_ms": [
+        1.5581850020680577,
+        1.6011630032153334,
+        1.5946460007398855,
+        1.568236002640333,
+        1.5836919992580079
+      ],
+      "projection_ms": [
+        78.07797100031166,
+        80.12429699738277,
+        78.93350399899646,
+        78.67490299759083,
+        76.42400599797838
+      ],
+      "source_file_count": 100,
+      "task_count": 100,
+      "test_count": 100,
+      "total_document_bytes": 89940
+    },
+    {
+      "admitted": true,
+      "document_bytes": {
+        "specs/current/scale-1000.json": 181,
+        "specs/current/scale-1000.md": 22,
+        "work/scale-1000/engineering-model.json": 372643,
+        "work/scale-1000/inner-loop/tasks.yaml": 133059,
+        "work/scale-1000/test-plan.json": 383341
+      },
+      "evidence_included": false,
+      "graph_edge_count": 2002,
+      "model_node_count": 2003,
+      "outline_ms": [
+        110.88931500125909,
+        153.70324200193863,
+        109.2005770005926,
+        110.30953299996327,
+        145.8591489972605
+      ],
+      "projection_ms": [
+        10174.376494000171,
+        12635.09967400023,
+        12541.141791996779,
+        12969.337970997003,
+        13006.682003000606
+      ],
+      "source_file_count": 1000,
+      "task_count": 1000,
+      "test_count": 1000,
+      "total_document_bytes": 889246
+    }
+  ],
+  "warm_ms": [],
+  "workload": {
+    "code_candidate_sha": "346ff3755e0ea5edc3d5d44fd46e5aea8833aa30",
+    "document_bytes": {
+      "specs/current/structured-agentic-environment.json": 7476,
+      "specs/current/structured-agentic-environment.md": 19906,
+      "work/structured-agentic-environment/engineering-model.json": 4534,
+      "work/structured-agentic-environment/inner-loop/tasks.yaml": 8550,
+      "work/structured-agentic-environment/test-plan.json": 72133
+    },
+    "graph_edge_count": 12,
+    "kind": "real-pilot",
+    "model_input_sha256": "7b91318398eea32aec1bfed3e33efac5865bdb1e1ee70e459d9fbfbd9bfa472a",
+    "model_node_count": 12,
+    "model_task_count": 1,
+    "selected_case_id": "test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs",
+    "selected_scenario_id": "representative-model-is-accepted",
+    "selected_test_id": "MV-valid",
+    "synthetic_model": false,
+    "task_count": 9,
+    "test_count": 57,
+    "total_document_bytes": 112599
+  }
+}

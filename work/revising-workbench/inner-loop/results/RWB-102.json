@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "revising-workbench",
+  "task_id": "RWB-102",
+  "base_sha": "c2635515f4f4643344b8483b86ea7d8e046d4bab",
+  "candidate_sha": "ec1c2d614e014ade18a54fbfa13c970f77cb0322",
+  "tdd": {
+    "seam": "Captured passage resolution, dependency closure and explicit selected product/execution identity across engineering-model, task review, traceability, candidate validation, and coordinator entrypoints.",
+    "red": {
+      "command": "./ask traceability run revising-workbench --candidate-sha d9ceb6ffde1b32d6c8f6ebc81f0eceedb8a500da --scope task --task-id RWB-102 --phase red",
+      "output": "work/revising-workbench/traceability/runs/019e708bb70b49a0b8b27d928793cd78/results.json (registered in work/revising-workbench/traceability/executions.json): RWB-PASSAGE-ACTIONS failed as behavior_assertion because unadopted integrate_ready refused before TaskResult validation; the other two mapped cases passed, all ten baseline guard cases passed, and all runners collected successfully.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run revising-workbench --candidate-sha ec1c2d614e014ade18a54fbfa13c970f77cb0322 --scope task --task-id RWB-102 --phase final_green",
+      "output": "work/revising-workbench/traceability/runs/b9e6a2df101b4e5d9ff115ab4ce271a0/results.json (registered in work/revising-workbench/traceability/executions.json): all three mapped cases and all ten baseline guard cases passed; all four runner executions exited 0 with collection_status=ok. The history-only candidate has the same source tree as fcde3a4.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "Implements captured passage selectors and freshness identity; binds persisted resolution text and helper identity; guards dependent v2 selected-task actions using qualified execution ownership while preserving v1 task routes; treats safe missing captured blobs as unavailable without fallback; ignores fenced Markdown examples and captures foreign flow plans and selector closure. Added tests for publication/input lineage and stale linked-context/helper actions, v1 startup/spawn/integration/review/verification routes, and valid Markdown fence closing syntax. Intermediate final-green attempt 3c534b53bb354cc19ee28c1a57e846b8 exposed a baseline diagnostic-order regression; corrected before final candidate. Source changes are clean according to inner_loop.evidence.source_changes. Awaiting independent re-review; this worker did not record review or integrate. Added direct and CLI external-save tests proving the selected review target and persisted body stay bound to one captured document. Added a real unadopted integrate_ready route proving inner-loop TaskResult integration does not require an adopted-model execution alias."
+}

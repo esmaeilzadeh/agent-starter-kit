@@ -1,0 +1,70 @@
+test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests) ... FAIL
+test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests) ... FAIL
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_candidate_preserves_stable_generation (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... ok
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_decision_history_and_dependency_propagation (test_engineering_model.ModelEditTests) ... ok
+test_revise_invalidates_transitive_decisions (test_engineering_model.ModelEditTests) ... FAIL
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... ok
+
+======================================================================
+FAIL: test_missing_and_historical_evidence (test_engineering_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-c4obu_p1/candidate/_ask/tests/test_engineering_evidence.py", line 173, in test_missing_and_historical_evidence
+    missing = self.inspect()
+  File "/tmp/ask-cases-c4obu_p1/candidate/_ask/tests/test_engineering_evidence.py", line 57, in inspect
+    self.assertEqual(changed, [], 'Inspection changed repository artifacts or refs')
+AssertionError: Lists differ: ['work/w/traceability/completion.json'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'work/w/traceability/completion.json'
+
+- ['work/w/traceability/completion.json']
++ [] : Inspection changed repository artifacts or refs
+
+======================================================================
+FAIL: test_real_evidence_and_tamper_is_read_only (test_engineering_evidence.EvidenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-c4obu_p1/candidate/_ask/tests/test_engineering_evidence.py", line 75, in test_real_evidence_and_tamper_is_read_only
+    result = self.inspect()
+  File "/tmp/ask-cases-c4obu_p1/candidate/_ask/tests/test_engineering_evidence.py", line 57, in inspect
+    self.assertEqual(changed, [], 'Inspection changed repository artifacts or refs')
+AssertionError: Lists differ: ['work/w/traceability/completion.json'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'work/w/traceability/completion.json'
+
+- ['work/w/traceability/completion.json']
++ [] : Inspection changed repository artifacts or refs
+
+======================================================================
+FAIL: test_invalid_candidate_preserves_stable_generation (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-c4obu_p1/candidate/_ask/tests/test_engineering_guard.py", line 23, in test_invalid_candidate_preserves_stable_generation
+    self.assertIn("EM001_PARENT_COUNT", {e["code"] for e in result["diagnostics"]})
+AssertionError: 'EM001_PARENT_COUNT' not found in {'EM002_ACTION'}
+
+======================================================================
+FAIL: test_revise_invalidates_transitive_decisions (test_engineering_model.ModelEditTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-c4obu_p1/candidate/_ask/tests/test_engineering_model.py", line 52, in test_revise_invalidates_transitive_decisions
+    self.assertEqual(nodes[identity]["lifecycle"], "open", f"{command}: {identity}")
+AssertionError: 'resolved' != 'open'
+- resolved
++ open
+ : {'op': 'revise_node', 'id': 'feature', 'changes': {'title': 'Changed feature'}}: second
+
+----------------------------------------------------------------------
+Ran 12 tests in 6.336s
+
+FAILED (failures=4)

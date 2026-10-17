@@ -1,0 +1,43 @@
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... FAIL
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... FAIL
+
+======================================================================
+FAIL: test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-rwm75v29/candidate/_ask/tests/test_engineering_guard.py", line 23, in test_invalid_prestate_prevents_action
+    self.assertEqual(blocked.returncode, 1, "invalid prestate must produce an admission refusal")
+AssertionError: 2 != 1 : invalid prestate must produce an admission refusal
+
+======================================================================
+FAIL: test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-rwm75v29/candidate/_ask/tests/test_engineering_model.py", line 158, in test_duplicate_missing_illegal_cardinality_and_cycles
+    self.assertEqual([(error["path"], error["ids"]) for error in matches],
+AssertionError: Lists differ: [] != [('$.nodes[2]', ['work-item'])]
+
+Second list contains 1 additional elements.
+First extra element 0:
+('$.nodes[2]', ['work-item'])
+
+- []
++ [('$.nodes[2]', ['work-item'])] : [{'code': 'EM001_ILLEGAL_EDGE', 'path': '$.edges[2]', 'message': 'edge is not legal for its node types', 'ids': ['choice', 'work-item']}]
+
+======================================================================
+FAIL: test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-rwm75v29/candidate/_ask/tests/test_engineering_model.py", line 93, in test_valid_broad_model_and_external_refs
+    self.assertEqual(len(coverage_errors), 1, errors)
+AssertionError: 0 != 1 : []
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.781s
+
+FAILED (failures=3)

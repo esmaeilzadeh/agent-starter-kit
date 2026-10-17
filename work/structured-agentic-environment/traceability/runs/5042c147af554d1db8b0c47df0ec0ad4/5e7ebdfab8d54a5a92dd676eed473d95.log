@@ -1,0 +1,61 @@
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:49:23.472 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/scriptrunner/[0m[1mexe[0m [31m [0m
+[31m [0m [1mc_code.py[0m:129 in exec_func_with_error_handling                                       [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/scriptrunner/[0m[1mscr[0m [31m [0m
+[31m [0m [1mipt_runner.py[0m:795 in code_to_exec                                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/tmp/ask-cases-_rd1zynx/candidate/_ask/ui/[0m[1mstreamlit_app.py[0m:24 in <module>            [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m 21 [0m[94mfrom[0m[90m [0m[4;96mengineering_model[0m[4;96m.[0m[4;96mactions[0m[90m [0m[94mimport[0m edit                                     [31m [0m
+[31m [0m   [2m 22 [0m[94mfrom[0m[90m [0m[4;96mengineering_model[0m[4;96m.[0m[4;96madmission[0m[90m [0m[94mimport[0m admit, load_published                  [31m [0m
+[31m [0m   [2m 23 [0m[94mfrom[0m[90m [0m[4;96mengineering_model[0m[4;96m.[0m[4;96mprojection[0m[90m [0m[94mimport[0m project                               [31m [0m
+[31m [0m [31m❱ [0m 24 [94mfrom[0m[90m [0m[4;96mworkbench_context[0m[90m [0m[94mimport[0m (                                                [31m [0m
+[31m [0m   [2m 25 [0m[2m│   [0mSTATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,                            [31m [0m
+[31m [0m   [2m 26 [0m[2m│   [0mreset_for_work, route_to,                                                  [31m [0m
+[31m [0m   [2m 27 [0m)                                                                              [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mModuleNotFoundError: [0mNo module named [32m'workbench_context'[0m
+FAIL
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:49:24.886 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/scriptrunner/[0m[1mexe[0m [31m [0m
+[31m [0m [1mc_code.py[0m:129 in exec_func_with_error_handling                                       [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/mohamad/.local/lib/python3.10/site-packages/streamlit/runtime/scriptrunner/[0m[1mscr[0m [31m [0m
+[31m [0m [1mipt_runner.py[0m:795 in code_to_exec                                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/tmp/ask-cases-_rd1zynx/candidate/_ask/ui/[0m[1mstreamlit_app.py[0m:24 in <module>            [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m 21 [0m[94mfrom[0m[90m [0m[4;96mengineering_model[0m[4;96m.[0m[4;96mactions[0m[90m [0m[94mimport[0m edit                                     [31m [0m
+[31m [0m   [2m 22 [0m[94mfrom[0m[90m [0m[4;96mengineering_model[0m[4;96m.[0m[4;96madmission[0m[90m [0m[94mimport[0m admit, load_published                  [31m [0m
+[31m [0m   [2m 23 [0m[94mfrom[0m[90m [0m[4;96mengineering_model[0m[4;96m.[0m[4;96mprojection[0m[90m [0m[94mimport[0m project                               [31m [0m
+[31m [0m [31m❱ [0m 24 [94mfrom[0m[90m [0m[4;96mworkbench_context[0m[90m [0m[94mimport[0m (                                                [31m [0m
+[31m [0m   [2m 25 [0m[2m│   [0mSTATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,                            [31m [0m
+[31m [0m   [2m 26 [0m[2m│   [0mreset_for_work, route_to,                                                  [31m [0m
+[31m [0m   [2m 27 [0m)                                                                              [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mModuleNotFoundError: [0mNo module named [32m'workbench_context'[0m
+FAIL
+
+======================================================================
+FAIL: test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-_rd1zynx/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 107, in test_navigation_does_not_refresh_stale_form_identity
+    self.assertFalse(app.exception, app.exception)
+AssertionError: ElementList(_list=[Exception(message="No module named 'workbench_context'", stack_trace=['File "/tmp/ask-cases-_rd1zynx/candidate/_ask/ui/streamlit_app.py", line 24, in <module>\n    from workbench_context import ('])]) is not false : ElementList(_list=[Exception(message="No module named 'workbench_context'", stack_trace=['File "/tmp/ask-cases-_rd1zynx/candidate/_ask/ui/streamlit_app.py", line 24, in <module>\n    from workbench_context import ('])])
+
+======================================================================
+FAIL: test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-_rd1zynx/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 66, in test_work_default_routes_and_context_reset
+    self.assertFalse(app.exception, app.exception)
+AssertionError: ElementList(_list=[Exception(message="No module named 'workbench_context'", stack_trace=['File "/tmp/ask-cases-_rd1zynx/candidate/_ask/ui/streamlit_app.py", line 24, in <module>\n    from workbench_context import ('])]) is not false : ElementList(_list=[Exception(message="No module named 'workbench_context'", stack_trace=['File "/tmp/ask-cases-_rd1zynx/candidate/_ask/ui/streamlit_app.py", line 24, in <module>\n    from workbench_context import ('])])
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.113s
+
+FAILED (failures=2)

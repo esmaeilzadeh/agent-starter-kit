@@ -7,7 +7,7 @@ cp -a "$ROOT/_ask" "$TMP/_ask"
 mkdir -p "$TMP/.agents"
 cp -a "$ROOT/.agents/ask" "$TMP/.agents/ask"
 mkdir -p "$TMP/.cursor/commands"
-(cd "$TMP" && ./_ask/scripts/sync-cursor-binding.sh >/dev/null)
+(cd "$TMP" && ASK_ROOT="$TMP" ./_ask/scripts/sync-cursor-binding.sh >/dev/null)
 test -f "$TMP/.cursor/commands/off-path.md"
 grep -q 'this session only' "$TMP/.cursor/commands/off-path.md"
 grep -qE '^description:' "$TMP/.cursor/commands/off-path.md"

@@ -1,0 +1,28 @@
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:55:56.214 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 01:55:58.215 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+
+======================================================================
+FAIL: test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-o0sclqm7/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 211, in test_navigation_does_not_refresh_stale_form_identity
+    self.assertEqual(app.subheader[0].value, "Purpose",
+AssertionError: 'Canonical behavior' != 'Purpose'
+- Canonical behavior
++ Purpose
+ : Back should render the restored epic in the same rerun
+
+======================================================================
+FAIL: test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-o0sclqm7/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 179, in test_work_default_routes_and_context_reset
+    self.assertIn("Read-only source", _text(app))
+AssertionError: 'Read-only source' not found in 'Engineering workbench\nPurpose\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Purpose**\n**Purpose**\nPurpose\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `agent/pilot` · Workstream: `archive`\nScenarios without a recorded story\nTasks without a scenario mapping\nEpic · root of the selected workstream hierarchy\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000build\n\u3000Decision · Choose\nBack'
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.788s
+
+FAILED (failures=2)
