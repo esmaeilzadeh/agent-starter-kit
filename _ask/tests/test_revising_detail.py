@@ -5,6 +5,7 @@ import os
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -39,11 +40,133 @@ def _open(app, route: str) -> None:
 class DetailAppTests(unittest.TestCase):
     def test_setup_action_assertion_helpers_observations_and_flow_specificity(self):
         self._assert_same_revision_setup_and_helper_are_loaded()
+        self._assert_criterion_only_tests_do_not_claim_the_selected_flow()
         self._assert_actual_output_is_available_only_for_valid_digests()
+        self._assert_skipped_runtime_error_and_not_run_states_remain_distinct()
         _run_existing("test_planned_test_shows_its_source_in_the_detail_panel")
         _run_existing("test_historical_evidence_candidate_is_inspectable_without_being_current")
         _run_existing("test_repeated_nested_evidence_fields_do_not_duplicate_expanders")
         _run_existing("test_overview_loads_results_on_demand_and_explains_debug_identifiers")
+
+    def _assert_criterion_only_tests_do_not_claim_the_selected_flow(self):
+        import subprocess
+        import tempfile
+        from revising_fixture import digest
+        from test_revising_context import _repo
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root)
+            plan_path = root / "work/product/test-plan.json"
+            plan = json.loads(plan_path.read_text())
+            plan["tests"].append({
+                "id": "WB-stale", "criterion_ids": ["EM-007"], "type": "unit",
+                "change_kind": "new", "runner_id": "fixture",
+                "case_id": "test_fixture.Cases.test_stale",
+                "source_paths": ["test_fixture.py"],
+                "scenario": {"given": "A stale proposal", "when": "Publish",
+                             "then": ["The proposal is refused"]},
+                "expected_assertions": [{"criterion_id": "EM-007",
+                                         "checks": ["Refuse a stale proposal"]}],
+            })
+            plan["task_scopes"][0]["test_ids"].append("WB-stale")
+            plan_path.write_text(json.dumps(plan, sort_keys=True))
+            source_path = root / "test_fixture.py"
+            source_path.write_text(source_path.read_text() +
+                                   "    def test_stale(self):\n        self.assertFalse(True)\n")
+
+            model_path = root / "work/product/engineering-model.json"
+            model = json.loads(model_path.read_text())
+            model["nodes"].extend([
+                {"id": "scenario-stale", "type": "scenario", "title": "Stale proposal",
+                 "lifecycle": "active", "reference": {"path": "specs/current/product.json",
+                                                           "id": "EM-007"},
+                 "case": {"work_id": "product", "plan_digest": digest(plan),
+                          "case_id": "WB-stale"}},
+                {"id": "test-stale", "type": "test", "title": "Stale-only assertion",
+                 "lifecycle": "active", "reference": {"path": "work/product/test-plan.json",
+                                                           "id": "WB-stale"}},
+            ])
+            model["nodes"][2]["case"]["plan_digest"] = digest(plan)
+            model["edges"].append({"type": "covers", "source": "test-stale",
+                                   "target": "scenario-stale"})
+            model_path.write_text(json.dumps(model, sort_keys=True))
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.name", "Workbench Test"], check=True)
+            subprocess.run(["git", "-C", str(root), "config", "user.email",
+                            "workbench@example.invalid"], check=True)
+            subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+            subprocess.run(["git", "-C", str(root), "commit", "-qm",
+                            "Create criterion-related sibling flow"], check=True)
+            candidate = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"],
+                                                text=True).strip()
+            snapshot, diagnostics = admit(root, "product")
+            self.assertFalse(diagnostics, diagnostics)
+            projection = project(snapshot, root, include_evidence=False)
+            tests = {row["id"]: row for row in projection["workbench"]["tests"]}
+            self.assertEqual(tests["WB-publish"]["scenario_ids"], ["scenario"])
+            self.assertEqual(tests["WB-stale"]["scenario_ids"], ["scenario-stale"])
+
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"),
+                                        default_timeout=30).run(timeout=30)
+                _open(app, "test:WB-publish")
+                self.assertFalse(app.exception, app.exception)
+                rendered = test_engineering_ui.text(app)
+                self.assertIn("A valid model", rendered)
+                self.assertIn("Selected behavior flow", rendered)
+                self.assertNotIn("The proposal is refused", rendered)
+                self.assertNotIn("self.assertFalse(True)", rendered)
+
+    def _assert_skipped_runtime_error_and_not_run_states_remain_distinct(self):
+        cases = [
+            ("skipped", "Skipped", None, "Recorded outcome: Skipped"),
+            ("error", "Error", "runtime_error", "Failure detail: runtime error"),
+            ("not_run", None, None, "No recorded execution is attached to this selected test."),
+        ]
+        for state, outcome, failure_kind, expected in cases:
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                workbench_model(root)
+                runs = []
+                if outcome:
+                    runs.append({
+                        "work_id": "pilot", "test_id": "CASE-1",
+                        "case_id": "test_fixture.Cases.test_behavior",
+                        "run_id": state + "-run", "phase": "final_green",
+                        "outcome": state, "failure_kind": failure_kind,
+                        "output_status": "valid", "source_status": "current",
+                        "working_source_applicability": "matches selected source",
+                        "recorded_at": "2026-10-17T00:00:00Z", "duration": 0.1,
+                    })
+                detail = {
+                    "candidate_sha": "candidate",
+                    "source": {"status": "current"},
+                    "evidence": {"status": "available"},
+                    "execution_history": {
+                        "status": "not_run" if state == "not_run" else "available",
+                        "runs": runs,
+                        "diagnostic": "no retained execution matches this test and contract"
+                        if state == "not_run" else None,
+                    },
+                    "historical_candidates": [],
+                }
+                with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
+                      patch("streamlit_app.workbench_loading.load_selected_detail",
+                            return_value=detail)):
+                    app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"),
+                                            default_timeout=30).run(timeout=30)
+                    _open(app, "result:CASE-1")
+                    self.assertFalse(app.exception, app.exception)
+                    rendered = test_engineering_ui.text(app)
+                    self.assertIn(expected, rendered)
+                    self.assertNotIn("Recorded outcome: Passed", rendered)
+                    if state == "not_run":
+                        self.assertNotIn("Recorded outcome:", rendered)
+                    elif state == "error":
+                        self.assertIn("Recorded outcome: Error", rendered)
+                    else:
+                        self.assertNotIn("runtime error", rendered)
 
     def _assert_same_revision_setup_and_helper_are_loaded(self):
         import subprocess
