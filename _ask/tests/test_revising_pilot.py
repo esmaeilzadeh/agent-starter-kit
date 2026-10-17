@@ -34,7 +34,8 @@ class MigrationTests(unittest.TestCase):
         result = review_migration(self.source, self.target, approved, work_id="pilot")
         self.assertEqual(result["status"], "approved")
         self.assertEqual(result["preservation_diff"], {"added_ids": [], "removed_ids": [],
-                                                        "changed_references": [], "changed_edges": []})
+                                                        "changed_references": [],
+                                                        "changed_edges": {"removed": [], "added": []}})
         bad = copy.deepcopy(self.target)
         bad["nodes"][1]["reference"]["id"] = "C-2"
         with self.assertRaisesRegex(ValueError, "reference"):
