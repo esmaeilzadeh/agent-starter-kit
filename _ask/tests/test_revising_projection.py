@@ -238,6 +238,19 @@ class ProjectionTests(unittest.TestCase):
                 legacy_markdown = render_markdown(legacy_view)
                 self.assertIn("`build`: blocked", legacy_markdown)
                 self.assertIn("choice is open; requires resolved", legacy_markdown)
+                _put(legacy_root, "work/pilot/inner-loop/state.json", {
+                    "work_id": [], "tasks": {"build": {"status": "integrated"}},
+                })
+                try:
+                    malformed_legacy = project(capture(legacy_root, "pilot"), legacy_root,
+                                               include_evidence=False)
+                except TypeError as exc:
+                    self.fail(f"malformed legacy owner identity must be unavailable, not crash: {exc}")
+                malformed_build = next(row for row in malformed_legacy["workbench"]["tasks"]
+                                       if row["id"] == "build")
+                self.assertEqual(malformed_build.get("status_source"),
+                                 "unavailable-malformed-owner-state")
+                self.assertIsNone(malformed_build.get("runtime_status"))
 
     def test_v2_json_markdown_ids_and_state_match(self):
         with tempfile.TemporaryDirectory() as directory:
