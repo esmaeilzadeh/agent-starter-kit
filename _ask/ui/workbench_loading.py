@@ -411,7 +411,8 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     referenced_work = reference.get("work_id")
     if referenced_work and referenced_work != snapshot.work_id:
         return _load_referenced_test_detail(root, snapshot, test, source_context,
-                                            candidate_sha=candidate_sha, cache=cache)
+                                            candidate_sha=candidate_sha, cache=cache,
+                                            include_evidence=include_evidence)
     context_kind = source_context.get("kind", "working-tree")
     captured_test = _captured_test(snapshot, test, node_id)
     current_head = _git(root, "rev-parse", "HEAD")
@@ -540,8 +541,12 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
 
 
 def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_context: dict,
-                                 *, candidate_sha: str | None, cache) -> dict:
+                                 *, candidate_sha: str | None, cache,
+                                 include_evidence: bool = True) -> dict:
     """Inspect an explicitly linked retained Test through the representative authority gate."""
+    if not include_evidence:
+        return _load_referenced_test_source(root, snapshot, test, source_context,
+                                            candidate_sha=candidate_sha, cache=cache)
     from engineering_model.readability import demo_gate
     from engineering_model.readable_tests import read_test
     from engineering_model.workbench_evidence import qualified_source
@@ -661,6 +666,87 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
         _cache_representative_detail(cache, cache_key, base)
         return base
 
+
+def _load_referenced_test_source(root: Path, snapshot, test: dict, source_context: dict,
+                                 *, candidate_sha: str | None, cache) -> dict:
+    """Load linked Test source without evaluating retained-result authority."""
+    from engineering_model.readable_tests import read_test
+    from engineering_model.workbench_evidence import qualified_source
+
+    reference = test.get("reference", {})
+    work_id = reference.get("work_id")
+    plan_path = f"work/{work_id}/test-plan.json" if isinstance(work_id, str) else None
+    raw_plan = snapshot.files.get(plan_path) if plan_path else None
+    base = {"source": {"status": "unavailable", "selector": test.get("case_id"),
+                       "source_sha": None, "source_path": None, "source": "",
+                       "diagnostic": "linked Test source has not been loaded"},
+            "readable_test": {"status": "unavailable", "context_status": "unavailable",
+                              "context": [], "test_source": "",
+                              "diagnostic": "linked Test source has not been loaded"},
+            "evidence": {"status": "not_loaded",
+                         "diagnostic": "Open Results to inspect retained execution evidence."},
+            "execution_history": {"status": "not_loaded", "completion": "not_evaluated", "runs": []},
+            "historical_candidates": [], "historical_contracts": [],
+            "candidate_sha": None, "context_kind": source_context.get("kind", "working-tree")}
+    try:
+        if raw_plan is None:
+            raise ValueError("linked Test plan is unavailable in the captured workbench snapshot")
+        plan = json.loads(raw_plan.decode("utf-8"))
+        if (_json_digest(plan) != reference.get("plan_digest")
+                or not isinstance(plan, dict) or plan.get("work_id") != work_id):
+            raise ValueError("linked Test plan differs from its captured digest")
+        matches = [item for item in plan.get("tests", [])
+                   if isinstance(item, dict) and item.get("id") == test.get("id")]
+        if len(matches) != 1:
+            raise ValueError("linked Test is missing or ambiguous in its captured plan")
+        selected_test = matches[0]
+        for key in ("case_id", "runner_id", "source_paths"):
+            if selected_test.get(key) != test.get(key):
+                raise ValueError(f"linked Test {key} differs from the captured plan")
+        current_raw = _git(root, "rev-parse", "HEAD")
+        current_sha = current_raw.decode("ascii", "replace") if current_raw else None
+        source_revision = candidate_sha or current_sha
+        if source_revision is None:
+            raise ValueError("selected source revision is unavailable")
+        resolved = _git(root, "rev-parse", "--verify", f"{source_revision}^{{commit}}")
+        if resolved is None:
+            raise ValueError("selected source revision is not a Git commit")
+        source_revision = resolved.decode("ascii", "replace")
+        context_kind = source_context.get("kind", "working-tree")
+        committed_sources = _accepted_source_digests(root, selected_test, source_revision)
+        working_sources = (_accepted_source_digests(root, selected_test)
+                           if context_kind != "git-commit" else committed_sources)
+        cache_key = "linked-source:" + _json_digest({
+            "snapshot": snapshot.identity.get("digest"), "plan": reference.get("plan_digest"),
+            "test": {key: selected_test.get(key) for key in ("id", "case_id", "runner_id", "source_paths")},
+            "revision": source_revision, "context": context_kind,
+            "working_sources": working_sources,
+        })
+        if cache is not None and cache_key in cache:
+            cache.move_to_end(cache_key)
+            return cache[cache_key]
+        if context_kind == "git-commit":
+            source = qualified_source(root, selected_test, source_revision, current_sha=current_sha)
+        else:
+            source = _working_source(root, selected_test)
+        readable = {"status": "unavailable", "context_status": "unavailable",
+                    "context": [], "test_source": "",
+                    "diagnostic": "working source differs from committed helper context"}
+        if context_kind == "git-commit" or (committed_sources is not None
+                                              and committed_sources == working_sources):
+            readable = read_test(root, selected_test, source_revision, current_sha=current_sha)
+        base.update(source=source, readable_test=readable, candidate_sha=source_revision,
+                    context_kind=context_kind)
+        if cache is not None:
+            cache[cache_key] = base
+            cache.move_to_end(cache_key)
+            while len(cache) > _CACHE_LIMIT:
+                cache.popitem(last=False)
+        return base
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        base["source"]["diagnostic"] = str(exc)
+        base["readable_test"]["diagnostic"] = str(exc)
+        return base
 
 def _representative_cache_key(root: Path, retained_root: Path, snapshot, task_node_id: str) -> str:
     """Hash every mutable authority input before reusing a retained pilot inspection."""
