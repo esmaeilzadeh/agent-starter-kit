@@ -88,3 +88,29 @@ the test itself must restore its temporary outputs.
 The user's explicit instruction was “fix the main workflow first then continue.”
 This additional change fixes the candidate-integrity false failure discovered
 while executing the required integration gate for that repair.
+
+## Second detached integration finding
+
+After EM-020's sync check passed, detached verification found that
+`_ask/tests/test-askit-first-run.sh` inherited the verifier's `ASK_ROOT` into a
+temporary consumer. Its successful first-run overlay rewrote
+`.codex/agents/kit-07-review.toml` in the candidate. This is a separate test
+harness environment leak from the sync script's temporary generated outputs.
+
+## Second proposed change
+
+Extend EM-020 and RWB-CANDIDATE-SYNC-CLEAN to execute the first-run consumer test
+in the disposable candidate with `ASK_ROOT` inherited, and assert that the
+candidate remains clean. Update the test script to clear the verifier-only root
+before interacting with its non-git and temporary consumer directories. Keep
+sync projection restoration and its forced-failure case as already accepted.
+
+Impacted artifacts are the canonical spec, test plan, TaskGraph, plan, this
+proposal, `_ask/tests/test-askit-first-run.sh`, and
+`_ask/tests/test_traceability_entrypoints.py`. The test must also bind
+`ASK_ROOT` to its child worktree so nested sync commands cannot target the
+outer verifier checkout.
+
+The user's instruction remains: “fix the main workflow first then continue.”
+This second additive change addresses another required static check that mutates
+the candidate during the same detached integration gate.

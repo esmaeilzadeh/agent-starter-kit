@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "revising-workbench",
-  "revision": 3,
+  "revision": 4,
   "criteria": [
     {
       "id": "EM-001",
@@ -205,10 +205,11 @@
     },
     {
       "id": "EM-020",
-      "given": "Required detached candidate checks exercise work-specific agent runtime synchronization",
-      "when": "The sync check tests temporary risk/model overrides and the coordinator verifies the candidate tree",
+      "given": "Required detached candidate checks exercise work-specific agent runtime synchronization and first-run consumer overlays",
+      "when": "The sync and first-run checks run with verifier environment overrides and the coordinator verifies the candidate tree",
       "then": [
         "The sync check restores every generated agent projection to its exact pre-test bytes even when an assertion fails",
+        "First-run consumer checks do not let inherited verifier roots write into the candidate or change candidate source and CheckPlan",
         "Successful required checks leave candidate source and CheckPlan unchanged for the detached integration integrity gate"
       ],
       "verification_mode": "tests"

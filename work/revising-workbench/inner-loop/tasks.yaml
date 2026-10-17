@@ -115,6 +115,7 @@ tasks:
       - _ask/scripts/inner_loop/evidence.py
       - _ask/tests/test_traceability_entrypoints.py
       - _ask/tests/test-sync-runtime-agents.sh
+      - _ask/tests/test-askit-first-run.sh
       - _ask/docs/spec-test-traceability.md
     completion_evidence: "AppTest proves flow-specific readable source/results, all honest states and collapsed identifiers; current decision persistence and invalid/stale/historical no-write cases pass; zero eager scans and tamper refresh asserted; amended accepted contracts pass detached integration while verifier code remains pinned to the task base"
     test_ids: [RWB-APP-EVIDENCE, RWB-APP-DECISIONS, RWB-LAZY-CACHE, RWB-INNER-LOOP-AMENDMENT, RWB-CANDIDATE-SYNC-CLEAN]

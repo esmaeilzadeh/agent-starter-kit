@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "revising-workbench",
-  "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
+  "spec_digest": "ef61929ead5e8a5e52fb431f830a71ccc4f30fcba08daf4604298ce79fe77687",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -2643,19 +2643,19 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "The candidate carries a work-specific reviewer model overlay and the normal sync test applies temporary overrides",
-        "when": "The exact static sync check executes with a forced post-sync failure and then a successful run in a disposable candidate worktree",
+        "given": "The candidate has a work-specific reviewer model overlay and the verifier exports ASK_ROOT into sync and first-run consumer checks",
+        "when": "The forced-failure sync check, successful sync check, and first-run consumer test execute in a disposable candidate worktree",
         "then": [
-          "The failing check restores every generated runtime-agent projection to its exact pre-check bytes",
-          "The candidate remains clean after both the expected failure and successful check"
+          "The failing sync check restores all generated runtime-agent projections to their exact pre-check bytes",
+          "Both successful checks leave the candidate source tree clean and integration eligible"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-020",
           "checks": [
-            "Force a failure after generated projections change, require the expected nonzero status, compare all runtime projection files byte-for-byte with their pre-check snapshot, and assert the candidate is clean",
-            "Run the same check successfully and assert the candidate is still clean"
+            "Force a failure after generated projections change, require the expected nonzero status, compare every runtime projection file with its pre-check snapshot, and assert the candidate is clean",
+            "Run the sync check successfully and the first-run consumer test with ASK_ROOT set to the child candidate; require both to succeed without changing the candidate tree"
           ]
         }
       ],
@@ -2663,7 +2663,8 @@
       "case_id": "test_traceability_entrypoints.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree",
       "source_paths": [
         "_ask/tests/test_traceability_entrypoints.py",
-        "_ask/tests/test-sync-runtime-agents.sh"
+        "_ask/tests/test-sync-runtime-agents.sh",
+        "_ask/tests/test-askit-first-run.sh"
       ]
     }
   ],
