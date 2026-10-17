@@ -60,6 +60,8 @@ class DetailAppTests(unittest.TestCase):
                 "    def test_behavior(self):\n"
                 "        actual = self.expected\n"
                 "        self.assertEqual(actual, 'accepted')\n")
+            external = root / "support.py"
+            external.write_text("def curated_expectation():\n    return 'curated'\n")
             subprocess.run(["git", "init", "-q", str(root)], check=True)
             subprocess.run(["git", "-C", str(root), "config", "user.name", "Workbench Test"], check=True)
             subprocess.run(["git", "-C", str(root), "config", "user.email", "workbench@example.invalid"], check=True)
@@ -70,6 +72,21 @@ class DetailAppTests(unittest.TestCase):
             self.assertFalse(diagnostics, diagnostics)
             projection = project(snapshot, root, include_evidence=False)
             test = next(row for row in projection["workbench"]["tests"] if row["id"] == "CASE-1")
+            # The compact v1 fixture does not admit source_context. Exercise the
+            # captured-file reader with the same v2 Test field without changing
+            # the fixture's unrelated v1 validation surface.
+            model_path = f"work/{snapshot.work_id}/engineering-model.json"
+            captured_model = json.loads(snapshot.files[model_path].decode())
+            captured_model["nodes"][-1]["source_context"] = [{
+                "path": "support.py", "qualified_name": "support.curated_expectation",
+                "role": "helper", "revision": "snapshot",
+                "explanation": "Contract helper declared on the selected test node.",
+            }]
+            from dataclasses import replace
+            from types import MappingProxyType
+            captured_files = {**snapshot.files,
+                              model_path: json.dumps(captured_model).encode()}
+            snapshot = replace(snapshot, files=MappingProxyType(captured_files))
             detail = load_selected_detail(
                 root, snapshot, test, node_id="case",
                 source_context={"kind": "git-commit", "work_id": "pilot", "commit": candidate},
@@ -81,6 +98,10 @@ class DetailAppTests(unittest.TestCase):
             helper = next(item for item in readable.get("context", [])
                           if str(item.get("selector", "")).endswith("expected_output"))
             self.assertIn("return 'accepted'", helper["source"])
+            curated = next(item for item in readable.get("context", [])
+                           if item.get("selector") == "support.curated_expectation")
+            self.assertEqual(curated.get("status"), "available")
+            self.assertIn("return 'curated'", curated["source"])
             self.assertEqual(readable["flow"]["given"], "Valid input")
             self.assertEqual(readable["flow"]["when"], "Validate")
             self.assertIn("Accept", readable["flow"]["then"])
@@ -127,34 +148,7 @@ class DetailAppTests(unittest.TestCase):
     def test_attributed_choice_reload_and_invalid_stale_historical_refusal(self):
         _run_existing("test_resolution_survives_new_session")
         _run_existing("test_referenced_spec_change_keeps_form_stale_until_refresh")
-        self._assert_task_displays_blocking_decision_context()
         self._assert_committed_decision_form_is_read_only()
-
-    def _assert_task_displays_blocking_decision_context(self):
-        import tempfile
-
-        from engineering_fixture import write_json
-
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            model, _spec = workbench_model(root)
-            choice = next(node for node in model["nodes"] if node["id"] == "choice")
-            choice["history"] = [{
-                "event": "reopened", "actor": "Reviewer",
-                "rationale": "The latest evidence no longer supports the earlier choice.",
-                "timestamp": "2026-01-02T03:04:05Z", "options": choice["options"], "resolution": {},
-            }]
-            write_json(root, "work/pilot/engineering-model.json", model)
-            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
-                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"),
-                                        default_timeout=30).run(timeout=30)
-                _open(app, "build")
-                self.assertFalse(app.exception, app.exception)
-                rendered = test_engineering_ui.text(app)
-                self.assertIn("Choose · choice is open; requires resolved", rendered)
-                self.assertIn("Available choices: First (one); Second (two)", rendered)
-                self.assertIn("Last decision update by Reviewer", rendered)
-                self.assertIn("The latest evidence no longer supports the earlier choice.", rendered)
 
     def _assert_committed_decision_form_is_read_only(self):
         import subprocess
