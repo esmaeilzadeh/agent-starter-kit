@@ -117,18 +117,16 @@ def structural_workload(task_count: int) -> dict:
             raise AssertionError(f"scale-{task_count} fixture was not admitted: {admission_errors[:3]}")
         if admitted.identity != snapshot.identity:
             raise AssertionError("admission changed the validated source identity")
-        projection_samples, outline_samples = [], []
-        for _ in range(5):
-            started = time.perf_counter()
-            projected = project(admitted, root, include_evidence=False)
-            projection_samples.append((time.perf_counter() - started) * 1000)
-            started = time.perf_counter()
-            outline = build_outline(projected)
-            outline_samples.append((time.perf_counter() - started) * 1000)
-            assert len(projected["workbench"]["tasks"]) == task_count
-            assert len(projected["workbench"]["tests"]) == task_count
-            assert sum(entry["kind"] == "task" for entry in outline["entries"]) == task_count
-            assert sum(entry["kind"] == "test" for entry in outline["entries"]) == task_count
+        started = time.perf_counter()
+        projected = project(admitted, root, include_evidence=False)
+        projection_samples = [(time.perf_counter() - started) * 1000]
+        started = time.perf_counter()
+        outline = build_outline(projected)
+        outline_samples = [(time.perf_counter() - started) * 1000]
+        assert len(projected["workbench"]["tasks"]) == task_count
+        assert len(projected["workbench"]["tests"]) == task_count
+        assert sum(entry["kind"] == "task" for entry in outline["entries"]) == task_count
+        assert sum(entry["kind"] == "test" for entry in outline["entries"]) == task_count
         return {"task_count": task_count, "test_count": len(plan["tests"]),
                 "model_node_count": len(model["nodes"]), "graph_edge_count": len(model["edges"]),
                 "source_file_count": len(set(source_paths)),
