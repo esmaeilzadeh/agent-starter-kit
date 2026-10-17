@@ -11,6 +11,8 @@ def task_rows(projection: dict) -> list[dict]:
     projected = [item for item in workbench.get("tasks", []) if isinstance(item, dict)]
     states = {str(item.get("id")): item for item in projection.get("tasks", [])}
     nodes = {str(item.get("id")): item for item in projection.get("model", {}).get("nodes", [])}
+    decisions = {identity: node for identity, node in nodes.items()
+                 if node.get("type") == "decision"}
     is_v2 = projection.get("model", {}).get("schema") == "ask-engineering-model/v2"
     id_counts = {}
     for item in projected:
@@ -34,6 +36,17 @@ def task_rows(projection: dict) -> list[dict]:
                        if candidate.get("type") == "story"}
         execution_identity = item.get("execution_identity")
         selection_id = task_selection_id(item, id_counts[identity] > 1)
+        blockers = []
+        raw_blockers = state.get("blockers") or item.get("blockers") or item.get("readiness_blockers", [])
+        for blocker in raw_blockers:
+            if not isinstance(blocker, dict):
+                continue
+            decision = decisions.get(str(blocker.get("id")), {})
+            blockers.append({**blocker,
+                             "title": decision.get("title") or blocker.get("id"),
+                             "options": decision.get("options", []),
+                             "history": decision.get("history", []),
+                             "resolution": decision.get("resolution", {})})
         rows.append({
             **item,
             "id": identity,
@@ -43,7 +56,7 @@ def task_rows(projection: dict) -> list[dict]:
             "lifecycle": item.get("lifecycle", node.get("lifecycle", "not recorded")),
             "status": status,
             "runtime_status": item.get("runtime_status", state.get("runtime_status")),
-            "blockers": state.get("blockers", item.get("blockers", [])),
+            "blockers": blockers,
             "result_path": item.get("result_path") or state.get("result_path"),
             "verified": False,
             "result_reference_recorded": bool(item.get("result_path") or state.get("result_path")),
@@ -120,7 +133,26 @@ def _detail(row: dict, *, on_open=None, context: str = "tasks") -> None:
     if not blockers:
         st.caption("No blockers are recorded.")
     for blocker in blockers:
-        st.warning(f"{blocker.get('id', 'unknown')} · {blocker.get('reason', 'Reason not recorded.')}")
+        st.warning(f"{blocker.get('title') or blocker.get('id', 'unknown')} · "
+                   f"{blocker.get('reason', 'Reason not recorded.')}")
+        if blocker.get("options"):
+            st.caption("Available choices: " + "; ".join(
+                f"{option.get('label', option.get('id', ''))} ({option.get('id', '')})"
+                for option in blocker["options"] if isinstance(option, dict)))
+        history = blocker.get("history") or []
+        if history:
+            latest = history[-1]
+            if isinstance(latest, dict):
+                st.caption("Last decision update by " + str(latest.get("actor") or "unavailable"))
+                if latest.get("rationale"):
+                    st.write("Decision rationale: " + str(latest["rationale"]))
+        resolution = blocker.get("resolution")
+        if isinstance(resolution, dict) and resolution:
+            option_id = resolution.get("option_id")
+            st.caption("Resolved option: " + str(option_id or "unavailable") +
+                       " · actor: " + str(resolution.get("actor") or "unavailable"))
+            if resolution.get("rationale"):
+                st.write("Resolution rationale: " + str(resolution["rationale"]))
 
     scenarios = row.get("related_scenarios") or []
     st.markdown("#### Related scenarios")
