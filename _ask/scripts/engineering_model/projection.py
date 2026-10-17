@@ -225,7 +225,8 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
             state = None
         if (model.get("schema") == "ask-engineering-model/v1" and owner == snapshot.work_id
                 and isinstance(state, dict) and isinstance(state.get("tasks"), dict)
-                and state.get("schema") is None and state.get("work_id") in {None, owner}):
+                and state.get("schema") is None
+                and (state.get("work_id") is None or state.get("work_id") == owner)):
             runtime_states[owner] = {"state": state, "source": "task-state"}
             continue
         if (not isinstance(state, dict) or state.get("schema") != "ask-inner-loop-state/v1"
