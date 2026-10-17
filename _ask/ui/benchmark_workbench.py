@@ -247,7 +247,8 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
                   if path.startswith("specs/current/") and path.endswith(".json")]
     current_spec_path = next((path for path in spec_paths
                               if canonical(json.loads(admitted_snapshot.files[path]))
-                              == current_plan.get("spec_digest")), None)
+                              == current_plan.get("spec_digest")),
+                             spec_paths[0] if spec_paths else None)
     if current_spec_path is None:
         raise ValueError("benchmark plan does not bind one captured current specification")
     current_spec = json.loads(admitted_snapshot.files[current_spec_path])
