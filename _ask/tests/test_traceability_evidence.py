@@ -9,6 +9,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from verification.traceability.completion import evaluate_completion
 from verification.traceability.contracts import Invalid,POLICY,digest
 from verification.traceability.evidence import record_test_review,review_errors,write_json
+from verification.traceability.service import reports
 from traceability_fixture import Consumer
 
 class EvidenceTests(unittest.TestCase):
@@ -65,6 +66,19 @@ class EvidenceTests(unittest.TestCase):
             green=copy.deepcopy(self.c.green);green[field]=value;self.persist(green);self.assertEqual(self.evaluate([self.c.red,green])['status'],'fail')
         path=self.c.root/self.c.green['cases'][0]['output_artifact'];path.write_text('forged output')
         self.assertEqual(self.evaluate()['status'],'fail')
+    def test_U08_unreachable_historical_red_is_rejected_without_poisoning_completion(self):
+        self.passing()
+        red=copy.deepcopy(self.c.red);red['run_id']='unreachable-red'
+        orphan=self.c.git('commit-tree',self.c.sha+'^{tree}','-m','unreachable red source')
+        for case in red['cases']:case['source_sha']=orphan
+        runtime=self.c.root/'work/w/traceability';write_json(runtime/'runs'/red['run_id']/'results.json',red)
+        ledger=json.loads((runtime/'executions.json').read_text())
+        ledger.append({'run_id':red['run_id'],'digest':digest(red),'phase':'red','scope':'workstream','task_id':None,'candidate_sha':orphan,'spec_digest':red['spec_digest'],'plan_digest':red['plan_digest']})
+        write_json(runtime/'executions.json',ledger)
+        accepted,rejected=reports(self.c.root,'w',self.c.contracts,self.c.sha,'workstream',None)
+        self.assertEqual([report['run_id'] for report in accepted],[self.c.red['run_id'],self.c.green['run_id']])
+        self.assertEqual(rejected,[{'run_id':'unreachable-red','candidate_sha':orphan,'reasons':['red source is not reachable from the candidate'],'report_digest':digest(red),'retained_report':f'work/w/traceability/runs/{red["run_id"]}/results.json'}])
+        self.passing()
     def test_I03_changed_candidate_invalidates_bound_semantic_review(self):
         self.passing();self.c.write('test_app.py',(self.c.root/'test_app.py').read_text()+'\n# changed reviewed source\n');sha=self.c.commit('change source')
         context=self.c.context();context['candidate_sha']=sha

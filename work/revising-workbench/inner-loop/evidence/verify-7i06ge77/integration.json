@@ -1,0 +1,352 @@
+{
+  "work_id": "revising-workbench",
+  "task_id": "RWB-107",
+  "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+  "candidate_sha": "1cef4fff0a15267177aadfdd0e433d9c71c13284",
+  "schema": "ask-integration-evidence/v1",
+  "result": "fail",
+  "result_digest": "fc9d3cf768c4254bccd10b64f14ab916ee79a633e34069c0cbcba17126a81781",
+  "checks": [
+    {
+      "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/0.log",
+      "output_digest": "e1c6e6247094cffbbe3928c2c0c579e42300288df0d6cec87ec2bff7473241a7"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-complete.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/1.log",
+      "output_digest": "efa293615aa68716f429c21f4c03bda8d6130b275eb2764bf2d34645bb2ecaa3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-first-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/2.log",
+      "output_digest": "e46608100ec7cfead0a5aa8e2179ceda8876c483853469f9f2293a225f7ebe56"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-self-install.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/3.log",
+      "output_digest": "8a238900a3eb9d3725f99742f873db9a9df3f4ef3b862279b69f685a89311da0"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/4.log",
+      "output_digest": "5814a776633cbea0776e5f33de80a4af3527bbf1adc99704c40f8300b2245e03"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-clean-worktree.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/5.log",
+      "output_digest": "b2e8533016dbcceb644ddce86aa502bce14da7a7ba3eb82d72bdacb211bfdbf3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-confirmation.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/6.log",
+      "output_digest": "e89868a2c3dde69792c7e03b45e2e7afea38c3d1e79bfce75b47c704e1e34c2f"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-guidance.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/7.log",
+      "output_digest": "8ac52b3329cafe14204ad77f3aadf1d30af5a271d68c5c7681f5f52cad0407bd"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/8.log",
+      "output_digest": "e820770d70a0ac4f82e98d05a823fb735fc499bffe40f365e1280bc75b4e62b1"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/9.log",
+      "output_digest": "fc386834f62fc118ca75abba8d8488a3b8f8a9aac81ff0a46f925ef5dca4c4b4"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/10.log",
+      "output_digest": "6d2bd4b27a5f63ae97aff392f10c5abb03fce029afb40d188a4edc4d38517394"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-humanizer-docs-specs.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/11.log",
+      "output_digest": "bb7153497ae0b00c0dea075c1717db643fb2704a4dd9bd5b00a49b5dcbd15566"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop-reliability.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/12.log",
+      "output_digest": "e94fceb0afa5bc205bb96f4982c70d189c3a099840150d18a325411b52596110"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/13.log",
+      "output_digest": "196d7a65694f31564c4bd1bf9e145c4d192d440f1fcab1cb870f41cd247236e6"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-apply.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/14.log",
+      "output_digest": "3708107d19458109ce90f7a1fe8253b34a772dc3cd8d783220fe9d1b89097e59"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-dry-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/15.log",
+      "output_digest": "ab0ca063865256206ba7b5f29ef0abe2d5010395f81c5df52b58194bbede7fe5"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-user-completion.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/16.log",
+      "output_digest": "261d72ab640cfc32c4dd8d3e22793f083aa42e6e66d4b4e1b370cbcb29cd91d9"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-later-inbox-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/17.log",
+      "output_digest": "f1a32ac8f2dcbdf7e50144b9bb5a1e26a7190ada292a7de2ecdd2b3c7aeedd5e"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/18.log",
+      "output_digest": "a181bce40961ab1087396476d0fab48e16d5705d6affa6238e461917c30c9d49"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/19.log",
+      "output_digest": "8f5c9121d8e4e19a07bb7b4c33a7aae90ae57a266b2bc35adbcb139206abc6cc"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/20.log",
+      "output_digest": "0b796c2b08fbb36dcc62c00f3a4cdc3c8c803c17fab923aa2fa9ff0701191db5"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/21.log",
+      "output_digest": "899dc9c2a53edb1f4b374b1dbf7b6cbcfb73e17f785b6175e1b0c53e72fb87c2"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-writes-manifest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/22.log",
+      "output_digest": "424f8246aef9c46395069c07d15e9f06b32da2d16bc00f3e0a6c3b1bbe3cfde4"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-env-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/23.log",
+      "output_digest": "f156179a815195ecb949ab29dfea0c978126d6b41f3a2c834fb78cf377265f0a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-human-only.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/24.log",
+      "output_digest": "dba1b64b66e449baf0dcb4b38a56f6bd32b7b623c55f8c07ff8be78609d91b74"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/25.log",
+      "output_digest": "28caad8b0a55cb93060bd789cf8ff49eb84e2606991b97c20e986d1513de1d14"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/26.log",
+      "output_digest": "b0a784d8575e7a5a28c8559f19f32b46337875aa05608014598d71a124cd8e98"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-no-explore-map.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/27.log",
+      "output_digest": "443b0b454396c5324d2c96e107ffd9d14db0aad4bc1a1f8e935160e1bd27a2ae"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/28.log",
+      "output_digest": "5300ce25bbd30eb4c48e6fa197e63839412f0cb4b0ba61140509e14ccd0ad30d"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-status.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-status.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/29.log",
+      "output_digest": "79827fb9735d5d131431970e66e06d511b430b0675084266adf3b3bac3e05ed9"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/30.log",
+      "output_digest": "e184deb2ae74a50b1d4f4b940d00ee2e520e507b52635d9b88e0920b2f7800ec"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-off-path-command.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/31.log",
+      "output_digest": "a06448d6ccb0ff8b496b65eca8de8890735202c636f2c0b4aeaf311ff789ee47"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/32.log",
+      "output_digest": "91d62e4e1928b7c7108c0d09dbd3dc88e478f31be90038412fdb37d3367bd920"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/33.log",
+      "output_digest": "4f9a829166f2dd55d46a62a9dcd8a5b4caae528daeb6018770347b703ea1c0d0"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/34.log",
+      "output_digest": "d44023e2b66cae1ad68891336cab75b83b58e1ebcbc7b4d2bcd9d26aa3c4c7d5"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-workstream-smoke.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/35.log",
+      "output_digest": "bacbb0a6149ae971a59cc01ba828be0768cc99d5934c4955b3a5705c7929c63d"
+    },
+    {
+      "id": "traceability-cases",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/80bc1651acb941ae880eb89e4e5d1e8f/36.log",
+      "output_digest": "679a4bcf0c630994b78db3a1234129862435238bc1e24f96e5c828bda91d14c7"
+    }
+  ],
+  "evidence_path": "work/revising-workbench/inner-loop/evidence/verify-7i06ge77/verification.json",
+  "log_path": "work/revising-workbench/inner-loop/evidence/verify-7i06ge77/output.log",
+  "runner_digest": "c2dddcc19cc09ee2413c8f151f6665869ec07284ffbda732cd9e4023f7594a7f",
+  "runner_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+  "tree_sha": "efba948b19f97a8123230489a901f7c87a015695",
+  "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
+  "error": "required candidate verification failed or mismatched its CheckPlan: candidate source/CheckPlan changed during verification",
+  "record_path": "work/revising-workbench/inner-loop/evidence/verify-7i06ge77/integration.json"
+}
