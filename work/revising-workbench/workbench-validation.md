@@ -78,6 +78,6 @@ The generated completion record is ignored runtime output at
 `work/revising-workbench/traceability/completion.json`. No review was
 self-authored or claimed.
 
-At the time of this record, RWB-108 remains the active task and RWB-109 remains
-pending. Final acceptance also still requires the candidate-bound human
-comprehension exercise.
+The coordinator has now marked RWB-108 `blocked` on the missing genuine WB-003
+evidence in commit `c574b01`; RWB-109 remains `pending`. Final acceptance also
+requires the candidate-bound human comprehension exercise.
