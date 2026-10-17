@@ -167,6 +167,7 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
                 product_node_id=product_node.get("id") if product_node else None,
                 model_lifecycle=product_node.get("lifecycle") if product_node else None,
                 model_status=model_state.get("status") if isinstance(model_state, dict) else None,
+                readiness_status=model_state.get("status") if isinstance(model_state, dict) else None,
                 readiness_source=("engineering-model" if model_state is not None else "unavailable"),
                 verification_status=None,
                 verification_source="no-verification-record",
