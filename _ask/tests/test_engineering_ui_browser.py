@@ -131,7 +131,9 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 expect(first.get_by_text("Historical evidence", exact=True).first).to_be_visible()
                 expect(first.get_by_role("heading", name="Test source", exact=True)).to_be_visible()
                 expect(first.get_by_text("Exact HELLO output", exact=True)).to_be_visible()
-                expect(first.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
+                expect(first.get_by_text(
+                    "Selected source path: test_app.py · current revision", exact=True
+                )).to_be_visible()
                 debug = first.locator("summary").filter(has_text="Technical details and identifiers")
                 expect(first.locator('[class~="st-key-route-result-U"] button')).to_have_attribute("kind", "primary")
                 debug.click()
@@ -139,10 +141,14 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 expect(first.get_by_text("test_app.Cases.test_unit", exact=True)).to_be_visible()
                 expect(first.get_by_text("./ask traceability check-completion", exact=False)).to_be_visible()
                 self.open_route(first, "Uppercase assertion")
-                expect(first.get_by_text("Selected source path: test_app.py", exact=True)).to_be_visible()
+                expect(first.get_by_text(
+                    "Selected source path: test_app.py · current revision", exact=True
+                )).to_be_visible()
                 expect(first.get_by_text("test_app.Cases.test_unit", exact=True)).to_be_visible()
                 self.open_route(first, "Build")
-                expect(first.get_by_text("choice", exact=False)).to_be_visible()
+                expect(first.get_by_text(
+                    "Available choices: First (one); Second (two)", exact=True
+                )).to_be_visible()
                 expect(first.get_by_text("Blockers", exact=False)).to_be_visible()
 
                 self.open_route(first, "Decision")
@@ -253,7 +259,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     )
                     page = browser.new_page()
                     page.goto(url, wait_until="domcontentloaded")
-                    self.open_route(page, "Behavior assertion")
+                    page.locator('[class~="st-key-route-test-CASE-1"] button').click()
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
                     self.open_route(page, "Result / evidence")
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
