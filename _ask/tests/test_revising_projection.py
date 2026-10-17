@@ -1,6 +1,7 @@
 """Qualified workbench projections and immutable source inspection."""
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -9,12 +10,12 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from _ask.scripts.engineering_model.admission import validate_current
-from _ask.scripts.engineering_model.projection import project
+from _ask.scripts.engineering_model.projection import markdown as render_markdown, project
 from _ask.scripts.engineering_model.snapshot import capture
 from _ask.scripts.engineering_model.workbench_sources import discover_work, read_snapshot
 from _ask.tests.revising_fixture import digest
 from _ask.tests.test_revising_context import _put, _repo
-from _ask.tests.engineering_fixture import model_command
+from _ask.tests.engineering_fixture import model_command, workbench_model
 
 
 def _projection_repo(root):
@@ -30,6 +31,8 @@ def _projection_repo(root):
         {"id": "standalone", "type": "task", "title": "Standalone support", "lifecycle": "planned",
          "execution": {"work_id": "delivery", "task_id": "shared-17"}},
         {"id": "story-two", "type": "story", "title": "Second outcome", "lifecycle": "active"},
+        {"id": "implementation", "type": "implementation", "title": "Task implementation",
+         "lifecycle": "active", "reference": {"path": "src/workbench.py", "symbol": "publish"}},
     ])
     model["nodes"][2]["case"]["plan_digest"] = "pending"
     model["nodes"].append({"id": "choice", "type": "decision", "title": "Publish decision",
@@ -42,6 +45,8 @@ def _projection_repo(root):
         {"type": "contributes_to", "source": "standalone", "target": "story"},
         {"type": "contributes_to", "source": "standalone", "target": "story-two"},
         {"type": "contributes_to", "source": "standalone", "target": "scenario-stale"},
+        {"type": "implements", "source": "implementation", "target": "task"},
+        {"type": "implements", "source": "implementation", "target": "scenario-stale"},
     ])
     spec = json.loads((root / "specs/current/product.json").read_text())
     plan = json.loads((root / "work/product/test-plan.json").read_text())
@@ -64,6 +69,7 @@ def _projection_repo(root):
     _put(root, "specs/current/product.json", spec)
     _put(root, "work/product/test-plan.json", plan)
     _put(root, "work/product/engineering-model.json", model)
+    _put(root, "src/workbench.py", b"def publish():\n    return True\n")
     graph_path = root / "work/product/inner-loop/tasks.yaml"
     graph_path.parent.mkdir(parents=True, exist_ok=True)
     graph_path.write_text(
@@ -104,6 +110,9 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(tasks["WB-003"]["dependencies"], [])
             self.assertEqual(tasks["WB-003"]["owned_paths"], ["src/publish.py"])
             self.assertEqual(tasks["WB-003"]["owned_test_ids"], ["WB-publish"])
+            self.assertIn({"id": "scenario-stale", "via": "recorded-implementation"},
+                          tasks["WB-003"].get("related_scenarios", []),
+                          "product implementation routes remain attached after alias deduplication")
             self.assertEqual(tests["WB-publish"]["scenario_ids"], ["scenario"],
                              "shared criterion membership must not join the distinct WB-stale flow")
             self.assertEqual(tests["WB-stale"]["scenario_ids"], ["scenario-stale"])
@@ -137,6 +146,50 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(updated["status"], "completed")
             self.assertEqual(updated["runtime_status"], "integrated")
             self.assertIsNone(updated.get("verification_status"), "runtime state must not imply verified completion")
+
+            with tempfile.TemporaryDirectory() as collision_directory:
+                collision_root = Path(collision_directory)
+                _projection_repo(collision_root)
+                model_path = collision_root / "work/product/engineering-model.json"
+                collision_model = json.loads(model_path.read_text())
+                plan_path = collision_root / "work/product/test-plan.json"
+                collision_plan = json.loads(plan_path.read_text())
+                collision_plan["task_scopes"][1]["task_id"] = "standalone"
+                _put(collision_root, "work/product/test-plan.json", collision_plan)
+                collision_digest = digest(collision_plan)
+                for node in collision_model["nodes"]:
+                    if node.get("type") == "scenario":
+                        node["case"]["plan_digest"] = collision_digest
+                _put(collision_root, "work/product/engineering-model.json", collision_model)
+                graph_path = collision_root / "work/product/inner-loop/tasks.yaml"
+                graph_path.write_text(graph_path.read_text().replace("WB-004", "standalone"), encoding="utf-8")
+                collision_snapshot, collision_errors = validate_current(collision_root, "product")
+                self.assertFalse(collision_errors, str(collision_errors))
+                collision_view = project(collision_snapshot, collision_root, include_evidence=False)
+                colliding_rows = [row for row in collision_view["workbench"]["tasks"]
+                                  if row["id"] == "standalone"]
+                self.assertEqual(len(colliding_rows), 2,
+                                 "a product Task and execution Task with the same local ID remain distinct")
+                product_row = next(row for row in colliding_rows
+                                   if row.get("product_identity") == {"work_id": "product", "node_id": "standalone"})
+                self.assertEqual(product_row.get("execution_identity"), {"work_id": "delivery", "task_id": "shared-17"})
+                self.assertIn({"id": "scenario-stale", "via": "contributes-to"},
+                              product_row.get("related_scenarios", []))
+
+            with tempfile.TemporaryDirectory() as legacy_directory:
+                legacy_root = Path(legacy_directory)
+                project_root = Path(__file__).resolve().parents[2]
+                shutil.copytree(project_root / ".agents/ask/verification", legacy_root / ".agents/ask/verification")
+                workbench_model(legacy_root)
+                (legacy_root / "specs/current/pilot.md").write_text("# Pilot specification\n", encoding="utf-8")
+                legacy_snapshot, legacy_errors = validate_current(legacy_root, "pilot")
+                self.assertFalse(legacy_errors, str(legacy_errors))
+                legacy_view = project(legacy_snapshot, legacy_root, include_evidence=False)
+                legacy_tasks = {row["id"]: row for row in legacy_view["workbench"]["tasks"]}
+                self.assertEqual(legacy_tasks["build"].get("readiness_status"), "blocked")
+                legacy_markdown = render_markdown(legacy_view)
+                self.assertIn("Readiness: blocked", legacy_markdown)
+                self.assertIn("choice is open; requires resolved", legacy_markdown)
 
     def test_live_archive_foreign_and_historical_revisions_are_read_only(self):
         with tempfile.TemporaryDirectory() as directory:
