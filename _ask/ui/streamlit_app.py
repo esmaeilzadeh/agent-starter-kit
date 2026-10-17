@@ -932,6 +932,7 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                     on_open=_open_related_route,
                     on_clear=_clear_overview_filter,
                     active_filter=st.session_state.get(STATE_OVERVIEW_FILTER),
+                    outline=outline,
                 )
             else:
                 st.subheader(selected["label"])

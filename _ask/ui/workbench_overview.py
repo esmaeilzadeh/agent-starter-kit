@@ -48,7 +48,8 @@ def summary_records(projection: dict, *, failed_result_ids: list[str] | None = N
 
 def render_overview(projection: dict, *, work_id: str, on_filter=None,
                     on_open=None, on_clear=None, active_filter: dict | None = None,
-                    failed_result_ids: list[str] | None = None) -> None:
+                    failed_result_ids: list[str] | None = None,
+                    outline: dict | None = None) -> None:
     """Render the epic root without reading test source or evaluating evidence."""
     model = projection.get("model", {})
     nodes = {node.get("id"): node for node in model.get("nodes", [])}
@@ -71,7 +72,7 @@ def render_overview(projection: dict, *, work_id: str, on_filter=None,
     else:
         st.write(purpose.get("title") or "Purpose is not recorded.")
 
-    _render_flow(projection, on_open)
+    _render_flow(projection, on_open, outline=outline)
     _render_delivery(stories, scenarios, on_open)
     model_tasks = {str(node.get("id")): node for node in model.get("nodes", [])
                    if node.get("type") == "task"}
@@ -83,11 +84,11 @@ def render_overview(projection: dict, *, work_id: str, on_filter=None,
         _render_filter(projection, active_filter, on_open=on_open, on_clear=on_clear)
 
 
-def _render_flow(projection: dict, on_open) -> None:
+def _render_flow(projection: dict, on_open, *, outline: dict | None = None) -> None:
     """Show the actual recorded hierarchy as a connected, navigable flow."""
     st.markdown("#### End-to-end delivery path")
     st.caption("Follow each recorded link from purpose through delivery and verification.")
-    entries = build_outline(projection)["entries"]
+    entries = (outline or build_outline(projection))["entries"]
     visible = [entry for entry in entries if entry.get("kind") != "decision"]
     if not visible:
         st.info("No connected delivery records are available yet.")
