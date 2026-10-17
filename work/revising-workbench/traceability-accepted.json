@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
+  "contract_sha": "54ef012b0517758ee548a2a4ee79b28e698990ff",
   "work_id": "revising-workbench",
   "reviewer": "/root/review_rwb104",
   "recorded_by": "/root",
@@ -13,55 +13,36 @@
     "decision": "APPROVED",
     "reviewer": "/root/review_rwb104",
     "runtime": "codex",
-    "reviewed_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
-    "previous_contract_sha": "bdffffd4540ada236c30603fcda125575e479d97",
-    "implementation_source_sha": "e7ed1101b6bd1ef8016cf5a6470e4392420d4e6a",
+    "reviewed_sha": "54ef012b0517758ee548a2a4ee79b28e698990ff",
+    "previous_contract_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
     "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
     "plan_digest": "36fe0b54e4431123d52649a3fd5f6ce738ebfdf2cd503428fcf3a5f55a157769",
-    "graph_digest": "80a61d7e6c0c510de1d12ea48419d60f2c7650aa8e9a163e8b7abca1a3825c71",
+    "graph_digest": "bc59ece2074e22e98499237a7f9fa9521a28924212eafe63c72c552306ee41ba",
     "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
-    "assessment": "APPROVED narrow RWB-HISTORICAL evidence-mapping amendment. The accepted specification and TaskGraph are unchanged. Only this case and its runner change in the canonical plan. It now names the unchanged baseline committed-source consistency test as regression and limits its asserted criterion to EM-009. The duplicate newly added helper test is removed; projection/runtime/CLI implementations are unchanged from e7ed110. The change corrects an unsupported new-behavior/TDD classification rather than inventing a red failure for an existing unchanged source reader. No product criterion, required test type, task assignment/order/ownership or gate is weakened. Final addendum at 3520cb0 changes only explanatory plan prose: 22 original inherited regressions retain four discovery runners; the additional RWB-HISTORICAL regression uses its own exact selector; 33 new cases remain. This accurately describes the amended canonical plan. No contract or source bytes change from d9ca2a5.",
-    "changed_case": "RWB-HISTORICAL",
-    "changed_fields": [
-      "rwb-historical.argv",
-      "RWB-HISTORICAL.criterion_ids",
-      "RWB-HISTORICAL.change_kind",
-      "RWB-HISTORICAL.scenario",
-      "RWB-HISTORICAL.expected_assertions",
-      "RWB-HISTORICAL.case_id",
-      "RWB-HISTORICAL.source_paths"
+    "assessment": "APPROVED narrow RWB-107 ownership amendment. Adds only _ask/ui/workbench_tasks.py to the accepted RWB-107 ownership set and corresponding plan table. This is necessary to satisfy the already accepted RWB-APP-DECISIONS requirement that blocker cause/options/actor/rationale remain meaningful in Task context. No What/Why, semantic criterion, required test type, executable selector, runner, task assignment, completion evidence, dependency or task order changes. Removing the later card correctly retains this as required live-plan work rather than an unapproved deferral.",
+    "added_owned_paths": [
+      "_ask/ui/workbench_tasks.py"
     ],
-    "unchanged_baseline_source": "_ask/tests/test_engineering_workbench_sources.py",
-    "baseline_source_assessment": "The entire selected test file is byte-identical between prior accepted contract bdffffd and reviewed amendment d9ca2a5. The exact method captures model, TaskGraph, test-plan and requested source from one commit, moves the current branch, checks captured original bytes and noneditability, verifies HEAD/refs/current source bytes unchanged, then moves the selected ref and proves old capture remains bound while refreshed capture changes. It substantively supports the narrowed EM-009 integration claim.",
-    "coverage_assessment": {
-      "EM-009": "RWB-HISTORICAL retains selected-revision/source consistency integration coverage. RWB-APP-ENTRY retains broader subject/foreign/read-only navigation integration coverage; RWB-BROWSER-NAV and RWB-BROWSER-PILOT retain e2e coverage.",
-      "EM-017": "Genuine historical harness identity/authority is not established by a generic source fixture. Existing RWB-MIGRATION and RWB-GENUINE-WB003 integration cases and RWB-BROWSER-PILOT e2e case retain this criterion. Removing the unsupported helper claim does not remove the semantic obligation.",
-      "EM-018": "Repository-only identity/external-context obligations remain covered by RWB-QUALIFIED-ID and RWB-SUBJECT-RULES unit cases, RWB-FRESH-INTAKE and RWB-NEW-CONTRACT integration cases, and RWB-BROWSER-PILOT e2e. No criterion text or required type changes."
-    },
-    "boundary_assessment": "Review is restricted to canonical plan/test mapping and removal of the duplicate helper test. The baseline test source remains unchanged, the production source remains byte-identical to approved e7ed110, and all prior runtime/history artifacts retain their original identity. No acceptance ref or execution state was changed by reviewer.",
+    "changed_task_fields": [
+      "RWB-107.owned_paths"
+    ],
+    "original_task_base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+    "boundary_assessment": "The newly assigned renderer was owned by predecessor RWB-106 and is also needed by later RWB-109. The explicit strict dependency chain RWB-106 to RWB-107 to RWB-108 to RWB-109 serializes those changes, preserving one writer. This amendment authorizes the minimal existing Task-detail seam needed for an unchanged accepted obligation; it does not weaken scope or grant worker ownership of other UI/backend modules. Prior source rejection for unowned changes remains historically correct under the previous contract.",
+    "completion_evidence_assessment": "TaskGraph completion_evidence and RWB-APP-DECISIONS criterion/type/selector/assertions remain byte-identical. Required Task blocker decision context must be restored and tested in the eventual source candidate. This contract review does not approve current source code or remove the separately reproduced working-helper freshness defect.",
     "verification": [
-      "contracts_at/validate_plan accepts exact d9ca2a5 spec, plan and graph with all required criterion/type coverage intact.",
-      "Compared previous and reviewed plans: only runners and tests sections differ; only RWB-HISTORICAL test changes.",
-      "Compared current specification and graph against prior accepted contract: equal.",
-      "Executed python3 -m unittest _ask.tests.test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only: one test passed.",
-      "contracts_at/validate_plan accepts exact 3520cb0; spec/plan/graph compare equal to independently approved d9ca2a5 amendment."
+      "contracts_at/validate_plan accepts exact 54ef012 spec, canonical plan and amended TaskGraph.",
+      "Compared prior accepted contract 3520cb0: canonical specification and test plan are equal; only RWB-107 owned_paths changes in TaskGraph.",
+      "Compared dd5c6ad to 54ef012: only TaskGraph ownership, matching Markdown plan row, and removal of the rejected deferred-work card change. Production and test sources remain unchanged."
     ],
     "blocking_findings": [],
     "limitations": [
-      "Plan amendment approval only; fresh exact-contract task runs and independent task review remain necessary after coordinator accepts this amendment.",
-      "Previous task red/green reports remain historical under their original plan digest; they must not be relabeled as runs of the amended contract.",
-      "Human acceptance, genuine WB-003 evidence, successor UI/browser obligations and final workstream verification remain outstanding."
-    ],
-    "supersedes_review_artifact": "work/revising-workbench/traceability/plan-review-amendment-d9ca2a5.json",
-    "prior_reviewed_sha": "d9ca2a5a572279bf7fcf83fd81b5ffca04a674a8",
-    "documentation_addendum": {
-      "decision": "APPROVED",
-      "changed_path": "work/revising-workbench/plan.md",
-      "assessment": "Compared full d9ca2a5-to-3520cb0 delta: only the regression runner explanation and 34-to-33 new-case count change. Canonical spec, plan JSON and TaskGraph compare equal; implementation/test sources do not change. Total remains 56 cases, comprising 23 regressions and 33 new cases."
-    }
+      "Contract amendment approval only. Coordinator must record accept-plan through its normal authority operation; reviewer has not pinned or changed any accepted ref.",
+      "Respect the existing no-amendment-while-running gate and audited state transitions, preserving original task base/history and reviewing the complete task diff after resumed implementation.",
+      "Final task source must restore the required blocker-context behavior, address working curated-helper freshness, and obtain fresh exact-contract execution and independent review before integration."
+    ]
   },
-  "plan_review_digest": "264e4214941d3eae26b22a32775d8f563b4f880855e5cf8eaab105b18efe66d6",
+  "plan_review_digest": "840e4476740ca982722f8014c5d3205821d586a339d64239025f9756d79eef13",
   "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
   "plan_digest": "36fe0b54e4431123d52649a3fd5f6ce738ebfdf2cd503428fcf3a5f55a157769",
-  "graph_digest": "80a61d7e6c0c510de1d12ea48419d60f2c7650aa8e9a163e8b7abca1a3825c71"
+  "graph_digest": "bc59ece2074e22e98499237a7f9fa9521a28924212eafe63c72c552306ee41ba"
 }
