@@ -1,7 +1,10 @@
 """Public completion journeys in a disposable consumer, including a real CLI app."""
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
+import tempfile
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from traceability_fixture import Consumer
@@ -10,6 +13,50 @@ class EntrypointTests(unittest.TestCase):
     def consumer(self,**kwargs):c=Consumer(**kwargs);self.addCleanup(c.close);return c
     def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
     def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
+    def test_I09_runtime_agent_sync_preserves_candidate_tree(self):
+        root=Path(__file__).resolve().parents[2]
+        head=subprocess.run(['git','rev-parse','HEAD'],cwd=root,text=True,
+                            capture_output=True,check=True).stdout.strip()
+        with tempfile.TemporaryDirectory(prefix='ask-sync-clean-') as directory:
+            candidate=Path(directory)/'candidate'
+            subprocess.run(['git','worktree','add','--detach',str(candidate),head],cwd=root,
+                           text=True,capture_output=True,check=True)
+            try:
+                env=os.environ.copy()
+                env['ASK_WORK_ID']='revising-workbench'
+                env['GIT_CONFIG_COUNT']='1'
+                env['GIT_CONFIG_KEY_0']='init.defaultBranch'
+                env['GIT_CONFIG_VALUE_0']='main'
+                def projection_snapshot():
+                    snapshot={}
+                    for directory in ('.cursor/agents','.claude/agents','.codex/agents','.opencode/agents'):
+                        for path in (candidate/directory).rglob('*'):
+                            if path.is_file():
+                                snapshot[path.relative_to(candidate).as_posix()]=path.read_bytes()
+                    return snapshot
+                def require_clean():
+                    status=subprocess.run(['git','status','--porcelain','--untracked-files=all'],
+                                          cwd=candidate,text=True,capture_output=True,check=True)
+                    self.assertEqual(status.stdout,'',f'sync test dirtied candidate:\n{status.stdout}')
+
+                before=projection_snapshot()
+                failing_env=env.copy()
+                failing_env['ASK_SYNC_TEST_FORCE_FAILURE']='1'
+                failed=subprocess.run(['bash','_ask/tests/test-sync-runtime-agents.sh'],cwd=candidate,
+                                      env=failing_env,text=True,capture_output=True)
+                self.assertEqual(failed.returncode,97,failed.stdout+failed.stderr)
+                self.assertIn('forced post-sync failure',failed.stderr)
+                self.assertEqual(projection_snapshot(),before,'failed sync did not restore exact agent projections')
+                require_clean()
+
+                passed=subprocess.run(['bash','_ask/tests/test-sync-runtime-agents.sh'],cwd=candidate,
+                                      env=env,text=True,capture_output=True)
+                self.assertEqual(passed.returncode,0,passed.stdout+passed.stderr)
+                self.assertEqual(projection_snapshot(),before,'successful sync changed agent projections')
+                require_clean()
+            finally:
+                subprocess.run(['git','worktree','remove','--force',str(candidate)],cwd=root,
+                               text=True,capture_output=True,check=False)
     def test_I08_integration_accepts_reviewed_contract_amended_after_task_base(self):
         c=self.consumer(tasks=True)
         base=c.sha
