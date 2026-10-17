@@ -114,3 +114,25 @@ outer verifier checkout.
 The user's instruction remains: “fix the main workflow first then continue.”
 This second additive change addresses another required static check that mutates
 the candidate during the same detached integration gate.
+
+## Third detached integration finding
+
+With the first-run `ASK_ROOT` leak fixed, the next mandatory command,
+`_ask/tests/test-bindings-consumer-overlay.sh`, also inherited verifier `ASK_ROOT`
+into a temporary install target. Its successful install changed the candidate's
+Codex review projection. This is another temporary-consumer boundary leaking the
+outer verifier context.
+
+## Third proposed change
+
+Extend EM-020 and RWB-CANDIDATE-SYNC-CLEAN to run the binding-overlay check with
+`ASK_ROOT` set to the child candidate and assert both candidate cleanliness and
+consumer binding preservation. Invoke `install-kit.sh` with verifier-only
+`ASK_ROOT` and `ASK_WORK_ID` removed, so generated projections resolve relative
+to the actual consumer target and work-specific settings cannot escape into the
+candidate.
+
+Impacted artifacts are the canonical spec, test plan, TaskGraph, plan, this
+proposal, `_ask/tests/test-bindings-consumer-overlay.sh`, and
+`_ask/tests/test_traceability_entrypoints.py`. The user's instruction remains:
+“fix the main workflow first then continue.”

@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "revising-workbench",
-  "spec_digest": "ef61929ead5e8a5e52fb431f830a71ccc4f30fcba08daf4604298ce79fe77687",
+  "spec_digest": "3d4451ba04bb18bf05d1d64049a10cedb32e9ad63e601c83427646d5cf7646aa",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -2643,19 +2643,19 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "The candidate has a work-specific reviewer model overlay and the verifier exports ASK_ROOT into sync and first-run consumer checks",
-        "when": "The forced-failure sync check, successful sync check, and first-run consumer test execute in a disposable candidate worktree",
+        "given": "The candidate has a work-specific reviewer overlay and the verifier exports ASK_ROOT into sync, first-run, and consumer-overlay checks",
+        "when": "The forced-failure sync check, successful sync, first-run consumer test, and binding-overlay install test execute in a disposable candidate worktree",
         "then": [
-          "The failing sync check restores all generated runtime-agent projections to their exact pre-check bytes",
-          "Both successful checks leave the candidate source tree clean and integration eligible"
+          "The failing sync check restores generated runtime-agent projections to exact pre-check bytes",
+          "All successful checks leave candidate source and projections unchanged and preserve consumer bindings"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-020",
           "checks": [
-            "Force a failure after generated projections change, require the expected nonzero status, compare every runtime projection file with its pre-check snapshot, and assert the candidate is clean",
-            "Run the sync check successfully and the first-run consumer test with ASK_ROOT set to the child candidate; require both to succeed without changing the candidate tree"
+            "Force a failure after runtime projections change, require the expected nonzero status, compare all projection files with their pre-check snapshot, and assert the candidate is clean",
+            "Run sync, first-run, and binding-overlay checks with ASK_ROOT set to the child candidate; require success, exact projection preservation, and no candidate changes"
           ]
         }
       ],
@@ -2664,7 +2664,8 @@
       "source_paths": [
         "_ask/tests/test_traceability_entrypoints.py",
         "_ask/tests/test-sync-runtime-agents.sh",
-        "_ask/tests/test-askit-first-run.sh"
+        "_ask/tests/test-askit-first-run.sh",
+        "_ask/tests/test-bindings-consumer-overlay.sh"
       ]
     }
   ],
