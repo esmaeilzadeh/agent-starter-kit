@@ -240,7 +240,7 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
     if admission_errors:
         raise ValueError("benchmark requires an admitted workstream: " + "; ".join(
             str(item.get("message", item)) for item in admission_errors))
-    current_plan = json.loads(admitted_snapshot.files[model_paths[1]])
+    current_plan = plan_document
     canonical = lambda value: hashlib.sha256(json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
     spec_paths = [path for path in sorted(admitted_snapshot.files)
