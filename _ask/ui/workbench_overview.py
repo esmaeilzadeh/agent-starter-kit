@@ -20,6 +20,7 @@ def summary_records(projection: dict, *, failed_result_ids: list[str] | None = N
     for item in attention:
         if item.get("type") == "task":
             product_id = str(item.get("id", ""))
+            matched_product = False
             for identity, task in task_ids.items():
                 product_identity = task.get("product_identity")
                 product_node_id = (product_identity.get("node_id")
@@ -27,6 +28,12 @@ def summary_records(projection: dict, *, failed_result_ids: list[str] | None = N
                                    else task.get("product_node_id"))
                 if product_node_id and product_id == str(product_node_id):
                     blocked.add(identity)
+                    matched_product = True
+            # Legacy v1 task attention IDs already name the rendered task row.
+            if not matched_product:
+                blocked.update(identity for identity, task in task_ids.items()
+                               if not isinstance(task.get("product_identity"), dict)
+                               and str(task.get("id", "")) == product_id)
     return {
         "scenarios": sorted(str(item.get("id")) for item in projection.get("scenarios", [])),
         "tasks": sorted(task_ids),
