@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import streamlit as st
+from workbench_context import task_selection_id
 
 
 def summary_records(projection: dict, *, failed_result_ids: list[str] | None = None) -> dict[str, list[str] | None]:
@@ -9,11 +10,27 @@ def summary_records(projection: dict, *, failed_result_ids: list[str] | None = N
     workbench = projection.get("workbench", {})
     tasks = workbench.get("tasks", [])
     attention = projection.get("attention", [])
+    counts = {}
+    for task in tasks:
+        identity = str(task.get("id", ""))
+        counts[identity] = counts.get(identity, 0) + 1
+    task_ids = {task_selection_id(task, counts[str(task.get("id", ""))] > 1): task
+                for task in tasks}
+    blocked = {identity for identity, task in task_ids.items() if task.get("status") == "blocked"}
+    for item in attention:
+        if item.get("type") == "task":
+            product_id = str(item.get("id", ""))
+            for identity, task in task_ids.items():
+                product_identity = task.get("product_identity")
+                product_node_id = (product_identity.get("node_id")
+                                   if isinstance(product_identity, dict)
+                                   else task.get("product_node_id"))
+                if product_node_id and product_id == str(product_node_id):
+                    blocked.add(identity)
     return {
         "scenarios": sorted(str(item.get("id")) for item in projection.get("scenarios", [])),
-        "tasks": sorted(str(item.get("id")) for item in tasks),
-        "blocked": sorted({str(item.get("id")) for item in attention if item.get("type") == "task"}
-                           | {str(item.get("id")) for item in tasks if item.get("status") == "blocked"}),
+        "tasks": sorted(task_ids),
+        "blocked": sorted(blocked),
         "decisions": sorted(str(item.get("id")) for item in attention
                              if item.get("type") == "decision" and item.get("status") == "open"),
         # Results have their own explicit load flow; unknown is never zero.
@@ -28,20 +45,23 @@ def render_overview(projection: dict, *, work_id: str, on_filter=None,
     model = projection.get("model", {})
     nodes = {node.get("id"): node for node in model.get("nodes", [])}
     epic = next((node for node in nodes.values() if node.get("type") == "intent"), None)
-    epic = epic or next((node for node in nodes.values() if node.get("type") == "feature"), None)
+    feature = next((node for node in nodes.values() if node.get("type") == "feature"), None)
+    purpose = epic or feature
     stories = projection.get("workbench", {}).get("stories", [])
     scenarios = projection.get("scenarios", [])
     tasks = projection.get("workbench", {}).get("tasks", [])
 
-    st.subheader((epic or {}).get("title") or "Epic")
+    st.subheader((purpose or {}).get("title") or "Workstream")
     st.caption("Choose a Story or Task from the outline, or follow a recorded Scenario to its delivery work.")
-    st.caption("Purpose")
     if epic is None:
-        st.info("No epic or purpose record is available in this workstream.")
-    elif epic.get("description"):
-        st.write(epic["description"])
+        st.caption("No recorded Epic")
+    st.caption("Purpose")
+    if purpose is None:
+        st.info("No purpose record is available in this workstream.")
+    elif purpose.get("description"):
+        st.write(purpose["description"])
     else:
-        st.write(epic.get("title") or "Purpose is not recorded.")
+        st.write(purpose.get("title") or "Purpose is not recorded.")
 
     _render_delivery(stories, scenarios, on_open)
     model_tasks = {str(node.get("id")): node for node in model.get("nodes", [])
@@ -160,7 +180,13 @@ def _render_summaries(projection: dict, work_id: str, *, on_filter,
 def _render_filter(projection: dict, active_filter: dict, *, on_open, on_clear) -> None:
     kind = active_filter.get("kind")
     ids = set(active_filter.get("ids", []))
-    tasks = {str(item.get("id")): item for item in projection.get("workbench", {}).get("tasks", [])}
+    task_items = projection.get("workbench", {}).get("tasks", [])
+    counts = {}
+    for task in task_items:
+        identity = str(task.get("id", ""))
+        counts[identity] = counts.get(identity, 0) + 1
+    tasks = {task_selection_id(item, counts[str(item.get("id", ""))] > 1): item
+             for item in task_items}
     scenarios = {str(item.get("id")): item for item in projection.get("scenarios", [])}
     decisions = {str(item.get("id")): item for item in projection.get("model", {}).get("nodes", [])
                  if item.get("type") == "decision"}
@@ -182,5 +208,6 @@ def _render_filter(projection: dict, active_filter: dict, *, on_open, on_clear) 
             st.write(label)
             st.caption(f"{identity} · {str(status).replace('_', ' ')}")
             if on_open:
+                open_identity = task_selection_id(item, counts[str(item.get("id", ""))] > 1) if kind in {"tasks", "blocked"} else identity
                 st.button("Open record", key=f"overview:filter:open:{kind}:{identity}",
-                          on_click=on_open, args=(kind, identity))
+                          on_click=on_open, args=(kind, open_identity))

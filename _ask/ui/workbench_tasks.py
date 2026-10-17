@@ -2,16 +2,22 @@
 from __future__ import annotations
 
 import streamlit as st
+from workbench_context import task_selection_id
 
 
 def task_rows(projection: dict) -> list[dict]:
     """Return stable, display-ready task rows without inventing completion."""
     workbench = projection.get("workbench", {})
-    projected = {str(item.get("id")): item for item in workbench.get("tasks", [])}
+    projected = [item for item in workbench.get("tasks", []) if isinstance(item, dict)]
     states = {str(item.get("id")): item for item in projection.get("tasks", [])}
     nodes = {str(item.get("id")): item for item in projection.get("model", {}).get("nodes", [])}
+    id_counts = {}
+    for item in projected:
+        identity = str(item.get("id"))
+        id_counts[identity] = id_counts.get(identity, 0) + 1
     rows = []
-    for identity, item in projected.items():
+    for item in projected:
+        identity = str(item.get("id"))
         product_node_id = str(item.get("product_node_id", identity))
         state = states.get(product_node_id, states.get(identity, {}))
         node = nodes.get(identity, {})
@@ -20,9 +26,13 @@ def task_rows(projection: dict) -> list[dict]:
         status = item.get("status", state.get("status", "not recorded"))
         story_nodes = {str(candidate.get("id")): candidate for candidate in nodes.values()
                        if candidate.get("type") == "story"}
+        product_identity = item.get("product_identity")
+        execution_identity = item.get("execution_identity")
+        selection_id = task_selection_id(item, id_counts[identity] > 1)
         rows.append({
             **item,
             "id": identity,
+            "selection_id": selection_id,
             "title": item.get("title") or node.get("title") or identity,
             "purpose": item.get("outcome") or node.get("description") or "",
             "lifecycle": item.get("lifecycle", node.get("lifecycle", "not recorded")),
@@ -82,9 +92,13 @@ def _detail(row: dict, *, on_open=None, context: str = "tasks") -> None:
             st.caption(f"No {role} passage is recorded.")
         for passage in passages:
             st.markdown(f"**{role.title()} passage · {passage.get('state', 'unavailable')}**")
-            st.caption(str(passage.get("path", "Path not recorded")))
+            st.caption(f"{passage.get('path', 'Path not recorded')} · revision {passage.get('revision', 'not recorded')} · selector {passage.get('selector', 'not recorded')}")
             if passage.get("text"):
                 st.text(passage["text"])
+                if passage.get("surrounding_text"):
+                    with st.expander(f"Show surrounding {role} text · {passage.get('path', '')}",
+                                     expanded=False, key=f"{context}:passage:{row['selection_id']}:{role}"):
+                        st.text(passage["surrounding_text"])
             elif passage.get("message"):
                 st.info(str(passage["message"]))
 
@@ -176,8 +190,9 @@ def render_tasks(projection: dict, *, context: str = "tasks", on_open=None,
     if not filtered:
         st.info("No tasks match the current filters.")
         return
-    options = [row["id"] for row in filtered]
-    labels = {row["id"]: f"{row['id']} · {row['title']} · {row.get('status', 'not recorded')}"
+    options = [row["selection_id"] for row in filtered]
+    rows_by_selection = {row["selection_id"]: row for row in filtered}
+    labels = {row["selection_id"]: f"{row['id']} · {row['title']} · {row.get('status', 'not recorded')}"
               for row in filtered}
     selection_key = f"tasks:selected:{context}"
     if st.session_state.get(selection_key) not in options:
@@ -185,6 +200,6 @@ def render_tasks(projection: dict, *, context: str = "tasks", on_open=None,
     selected_task_id = st.selectbox("Selected task", options,
                                     format_func=lambda identity: labels[identity],
                                     key=selection_key)
-    selected = next(row for row in filtered if row["id"] == selected_task_id)
+    selected = rows_by_selection[selected_task_id]
     with st.container(border=True):
         _detail(selected, on_open=on_open, context=context)

@@ -120,6 +120,90 @@ def _text(app) -> str:
 
 
 class WorkbenchAppTests(unittest.TestCase):
+    def test_shared_story_route_does_not_duplicate_navigation_keys(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _init_repository(root)
+            model_path = root / "work/product/engineering-model.json"
+            doc = json.loads(model_path.read_text())
+            doc["nodes"].append({"id": "capability-two", "type": "feature",
+                                 "title": "Second capability", "lifecycle": "active"})
+            doc["edges"].append({"type": "enables", "source": "capability-two", "target": "story"})
+            _put(root, "work/product/engineering-model.json", doc)
+            app = _run(root)
+            self.assertFalse(app.exception, app.exception)
+            from engineering_model.admission import admit
+            from engineering_model.projection import project
+            from workbench_navigation import build_outline
+            snapshot, diagnostics = admit(root, "product")
+            self.assertFalse(diagnostics, diagnostics)
+            outline = build_outline(project(snapshot, root, include_evidence=False))
+            story_routes = [entry["route_id"] for entry in outline["entries"]
+                            if entry["kind"] == "story" and entry["node_id"] == "story"]
+            self.assertEqual(len(story_routes), 2)
+            self.assertEqual(len(set(story_routes)), 2)
+
+    def test_task_summary_uses_displayed_qualified_rows(self):
+        from workbench_overview import summary_records
+
+        projection = {
+            "workbench": {"tasks": [
+                {"id": "task", "product_node_id": "task", "status": "blocked",
+                 "product_identity": {"work_id": "product", "node_id": "task"},
+                 "execution_identity": {"work_id": "delivery", "task_id": "shared-17"}},
+                {"id": "task", "product_node_id": None, "status": "planned",
+                 "product_identity": None,
+                 "execution_identity": {"work_id": "product", "task_id": "task"}},
+            ]},
+            "attention": [{"type": "task", "id": "task"}],
+            "scenarios": [], "tasks": [],
+        }
+        records = summary_records(projection)
+        self.assertEqual(records["tasks"], ["execution:product:task", "product:product:task"])
+        self.assertEqual(records["blocked"], ["product:product:task"])
+
+    def test_recorded_subject_association_routes_when_url_is_absent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _init_repository(root)
+            model_path = root / "work/product/engineering-model.json"
+            doc = json.loads(model_path.read_text())
+            doc["subject_association"] = {
+                "subject": {"work_id": "product", "node_id": "story"},
+                "revision": "snapshot", "snapshot_digest": "a" * 64,
+                "subject_snapshot_digest": "b" * 64, "contribution": "Publish capability",
+                "exclusions": [], "execution_owner": None,
+                "history": [{"actor": "human", "rationale": "Recorded focus", "timestamp": "2026-01-01T00:00:00Z"}],
+            }
+            _put(root, "work/product/engineering-model.json", doc)
+            app = _run(root)
+            self.assertFalse(app.exception, app.exception)
+            self.assertEqual(app.session_state["_engineering_route"], "story")
+            self.assertEqual(app.session_state["_engineering_route_history"], ["capability"])
+
+    def test_ambiguous_bare_task_subject_is_not_guessed(self):
+        from workbench_context import resolve_subject_route
+
+        projection = {"workbench": {"tasks": [
+            {"id": "shared", "product_identity": {"work_id": "product", "node_id": "one"},
+             "execution_identity": {"work_id": "delivery", "task_id": "shared"}},
+            {"id": "shared", "product_identity": None,
+             "execution_identity": {"work_id": "remote", "task_id": "shared"}},
+        ]}}
+        entries = [
+            {"kind": "task", "route_id": "product:product:one",
+             "selection_id": "product:product:one", "node_id": "shared",
+             "path": [("root", "Root"), ("product:product:one", "Task")]},
+            {"kind": "task", "route_id": "execution:remote:shared",
+             "selection_id": "execution:remote:shared", "node_id": "shared",
+             "path": [("root", "Root"), ("execution:remote:shared", "Task")]},
+        ]
+        outline = {"entries": entries}
+        self.assertIsNone(resolve_subject_route(outline, projection, "task:shared"))
+        self.assertEqual(resolve_subject_route(outline, projection,
+                                              "task:execution:remote:shared")[0],
+                         "execution:remote:shared")
+
     def test_direct_subject_standalone_shared_back_and_revision_entry(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -143,9 +227,18 @@ class WorkbenchAppTests(unittest.TestCase):
             _click(app, root, "route:back")
             self.assertEqual(app.session_state["_engineering_route"], "scenario-two")
 
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app.selectbox(key="source_id").select("git:agent/product").run(timeout=30)
+            self.assertFalse(app.exception, app.exception)
+            committed_text = _text(app)
+            self.assertIn("A verified publication is visible to its intended readers.", committed_text)
+            self.assertIn("| WB-003 | Publish the selected result |", committed_text)
+            self.assertIn("revision", committed_text)
+
             app = _run(root)
             self.assertFalse(app.exception, app.exception)
             self.assertIn("Choose a Story or Task", _text(app))
+            self.assertIn("No recorded Epic", _text(app))
             self.assertIn("Scenarios without a recorded story", _text(app))
             _click(app, root, "route:scenario")
             self.assertFalse(app.exception, app.exception)

@@ -20,6 +20,20 @@ def identity_for(view: dict, work_id: str, source: str = "working-tree") -> dict
             "editable": bool(view.get("editable"))}
 
 
+def task_selection_id(item: dict, duplicate: bool = False) -> str:
+    """Return a stable selection key that preserves product/execution identity."""
+    identity = str(item.get("id", ""))
+    if not duplicate:
+        return identity
+    product = item.get("product_identity")
+    if isinstance(product, dict):
+        return f"product:{product.get('work_id', '')}:{product.get('node_id', identity)}"
+    execution = item.get("execution_identity")
+    if isinstance(execution, dict):
+        return f"execution:{execution.get('work_id', '')}:{execution.get('task_id', identity)}"
+    return identity
+
+
 def reset_for_work(session, work_id: str, view: dict, epic_id: str,
                    source: str = "working-tree", source_context: dict | None = None) -> None:
     """Reset selections and caches when the displayed work/source changes."""
@@ -51,13 +65,31 @@ def resolve_subject_route(outline: dict, projection: dict, subject: str) -> tupl
                    if entry.get("kind") == "story" and str(entry.get("node_id")) == identity]
     else:
         rows = projection.get("workbench", {}).get("tasks", [])
-        selected_rows = [row for row in rows if identity in {
-            str(row.get("id", "")), str(row.get("product_node_id", ""))
-        }]
-        task_ids = {str(row.get("id")) for row in selected_rows}
-        matches = [entry for entry in entries
-                   if entry.get("kind") == "task" and str(entry.get("node_id")) in task_ids]
+        id_counts = {}
+        for row in rows:
+            key = str(row.get("id", ""))
+            id_counts[key] = id_counts.get(key, 0) + 1
+        selected = []
+        for row in rows:
+            key = task_selection_id(row, id_counts.get(str(row.get("id", "")), 0) > 1)
+            product = row.get("product_identity") or {}
+            execution = row.get("execution_identity") or {}
+            candidates = {key, str(row.get("id", ""))}
+            candidates.add(str(row.get("product_node_id") or ""))
+            if isinstance(product, dict):
+                candidates.add(f"product:{product.get('work_id')}:{product.get('node_id')}")
+            if isinstance(execution, dict):
+                candidates.add(f"execution:{execution.get('work_id')}:{execution.get('task_id')}")
+            if identity in candidates:
+                selected.append((row, key))
+        if len(selected) != 1:
+            return None
+        selected_key = selected[0][1]
+        matches = [entry for entry in entries if entry.get("kind") == "task"
+                   and entry.get("selection_id", entry.get("node_id")) == selected_key]
     if not matches:
+        return None
+    if kind == "task" and len({entry.get("selection_id", entry.get("node_id")) for entry in matches}) != 1:
         return None
     selected = min(matches, key=lambda entry: (len(entry.get("path", [])), entry["route_id"]))
     route_ids = [identity for identity, _ in selected.get("path", []) if identity]

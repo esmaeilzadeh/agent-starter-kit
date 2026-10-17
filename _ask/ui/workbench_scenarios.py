@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import streamlit as st
+from workbench_context import task_selection_id
 
 
 def scenario_relationships(projection: dict, scenario_id: str) -> dict:
@@ -10,9 +11,15 @@ def scenario_relationships(projection: dict, scenario_id: str) -> dict:
     scenario = scenarios.get(scenario_id)
     if scenario is None:
         return {"scenario": None, "tasks": [], "tests": []}
-    tasks = [task for task in projection.get("workbench", {}).get("tasks", [])
+    task_items = [task for task in projection.get("workbench", {}).get("tasks", [])
              if any(str(link.get("id")) == scenario_id
                     for link in task.get("related_scenarios", []))]
+    counts = {}
+    for task in projection.get("workbench", {}).get("tasks", []):
+        identity = str(task.get("id", ""))
+        counts[identity] = counts.get(identity, 0) + 1
+    tasks = [{**task, "selection_id": task_selection_id(task, counts[str(task.get("id", ""))] > 1)}
+             for task in task_items]
     tests = [test for test in projection.get("workbench", {}).get("tests", [])
              if scenario_id in {str(item) for item in test.get("scenario_ids", [])}]
     # Projection fixtures may carry canonical tests without a second workbench
@@ -56,8 +63,9 @@ def render_scenario(projection: dict, scenario_id: str, *, on_open=None) -> None
             st.write(task.get("title") or task_id)
             st.caption(f"{task.get('status', 'not recorded')} · {via}")
             if on_open:
-                st.button("Open task", key=f"scenario:{scenario_id}:task:{task_id}",
-                          on_click=on_open, args=("task", task_id))
+                selection_id = task.get("selection_id", task_id)
+                st.button("Open task", key=f"scenario:{scenario_id}:task:{selection_id}",
+                          on_click=on_open, args=("task", selection_id))
 
     st.markdown("#### Verifying tests")
     if not related["tests"]:

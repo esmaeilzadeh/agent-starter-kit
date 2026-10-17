@@ -5,7 +5,7 @@ from collections import defaultdict
 
 import streamlit as st
 
-from workbench_context import STATE_ROUTE, back, navigate, route_to
+from workbench_context import STATE_ROUTE, back, navigate, route_to, task_selection_id
 
 
 def _contains(model: dict) -> tuple[dict[str, list[str]], dict[str, str]]:
@@ -40,7 +40,12 @@ def build_outline(projection: dict) -> dict:
 
     stories = {item["id"]: item for item in projection.get("workbench", {}).get("stories", [])}
     scenarios = {item["id"]: item for item in projection.get("scenarios", [])}
-    tasks = {item["id"]: item for item in projection.get("workbench", {}).get("tasks", [])}
+    tasks = [item for item in projection.get("workbench", {}).get("tasks", []) if isinstance(item, dict)]
+    task_counts = {}
+    for item in tasks:
+        task_counts[str(item.get("id", ""))] = task_counts.get(str(item.get("id", "")), 0) + 1
+    tasks_by_selection = {task_selection_id(item, task_counts[str(item.get("id", ""))] > 1): item
+                          for item in tasks}
     tests = {item["id"]: item for item in projection.get("workbench", {}).get("tests", [])}
     entries: list[dict] = []
     ancestors: dict[str, list[tuple[str, str]]] = {}
@@ -53,16 +58,19 @@ def build_outline(projection: dict) -> dict:
         return sorted(explicit & set(scenarios))
 
     def tasks_for_scenario(scenario_id):
-        return sorted(task_id for task_id, task in tasks.items()
+        return sorted(task_selection_id(task, task_counts[str(task.get("id", ""))] > 1)
+                      for task in tasks
                       if any(link.get("id") == scenario_id
                              for link in task.get("related_scenarios", [])))
 
     def tests_for_task(task_id, scenario_id):
+        task = tasks_by_selection[task_id]
+        raw_id = str(task.get("id", ""))
         return sorted(test_id for test_id, test in tests.items()
                       if (test_id, scenario_id) not in emitted_test_scenarios
                       and scenario_id in test.get("scenario_ids", [])
-                      and (test.get("owner_task_id") == task_id or any(
-                          link.get("task_id") == task_id for link in test.get("related_tasks", []))))
+                      and (test.get("owner_task_id") == raw_id or any(
+                          link.get("task_id") == raw_id for link in test.get("related_tasks", []))))
 
     def unique_route(base, context):
         return base if base not in ancestors else f"{base}@{context}"
@@ -79,15 +87,17 @@ def build_outline(projection: dict) -> dict:
                 node_id=test_id, indent=indent + 1)
         emitted_test_scenarios.add((test_id, scenario_id))
 
-    def add_task(task_id, path, indent, scenario_id):
-        task = tasks[task_id]
-        label = task.get("title") or task_id
+    def add_task(task_id, path, indent, scenario_id, route_context=None):
+        task = tasks_by_selection[task_id]
+        raw_id = str(task.get("id", ""))
+        label = task.get("title") or raw_id
         if label:
             label = label[0].upper() + label[1:]
-        route_id = unique_route(task_id, scenario_id or task_id)
+        route_id = unique_route(task_id, route_context or scenario_id or task_id)
         task_path = [*path, (route_id, label)]
         _append(entries, ancestors, route_id, label, "task", task_path,
-                node_id=task_id, indent=indent)
+                node_id=raw_id, indent=indent)
+        entries[-1]["selection_id"] = task_id
         related = tests_for_task(task_id, scenario_id) if scenario_id else []
         for test_id in related:
             add_test(test_id, task_path, indent + 1, scenario_id)
@@ -95,12 +105,14 @@ def build_outline(projection: dict) -> dict:
     def add_scenario(scenario_id, path, indent):
         scenario = scenarios[scenario_id]
         label = scenario.get("title") or scenario_id
-        scenario_path = [*path, (scenario_id, label)]
-        _append(entries, ancestors, scenario_id, label, "scenario", scenario_path,
+        scenario_route = unique_route(scenario_id, path[-1][0] if path else scenario_id)
+        scenario_path = [*path, (scenario_route, label)]
+        _append(entries, ancestors, scenario_route, label, "scenario", scenario_path,
+                node_id=scenario_id,
                 indent=indent)
         linked_tasks = tasks_for_scenario(scenario_id)
         for task_id in linked_tasks:
-            add_task(task_id, scenario_path, indent + 1, scenario_id)
+            add_task(task_id, scenario_path, indent + 1, scenario_id, scenario_route)
         directly_linked_tests = sorted(test_id for test_id, test in tests.items()
                                        if (test_id, scenario_id) not in emitted_test_scenarios
                                        and scenario_id in test.get("scenario_ids", []))
@@ -109,7 +121,7 @@ def build_outline(projection: dict) -> dict:
             owner = test.get("owner_task_id")
             if not linked_tasks or (owner and owner not in linked_tasks):
                 if owner in tasks:
-                    add_task(owner, scenario_path, indent + 1, scenario_id)
+                    add_task(owner, scenario_path, indent + 1, scenario_id, scenario_route)
                 else:
                     add_test(test_id, scenario_path, indent + 1, scenario_id)
 
@@ -120,7 +132,8 @@ def build_outline(projection: dict) -> dict:
         root = nodes[root_id]
         title = root.get("title") or root_id
         epic_path = [(root_id, title)]
-        _append(entries, ancestors, root_id, title, "epic", epic_path, indent=0)
+        root_kind = "epic" if root.get("type") == "intent" else "feature" if root.get("type") == "feature" else "root"
+        _append(entries, ancestors, root_id, title, root_kind, epic_path, indent=0)
         root_routes.append(root_id)
         descendants = set()
         pending = list(children.get(root_id, []))
@@ -137,8 +150,10 @@ def build_outline(projection: dict) -> dict:
             emitted_stories.add(story_id)
             story = stories[story_id]
             story_title = story.get("title") or story_id
-            story_path = [*epic_path, (story_id, story_title)]
-            _append(entries, ancestors, story_id, story_title, "story", story_path,
+            story_route = unique_route(story_id, root_id)
+            story_path = [*epic_path, (story_route, story_title)]
+            _append(entries, ancestors, story_route, story_title, "story", story_path,
+                    node_id=story_id,
                     indent=1)
             story_scenarios.update(scenario_ids_for_story(story_id))
             for scenario_id in scenario_ids_for_story(story_id):
@@ -155,8 +170,10 @@ def build_outline(projection: dict) -> dict:
             for story_id in orphan_stories:
                 story = stories[story_id]
                 story_title = story.get("title") or story_id
-                story_path = [*group_path, (story_id, story_title)]
-                _append(entries, ancestors, story_id, story_title, "story", story_path,
+                story_route = unique_route(story_id, group_id)
+                story_path = [*group_path, (story_route, story_title)]
+                _append(entries, ancestors, story_route, story_title, "story", story_path,
+                        node_id=story_id,
                         indent=2)
                 emitted_stories.add(story_id)
                 for scenario_id in scenario_ids_for_story(story_id):
@@ -175,8 +192,8 @@ def build_outline(projection: dict) -> dict:
                 emitted_scenarios.add(scenario_id)
                 add_scenario(scenario_id, group_path, 2)
 
-        unrelated_tasks = sorted(task_id for task_id, task in tasks.items()
-                                 if not task.get("related_scenarios"))
+        unrelated_tasks = sorted(task_selection_id(task, task_counts[str(task.get("id", ""))] > 1)
+                                 for task in tasks if not task.get("related_scenarios"))
         if unrelated_tasks:
             group_id = f"unmapped-tasks:{root_id}"
             group_label = "Tasks without a scenario mapping"
@@ -211,7 +228,8 @@ def build_outline(projection: dict) -> dict:
 def render_outline(projection: dict) -> dict:
     """Render accessible native buttons for every linked level of the outline."""
     outline = build_outline(projection)
-    st.markdown("**Epic**")
+    st.markdown("**Epic**" if any(entry["kind"] == "epic" for entry in outline["entries"])
+                else "**Workstream**")
     for entry in outline["entries"]:
         label = entry["label"]
         if entry["kind"] == "group":

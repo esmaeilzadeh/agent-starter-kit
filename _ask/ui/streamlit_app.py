@@ -58,7 +58,8 @@ def _open_related_route(kind: str, identity: str) -> None:
                       "decisions": "decision", "failed-results": "result"}.get(kind, kind)
     matching = [entry for entry in outline["entries"]
                 if entry.get("kind") == canonical_kind
-                and str(entry.get("node_id")) == str(identity)]
+                and (str(entry.get("selection_id", entry.get("node_id"))) == str(identity)
+                     or str(entry.get("node_id")) == str(identity))]
     current = st.session_state.get(STATE_ROUTE)
     selected = next((entry for entry in matching
                      if any(route_id == current for route_id, _ in entry.get("path", []))), None)
@@ -68,11 +69,36 @@ def _open_related_route(kind: str, identity: str) -> None:
     navigate(st.session_state, selected["route_id"])
 
 
-def _apply_subject_entry(projection: dict, work_id: str, source_id: str) -> None:
+def _apply_subject_entry(projection: dict, work_id: str, source_id: str,
+                         snapshot_digest: str | None = None) -> None:
     """Apply a direct Story/Task URL once per captured work/source selection."""
     subject = st.query_params.get("subject")
     subject = subject if isinstance(subject, str) and subject else None
-    marker = (work_id, source_id, subject)
+    explicit = subject is not None
+    st.session_state["_engineering_recorded_subject_notice"] = None
+    if subject is None:
+        association = projection.get("model", {}).get("subject_association")
+        recorded = association.get("subject") if isinstance(association, dict) else None
+        valid_association = (isinstance(association, dict)
+                             and association.get("revision") == "snapshot"
+                             and isinstance(association.get("snapshot_digest"), str)
+                             and len(association["snapshot_digest"]) == 64
+                             and all(char in "0123456789abcdef" for char in association["snapshot_digest"])
+                             and isinstance(association.get("contribution"), str)
+                             and bool(association["contribution"].strip())
+                             and isinstance(association.get("exclusions"), list)
+                             and isinstance(association.get("history"), list)
+                             and bool(association["history"]))
+        if (valid_association and isinstance(recorded, dict)
+                and recorded.get("work_id") == work_id):
+            node = _node_map(projection).get(recorded.get("node_id"))
+            if node and node.get("type") in {"story", "task"}:
+                subject = f"{node['type']}:{recorded['node_id']}"
+        elif isinstance(recorded, dict):
+            st.session_state["_engineering_recorded_subject_notice"] = (
+                f"Recorded subject {recorded.get('work_id', 'unknown')}:{recorded.get('node_id', 'unknown')} "
+                "belongs to another workstream or snapshot. Choose a subject from the current outline.")
+    marker = (work_id, source_id, snapshot_digest, subject)
     if st.session_state.get(STATE_SUBJECT_ENTRY) == marker:
         return
     st.session_state[STATE_SUBJECT_ENTRY] = marker
@@ -83,7 +109,7 @@ def _apply_subject_entry(projection: dict, work_id: str, source_id: str) -> None
     resolved = resolve_subject_route(outline, projection, subject)
     if resolved is None:
         st.session_state["_engineering_subject_notice"] = (
-            f"The requested subject {subject!r} is unavailable or ambiguous in this captured workstream. "
+            f"The requested {'URL subject' if explicit else 'recorded subject'} {subject!r} is unavailable or ambiguous in this captured workstream. "
             "Choose a recorded Story or Task from the outline."
         )
         return
@@ -141,7 +167,9 @@ def _capture_view(root: Path, work_id: str) -> dict:
         if snapshot is None:
             return {"snapshot": None, "projection": None, "captured": None,
                     "editable": False, "last_validated": False, "diagnostics": diagnostics}
-        return {"snapshot": snapshot.identity, "projection": project(snapshot, root, include_evidence=False),
+        projection = project(snapshot, root, include_evidence=False)
+        _add_passage_surroundings(snapshot, projection)
+        return {"snapshot": snapshot.identity, "projection": projection,
                 "captured": snapshot, "editable": editable, "last_validated": last_validated,
                 "diagnostics": diagnostics}
     except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
@@ -154,6 +182,8 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
     """Project a source resolved entirely from one immutable Git commit."""
     from types import MappingProxyType
     from engineering_model.snapshot import Snapshot, decode, referenced_paths
+    from engineering_model.passages import resolve
+    import hashlib
 
     try:
         initial = read_snapshot(root, ref, work_id)
@@ -199,13 +229,42 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
         for path in requested:
             statuses.setdefault(path, "missing")
             files.setdefault(path, None)
-        snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
+        passage_records = {}
+        document = decode(files[f"work/{work_id}/engineering-model.json"])
+        for node in document.get("nodes", []):
+            for index, reference in enumerate(node.get("context", []) if isinstance(node.get("context"), list) else []):
+                path = reference.get("path")
+                revision = reference.get("revision")
+                selector = reference.get("selector")
+                raw = files.get(path)
+                passage_status = statuses.get(path, "missing")
+                if revision != "snapshot":
+                    historical = read_snapshot(root, revision, work_id, paths=[path])
+                    raw = historical.files.get(path)
+                    passage_status = "present" if raw is not None else "missing"
+                resolution = resolve(path, raw, selector, status=passage_status)
+                if raw is not None and resolution.get("start_line") is not None:
+                    lines = raw.decode("utf-8").splitlines()
+                    start = max(0, resolution["start_line"] - 1 - 3)
+                    end = min(len(lines), (resolution.get("end_line") or resolution["start_line"]) + 3)
+                    resolution["surrounding_text"] = "\n".join(lines[start:end])
+                key = f"{node.get('id')}\0context\0{index}"
+                passage_records[key] = {
+                    "node_id": node.get("id"), "role": reference.get("role"), "kind": "context",
+                    "path": path, "revision": revision, "selector": selector,
+                    "status": passage_status,
+                    "sha256": hashlib.sha256(raw).hexdigest() if raw is not None else None,
+                    "resolution": resolution,
+                }
+        snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
+                            MappingProxyType(passage_records))
         diagnostics = snapshot.diagnostics(root)
         if diagnostics:
             return {"snapshot": None, "projection": None, "captured": snapshot,
                     "editable": False, "last_validated": False, "diagnostics": diagnostics,
                     "source_context": {"ref": ref, "commit": commit}}
         projection = project(snapshot, root, include_evidence=False)
+        _add_passage_surroundings(snapshot, projection)
         # Runtime state is checkout-local. A historical source must not borrow it.
         for task in projection.get("workbench", {}).get("tasks", []):
             task.update(status="planned", status_source="no-runtime-record",
@@ -217,6 +276,32 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
         return {"snapshot": None, "projection": None, "captured": None,
                 "editable": False, "last_validated": False,
                 "diagnostics": [_diagnostic("EM008_COMMITTED_READ", f"work/{work_id}/engineering-model.json", str(exc))]}
+
+
+def _add_passage_surroundings(snapshot, projection: dict) -> None:
+    """Attach a small source window from the exact bytes used to resolve each passage."""
+    for record in snapshot.passages.values():
+        resolution = record.get("resolution") or {}
+        path = record.get("path")
+        raw = snapshot.files.get(path)
+        if record.get("kind") != "context" or resolution.get("start_line") is None:
+            continue
+        surrounding = resolution.get("surrounding_text")
+        if not surrounding and raw is not None:
+            try:
+                lines = raw.decode("utf-8").splitlines()
+            except UnicodeDecodeError:
+                continue
+            start = max(0, resolution["start_line"] - 1 - 3)
+            end = min(len(lines), (resolution.get("end_line") or resolution["start_line"]) + 3)
+            surrounding = "\n".join(lines[start:end])
+            resolution["surrounding_text"] = surrounding
+        for task in projection.get("workbench", {}).get("tasks", []):
+            if str(task.get("product_node_id") or task.get("id")) != str(record.get("node_id")):
+                continue
+            for passage in task.get("context", {}).get(record.get("role"), []):
+                if passage.get("path") == path and passage.get("start_line") == resolution.get("start_line"):
+                    passage["surrounding_text"] = surrounding
 
 
 def _show_diagnostics(diagnostics: list[dict]) -> None:
@@ -821,7 +906,8 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                 from workbench_tasks import render_tasks
 
                 render_tasks(projection, context=f"route:{selected['route_id']}",
-                             on_open=_open_related_route, selected_id=selected["node_id"])
+                             on_open=_open_related_route,
+                             selected_id=selected.get("selection_id", selected["node_id"]))
             elif selected["kind"] == "scenario":
                 from workbench_scenarios import render_scenario
 
@@ -830,7 +916,7 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                 from workbench_stories import render_story
 
                 render_story(projection, selected["node_id"], on_open=_open_related_route)
-            elif selected["kind"] == "epic":
+            elif selected["kind"] in {"epic", "feature", "root"}:
                 render_overview(
                     projection, work_id=work_id,
                     on_filter=_set_overview_filter,
@@ -986,10 +1072,14 @@ if refresh_inputs:
     st.rerun()
 
 projection = view["projection"]
-_apply_subject_entry(projection, work_id, source_id)
+_apply_subject_entry(projection, work_id, source_id,
+                     (view.get("snapshot") or {}).get("digest"))
 subject_notice = st.session_state.get("_engineering_subject_notice")
 if subject_notice:
     st.warning(subject_notice)
+recorded_subject_notice = st.session_state.get("_engineering_recorded_subject_notice")
+if recorded_subject_notice:
+    st.info(recorded_subject_notice)
 _render_workbench(projection, view, root, work_id, source_context)
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
