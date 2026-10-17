@@ -19,7 +19,8 @@ class ReadableTestTests(unittest.TestCase):
         self.git("config", "user.email", "test@example.invalid")
         self.git("config", "user.name", "Readable test")
         self.write("test_sample.py", """import unittest
-FIXTURE = {"input": "old input"}
+BASE = "old input"
+FIXTURE = {"input": BASE}
 
 def raw_input():
     return FIXTURE["input"]
@@ -42,6 +43,7 @@ class ProjectionTests(unittest.TestCase):
         actual = make_input()
         self._assert_projection(actual)
 """)
+        self.write("helpers.py", "def external_input():\n    return 'old external input'\n")
         self.old_sha = self.commit("initial selected test source")
         self.write("test_sample.py", """import unittest
 FIXTURE = {"input": "new input"}
@@ -67,12 +69,16 @@ class ProjectionTests(unittest.TestCase):
         actual = make_input()
         self._assert_projection(actual)
 """)
+        self.write("helpers.py", "def external_input():\n    return 'new external input'\n")
         self.current_sha = self.commit("change current fixture and helper")
         self.test = {
             "id": "T",
             "case_id": "test_sample.ProjectionTests.test_projection",
             "runner_id": "unittest",
             "source_paths": ["test_sample.py"],
+            "source_context": [{"path": "helpers.py", "revision": self.old_sha,
+                                "qualified_name": "helpers.external_input", "role": "helper",
+                                "explanation": "External helper used by the selected flow."}],
             "scenario": {"given": "fixture input", "when": "project", "then": ["old expected"]},
         }
 
@@ -102,7 +108,8 @@ class ProjectionTests(unittest.TestCase):
         self.assertIn("self._assert_projection(actual)", readable["test_source"])
         context = {item["selector"]: item for item in readable["context"]}
         self.assertIn("import unittest", context["<imports>"]["source"])
-        self.assertIn('FIXTURE = {"input": "old input"}', context["FIXTURE"]["source"])
+        self.assertIn('FIXTURE = {"input": BASE}', context["FIXTURE"]["source"])
+        self.assertIn('BASE = "old input"', context["BASE"]["source"])
         self.assertIn("return raw_input()", context["test_sample.make_input"]["source"])
         self.assertIn("return FIXTURE[\"input\"]", context["test_sample.raw_input"]["source"])
         self.assertIn('self.expected = "old expected"',
@@ -111,6 +118,16 @@ class ProjectionTests(unittest.TestCase):
         self.assertIn("self.assertEqual(actual, self.expected)",
                       context["ProjectionTests._assert_projection"]["source"])
         self.assertNotIn("new input", json_context(readable))
+        external = next(item for item in readable["context"]
+                        if item["selector"] == "helpers.external_input")
+        self.assertIn("old external input", external["source"])
+        self.assertEqual(external["explanation"], "External helper used by the selected flow.")
+
+        namespaced = dict(self.test, case_id="_ask.tests.test_sample.ProjectionTests.test_projection")
+        qualified = read_test(self.root, namespaced, self.old_sha,
+                              current_sha=self.current_sha)
+        self.assertEqual(qualified["status"], "historical", qualified)
+        self.assertIn("self._assert_projection(actual)", qualified["test_source"])
 
         self.write("test_sample.py", """import unittest
 FIXTURE = {"input": "old input"}
@@ -149,12 +166,13 @@ class EvidenceIdentityTests(unittest.TestCase):
         self.git("config", "user.email", "test@example.invalid")
         self.git("config", "user.name", "Evidence identity")
         self.write("test_sample.py", "def test_case():\n    assert True\n")
+        self.write("support.py", "VALUE = 1\n")
         self.candidate = self.commit("candidate test source")
         self.runtime = self.root / "work/w/traceability"
         self.runtime.mkdir(parents=True)
         self.test = {"id": "T", "runner_id": "pytest",
                      "case_id": "test_sample.test_case",
-                     "source_paths": ["test_sample.py"]}
+                     "source_paths": ["test_sample.py", "support.py"]}
 
     def git(self, *args):
         return subprocess.run(["git", *args], cwd=self.root, check=True,
@@ -184,7 +202,8 @@ class EvidenceIdentityTests(unittest.TestCase):
         case = {"test_id": test_id, "runner_id": "pytest",
                 "case_id": "test_sample.test_case", "execution_id": "exec-1",
                 "phase": "final_green", "source_sha": source,
-                "source_digests": {"test_sample.py": self.blob_digest(source, "test_sample.py")},
+                "source_digests": {path: self.blob_digest(source, path)
+                                    for path in self.test["source_paths"]},
                 "outcome": outcome, "failure_kind": failure_kind,
                 "output_artifact": artifact, "output_digest": output_digest,
                 "recorded_at": recorded_at, "duration": duration}
@@ -243,23 +262,22 @@ class EvidenceIdentityTests(unittest.TestCase):
             ("failed collection", lambda r: r["executions"][0].update(collection_status="error"), "invalid"),
         ]
         for label, mutate, expected_status in cases:
-            with self.subTest(label=label):
-                report, _ledger = self.report(run_id="run-1")
-                mutate(report)
-                report_path = self.runtime / "runs/run-1/results.json"
-                report_path.write_text(json.dumps(report, sort_keys=True), encoding="utf-8")
-                ledger = [{"work_id": "w", "run_id": "run-1", "phase": "final_green",
-                           "candidate_sha": report["candidate_sha"], "spec_digest": "spec-1",
-                           "plan_digest": "plan-1", "scope": "task", "task_id": "task-1",
-                           "test_id": "T", "digest": hashlib.sha256(json.dumps(
-                               report, sort_keys=True, separators=(",", ":")).encode()).hexdigest()}]
-                (self.runtime / "executions.json").write_text(json.dumps(ledger), encoding="utf-8")
-                result = self.history()
-                if expected_status == "invalid":
-                    self.assertTrue(any(row.get("output_status") == "invalid"
-                                        for row in result["runs"]), (label, result))
-                else:
-                    self.assertEqual(result["status"], expected_status, (label, result))
+            report, _ledger = self.report(run_id="run-1")
+            mutate(report)
+            report_path = self.runtime / "runs/run-1/results.json"
+            report_path.write_text(json.dumps(report, sort_keys=True), encoding="utf-8")
+            ledger = [{"work_id": "w", "run_id": "run-1", "phase": "final_green",
+                       "candidate_sha": report["candidate_sha"], "spec_digest": "spec-1",
+                       "plan_digest": "plan-1", "scope": "task", "task_id": "task-1",
+                       "test_id": "T", "digest": hashlib.sha256(json.dumps(
+                           report, sort_keys=True, separators=(",", ":")).encode()).hexdigest()}]
+            (self.runtime / "executions.json").write_text(json.dumps(ledger), encoding="utf-8")
+            result = self.history()
+            if expected_status == "invalid":
+                self.assertTrue(any(row.get("output_status") == "invalid"
+                                    for row in result["runs"]), (label, result))
+            else:
+                self.assertEqual(result["status"], expected_status, (label, result))
 
         report, ledger = self.report()
         ledger[0]["work_id"] = "other-work"
@@ -287,16 +305,15 @@ class EvidenceIdentityTests(unittest.TestCase):
 
         for outcome, failure_kind in (("passed", None), ("failed", "behavior_assertion"),
                                       ("skipped", None), ("error", "runtime_error")):
-            with self.subTest(outcome=outcome):
-                report, _ledger = self.report(outcome=outcome, failure_kind=failure_kind,
-                                              run_id="run-1", log_text=f"{outcome} output\n")
-                result = self.history()
-                row = result["runs"][0]
-                self.assertEqual((row["outcome"], row["failure_kind"], row["output_status"]),
-                                 (outcome, failure_kind, "valid"))
-                self.assertEqual(row["completion"], "not_evaluated")
-                self.assertEqual(row["applicability"], "current")
-                self.assertIn(f"{outcome} output", (self.root / row["output_artifact"]).read_text())
+            report, _ledger = self.report(outcome=outcome, failure_kind=failure_kind,
+                                          run_id="run-1", log_text=f"{outcome} output\n")
+            result = self.history()
+            row = result["runs"][0]
+            self.assertEqual((row["outcome"], row["failure_kind"], row["output_status"]),
+                             (outcome, failure_kind, "valid"))
+            self.assertEqual(row["completion"], "not_evaluated")
+            self.assertEqual(row["applicability"], "current")
+            self.assertIn(f"{outcome} output", (self.root / row["output_artifact"]).read_text())
 
         report, _ledger = self.report(run_id="run-1", outcome="unknown-outcome",
                                       failure_kind=None, log_text="unclassified observation\n")
@@ -328,6 +345,15 @@ class EvidenceIdentityTests(unittest.TestCase):
         row = next(item for item in historical["runs"] if item["run_id"] == "run-2")
         self.assertEqual((row["applicability"], row["source_status"]), ("historical", "historical"))
         self.assertEqual(self.git("rev-parse", "HEAD"), historical_head)
+
+        report, _ledger = self.report(run_id="run-3", candidate=historical_head,
+                                      source=historical_head, outcome="passed")
+        self.write("support.py", "VALUE = 2\n")
+        changed_helper = self.commit("change helper source only")
+        helper_stale = execution_history(self.root, "w", self.test, spec_digest="spec-1",
+                                         plan_digest="plan-1", candidate_sha=changed_helper)
+        row = next(item for item in helper_stale["runs"] if item["run_id"] == "run-3")
+        self.assertEqual((row["applicability"], row["source_status"]), ("stale", "stale"))
 
         (self.runtime / "executions.json").write_text("[]", encoding="utf-8")
         self.assertEqual(self.history()["status"], "not_run")

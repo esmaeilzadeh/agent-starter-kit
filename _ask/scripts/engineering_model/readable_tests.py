@@ -59,17 +59,30 @@ def read_test(root, test, source_sha, *, current_sha=None):
             raise ValueError("accepted test source paths are missing")
         sha = _commit(root, source_sha)
         current = _commit(root, current_sha) if current_sha is not None else None
-        module = selector.split(".", 1)[0]
-        candidates = [path for path in paths if _safe_path(path)
-                      and PurePosixPath(path).stem == module]
+        selector_parts = selector.split(".")
+        candidates = []
+        normalized_selectors = {}
+        for path in paths:
+            if not _safe_path(path):
+                continue
+            path_parts = list(PurePosixPath(path).with_suffix("").parts)
+            for index in range(len(selector_parts) - 1, -1, -1):
+                if selector_parts[index - len(path_parts):index] == path_parts:
+                    candidates.append(path)
+                    normalized_selectors[path] = ".".join(
+                        [PurePosixPath(path).stem, *selector_parts[index:]])
+                    break
         if not candidates and len(paths) == 1 and _safe_path(paths[0]):
             candidates = list(paths)
+            normalized_selectors[paths[0]] = selector
         if len(candidates) != 1:
             raise ValueError("qualified test module does not select one accepted source path")
         source_path = candidates[0]
+        local_selector = normalized_selectors[source_path]
+        module = PurePosixPath(source_path).stem
         text = _blob(root, sha, source_path).decode("utf-8")
         tree = ast.parse(text, filename=source_path)
-        selected_module, selected, _start, _end = _selector_node(tree, selector)
+        selected_module, selected, _start, _end = _selector_node(tree, local_selector)
         if selected_module != PurePosixPath(source_path).stem:
             raise ValueError("qualified selector module differs from accepted source path")
         result.update(status="current" if current is None or sha == current else "historical",
@@ -93,6 +106,48 @@ def read_test(root, test, source_sha, *, current_sha=None):
             context.append({"selector": "<imports>", "role": "import-boundary",
                             "status": "available", "source": "\n".join(text.splitlines()[first - 1:last]),
                             "source_path": source_path, "source_sha": sha, "current_sha": current})
+
+        declared_context = test.get("source_context", [])
+        if not isinstance(declared_context, list):
+            raise ValueError("curated source context must be an array")
+        for entry in declared_context:
+            if (not isinstance(entry, dict) or not _safe_path(entry.get("path"))
+                    or not isinstance(entry.get("qualified_name"), str)
+                    or not isinstance(entry.get("role"), str)):
+                raise ValueError("curated source context entry is malformed")
+            revision = entry.get("revision")
+            if revision == "snapshot":
+                revision = current or sha
+            try:
+                context_sha = _commit(root, revision)
+                context_text = _blob(root, context_sha, entry["path"]).decode("utf-8")
+                context_tree = ast.parse(context_text, filename=entry["path"])
+                selector_parts = entry["qualified_name"].split(".")
+                path_parts = list(PurePosixPath(entry["path"]).with_suffix("").parts)
+                source_module = PurePosixPath(entry["path"]).stem
+                context_selector = entry["qualified_name"]
+                for index in range(len(selector_parts) - 1, -1, -1):
+                    if selector_parts[index - len(path_parts):index] == path_parts:
+                        context_selector = ".".join([source_module, *selector_parts[index:]])
+                        break
+                else:
+                    if selector_parts[0] != source_module:
+                        raise ValueError("curated selector does not identify its source path")
+                selected_module, context_node, _begin, _finish = _selector_node(
+                    context_tree, context_selector)
+                if selected_module != source_module:
+                    raise ValueError("curated selector module differs from source path")
+                record = _record(context_text, context_node, entry["qualified_name"],
+                                 entry["role"], entry["path"], context_sha, current)
+                record["explanation"] = entry.get("explanation")
+                context.append(record)
+            except (OSError, UnicodeError, ValueError, TypeError, SyntaxError,
+                    subprocess.SubprocessError) as exc:
+                context.append({"selector": entry.get("qualified_name"),
+                                "role": entry.get("role"), "status": "missing", "source": "",
+                                "source_path": entry.get("path"), "source_sha": None,
+                                "current_sha": current, "explanation": entry.get("explanation"),
+                                "diagnostic": str(exc)})
 
         selected_nodes = [selected]
         for setup_name in ("setUp", "asyncSetUp", "setUpClass"):
@@ -143,7 +198,18 @@ def read_test(root, test, source_sha, *, current_sha=None):
                 targets = node.targets if isinstance(node, ast.Assign) else [node.target]
                 for target in targets:
                     assignments.update({name: node for name in _target_names(target)})
-        for name in sorted(module_names & assignments.keys()):
+        fixture_names = set()
+        pending_fixtures = list(module_names & assignments.keys())
+        while pending_fixtures:
+            name = pending_fixtures.pop()
+            if name in fixture_names:
+                continue
+            fixture_names.add(name)
+            assignment = assignments[name]
+            dependencies = _loaded_names([assignment]) & assignments.keys()
+            module_names.update(_loaded_names([assignment]))
+            pending_fixtures.extend(dependencies - fixture_names)
+        for name in sorted(fixture_names):
             context.append(_record(text, assignments[name], name, "fixture", source_path, sha, current))
         if any(item["status"] == "missing" for item in context):
             result["context_status"] = "incomplete"
