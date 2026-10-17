@@ -1,7 +1,6 @@
 """Explicit, reviewed v1-to-v2 migration through the shared guarded action."""
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
 
@@ -16,13 +15,6 @@ def _digest(value):
                                   ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
-def _references(document):
-    return {node["id"]: copy.deepcopy(node["reference"])
-            for node in document.get("nodes", [])
-            if isinstance(node, dict) and isinstance(node.get("id"), str)
-            and "reference" in node}
-
-
 def preservation_diff(source, target):
     """Describe stable historical identities, references and edge changes."""
     source_nodes = {node["id"]: node for node in source.get("nodes", [])
@@ -33,10 +25,16 @@ def preservation_diff(source, target):
     target_edges = {tuple(sorted(edge.items())) for edge in target.get("edges", []) if isinstance(edge, dict)}
     changed_references = sorted(node_id for node_id in source_nodes.keys() & target_nodes.keys()
                                 if source_nodes[node_id].get("reference") != target_nodes[node_id].get("reference"))
+    changed_records = [{"id": node_id, "fields": sorted(
+        key for key, value in original.items() if migrated.get(key) != value)}
+        for node_id, original in sorted(source_nodes.items()) if node_id in target_nodes
+        for migrated in (target_nodes[node_id],)
+        if any(migrated.get(key) != value for key, value in original.items())]
     return {
         "added_ids": sorted(target_nodes.keys() - source_nodes.keys()),
         "removed_ids": sorted(source_nodes.keys() - target_nodes.keys()),
         "changed_references": changed_references,
+        "changed_records": changed_records,
         "changed_edges": {"removed": [list(edge) for edge in sorted(source_edges - target_edges)],
                           "added": [list(edge) for edge in sorted(target_edges - source_edges)]},
     }
@@ -50,6 +48,10 @@ def review_migration(source, target, review, *, work_id):
         raise ValueError("migration target must be an ask-engineering-model/v2 document")
     if source.get("work_id") != work_id or target.get("work_id") != work_id:
         raise ValueError("migration work_id must match the selected workstream")
+    if (not isinstance(source.get("revision"), int) or isinstance(source.get("revision"), bool)
+            or not isinstance(target.get("revision"), int) or isinstance(target.get("revision"), bool)
+            or target["revision"] <= source["revision"]):
+        raise ValueError("migration target revision must advance the historical model revision")
     if not isinstance(review, dict) or review.get("schema") != REVIEW_SCHEMA:
         raise ValueError("migration review schema is missing or invalid")
     if review.get("decision") != "APPROVED":
@@ -62,6 +64,8 @@ def review_migration(source, target, review, *, work_id):
         raise ValueError("migration cannot remove historical node identities")
     if diff["changed_references"]:
         raise ValueError("migration cannot rewrite historical references")
+    if diff["changed_records"]:
+        raise ValueError("migration cannot rewrite historical node fields or evidence attribution")
     expected = {"source_digest": _digest(source), "target_digest": _digest(target),
                 "diff_digest": _digest(diff)}
     for field, digest in expected.items():
@@ -71,7 +75,7 @@ def review_migration(source, target, review, *, work_id):
             "reviewer": review["reviewer"], "rationale": review["rationale"]}
 
 
-def migrate(root, work_id, expected, target, review):
+def migrate(root, work_id, expected, target, review, *, selected_task_id=None):
     """Apply a reviewed target using pre/action/post/publication admission."""
     def precondition(snapshot):
         if snapshot.document.get("schema") != SCHEMA:
@@ -83,4 +87,6 @@ def migrate(root, work_id, expected, target, review):
         return {snapshot.model_path: json.dumps(target, ensure_ascii=False, sort_keys=True,
                                                 indent=2).encode("utf-8") + b"\n"}
 
-    return run_action(root, work_id, expected, action, precondition=precondition)
+    return run_action(root, work_id, expected, action, precondition=precondition,
+                      selected_task_id=selected_task_id,
+                      selected_context_document=target if selected_task_id is not None else None)

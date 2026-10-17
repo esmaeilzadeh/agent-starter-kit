@@ -88,6 +88,26 @@ workstreams keep their policy and acquire no validated-state label. Adoption
 markers include the working model, tracked HEAD model and published pointer, so
 deleting the working file does not bypass admission.
 
+### Explicit v1 migration and representative evidence
+
+Opening or validating a v1 model never converts it. `./ask model migrate`
+requires the current admitted snapshot digest, a proposed v2 JSON document, and
+an `ask-engineering-migration-review/v1` approval bound to the canonical source,
+target, and preservation-diff digests. Removed IDs, changed historical node
+fields, references, or stale review digests refuse. The target passes the same
+pre/action/post/publication journal and generation-pointer guard as other model
+actions. If a Task is selected, its unique spec and plan passages are resolved
+from the exact proposed target snapshot before the migration action runs; the
+current v1 snapshot still receives the ordinary pre-check.
+
+`ask-workbench-comprehension/v1` records bind ten attributable human answers to
+the candidate, snapshot, selected Task/Scenario/Test and inspected dependency
+digests. Validation preserves failed assessments and marks changed bindings
+stale. It does not generate answers or certify the human. A resolved passage
+gate reports that genuine retained execution authority and an independent
+human exercise remain prerequisites; passage availability alone never marks a
+demo complete.
+
 ## Publication and failure boundaries
 
 The publication unit is a complete captured generation selected by one atomic

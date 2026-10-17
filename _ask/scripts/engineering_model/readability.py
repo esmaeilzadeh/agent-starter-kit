@@ -12,6 +12,9 @@ def validate_record(record, expected):
         return {"status": "invalid", "diagnostics": ["record schema is invalid"]}
     if not isinstance(expected, dict):
         return {"status": "invalid", "diagnostics": ["expected binding must be an object"]}
+    required_bindings = {"candidate_sha", "snapshot_digest", "task", "scenario", "test", "dependencies"}
+    if not required_bindings <= set(expected):
+        return {"status": "invalid", "diagnostics": ["expected binding must include candidate, snapshot, Task, Scenario, Test, and dependencies"]}
     for key, value in expected.items():
         if record.get(key) != value:
             return {"status": "stale", "diagnostics": [f"record binding differs: {key}"]}
@@ -42,6 +45,40 @@ def validate_record(record, expected):
         failed.append("chat_assistance")
     return {"status": "failed" if failed else "valid", "failed_prompts": failed,
             "diagnostics": ["one or more comprehension assessments failed"] if failed else []}
+
+
+def demo_gate(root, snapshot, task_node_id, *, expected_snapshot_digest=None):
+    """Gate context locally and report genuine evidence/human work still required.
+
+    Resolving context alone never marks a demonstration complete. The actual
+    retained-result evaluator and returning-human exercise remain separate.
+    """
+    from .passages import required_task_passages
+    from .snapshot import is_current
+
+    reasons = []
+    diagnostics = snapshot.diagnostics(root)
+    if (not is_current(snapshot, root)
+            or (expected_snapshot_digest is not None
+                and snapshot.identity["digest"] != expected_snapshot_digest)):
+        reasons.append("snapshot is stale")
+    if diagnostics:
+        reasons.append("captured model or required context is invalid")
+    try:
+        missing = required_task_passages(snapshot, task_node_id)
+    except ValueError as exc:
+        missing = ["task"]
+        reasons.append(str(exc))
+    if missing:
+        reasons.append("required passages unresolved: " + ", ".join(missing))
+    return {"status": "blocked_context" if reasons else "context_ready",
+            "task_node_id": task_node_id, "snapshot_digest": snapshot.identity["digest"],
+            "context_blockers": reasons,
+            "prerequisites": [
+                {"id": "genuine_retained_result", "status": "not_evaluated"},
+                {"id": "human_comprehension", "status": "not_recorded"},
+            ],
+            "demo_complete": False}
 
 
 def _nonempty(value):

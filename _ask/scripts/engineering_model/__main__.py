@@ -41,6 +41,12 @@ def main(argv: list[str] | None = None) -> int:
     context_parser.add_argument("--work-id", required=True)
     context_parser.add_argument("--request", required=True, help="structured request JSON file")
     context_parser.add_argument("--branch", help="execution locator only")
+    migrate_parser = commands.add_parser("migrate", help="apply an explicitly reviewed v1-to-v2 migration")
+    migrate_parser.add_argument("--work-id", required=True)
+    migrate_parser.add_argument("--expected", required=True, help="current admitted snapshot digest")
+    migrate_parser.add_argument("--target", required=True, help="proposed v2 model JSON")
+    migrate_parser.add_argument("--review", required=True, help="digest-bound migration review JSON")
+    migrate_parser.add_argument("--task-node", help="Task whose captured spec and plan passages are required")
     args = parser.parse_args(argv)
 
     root = Path.cwd().resolve()
@@ -59,6 +65,19 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0
+    if args.command == "migrate":
+        try:
+            from .migration import migrate
+            target = decode(Path(args.target).read_bytes())
+            review = decode(Path(args.review).read_bytes())
+            result = migrate(root, args.work_id, args.expected, target, review,
+                             selected_task_id=args.task_node)
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError) as exc:
+            print(json.dumps({"valid": False, "diagnostics": [{"code": "EM020_MIGRATION", "message": str(exc)}]}),
+                  file=sys.stderr)
+            return 1
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result["valid"] else 1
     if args.command == "admit" and (args.action or args.action_command):
         if not args.action or not args.action_command:
             parser.error("--action requires an action command after --")

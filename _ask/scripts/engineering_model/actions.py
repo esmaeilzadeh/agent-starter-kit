@@ -209,7 +209,7 @@ def recover_locked(root, work_id, state, *, validated=None):
 
 
 def run_action(root, work_id, expected, action, *, selected_task_id=None, selected_execution=None,
-               precondition=None, additional_snapshots=None):
+               precondition=None, additional_snapshots=None, selected_context_document=None):
     """Call action once on validated captured bytes; publish only its valid result.
 
     action returns a map of repository-relative document paths to bytes (or None
@@ -228,19 +228,31 @@ def run_action(root, work_id, expected, action, *, selected_task_id=None, select
                 return _result(base, None, diagnostics, steps)
             if base.identity["digest"] != expected:
                 raise Refused("EM007_STALE_INPUT", "displayed input snapshot is no longer current")
+            if precondition is not None:
+                precondition(base)
+            context_snapshot = base
+            if selected_context_document is not None:
+                if not isinstance(selected_context_document, dict):
+                    raise Refused("EM015_TASK_ID", "selected context document must be a validated model object")
+                context_bytes = json.dumps(selected_context_document, ensure_ascii=False,
+                                           sort_keys=True, indent=2).encode("utf-8")
+                context_snapshot = capture(root, work_id,
+                                           overrides={base.model_path: context_bytes})
+                context_errors = context_snapshot.diagnostics(root)
+                if context_errors:
+                    first = context_errors[0]
+                    raise Refused(first["code"], first["message"], first.get("path", "$"))
             try:
-                selected = selected_task_node(base, selected_task_id=selected_task_id,
+                selected = selected_task_node(context_snapshot, selected_task_id=selected_task_id,
                                               selected_execution=selected_execution)
             except ValueError as exc:
                 raise Refused("EM015_TASK_ID", str(exc)) from exc
             if selected is not None:
-                missing = required_task_passages(base, selected["id"])
+                missing = required_task_passages(context_snapshot, selected["id"])
                 if missing:
                     raise Refused("EM015_CONTEXT_REQUIRED",
                                   "selected Task requires unique captured spec and plan passages: "
-                                  + ", ".join(missing), base.model_path)
-            if precondition is not None:
-                precondition(base)
+                                  + ", ".join(missing), context_snapshot.model_path)
             external_snapshots = additional_snapshots() if callable(additional_snapshots) else ()
             for external in external_snapshots:
                 if not is_current(external, root):

@@ -26,7 +26,7 @@ class MigrationTests(unittest.TestCase):
         self.target = copy.deepcopy(self.source)
         self.target.update(schema="ask-engineering-model/v2", revision=2)
 
-    def test_reviewed_migration_binds_both_models_and_preserves_identity_authority(self):
+    def test_reviewed_adoption_preserves_v1_identity_references_and_evidence(self):
         from engineering_model.migration import preservation_diff, review_migration
 
         diff = preservation_diff(self.source, self.target)
@@ -38,11 +38,33 @@ class MigrationTests(unittest.TestCase):
         self.assertEqual(result["status"], "approved")
         self.assertEqual(result["preservation_diff"], {"added_ids": [], "removed_ids": [],
                                                         "changed_references": [],
+                                                        "changed_records": [],
                                                         "changed_edges": {"removed": [], "added": []}})
         bad = copy.deepcopy(self.target)
         bad["nodes"][1]["reference"]["id"] = "C-2"
         with self.assertRaisesRegex(ValueError, "reference"):
             review_migration(self.source, bad, approved, work_id="pilot")
+        bad_field = copy.deepcopy(self.target)
+        bad_field["nodes"][1]["title"] = "Rewritten historical evidence"
+        approved_field = dict(approved, target_digest=digest(bad_field),
+                             diff_digest=digest(preservation_diff(self.source, bad_field)))
+        with self.assertRaisesRegex(ValueError, "historical node fields"):
+            review_migration(self.source, bad_field, approved_field, work_id="pilot")
+
+        root = Path(__file__).resolve().parents[2]
+        historical = json.loads((root / "work/structured-agentic-environment/engineering-model.json").read_text())
+        proposal = copy.deepcopy(historical)
+        proposal.update(schema="ask-engineering-model/v2", revision=historical["revision"] + 1)
+        documented = {"schema": "ask-engineering-migration-review/v1", "decision": "APPROVED",
+                      "reviewer": "Codex implementation review",
+                      "rationale": "The schema/revision-only proposal preserves all historical node fields, IDs, references, and edges; the source remains unchanged.",
+                      "source_digest": "7a6f3b223df36df5202e5890d870f7db23cc5a552bce7564b383d277b619a341",
+                      "target_digest": "74cf6e0bb282aaedf191bd969d86e7778a2c75213ca852a6eda4bf2b3e971bfc",
+                      "diff_digest": "9fa1e5f96eaa32b5cd8918c576ea272c56580929a4437c7fdbd9bfb5c3e813a7"}
+        self.assertEqual(review_migration(historical, proposal, documented,
+                                          work_id="structured-agentic-environment")["status"], "approved")
+        self.assertEqual(json.loads((root / "work/structured-agentic-environment/engineering-model.json").read_text()),
+                         historical)
 
     def test_unreviewed_or_digest_stale_migration_is_refused(self):
         from engineering_model.migration import review_migration, preservation_diff
@@ -57,6 +79,12 @@ class MigrationTests(unittest.TestCase):
         changed["revision"] = 3
         with self.assertRaisesRegex(ValueError, "digest"):
             review_migration(self.source, changed, review, work_id="pilot")
+
+    def test_new_work_requires_own_spec_graph_review_and_accepted_contract(self):
+        PilotIntegrationTests().test_new_work_requires_its_own_spec_graph_review_and_accepted_contract()
+
+    def test_migration_passage_dependencies_use_real_guarded_entry(self):
+        PilotIntegrationTests().test_migration_passages_use_the_real_guarded_entry()
 
 
 class ReadabilityTests(unittest.TestCase):
@@ -154,7 +182,9 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertNotEqual(accepted["contract_sha"], "70dd295aacff869857081a94870d02fcbf4d640c")
 
     def test_retained_WB003_observation_is_genuine_and_authority_checked(self):
-        from engineering_model.workbench_evidence import execution_history
+        from engineering_model.passages import resolve
+        from engineering_model.readable_tests import read_test
+        from engineering_model.workbench_evidence import execution_history, qualified_source
 
         root = Path(os.environ.get("ASK_RWB_RETAINED_ROOT", Path(__file__).resolve().parents[2])).resolve()
         work = root / "work/structured-agentic-environment"
@@ -169,8 +199,39 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(review["verdict"], "APPROVED")
         self.assertEqual(task["evidence"]["verification"]["result"], "pass")
         self.assertEqual(task["evidence"]["verification"]["result_digest"], review["result_digest"])
+        result_raw = result_path.read_bytes()
+        self.assertEqual(hashlib.sha256(result_raw).hexdigest(), review["result_digest"])
+        review_evidence = root / review["evidence"]
+        self.assertEqual(hashlib.sha256(review_evidence.read_bytes()).hexdigest(), review["evidence_digest"])
+        checks = task["evidence"]["verification"]["checks"]
+        self.assertTrue(checks)
+        for check in checks:
+            self.assertEqual((check["status"], check["exit_code"]), ("pass", 0))
+            artifact = root / check["evidence"]
+            self.assertEqual(hashlib.sha256(artifact.read_bytes()).hexdigest(), check["output_digest"])
         plan = json.loads((work / "test-plan.json").read_text())
         selected_test = next(test for test in plan["tests"] if test["id"] == "WB-evidence-identity")
+        current_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                     capture_output=True, text=True).stdout.strip()
+        source = qualified_source(root, selected_test, result["candidate_sha"], current_sha=current_sha)
+        self.assertEqual(source["status"], "historical")
+        self.assertIn("test_results_match_work_test_run_and_contract", source["source"])
+        readable = read_test(root, selected_test, result["candidate_sha"], current_sha=current_sha)
+        self.assertEqual(readable["status"], "historical")
+        self.assertEqual(readable["context_status"], "complete")
+        selectors = {entry["selector"] for entry in readable["context"]}
+        self.assertTrue({"WorkbenchTests.setUp", "WorkbenchTests._report", "WorkbenchTests._ledger",
+                         "WorkbenchTests._blob_digest", "WorkbenchTests.git", "WorkbenchTests.write",
+                         "WorkbenchTests.commit"} <= selectors)
+        second_spec = resolve("specs/current/structured-agentic-environment.md",
+                              (root / "specs/current/structured-agentic-environment.md").read_bytes(),
+                              {"kind": "heading", "path": [
+                                  "Specification: Engineering Model and local workbench", "Interactive UI"]})
+        self.assertEqual(second_spec["state"], "available")
+        self.assertIn("The workbench presents", second_spec["text"])
+        concrete_flow = next(test for test in plan["tests"] if test["id"] == "WB-evidence-identity")
+        self.assertEqual(concrete_flow["case_id"],
+                         "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract")
         observed = execution_history(root, "structured-agentic-environment", selected_test,
                                      spec_digest="f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
                                      plan_digest="4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
@@ -184,18 +245,45 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(matches[0]["source_status"], "historical")
 
     def test_representative_passage_dependencies_require_exact_baseline_context(self):
-        from engineering_model.passages import required_task_passages
+        from engineering_model.readability import demo_gate
         from engineering_model.snapshot import capture
 
         root = Path(__file__).resolve().parents[2]
         snapshot = capture(root, "revising-workbench")
         self.assertEqual(snapshot.diagnostics(root), [])
-        self.assertEqual(required_task_passages(snapshot, "inspect-genuine-wb003"), [])
+        gate = demo_gate(root, snapshot, "inspect-genuine-wb003",
+                         expected_snapshot_digest=snapshot.identity["digest"])
+        self.assertEqual(gate["status"], "context_ready")
+        self.assertFalse(gate["demo_complete"])
+        self.assertEqual(gate["prerequisites"], [
+            {"id": "genuine_retained_result", "status": "not_evaluated"},
+            {"id": "human_comprehension", "status": "not_recorded"}])
         spec = snapshot.resolve_passage("inspect-genuine-wb003", "spec")
         plan = snapshot.resolve_passage("inspect-genuine-wb003", "plan")
         self.assertEqual((spec["state"], plan["state"]), ("available", "available"))
         self.assertIn("Projections and evidence", spec["text"])
         self.assertIn("WB-003", plan["text"])
+
+        stale = demo_gate(root, snapshot, "inspect-genuine-wb003", expected_snapshot_digest="0" * 64)
+        self.assertEqual(stale["status"], "blocked_context")
+
+        from engineering_model.snapshot import capture
+        missing_model = copy.deepcopy(snapshot.document)
+        missing_model["nodes"][2]["context"][0]["path"] = "specs/current/missing.md"
+        missing = capture(root, "revising-workbench", overrides={
+            snapshot.model_path: json.dumps(missing_model).encode("utf-8")})
+        self.assertEqual(demo_gate(root, missing, "inspect-genuine-wb003")["status"], "blocked_context")
+
+        spec_path = "specs/current/structured-agentic-environment.md"
+        duplicate_spec = (root / spec_path).read_bytes() + b"\n## Projections and evidence\nDuplicate section.\n"
+        ambiguous = capture(root, "revising-workbench", overrides={spec_path: duplicate_spec})
+        self.assertEqual(demo_gate(root, ambiguous, "inspect-genuine-wb003")["status"], "blocked_context")
+
+        model = copy.deepcopy(snapshot.document)
+        model["nodes"][2]["context"][0]["path"] = "../outside.md"
+        unsafe = capture(root, "revising-workbench", overrides={
+            snapshot.model_path: json.dumps(model).encode("utf-8")})
+        self.assertEqual(demo_gate(root, unsafe, "inspect-genuine-wb003")["status"], "blocked_context")
 
     def test_public_migration_entry_is_available_without_implicit_conversion(self):
         root = Path(__file__).resolve().parents[2]
@@ -203,6 +291,14 @@ class PilotIntegrationTests(unittest.TestCase):
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("migrate", result.stdout)
+
+
+class RepresentativeTests(unittest.TestCase):
+    def test_required_retained_wb003_result_is_genuine_and_historically_applicable(self):
+        PilotIntegrationTests().test_retained_WB003_observation_is_genuine_and_authority_checked()
+
+    def test_required_passages_gate_demo_without_fabricated_success(self):
+        PilotIntegrationTests().test_representative_passage_dependencies_require_exact_baseline_context()
 
 
 if __name__ == "__main__":

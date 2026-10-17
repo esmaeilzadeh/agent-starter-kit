@@ -1,0 +1,63 @@
+{
+  "edges": [
+    {
+      "source": "inspect-genuine-wb003",
+      "target": "representative-returning-developer",
+      "type": "contributes_to"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "workbench-pilot",
+      "lifecycle": "active",
+      "title": "Recover task context and inspect trustworthy workbench evidence",
+      "type": "intent"
+    },
+    {
+      "id": "representative-returning-developer",
+      "lifecycle": "active",
+      "title": "As a returning developer, recover a delivery task behavior and inspect its evidence",
+      "type": "story"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/structured-agentic-environment.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: Engineering Model and local workbench",
+              "Projections and evidence"
+            ]
+          }
+        },
+        {
+          "path": "work/structured-agentic-environment/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: connected Engineering Workbench",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "WB-003"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "WB-003",
+        "work_id": "structured-agentic-environment"
+      },
+      "id": "inspect-genuine-wb003",
+      "lifecycle": "planned",
+      "title": "Inspect the genuine historical WB-003 evidence flow",
+      "type": "task"
+    }
+  ],
+  "revision": 1,
+  "schema": "ask-engineering-model/v2",
+  "work_id": "revising-workbench"
+}
