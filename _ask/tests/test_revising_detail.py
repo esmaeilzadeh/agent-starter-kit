@@ -48,10 +48,12 @@ class DetailAppTests(unittest.TestCase):
     def _assert_same_revision_setup_and_helper_are_loaded(self):
         import subprocess
         import tempfile
+        from revising_fixture import digest
+        from test_revising_context import _repo
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            workbench_model(root)
+            _repo(root)
             source = root / "_ask/tests/test_fixture.py"
             source.parent.mkdir(parents=True)
             source.write_text(
@@ -63,39 +65,35 @@ class DetailAppTests(unittest.TestCase):
                 "        self.assertEqual(actual, 'accepted')\n")
             external = root / "support.py"
             external.write_text("def curated_expectation():\n    return 'curated'\n")
-            plan_path = root / "work/pilot/test-plan.json"
+            plan_path = root / "work/product/test-plan.json"
             plan = json.loads(plan_path.read_text())
             plan["tests"][0]["case_id"] = "_ask.tests.test_fixture.Cases.test_behavior"
             plan["tests"][0]["source_paths"] = ["_ask/tests/test_fixture.py"]
-            plan_path.write_text(json.dumps(plan))
+            plan_path.write_text(json.dumps(plan, sort_keys=True))
+            model_path = root / "work/product/engineering-model.json"
+            model = json.loads(model_path.read_text())
+            test_node = next(node for node in model["nodes"] if node["id"] == "test")
+            test_node["source_context"] = [{
+                "path": "support.py", "qualified_name": "support.curated_expectation",
+                "role": "helper", "revision": "snapshot",
+                "explanation": "Contract helper declared on the selected test node.",
+            }]
+            scenario_node = next(node for node in model["nodes"] if node["id"] == "scenario")
+            scenario_node["case"]["plan_digest"] = digest(plan)
+            model_path.write_text(json.dumps(model, sort_keys=True))
             subprocess.run(["git", "init", "-q", str(root)], check=True)
             subprocess.run(["git", "-C", str(root), "config", "user.name", "Workbench Test"], check=True)
             subprocess.run(["git", "-C", str(root), "config", "user.email", "workbench@example.invalid"], check=True)
             subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
             subprocess.run(["git", "-C", str(root), "commit", "-qm", "Create selected helper fixture"], check=True)
             candidate = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
-            snapshot, diagnostics = admit(root, "pilot")
+            snapshot, diagnostics = admit(root, "product")
             self.assertFalse(diagnostics, diagnostics)
             projection = project(snapshot, root, include_evidence=False)
-            test = next(row for row in projection["workbench"]["tests"] if row["id"] == "CASE-1")
-            # The compact v1 fixture does not admit source_context. Exercise the
-            # captured-file reader with the same v2 Test field without changing
-            # the fixture's unrelated v1 validation surface.
-            model_path = f"work/{snapshot.work_id}/engineering-model.json"
-            captured_model = json.loads(snapshot.files[model_path].decode())
-            captured_model["nodes"][-1]["source_context"] = [{
-                "path": "support.py", "qualified_name": "support.curated_expectation",
-                "role": "helper", "revision": "snapshot",
-                "explanation": "Contract helper declared on the selected test node.",
-            }]
-            from dataclasses import replace
-            from types import MappingProxyType
-            captured_files = {**snapshot.files,
-                              model_path: json.dumps(captured_model).encode()}
-            snapshot = replace(snapshot, files=MappingProxyType(captured_files))
+            test = next(row for row in projection["workbench"]["tests"] if row["id"] == "WB-publish")
             detail = load_selected_detail(
-                root, snapshot, test, node_id="case",
-                source_context={"kind": "git-commit", "work_id": "pilot", "commit": candidate},
+                root, snapshot, test, node_id="test",
+                source_context={"kind": "git-commit", "work_id": "product", "commit": candidate},
                 candidate_sha=candidate,
             )
             readable = detail.get("readable_test") or {}
@@ -109,9 +107,29 @@ class DetailAppTests(unittest.TestCase):
             self.assertIsNotNone(curated, "captured model source_context is shown with the test")
             self.assertEqual(curated.get("status"), "available")
             self.assertIn("return 'curated'", curated["source"])
-            self.assertEqual(readable["flow"]["given"], "Valid input")
-            self.assertEqual(readable["flow"]["when"], "Validate")
-            self.assertIn("Accept", readable["flow"]["then"])
+            self.assertEqual(readable["flow"]["given"], "A valid model")
+            self.assertEqual(readable["flow"]["when"], "Admitted")
+            self.assertIn("Only captured sources are used", readable["flow"]["then"])
+            from collections import OrderedDict
+            cache = OrderedDict()
+            working_context = {"kind": "working-tree", "work_id": "product"}
+            working_detail = load_selected_detail(
+                root, snapshot, test, node_id="test", source_context=working_context,
+                candidate_sha=candidate, cache=cache)
+            self.assertEqual(working_detail["readable_test"]["status"], "current")
+            helper_path = root / "support.py"
+            original_stat = helper_path.stat()
+            helper_path.write_text("def curated_expectation():\n    return 'edited'\n")
+            os.utime(helper_path, ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns))
+            edited_detail = load_selected_detail(
+                root, snapshot, test, node_id="test", source_context=working_context,
+                candidate_sha=candidate, cache=cache)
+            self.assertNotEqual(edited_detail["identity"], working_detail["identity"],
+                                "same-mtime curated helper edits invalidate detail cache")
+            self.assertEqual(edited_detail["readable_test"]["status"], "unavailable")
+            self.assertIn("differs from committed helper context",
+                          edited_detail["readable_test"]["diagnostic"])
+            helper_path.write_text("def curated_expectation():\n    return 'curated'\n")
             original_expander = st.expander
 
             def expand_helper(*args, **kwargs):
@@ -123,13 +141,14 @@ class DetailAppTests(unittest.TestCase):
                   patch.object(st, "expander", expand_helper)):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"),
                                         default_timeout=30).run(timeout=30)
-                _open(app, "test:CASE-1")
+                _open(app, "test:WB-publish")
                 self.assertFalse(app.exception, app.exception)
                 rendered = test_engineering_ui.text(app)
                 self.assertIn("Selected behavior flow", rendered)
                 self.assertIn("Setup", rendered)
                 self.assertIn("def test_behavior(self):", rendered)
                 self.assertIn("Source context", rendered)
+                self.assertIn("Inspected source revision: " + candidate, rendered)
             self.assertIn("return 'accepted'", rendered)
 
     def _assert_actual_output_is_available_only_for_valid_digests(self):
@@ -157,7 +176,34 @@ class DetailAppTests(unittest.TestCase):
     def test_attributed_choice_reload_and_invalid_stale_historical_refusal(self):
         _run_existing("test_resolution_survives_new_session")
         _run_existing("test_referenced_spec_change_keeps_form_stale_until_refresh")
+        self._assert_task_displays_blocking_decision_context()
         self._assert_committed_decision_form_is_read_only()
+
+    def _assert_task_displays_blocking_decision_context(self):
+        import tempfile
+
+        from engineering_fixture import write_json
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model, _spec = workbench_model(root)
+            choice = next(node for node in model["nodes"] if node["id"] == "choice")
+            choice["history"] = [{
+                "event": "reopened", "actor": "Reviewer",
+                "rationale": "The latest evidence no longer supports the earlier choice.",
+                "timestamp": "2026-01-02T03:04:05Z", "options": choice["options"], "resolution": {},
+            }]
+            write_json(root, "work/pilot/engineering-model.json", model)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"),
+                                        default_timeout=30).run(timeout=30)
+                _open(app, "build")
+                self.assertFalse(app.exception, app.exception)
+                rendered = test_engineering_ui.text(app)
+                self.assertIn("Choose · choice is open; requires resolved", rendered)
+                self.assertIn("Available choices: First (one); Second (two)", rendered)
+                self.assertIn("Last decision update by Reviewer", rendered)
+                self.assertIn("The latest evidence no longer supports the earlier choice.", rendered)
 
     def _assert_committed_decision_form_is_read_only(self):
         import subprocess
