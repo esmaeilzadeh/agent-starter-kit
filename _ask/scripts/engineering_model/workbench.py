@@ -25,7 +25,8 @@ def _runtime_task_record(owner_entry, task_id):
     status = record.get("status") if isinstance(record, dict) else None
     if not isinstance(record, dict) or not isinstance(status, str) or status not in _RUNTIME_TASK_STATUSES:
         return None, None, "unavailable-malformed-runtime-task-record"
-    return record, status, "inner-loop-state"
+    source = "task-state" if owner_entry.get("source") == "task-state" else "inner-loop-state"
+    return record, status, source
 
 
 def _captured_json(snapshot, path):
