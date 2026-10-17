@@ -131,6 +131,12 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
                                if isinstance(item, dict) and isinstance(item.get("id"), str)}
     task_rows = []
     for task_id, definition in sorted(task_definitions.items()):
+        is_v2 = model.get("schema") == "ask-engineering-model/v2"
+        identity = (work_id, task_id)
+        products = model_task_by_execution.get(identity, []) if is_v2 else []
+        product_node = products[0] if len(products) == 1 else None
+        relationship_task_id = (product_node.get("id") if product_node is not None else
+                                None if is_v2 else task_id)
         record = runtime_tasks.get(task_id) if isinstance(runtime_tasks, dict) else None
         state = record.get("status") if isinstance(record, dict) else None
         status = {
@@ -140,8 +146,8 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
         owned_tests = sorted(scope_tests.get(task_id, set()))
         mapped_scenarios = {scenario for test_id in owned_tests
                             for scenario in scenario_ids_by_case.get(test_id, set())}
-        explicit_scenarios = explicit_scenarios_by_task.get(task_id, set())
-        supported_scenarios = supported_scenarios_by_task.get(task_id, set())
+        explicit_scenarios = explicit_scenarios_by_task.get(relationship_task_id, set())
+        supported_scenarios = supported_scenarios_by_task.get(relationship_task_id, set())
         scenarios = sorted(mapped_scenarios | explicit_scenarios | supported_scenarios)
         row = {
             "id": task_id,
@@ -162,10 +168,7 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             "runtime_status": state,
             "result_path": record.get("result_path") if isinstance(record, dict) else None,
         }
-        if model.get("schema") == "ask-engineering-model/v2":
-            identity = (work_id, task_id)
-            products = model_task_by_execution.get(identity, [])
-            product_node = products[0] if len(products) == 1 else None
+        if is_v2:
             model_state = model_task_states_by_id.get(product_node.get("id")) if product_node else None
             row.update(
                 product_identity=(product_identity(work_id, product_node["id"]) if product_node else None),
@@ -189,25 +192,18 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             row["related_stories"] = [
                 {"id": story_id, "via": "contributes-to"} for story_id in related_stories
             ]
-            related_scenarios = row["related_scenarios"] + [
-                {"id": scenario, "via": "contributes-to"}
-                for scenario in sorted(supported_scenarios_by_task.get(
-                    product_node.get("id") if product_node is not None else None, set()))
-            ]
-            row["related_scenarios"] = sorted(
-                {(item["id"], item["via"]): item for item in related_scenarios}.values(),
-                key=lambda item: (item["id"], item["via"]))
         task_rows.append(row)
     known_task_ids = set(task_definitions)
-    graph_execution_ids = {(work_id, task_id) for task_id in task_definitions}
+    bound_product_node_ids = {row.get("product_node_id") for row in task_rows
+                               if row.get("product_node_id") is not None}
     for task in model_task_states:
         task_id = task.get("id")
-        if task_id in known_task_ids:
+        if model.get("schema") == "ask-engineering-model/v2":
+            if task_id in bound_product_node_ids:
+                continue
+        elif task_id in known_task_ids:
             continue
         node = nodes.get(task_id, {})
-        alias = execution_identity(node)
-        if alias is not None and alias in graph_execution_ids:
-            continue
         row = {
             "id": task_id, "title": node.get("title", task_id), "outcome": "",
             "dependencies": [], "owned_paths": [], "owned_test_ids": [],

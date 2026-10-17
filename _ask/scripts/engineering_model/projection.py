@@ -292,7 +292,12 @@ def markdown(projection):
         render_branch(root)
     lines.extend(["", "## Tasks"])
     projected_work = projection.get("workbench", {}).get("tasks", [])
-    if projected_work:
+    if projection.get("model", {}).get("schema") != "ask-engineering-model/v2":
+        for task in projection["tasks"]:
+            lines.append(f"- `{task['id']}`: {task['status']} (lifecycle: {task['lifecycle']})")
+            for blocker in task["blockers"]:
+                lines.append(f"  - Blocked by `{blocker['id']}`: {blocker['reason']}")
+    elif projected_work:
         for task in projected_work:
             execution = task.get("execution_identity")
             execution_label = (f"{execution.get('work_id')}:{execution.get('task_id')}"
