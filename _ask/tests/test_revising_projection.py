@@ -201,6 +201,20 @@ class ProjectionTests(unittest.TestCase):
                                            {"work_id": "product", "node_id": "standalone"})
                 self.assertEqual(missing_runtime_row.get("status_source"), "no-task-record",
                                  "a readable owner state without this task must be distinguished from no state")
+                _put(collision_root, "work/delivery/inner-loop/state.json", {
+                    "schema": "ask-inner-loop-state/v1", "work_id": "delivery",
+                    "tasks": {"shared-17": {"status": ["integrated"]}},
+                })
+                malformed_view = project(capture(collision_root, "product"), collision_root,
+                                         include_evidence=False)
+                malformed_rows = [row for row in malformed_view["workbench"]["tasks"]
+                                  if row["id"] == "standalone"]
+                self.assertEqual(len(malformed_rows), 2)
+                self.assertTrue(all(row.get("status_source") ==
+                                    "unavailable-malformed-runtime-task-record"
+                                    for row in malformed_rows), malformed_rows)
+                self.assertTrue(all(row.get("runtime_status") is None for row in malformed_rows),
+                                malformed_rows)
 
             with tempfile.TemporaryDirectory() as legacy_directory:
                 legacy_root = Path(legacy_directory)
