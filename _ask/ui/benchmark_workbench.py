@@ -233,19 +233,27 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
         model_head = "gitless"
     model_paths = [f"work/{work_id}/engineering-model.json", f"work/{work_id}/test-plan.json"]
     model_digest, model_sizes = digest_tree(model_root, model_paths)
-    workload_paths = [*model_paths, f"work/{work_id}/inner-loop/tasks.yaml",
-                      f"specs/current/{work_id}.json", f"specs/current/{work_id}.md"]
-    workload_digest, workload_sizes = digest_tree(model_root, workload_paths)
+    workload_paths = [*model_paths, f"work/{work_id}/inner-loop/tasks.yaml"]
     model_document = json.loads((model_root / model_paths[0]).read_text(encoding="utf-8"))
     plan_document = json.loads((model_root / model_paths[1]).read_text(encoding="utf-8"))
     admitted_snapshot, admission_errors = validate_current(model_root, work_id)
     if admission_errors:
         raise ValueError("benchmark requires an admitted workstream: " + "; ".join(
             str(item.get("message", item)) for item in admission_errors))
-    current_spec = json.loads(admitted_snapshot.files[f"specs/current/{work_id}.json"])
     current_plan = json.loads(admitted_snapshot.files[model_paths[1]])
     canonical = lambda value: hashlib.sha256(json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+    spec_paths = [path for path in sorted(admitted_snapshot.files)
+                  if path.startswith("specs/current/") and path.endswith(".json")]
+    current_spec_path = next((path for path in spec_paths
+                              if canonical(json.loads(admitted_snapshot.files[path]))
+                              == current_plan.get("spec_digest")), None)
+    if current_spec_path is None:
+        raise ValueError("benchmark plan does not bind one captured current specification")
+    current_spec = json.loads(admitted_snapshot.files[current_spec_path])
+    spec_markdown_path = current_spec_path[:-5] + ".md"
+    workload_paths.extend((current_spec_path, spec_markdown_path))
+    workload_digest, workload_sizes = digest_tree(model_root, workload_paths)
     projection = project(admitted_snapshot, model_root, include_evidence=False)
     outline = build_outline(projection)
     root_route = outline["roots"][0]
