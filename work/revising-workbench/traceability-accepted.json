@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "7bc129462ca214eca697cf1b728fcb690972eddb",
+  "contract_sha": "daa4e8188793599faf5a1e355788213002dd808f",
   "work_id": "revising-workbench",
   "reviewer": "/root/review_rwb107",
   "recorded_by": "/root",
@@ -13,50 +13,39 @@
     "decision": "APPROVED",
     "reviewer": "/root/review_rwb107",
     "runtime": "codex",
-    "model": "GPT-6 family; exact selectable identifier unavailable",
+    "model": "GPT-6 family; exact identifier unavailable",
     "configured_model": "gpt-6.1-sol",
     "parent_model": "GPT-6 family; exact identifier unavailable",
-    "reviewed_sha": "7bc129462ca214eca697cf1b728fcb690972eddb",
-    "previous_contract_sha": "54ef012b0517758ee548a2a4ee79b28e698990ff",
-    "spec_digest": "eb887b8d8779f3b7e0a29274238b2f6dd619b4696ba3d4877a1d2eaf8e16d544",
-    "plan_digest": "10fcf11fb3060c40dda46f95a1e662a6eb449cc171e8d1e14817adbb9d82cebc",
-    "graph_digest": "7e953d35308a572786d9e0587ee3d2c0cd9c145ae357f72a4b8507b98f58bc75",
+    "reviewed_sha": "0c87a8f8de6a99dd1d1a08736b430e8554e56ad9",
+    "previous_contract_sha": "7bc129462ca214eca697cf1b728fcb690972eddb",
+    "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
+    "plan_digest": "0befd96ea5c5ed4715a413017292cb1730be1328b8674f4e47a852583ce2d685",
+    "graph_digest": "ef1c6a2729a2d4a179e9fa9c89c67d931a49158865831c4491067d42e8c36e0e",
     "boundary": "ok",
+    "assessment": "APPROVED narrow EM-020 amendment for the required runtime-sync test leakage repair. Exact corrected plan now requires post-regeneration forced failure, expected nonzero status, exact projection byte restoration and clean candidate, followed by a successful clean run. This closes the sole semantic blocker from 6c696b3. Scope, authority, required integration type, task assignment and source/selector binding remain coherent. Contract approval only; implementation and executed evidence are not approved by this artifact.",
     "blocking_findings": [],
-    "assessment": "APPROVED narrow amendment of the serialized RWB-107 task for the human-authorized integration workflow repair. EM-019 now correctly preserves base-pinned verifier code/imports and candidate-derived CheckPlan while requiring candidate obligations to match external coordinator authority. The new integration obligation, case selector and three production/test/documentation ownership additions are coherent. All three prior amendment blockers are resolved at the contract/assertion-design level. This decision approves the contract amendment; exact source execution, TaskResult and semantic review remain required before integration.",
+    "validation": [
+      "contracts_at/validate_plan accepts exact corrected candidate 0c87a8f8de6a99dd1d1a08736b430e8554e56ad9 and recorded canonical digests.",
+      "TaskGraph RWB-107.test_ids and plan task scope now both contain all five required cases, including RWB-CANDIDATE-SYNC-CLEAN.",
+      "Spec revision increments to 3; existing criteria remain semantically unchanged and EM-020 adds an integration obligation rather than weakening detached candidate integrity.",
+      "Discovery runner and declared test_traceability_entrypoints.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree identity are coherent with the supported adapter; source_paths include both Python integration case and actual shell check."
+    ],
+    "scope_and_authority": "The user's instruction to fix the main workflow first authorizes addressing the required sync check's candidate-tree leakage discovered at the existing integration gate. Adding only _ask/tests/test-sync-runtime-agents.sh to the already serialized RWB-107 ownership is narrow; the Python integration source is already owned. Restoring temporary projections in the check preserves the candidate integrity gate and does not grant authority to generated files or ignore dirty paths. No third-party service, runtime production behavior or unrelated task is introduced.",
+    "evidence_requirements": "The new case is correctly change_kind new and integration. Its implementation need not exist at contract acceptance, but eventual completion requires collected behavior assertion red, exact final green, unchanged intended assertions and fresh complete-task semantic review. After the amended spec/plan digest changes, refresh recognized red evidence for all earlier new cases under the accepted contract as required by the current report service; prior-contract runs alone cannot complete the task.",
+    "limitations": [
+      "Candidate contract review only. No working-tree implementation is approved or bound by this artifact; final source review must check the actual forced post-sync failure, restoration implementation and evidence.",
+      "No tests run and no source, implementation, state, TaskResult, contract or pin modified by reviewer. Only this runtime review artifact was written."
+    ],
     "prior_findings": [
       {
-        "finding": "Contradictory CheckPlan authority",
+        "finding": "Missing failure-path cleanup obligation",
         "decision": "RESOLVED",
-        "assessment": "EM-019 and the proposal now explicitly distinguish base-pinned verifier code/imports from candidate-derived CheckPlan. This agrees with plan_identity(checkout, runner), snapshot_runner(base_sha), the existing inner-loop evidence contract and the unchanged CheckPlan authority. The production change alters only the accepted-contract anchor to the immutable candidate; existing external coordinator-authority equality remains in load_accepted."
-      },
-      {
-        "finding": "Changed behavior classified regression",
-        "decision": "RESOLVED",
-        "assessment": "RWB-INNER-LOOP-AMENDMENT now declares change_kind new, requiring real collected assertion-red and exact-candidate final green. No regression relabeling or nonbehavioral exemption is proposed. Catching NotIntegrable for the positive case and asserting that evidence is present permits the pre-fix workflow failure to be reported as a test assertion rather than an unclassified exception. That actual red still must be executed and retained."
-      },
-      {
-        "finding": "Missing base/authority/unamended assertions",
-        "decision": "RESOLVED",
-        "assessment": "The assigned method now explicitly asserts evidence.runner_sha equals the original base, passes a separate unamended task through the same detached verifier entrypoint, and rejects a committed candidate-only accepted-pin mutation with the specific coordinator-authority mismatch diagnostic. The amended positive fixture records a real independently accepted post-base ownership amendment and matching candidate pin. These assertions exercise the real verifier and authority loader rather than mock verdicts. Source inspection confirms the reported runner SHA corresponds to the actual snapshot_runner(base_sha) invocation."
+        "assessment": "RWB-CANDIDATE-SYNC-CLEAN scenario and expected_assertions explicitly force failure after generated projections change, compare every runtime projection file with its pre-check snapshot, require expected nonzero exit and clean child tree, then run successfully and require the tree still clean. Removing failure cleanup while restoring only on success will fail the planned assertions."
       }
-    ],
-    "scope_assessment": "The added owned paths are _ask/scripts/inner_loop/evidence.py, _ask/tests/test_traceability_entrypoints.py and _ask/docs/spec-test-traceability.md. They cover the minimal changed implementation, public integration regression journey and explanatory contract. RWB-107 remains the only writer and dependency order is unchanged. No other existing criterion, obligation, test classification, executable selector or task assignment is weakened. Existing RWB-107 source/evidence changes remain subject to the complete original-base review.",
-    "test_plan_assessment": "Integration is the adequate required type for EM-019 because the observable boundary spans Git revisions, external accepted authority, verifier snapshots and detached candidate execution. The discovery runner produces the declared test_traceability_entrypoints.EntrypointTests.test_I08_integration_accepts_reviewed_contract_amended_after_task_base identity; the current adapter filters execution to declared case IDs. Later semantic inventory must account for other unchanged public methods in the shared test source through mapped cases or explicit exclusions. No dynamic subtests are introduced.",
-    "validation": [
-      "Read exact corrected candidate and compared its canonical spec/test-plan/TaskGraph against accepted contract 54ef012 and rejected candidate 411a845.",
-      "contracts_at and validate_plan accept corrected canonical spec, plan and graph; their digests are recorded above.",
-      "Inspected current source fix, authority comparison, snapshot_runner and candidate CheckPlan loading, plus the complete assigned test method and corrected specification-change proposal."
-    ],
-    "limitations": [
-      "Contract and assertion-design approval only. No tests were run by this reviewer; no red/green execution is claimed by this amendment artifact.",
-      "Coordinator must accept the corrected contract through normal authority, preserving the original task base and transition audit, then obtain valid assertion-red and exact final-green for the new case under the amended contract.",
-      "Fresh complete TaskResult, candidate-bound semantic test review, inner-loop review and normal executed integration gate remain required. The earlier 767b83d source review does not approve later workflow source changes or the amended obligations.",
-      "No source, state, TaskResult, accepted pin or contract was modified by this reviewer; only this runtime decision artifact was written."
     ]
   },
-  "plan_review_digest": "1ded817b82f615fdf4a282e2df089a343a7a82a35a6c18c88d7de2eaaa1a3909",
-  "spec_digest": "eb887b8d8779f3b7e0a29274238b2f6dd619b4696ba3d4877a1d2eaf8e16d544",
-  "plan_digest": "10fcf11fb3060c40dda46f95a1e662a6eb449cc171e8d1e14817adbb9d82cebc",
-  "graph_digest": "7e953d35308a572786d9e0587ee3d2c0cd9c145ae357f72a4b8507b98f58bc75"
+  "plan_review_digest": "83947d93202bb916dd3c7cde90325e7d9f31c9783ae0d71f0cbf5085fa681be4",
+  "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
+  "plan_digest": "0befd96ea5c5ed4715a413017292cb1730be1328b8674f4e47a852583ce2d685",
+  "graph_digest": "ef1c6a2729a2d4a179e9fa9c89c67d931a49158865831c4491067d42e8c36e0e"
 }

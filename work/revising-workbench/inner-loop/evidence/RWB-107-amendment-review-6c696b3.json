@@ -1,0 +1,37 @@
+{
+  "schema": "ask-test-plan-review/v1",
+  "work_id": "revising-workbench",
+  "decision": "REJECTED",
+  "reviewer": "/root/review_rwb107",
+  "runtime": "codex",
+  "model": "GPT-6 family; exact identifier unavailable",
+  "configured_model": "gpt-6.1-sol",
+  "parent_model": "GPT-6 family; exact identifier unavailable",
+  "reviewed_sha": "6c696b3bd7bb83e445249db53f476888fa2dd9b6",
+  "previous_contract_sha": "7bc129462ca214eca697cf1b728fcb690972eddb",
+  "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
+  "plan_digest": "6e191a713a11044c39925626ba133b2fe04507266969a691729364b95b43a50d",
+  "graph_digest": "ef1c6a2729a2d4a179e9fa9c89c67d931a49158865831c4491067d42e8c36e0e",
+  "boundary": "ok",
+  "assessment": "Narrow, justified workflow test-fixture repair, but the proposed test obligation does not cover EM-020 restoration after assertion failure. Approve only after that obligation is added and independently reviewed. This supersedes the initially requested 5f950b4 contract identity, whose digest/assignment errors the coordinator corrected before this review finished.",
+  "blocking_findings": [
+    {
+      "severity": "P1",
+      "location": "work/revising-workbench/test-plan.json: RWB-CANDIDATE-SYNC-CLEAN scenario and expected_assertions",
+      "finding": "EM-020 requires exact pre-test projection restoration even when an assertion fails. The new test obligation currently requires only a successful real sync check and clean child worktree. Removing failure cleanup while restoring on the success path would satisfy those planned assertions yet violate EM-020.",
+      "required_change": "Retain the normal successful real-shell check and add an explicit forced assertion-failure path after at least one sync has written projections. Require nonzero exit, exact pre/post bytes or presence for each generated review-agent projection, and no leaked candidate changes. Force the failure after writes, rather than failing a preflight before any temporary projections exist. Include the failure path in scenario/expected_assertions and eventual executed test/TDD evidence."
+    }
+  ],
+  "validation": [
+    "contracts_at/validate_plan accepts exact corrected candidate 6c696b3 and canonical digests above.",
+    "TaskGraph RWB-107.test_ids and plan task scope now both contain all five required cases, including RWB-CANDIDATE-SYNC-CLEAN.",
+    "Spec revision increments to 3; existing criteria remain semantically unchanged and EM-020 adds an integration obligation rather than weakening detached candidate integrity.",
+    "Discovery runner and declared test_traceability_entrypoints.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree identity are coherent with the supported adapter; source_paths include both Python integration case and actual shell check."
+  ],
+  "scope_and_authority": "The user's instruction to fix the main workflow first authorizes addressing the required sync check's candidate-tree leakage discovered at the existing integration gate. Adding only _ask/tests/test-sync-runtime-agents.sh to the already serialized RWB-107 ownership is narrow; the Python integration source is already owned. Restoring temporary projections in the check preserves the candidate integrity gate and does not grant authority to generated files or ignore dirty paths. No third-party service, runtime production behavior or unrelated task is introduced.",
+  "evidence_requirements": "The new case is correctly change_kind new and integration. Its implementation need not exist at contract acceptance, but eventual completion requires collected behavior assertion red, exact final green, unchanged intended assertions and fresh complete-task semantic review. After the amended spec/plan digest changes, refresh recognized red evidence for all earlier new cases under the accepted contract as required by the current report service; prior-contract runs alone cannot complete the task.",
+  "limitations": [
+    "Candidate contract review only. Working-tree shell/Python edits were read as proposed support and are not approved or bound by this artifact.",
+    "No tests run and no source, implementation, state, TaskResult, contract or pin modified by reviewer. Only this runtime review artifact was written."
+  ]
+}
