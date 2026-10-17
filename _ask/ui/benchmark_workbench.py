@@ -158,7 +158,11 @@ def free_port():
 
 def start_server(model_root: Path, work_id: str | None = None):
     port = free_port()
-    env = dict(os.environ, ASK_MODEL_ROOT=str(model_root), ASK_PYTHON=sys.executable,
+    ui_python = os.environ.get("ASK_UI_PYTHON")
+    if not ui_python:
+        bundled_python = ROOT / "_ask/.venv/bin/python"
+        ui_python = str(bundled_python) if bundled_python.is_file() else sys.executable
+    env = dict(os.environ, ASK_MODEL_ROOT=str(model_root), ASK_PYTHON=ui_python,
                PYTHONPATH=str(ROOT / "_ask/scripts"))
     if work_id:
         env["ASK_WORK_ID"] = work_id
