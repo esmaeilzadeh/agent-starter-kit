@@ -110,7 +110,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                 first_context = browser.new_context()
                 first = first_context.new_page()
                 first.goto(url, wait_until="domcontentloaded")
-                expect(first.get_by_role("button", name="Uppercase behavior", exact=False)).to_be_visible()
+                expect(first.get_by_role("button", name="Uppercase behavior", exact=True)).to_be_visible()
 
                 # The exact selected test retains historical outcomes, distinct from current evidence.
                 self.open_result(first, "E")
