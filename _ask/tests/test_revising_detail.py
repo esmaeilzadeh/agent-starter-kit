@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -213,5 +214,45 @@ class DetailAppTests(unittest.TestCase):
                 self.assertFalse(app.exception, app.exception)
                 self.assertEqual(load_source.call_count, 2,
                                  "same-mtime source changes invalidate selected detail on refresh")
+
+        consumer, _historical = evidence_workbench()
+        try:
+            original_history = workbench_loading.execution_history
+            with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}),
+                  patch.object(workbench_loading, "execution_history", wraps=original_history) as inspect_history):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"), default_timeout=30).run(timeout=30)
+                self.assertFalse(app.exception, app.exception)
+                inspect_history.assert_not_called()
+                _open(app, "result:U")
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("Captured execution output", test_engineering_ui.text(app))
+                self.assertGreater(inspect_history.call_count, 0)
+                count = inspect_history.call_count
+                _open(app, "purpose")
+                _open(app, "result:U")
+                self.assertEqual(inspect_history.call_count, count,
+                                 "revisited detail reuses its evidence cache")
+
+                ledger = json.loads((consumer.root / "work/w/traceability/executions.json").read_text())
+                final = next(item for item in reversed(ledger)
+                             if item.get("candidate_sha") == consumer.sha
+                             and item.get("phase") == "final_green"
+                             and item.get("scope") == "workstream")
+                report_path = consumer.root / "work/w/traceability/runs" / final["run_id"] / "results.json"
+                report = json.loads(report_path.read_text())
+                case = next(item for item in report["cases"] if item.get("test_id") == "U")
+                log_path = consumer.root / case["output_artifact"]
+                before = log_path.stat()
+                log_path.write_bytes(log_path.read_bytes() + b"tampered")
+                os.utime(log_path, ns=(before.st_atime_ns, before.st_mtime_ns))
+                app.button(key="refresh").click().run(timeout=30)
+                self.assertFalse(app.exception, app.exception)
+                _open(app, "result:U")
+                self.assertFalse(app.exception, app.exception)
+                self.assertGreater(inspect_history.call_count, count,
+                                   "same-mtime log tampering invalidates the evidence cache")
+                self.assertIn("Output integrity: invalid", test_engineering_ui.text(app))
+        finally:
+            consumer.close()
 
         _run_existing("test_gitless_model_root_keeps_workbench_usable_without_git_fatal")
