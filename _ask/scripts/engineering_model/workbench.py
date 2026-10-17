@@ -275,12 +275,6 @@ def build_workbench(snapshot, model, model_task_states, runtime_states=None):
                        ])
         task_rows.append(row)
     task_rows.sort(key=lambda item: item["id"])
-    tasks_by_scenario = {}
-    for task in task_rows:
-        for link in task.get("related_scenarios", []):
-            scenario_id = link.get("id")
-            if isinstance(scenario_id, str):
-                tasks_by_scenario.setdefault(scenario_id, set()).add(task["id"])
 
     owner_by_test = {}
     for task_id, owned_ids in scope_tests.items():
@@ -294,7 +288,9 @@ def build_workbench(snapshot, model, model_task_states, runtime_states=None):
         scenario_ids = sorted(scenario_ids_by_case.get(test_id, set()))
         related_tasks = set()
         for scenario_id in scenario_ids:
-            related_tasks.update(tasks_by_scenario.get(scenario_id, ()))
+            for task in task_rows:
+                if any(link["id"] == scenario_id for link in task.get("related_scenarios", [])):
+                    related_tasks.add(task["id"])
         owner = owners[0] if len(owners) == 1 else None
         test_rows.append({
             "id": test_id,
