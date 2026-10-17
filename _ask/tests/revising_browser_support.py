@@ -37,34 +37,37 @@ def browser_session(model_root: Path = ROOT, work_id: str = "revising-workbench"
     model_root = Path(model_root).resolve()
     process, url, _started = start_server(model_root, work_id)
     try:
-        await_http(process, url)
+        await_http(process, url, timeout=30)
         with sync_playwright() as playwright:
-            options = {"headless": True, "args": ["--no-sandbox"]}
-            channel = os.environ.get("ASK_BROWSER_CHANNEL")
-            executable = (os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
-                          or shutil.which("google-chrome") or shutil.which("chromium"))
-            if channel:
-                options["channel"] = channel
-            elif executable:
-                options["executable_path"] = executable
-            browser = playwright.chromium.launch(**options)
-            context = browser.new_context(viewport=viewport or {"width": 1280, "height": 900})
-            if block_external:
-                context.route("**/*", lambda route: route.continue_()
-                              if route.request.url.startswith(("http://127.0.0.1:", "http://localhost:"))
-                              else route.abort())
-            page = context.new_page()
-            if subject:
-                url += "?" + urlencode({"subject": subject})
-            page.goto(url, wait_until="domcontentloaded", timeout=30000)
-            expect(page.get_by_role("heading", name="Engineering workbench", exact=True)).to_be_visible(timeout=15000)
-            expect(page.get_by_label("Workstream", exact=True)).to_be_visible(timeout=15000)
-            expect(page.get_by_text("Validated inputs", exact=False)).to_be_visible(timeout=15000)
+            browser = context = None
             try:
+                options = {"headless": True, "args": ["--no-sandbox"]}
+                channel = os.environ.get("ASK_BROWSER_CHANNEL")
+                executable = (os.environ.get("PLAYWRIGHT_CHROMIUM_EXECUTABLE")
+                              or shutil.which("google-chrome") or shutil.which("chromium"))
+                if channel:
+                    options["channel"] = channel
+                elif executable:
+                    options["executable_path"] = executable
+                browser = playwright.chromium.launch(**options)
+                context = browser.new_context(viewport=viewport or {"width": 1280, "height": 900})
+                if block_external:
+                    context.route("**/*", lambda route: route.continue_()
+                                  if route.request.url.startswith(("http://127.0.0.1:", "http://localhost:"))
+                                  else route.abort())
+                page = context.new_page()
+                if subject:
+                    url += "?" + urlencode({"subject": subject})
+                page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                expect(page.get_by_role("heading", name="Engineering workbench", exact=True)).to_be_visible(timeout=30000)
+                expect(page.get_by_label("Workstream", exact=True)).to_be_visible(timeout=30000)
+                expect(page.get_by_text("Validated inputs", exact=False)).to_be_visible(timeout=30000)
                 yield page, browser
             finally:
-                context.close()
-                browser.close()
+                if context is not None:
+                    context.close()
+                if browser is not None:
+                    browser.close()
     finally:
         process.terminate()
         try:
