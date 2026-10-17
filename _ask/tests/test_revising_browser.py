@@ -111,19 +111,18 @@ class WorkbenchBrowserTests(unittest.TestCase):
             focused = page.locator(":focus")
             expect(focused).to_be_visible()
             self.assertTrue(focused.get_attribute("aria-label") or focused.inner_text().strip())
-            focus_styles = focused.evaluate("""e => {
+            focus_styles = focused.evaluate(r"""e => {
                 const style = getComputedStyle(e);
-                let node = e, background = 'rgba(0, 0, 0, 0)';
-                while (node && background.endsWith(', 0)')) {
-                    background = getComputedStyle(node).backgroundColor;
-                    node = node.parentElement;
-                }
-                if (background === 'rgba(0, 0, 0, 0)') background = 'rgb(255, 255, 255)';
-                return {outlineColor: style.outlineColor, outlineWidth: style.outlineWidth, background};
+                const surface = getComputedStyle(document.querySelector('.stApp')).backgroundColor;
+                const shadow = style.boxShadow.match(/rgba?\([^)]*\)/)?.[0];
+                return {outlineColor: style.outlineColor, outlineWidth: style.outlineWidth,
+                        background: style.backgroundColor, shadow, surface};
             }""")
             self.assertGreaterEqual(float(focus_styles["outlineWidth"].removesuffix("px")), 2)
             self.assertGreaterEqual(self._contrast(
                 focus_styles["outlineColor"], focus_styles["background"]), 3)
+            self.assertGreaterEqual(self._contrast(
+                focus_styles["shadow"], focus_styles["surface"]), 3)
 
     def test_exact_representative_story_uses_genuine_wb003_evidence(self):
         before = git_fingerprint(ROOT)
