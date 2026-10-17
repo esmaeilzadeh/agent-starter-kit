@@ -189,10 +189,14 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             row["related_stories"] = [
                 {"id": story_id, "via": "contributes-to"} for story_id in related_stories
             ]
-            row["related_scenarios"] = [
+            related_scenarios = row["related_scenarios"] + [
                 {"id": scenario, "via": "contributes-to"}
-                for scenario in sorted(supported_scenarios_by_task.get(product_node.get("id"), set()))
-            ] + row["related_scenarios"]
+                for scenario in sorted(supported_scenarios_by_task.get(
+                    product_node.get("id") if product_node is not None else None, set()))
+            ]
+            row["related_scenarios"] = sorted(
+                {(item["id"], item["via"]): item for item in related_scenarios}.values(),
+                key=lambda item: (item["id"], item["via"]))
         task_rows.append(row)
     known_task_ids = set(task_definitions)
     graph_execution_ids = {(work_id, task_id) for task_id in task_definitions}
