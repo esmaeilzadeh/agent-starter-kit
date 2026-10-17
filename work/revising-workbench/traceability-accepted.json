@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "3d2949e85e8e08932db1fe2d6b7f333d7bec42fa",
+  "contract_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
   "work_id": "revising-workbench",
   "reviewer": "/root/review_rwb107",
   "recorded_by": "/root",
@@ -16,35 +16,36 @@
     "model": "GPT-6 family; exact selectable identifier unavailable",
     "configured_model": "gpt-6.1-sol",
     "parent_model": "GPT-6 family; exact identifier unavailable",
-    "reviewed_sha": "4579303502aa31c813c3aa261e96d4d5075090b6",
-    "previous_contract_sha": "daa4e8188793599faf5a1e355788213002dd808f",
-    "spec_digest": "ef61929ead5e8a5e52fb431f830a71ccc4f30fcba08daf4604298ce79fe77687",
-    "plan_digest": "dea83a9607dc9654b2ae70d1f2126a845af9b5cc22af8ba0a5a20e0928f3d77c",
-    "graph_digest": "7220567a2cda4c0f092ff89b04c10a40fbe59aa74429147c6b1cf3bd39df245e",
+    "reviewed_sha": "5719f64b4440431a4ac80d9aac80c27bba8eb5d6",
+    "previous_contract_sha": "3d2949e85e8e08932db1fe2d6b7f333d7bec42fa",
+    "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+    "plan_digest": "5af89843427a100e5b90c164167217520ad33ba88ad1721cf91022e91ed6809d",
+    "graph_digest": "8effd240d9f62408e618831dd705b5ff806ec6f7ea5ae77f6fb62eae522483aa",
     "boundary": "ok",
     "blocking_findings": [],
-    "assessment": "APPROVED additive EM-020 revision 4 contract amendment for first-run consumer isolation. It preserves every accepted sync cleanup/failure assertion and adds a real first-run consumer check under an inherited verifier root, requiring success and unchanged candidate source/CheckPlan. This is a narrow continuation of the human-authorized workflow repair and does not weaken or bypass the detached candidate integrity gate. This exact final candidate supersedes the initially supplied 4d20ab4, adding matching plan ownership/completion text without changing canonical contract digests.",
-    "scope_and_authority": "The user directed the coordinator to fix the main workflow first and continue. The newly observed required-check leak writes into the candidate through inherited ASK_ROOT during temporary-consumer adoption; addressing that fixture leak is within the authorized repair. Adding only _ask/tests/test-askit-first-run.sh to the existing serialized RWB-107 ownership covers the minimal additional changed script; the integration test source is already owned. The Markdown plan now includes both static test scripts and their candidate-integrity completion evidence. No task dependency, external authority, public production interface or unrelated product behavior changes.",
-    "test_mapping_assessment": "RWB-CANDIDATE-SYNC-CLEAN remains a new integration case assigned exclusively to RWB-107 and EM-020, using the existing supported discovery runner and exact I09 selector. Its source_paths now include the Python case, actual sync script and actual first-run script. The amended scenario and expected assertions explicitly retain the forced post-write failure, expected error status, exact projection snapshots and clean-tree checks, then require both successful sync and first-run consumer execution with ASK_ROOT set to the asserted child candidate. Integration is appropriate for actual shell subprocesses, temporary adoption consumers and immutable Git worktree integrity. Implementation review must verify the first-run script actually exercises its existing non-git refusal, non-adopted refusal and explicit adoption assertions, rather than satisfying the new case through a no-op success.",
+    "assessment": "APPROVED coherent revision-5 scope update. EM-020, canonical scenario/assertions/source list, TaskGraph ownership/completion, Markdown plan and amendment proposal agree on actual sync, first-run, binding-overlay and temporary-root canonical/off-path sync checks under inherited verifier environment. All previously accepted cleanup/failure and integrity obligations remain. The fix is constrained to binding writes to the repository each operation explicitly targets; candidate source and CheckPlan protection remain intact.",
+    "scope_assessment": "The added _ask/scripts/install-kit.sh path is needed to fix the shared target-install synchronization seam rather than patch only individual callers. The proposed change must bind only its synchronization subprocess to the explicit TARGET and clear the inherited work-specific override there. The two added shell test paths directly invoke sync in temporary roots and need explicit temporary ASK_ROOT binding. These three additions are minimal for the identified common leak; existing first-run/binding-overlay and integration paths are already owned. No unrelated installer behavior, shared verification authority or task scheduling expansion is approved. All five RWB-107 cases remain assigned to the same serialized task with unchanged dependencies.",
+    "authority_assessment": "The user's instruction to fix the main workflow first authorizes repairing required checks that write into the immutable verifier candidate. The proposal explains the discovered install-target and direct temporary-root leaks and keeps the normal integrity gate. Isolating an install's sync to its explicit consumer TARGET and direct tests to their TMP roots implements that authorized repair without treating inherited outer context as target authority.",
+    "mapping_assessment": "RWB-CANDIDATE-SYNC-CLEAN remains a new integration case with supported discovery and exact I09 selector. Its expected assertions require real checks under ASK_ROOT pointing at the asserted child candidate, successful exits, exact projection preservation and no tracked/untracked candidate changes, while retaining forced post-write failure cleanup. The source list includes Python, all actual changed shell checks and install-kit.sh, so source changes affect evidence freshness. The binding-overlay script must retain its real two-install consumer binding canary. Canonical-source and off-path scripts must retain their existing assertions that the requested content is generated inside the temporary root; a no-op success would not satisfy the mapped behavior. Integration is adequate for subprocess, explicit repository target and immutable worktree integrity boundaries.",
     "validation": [
-      "contracts_at/validate_plan accepts exact candidate 4579303502aa31c813c3aa261e96d4d5075090b6; canonical digests recorded above.",
-      "TaskGraph RWB-107 test_ids exactly agrees with the canonical plan scope's five cases; only the additional script ownership changes in the graph.",
-      "Spec revision increments to 4. Existing EM-020 cleanup and candidate-integrity conditions remain, with additive first-run root isolation. Other criteria, obligations, selectors, required types and task assignments are unchanged.",
-      "Read the specification-change rationale and current first-run script to confirm that the mapped path is the required static consumer test responsible for inherited-root writes."
+      "contracts_at/validate_plan accepts exact candidate 5719f64b4440431a4ac80d9aac80c27bba8eb5d6 with the canonical digests above.",
+      "TaskGraph RWB-107.test_ids exactly equals canonical plan task_scope.test_ids; all five assigned cases and existing executable selectors remain unchanged.",
+      "Markdown RWB-107 ownership and completion evidence match the expanded TaskGraph and canonical test plan; proposal identifies the same additional source paths and target-binding behavior.",
+      "Read current install-kit target synchronization and both temporary-root shell test callers to confirm the new owned paths correspond to the actual inherited-root writes. No implementation edited or executed."
     ],
     "execution_requirements": [
-      "Contract approval only; actual implementation is not approved here and no tests were run by this reviewer.",
-      "Commit the new/changed behavior assertion and retain a collected behavior-red for the actual inherited-root failure; keep its intended assertions through exact final green.",
-      "Refresh recognized red history for every new task case under the newly accepted spec/plan digest, then obtain fresh candidate-bound semantic and inner-loop review before integration.",
-      "Keep first-run shell execution bound to its temporary consumer, while the outer integration case deliberately injects the child candidate root. The candidate source and CheckPlan gate must remain unchanged."
+      "Contract-only approval. Commit the intended assertions before implementation and retain collected behavior-red for the added target/temp-root isolation behavior, with explicit expected temporary output and candidate-byte/cleanliness assertions.",
+      "Do not weaken existing sync cleanup, first-run, binding canary, canonical-source preference or off-path content assertions to obtain success.",
+      "Refresh recognized red history for all new task cases under this accepted spec/plan digest, then run exact final green and obtain fresh complete-task source/evidence review and normal executed integration.",
+      "The install fix must remain scoped to the explicit target synchronization subprocess; this amendment does not approve unrelated installation semantics or candidate integrity exceptions."
     ],
     "limitations": [
-      "No implementation, state, TaskResult, contract or accepted pin was modified. Only this runtime amendment review artifact was written.",
-      "Independent amendment approval does not replace coordinator accept-plan authority, executed integration, outer Verify or human Accept."
+      "No tests run and no implementation, state, TaskResult, source contract or accepted pin modified by reviewer. Only this runtime review artifact was written.",
+      "Independent amendment approval does not itself change coordinator acceptance authority or replace final semantic review, integration, outer Verify or human Accept."
     ]
   },
-  "plan_review_digest": "851a434d335f7cf50838575826c83c30c764b8274aeb07715b0769329789238f",
-  "spec_digest": "ef61929ead5e8a5e52fb431f830a71ccc4f30fcba08daf4604298ce79fe77687",
-  "plan_digest": "dea83a9607dc9654b2ae70d1f2126a845af9b5cc22af8ba0a5a20e0928f3d77c",
-  "graph_digest": "7220567a2cda4c0f092ff89b04c10a40fbe59aa74429147c6b1cf3bd39df245e"
+  "plan_review_digest": "fd87315fbe301e62353208e56e1a4e90a9331388cc8fdc2c5510b255d09823fb",
+  "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+  "plan_digest": "5af89843427a100e5b90c164167217520ad33ba88ad1721cf91022e91ed6809d",
+  "graph_digest": "8effd240d9f62408e618831dd705b5ff806ec6f7ea5ae77f6fb62eae522483aa"
 }

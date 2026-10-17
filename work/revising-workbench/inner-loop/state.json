@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 47,
+  "revision": 57,
   "coordinator_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -2410,13 +2410,13 @@
           "work_id": "revising-workbench",
           "task_id": "RWB-107",
           "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
-          "candidate_sha": "767b83dd56b32ba155020a7996510cfea0233ec0",
-          "result_digest": "2d8706f19d54ef7c74eceda4679cdf480524f159ac1f3344aeadd727b20c653c",
+          "candidate_sha": "1cef4fff0a15267177aadfdd0e433d9c71c13284",
+          "result_digest": "fc9d3cf768c4254bccd10b64f14ab916ee79a633e34069c0cbcba17126a81781",
           "reviewer": "/root/review_rwb107",
           "policy": "_ask/policies/delegation.md",
           "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
-          "evidence": "work/revising-workbench/inner-loop/evidence/RWB-107-review-767b83d.md",
-          "evidence_digest": "d68d71cfae3170f3e3e42ff506c129a5312f5aa796438630676bb967512aa4f0",
+          "evidence": "work/revising-workbench/inner-loop/evidence/RWB-107-review-1cef4ff.md",
+          "evidence_digest": "7dddda1417251654b719fef0f2f0f7aef9bc42d2f2ff27c03cd8e68132f0e52f",
           "verdict": "APPROVED",
           "boundary": "ok",
           "exemption_reason": null
