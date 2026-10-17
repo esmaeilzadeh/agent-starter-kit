@@ -114,14 +114,15 @@ input blocks admission; missing-to-present and duplicate passages stale snapshot
 fixture results cannot stand in for genuine WB-003 evidence; failed or stale human
 understanding blocks demonstration.
 
-All runners use the supported `unittest` adapter. The 23 inherited regressions
+All runners use the supported `unittest` adapter. The 22 inherited regressions
 use four file-scoped discovery runners, each declaring
 `python3 -m unittest discover -s _ask/tests -p test_engineering_<file>.py`:
 model (9 cases), guard (10), CLI (1) and evidence (2). Their canonical case IDs
 use the actual bare discovered module names; every collected case is mapped once
 to its file's runner. Discovery supplies the candidate's `_ask/tests` import root,
 so existing bare fixture imports need neither ambient `PYTHONPATH` nor original
-checkout modules. Task scopes filter that same runner to their accepted subset;
+checkout modules. RWB-HISTORICAL is the additional inherited regression and uses
+its own exact selector. Task scopes filter each runner to their accepted subset;
 full-workstream execution maps all collected cases.
 
 The 33 future new cases retain one exact namespace-qualified `_ask.tests.*`
