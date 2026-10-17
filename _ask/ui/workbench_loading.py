@@ -12,6 +12,7 @@ from collections import OrderedDict
 from engineering_model.projection import project
 from engineering_model.evidence import inspect as inspect_workstream_evidence
 from engineering_model.workbench_evidence import execution_history, qualified_source
+from engineering_model.readable_tests import read_test
 
 
 _CACHE_LIMIT = 16
@@ -23,6 +24,51 @@ def _sha(raw: bytes) -> str:
 
 def _json_digest(value) -> str:
     return _sha(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode())
+
+
+def _verified_output(root: Path, relative: str, expected_digest: str) -> str | None:
+    path = _confined_file(root, relative)
+    if path is None or not path.is_file():
+        return None
+    try:
+        hasher = hashlib.sha256()
+        tail = bytearray()
+        with path.open("rb") as stream:
+            while True:
+                chunk = stream.read(65536)
+                if not chunk:
+                    break
+                hasher.update(chunk)
+                tail.extend(chunk)
+                if len(tail) > 12000:
+                    del tail[:-12000]
+        if hasher.hexdigest() != expected_digest:
+            return None
+        return bytes(tail).decode("utf-8", "replace")
+    except OSError:
+        return None
+
+
+def _captured_test(snapshot, test: dict, node_id: str) -> dict:
+    """Restore the full accepted test-plan record omitted by the display projection."""
+    try:
+        raw = snapshot.files.get(f"work/{snapshot.work_id}/test-plan.json")
+        plan = json.loads(raw.decode("utf-8")) if raw else {}
+        matches = [item for item in plan.get("tests", []) if isinstance(item, dict)
+                   and item.get("id") == test.get("id")]
+        if len(matches) == 1:
+            captured = {**test, **matches[0]}
+            model_raw = snapshot.files.get(f"work/{snapshot.work_id}/engineering-model.json")
+            model = json.loads(model_raw.decode("utf-8")) if model_raw else {}
+            nodes = model.get("nodes", []) if isinstance(model, dict) else []
+            model_test = next((item for item in nodes if isinstance(item, dict)
+                               and item.get("id") == node_id and item.get("type") == "test"), {})
+            if isinstance(model_test.get("source_context"), list):
+                captured["source_context"] = model_test["source_context"]
+            return captured
+    except (UnicodeError, ValueError, TypeError, AttributeError):
+        pass
+    return test
 
 
 def _safe_relative(value: str) -> bool:
@@ -108,23 +154,42 @@ def _working_source(root: Path, test: dict) -> dict:
 
 def _accepted_source_digests(root: Path, test: dict,
                              revision: str | None = None) -> dict[str, str] | None:
-    """Hash every declared source file, requiring confined regular files/blobs."""
+    """Hash test and curated helper files, requiring confined regular files/blobs."""
     selector = test.get("case_id") if isinstance(test, dict) else None
     paths = test.get("source_paths") if isinstance(test, dict) else None
     if not isinstance(selector, str) or not isinstance(paths, list) or not paths:
         return None
     if any(not _safe_relative(path) for path in paths) or len(paths) != len(set(paths)):
         return None
+    declared = [(path, revision) for path in paths]
+    contexts = test.get("source_context", [])
+    if not isinstance(contexts, list):
+        return None
+    for entry in contexts:
+        if (not isinstance(entry, dict) or not _safe_relative(entry.get("path"))
+                or not isinstance(entry.get("revision"), str)):
+            return None
+        relative = entry["path"]
+        context_revision = entry["revision"]
+        if context_revision == "snapshot":
+            context_revision = revision
+        declared.append((relative, context_revision))
+    declared = list(dict.fromkeys(declared))
+    key_counts: dict[str, int] = {}
     results = {}
     if revision is None:
-        for relative in paths:
+        for relative, source_revision in declared:
+            count = key_counts.get(relative, 0)
+            key_counts[relative] = count + 1
+            key = (relative if count == 0 else
+                   json.dumps([relative, source_revision], separators=(",", ":")))
             path = _confined_file(root, relative)
             if path is None:
                 return None
             try:
                 if not path.is_file():
                     return None
-                results[relative] = _sha(path.read_bytes())
+                results[key] = _sha(path.read_bytes())
             except OSError:
                 return None
         return results
@@ -134,8 +199,20 @@ def _accepted_source_digests(root: Path, test: dict,
         if checked.returncode:
             return None
         commit = checked.stdout.decode("ascii").strip()
-        for relative in paths:
-            listing = subprocess.run(["git", "ls-tree", "-z", commit, "--", relative],
+        for relative, source_revision in declared:
+            count = key_counts.get(relative, 0)
+            key_counts[relative] = count + 1
+            key = (relative if count == 0 else
+                   json.dumps([relative, source_revision], separators=(",", ":")))
+            source_commit = commit
+            if source_revision is not None:
+                resolved = subprocess.run(["git", "rev-parse", "--verify",
+                                           f"{source_revision}^{{commit}}"],
+                                          cwd=root, capture_output=True, timeout=3, check=False)
+                if resolved.returncode:
+                    return None
+                source_commit = resolved.stdout.decode("ascii").strip()
+            listing = subprocess.run(["git", "ls-tree", "-z", source_commit, "--", relative],
                                      cwd=root, capture_output=True, timeout=3, check=False)
             if listing.returncode:
                 return None
@@ -151,7 +228,7 @@ def _accepted_source_digests(root: Path, test: dict,
                                   cwd=root, capture_output=True, timeout=3, check=False)
             if blob.returncode:
                 return None
-            results[relative] = _sha(blob.stdout)
+            results[key] = _sha(blob.stdout)
         return results
     except (OSError, UnicodeError, subprocess.TimeoutExpired):
         return None
@@ -198,7 +275,12 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
     except (UnicodeError, ValueError, TypeError):
         pass
     source_items = {}
-    for relative in test.get("source_paths", []):
+    source_paths = list(test.get("source_paths", []))
+    curated_contexts = test.get("source_context", [])
+    if isinstance(curated_contexts, list):
+        source_paths.extend(entry.get("path") for entry in curated_contexts
+                            if isinstance(entry, dict) and isinstance(entry.get("path"), str))
+    for relative in sorted(set(source_paths)):
         path = _confined_file(root, relative)
         if path is None or not path.is_file():
             source_items[str(relative)] = "unavailable"
@@ -324,6 +406,7 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     """Load one test's qualified source and retained evidence after explicit selection."""
     root = Path(root).resolve()
     context_kind = source_context.get("kind", "working-tree")
+    captured_test = _captured_test(snapshot, test, node_id)
     current_head = _git(root, "rev-parse", "HEAD")
     evidence_candidate = source_context.get("commit") if context_kind == "git-commit" else candidate_sha
     if evidence_candidate is None and current_head:
@@ -331,7 +414,7 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     if isinstance(evidence_candidate, bytes):
         evidence_candidate = evidence_candidate.decode("ascii", "replace")
     selected_candidate = evidence_candidate
-    key = detail_identity(root, snapshot, test, source_context=source_context,
+    key = detail_identity(root, snapshot, captured_test, source_context=source_context,
                           candidate_sha=selected_candidate)
     cache = cache if cache is not None else OrderedDict()
     if key in cache:
@@ -343,6 +426,21 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                                   current_sha=current_head.decode("ascii", "replace") if current_head else None)
     else:
         source = _working_source(root, test)
+
+    readable_test = {"status": "unavailable", "context_status": "unavailable",
+                     "context": [], "test_source": "",
+                     "diagnostic": "same-revision helper context requires matching committed source bytes"}
+    if selected_candidate:
+        committed_sources = _accepted_source_digests(root, captured_test, str(selected_candidate))
+        working_sources = (_accepted_source_digests(root, captured_test)
+                           if context_kind != "git-commit" else committed_sources)
+        if (context_kind == "git-commit" or
+                (committed_sources is not None and committed_sources == working_sources)):
+            readable_test = read_test(root, captured_test, str(selected_candidate),
+                                      current_sha=(current_head.decode("ascii", "replace")
+                                                   if current_head else None))
+        else:
+            readable_test["diagnostic"] = "working source differs from committed helper context"
 
     try:
         if selected_candidate is None:
@@ -396,19 +494,26 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     # Keep that verdict separate from whether the retained source bytes match
     # the exact test method currently shown in this detail panel.
     selected_source_digests = _accepted_source_digests(
-        root, test, str(selected_candidate) if context_kind == "git-commit" and selected_candidate else None)
+        root, captured_test,
+        str(selected_candidate) if context_kind == "git-commit" and selected_candidate else None)
     for run in history.get("runs", []):
         applicability = "unavailable"
         retained_sha = run.get("source_sha") if isinstance(run, dict) else None
-        retained_source_digests = _accepted_source_digests(root, test, retained_sha) if retained_sha else None
+        retained_source_digests = (_accepted_source_digests(root, captured_test, retained_sha)
+                                   if retained_sha else None)
         if selected_source_digests and retained_source_digests:
             applicability = ("matches selected source" if retained_source_digests == selected_source_digests
                              else "differs from selected source")
         if isinstance(run, dict):
             run["working_source_applicability"] = applicability
+            if run.get("output_status") == "valid":
+                relative = run.get("output_artifact")
+                run["output_text"] = (_verified_output(root, relative, run.get("output_digest", ""))
+                                      if isinstance(relative, str) else None)
     historical_candidates = (historical_contract_candidates(root, snapshot.work_id)
                              if not history.get("runs") else [])
     value = {"identity": key, "source": source, "evidence_projection": evidence_projection,
+             "readable_test": readable_test,
              "evidence": evidence_set, "execution_history": history,
              "historical_candidates": historical_candidates,
              "historical_contracts": [],
