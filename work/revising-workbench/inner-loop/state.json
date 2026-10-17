@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 36,
+  "revision": 41,
   "coordinator_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -2398,8 +2398,8 @@
       }
     },
     "RWB-107": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,

@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "revising-workbench",
+  "task_id": "RWB-107",
+  "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+  "candidate_sha": "f5adb9e8f075a2aed8fceac6eca9529115154a5f",
+  "tdd": {
+    "seam": "Load selected test plan and model-declared source_context from admitted v2 snapshots; keep test and curated helper bytes revision-bound, invalidate detail cache on same-mtime helper edits, render readable namespaced test assertions and collapsed source provenance, and retain reasoned blocker context in Task detail.",
+    "red": {
+      "command": "./ask traceability run revising-workbench --candidate-sha 911a6ab9434c2c512688cf3160927ac1ca2fecb7 --scope task --task-id RWB-107 --phase red",
+      "output": "work/revising-workbench/traceability/runs/6e185916ba1f44e9881b1498a448db1b/results.json: RWB-APP-EVIDENCE and RWB-APP-DECISIONS failed as behavior_assertion with successful collection; RWB-LAZY-CACHE passed.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run revising-workbench --candidate-sha f5adb9e8f075a2aed8fceac6eca9529115154a5f --scope task --task-id RWB-107 --phase final_green",
+      "output": "work/revising-workbench/traceability/runs/cdd859c407a8446e819c29126dcadde7/results.json: all three assigned cases passed, executions exited 0 and collected successfully.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "The approved ownership amendment at 54ef012b adds only _ask/ui/workbench_tasks.py to RWB-107; accept-plan pins it in traceability-accepted.json. The test fixture now admits a real v2 model with Test.source_context declaring an external helper, and same-mtime edits to that helper invalidate the cached detail and refuse stale committed bytes. The loader restores captured plan and model context, hashes curated helper dependencies for cache identity/currency, and the UI renders readable source for namespaced selectors, every source-context role, explanations, incomplete-state diagnostics, and the actual source commit in the collapsed helper expander. Task blocker cause, options, latest actor/rationale, and resolution attribution are visible in Task context. Red candidate 911a6ab9434c2c512688cf3160927ac1ca2fecb7 (run 6e185916ba1f44e9881b1498a448db1b) records behavior_assertion failures for RWB-APP-EVIDENCE and RWB-APP-DECISIONS. Exact final candidate f5adb9e8f075a2aed8fceac6eca9529115154a5f passes all three assigned cases in run cdd859c407a8446e819c29126dcadde7. Independent exact-candidate source review is pending."
+}
