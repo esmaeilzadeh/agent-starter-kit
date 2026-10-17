@@ -205,6 +205,10 @@ class ProjectionTests(unittest.TestCase):
                     "schema": "ask-inner-loop-state/v1", "work_id": "delivery",
                     "tasks": {"shared-17": {"status": ["integrated"]}},
                 })
+                _put(collision_root, "work/product/inner-loop/state.json", {
+                    "schema": "ask-inner-loop-state/v1", "work_id": "product",
+                    "tasks": {"standalone": {"status": ["integrated"]}},
+                })
                 malformed_view = project(capture(collision_root, "product"), collision_root,
                                          include_evidence=False)
                 malformed_rows = [row for row in malformed_view["workbench"]["tasks"]
