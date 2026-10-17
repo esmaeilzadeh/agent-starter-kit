@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "daa4e8188793599faf5a1e355788213002dd808f",
+  "contract_sha": "3d2949e85e8e08932db1fe2d6b7f333d7bec42fa",
   "work_id": "revising-workbench",
   "reviewer": "/root/review_rwb107",
   "recorded_by": "/root",
@@ -13,39 +13,38 @@
     "decision": "APPROVED",
     "reviewer": "/root/review_rwb107",
     "runtime": "codex",
-    "model": "GPT-6 family; exact identifier unavailable",
+    "model": "GPT-6 family; exact selectable identifier unavailable",
     "configured_model": "gpt-6.1-sol",
     "parent_model": "GPT-6 family; exact identifier unavailable",
-    "reviewed_sha": "0c87a8f8de6a99dd1d1a08736b430e8554e56ad9",
-    "previous_contract_sha": "7bc129462ca214eca697cf1b728fcb690972eddb",
-    "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
-    "plan_digest": "0befd96ea5c5ed4715a413017292cb1730be1328b8674f4e47a852583ce2d685",
-    "graph_digest": "ef1c6a2729a2d4a179e9fa9c89c67d931a49158865831c4491067d42e8c36e0e",
+    "reviewed_sha": "4579303502aa31c813c3aa261e96d4d5075090b6",
+    "previous_contract_sha": "daa4e8188793599faf5a1e355788213002dd808f",
+    "spec_digest": "ef61929ead5e8a5e52fb431f830a71ccc4f30fcba08daf4604298ce79fe77687",
+    "plan_digest": "dea83a9607dc9654b2ae70d1f2126a845af9b5cc22af8ba0a5a20e0928f3d77c",
+    "graph_digest": "7220567a2cda4c0f092ff89b04c10a40fbe59aa74429147c6b1cf3bd39df245e",
     "boundary": "ok",
-    "assessment": "APPROVED narrow EM-020 amendment for the required runtime-sync test leakage repair. Exact corrected plan now requires post-regeneration forced failure, expected nonzero status, exact projection byte restoration and clean candidate, followed by a successful clean run. This closes the sole semantic blocker from 6c696b3. Scope, authority, required integration type, task assignment and source/selector binding remain coherent. Contract approval only; implementation and executed evidence are not approved by this artifact.",
     "blocking_findings": [],
+    "assessment": "APPROVED additive EM-020 revision 4 contract amendment for first-run consumer isolation. It preserves every accepted sync cleanup/failure assertion and adds a real first-run consumer check under an inherited verifier root, requiring success and unchanged candidate source/CheckPlan. This is a narrow continuation of the human-authorized workflow repair and does not weaken or bypass the detached candidate integrity gate. This exact final candidate supersedes the initially supplied 4d20ab4, adding matching plan ownership/completion text without changing canonical contract digests.",
+    "scope_and_authority": "The user directed the coordinator to fix the main workflow first and continue. The newly observed required-check leak writes into the candidate through inherited ASK_ROOT during temporary-consumer adoption; addressing that fixture leak is within the authorized repair. Adding only _ask/tests/test-askit-first-run.sh to the existing serialized RWB-107 ownership covers the minimal additional changed script; the integration test source is already owned. The Markdown plan now includes both static test scripts and their candidate-integrity completion evidence. No task dependency, external authority, public production interface or unrelated product behavior changes.",
+    "test_mapping_assessment": "RWB-CANDIDATE-SYNC-CLEAN remains a new integration case assigned exclusively to RWB-107 and EM-020, using the existing supported discovery runner and exact I09 selector. Its source_paths now include the Python case, actual sync script and actual first-run script. The amended scenario and expected assertions explicitly retain the forced post-write failure, expected error status, exact projection snapshots and clean-tree checks, then require both successful sync and first-run consumer execution with ASK_ROOT set to the asserted child candidate. Integration is appropriate for actual shell subprocesses, temporary adoption consumers and immutable Git worktree integrity. Implementation review must verify the first-run script actually exercises its existing non-git refusal, non-adopted refusal and explicit adoption assertions, rather than satisfying the new case through a no-op success.",
     "validation": [
-      "contracts_at/validate_plan accepts exact corrected candidate 0c87a8f8de6a99dd1d1a08736b430e8554e56ad9 and recorded canonical digests.",
-      "TaskGraph RWB-107.test_ids and plan task scope now both contain all five required cases, including RWB-CANDIDATE-SYNC-CLEAN.",
-      "Spec revision increments to 3; existing criteria remain semantically unchanged and EM-020 adds an integration obligation rather than weakening detached candidate integrity.",
-      "Discovery runner and declared test_traceability_entrypoints.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree identity are coherent with the supported adapter; source_paths include both Python integration case and actual shell check."
+      "contracts_at/validate_plan accepts exact candidate 4579303502aa31c813c3aa261e96d4d5075090b6; canonical digests recorded above.",
+      "TaskGraph RWB-107 test_ids exactly agrees with the canonical plan scope's five cases; only the additional script ownership changes in the graph.",
+      "Spec revision increments to 4. Existing EM-020 cleanup and candidate-integrity conditions remain, with additive first-run root isolation. Other criteria, obligations, selectors, required types and task assignments are unchanged.",
+      "Read the specification-change rationale and current first-run script to confirm that the mapped path is the required static consumer test responsible for inherited-root writes."
     ],
-    "scope_and_authority": "The user's instruction to fix the main workflow first authorizes addressing the required sync check's candidate-tree leakage discovered at the existing integration gate. Adding only _ask/tests/test-sync-runtime-agents.sh to the already serialized RWB-107 ownership is narrow; the Python integration source is already owned. Restoring temporary projections in the check preserves the candidate integrity gate and does not grant authority to generated files or ignore dirty paths. No third-party service, runtime production behavior or unrelated task is introduced.",
-    "evidence_requirements": "The new case is correctly change_kind new and integration. Its implementation need not exist at contract acceptance, but eventual completion requires collected behavior assertion red, exact final green, unchanged intended assertions and fresh complete-task semantic review. After the amended spec/plan digest changes, refresh recognized red evidence for all earlier new cases under the accepted contract as required by the current report service; prior-contract runs alone cannot complete the task.",
+    "execution_requirements": [
+      "Contract approval only; actual implementation is not approved here and no tests were run by this reviewer.",
+      "Commit the new/changed behavior assertion and retain a collected behavior-red for the actual inherited-root failure; keep its intended assertions through exact final green.",
+      "Refresh recognized red history for every new task case under the newly accepted spec/plan digest, then obtain fresh candidate-bound semantic and inner-loop review before integration.",
+      "Keep first-run shell execution bound to its temporary consumer, while the outer integration case deliberately injects the child candidate root. The candidate source and CheckPlan gate must remain unchanged."
+    ],
     "limitations": [
-      "Candidate contract review only. No working-tree implementation is approved or bound by this artifact; final source review must check the actual forced post-sync failure, restoration implementation and evidence.",
-      "No tests run and no source, implementation, state, TaskResult, contract or pin modified by reviewer. Only this runtime review artifact was written."
-    ],
-    "prior_findings": [
-      {
-        "finding": "Missing failure-path cleanup obligation",
-        "decision": "RESOLVED",
-        "assessment": "RWB-CANDIDATE-SYNC-CLEAN scenario and expected_assertions explicitly force failure after generated projections change, compare every runtime projection file with its pre-check snapshot, require expected nonzero exit and clean child tree, then run successfully and require the tree still clean. Removing failure cleanup while restoring only on success will fail the planned assertions."
-      }
+      "No implementation, state, TaskResult, contract or accepted pin was modified. Only this runtime amendment review artifact was written.",
+      "Independent amendment approval does not replace coordinator accept-plan authority, executed integration, outer Verify or human Accept."
     ]
   },
-  "plan_review_digest": "83947d93202bb916dd3c7cde90325e7d9f31c9783ae0d71f0cbf5085fa681be4",
-  "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
-  "plan_digest": "0befd96ea5c5ed4715a413017292cb1730be1328b8674f4e47a852583ce2d685",
-  "graph_digest": "ef1c6a2729a2d4a179e9fa9c89c67d931a49158865831c4491067d42e8c36e0e"
+  "plan_review_digest": "851a434d335f7cf50838575826c83c30c764b8274aeb07715b0769329789238f",
+  "spec_digest": "ef61929ead5e8a5e52fb431f830a71ccc4f30fcba08daf4604298ce79fe77687",
+  "plan_digest": "dea83a9607dc9654b2ae70d1f2126a845af9b5cc22af8ba0a5a20e0928f3d77c",
+  "graph_digest": "7220567a2cda4c0f092ff89b04c10a40fbe59aa74429147c6b1cf3bd39df245e"
 }
