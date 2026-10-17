@@ -2,6 +2,10 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 ASKIT="$ROOT/askit"
+# Verification sets ASK_ROOT to the candidate checkout. This test deliberately
+# exercises separate consumer directories, so let each command resolve from
+# its working directory instead of writing generated projections into the kit.
+unset ASK_ROOT
 export ASKIT_KIT_ROOT="$ROOT"
 export ASKIT_SKIP_SETUP=1
 export ASKIT_SKIP_COMPLETION_INSTALL=1
