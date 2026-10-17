@@ -905,6 +905,7 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                         source_context=source_context,
                         candidate_sha=source_context.get("commit"),
                         cache=detail_cache,
+                        include_evidence=selected["kind"] == "result",
                     )
                 render_test(projection, test_id, detail=detail,
                             context=f"{selected['kind']}:{selected['route_id']}",

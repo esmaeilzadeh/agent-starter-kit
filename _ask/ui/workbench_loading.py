@@ -258,7 +258,7 @@ def _traceability_fingerprint(root: Path, work_id: str) -> dict:
 
 
 def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
-                    candidate_sha: str | None = None) -> str:
+                    candidate_sha: str | None = None, include_evidence: bool = True) -> str:
     """Hash selected definitions, exact source bytes, authority refs, and evidence bytes."""
     root = Path(root).resolve()
     work_id = str(snapshot.work_id)
@@ -305,7 +305,9 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
         "working_source_bytes": source_items if source_context.get("kind") == "working-tree" else {},
         "accepted_ref": authority.decode("ascii", "replace") if authority else None,
         "all_accepted_refs": _sha(refs) if refs else None,
-        "traceability_bytes": _traceability_fingerprint(root, work_id),
+        "traceability_bytes": (_traceability_fingerprint(root, work_id)
+                               if include_evidence else None),
+        "include_evidence": include_evidence,
     })
 
 
@@ -401,8 +403,9 @@ def inspect_historical_contract_candidate(root: Path, work_id: str, test: dict,
 
 def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                          source_context: dict, candidate_sha: str | None = None,
-                         cache: OrderedDict | None = None) -> dict:
-    """Load one test's qualified source and retained evidence after explicit selection."""
+                         cache: OrderedDict | None = None,
+                         include_evidence: bool = True) -> dict:
+    """Load one test's source, optionally deferring retained evidence until Results."""
     root = Path(root).resolve()
     reference = test.get("reference") if isinstance(test.get("reference"), dict) else {}
     referenced_work = reference.get("work_id")
@@ -419,7 +422,7 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
         evidence_candidate = evidence_candidate.decode("ascii", "replace")
     selected_candidate = evidence_candidate
     key = detail_identity(root, snapshot, captured_test, source_context=source_context,
-                          candidate_sha=selected_candidate)
+                          candidate_sha=selected_candidate, include_evidence=include_evidence)
     cache = cache if cache is not None else OrderedDict()
     if key in cache:
         cache.move_to_end(key)
@@ -445,6 +448,21 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                                                    if current_head else None))
         else:
             readable_test["diagnostic"] = "working source differs from committed helper context"
+
+    if not include_evidence:
+        value = {"identity": key, "source": source, "evidence_projection": None,
+                 "readable_test": readable_test,
+                 "evidence": {"status": "not_loaded",
+                              "diagnostic": "Open Results to inspect retained execution evidence."},
+                 "execution_history": {"status": "not_loaded", "completion": "not_evaluated",
+                                       "runs": []},
+                 "historical_candidates": [], "historical_contracts": [],
+                 "candidate_sha": selected_candidate, "context_kind": context_kind}
+        cache[key] = value
+        cache.move_to_end(key)
+        while len(cache) > _CACHE_LIMIT:
+            cache.popitem(last=False)
+        return value
 
     try:
         if selected_candidate is None:
