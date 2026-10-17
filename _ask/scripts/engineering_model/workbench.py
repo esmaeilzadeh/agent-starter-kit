@@ -57,6 +57,7 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
     test_node_by_case = {}
     scenario_ids_by_case = {}
     explicit_scenarios_by_task = {}
+    supported_scenarios_by_task = {}
     scenarios_by_criterion = {}
     canonical_spec_path = f"specs/current/{work_id}.json"
     for node in nodes.values():
@@ -85,6 +86,12 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             )
     for edge in model.get("edges", []):
         if not isinstance(edge, dict):
+            continue
+        if edge.get("type") == "contributes_to":
+            source = nodes.get(edge.get("source"))
+            target = nodes.get(edge.get("target"))
+            if source and source.get("type") == "task" and target and target.get("type") == "scenario":
+                supported_scenarios_by_task.setdefault(source["id"], set()).add(target["id"])
             continue
         if edge.get("type") == "implements":
             implementation = nodes.get(edge.get("source"))
@@ -134,7 +141,8 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
         mapped_scenarios = {scenario for test_id in owned_tests
                             for scenario in scenario_ids_by_case.get(test_id, set())}
         explicit_scenarios = explicit_scenarios_by_task.get(task_id, set())
-        scenarios = sorted(mapped_scenarios | explicit_scenarios)
+        supported_scenarios = supported_scenarios_by_task.get(task_id, set())
+        scenarios = sorted(mapped_scenarios | explicit_scenarios | supported_scenarios)
         row = {
             "id": task_id,
             "title": definition.get("title", task_id),
@@ -144,7 +152,8 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             "owned_test_ids": owned_tests,
             "related_scenarios": [
                 {"id": scenario,
-                 "via": "recorded-implementation" if scenario in explicit_scenarios else "test-mapping"}
+                 "via": ("recorded-implementation" if scenario in explicit_scenarios else
+                         "contributes-to" if scenario in supported_scenarios else "test-mapping")}
                 for scenario in scenarios
             ],
             "status": status,
@@ -168,6 +177,7 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
                 model_lifecycle=product_node.get("lifecycle") if product_node else None,
                 model_status=model_state.get("status") if isinstance(model_state, dict) else None,
                 readiness_status=model_state.get("status") if isinstance(model_state, dict) else None,
+                readiness_blockers=(model_state.get("blockers", []) if isinstance(model_state, dict) else []),
                 readiness_source=("engineering-model" if model_state is not None else "unavailable"),
                 verification_status=None,
                 verification_source="no-verification-record",
@@ -179,23 +189,36 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             row["related_stories"] = [
                 {"id": story_id, "via": "contributes-to"} for story_id in related_stories
             ]
+            row["related_scenarios"] = [
+                {"id": scenario, "via": "contributes-to"}
+                for scenario in sorted(supported_scenarios_by_task.get(product_node.get("id"), set()))
+            ] + row["related_scenarios"]
         task_rows.append(row)
     known_task_ids = set(task_definitions)
+    graph_execution_ids = {(work_id, task_id) for task_id in task_definitions}
     for task in model_task_states:
         task_id = task.get("id")
         if task_id in known_task_ids:
             continue
         node = nodes.get(task_id, {})
+        alias = execution_identity(node)
+        if alias is not None and alias in graph_execution_ids:
+            continue
         row = {
             "id": task_id, "title": node.get("title", task_id), "outcome": "",
             "dependencies": [], "owned_paths": [], "owned_test_ids": [],
             "related_scenarios": [
                 {"id": scenario, "via": "recorded-implementation"}
                 for scenario in sorted(explicit_scenarios_by_task.get(task_id, set()))
+            ] + [
+                {"id": scenario, "via": "contributes-to"}
+                for scenario in sorted(supported_scenarios_by_task.get(task_id, set()))
             ], "status": "not-recorded",
             "status_source": "no-task-record", "record_source": "engineering-model",
             "runtime_status": None, "result_path": None,
-            "lifecycle": task.get("lifecycle"), "model_status": task.get("status"),
+            "lifecycle": task.get("lifecycle"), "model_lifecycle": task.get("lifecycle"),
+            "model_status": task.get("status"), "readiness_status": task.get("status"),
+            "readiness_blockers": task.get("blockers", []),
         }
         if model.get("schema") == "ask-engineering-model/v2":
             row.update(product_identity=task.get("product_identity"),
@@ -203,6 +226,8 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
                        identity_source="engineering-model",
                        product_node_id=task_id,
                        model_lifecycle=task.get("lifecycle"),
+                       readiness_status=task.get("status"),
+                       readiness_blockers=task.get("blockers", []),
                        readiness_source="engineering-model",
                        verification_status=None,
                        verification_source="no-verification-record",

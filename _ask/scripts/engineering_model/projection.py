@@ -1,6 +1,7 @@
 """Deterministic machine and Markdown views over an admitted snapshot."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from pathlib import PurePosixPath
@@ -103,11 +104,45 @@ def _scenario_views(snapshot, model, evidence_by_reference):
                           if isinstance(item, dict) and item.get("id") == reference.get("id")), None)
         view = {"id": node["id"], "title": node["title"], "reference": reference}
         if criterion is not None:
-            for field in ("given", "when", "then", "verification_mode"):
-                view[field] = criterion[field]
             view["criterion_id"] = criterion["id"]
+            if model.get("schema") == "ask-engineering-model/v2":
+                view["criterion"] = {field: criterion[field] for field in
+                                     ("given", "when", "then", "verification_mode")
+                                     if field in criterion}
+            else:
+                for field in ("given", "when", "then", "verification_mode"):
+                    view[field] = criterion[field]
         else:
             view["canonical_status"] = "unavailable"
+        if model.get("schema") == "ask-engineering-model/v2":
+            selector = node.get("case")
+            if selector is None:
+                view["canonical_status"] = "not-selected" if node.get("lifecycle") == "draft" else "unavailable"
+            elif isinstance(selector, dict):
+                case_work = selector.get("work_id")
+                case_id = selector.get("case_id")
+                plan_path = f"work/{case_work}/test-plan.json" if isinstance(case_work, str) else None
+                plan = _captured_json(snapshot, plan_path) if plan_path else None
+                actual_digest = (hashlib.sha256(json.dumps(
+                    plan, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+                    if isinstance(plan, dict) else None)
+                tests_for_case = (plan.get("tests", []) if isinstance(plan, dict) else [])
+                selected = [item for item in tests_for_case if isinstance(item, dict)
+                            and item.get("id") == case_id] if isinstance(tests_for_case, list) else []
+                if (isinstance(plan, dict) and plan.get("work_id") == case_work
+                        and actual_digest == selector.get("plan_digest") and len(selected) == 1
+                        and isinstance(selected[0].get("scenario"), dict)):
+                    flow = selected[0]["scenario"]
+                    for field in ("given", "when", "then"):
+                        if field in flow:
+                            view[field] = flow[field]
+                    view["canonical_case"] = {"work_id": case_work, "plan_digest": actual_digest,
+                                               "case_id": case_id}
+                    view["canonical_status"] = "available"
+                else:
+                    view["canonical_status"] = "unavailable"
+            else:
+                view["canonical_status"] = "unavailable"
         cases = []
         for test_id in sorted(covered_by.get(node["id"], [])):
             test_node = nodes.get(test_id)
@@ -266,6 +301,17 @@ def markdown(projection):
             product_label = (f"{product.get('work_id')}:{product.get('node_id')}"
                              if isinstance(product, dict) else "unbound")
             lines.append(f"- `{task['id']}`: {task['status']} (product `{product_label}`, execution `{execution_label}`)")
+            if "readiness_status" in task:
+                readiness = task.get("readiness_status") or "unavailable"
+                readiness_source = task.get("readiness_source", "unavailable")
+                lifecycle = task.get("model_lifecycle") or "unavailable"
+                runtime = task.get("runtime_status") or "unavailable"
+                verification = task.get("verification_status") or "unavailable"
+                lines.append(f"  - Readiness: {readiness} (source: {readiness_source}); definition lifecycle: {lifecycle}; "
+                             f"runtime status: {runtime} (source: {task.get('status_source', 'unavailable')}); "
+                             f"verification status: {verification} (source: {task.get('verification_source', 'unavailable')})")
+                for blocker in task.get("readiness_blockers", []):
+                    lines.append(f"  - Readiness blocker `{blocker['id']}`: {blocker['reason']}")
             if task.get("outcome"):
                 lines.append(f"  - Outcome: {task['outcome']}")
             if task.get("dependencies"):
@@ -289,6 +335,12 @@ def markdown(projection):
     for scenario in projection["scenarios"]:
         lines.extend([f"### `{scenario['id']}`: {scenario['title']}",
                       f"Reference: `{_reference_text(scenario['reference'])}`"])
+        if scenario.get("canonical_status") is not None:
+            if scenario.get("canonical_status") == "available":
+                case = scenario.get("canonical_case", {})
+                lines.append(f"Selected canonical case: `{case.get('work_id')}#{case.get('case_id')}`")
+            else:
+                lines.append(f"Selected canonical case: {scenario['canonical_status']}")
         for field in ("given", "when", "then"):
             if field in scenario:
                 value = scenario[field]
