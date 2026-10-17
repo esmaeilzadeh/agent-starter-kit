@@ -1,0 +1,17 @@
+{
+  "work_id": "revising-workbench",
+  "task_id": "RWB-104",
+  "base_sha": "a4c1d871f6c5bc3a6fa0ee8232c4e61f14a7675f",
+  "candidate_sha": "757462690641c6f6f823a1f6aec81fb0f83007d9",
+  "schema": "ask-integration-evidence/v1",
+  "result": "fail",
+  "result_digest": "ce3eb533f8bf5be43d05cc19f64f856ee51d1420fa707af64b74e77f24fce818",
+  "checks": [],
+  "evidence_path": "work/revising-workbench/inner-loop/evidence/verify-8edce_by/verification.json",
+  "log_path": "work/revising-workbench/inner-loop/evidence/verify-8edce_by/output.log",
+  "runner_digest": "c2dddcc19cc09ee2413c8f151f6665869ec07284ffbda732cd9e4023f7594a7f",
+  "runner_sha": "a4c1d871f6c5bc3a6fa0ee8232c4e61f14a7675f",
+  "tree_sha": "0248ac5f299984fae423f350a491ee0e9305b282",
+  "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
+  "record_path": "work/revising-workbench/inner-loop/evidence/verify-8edce_by/integration.json"
+}
