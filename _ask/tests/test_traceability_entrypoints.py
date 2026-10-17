@@ -63,6 +63,16 @@ class EntrypointTests(unittest.TestCase):
                 self.assertEqual(consumer.returncode,0,consumer.stdout+consumer.stderr)
                 self.assertEqual(projection_snapshot(),before,'first-run consumer changed runtime agent projections')
                 require_clean()
+
+                for script in ('test-bindings-consumer-overlay.sh',
+                               'test-sync-canonical-ask.sh',
+                               'test-sync-off-path-command.sh'):
+                    checked=subprocess.run(['bash',f'_ask/tests/{script}'],cwd=candidate,
+                                            env=env,text=True,capture_output=True)
+                    self.assertEqual(checked.returncode,0,checked.stdout+checked.stderr)
+                    self.assertEqual(projection_snapshot(),before,
+                                     f'{script} changed runtime agent projections')
+                    require_clean()
             finally:
                 subprocess.run(['git','worktree','remove','--force',str(candidate)],cwd=root,
                                text=True,capture_output=True,check=False)
