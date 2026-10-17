@@ -182,7 +182,9 @@ def required_task_passages(snapshot, node_id):
     missing = []
     for role in ("spec", "plan"):
         entries = by_role.get(role, [])
-        if len(entries) != 1 or entries[0].get("resolution", {}).get("state") != "available":
+        if (not entries or any(entry.get("resolution", {}).get("state") != "available"
+                               for entry in entries)
+                or (role == "plan" and len(entries) != 1)):
             missing.append(role)
             continue
         if role == "plan":

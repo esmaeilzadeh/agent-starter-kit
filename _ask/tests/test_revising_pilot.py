@@ -95,7 +95,14 @@ class ReadabilityTests(unittest.TestCase):
                     "task": {"work_id": "w", "node_id": "task"},
                     "scenario": {"work_id": "w", "node_id": "scenario"},
                     "test": {"work_id": "w", "test_id": "WB-1", "case_id": "test_case"},
-                    "dependencies": {"source_sha": "c" * 40, "spec_digest": "d" * 64}}
+                    "dependencies": {"inspected_sources": {"candidate_sha": "c" * 40},
+                                     "spec": {"selector_digest": "d" * 64, "bytes_digest": "e" * 64},
+                                     "plan": {"selector_digest": "f" * 64, "bytes_digest": "1" * 64},
+                                     "test": {"source_digest": "2" * 64},
+                                     "helpers": {"source_digests": ["3" * 64]},
+                                     "fixtures": {"source_digests": ["4" * 64]},
+                                     "evidence": {"report_digest": "5" * 64, "log_digests": ["6" * 64],
+                                                  "contract_digest": "7" * 64, "review_digest": "8" * 64}}}
         prompts = ["purpose", "spec_context", "plan_context", "concrete_flow", "setup",
                    "action", "expected_observation", "assertion", "actual_outcome", "applicability"]
         record = {"schema": "ask-workbench-comprehension/v1", **expected,
@@ -108,8 +115,14 @@ class ReadabilityTests(unittest.TestCase):
         failed = copy.deepcopy(record)
         failed["answers"][4]["assessment"] = "fail"
         self.assertEqual(validate_record(failed, expected)["status"], "failed")
-        stale = dict(expected, dependencies={"source_sha": "e" * 40, "spec_digest": "d" * 64})
+        stale_deps = copy.deepcopy(expected["dependencies"])
+        stale_deps["helpers"]["source_digests"] = ["9" * 64]
+        stale = dict(expected, dependencies=stale_deps)
         self.assertEqual(validate_record(record, stale)["status"], "stale")
+        incomplete_deps = copy.deepcopy(expected["dependencies"])
+        del incomplete_deps["evidence"]
+        incomplete = dict(expected, dependencies=incomplete_deps)
+        self.assertEqual(validate_record(record, incomplete)["status"], "invalid")
         assisted = copy.deepcopy(record)
         assisted["chat_assistance"] = True
         self.assertEqual(validate_record(assisted, expected)["status"], "failed")
@@ -209,6 +222,18 @@ class PilotIntegrationTests(unittest.TestCase):
             self.assertEqual((check["status"], check["exit_code"]), ("pass", 0))
             artifact = root / check["evidence"]
             self.assertEqual(hashlib.sha256(artifact.read_bytes()).hexdigest(), check["output_digest"])
+        test_review_path = work / "traceability/reviews/70dd295aacff869857081a94870d02fcbf4d640c.json"
+        test_review_envelope = json.loads(test_review_path.read_text())
+        test_review = test_review_envelope["review"]
+        self.assertEqual(test_review_envelope["review_digest"], digest(test_review))
+        self.assertEqual((test_review["decision"], test_review["candidate_sha"],
+                          test_review["scope"], test_review["task_id"]),
+                         ("APPROVED", result["candidate_sha"], "task", "WB-003"))
+        self.assertEqual(test_review["spec_digest"],
+                         "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb")
+        self.assertEqual(test_review["plan_digest"],
+                         "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8")
+        self.assertIn("WB-evidence-identity", test_review["test_ids"])
         plan = json.loads((work / "test-plan.json").read_text())
         selected_test = next(test for test in plan["tests"] if test["id"] == "WB-evidence-identity")
         current_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
@@ -251,21 +276,38 @@ class PilotIntegrationTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[2]
         snapshot = capture(root, "revising-workbench")
         self.assertEqual(snapshot.diagnostics(root), [])
+        admission = {"canonical_flow": {"work_id": "structured-agentic-environment",
+                                        "plan_digest": "a" * 64, "case_id": "WB-evidence-identity",
+                                        "executable_case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract"},
+                     "source_identities": {"candidate_sha": "b" * 40, "spec_digest": "c" * 64,
+                                           "plan_digest": "a" * 64, "source_digest": "d" * 64},
+                     "evidence_identities": {"report_digest": "e" * 64, "log_digests": ["f" * 64],
+                                             "contract_digest": "1" * 64, "review_digest": "2" * 64,
+                                             "run_id": "799924ec199b4717a3eabf4fb39a1bdc"}}
         gate = demo_gate(root, snapshot, "inspect-genuine-wb003",
-                         expected_snapshot_digest=snapshot.identity["digest"])
+                         expected_snapshot_digest=snapshot.identity["digest"],
+                         admission=admission, expected_admission=copy.deepcopy(admission))
         self.assertEqual(gate["status"], "context_ready")
         self.assertFalse(gate["demo_complete"])
         self.assertEqual(gate["prerequisites"], [
             {"id": "genuine_retained_result", "status": "not_evaluated"},
             {"id": "human_comprehension", "status": "not_recorded"}])
-        spec = snapshot.resolve_passage("inspect-genuine-wb003", "spec")
+        spec = next(row["resolution"] for row in snapshot.passages.values()
+                    if row.get("node_id") == "inspect-genuine-wb003" and row.get("role") == "spec"
+                    and row["resolution"].get("selector", {}).get("path", [])[-1:] == ["Projections and evidence"])
         plan = snapshot.resolve_passage("inspect-genuine-wb003", "plan")
         self.assertEqual((spec["state"], plan["state"]), ("available", "available"))
         self.assertIn("Projections and evidence", spec["text"])
         self.assertIn("WB-003", plan["text"])
 
-        stale = demo_gate(root, snapshot, "inspect-genuine-wb003", expected_snapshot_digest="0" * 64)
+        stale = demo_gate(root, snapshot, "inspect-genuine-wb003", expected_snapshot_digest="0" * 64,
+                          admission=admission, expected_admission=admission)
         self.assertEqual(stale["status"], "blocked_context")
+        stale_admission = copy.deepcopy(admission)
+        stale_admission["source_identities"]["candidate_sha"] = "0" * 40
+        self.assertIn("representative admission identities are stale",
+                      demo_gate(root, snapshot, "inspect-genuine-wb003", admission=stale_admission,
+                                expected_admission=admission)["context_blockers"])
 
         from engineering_model.snapshot import capture
         missing_model = copy.deepcopy(snapshot.document)

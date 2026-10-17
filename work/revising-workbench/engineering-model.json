@@ -45,6 +45,18 @@
             "kind": "plan-task",
             "task_id": "WB-003"
           }
+        },
+        {
+          "path": "specs/current/structured-agentic-environment.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: Engineering Model and local workbench",
+              "Interactive UI"
+            ]
+          }
         }
       ],
       "execution": {
