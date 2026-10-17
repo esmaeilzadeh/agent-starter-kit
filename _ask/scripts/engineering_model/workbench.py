@@ -6,28 +6,6 @@ from .identities import execution_identity, product_identity
 from inner_loop.yaml_lite import parse_yaml
 
 
-_RUNTIME_TASK_STATUSES = {
-    "pending", "ready", "running", "integrated", "blocked", "failed", "escalated", "cancelled",
-}
-
-
-def _runtime_task_record(owner_entry, task_id):
-    owner_state = owner_entry.get("state") if isinstance(owner_entry, dict) else None
-    if not isinstance(owner_state, dict):
-        source = owner_entry.get("source", "no-runtime-record") if isinstance(owner_entry, dict) else "no-runtime-record"
-        return None, None, source
-    tasks = owner_state.get("tasks")
-    if not isinstance(tasks, dict):
-        return None, None, "unavailable-malformed-owner-state"
-    if task_id not in tasks:
-        return None, None, "no-task-record"
-    record = tasks[task_id]
-    status = record.get("status") if isinstance(record, dict) else None
-    if not isinstance(record, dict) or not isinstance(status, str) or status not in _RUNTIME_TASK_STATUSES:
-        return None, None, "unavailable-malformed-runtime-task-record"
-    return record, status, "inner-loop-state"
-
-
 def _captured_json(snapshot, path):
     raw = snapshot.files.get(path)
     if raw is None:
@@ -162,7 +140,10 @@ def build_workbench(snapshot, model, model_task_states, runtime_states=None):
         runtime_owner = runtime_identity[0] if runtime_identity is not None else work_id
         runtime_task_id = runtime_identity[1] if runtime_identity is not None else task_id
         owner_entry = runtime_states.get(runtime_owner, {})
-        record, state, runtime_source = _runtime_task_record(owner_entry, runtime_task_id)
+        owner_state = owner_entry.get("state") if isinstance(owner_entry, dict) else None
+        runtime_tasks = owner_state.get("tasks", {}) if isinstance(owner_state, dict) else {}
+        record = runtime_tasks.get(runtime_task_id) if isinstance(runtime_tasks, dict) else None
+        state = record.get("status") if isinstance(record, dict) else None
         status = {
             "running": "active", "integrated": "completed", "blocked": "blocked",
             "failed": "failed", "escalated": "blocked", "cancelled": "cancelled",
@@ -187,7 +168,9 @@ def build_workbench(snapshot, model, model_task_states, runtime_states=None):
                 for scenario in scenarios
             ],
             "status": status,
-            "status_source": runtime_source,
+            "status_source": ("inner-loop-state" if record else
+                              owner_entry.get("source", "no-runtime-record") if isinstance(owner_entry, dict)
+                              else "no-runtime-record"),
             "record_source": "task-graph",
             "runtime_status": state,
             "runtime_work_id": runtime_owner,
@@ -233,7 +216,10 @@ def build_workbench(snapshot, model, model_task_states, runtime_states=None):
         runtime_owner = execution.get("work_id") if execution else None
         runtime_task_id = execution.get("task_id") if execution else None
         owner_entry = runtime_states.get(runtime_owner, {}) if runtime_owner else {}
-        record, runtime_status, runtime_source = _runtime_task_record(owner_entry, runtime_task_id)
+        owner_state = owner_entry.get("state") if isinstance(owner_entry, dict) else None
+        runtime_tasks = owner_state.get("tasks", {}) if isinstance(owner_state, dict) else {}
+        record = runtime_tasks.get(runtime_task_id) if isinstance(runtime_tasks, dict) and runtime_task_id else None
+        runtime_status = record.get("status") if isinstance(record, dict) else None
         execution_status = {
             "running": "active", "integrated": "completed", "blocked": "blocked",
             "failed": "failed", "escalated": "blocked", "cancelled": "cancelled",
@@ -248,7 +234,9 @@ def build_workbench(snapshot, model, model_task_states, runtime_states=None):
                 {"id": scenario, "via": "contributes-to"}
                 for scenario in sorted(supported_scenarios_by_task.get(task_id, set()))
             ], "status": execution_status,
-            "status_source": runtime_source, "record_source": "engineering-model",
+            "status_source": ("inner-loop-state" if record else
+                              owner_entry.get("source", "no-runtime-record") if isinstance(owner_entry, dict)
+                              else "no-runtime-record"), "record_source": "engineering-model",
             "runtime_status": runtime_status, "runtime_work_id": runtime_owner,
             "result_path": record.get("result_path") if isinstance(record, dict) else None,
             "lifecycle": task.get("lifecycle"), "model_lifecycle": task.get("lifecycle"),
