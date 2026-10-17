@@ -56,5 +56,33 @@ class MigrationTests(unittest.TestCase):
             review_migration(self.source, changed, review, work_id="pilot")
 
 
+class ReadabilityTests(unittest.TestCase):
+    def test_each_answer_and_changed_dependency_control_comprehension_validity(self):
+        from engineering_model.readability import validate_record
+
+        expected = {"candidate_sha": "a" * 40, "snapshot_digest": "b" * 64,
+                    "task": {"work_id": "w", "node_id": "task"},
+                    "scenario": {"work_id": "w", "node_id": "scenario"},
+                    "test": {"work_id": "w", "test_id": "WB-1", "case_id": "test_case"},
+                    "dependencies": {"source_sha": "c" * 40, "spec_digest": "d" * 64}}
+        prompts = ["purpose", "spec_context", "plan_context", "concrete_flow", "setup",
+                   "action", "expected_observation", "assertion", "actual_outcome", "applicability"]
+        record = {"schema": "ask-workbench-comprehension/v1", **expected,
+                  "chat_assistance": False, "participant": "returning human", "assessor": "independent assessor",
+                  "timestamp": "2026-10-17T12:00:00Z",
+                  "answers": [{"prompt": prompt, "answer": "Human answer", "assessment": "pass",
+                               "assessor_reason": "Evidence supports answer", "evidence": "source"}
+                              for prompt in prompts]}
+        self.assertEqual(validate_record(record, expected)["status"], "valid")
+        failed = copy.deepcopy(record)
+        failed["answers"][4]["assessment"] = "fail"
+        self.assertEqual(validate_record(failed, expected)["status"], "failed")
+        stale = dict(expected, dependencies={"source_sha": "e" * 40, "spec_digest": "d" * 64})
+        self.assertEqual(validate_record(record, stale)["status"], "stale")
+        assisted = copy.deepcopy(record)
+        assisted["chat_assistance"] = True
+        self.assertEqual(validate_record(assisted, expected)["status"], "failed")
+
+
 if __name__ == "__main__":
     unittest.main()
