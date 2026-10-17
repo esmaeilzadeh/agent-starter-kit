@@ -23,10 +23,11 @@ def _loaded_names(nodes):
             if isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load)}
 
 
-def _self_calls(nodes):
-    return {child.func.attr for node in nodes for child in ast.walk(node)
-            if isinstance(child, ast.Call) and isinstance(child.func, ast.Attribute)
-            and isinstance(child.func.value, ast.Name) and child.func.value.id == "self"}
+def _self_method_references(nodes):
+    """Find class method references through ``self``, including callbacks."""
+    return {child.attr for node in nodes for child in ast.walk(node)
+            if isinstance(child, ast.Attribute) and isinstance(child.value, ast.Name)
+            and child.value.id == "self"}
 
 
 def _record(text, node, selector, role, source_path, source_sha, current_sha):
@@ -105,7 +106,7 @@ def read_test(root, test, source_sha, *, current_sha=None):
         pending = list(selected_nodes)
         while pending:
             node = pending.pop()
-            for name in _self_calls([node]):
+            for name in _self_method_references([node]):
                 helper = class_methods.get(name)
                 if helper is not None and helper not in selected_nodes:
                     selected_nodes.append(helper)
@@ -122,11 +123,19 @@ def read_test(root, test, source_sha, *, current_sha=None):
                                    "helper", source_path, sha, current))
 
         module_names = _loaded_names(selected_nodes)
-        for name in sorted(module_names & top_functions.keys()):
+        pending_functions = list(module_names & top_functions.keys())
+        included_functions = set()
+        while pending_functions:
+            name = pending_functions.pop()
+            if name in included_functions:
+                continue
+            included_functions.add(name)
             function = top_functions[name]
             context.append(_record(text, function, f"{module}.{name}", "helper",
                                    source_path, sha, current))
-            module_names.update(_loaded_names([function]))
+            dependencies = _loaded_names([function])
+            module_names.update(dependencies)
+            pending_functions.extend(dependencies.intersection(top_functions).difference(included_functions))
 
         assignments = {}
         for node in tree.body:
