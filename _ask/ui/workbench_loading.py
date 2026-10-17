@@ -49,7 +49,7 @@ def _verified_output(root: Path, relative: str, expected_digest: str) -> str | N
         return None
 
 
-def _captured_test(snapshot, test: dict) -> dict:
+def _captured_test(snapshot, test: dict, node_id: str) -> dict:
     """Restore the full accepted test-plan record omitted by the display projection."""
     try:
         raw = snapshot.files.get(f"work/{snapshot.work_id}/test-plan.json")
@@ -57,7 +57,15 @@ def _captured_test(snapshot, test: dict) -> dict:
         matches = [item for item in plan.get("tests", []) if isinstance(item, dict)
                    and item.get("id") == test.get("id")]
         if len(matches) == 1:
-            return {**test, **matches[0]}
+            captured = {**test, **matches[0]}
+            model_raw = snapshot.files.get(f"work/{snapshot.work_id}/engineering-model.json")
+            model = json.loads(model_raw.decode("utf-8")) if model_raw else {}
+            nodes = model.get("nodes", []) if isinstance(model, dict) else []
+            model_test = next((item for item in nodes if isinstance(item, dict)
+                               and item.get("id") == node_id and item.get("type") == "test"), {})
+            if isinstance(model_test.get("source_context"), list):
+                captured["source_context"] = model_test["source_context"]
+            return captured
     except (UnicodeError, ValueError, TypeError, AttributeError):
         pass
     return test
@@ -386,7 +394,7 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                      "context": [], "test_source": "",
                      "diagnostic": "same-revision helper context requires matching committed source bytes"}
     if selected_candidate:
-        captured_test = _captured_test(snapshot, test)
+        captured_test = _captured_test(snapshot, test, node_id)
         committed_sources = _accepted_source_digests(root, captured_test, str(selected_candidate))
         working_sources = (_accepted_source_digests(root, captured_test)
                            if context_kind != "git-commit" else committed_sources)
