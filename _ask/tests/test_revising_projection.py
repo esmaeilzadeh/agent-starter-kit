@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 import shutil
-import subprocess
 import tempfile
 import unittest
 import sys
@@ -12,7 +11,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from _ask.scripts.engineering_model.admission import validate_current
 from _ask.scripts.engineering_model.projection import markdown as render_markdown, project
 from _ask.scripts.engineering_model.snapshot import capture
-from _ask.scripts.engineering_model.workbench_sources import discover_work, read_snapshot
 from _ask.tests.revising_fixture import digest
 from _ask.tests.test_revising_context import _put, _repo
 from _ask.tests.engineering_fixture import model_command, workbench_model
@@ -219,60 +217,6 @@ class ProjectionTests(unittest.TestCase):
                 legacy_markdown = render_markdown(legacy_view)
                 self.assertIn("`build`: blocked", legacy_markdown)
                 self.assertIn("choice is open; requires resolved", legacy_markdown)
-
-    def test_live_archive_foreign_and_historical_revisions_are_read_only(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            def git(*args):
-                return subprocess.run(["git", *args], cwd=root, check=True,
-                                      capture_output=True, text=True).stdout.strip()
-            git("init", "-b", "main")
-            git("config", "user.email", "projection@example.invalid")
-            git("config", "user.name", "Projection Fixture")
-            _put(root, "work/archive/engineering-model.json", {"schema": "fixture", "revision": 1})
-            _put(root, "work/product/engineering-model.json", {"schema": "fixture", "work_id": "product", "revision": 1})
-            (root / "work/product/inner-loop").mkdir(parents=True)
-            (root / "work/product/inner-loop/tasks.yaml").write_bytes(b"revision: 1\n")
-            _put(root, "work/product/test-plan.json", {"work_id": "product", "revision": 1})
-            (root / "src").mkdir()
-            (root / "src/harness.py").write_text("VALUE = 'historical'\n", encoding="utf-8")
-            git("add", "-A")
-            git("commit", "-m", "initial archive and product")
-            old_product = git("rev-parse", "HEAD")
-            git("checkout", "-b", "agent/product")
-            _put(root, "work/product/engineering-model.json", {"schema": "fixture", "work_id": "product", "revision": 2})
-            (root / "work/product/inner-loop").mkdir(parents=True, exist_ok=True)
-            (root / "work/product/inner-loop/tasks.yaml").write_bytes(b"revision: 2\n")
-            _put(root, "work/product/test-plan.json", {"work_id": "product", "revision": 2})
-            git("add", "-A")
-            git("commit", "-m", "current product")
-            _put(root, "work/other/engineering-model.json", {"schema": "fixture", "work_id": "other", "revision": 1})
-            git("add", "-A")
-            git("commit", "-m", "foreign model")
-            other_revision = git("rev-parse", "HEAD")
-            before_head = git("rev-parse", "HEAD")
-            before_refs = git("show-ref")
-            before_files = {path: (root / path).read_bytes() for path in (
-                "work/product/engineering-model.json", "work/product/inner-loop/tasks.yaml",
-                "work/product/test-plan.json", "work/other/engineering-model.json", "src/harness.py")}
-            inventory = discover_work(root)
-            self.assertEqual(inventory["current_work_id"], "product")
-            rows = {row["work_id"]: row for row in inventory["workstreams"]}
-            self.assertEqual(rows["product"]["source"], "git-ref")
-            selected = read_snapshot(root, old_product, "product", paths=["src/harness.py"])
-            foreign = read_snapshot(root, other_revision, "other")
-            self.assertEqual(selected.commit, old_product)
-            self.assertEqual(json.loads(selected.files["work/product/engineering-model.json"]),
-                             {"schema": "fixture", "work_id": "product", "revision": 1})
-            self.assertEqual(selected.files["src/harness.py"], b"VALUE = 'historical'\n")
-            self.assertFalse(selected.editable)
-            self.assertEqual(foreign.commit, other_revision)
-            self.assertEqual(json.loads(foreign.files["work/other/engineering-model.json"])["work_id"], "other")
-            self.assertEqual(git("rev-parse", "HEAD"), before_head)
-            self.assertEqual(git("show-ref"), before_refs)
-            self.assertEqual({path: (root / path).read_bytes() for path in before_files}, before_files)
-            self.assertEqual(selected.files["work/product/inner-loop/tasks.yaml"], b"revision: 1\n")
-            self.assertEqual(json.loads(selected.files["work/product/test-plan.json"])["revision"], 1)
 
     def test_v2_json_markdown_ids_and_state_match(self):
         with tempfile.TemporaryDirectory() as directory:

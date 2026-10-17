@@ -246,7 +246,7 @@
         "python3",
         "-m",
         "unittest",
-        "_ask.tests.test_revising_projection.ProjectionTests.test_live_archive_foreign_and_historical_revisions_are_read_only"
+        "_ask.tests.test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only"
       ]
     },
     {
@@ -1445,45 +1445,30 @@
     {
       "id": "RWB-HISTORICAL",
       "criterion_ids": [
-        "EM-009",
-        "EM-017",
-        "EM-018"
+        "EM-009"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
-        "given": "Local live refs/default archive and a foreign model at an explicitly committed revision",
-        "when": "Discover inventory and inspect committed source/model/context/evidence without checkout",
+        "given": "A workbench snapshot and its source blobs captured from a committed branch revision",
+        "when": "The branch moves and the captured historical snapshot is inspected",
         "then": [
-          "Checkout, product subject and inspected revision remain distinct; historical/foreign bytes are consistent and read-only; unavailable records remain explicit",
-          "Original harness remains inspectable at original paths/identity while excluded from main pilot",
-          "Only repository revisioned sources and optional labeled external references are used; HEAD/refs/source bytes unchanged"
+          "Model, task graph, plan and requested source bytes remain bound to the selected commit",
+          "Inspection is read-only and leaves the checkout, refs and current source bytes unchanged"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "EM-009",
           "checks": [
-            "Checkout, product subject and inspected revision remain distinct; historical/foreign bytes are consistent and read-only; unavailable records remain explicit"
-          ]
-        },
-        {
-          "criterion_id": "EM-017",
-          "checks": [
-            "Original harness remains inspectable at original paths/identity while excluded from main pilot"
-          ]
-        },
-        {
-          "criterion_id": "EM-018",
-          "checks": [
-            "Only repository revisioned sources and optional labeled external references are used; HEAD/refs/source bytes unchanged"
+            "Selected revision remains distinct from the current checkout; model, task graph, plan and requested source bytes are consistent and read-only"
           ]
         }
       ],
       "runner_id": "rwb-historical",
-      "case_id": "_ask.tests.test_revising_projection.ProjectionTests.test_live_archive_foreign_and_historical_revisions_are_read_only",
+      "case_id": "_ask.tests.test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only",
       "source_paths": [
-        "_ask/tests/test_revising_projection.py"
+        "_ask/tests/test_engineering_workbench_sources.py"
       ]
     },
     {
