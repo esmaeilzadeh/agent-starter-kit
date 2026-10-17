@@ -1,9 +1,9 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "bdffffd4540ada236c30603fcda125575e479d97",
+  "contract_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
   "work_id": "revising-workbench",
-  "reviewer": "/root/review_revising_plan",
+  "reviewer": "/root/review_rwb104",
   "recorded_by": "/root",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
@@ -11,38 +11,57 @@
     "schema": "ask-test-plan-review/v1",
     "work_id": "revising-workbench",
     "decision": "APPROVED",
-    "reviewer": "/root/review_revising_plan",
-    "model": "gpt-6.1-sol",
-    "reasoning_effort": "high",
+    "reviewer": "/root/review_rwb104",
     "runtime": "codex",
-    "reviewed_sha": "bdffffd4540ada236c30603fcda125575e479d97",
+    "reviewed_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
+    "previous_contract_sha": "bdffffd4540ada236c30603fcda125575e479d97",
+    "implementation_source_sha": "e7ed1101b6bd1ef8016cf5a6470e4392420d4e6a",
     "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
-    "plan_digest": "936e4cb9a06d550476170c299c9a64e337cd6c9c833da3ce5952c871f87a2e7b",
+    "plan_digest": "36fe0b54e4431123d52649a3fd5f6ce738ebfdf2cd503428fcf3a5f55a157769",
     "graph_digest": "80a61d7e6c0c510de1d12ea48419d60f2c7650aa8e9a163e8b7abca1a3825c71",
     "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
-    "assessment": "APPROVED narrow RWB-103 ownership/completion-evidence amendment only. Adds required admission.py final publication helper; no spec/test-plan/case/type/runner/task-scope/order/dependency or unrelated task changes. Exact source remains previously semantically reviewed b215. Original task history and current accepted-authority/evidence gates remain mandatory; no state/ref/source mutation or integration approval.",
-    "added_owned_paths": [
-      "_ask/scripts/engineering_model/admission.py"
+    "assessment": "APPROVED narrow RWB-HISTORICAL evidence-mapping amendment. The accepted specification and TaskGraph are unchanged. Only this case and its runner change in the canonical plan. It now names the unchanged baseline committed-source consistency test as regression and limits its asserted criterion to EM-009. The duplicate newly added helper test is removed; projection/runtime/CLI implementations are unchanged from e7ed110. The change corrects an unsupported new-behavior/TDD classification rather than inventing a red failure for an existing unchanged source reader. No product criterion, required test type, task assignment/order/ownership or gate is weakened. Final addendum at 3520cb0 changes only explanatory plan prose: 22 original inherited regressions retain four discovery runners; the additional RWB-HISTORICAL regression uses its own exact selector; 33 new cases remain. This accurately describes the amended canonical plan. No contract or source bytes change from d9ca2a5.",
+    "changed_case": "RWB-HISTORICAL",
+    "changed_fields": [
+      "rwb-historical.argv",
+      "RWB-HISTORICAL.criterion_ids",
+      "RWB-HISTORICAL.change_kind",
+      "RWB-HISTORICAL.scenario",
+      "RWB-HISTORICAL.expected_assertions",
+      "RWB-HISTORICAL.case_id",
+      "RWB-HISTORICAL.source_paths"
     ],
-    "changed_task_fields": [
-      "RWB-103.owned_paths",
-      "RWB-103.completion_evidence"
+    "unchanged_baseline_source": "_ask/tests/test_engineering_workbench_sources.py",
+    "baseline_source_assessment": "The entire selected test file is byte-identical between prior accepted contract bdffffd and reviewed amendment d9ca2a5. The exact method captures model, TaskGraph, test-plan and requested source from one commit, moves the current branch, checks captured original bytes and noneditability, verifies HEAD/refs/current source bytes unchanged, then moves the selected ref and proves old capture remains bound while refreshed capture changes. It substantively supports the narrowed EM-009 integration claim.",
+    "coverage_assessment": {
+      "EM-009": "RWB-HISTORICAL retains selected-revision/source consistency integration coverage. RWB-APP-ENTRY retains broader subject/foreign/read-only navigation integration coverage; RWB-BROWSER-NAV and RWB-BROWSER-PILOT retain e2e coverage.",
+      "EM-017": "Genuine historical harness identity/authority is not established by a generic source fixture. Existing RWB-MIGRATION and RWB-GENUINE-WB003 integration cases and RWB-BROWSER-PILOT e2e case retain this criterion. Removing the unsupported helper claim does not remove the semantic obligation.",
+      "EM-018": "Repository-only identity/external-context obligations remain covered by RWB-QUALIFIED-ID and RWB-SUBJECT-RULES unit cases, RWB-FRESH-INTAKE and RWB-NEW-CONTRACT integration cases, and RWB-BROWSER-PILOT e2e. No criterion text or required type changes."
+    },
+    "boundary_assessment": "Review is restricted to canonical plan/test mapping and removal of the duplicate helper test. The baseline test source remains unchanged, the production source remains byte-identical to approved e7ed110, and all prior runtime/history artifacts retain their original identity. No acceptance ref or execution state was changed by reviewer.",
+    "verification": [
+      "contracts_at/validate_plan accepts exact d9ca2a5 spec, plan and graph with all required criterion/type coverage intact.",
+      "Compared previous and reviewed plans: only runners and tests sections differ; only RWB-HISTORICAL test changes.",
+      "Compared current specification and graph against prior accepted contract: equal.",
+      "Executed python3 -m unittest _ask.tests.test_engineering_workbench_sources.WorkbenchTests.test_cross_branch_snapshot_is_consistent_and_read_only: one test passed.",
+      "contracts_at/validate_plan accepts exact 3520cb0; spec/plan/graph compare equal to independently approved d9ca2a5 amendment."
     ],
-    "previous_contract_sha": "5964fbfb56128e95676f0b991852ac58529cb8f8",
-    "original_task_base_sha": "ec1c2d614e014ade18a54fbfa13c970f77cb0322",
-    "implementation_source_sha": "b215ab9af93fb2fc8e8be08c319d5576f8c5cdcc",
-    "implementation_semantic_review": "work/revising-workbench/inner-loop/evidence/RWB-103-review-b215ab9.md",
-    "boundary_assessment": "The sole prior glob_too_narrow publication helper is necessary and minimally added. _publish observations API/checks and recovery rollback remain one shared guard; existing verification authority/instrumentation is unchanged. Dependency chain serializes shared admission.py with RWB102 and later tasks.",
-    "completion_evidence_assessment": "Clarifies existing accepted EM002/EM007/EM015 freshness/publication responsibilities and RWB-ASSOCIATION-PASSAGES assertions: required context, intent handoff, post-write foreign stale detection, rollback and no publication. Does not replace or weaken canonical tests or their real-entry/no-stub requirements.",
     "blocking_findings": [],
     "limitations": [
-      "Plan amendment approval only; previous task rejection remains historically correct under old ownership.",
-      "Coordinator must use normal accept-plan authority and audited writer/base transitions, preserving originalec1 task base/history and complete original-base source review; no refusal bypass or WIP exemption.",
-      "Future task review/evidence must bind resulting candidate/current accepted contract. No source/state/ref/commits changed by reviewer."
-    ]
+      "Plan amendment approval only; fresh exact-contract task runs and independent task review remain necessary after coordinator accepts this amendment.",
+      "Previous task red/green reports remain historical under their original plan digest; they must not be relabeled as runs of the amended contract.",
+      "Human acceptance, genuine WB-003 evidence, successor UI/browser obligations and final workstream verification remain outstanding."
+    ],
+    "supersedes_review_artifact": "work/revising-workbench/traceability/plan-review-amendment-d9ca2a5.json",
+    "prior_reviewed_sha": "d9ca2a5a572279bf7fcf83fd81b5ffca04a674a8",
+    "documentation_addendum": {
+      "decision": "APPROVED",
+      "changed_path": "work/revising-workbench/plan.md",
+      "assessment": "Compared full d9ca2a5-to-3520cb0 delta: only the regression runner explanation and 34-to-33 new-case count change. Canonical spec, plan JSON and TaskGraph compare equal; implementation/test sources do not change. Total remains 56 cases, comprising 23 regressions and 33 new cases."
+    }
   },
-  "plan_review_digest": "72cb93046ddb00f9d5cb6548db26f855f0721ac4c3364fa55a3dd3f56795a330",
+  "plan_review_digest": "264e4214941d3eae26b22a32775d8f563b4f880855e5cf8eaab105b18efe66d6",
   "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
-  "plan_digest": "936e4cb9a06d550476170c299c9a64e337cd6c9c833da3ce5952c871f87a2e7b",
+  "plan_digest": "36fe0b54e4431123d52649a3fd5f6ce738ebfdf2cd503428fcf3a5f55a157769",
   "graph_digest": "80a61d7e6c0c510de1d12ea48419d60f2c7650aa8e9a163e8b7abca1a3825c71"
 }
