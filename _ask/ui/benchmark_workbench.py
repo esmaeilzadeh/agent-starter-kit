@@ -189,24 +189,24 @@ def await_http(process, url, timeout=20):
     raise TimeoutError("Streamlit HTTP startup exceeded the harness timeout")
 
 
-def ready(page, root_route="purpose", root_title="Purpose", work_id=None):
-    page.get_by_role("heading", name="Engineering workbench", exact=True).wait_for(timeout=10000)
+def ready(page, root_route="purpose", root_title="Purpose", work_id=None, timeout=10000):
+    page.get_by_role("heading", name="Engineering workbench", exact=True).wait_for(timeout=timeout)
     if work_id:
         selector = page.get_by_label("Workstream")
-        selector.wait_for(timeout=10000)
+        selector.wait_for(timeout=timeout)
         if selector.input_value() != work_id:
             selector.click()
             selector.fill(work_id)
             selector.press("ArrowDown")
             page.get_by_role("option", name=work_id, exact=True).click()
-            expect(selector).to_have_value(work_id, timeout=10000)
+            expect(selector).to_have_value(work_id, timeout=timeout)
     selected = page.locator(f'[class~="{_key_class("route:" + root_route)}"]').get_by_role("button")
-    selected.wait_for(timeout=10000)
-    expect(selected).to_have_attribute("kind", "primary", timeout=10000)
-    expect(page.get_by_role("heading", name=root_title, exact=True)).to_be_visible(timeout=10000)
+    selected.wait_for(timeout=timeout)
+    expect(selected).to_have_attribute("kind", "primary", timeout=timeout)
+    expect(page.get_by_role("heading", name=root_title, exact=True)).to_be_visible(timeout=timeout)
     for label in ("Stories and scenarios", "Task progress", "Needs attention",
                   "Scenarios", "Tasks", "Blocked tasks", "Open decisions"):
-        expect(page.get_by_text(label, exact=True)).to_be_visible(timeout=10000)
+        expect(page.get_by_text(label, exact=True)).to_be_visible(timeout=timeout)
     return selected
 
 
@@ -438,16 +438,28 @@ def run(model_root: Path, work_id: str, warm_samples=20, cold_samples=5,
             process.wait(timeout=5)
         for index in range(cold_samples):
             process, url, started = start_server(model_root, work_id)
+            page = browser.new_page()
             try:
                 await_http(process, url)
-                page = browser.new_page()
                 page.goto(url, wait_until="domcontentloaded")
-                ready(page, root_route, root_title, work_id)
-                data["cold_start_to_ready_ms"].append({"sample": index,
-                    "elapsed": (time.perf_counter() - started) * 1000})
+                try:
+                    ready(page, root_route, root_title, work_id, timeout=30000)
+                    item = {"sample": index, "elapsed": (time.perf_counter() - started) * 1000,
+                            "ready": True}
+                except Exception as exc:
+                    item = {"sample": index, "elapsed": (time.perf_counter() - started) * 1000,
+                            "ready": False, "error": {"type": type(exc).__name__,
+                                                       "message": str(exc)}}
+                data["cold_start_to_ready_ms"].append(item)
                 persist_partial()
-                page.close()
+            except Exception as exc:
+                data["cold_start_to_ready_ms"].append({
+                    "sample": index, "elapsed": (time.perf_counter() - started) * 1000,
+                    "ready": False, "error": {"type": type(exc).__name__,
+                                               "message": str(exc)}})
+                persist_partial()
             finally:
+                page.close()
                 process.terminate()
                 process.wait(timeout=5)
         browser.close()

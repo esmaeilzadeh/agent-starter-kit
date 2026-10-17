@@ -57,7 +57,8 @@ class WorkbenchPerformanceTests(unittest.TestCase):
         outcome = {"p95_ms": observed, "limits_ms": limits, "cold_ms": cold,
                    "cold_limit_ms": 4000,
                    "passed": all(observed[key] <= limit for key, limit in limits.items())
-                   and all(value <= 4000 for value in cold)}
+                   and all(value <= 4000 for value in cold)
+                   and all(sample.get("ready") is True for sample in result["cold_start_to_ready_ms"])}
         result["budget_validation"] = outcome
         output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         self.assertTrue(outcome["passed"], outcome)
