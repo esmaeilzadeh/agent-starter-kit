@@ -12,6 +12,7 @@ from collections import OrderedDict
 from engineering_model.projection import project
 from engineering_model.evidence import inspect as inspect_workstream_evidence
 from engineering_model.workbench_evidence import execution_history, qualified_source
+from engineering_model.readable_tests import read_test
 
 
 _CACHE_LIMIT = 16
@@ -23,6 +24,43 @@ def _sha(raw: bytes) -> str:
 
 def _json_digest(value) -> str:
     return _sha(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode())
+
+
+def _verified_output(root: Path, relative: str, expected_digest: str) -> str | None:
+    path = _confined_file(root, relative)
+    if path is None or not path.is_file():
+        return None
+    try:
+        hasher = hashlib.sha256()
+        tail = bytearray()
+        with path.open("rb") as stream:
+            while True:
+                chunk = stream.read(65536)
+                if not chunk:
+                    break
+                hasher.update(chunk)
+                tail.extend(chunk)
+                if len(tail) > 12000:
+                    del tail[:-12000]
+        if hasher.hexdigest() != expected_digest:
+            return None
+        return bytes(tail).decode("utf-8", "replace")
+    except OSError:
+        return None
+
+
+def _captured_test(snapshot, test: dict) -> dict:
+    """Restore the full accepted test-plan record omitted by the display projection."""
+    try:
+        raw = snapshot.files.get(f"work/{snapshot.work_id}/test-plan.json")
+        plan = json.loads(raw.decode("utf-8")) if raw else {}
+        matches = [item for item in plan.get("tests", []) if isinstance(item, dict)
+                   and item.get("id") == test.get("id")]
+        if len(matches) == 1:
+            return {**test, **matches[0]}
+    except (UnicodeError, ValueError, TypeError, AttributeError):
+        pass
+    return test
 
 
 def _safe_relative(value: str) -> bool:
@@ -344,6 +382,22 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     else:
         source = _working_source(root, test)
 
+    readable_test = {"status": "unavailable", "context_status": "unavailable",
+                     "context": [], "test_source": "",
+                     "diagnostic": "same-revision helper context requires matching committed source bytes"}
+    if selected_candidate:
+        captured_test = _captured_test(snapshot, test)
+        committed_sources = _accepted_source_digests(root, captured_test, str(selected_candidate))
+        working_sources = (_accepted_source_digests(root, captured_test)
+                           if context_kind != "git-commit" else committed_sources)
+        if (context_kind == "git-commit" or
+                (committed_sources is not None and committed_sources == working_sources)):
+            readable_test = read_test(root, captured_test, str(selected_candidate),
+                                      current_sha=(current_head.decode("ascii", "replace")
+                                                   if current_head else None))
+        else:
+            readable_test["diagnostic"] = "working source differs from committed helper context"
+
     try:
         if selected_candidate is None:
             raise ValueError("Git candidate is unavailable")
@@ -406,9 +460,14 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                              else "differs from selected source")
         if isinstance(run, dict):
             run["working_source_applicability"] = applicability
+            if run.get("output_status") == "valid":
+                relative = run.get("output_artifact")
+                run["output_text"] = (_verified_output(root, relative, run.get("output_digest", ""))
+                                      if isinstance(relative, str) else None)
     historical_candidates = (historical_contract_candidates(root, snapshot.work_id)
                              if not history.get("runs") else [])
     value = {"identity": key, "source": source, "evidence_projection": evidence_projection,
+             "readable_test": readable_test,
              "evidence": evidence_set, "execution_history": history,
              "historical_candidates": historical_candidates,
              "historical_contracts": [],
