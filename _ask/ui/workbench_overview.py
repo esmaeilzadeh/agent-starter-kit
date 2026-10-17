@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import streamlit as st
-from workbench_context import task_selection_id
+from workbench_navigation import build_outline
 
 
 def summary_records(projection: dict, *, failed_result_ids: list[str] | None = None) -> dict[str, list[str] | None]:
@@ -70,8 +70,7 @@ def render_overview(projection: dict, *, work_id: str, on_filter=None,
     else:
         st.write(purpose.get("title") or "Purpose is not recorded.")
 
-    _render_flow(purpose, stories, scenarios, tasks,
-                 projection.get("workbench", {}).get("tests", []), on_open)
+    _render_flow(projection, on_open)
     _render_delivery(stories, scenarios, on_open)
     model_tasks = {str(node.get("id")): node for node in model.get("nodes", [])
                    if node.get("type") == "task"}
@@ -83,41 +82,30 @@ def render_overview(projection: dict, *, work_id: str, on_filter=None,
         _render_filter(projection, active_filter, on_open=on_open, on_clear=on_clear)
 
 
-def _render_flow(purpose, stories, scenarios, tasks, tests, on_open) -> None:
-    """Make the recorded path from intent to inspected result visible at a glance."""
-    st.markdown("#### Delivery flow")
-    task_counts = {}
-    for task in tasks:
-        identity = str(task.get("id", ""))
-        task_counts[identity] = task_counts.get(identity, 0) + 1
-    stages = [
-        ("Purpose", "epic" if (purpose or {}).get("type") == "intent" else "feature",
-         (purpose or {}).get("id"), 1 if purpose else 0),
-        ("Stories", "story", stories[0].get("id") if stories else None, len(stories)),
-        ("Scenarios", "scenario", scenarios[0].get("id") if scenarios else None, len(scenarios)),
-        ("Tasks", "task", task_selection_id(tasks[0], task_counts[str(tasks[0].get("id", ""))] > 1)
-         if tasks else None, len(tasks)),
-        ("Tests", "test", tests[0].get("id") if tests else None, len(tests)),
-        ("Results", "result", tests[0].get("id") if tests else None, len(tests)),
-    ]
-    with st.container(horizontal=True, vertical_alignment="center", gap="small"):
-        for index, (label, kind, identity, count) in enumerate(stages):
-            if index:
-                st.markdown(":material/arrow_forward:")
-            with st.container(border=True, key=f"delivery-flow:{label.lower()}"):
-                st.caption(f"{index + 1} · {label}")
-                if label == "Results":
-                    st.write("Evidence loads on demand" if count else "No Test recorded yet")
-                else:
-                    st.write(f"{count} {label.lower()}" if count else "No record yet")
-                if identity and on_open:
-                    action = ("Open purpose" if label == "Purpose" else "Open result"
-                              if kind == "result" else
-                              f"Open {label[:-1].lower() if label.endswith('s') else label.lower()}")
-                    st.button(action, key=f"delivery-flow:open:{label.lower()}",
-                              on_click=on_open, args=(kind, str(identity)))
-                elif label == "Results":
-                    st.caption("A Test must be recorded first.")
+def _render_flow(projection: dict, on_open) -> None:
+    """Show the actual recorded hierarchy as a connected, navigable flow."""
+    st.markdown("#### End-to-end delivery path")
+    st.caption("Follow each recorded link from purpose through delivery and verification.")
+    entries = build_outline(projection)["entries"]
+    visible = [entry for entry in entries if entry.get("kind") != "decision"]
+    if not visible:
+        st.info("No connected delivery records are available yet.")
+        return
+    for entry in visible:
+        kind = str(entry.get("kind", "record"))
+        label = str(entry.get("label") or entry.get("node_id") or kind.title())
+        indent = int(entry.get("indent", 0))
+        if kind == "group":
+            st.caption(label)
+            continue
+        prefix = "　" * min(indent, 8) + ("↳ " if indent else "● ")
+        display = f"{prefix}{kind.title()}  ·  {label}"
+        if on_open:
+            st.button(display, key=f"delivery-flow:route:{entry['route_id']}",
+                      type="tertiary", width="stretch", on_click=on_open,
+                      args=(kind, str(entry.get("selection_id", entry.get("node_id", "")))))
+        else:
+            st.write(display)
 
 
 def _render_delivery(stories: list[dict], scenarios: list[dict], on_open) -> None:
