@@ -1,6 +1,6 @@
 {
   "work_id": "revising-workbench",
-  "commit_sha": "f085f12b376dc13a5b26cdead68d8da0d86e9d29",
-  "result": "blocked",
-  "notes": "RWB-108 is blocked because the genuine WB-003 execution ledger is unavailable; candidate verification passed 37 repository checks but workstream completion lacks candidate-bound independent review. RWB-109 remains pending; its browser fixture failures and human comprehension exercise are outstanding."
+  "commit_sha": "e514444977dcfd09cfff6114ac2e45251378018e",
+  "result": "unblocked",
+  "notes": "Recovered original historical WB-003 ledger; 12 pilot tests and all five substantive detached browser journeys passed. Narrow independent fix review approved. User requested stop during benchmark; final Verify interrupted, no complete benchmark or workstream acceptance claimed."
 }

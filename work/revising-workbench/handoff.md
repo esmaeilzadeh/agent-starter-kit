@@ -1,41 +1,50 @@
-# Handoff: continue RWB-109 on another machine
+# Handoff: original blockers resolved; stopped for Luna
 
-**Repository:** `agent-starter-kit`  
-**Branch:** `agent/revising-workbench`  
-**Starting commit:** `68a1cea` — `test(ui): retain browser journey traces and screenshots`  
-**Remote:** `origin/agent/revising-workbench`
+Branch: `agent/revising-workbench`
+Tested code candidate: `e514444977dcfd09cfff6114ac2e45251378018e`
+Coordinator state: revision 66, RWB-108 `running`, RWB-109 `pending`.
+RWB-108 retains its original base `743309782b5f08f5a46fe03178651e106a7e3150`.
 
-The branch was pushed and the worktree was clean when this handoff was prepared.
+The human requested stopping once the block was fixed so Luna can finish the
+remaining work. No new workstream was created. No task integration, complete
+workstream review, or human acceptance is claimed.
 
-## Resume
+## Resolved
 
-1. Fetch and check out `agent/revising-workbench`.
-2. Read `AGENTS.md` and the current RWB-109 workstream artifacts before editing.
-3. Run `./ask check-clean` before starting work.
-4. Rerun the interrupted performance benchmark on the current candidate:
+- Recovered the genuine historical WB-003 ledger byte-for-byte from Git history.
+  All 12 pilot tests now pass, including historical authority and context gates.
+- Fixed browser startup in detached candidate checkouts: select the requested
+  workstream and working-tree source, waiting for each Streamlit rerun before
+  changing the next dependent selector.
+- All five substantive browser cases passed in the final verification run:
+  navigation, guarded choices, helper/results inspection, keyboard/accessibility,
+  and the real WB-003 representative journey.
+- Narrow independent review approved the final fix. See
+  `inner-loop/evidence/unblock-review-e514444.md`; the earlier rejected review
+  remains as history. This is not whole-workstream approval.
 
-   ```bash
-   PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome \
-     _ask/.venv/bin/python -m unittest _ask.tests.test_revising_performance -v
-   ```
+## Evidence and portability
 
-   If Chrome is installed elsewhere, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to its path. The benchmark takes a few minutes. The previous attempt was stopped at the user's request, so it did not produce a completed result for `68a1cea`.
+The ledger is ignored runtime data. Recovery provenance, its original Git source
+and byte hash are in `inner-loop/evidence/RWB-108-ledger-recovery.md`. Recover
+those exact original bytes if another checkout lacks the ledger; preserve any
+existing ledger. A later failed workstream completion did not invalidate the
+separately approved historical WB-003 task result.
 
-5. Inspect `work/revising-workbench/traceability/rwb109/browser-benchmark.json`. The last completed benchmark was bound to `cdd9d7f`, before the trace-retention-only change in `68a1cea`. It passed: warm p95 was 299 ms overview, 152 ms metadata navigation, 195 ms filter, and 484 ms source/result; five cold starts were 2.0–2.4 seconds. Rerun to produce measurements for the current candidate.
-6. Complete `work/revising-workbench/workbench-validation.md` with the candidate identity, browser outcomes, benchmark measurements, artifact paths, and remaining manual checks. Browser traces and screenshots are written under `work/revising-workbench/traceability/rwb109/browser-traces/`; generated runtime artifacts are ignored.
-7. Run `./ask verify` and follow the repository's result-recording workflow. Do not record human scenario acceptance or independent semantic review as complete without their required evidence.
+Current execution logs are under `traceability/rwb109/`. The final `./ask verify`
+run was interrupted by the human's stop request during the benchmark. Its
+completed browser cases passed; it produced no final verification verdict or
+completed benchmark for this candidate. Do not reuse older benchmark JSON as a
+measurement for this candidate.
 
-## Findings and changes already committed
+## Remaining existing work
 
-- The root `.venv` was removed. Workbench dependencies live in `_ask/.venv`, and launcher/helper paths and ignore rules were updated.
-- The no-op Scenario “Open test” route was fixed by including inline canonical scenario tests in navigation and test records.
-- The WB-003 result view now uses the retained approved test-review contract and genuine historical execution evidence. Its cache key incorporates relevant evidence content.
-- The keyboard-focus contrast failure was real: the teal outline against Streamlit's dark focused button background measured 2.37:1. Commit `cdd9d7f` added a white inner outline and teal outer ring; the narrow keyboard browser test passed.
-- The full browser suite passed once. A later rerun had a transient timeout in a legacy fixture's “Behavior assertion” route; that journey passed when rerun in isolation. Record both outcomes accurately.
+1. Check `./ask check-clean` and `./ask inner-loop status revising-workbench`.
+2. Complete RWB-108 TaskResult, whole-task boundary review, and integration under
+   the existing plan. Account for the RWB-109 source commits already present;
+   their presence does not establish task integration.
+3. Complete RWB-109's benchmark and validation, final independent workstream
+   review, and `./ask verify`/result recording.
+4. Obtain the real candidate-bound human comprehension exercise and human Accept.
 
-## Remaining
-
-- Complete the final benchmark for `68a1cea`.
-- Write the RWB-109 validation record and run final `./ask verify`.
-- The user's first-deployment walkthrough and its genuine human-comprehension record are pending. The automated test only verifies that missing or invalid human records are rejected.
-- Independent semantic review remains a workflow prerequisite. Do not fabricate or self-approve it.
+Use `_ask/.venv` for UI/test dependencies. No verification process remains running.

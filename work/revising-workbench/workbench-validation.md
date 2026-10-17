@@ -1,83 +1,49 @@
-# RWB-109 validation
+# Workbench unblock validation
 
-## Run identities
+Code candidate: `e514444977dcfd09cfff6114ac2e45251378018e`.
+Original missing-evidence block resolved; RWB-108 readmitted at unchanged base,
+coordinator revision 66. RWB-109 remains pending formal integration of RWB-108.
 
-- Browser benchmark candidate: `f52c441d780473bad86cae24abe4f0ae57d5a547`
-- RWB-108 test candidate: `9c92504605824eb7c9430108ea01c96b6f4cf007`
-- Latest recorded verification candidate: `f085f12b376dc13a5b26cdead68d8da0d86e9d29`
-- Workstream: `agent/revising-workbench`
-- Browser: `/usr/bin/google-chrome`
-- Test environment: `_ask/.venv`, installed from `_ask/ui/requirements.txt` and
-  `_ask/ui/requirements-test.txt`
+## Historical evidence
 
-## Browser and performance evidence
+The original ignored execution ledger was recovered from commit
+`d21dfcc2cca1ebbacee5c7de4025b0d85e4e518a`, before Git stopped tracking it.
+The restored bytes, WB-003 report, and log hashes match their original records.
+No execution entry or approval was invented. The provenance and recovery
+instructions are in `inner-loop/evidence/RWB-108-ledger-recovery.md`.
 
-The benchmark command was run on 2026-10-17:
+`python3 -m unittest _ask.tests.test_revising_pilot -v`: all 12 tests passed.
+The earlier conclusion that the missing ledger was unrecoverable was incorrect;
+Git history contained it. The historical task's valid review/integration remains
+independent of the later failed workstream completion.
 
-```text
-PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/google-chrome
-_ask/.venv/bin/python -m unittest _ask.tests.test_revising_performance -v
-```
+## Browser correction
 
-The benchmark stopped during fixture validation, before launching the browser.
-It reported that representative admission identities could not be verified
-because the retained successful historical report/log identity was missing or
-ambiguous. The required
-`work/structured-agentic-environment/traceability/executions.json` ledger is not
-present in this checkout. No warm samples, cold starts, browser traces, or
-screenshots were produced. The ignored local diagnostic is
-`work/revising-workbench/traceability/rwb109/browser-benchmark.json`; it records
-the failed run against the candidate above.
+The original detached navigation failure selected `ask-status`. Explicit model
+selection exposed a second failure: Workstream rerun reset Source after the
+client value assertion. The final helper waits for the server rerun to finish,
+then selects the working-tree snapshot used by the admitted benchmark projection.
+The original assertions and admission checks remain in force.
 
-The earlier successful browser suite and pre-`68a1cea` benchmark described in
-`handoff.md` remain historical evidence and do not certify this candidate.
+Detached navigation: passed, 1 test in 14.999 seconds.
+Narrow independent review: APPROVED in
+`inner-loop/evidence/unblock-review-e514444.md`.
 
-## Remaining evidence
+The required `./ask verify` was started on this candidate with the pinned UI
+Python and Chrome. All five substantive browser journeys passed in run
+`ee266f84491543d3b51d6d8231077572`, including keyboard/accessibility and genuine
+WB-003 evidence. Completed instrumented cases had no failures when the human
+requested stopping. The verifier was interrupted during the benchmark (exit 130),
+and its candidate worktree/processes were cleaned up.
 
-- Restore the genuine WB-003 execution ledger and confirm its report/log identity
-  through the existing evidence authority, then rerun the benchmark.
-- Complete browser navigation, guard, evidence, accessibility, and pilot checks;
-  retain their traces and screenshots against the final candidate.
-- Record the genuine human comprehension exercise against the final candidate.
-- Complete the independent semantic review and final workstream verification.
+Ignored runtime logs: `traceability/rwb109/unblock-nav-red.log`,
+`unblock-nav-rerun-barrier.log`, and `unblock-verify.log`.
+No completed benchmark or final verification verdict is claimed for this
+candidate. Earlier benchmark JSON belongs to earlier candidates.
 
-No human acceptance or successful RWB-109 validation is claimed here.
+## Remaining
 
-## RWB-108 prerequisite check
-
-`python3 -m unittest _ask.tests.test_revising_pilot -v` ran 12 cases on the
-RWB-108 candidate: 8 passed and 4 failed. The failures were the genuine WB-003
-observation and representative passage gate; both depend on the absent retained
-execution ledger. The source workstream's existing
-`work/structured-agentic-environment/traceability/completion.json` records
-`candidate source/CheckPlan changed during verification`, so its reports cannot
-be promoted as completed evidence. No ledger or historical completion record
-was reconstructed.
-
-The candidate traceability execution on `f085f12` recorded 70 final-green cases:
-64 passed, 5 failed, and 1 errored. The RWB-108 failures are
-`RWB-GENUINE-WB003` and `RWB-DEMO-PASSAGES`, both blocked by the absent WB-003
-ledger. RWB-109 also has three browser failures (`RWB-BROWSER-NAV`,
-`RWB-BROWSER-ACCESS`, and `RWB-BROWSER-PILOT`) because those cases open
-`work/ask-status` without an admitted engineering model; the browser app reports
-`EM001_MODEL_READ`. `RWB-BROWSER-BUDGETS` errors on the same missing historical
-WB-003 identity. These RWB-109 failures need correction under RWB-109's task
-scope after RWB-108 is completed.
-
-## Kit verification
-
-The RWB-107 amendment is now coordinator-pinned at contract `54d2e10`. The task
-was paused and readmitted under that reviewed pin in commits `b000e92` and
-`f085f12`, preserving its original base `7433097`.
-
-`./ask verify` on `f085f12b376dc13a5b26cdead68d8da0d86e9d29` passed all 37
-repository checks, then failed workstream completion because no independent
-review is recorded for that candidate at
-`work/revising-workbench/traceability/reviews/f085f12b376dc13a5b26cdead68d8da0d86e9d29.json`.
-The generated completion record is ignored runtime output at
-`work/revising-workbench/traceability/completion.json`. No review was
-self-authored or claimed.
-
-The coordinator has now marked RWB-108 `blocked` on the missing genuine WB-003
-evidence in commit `c574b01`; RWB-109 remains `pending`. Final acceptance also
-requires the candidate-bound human comprehension exercise.
+Formal TaskResults/integration, completed RWB-109 benchmark, full independent
+workstream review, final Verify, actual human comprehension, and Accept remain.
+The narrow review approves only these technical fixes. Work stopped at the
+human's request after resolving the original blockers.

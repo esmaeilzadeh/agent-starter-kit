@@ -1,0 +1,22 @@
+# Narrow blocker-fix review
+
+Decision: **APPROVED** for the technical blocker fixes only. No blocking findings.
+
+Reviewer: `/root/review_unblock`, independent of the coordinator implementing these fixes. Runtime: Codex. Configured model: `gpt-6.1-sol`; reasoning: high. Actual model identifier and parent model identifier are unavailable to this reviewer.
+
+Reviewed immutable range: `766474e` → `46eae34383cb64ae24ce18eff7ff09639f24a1da`, comprising `8e731d7346576d4c38f83a8e9fc1c3fdd0d97ccd` and `46eae34383cb64ae24ce18eff7ff09639f24a1da`. Also inspected the restored ignored historical ledger and its retained report/log. This review does not approve the complete task source since its original task base.
+
+## Findings and evidence
+
+- Historical recovery preserves original evidence. The working `work/structured-agentic-environment/traceability/executions.json` and the blob at `d21dfcc2cca1ebbacee5c7de4025b0d85e4e518a:work/structured-agentic-environment/traceability/executions.json` both hash to `b5ce6be822ee7903442b9695ae8585bac2e324046c6ae1b933c21f38cc5451a2`. Git confirms that commit is the parent of the commit that removed tracking. The ledger still has 142 entries; all 141 locally present reports match their canonical ledger digests. The missing report is unrelated run `3574c612c51f4c65ac96f62b174d8a35`. No synthesized entries or altered authority checks appear in the reviewed diff.
+- Selected WB-003 evidence is intact. Run `799924ec199b4717a3eabf4fb39a1bdc` binds candidate `70dd295aacff869857081a94870d02fcbf4d640c`. Its canonical report digest is `989d3a54624870f55d284e5396161683380b8661dcd08146df503450a5ebaf67`, and its retained log hashes to `020e0797771061f5c2c8244fc7853c7b3e41e93d5d44b81f3b193d68815b9ff9`, matching the ledger/report. The selected identity case records a passed final green. Unchanged pilot assertions and retained-evidence code still check source identity, accepted historical contract, independent review, coordinator review, integration receipts, and log/report bytes. The recovery does not convert the later failed workstream completion into a success.
+- RWB-108 readmission preserves its authority boundary. Its task record differs only in `status: blocked` → `running`; the original base SHA, contract reference, prior evidence and all other task records are unchanged. Revision advances from 65 to 66 and the history retains the original blocker followed by an attributable recovery event. Exactly one task is running. No completion, integration or human acceptance is recorded by this change.
+- Browser startup now selects the requested workstream through the visible UI. `select_workstream` extracts the existing benchmark selection sequence and is called from both `ready` and `browser_session`. It uses an exact Workstream label and exact option name, then waits for the selected value. `browser_session` retains its separate `Validated inputs` readiness assertion. Production app behavior and journey assertions are unchanged. This adds no arbitrary sleeps or bypass of model admission. The retained detached NAV red shows the prior startup stopped on default `ask-status`, whose model is absent, before the intended journey could execute.
+
+## Verification and limits
+
+The coordinator reports that all 12 pilot tests passed after recovery; this reviewer inspected their existing assertions and independently checked ledger/report/log bytes, without rerunning tests. At review writing, `work/revising-workbench/traceability/rwb109/unblock-final-green.log` was empty and its suite was still pending. The detached NAV red was inspected directly. This approval makes no claim that the final green completed.
+
+The restore operation's lock acquisition was not directly observed by this reviewer; the committed recovery account states it used the existing lock. Exact restored bytes and preserved state content were independently checked. The ignored ledger is local runtime data, so another checkout still needs the documented exact-source recovery, digest check, and preservation of any existing ledger.
+
+This is a narrow technical fix review. It is **not** a TaskResult integration review, whole-workstream semantic or traceability approval, approval of RWB-108 completion, or human comprehension/acceptance evidence. Those obligations remain under their existing gates. No source, state, accepted pin, TaskResult or review authority was modified by this reviewer; only this review artifact was written.
