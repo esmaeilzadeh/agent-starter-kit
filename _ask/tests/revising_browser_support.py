@@ -27,7 +27,7 @@ _load_browser_dependency()
 from playwright.sync_api import expect, sync_playwright  # noqa: E402
 
 sys.path.insert(0, str(ROOT / "_ask/ui"))
-from benchmark_workbench import _key_class, await_http, start_server  # noqa: E402
+from benchmark_workbench import _key_class, await_http, select_workstream, start_server  # noqa: E402
 
 
 @contextmanager
@@ -62,7 +62,7 @@ def browser_session(model_root: Path = ROOT, work_id: str = "revising-workbench"
                     url += "?" + urlencode({"subject": subject})
                 page.goto(url, wait_until="domcontentloaded", timeout=30000)
                 expect(page.get_by_role("heading", name="Engineering workbench", exact=True)).to_be_visible(timeout=30000)
-                expect(page.get_by_label("Workstream", exact=True)).to_be_visible(timeout=30000)
+                select_workstream(page, work_id, timeout=30000)
                 expect(page.get_by_text("Validated inputs", exact=False)).to_be_visible(timeout=30000)
                 yield page, browser
             finally:

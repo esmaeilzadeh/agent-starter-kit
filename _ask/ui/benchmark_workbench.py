@@ -189,17 +189,22 @@ def await_http(process, url, timeout=20):
     raise TimeoutError("Streamlit HTTP startup exceeded the harness timeout")
 
 
+def select_workstream(page, work_id: str, timeout=10000):
+    """Select the requested model even when a detached checkout has no default."""
+    selector = page.get_by_label("Workstream", exact=True)
+    selector.wait_for(timeout=timeout)
+    if selector.input_value() != work_id:
+        selector.click()
+        selector.fill(work_id)
+        selector.press("ArrowDown")
+        page.get_by_role("option", name=work_id, exact=True).click()
+        expect(selector).to_have_value(work_id, timeout=timeout)
+
+
 def ready(page, root_route="purpose", root_title="Purpose", work_id=None, timeout=10000):
     page.get_by_role("heading", name="Engineering workbench", exact=True).wait_for(timeout=timeout)
     if work_id:
-        selector = page.get_by_label("Workstream")
-        selector.wait_for(timeout=timeout)
-        if selector.input_value() != work_id:
-            selector.click()
-            selector.fill(work_id)
-            selector.press("ArrowDown")
-            page.get_by_role("option", name=work_id, exact=True).click()
-            expect(selector).to_have_value(work_id, timeout=timeout)
+        select_workstream(page, work_id, timeout=timeout)
     selected = page.locator(f'[class~="{_key_class("route:" + root_route)}"]').get_by_role("button")
     selected.wait_for(timeout=timeout)
     expect(selected).to_have_attribute("kind", "primary", timeout=timeout)
