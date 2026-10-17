@@ -11,7 +11,7 @@
   "reason": "The red candidate commit is detached and is not an ancestor of the reviewed candidate, so its failures cannot establish TDD continuity for that candidate. Preserve the run artifact for audit; do not include it in the active execution ledger.",
   "superseded_by": [
     "af8e9e805092426e94f826b4264187d2",
-    "a48cf93878c34363937f1193989b5e8c8"
+    "a48cf93878c34363937f1193989b5e8c"
   ],
   "retained_report": "work/revising-workbench/traceability/runs/ced3cf058da947bf9431237d3f676f34/results.json",
   "disposition_by": "/root"
