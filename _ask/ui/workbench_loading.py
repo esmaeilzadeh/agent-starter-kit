@@ -568,12 +568,13 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
     source_ids = identities.get("source_identities") or {}
     evidence_ids = identities.get("evidence_identities") or {}
     selected_sha = source_ids.get("test_source_sha")
-    plan_digest = (identities.get("canonical_flow") or {}).get("plan_digest")
+    plan_content_digest = (identities.get("canonical_flow") or {}).get("plan_digest")
     plan_path = retained_root / "work" / work_id / "test-plan.json"
     try:
         plan_raw = plan_path.read_bytes()
         plan_doc = json.loads(plan_raw.decode("utf-8"))
-        if _json_digest(plan_doc) != plan_digest or reference.get("plan_digest") != plan_digest:
+        if (_json_digest(plan_doc) != plan_content_digest
+                or reference.get("plan_digest") != plan_content_digest):
             raise ValueError("linked test-plan digest differs from the retained representative contract")
         matches = [item for item in plan_doc.get("tests", [])
                    if isinstance(item, dict) and item.get("id") == test.get("id")]
@@ -583,15 +584,29 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
         for key in ("case_id", "runner_id", "source_paths"):
             if selected_test.get(key) != test.get(key):
                 raise ValueError(f"linked Test {key} differs from the retained contract")
-        spec_digest = plan_doc.get("spec_digest")
-        if not isinstance(selected_sha, str) or not isinstance(spec_digest, str):
+        review_relative = (f"work/{work_id}/traceability/reviews/{selected_sha}.json"
+                           if isinstance(selected_sha, str) else "")
+        review_path = _confined_file(retained_root, review_relative) if review_relative else None
+        if review_path is None or not review_path.is_file():
+            raise ValueError("authority-reviewed representative Test contract is unavailable")
+        review_raw = review_path.read_bytes()
+        review_envelope = json.loads(review_raw.decode("utf-8"))
+        test_review = review_envelope.get("review", {})
+        if (hashlib.sha256(review_raw).hexdigest() != evidence_ids.get("test_review_digest")
+                or test_review.get("candidate_sha") != selected_sha
+                or test_review.get("decision") != "APPROVED"):
+            raise ValueError("authority-reviewed representative Test contract changed after evaluation")
+        spec_digest = test_review.get("spec_digest")
+        contract_plan_digest = test_review.get("plan_digest")
+        if (not isinstance(selected_sha, str) or not isinstance(spec_digest, str)
+                or not isinstance(contract_plan_digest, str)):
             raise ValueError("representative source or specification identity is missing")
         current_head = _git(retained_root, "rev-parse", "HEAD")
         current_sha = current_head.decode("ascii", "replace") if current_head else None
         source = qualified_source(retained_root, selected_test, selected_sha, current_sha=current_sha)
         readable = read_test(retained_root, selected_test, selected_sha, current_sha=current_sha)
         history = execution_history(retained_root, work_id, selected_test,
-                                    spec_digest=spec_digest, plan_digest=plan_digest,
+                                    spec_digest=spec_digest, plan_digest=contract_plan_digest,
                                     candidate_sha=selected_sha)
         selected_run = evidence_ids.get("run_id")
         runs = [item for item in history.get("runs", []) if item.get("run_id") == selected_run]
