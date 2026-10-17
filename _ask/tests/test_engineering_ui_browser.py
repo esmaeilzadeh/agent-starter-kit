@@ -49,7 +49,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
 
     @staticmethod
     def open_route(page, label):
-        button = page.get_by_role("button", name=label, exact=False).first
+        button = page.locator("button").filter(has_text=label).first
         expect(button).to_be_visible(timeout=7000)
         button.click()
 
@@ -259,7 +259,7 @@ class WorkbenchBrowserJourney(unittest.TestCase):
                     )
                     page = browser.new_page()
                     page.goto(url, wait_until="domcontentloaded")
-                    page.locator('[class~="st-key-route-test-CASE-1"] button').click()
+                    self.open_route(page, "Behavior assertion")
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()
                     self.open_route(page, "Result / evidence")
                     expect(page.get_by_text("Selected test: CASE-1 · revision-bound planned identity", exact=True)).to_be_visible()

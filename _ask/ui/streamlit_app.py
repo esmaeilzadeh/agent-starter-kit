@@ -885,10 +885,10 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                 from collections import OrderedDict
 
                 import workbench_loading
-                from workbench_tests import render_test
+                from workbench_tests import render_test, test_records
 
                 test_id = str(selected["node_id"])
-                test = next((item for item in projection.get("workbench", {}).get("tests", [])
+                test = next((item for item in test_records(projection)
                              if str(item.get("id")) == test_id), None)
                 detail = None
                 captured = view.get("captured")
@@ -897,7 +897,8 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                     test_node_id = next((node.get("id") for node in projection.get("model", {}).get("nodes", [])
                                          if node.get("type") == "test"
                                          and node.get("reference", {}).get("path") == plan_path
-                                         and node.get("reference", {}).get("id") == test_id), test_id)
+                                         and node.get("reference", {}).get("id") == test_id),
+                                        test.get("node_id", test_id))
                     detail_cache = st.session_state.setdefault(STATE_DETAIL_CACHE, OrderedDict())
                     detail = workbench_loading.load_selected_detail(
                         root, captured, test, node_id=test_node_id,

@@ -8,7 +8,36 @@ from workbench_loading import inspect_historical_contract_candidate
 
 
 def test_records(projection: dict) -> list[dict]:
-    return list(projection.get("workbench", {}).get("tests", []))
+    records = {str(item.get("id")): item
+               for item in projection.get("workbench", {}).get("tests", [])
+               if isinstance(item, dict) and item.get("id")}
+    for scenario in projection.get("scenarios", []):
+        if not isinstance(scenario, dict):
+            continue
+        for case in scenario.get("tests", []):
+            if not isinstance(case, dict):
+                continue
+            reference = case.get("reference") if isinstance(case.get("reference"), dict) else {}
+            test_id = str(case.get("id") or reference.get("id") or case.get("node_id") or "")
+            if not test_id:
+                continue
+            if test_id in records:
+                scenario_ids = set(records[test_id].get("scenario_ids", []))
+                records[test_id]["scenario_ids"] = sorted(scenario_ids | {str(scenario.get("id"))})
+            else:
+                records[test_id] = {**case, "id": test_id,
+                                    "scenario_ids": [str(scenario.get("id"))]}
+            record = records[test_id]
+            reference_work = reference.get("work_id")
+            if reference_work:
+                for task in projection.get("workbench", {}).get("tasks", []):
+                    if any(str(link.get("id")) == str(scenario.get("id"))
+                           for link in task.get("related_scenarios", [])):
+                        record.setdefault("representative_task_node_id",
+                                          task.get("product_node_id") or task.get("id"))
+                        record.setdefault("reference", reference)
+                        break
+    return list(records.values())
 
 
 def render_test(projection: dict, test_id: str, *, detail: dict | None = None,

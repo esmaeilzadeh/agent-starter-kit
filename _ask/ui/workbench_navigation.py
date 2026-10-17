@@ -47,6 +47,19 @@ def build_outline(projection: dict) -> dict:
     tasks_by_selection = {task_selection_id(item, task_counts[str(item.get("id", ""))] > 1): item
                           for item in tasks}
     tests = {item["id"]: item for item in projection.get("workbench", {}).get("tests", [])}
+    for scenario_id, scenario in scenarios.items():
+        for case in scenario.get("tests", []):
+            if not isinstance(case, dict):
+                continue
+            reference = case.get("reference") if isinstance(case.get("reference"), dict) else {}
+            test_id = str(case.get("id") or reference.get("id") or case.get("node_id") or "")
+            if not test_id:
+                continue
+            if test_id in tests:
+                current_ids = set(tests[test_id].get("scenario_ids", []))
+                tests[test_id]["scenario_ids"] = sorted(current_ids | {scenario_id})
+            else:
+                tests[test_id] = {**case, "id": test_id, "scenario_ids": [scenario_id]}
     entries: list[dict] = []
     ancestors: dict[str, list[tuple[str, str]]] = {}
     emitted_test_scenarios: set[tuple[str, str]] = set()
@@ -124,11 +137,10 @@ def build_outline(projection: dict) -> dict:
         for test_id in directly_linked_tests:
             test = tests[test_id]
             owner = test.get("owner_task_id")
-            if not linked_tasks or (owner and owner not in linked_tasks):
-                if owner in tasks:
-                    add_task(owner, scenario_path, indent + 1, scenario_id, scenario_route)
-                else:
-                    add_test(test_id, scenario_path, indent + 1, scenario_id)
+            if owner in tasks:
+                add_task(owner, scenario_path, indent + 1, scenario_id, scenario_route)
+            else:
+                add_test(test_id, scenario_path, indent + 1, scenario_id)
 
     root_routes = []
     emitted_stories: set[str] = set()

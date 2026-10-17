@@ -405,6 +405,11 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                          cache: OrderedDict | None = None) -> dict:
     """Load one test's qualified source and retained evidence after explicit selection."""
     root = Path(root).resolve()
+    reference = test.get("reference") if isinstance(test.get("reference"), dict) else {}
+    referenced_work = reference.get("work_id")
+    if referenced_work and referenced_work != snapshot.work_id:
+        return _load_referenced_test_detail(root, snapshot, test, source_context,
+                                            candidate_sha=candidate_sha, cache=cache)
     context_kind = source_context.get("kind", "working-tree")
     captured_test = _captured_test(snapshot, test, node_id)
     current_head = _git(root, "rev-parse", "HEAD")
@@ -523,6 +528,104 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     while len(cache) > _CACHE_LIMIT:
         cache.popitem(last=False)
     return value
+
+
+def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_context: dict,
+                                 *, candidate_sha: str | None, cache) -> dict:
+    """Inspect an explicitly linked retained Test through the representative authority gate."""
+    from engineering_model.readability import demo_gate
+    from engineering_model.readable_tests import read_test
+    from engineering_model.workbench_evidence import qualified_source
+
+    retained_root = Path(os.environ.get("ASK_RWB_RETAINED_ROOT", root)).resolve()
+    reference = test.get("reference", {})
+    work_id = reference.get("work_id")
+    task_node_id = test.get("representative_task_node_id")
+    base = {"source": {"status": "unavailable", "selector": test.get("case_id"),
+                       "source_sha": None, "source_path": None, "source": "",
+                       "diagnostic": "representative evidence has not been evaluated"},
+            "readable_test": {"status": "unavailable", "context_status": "unavailable",
+                              "context": [], "test_source": "",
+                              "diagnostic": "representative evidence has not been evaluated"},
+            "evidence": {"status": "unavailable", "diagnostic": "representative evidence has not been evaluated"},
+            "execution_history": {"status": "unavailable", "completion": "not_evaluated",
+                                  "runs": [], "diagnostic": "representative evidence has not been evaluated"},
+            "historical_contract_candidates": [], "historical_contracts": [],
+            "candidate_sha": None, "context_kind": "git-commit"}
+    if not isinstance(work_id, str) or not isinstance(task_node_id, str):
+        base["evidence"]["diagnostic"] = "linked Test has no qualified representative Task and workstream"
+        return base
+
+    gate = demo_gate(root, snapshot, task_node_id, retained_root=retained_root)
+    base["demo_gate"] = gate
+    if gate.get("status") != "context_ready":
+        detail = "; ".join(gate.get("context_blockers", [])) or "representative context is unavailable"
+        base["evidence"].update(status="unavailable", diagnostic=detail)
+        base["execution_history"]["diagnostic"] = detail
+        return base
+
+    identities = gate.get("admission_identities") or {}
+    source_ids = identities.get("source_identities") or {}
+    evidence_ids = identities.get("evidence_identities") or {}
+    selected_sha = source_ids.get("test_source_sha")
+    plan_digest = (identities.get("canonical_flow") or {}).get("plan_digest")
+    plan_path = retained_root / "work" / work_id / "test-plan.json"
+    try:
+        plan_raw = plan_path.read_bytes()
+        plan_doc = json.loads(plan_raw.decode("utf-8"))
+        if _json_digest(plan_doc) != plan_digest or reference.get("plan_digest") != plan_digest:
+            raise ValueError("linked test-plan digest differs from the retained representative contract")
+        matches = [item for item in plan_doc.get("tests", [])
+                   if isinstance(item, dict) and item.get("id") == test.get("id")]
+        if len(matches) != 1:
+            raise ValueError("linked Test is missing or ambiguous in its retained contract")
+        selected_test = matches[0]
+        for key in ("case_id", "runner_id", "source_paths"):
+            if selected_test.get(key) != test.get(key):
+                raise ValueError(f"linked Test {key} differs from the retained contract")
+        spec_digest = plan_doc.get("spec_digest")
+        if not isinstance(selected_sha, str) or not isinstance(spec_digest, str):
+            raise ValueError("representative source or specification identity is missing")
+        current_head = _git(retained_root, "rev-parse", "HEAD")
+        current_sha = current_head.decode("ascii", "replace") if current_head else None
+        source = qualified_source(retained_root, selected_test, selected_sha, current_sha=current_sha)
+        readable = read_test(retained_root, selected_test, selected_sha, current_sha=current_sha)
+        history = execution_history(retained_root, work_id, selected_test,
+                                    spec_digest=spec_digest, plan_digest=plan_digest,
+                                    candidate_sha=selected_sha)
+        selected_run = evidence_ids.get("run_id")
+        runs = [item for item in history.get("runs", []) if item.get("run_id") == selected_run]
+        if len(runs) != 1:
+            raise ValueError("the authority-verified representative execution is absent or ambiguous")
+        run = runs[0]
+        if (run.get("phase") != "final_green" or run.get("outcome") != "passed"
+                or run.get("output_status") != "valid" or run.get("source_status") != "historical"):
+            raise ValueError("the authority-verified representative execution is not a valid historical pass")
+        artifact = run.get("output_artifact")
+        run["output_text"] = (_verified_output(retained_root, artifact, run.get("output_digest", ""))
+                              if isinstance(artifact, str) else None)
+        if run["output_text"] is None:
+            raise ValueError("the authority-verified representative output log is unavailable")
+        base.update(source=source, readable_test=readable,
+                    evidence={"status": "historical", "diagnostic": None,
+                              "candidate_sha": selected_sha,
+                              "contract_digest": evidence_ids.get("contract_digest"),
+                              "report_digest": evidence_ids.get("report_digest")},
+                    execution_history={**history, "runs": [run]},
+                    candidate_sha=selected_sha, context_kind="git-commit")
+        base["identity"] = {"candidate_sha": selected_sha,
+                            "snapshot_digest": snapshot.identity.get("digest"),
+                            "test_id": selected_test.get("id"), "run_id": selected_run,
+                            "report_digest": evidence_ids.get("report_digest"),
+                            "log_digest": evidence_ids.get("log_digest")}
+        return base
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        message = str(exc)
+        base["source"]["diagnostic"] = message
+        base["readable_test"]["diagnostic"] = message
+        base["evidence"].update(status="unavailable", diagnostic=message)
+        base["execution_history"]["diagnostic"] = message
+        return base
 
 
 def clear_detail_cache(cache: OrderedDict | None) -> None:
