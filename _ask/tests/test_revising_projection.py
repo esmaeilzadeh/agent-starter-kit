@@ -139,7 +139,8 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(tasks["WB-003"].get("status_source"), "no-runtime-record")
             self.assertIsNone(tasks["WB-003"].get("verification_status"))
             self.assertEqual(tasks["WB-003"].get("verification_source"), "no-verification-record")
-            runtime = {"work_id": "product", "tasks": {"WB-003": {"status": "integrated"}}}
+            runtime = {"schema": "ask-inner-loop-state/v1", "work_id": "product",
+                       "tasks": {"WB-003": {"status": "integrated"}}}
             _put(root, "work/product/inner-loop/state.json", runtime)
             refreshed = project(capture(root, "product"), root, include_evidence=False)
             updated = next(row for row in refreshed["workbench"]["tasks"] if row["id"] == "WB-003")
