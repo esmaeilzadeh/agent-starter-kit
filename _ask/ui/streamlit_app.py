@@ -865,7 +865,14 @@ def _render_workbench(projection: dict, view: dict, root: Path, work_id: str,
                       source_context: dict) -> None:
     navigation_col, detail_col = st.columns([1, 2], gap="large")
     with navigation_col:
-        outline = render_outline(projection)
+        cached_outline = view.get("_workbench_outline")
+        if (not isinstance(cached_outline, dict)
+                or cached_outline.get("projection") is not projection):
+            outline = build_outline(projection)
+            view["_workbench_outline"] = {"projection": projection, "outline": outline}
+        else:
+            outline = cached_outline["outline"]
+        outline = render_outline(projection, outline=outline)
     route_id = st.session_state.get(STATE_ROUTE)
     if route_id not in outline["ancestors"]:
         route_id = outline["roots"][0] if outline["roots"] else ""

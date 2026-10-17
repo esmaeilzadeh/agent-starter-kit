@@ -242,9 +242,10 @@ def build_outline(projection: dict) -> dict:
     return {"entries": entries, "ancestors": ancestors, "roots": root_routes}
 
 
-def render_outline(projection: dict) -> dict:
+def render_outline(projection: dict, *, outline: dict | None = None) -> dict:
     """Render accessible native buttons for every linked level of the outline."""
-    outline = build_outline(projection)
+    if outline is None:
+        outline = build_outline(projection)
     st.markdown("**Epic**" if any(entry["kind"] == "epic" for entry in outline["entries"])
                 else "**Workstream**")
     for entry in outline["entries"]:
