@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "revising-workbench",
+  "task_id": "RWB-106",
+  "base_sha": "78e739763fd5888913d80c76458d7baad9e51619",
+  "candidate_sha": "1d6143fe84f415bbea7e3d1469abde162629256c",
+  "tdd": {
+    "seam": "Route captured Story and Task subjects through admitted hierarchy; preserve qualified Task identity across navigation, summaries, and related links; render exact Task purpose and revision-bound context in working and committed sources.",
+    "red": {
+      "command": "./ask traceability run revising-workbench --candidate-sha 60667abcd6d76aed5130129e5795b35e5d594f31 --scope task --task-id RWB-106 --phase red",
+      "output": "work/revising-workbench/traceability/runs/86af171e43064df8987996b38f7f6bc3/results.json: RWB-APP-ENTRY and RWB-APP-TASK failed as behavior_assertion with successful collection.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run revising-workbench --candidate-sha 1d6143fe84f415bbea7e3d1469abde162629256c --scope task --task-id RWB-106 --phase final_green",
+      "output": "work/revising-workbench/traceability/runs/9a8a63299a3047efacb6280db90b621f/results.json: both assigned cases passed, executions exited 0 and collected successfully.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "The first implementation candidate e1b9265 passed the assigned suite, but exact-candidate review rejected it for shared-Story duplicate routes, collapsed qualified Task rows, blocked-summary IDs that did not resolve to displayed records, missing committed Task passages, absent recorded-subject fallback, misleading Epic labels, and incomplete passage provenance/context. The remediation preserves qualified identity through navigation and summary filtering, routes shared hierarchy contexts with distinct keys, rejects ambiguous bare Task entry, resolves recorded local subject associations, reads context selectors from committed bytes, displays selector/revision and exposes surrounding captured text, and labels missing Epic intent accurately. Added regressions for shared Stories, qualified Task summary membership, ambiguous Task entry, recorded association routing, committed passages, and no-recorded-Epic copy. The test changes add assertions for accepted behaviors and do not weaken existing assertions. Full RWB-106 assigned traceability passes on the exact candidate. Independent re-review of 1d6143f is pending."
+}
