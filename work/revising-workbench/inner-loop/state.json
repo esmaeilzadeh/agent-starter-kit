@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 63,
+  "revision": 64,
   "coordinator_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -2791,7 +2791,7 @@
       }
     },
     "RWB-108": {
-      "status": "blocked",
+      "status": "running",
       "base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
       "task_branch": "",
       "result_path": "",
@@ -2851,6 +2851,16 @@
       "wip_sha": "10ec0cca24ec68156cd6a23edf6b511a1720d498",
       "reviewed_amendment_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
       "reason": "Pause the existing RWB-108 writer so the coordinator can accept the independently reviewed RWB-107 contract amendment under the no-running-task gate; preserve the WIP, task base, and evidence."
+    },
+    {
+      "event": "readmitted-under-reviewed-contract",
+      "task_id": "RWB-108",
+      "original_task_base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
+      "previous_candidate_sha": "10ec0cca24ec68156cd6a23edf6b511a1720d498",
+      "new_base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
+      "reviewed_amendment_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
+      "whole_task_review_from_original_base": true,
+      "note": "Resume the same RWB-108 writer under the coordinator-pinned RWB-107 contract amendment. Refresh TaskResult, red/final-green evidence, and whole-task review from the original task base; later RWB-109 changes are not exempt from task boundary review."
     }
   ]
 }
