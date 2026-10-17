@@ -41,6 +41,7 @@ def _projection_repo(root):
         {"type": "covers", "source": "test-stale", "target": "scenario-stale"},
         {"type": "contributes_to", "source": "standalone", "target": "story"},
         {"type": "contributes_to", "source": "standalone", "target": "story-two"},
+        {"type": "contributes_to", "source": "standalone", "target": "scenario-stale"},
     ])
     spec = json.loads((root / "specs/current/product.json").read_text())
     plan = json.loads((root / "work/product/test-plan.json").read_text())
@@ -87,12 +88,18 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(tasks["WB-003"].get("product_identity"), {"work_id": "product", "node_id": "task"})
             self.assertEqual(tasks["WB-003"].get("execution_identity"), {"work_id": "product", "task_id": "WB-003"})
             self.assertEqual(tasks["WB-003"].get("execution_source"), "engineering-model-task-alias")
+            self.assertEqual(len([row for row in tasks.values()
+                                  if row.get("execution_identity") == {"work_id": "product", "task_id": "WB-003"}]),
+                             1, "one qualified execution identity must produce one Task row")
             self.assertEqual(tasks["standalone"].get("product_identity"), {"work_id": "product", "node_id": "standalone"})
             self.assertEqual(tasks["standalone"].get("execution_identity"), {"work_id": "delivery", "task_id": "shared-17"})
             self.assertEqual(len([row for row in tasks.values() if row["product_identity"] ==
                                   {"work_id": "product", "node_id": "standalone"}]), 1,
                              "shared work is represented by one product identity")
             self.assertIn("story-two", [item["id"] for item in tasks["standalone"].get("related_stories", [])])
+            self.assertIn({"id": "scenario-stale", "via": "contributes-to"},
+                          tasks["standalone"].get("related_scenarios", []),
+                          "explicit Scenario support is contextual and does not imply test ownership")
             self.assertEqual(tasks["WB-003"]["outcome"], "Publish the selected case")
             self.assertEqual(tasks["WB-003"]["dependencies"], [])
             self.assertEqual(tasks["WB-003"]["owned_paths"], ["src/publish.py"])
@@ -115,6 +122,10 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(tasks["WB-003"]["status"], "planned")
             self.assertEqual(tasks["WB-003"].get("readiness_status"), "blocked")
             self.assertEqual(tasks["WB-003"].get("readiness_source"), "engineering-model")
+            self.assertEqual(tasks["WB-003"].get("readiness_blockers"), [
+                {"id": "choice", "type": "decision", "lifecycle": "open",
+                 "reason": "choice is open; requires resolved"}])
+            self.assertEqual(tasks["standalone"].get("readiness_status"), "ready")
             self.assertEqual({item["id"] for item in view["attention"]}, {"choice", "task"})
             self.assertEqual(tasks["WB-003"].get("status_source"), "no-runtime-record")
             self.assertIsNone(tasks["WB-003"].get("verification_status"))
@@ -197,6 +208,11 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(planned.get("model_status"), "blocked")
             self.assertEqual({item["id"] for item in json_view["attention"]}, {"choice", "task"})
             self.assertIn("WB-003", markdown_result.stdout)
+            self.assertIn("Readiness: blocked", markdown_result.stdout)
+            self.assertIn("choice is open; requires resolved", markdown_result.stdout)
+            self.assertIn("Given: Same obligation", markdown_result.stdout)
+            self.assertIn("When: Stale route", markdown_result.stdout)
+            self.assertIn("Refuse", markdown_result.stdout)
             self.assertIn("choice", markdown_result.stdout)
             before = (root / "work/product/engineering-model.json").read_bytes()
             (root / "work/product/inner-loop/tasks.yaml").write_text("schema: broken\n", encoding="utf-8")
