@@ -11,6 +11,7 @@ def task_rows(projection: dict) -> list[dict]:
     projected = [item for item in workbench.get("tasks", []) if isinstance(item, dict)]
     states = {str(item.get("id")): item for item in projection.get("tasks", [])}
     nodes = {str(item.get("id")): item for item in projection.get("model", {}).get("nodes", [])}
+    is_v2 = projection.get("model", {}).get("schema") == "ask-engineering-model/v2"
     id_counts = {}
     for item in projected:
         identity = str(item.get("id"))
@@ -18,15 +19,19 @@ def task_rows(projection: dict) -> list[dict]:
     rows = []
     for item in projected:
         identity = str(item.get("id"))
-        product_node_id = str(item.get("product_node_id", identity))
-        state = states.get(product_node_id, states.get(identity, {}))
-        node = nodes.get(identity, {})
-        if not node:
-            node = nodes.get(product_node_id, {})
+        product_identity = item.get("product_identity")
+        product_node_id = (product_identity.get("node_id")
+                           if isinstance(product_identity, dict) else
+                           item.get("product_node_id") if is_v2 else identity)
+        if is_v2:
+            state = states.get(str(product_node_id), {}) if product_node_id else {}
+            node = nodes.get(str(product_node_id), {}) if product_node_id else {}
+        else:
+            state = states.get(identity, {})
+            node = nodes.get(identity, {})
         status = item.get("status", state.get("status", "not recorded"))
         story_nodes = {str(candidate.get("id")): candidate for candidate in nodes.values()
                        if candidate.get("type") == "story"}
-        product_identity = item.get("product_identity")
         execution_identity = item.get("execution_identity")
         selection_id = task_selection_id(item, id_counts[identity] > 1)
         rows.append({

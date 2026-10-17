@@ -212,6 +212,36 @@ class WorkbenchAppTests(unittest.TestCase):
                                               "task:execution:remote:shared")[0],
                          "execution:remote:shared")
 
+    def test_execution_only_task_does_not_inherit_colliding_product_context(self):
+        from workbench_tasks import task_rows
+
+        projection = {
+            "model": {"schema": "ask-engineering-model/v2", "nodes": [
+                {"id": "standalone", "type": "task", "title": "Product Task",
+                 "description": "Product purpose", "lifecycle": "planned"},
+            ]},
+            "tasks": [{"id": "standalone", "status": "blocked",
+                       "context": {"spec": [{"text": "Foreign product passage"}],
+                                   "plan": [{"text": "Foreign product plan"}]},
+                       "blockers": [{"id": "foreign", "reason": "Foreign blocker"}]}],
+            "workbench": {"tasks": [
+                {"id": "standalone", "product_node_id": "standalone",
+                 "product_identity": {"work_id": "product", "node_id": "standalone"},
+                 "execution_identity": {"work_id": "delivery", "task_id": "shared-17"},
+                 "record_source": "engineering-model", "status": "blocked"},
+                {"id": "standalone", "product_node_id": None,
+                 "product_identity": None,
+                 "execution_identity": {"work_id": "product", "task_id": "standalone"},
+                 "record_source": "task-graph", "status": "planned"},
+            ]},
+        }
+        rows = task_rows(projection)
+        self.assertEqual(len(rows), 2)
+        execution = next(row for row in rows if row["record_source"] == "task-graph")
+        self.assertEqual(execution["context"], {})
+        self.assertEqual(execution["blockers"], [])
+        self.assertEqual(execution["purpose"], "")
+
     def test_direct_subject_standalone_shared_back_and_revision_entry(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
