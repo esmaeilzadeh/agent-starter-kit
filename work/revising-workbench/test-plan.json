@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "revising-workbench",
-  "spec_digest": "eb887b8d8779f3b7e0a29274238b2f6dd619b4696ba3d4877a1d2eaf8e16d544",
+  "spec_digest": "b2ea24b24259f90bbc3aabc36c5cd0f0df6e16d252fd95c457dfa4485470c911",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -139,6 +139,12 @@
     },
     {
       "criterion_id": "EM-019",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "EM-020",
       "required_types": [
         "integration"
       ]
@@ -543,6 +549,20 @@
     },
     {
       "id": "rwb-inner-loop-amendment",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability_entrypoints.py"
+      ]
+    },
+    {
+      "id": "rwb-candidate-sync-clean",
       "adapter": "unittest",
       "argv": [
         "python3",
@@ -2614,6 +2634,37 @@
       "source_paths": [
         "_ask/tests/test_traceability_entrypoints.py"
       ]
+    },
+    {
+      "id": "RWB-CANDIDATE-SYNC-CLEAN",
+      "criterion_ids": [
+        "EM-020"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The candidate carries a work-specific reviewer model overlay and the normal sync test applies temporary overrides",
+        "when": "The exact static sync check executes with a forced post-sync failure and then a successful run in a disposable candidate worktree",
+        "then": [
+          "The failing check restores every generated runtime-agent projection to its exact pre-check bytes",
+          "The candidate remains clean after both the expected failure and successful check"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-020",
+          "checks": [
+            "Force a failure after generated projections change, require the expected nonzero status, compare all runtime projection files byte-for-byte with their pre-check snapshot, and assert the candidate is clean",
+            "Run the same check successfully and assert the candidate is still clean"
+          ]
+        }
+      ],
+      "runner_id": "rwb-candidate-sync-clean",
+      "case_id": "test_traceability_entrypoints.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree",
+      "source_paths": [
+        "_ask/tests/test_traceability_entrypoints.py",
+        "_ask/tests/test-sync-runtime-agents.sh"
+      ]
     }
   ],
   "task_scopes": [
@@ -2693,7 +2744,8 @@
         "RWB-APP-EVIDENCE",
         "RWB-APP-DECISIONS",
         "RWB-LAZY-CACHE",
-        "RWB-INNER-LOOP-AMENDMENT"
+        "RWB-INNER-LOOP-AMENDMENT",
+        "RWB-CANDIDATE-SYNC-CLEAN"
       ]
     },
     {

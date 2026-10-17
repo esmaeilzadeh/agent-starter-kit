@@ -53,3 +53,38 @@ and exact-candidate review.
 ## Decision
 
 Approved by the human instruction: “fix the main workflow first, then continue.”
+
+
+## Additional workflow verification finding
+
+The first detached integration attempt passed every static command but failed the
+final candidate-integrity check. `_ask/tests/test-sync-runtime-agents.sh` ran with
+`ASK_WORK_ID=revising-workbench`, so its final sync applied the work-specific
+reviewer-model overlay and left `.codex/agents/kit-07-review.toml` modified in
+the disposable candidate checkout. The candidate verifier correctly detected that
+write and refused integration. This is test-fixture leakage: the script exercises
+temporary model/risk overrides but did not restore generated outputs afterward.
+
+## Additional proposed change
+
+Add criterion EM-020 and test RWB-CANDIDATE-SYNC-CLEAN. Preserve all four
+generated review-agent projections at test start and restore those exact files on
+all exits. The new integration case runs the real shell check in a child detached
+candidate worktree with the work-specific override active, then asserts both a
+successful check and a clean worktree. Add `_ask/tests/test-sync-runtime-agents.sh`
+to RWB-107 ownership and the integration case's source list.
+
+## Additional impact and alternatives
+
+Impacted artifacts are the canonical spec, test plan, TaskGraph, plan, this
+proposal, `_ask/tests/test-sync-runtime-agents.sh`, and
+`_ask/tests/test_traceability_entrypoints.py`. The change does not weaken the
+immutable candidate gate or hide generated paths from it. Changing the verifier
+to ignore generated paths would allow unrelated projection changes through, so
+the test itself must restore its temporary outputs.
+
+## Authority
+
+The user's explicit instruction was “fix the main workflow first then continue.”
+This additional change fixes the candidate-integrity false failure discovered
+while executing the required integration gate for that repair.

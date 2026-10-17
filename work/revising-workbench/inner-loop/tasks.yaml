@@ -114,9 +114,10 @@ tasks:
       - _ask/tests/test_revising_detail.py
       - _ask/scripts/inner_loop/evidence.py
       - _ask/tests/test_traceability_entrypoints.py
+      - _ask/tests/test-sync-runtime-agents.sh
       - _ask/docs/spec-test-traceability.md
     completion_evidence: "AppTest proves flow-specific readable source/results, all honest states and collapsed identifiers; current decision persistence and invalid/stale/historical no-write cases pass; zero eager scans and tamper refresh asserted; amended accepted contracts pass detached integration while verifier code remains pinned to the task base"
-    test_ids: [RWB-APP-EVIDENCE, RWB-APP-DECISIONS, RWB-LAZY-CACHE, RWB-INNER-LOOP-AMENDMENT]
+    test_ids: [RWB-APP-EVIDENCE, RWB-APP-DECISIONS, RWB-LAZY-CACHE, RWB-INNER-LOOP-AMENDMENT, RWB-CANDIDATE-SYNC-CLEAN]
   - id: RWB-108
     title: "Adopt new pilot without rewriting historical authority"
     outcome: "Explicit reviewed v1 to v2 migration, new-work model/contract registration, genuine WB-003 inspection and bound comprehension format"

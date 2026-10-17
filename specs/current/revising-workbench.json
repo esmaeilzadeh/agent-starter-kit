@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "revising-workbench",
-  "revision": 2,
+  "revision": 3,
   "criteria": [
     {
       "id": "EM-001",
@@ -197,9 +197,19 @@
       "given": "A task has a recorded coordinator base and a later contract amendment approved through the independent review and authority flow",
       "when": "The coordinator verifies the immutable task candidate for integration",
       "then": [
-      "Verifier code and imports remain pinned to the recorded task base while the CheckPlan is derived from the candidate",
-      "Accepted obligations are loaded from the candidate pin and must exactly match coordinator authority",
+        "Verifier code and imports remain pinned to the recorded task base while the CheckPlan is derived from the candidate",
+        "Accepted obligations are loaded from the candidate pin and must exactly match coordinator authority",
         "A candidate-only or otherwise unapproved obligation change is rejected"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "EM-020",
+      "given": "Required detached candidate checks exercise work-specific agent runtime synchronization",
+      "when": "The sync check tests temporary risk/model overrides and the coordinator verifies the candidate tree",
+      "then": [
+        "The sync check restores every generated agent projection to its exact pre-test bytes even when an assertion fails",
+        "Successful required checks leave candidate source and CheckPlan unchanged for the detached integration integrity gate"
       ],
       "verification_mode": "tests"
     }
