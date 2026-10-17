@@ -41,7 +41,13 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
     st.markdown("#### Test source")
     source_paths = test.get("source_paths", [])
     source = detail.get("source", {}) if isinstance(detail, dict) else {}
-    if source.get("status") in {"working-tree", "current", "historical"} and source.get("source"):
+    readable = detail.get("readable_test", {}) if isinstance(detail, dict) else {}
+    readable_source = readable.get("test_source") if isinstance(readable, dict) else None
+    if readable_source:
+        source_path = readable.get("source_path") or (source_paths[0] if source_paths else "source")
+        st.caption(f"Selected source path: {source_path} · {readable.get('status', 'revision unavailable')} revision")
+        st.code(readable_source, language="python")
+    elif source.get("status") in {"working-tree", "current", "historical"} and source.get("source"):
         source_path = source.get("source_path") or (source_paths[0] if source_paths else "source")
         st.caption(f"Selected source path: {source_path}")
         st.code(source["source"], language="python")
@@ -53,6 +59,41 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
                 st.caption(str(source["diagnostic"]))
     else:
         st.info("Test source is unavailable in this captured snapshot.")
+    flow = readable.get("flow") if isinstance(readable, dict) else None
+    if isinstance(readable, dict) and readable.get("context_status") in {"incomplete", "unavailable"}:
+        st.info("Some setup or helper context could not be read at the selected revision.")
+        if readable.get("diagnostic"):
+            st.caption(str(readable["diagnostic"]))
+    if isinstance(flow, dict):
+        st.markdown("#### Selected behavior flow")
+        for label, key in (("Setup", "given"), ("Action", "when"), ("Expected result", "then")):
+            value = flow.get(key)
+            if value:
+                st.markdown(f"**{label}**")
+                for item in value if isinstance(value, list) else [value]:
+                    st.write(item)
+    contexts = readable.get("context", []) if isinstance(readable, dict) else []
+    visible_contexts = [item for item in contexts if isinstance(item, dict)]
+    if visible_contexts:
+        st.markdown("#### Source context")
+        for index, item in enumerate(visible_contexts):
+            selector = str(item.get("selector", "source"))
+            role = str(item.get("role", "helper"))
+            label = f"{role.title()} · {selector}"
+            with st.expander(label, expanded=False,
+                             key=f"source-context:{context}:{test_id}:{index}:{selector}"):
+                revision = item.get("source_sha")
+                if role in {"setup", "helper", "fixture"} and revision:
+                    st.caption(f"Source commit: {revision}")
+                else:
+                    st.caption(f"Source revision: {item.get('status') or 'unavailable'}")
+                st.caption(f"Source path: {item.get('source_path') or 'unavailable'}")
+                if item.get("explanation"):
+                    st.write(str(item["explanation"]))
+                if item.get("status") == "available" and item.get("source"):
+                    st.code(item["source"], language="python")
+                else:
+                    st.info(item.get("diagnostic") or "This helper is unavailable at the selected revision.")
     if not show_execution:
         return
     st.markdown("#### Recorded execution")
@@ -121,6 +162,9 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
                 st.write("Failure detail: " + str(run["failure_kind"]).replace("_", " "))
             if run.get("diagnostic"):
                 st.caption(str(run["diagnostic"]))
+            if run.get("output_text"):
+                st.markdown("**Captured execution output**")
+                st.code(run["output_text"], language="text")
     if not runs and isinstance(history, dict) and history.get("diagnostic"):
         if history.get("status") == "invalid":
             st.warning(str(history["diagnostic"]))
