@@ -161,6 +161,18 @@ class ProjectionTests(unittest.TestCase):
                     if node.get("type") == "scenario":
                         node["case"]["plan_digest"] = collision_digest
                 _put(collision_root, "work/product/engineering-model.json", collision_model)
+                _put(collision_root, "work/delivery/engineering-model.json", {
+                    "schema": "ask-engineering-model/v2", "work_id": "delivery", "revision": 1,
+                    "nodes": [{"id": "shared-task", "type": "task", "title": "Shared delivery",
+                               "lifecycle": "active",
+                               "execution": {"work_id": "delivery", "task_id": "shared-17"}}],
+                    "edges": [],
+                })
+                _put(collision_root, "work/delivery/inner-loop/state.json", {
+                    "schema": "ask-inner-loop-state/v1", "work_id": "delivery",
+                    "tasks": {"shared-17": {"status": "integrated",
+                                              "result_path": "work/delivery/inner-loop/results/shared-17.json"}},
+                })
                 graph_path = collision_root / "work/product/inner-loop/tasks.yaml"
                 graph_path.write_text(graph_path.read_text().replace("WB-004", "standalone"), encoding="utf-8")
                 collision_snapshot, collision_errors = validate_current(collision_root, "product")
@@ -175,6 +187,11 @@ class ProjectionTests(unittest.TestCase):
                 self.assertEqual(product_row.get("execution_identity"), {"work_id": "delivery", "task_id": "shared-17"})
                 self.assertIn({"id": "scenario-stale", "via": "contributes-to"},
                               product_row.get("related_scenarios", []))
+                self.assertEqual(product_row.get("runtime_status"), "integrated")
+                self.assertEqual(product_row.get("status"), "completed")
+                self.assertEqual(product_row.get("status_source"), "inner-loop-state")
+                self.assertIsNone(product_row.get("verification_status"),
+                                  "a foreign integrated result does not imply verified completion")
 
             with tempfile.TemporaryDirectory() as legacy_directory:
                 legacy_root = Path(legacy_directory)
