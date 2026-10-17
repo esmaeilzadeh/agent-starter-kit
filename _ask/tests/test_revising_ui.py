@@ -189,6 +189,51 @@ class WorkbenchAppTests(unittest.TestCase):
             self.assertEqual(app.session_state["_engineering_route"], "story")
             self.assertEqual(app.session_state["_engineering_route_history"], ["capability"])
 
+    def test_invalid_recorded_subject_history_stays_at_chooser(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _init_repository(root)
+            model_path = root / "work/product/engineering-model.json"
+            doc = json.loads(model_path.read_text())
+            doc["subject_association"] = {
+                "subject": {"work_id": "product", "node_id": "story"},
+                "revision": "snapshot", "snapshot_digest": "a" * 64,
+                "subject_snapshot_digest": "b" * 64, "contribution": "Publish capability",
+                "exclusions": [], "execution_owner": None, "history": [{}],
+            }
+            _put(root, "work/product/engineering-model.json", doc)
+            app = _run(root)
+            self.assertFalse(app.exception, app.exception)
+            self.assertEqual(app.session_state["_engineering_route"], "capability")
+            self.assertIn("association is incomplete or invalid", _text(app))
+
+    def test_surrounding_passages_keep_their_revision_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _init_repository(root)
+            pinned_revision = subprocess.check_output(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip()
+            model_path = root / "work/product/engineering-model.json"
+            doc = json.loads(model_path.read_text())
+            doc["nodes"][3]["context"].append({
+                "role": "spec", "path": "docs/context.md", "revision": pinned_revision,
+                "selector": {"kind": "heading", "path": ["Scope"]},
+            })
+            _put(root, "work/product/engineering-model.json", doc)
+            _put(root, "docs/context.md",
+                 b"# Scope\nA verified publication is visible to its intended readers.\n"
+                 b"# After\nWorking-only surrounding text.\n")
+            app = _run(root, "task:task")
+            self.assertFalse(app.exception, app.exception)
+            view = app.session_state["_engineering_displayed_view"]
+            task = next(row for row in view["projection"]["workbench"]["tasks"]
+                        if (row.get("product_identity") or {}).get("node_id") == "task")
+            spec_passages = task["context"]["spec"]
+            current = next(item for item in spec_passages if item["revision"] == "snapshot")
+            historical = next(item for item in spec_passages if item["revision"] == pinned_revision)
+            self.assertIn("Working-only surrounding text", current["surrounding_text"])
+            self.assertNotIn("Working-only surrounding text", historical["surrounding_text"])
+
     def test_ambiguous_bare_task_subject_is_not_guessed(self):
         from workbench_context import resolve_subject_route
 

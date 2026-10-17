@@ -19,6 +19,7 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from engineering_model.admission import admit
+from engineering_model.context import _recorded_association
 from engineering_model.projection import project
 from engineering_model.workbench_sources import discover_work, read_snapshot
 from workbench_context import (
@@ -79,21 +80,15 @@ def _apply_subject_entry(projection: dict, work_id: str, source_id: str,
     if subject is None:
         association = projection.get("model", {}).get("subject_association")
         recorded = association.get("subject") if isinstance(association, dict) else None
-        valid_association = (isinstance(association, dict)
-                             and association.get("revision") == "snapshot"
-                             and isinstance(association.get("snapshot_digest"), str)
-                             and len(association["snapshot_digest"]) == 64
-                             and all(char in "0123456789abcdef" for char in association["snapshot_digest"])
-                             and isinstance(association.get("contribution"), str)
-                             and bool(association["contribution"].strip())
-                             and isinstance(association.get("exclusions"), list)
-                             and isinstance(association.get("history"), list)
-                             and bool(association["history"]))
+        valid_association = _recorded_association(association)
         if (valid_association and isinstance(recorded, dict)
                 and recorded.get("work_id") == work_id):
             node = _node_map(projection).get(recorded.get("node_id"))
             if node and node.get("type") in {"story", "task"}:
                 subject = f"{node['type']}:{recorded['node_id']}"
+        elif not valid_association and isinstance(recorded, dict):
+            st.session_state["_engineering_recorded_subject_notice"] = (
+                "The recorded subject association is incomplete or invalid. Choose a subject from the current outline.")
         elif isinstance(recorded, dict):
             st.session_state["_engineering_recorded_subject_notice"] = (
                 f"Recorded subject {recorded.get('work_id', 'unknown')}:{recorded.get('node_id', 'unknown')} "
@@ -308,7 +303,11 @@ def _add_passage_surroundings(snapshot, projection: dict, root: Path) -> None:
             if str(task.get("product_node_id") or task.get("id")) != str(record.get("node_id")):
                 continue
             for passage in task.get("context", {}).get(record.get("role"), []):
-                if passage.get("path") == path and passage.get("start_line") == resolution.get("start_line"):
+                if (passage.get("path") == path
+                        and passage.get("revision") == record.get("revision")
+                        and passage.get("selector") == record.get("selector")
+                        and passage.get("start_line") == resolution.get("start_line")
+                        and passage.get("source_sha256") == record.get("sha256")):
                     passage["surrounding_text"] = surrounding
 
 

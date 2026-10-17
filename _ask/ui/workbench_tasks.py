@@ -95,14 +95,15 @@ def _detail(row: dict, *, on_open=None, context: str = "tasks") -> None:
         passages = context.get(role, [])
         if not passages:
             st.caption(f"No {role} passage is recorded.")
-        for passage in passages:
+        for passage_index, passage in enumerate(passages):
             st.markdown(f"**{role.title()} passage · {passage.get('state', 'unavailable')}**")
             st.caption(f"{passage.get('path', 'Path not recorded')} · revision {passage.get('revision', 'not recorded')} · selector {passage.get('selector', 'not recorded')}")
             if passage.get("text"):
                 st.text(passage["text"])
                 if passage.get("surrounding_text"):
                     with st.expander(f"Show surrounding {role} text · {passage.get('path', '')}",
-                                     expanded=False, key=f"{context}:passage:{row['selection_id']}:{role}"):
+                                     expanded=False,
+                                     key=f"{context}:passage:{row['selection_id']}:{role}:{passage_index}"):
                         st.text(passage["surrounding_text"])
             elif passage.get("message"):
                 st.info(str(passage["message"]))
