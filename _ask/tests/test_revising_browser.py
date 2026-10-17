@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
 sys.path.insert(0, str(ROOT / "_ask/tests"))
 from revising_browser_support import (  # noqa: E402
+    _key_class,
     browser_session,
     git_fingerprint,
     run_existing_browser_journey,
@@ -83,6 +84,13 @@ class WorkbenchBrowserTests(unittest.TestCase):
                 "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract",
                 exact=False,
             )).to_be_visible()
+            result_route = page.locator(
+                f'[class~="{_key_class("route:result:WB-evidence-identity")}"]'
+            ).get_by_role("button")
+            result_route.click()
+            expect(page.get_by_role("heading", name="Recorded execution", exact=True)).to_be_visible()
+            expect(page.get_by_text("Recorded outcome: Passed", exact=True)).to_be_visible()
+            expect(page.get_by_text("Git candidate currency: historical", exact=True)).to_be_visible()
         self.assertEqual(git_fingerprint(ROOT), before)
 
     def test_demo_completion_requires_genuine_bound_successful_human_record(self):
