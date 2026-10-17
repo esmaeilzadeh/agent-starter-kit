@@ -148,7 +148,7 @@ class DetailAppTests(unittest.TestCase):
                 self.assertIn("Setup", rendered)
                 self.assertIn("def test_behavior(self):", rendered)
                 self.assertIn("Source context", rendered)
-                self.assertIn("Inspected source revision: " + candidate, rendered)
+                self.assertIn("Source commit: " + candidate, rendered)
             self.assertIn("return 'accepted'", rendered)
 
     def _assert_actual_output_is_available_only_for_valid_digests(self):

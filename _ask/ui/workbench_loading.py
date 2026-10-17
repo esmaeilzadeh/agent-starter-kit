@@ -154,23 +154,42 @@ def _working_source(root: Path, test: dict) -> dict:
 
 def _accepted_source_digests(root: Path, test: dict,
                              revision: str | None = None) -> dict[str, str] | None:
-    """Hash every declared source file, requiring confined regular files/blobs."""
+    """Hash test and curated helper files, requiring confined regular files/blobs."""
     selector = test.get("case_id") if isinstance(test, dict) else None
     paths = test.get("source_paths") if isinstance(test, dict) else None
     if not isinstance(selector, str) or not isinstance(paths, list) or not paths:
         return None
     if any(not _safe_relative(path) for path in paths) or len(paths) != len(set(paths)):
         return None
+    declared = [(path, revision) for path in paths]
+    contexts = test.get("source_context", [])
+    if not isinstance(contexts, list):
+        return None
+    for entry in contexts:
+        if (not isinstance(entry, dict) or not _safe_relative(entry.get("path"))
+                or not isinstance(entry.get("revision"), str)):
+            return None
+        relative = entry["path"]
+        context_revision = entry["revision"]
+        if context_revision == "snapshot":
+            context_revision = revision
+        declared.append((relative, context_revision))
+    declared = list(dict.fromkeys(declared))
+    key_counts: dict[str, int] = {}
     results = {}
     if revision is None:
-        for relative in paths:
+        for relative, source_revision in declared:
+            count = key_counts.get(relative, 0)
+            key_counts[relative] = count + 1
+            key = (relative if count == 0 else
+                   json.dumps([relative, source_revision], separators=(",", ":")))
             path = _confined_file(root, relative)
             if path is None:
                 return None
             try:
                 if not path.is_file():
                     return None
-                results[relative] = _sha(path.read_bytes())
+                results[key] = _sha(path.read_bytes())
             except OSError:
                 return None
         return results
@@ -180,8 +199,20 @@ def _accepted_source_digests(root: Path, test: dict,
         if checked.returncode:
             return None
         commit = checked.stdout.decode("ascii").strip()
-        for relative in paths:
-            listing = subprocess.run(["git", "ls-tree", "-z", commit, "--", relative],
+        for relative, source_revision in declared:
+            count = key_counts.get(relative, 0)
+            key_counts[relative] = count + 1
+            key = (relative if count == 0 else
+                   json.dumps([relative, source_revision], separators=(",", ":")))
+            source_commit = commit
+            if source_revision is not None:
+                resolved = subprocess.run(["git", "rev-parse", "--verify",
+                                           f"{source_revision}^{{commit}}"],
+                                          cwd=root, capture_output=True, timeout=3, check=False)
+                if resolved.returncode:
+                    return None
+                source_commit = resolved.stdout.decode("ascii").strip()
+            listing = subprocess.run(["git", "ls-tree", "-z", source_commit, "--", relative],
                                      cwd=root, capture_output=True, timeout=3, check=False)
             if listing.returncode:
                 return None
@@ -197,7 +228,7 @@ def _accepted_source_digests(root: Path, test: dict,
                                   cwd=root, capture_output=True, timeout=3, check=False)
             if blob.returncode:
                 return None
-            results[relative] = _sha(blob.stdout)
+            results[key] = _sha(blob.stdout)
         return results
     except (OSError, UnicodeError, subprocess.TimeoutExpired):
         return None
@@ -244,7 +275,12 @@ def detail_identity(root: Path, snapshot, test: dict, *, source_context: dict,
     except (UnicodeError, ValueError, TypeError):
         pass
     source_items = {}
-    for relative in test.get("source_paths", []):
+    source_paths = list(test.get("source_paths", []))
+    curated_contexts = test.get("source_context", [])
+    if isinstance(curated_contexts, list):
+        source_paths.extend(entry.get("path") for entry in curated_contexts
+                            if isinstance(entry, dict) and isinstance(entry.get("path"), str))
+    for relative in sorted(set(source_paths)):
         path = _confined_file(root, relative)
         if path is None or not path.is_file():
             source_items[str(relative)] = "unavailable"
@@ -370,6 +406,7 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     """Load one test's qualified source and retained evidence after explicit selection."""
     root = Path(root).resolve()
     context_kind = source_context.get("kind", "working-tree")
+    captured_test = _captured_test(snapshot, test, node_id)
     current_head = _git(root, "rev-parse", "HEAD")
     evidence_candidate = source_context.get("commit") if context_kind == "git-commit" else candidate_sha
     if evidence_candidate is None and current_head:
@@ -377,7 +414,7 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     if isinstance(evidence_candidate, bytes):
         evidence_candidate = evidence_candidate.decode("ascii", "replace")
     selected_candidate = evidence_candidate
-    key = detail_identity(root, snapshot, test, source_context=source_context,
+    key = detail_identity(root, snapshot, captured_test, source_context=source_context,
                           candidate_sha=selected_candidate)
     cache = cache if cache is not None else OrderedDict()
     if key in cache:
@@ -394,7 +431,6 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
                      "context": [], "test_source": "",
                      "diagnostic": "same-revision helper context requires matching committed source bytes"}
     if selected_candidate:
-        captured_test = _captured_test(snapshot, test, node_id)
         committed_sources = _accepted_source_digests(root, captured_test, str(selected_candidate))
         working_sources = (_accepted_source_digests(root, captured_test)
                            if context_kind != "git-commit" else committed_sources)
@@ -458,11 +494,13 @@ def load_selected_detail(root: Path, snapshot, test: dict, *, node_id: str,
     # Keep that verdict separate from whether the retained source bytes match
     # the exact test method currently shown in this detail panel.
     selected_source_digests = _accepted_source_digests(
-        root, test, str(selected_candidate) if context_kind == "git-commit" and selected_candidate else None)
+        root, captured_test,
+        str(selected_candidate) if context_kind == "git-commit" and selected_candidate else None)
     for run in history.get("runs", []):
         applicability = "unavailable"
         retained_sha = run.get("source_sha") if isinstance(run, dict) else None
-        retained_source_digests = _accepted_source_digests(root, test, retained_sha) if retained_sha else None
+        retained_source_digests = (_accepted_source_digests(root, captured_test, retained_sha)
+                                   if retained_sha else None)
         if selected_source_digests and retained_source_digests:
             applicability = ("matches selected source" if retained_source_digests == selected_source_digests
                              else "differs from selected source")

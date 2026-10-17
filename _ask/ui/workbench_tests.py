@@ -82,7 +82,11 @@ def render_test(projection: dict, test_id: str, *, detail: dict | None = None,
             label = f"{role.title()} · {selector}"
             with st.expander(label, expanded=False,
                              key=f"source-context:{context}:{test_id}:{index}:{selector}"):
-                st.caption(f"Source revision: {item.get('status') or 'unavailable'}")
+                revision = item.get("source_sha")
+                if role in {"setup", "helper", "fixture"} and revision:
+                    st.caption(f"Source commit: {revision}")
+                else:
+                    st.caption(f"Source revision: {item.get('status') or 'unavailable'}")
                 st.caption(f"Source path: {item.get('source_path') or 'unavailable'}")
                 if item.get("explanation"):
                     st.write(str(item["explanation"]))
