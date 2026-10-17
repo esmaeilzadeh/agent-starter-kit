@@ -189,7 +189,7 @@ class ProjectionTests(unittest.TestCase):
                 self.assertEqual(legacy_tasks["build"].get("status"), "blocked")
                 self.assertEqual(legacy_tasks["build"]["blockers"][0]["id"], "choice")
                 legacy_markdown = render_markdown(legacy_view)
-                self.assertIn("Readiness: blocked", legacy_markdown)
+                self.assertIn("`build`: blocked", legacy_markdown)
                 self.assertIn("choice is open; requires resolved", legacy_markdown)
 
     def test_live_archive_foreign_and_historical_revisions_are_read_only(self):
