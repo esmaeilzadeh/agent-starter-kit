@@ -36,6 +36,34 @@ def _record(text, node, selector, role, source_path, source_sha, current_sha):
             "source_sha": source_sha, "current_sha": current_sha}
 
 
+def _qualified_node(tree, selector):
+    """Resolve a curated function, class method, or assignment selector."""
+    parts = selector.split(".")
+    if len(parts) < 2 or any(not part for part in parts):
+        raise ValueError("curated source selector is not qualified")
+    body = tree.body
+    for name in parts[1:-1]:
+        classes = [node for node in body if isinstance(node, ast.ClassDef) and node.name == name]
+        if len(classes) != 1:
+            raise ValueError("curated source selector does not identify one class")
+        body = classes[0].body
+    name = parts[-1]
+    definitions = [node for node in body
+                   if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                   and node.name == name]
+    if len(definitions) == 1:
+        return definitions[0]
+    assignments = []
+    for node in body:
+        if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            if name in {target_name for target in targets for target_name in _target_names(target)}:
+                assignments.append(node)
+    if len(assignments) == 1:
+        return assignments[0]
+    raise ValueError("curated source selector does not identify one definition")
+
+
 def read_test(root, test, source_sha, *, current_sha=None):
     """Read a qualified test, direct setup/helpers and referenced module fixtures.
 
@@ -117,7 +145,7 @@ def read_test(root, test, source_sha, *, current_sha=None):
                 raise ValueError("curated source context entry is malformed")
             revision = entry.get("revision")
             if revision == "snapshot":
-                revision = current or sha
+                revision = sha
             try:
                 context_sha = _commit(root, revision)
                 context_text = _blob(root, context_sha, entry["path"]).decode("utf-8")
@@ -133,8 +161,8 @@ def read_test(root, test, source_sha, *, current_sha=None):
                 else:
                     if selector_parts[0] != source_module:
                         raise ValueError("curated selector does not identify its source path")
-                selected_module, context_node, _begin, _finish = _selector_node(
-                    context_tree, context_selector)
+                selected_module = context_selector.split(".", 1)[0]
+                context_node = _qualified_node(context_tree, context_selector)
                 if selected_module != source_module:
                     raise ValueError("curated selector module differs from source path")
                 record = _record(context_text, context_node, entry["qualified_name"],

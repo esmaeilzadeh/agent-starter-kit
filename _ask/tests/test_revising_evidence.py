@@ -43,7 +43,7 @@ class ProjectionTests(unittest.TestCase):
         actual = make_input()
         self._assert_projection(actual)
 """)
-        self.write("helpers.py", "def external_input():\n    return 'old external input'\n")
+        self.write("helpers.py", "VALUE = 'old external fixture'\ndef external_input():\n    return 'old external input'\n")
         self.old_sha = self.commit("initial selected test source")
         self.write("test_sample.py", """import unittest
 FIXTURE = {"input": "new input"}
@@ -69,16 +69,21 @@ class ProjectionTests(unittest.TestCase):
         actual = make_input()
         self._assert_projection(actual)
 """)
-        self.write("helpers.py", "def external_input():\n    return 'new external input'\n")
+        self.write("helpers.py", "VALUE = 'new external fixture'\ndef external_input():\n    return 'new external input'\n")
         self.current_sha = self.commit("change current fixture and helper")
         self.test = {
             "id": "T",
             "case_id": "test_sample.ProjectionTests.test_projection",
             "runner_id": "unittest",
             "source_paths": ["test_sample.py"],
-            "source_context": [{"path": "helpers.py", "revision": self.old_sha,
-                                "qualified_name": "helpers.external_input", "role": "helper",
-                                "explanation": "External helper used by the selected flow."}],
+            "source_context": [
+                {"path": "helpers.py", "revision": "snapshot",
+                 "qualified_name": "helpers.external_input", "role": "helper",
+                 "explanation": "External helper used by the selected flow."},
+                {"path": "helpers.py", "revision": "snapshot",
+                 "qualified_name": "helpers.VALUE", "role": "fixture",
+                 "explanation": "External fixture value used by the helper."},
+            ],
             "scenario": {"given": "fixture input", "when": "project", "then": ["old expected"]},
         }
 
@@ -122,6 +127,9 @@ class ProjectionTests(unittest.TestCase):
                         if item["selector"] == "helpers.external_input")
         self.assertIn("old external input", external["source"])
         self.assertEqual(external["explanation"], "External helper used by the selected flow.")
+        external_fixture = next(item for item in readable["context"]
+                                if item["selector"] == "helpers.VALUE")
+        self.assertIn("old external fixture", external_fixture["source"])
 
         namespaced = dict(self.test, case_id="_ask.tests.test_sample.ProjectionTests.test_projection")
         qualified = read_test(self.root, namespaced, self.old_sha,
@@ -355,10 +363,41 @@ class EvidenceIdentityTests(unittest.TestCase):
         row = next(item for item in helper_stale["runs"] if item["run_id"] == "run-3")
         self.assertEqual((row["applicability"], row["source_status"]), ("stale", "stale"))
 
+        self.assert_existing_evaluator_rechecks_retained_authority()
+
         (self.runtime / "executions.json").write_text("[]", encoding="utf-8")
         self.assertEqual(self.history()["status"], "not_run")
         (self.runtime / "executions.json").unlink()
         self.assertEqual(self.history()["status"], "unavailable")
+
+    def assert_existing_evaluator_rechecks_retained_authority(self):
+        tests_root = Path(__file__).resolve().parent
+        sys.path.insert(0, str(tests_root))
+        sys.path.insert(0, str(tests_root.parent / ".agents" / "ask"))
+        from traceability_fixture import Consumer
+        from engineering_model.evidence import inspect
+
+        consumer = Consumer()
+        self.addCleanup(consumer.close)
+        verified = consumer.command("verify")
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        accepted = inspect(consumer.root, "w")
+        self.assertEqual(accepted["status"], "valid", accepted)
+        self.assertTrue(accepted["current_completion"])
+
+        test_row = accepted["completion"]["criterion_evidence"][0]["tests"][0]
+        log_path = consumer.root / test_row["final_execution"]["output_artifact"]
+        original_log = log_path.read_bytes()
+        log_path.write_bytes(original_log + b"\nforged\n")
+        tampered_log = inspect(consumer.root, "w")
+        self.assertEqual(tampered_log["status"], "invalid", tampered_log)
+        self.assertIn("execution log", " ".join(tampered_log["completion"]["errors"]))
+
+        consumer.git("update-ref", "-d", "refs/ask/accepted-tests/w")
+        missing_authority = inspect(consumer.root, "w")
+        self.assertEqual(missing_authority["status"], "unavailable", missing_authority)
+        self.assertFalse(missing_authority["current_completion"])
+        self.assertIn("accepted-tests ref", " ".join(missing_authority["completion"]["errors"]))
 
 
 def json_context(readable):
