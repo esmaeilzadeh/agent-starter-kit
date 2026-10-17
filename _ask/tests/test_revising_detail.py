@@ -52,7 +52,8 @@ class DetailAppTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workbench_model(root)
-            source = root / "test_fixture.py"
+            source = root / "_ask/tests/test_fixture.py"
+            source.parent.mkdir(parents=True)
             source.write_text(
                 "def expected_output():\n    return 'accepted'\n\n"
                 "class Cases:\n"
@@ -62,6 +63,11 @@ class DetailAppTests(unittest.TestCase):
                 "        self.assertEqual(actual, 'accepted')\n")
             external = root / "support.py"
             external.write_text("def curated_expectation():\n    return 'curated'\n")
+            plan_path = root / "work/pilot/test-plan.json"
+            plan = json.loads(plan_path.read_text())
+            plan["tests"][0]["case_id"] = "_ask.tests.test_fixture.Cases.test_behavior"
+            plan["tests"][0]["source_paths"] = ["_ask/tests/test_fixture.py"]
+            plan_path.write_text(json.dumps(plan))
             subprocess.run(["git", "init", "-q", str(root)], check=True)
             subprocess.run(["git", "-C", str(root), "config", "user.name", "Workbench Test"], check=True)
             subprocess.run(["git", "-C", str(root), "config", "user.email", "workbench@example.invalid"], check=True)
@@ -122,6 +128,8 @@ class DetailAppTests(unittest.TestCase):
                 rendered = test_engineering_ui.text(app)
                 self.assertIn("Selected behavior flow", rendered)
                 self.assertIn("Setup", rendered)
+                self.assertIn("def test_behavior(self):", rendered)
+                self.assertIn("Source context", rendered)
             self.assertIn("return 'accepted'", rendered)
 
     def _assert_actual_output_is_available_only_for_valid_digests(self):
