@@ -75,9 +75,9 @@ class DetailAppTests(unittest.TestCase):
                 candidate_sha=candidate,
             )
             readable = detail.get("readable_test") or {}
-            self.assertEqual(readable["status"], "current")
-            self.assertTrue(any(item.get("role") == "setup" for item in readable["context"]))
-            helper = next(item for item in readable["context"]
+            self.assertEqual(readable.get("status"), "current")
+            self.assertTrue(any(item.get("role") == "setup" for item in readable.get("context", [])))
+            helper = next(item for item in readable.get("context", [])
                           if str(item.get("selector", "")).endswith("expected_output"))
             self.assertIn("return 'accepted'", helper["source"])
             self.assertEqual(readable["flow"]["given"], "Valid input")
@@ -184,36 +184,34 @@ class DetailAppTests(unittest.TestCase):
 
     def test_overview_has_no_source_evidence_reads_and_refresh_detects_tampering(self):
         import workbench_loading
+        import tempfile
 
-        with self.subTest("defer and cache selected source detail"):
-            import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            original = workbench_loading._working_source
+            with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
+                  patch.object(workbench_loading, "_working_source", wraps=original) as load_source):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"), default_timeout=30).run(timeout=30)
+                self.assertFalse(app.exception, app.exception)
+                load_source.assert_not_called()
+                _open(app, "test:CASE-1")
+                self.assertFalse(app.exception, app.exception)
+                self.assertEqual(load_source.call_count, 1)
+                _open(app, "purpose")
+                _open(app, "test:CASE-1")
+                self.assertEqual(load_source.call_count, 1,
+                                 "unchanged selected details reuse their parsed source cache")
 
-            with tempfile.TemporaryDirectory() as directory:
-                root = Path(directory)
-                workbench_model(root)
-                original = workbench_loading._working_source
-                with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
-                      patch.object(workbench_loading, "_working_source", wraps=original) as load_source):
-                    app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py"), default_timeout=30).run(timeout=30)
-                    self.assertFalse(app.exception, app.exception)
-                    load_source.assert_not_called()
-                    _open(app, "test:CASE-1")
-                    self.assertFalse(app.exception, app.exception)
-                    self.assertEqual(load_source.call_count, 1)
-                    _open(app, "purpose")
-                    _open(app, "test:CASE-1")
-                    self.assertEqual(load_source.call_count, 1,
-                                     "unchanged selected details reuse their parsed source cache")
-
-                    source = root / "test_fixture.py"
-                    before = source.stat()
-                    source.write_text(source.read_text() + "\n# changed helper bytes\n")
-                    os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
-                    app.button(key="refresh").click().run(timeout=30)
-                    self.assertFalse(app.exception, app.exception)
-                    _open(app, "test:CASE-1")
-                    self.assertFalse(app.exception, app.exception)
-                    self.assertEqual(load_source.call_count, 2,
-                                     "same-mtime source changes invalidate selected detail on refresh")
+                source = root / "test_fixture.py"
+                before = source.stat()
+                source.write_text(source.read_text() + "\n# changed helper bytes\n")
+                os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+                app.button(key="refresh").click().run(timeout=30)
+                self.assertFalse(app.exception, app.exception)
+                _open(app, "test:CASE-1")
+                self.assertFalse(app.exception, app.exception)
+                self.assertEqual(load_source.call_count, 2,
+                                 "same-mtime source changes invalidate selected detail on refresh")
 
         _run_existing("test_gitless_model_root_keeps_workbench_usable_without_git_fatal")
