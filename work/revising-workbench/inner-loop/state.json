@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 16,
+  "revision": 20,
   "coordinator_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -1201,14 +1201,39 @@
       }
     },
     "RWB-104": {
-      "status": "running",
+      "status": "blocked",
       "base_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
       "task_branch": "",
       "result_path": "",
-      "boundary_reject": null,
+      "boundary_reject": "accepted_test_contract_changed: reviewed historical regression evidence mapping amendment pending pin",
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {
+        "review": {
+          "work_id": "revising-workbench",
+          "task_id": "RWB-104",
+          "base_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
+          "candidate_sha": "e7ed1101b6bd1ef8016cf5a6470e4392420d4e6a",
+          "result_digest": "5a0ede80e2cc9cf90b0114ead0469d9a35eae59492febacbb3746cf04ee98ec5",
+          "reviewer": "independent-review/gpt-6.1-sol-high",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ba6fc8e139606df8d5db7fcbc19dc42655ec49a3c9c6523baf3ac15c27f44107",
+          "evidence": "work/revising-workbench/inner-loop/evidence/RWB-104-review-e7ed110.md",
+          "evidence_digest": "c715276f8f21f29fd9d52c867774a008ba95b14a265a3ee254ad9143fa171527",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      },
+      "admission_history": [
+        {
+          "event": "blocked-for-reviewed-contract-amendment",
+          "original_base_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
+          "wip_sha": "e7ed1101b6bd1ef8016cf5a6470e4392420d4e6a",
+          "reviewed_amendment_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
+          "reason": "Rebind RWB-HISTORICAL to unchanged baseline regression evidence under the independently reviewed test-plan amendment; preserve prior semantic review and refresh task evidence under the amended contract."
+        }
+      ]
     },
     "RWB-105": {
       "status": "pending",
