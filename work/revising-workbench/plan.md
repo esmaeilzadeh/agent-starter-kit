@@ -114,7 +114,7 @@ input blocks admission; missing-to-present and duplicate passages stale snapshot
 fixture results cannot stand in for genuine WB-003 evidence; failed or stale human
 understanding blocks demonstration.
 
-All runners use the supported `unittest` adapter. The 22 inherited regressions
+All runners use the supported `unittest` adapter. The 23 inherited regressions
 use four file-scoped discovery runners, each declaring
 `python3 -m unittest discover -s _ask/tests -p test_engineering_<file>.py`:
 model (9 cases), guard (10), CLI (1) and evidence (2). Their canonical case IDs
@@ -124,7 +124,7 @@ so existing bare fixture imports need neither ambient `PYTHONPATH` nor original
 checkout modules. Task scopes filter that same runner to their accepted subset;
 full-workstream execution maps all collected cases.
 
-The 34 future new cases retain one exact namespace-qualified `_ask.tests.*`
+The 33 future new cases retain one exact namespace-qualified `_ask.tests.*`
 selector per runner. Their fixture/helper imports must be package-qualified
 (e.g. `from _ask.tests.revising_fixture import ...` and
 `from _ask.tests.revising_browser_support import ...`) or explicitly rooted in
