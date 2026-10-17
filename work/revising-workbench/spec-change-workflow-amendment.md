@@ -136,3 +136,29 @@ Impacted artifacts are the canonical spec, test plan, TaskGraph, plan, this
 proposal, `_ask/tests/test-bindings-consumer-overlay.sh`, and
 `_ask/tests/test_traceability_entrypoints.py`. The user's instruction remains:
 “fix the main workflow first then continue.”
+
+
+## Fourth detached integration finding
+
+The binding-overlay, install-kit, and workstream-smoke checks all wrote the
+candidate's review-agent projection when they installed into a temporary
+consumer. Two other required shell tests (`test-sync-canonical-ask.sh` and
+`test-sync-off-path-command.sh`) directly ran sync inside temporary roots while
+inheriting the verifier's `ASK_ROOT`. Both failures came from child processes
+using the outer verifier root instead of the repository they were operating on.
+
+## Fourth proposed change
+
+Extend EM-020 and RWB-CANDIDATE-SYNC-CLEAN to execute the canonical-source and
+off-path temporary-root sync tests under an inherited candidate `ASK_ROOT`, and
+require candidate projection/source integrity after each. Change `install-kit.sh`
+to scope its runtime synchronization to `ASK_ROOT="$TARGET"` and clear the
+verifier's work-specific override for that target operation. Bind direct
+temporary-root sync tests to their `$TMP` root. Keep the full candidate integrity
+gate and consumer binding checks.
+
+Impacted artifacts are the canonical spec, test plan, TaskGraph, plan, this
+proposal, `_ask/scripts/install-kit.sh`, `_ask/tests/test-sync-canonical-ask.sh`,
+`_ask/tests/test-sync-off-path-command.sh`, and
+`_ask/tests/test_traceability_entrypoints.py`. This is the fourth additive
+continuation of the user's instruction to fix the main workflow before continuing.

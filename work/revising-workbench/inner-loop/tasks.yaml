@@ -117,8 +117,11 @@ tasks:
       - _ask/tests/test-sync-runtime-agents.sh
       - _ask/tests/test-askit-first-run.sh
       - _ask/tests/test-bindings-consumer-overlay.sh
+      - _ask/tests/test-sync-canonical-ask.sh
+      - _ask/tests/test-sync-off-path-command.sh
+      - _ask/scripts/install-kit.sh
       - _ask/docs/spec-test-traceability.md
-    completion_evidence: "AppTest proves flow-specific readable source/results, all honest states and collapsed identifiers; current decision persistence and invalid/stale/historical no-write cases pass; zero eager scans and tamper refresh asserted; amended accepted contracts pass detached integration while verifier code remains pinned to the task base; sync cleanup and first-run/binding-overlay consumers preserve candidate and consumer integrity under verifier root overrides"
+    completion_evidence: "AppTest proves flow-specific readable source/results, all honest states and collapsed identifiers; current decision persistence and invalid/stale/historical no-write cases pass; zero eager scans and tamper refresh asserted; amended accepted contracts pass detached integration while verifier code remains pinned to the task base; sync cleanup, first-run/binding-overlay consumers, and temporary-root sync tests preserve candidate and consumer integrity under verifier root overrides"
     test_ids: [RWB-APP-EVIDENCE, RWB-APP-DECISIONS, RWB-LAZY-CACHE, RWB-INNER-LOOP-AMENDMENT, RWB-CANDIDATE-SYNC-CLEAN]
   - id: RWB-108
     title: "Adopt new pilot without rewriting historical authority"

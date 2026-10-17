@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "revising-workbench",
-  "spec_digest": "3d4451ba04bb18bf05d1d64049a10cedb32e9ad63e601c83427646d5cf7646aa",
+  "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -2643,8 +2643,8 @@
       "type": "integration",
       "change_kind": "new",
       "scenario": {
-        "given": "The candidate has a work-specific reviewer overlay and the verifier exports ASK_ROOT into sync, first-run, and consumer-overlay checks",
-        "when": "The forced-failure sync check, successful sync, first-run consumer test, and binding-overlay install test execute in a disposable candidate worktree",
+        "given": "The candidate has a work-specific reviewer overlay and the verifier exports ASK_ROOT into sync, first-run, consumer-overlay, canonical-source sync, and off-path sync checks",
+        "when": "The forced-failure sync check, successful sync, first-run consumer test, binding-overlay install test, and temporary-root canonical/off-path sync tests execute in a disposable candidate worktree",
         "then": [
           "The failing sync check restores generated runtime-agent projections to exact pre-check bytes",
           "All successful checks leave candidate source and projections unchanged and preserve consumer bindings"
@@ -2655,7 +2655,7 @@
           "criterion_id": "EM-020",
           "checks": [
             "Force a failure after runtime projections change, require the expected nonzero status, compare all projection files with their pre-check snapshot, and assert the candidate is clean",
-            "Run sync, first-run, and binding-overlay checks with ASK_ROOT set to the child candidate; require success, exact projection preservation, and no candidate changes"
+            "Run sync, first-run, binding-overlay, canonical-source sync, and off-path sync checks with ASK_ROOT set to the child candidate; require success, exact projection preservation, and no candidate changes"
           ]
         }
       ],
@@ -2665,7 +2665,10 @@
         "_ask/tests/test_traceability_entrypoints.py",
         "_ask/tests/test-sync-runtime-agents.sh",
         "_ask/tests/test-askit-first-run.sh",
-        "_ask/tests/test-bindings-consumer-overlay.sh"
+        "_ask/tests/test-bindings-consumer-overlay.sh",
+        "_ask/tests/test-sync-canonical-ask.sh",
+        "_ask/tests/test-sync-off-path-command.sh",
+        "_ask/scripts/install-kit.sh"
       ]
     }
   ],
