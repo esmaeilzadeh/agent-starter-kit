@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 64,
+  "revision": 65,
   "coordinator_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -2791,7 +2791,7 @@
       }
     },
     "RWB-108": {
-      "status": "running",
+      "status": "blocked",
       "base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
       "task_branch": "",
       "result_path": "",
@@ -2861,6 +2861,14 @@
       "reviewed_amendment_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
       "whole_task_review_from_original_base": true,
       "note": "Resume the same RWB-108 writer under the coordinator-pinned RWB-107 contract amendment. Refresh TaskResult, red/final-green evidence, and whole-task review from the original task base; later RWB-109 changes are not exempt from task boundary review."
+    },
+    {
+      "event": "blocked-for-required-historical-evidence",
+      "task_id": "RWB-108",
+      "original_task_base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
+      "wip_sha": "53168f6d29f8aa2ce08a137eb8389af4770520f5",
+      "contract_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
+      "reason": "RWB-108 completion requires a genuine authority-evaluated WB-003 result. The retained structured-agentic-environment execution ledger is missing and its completion record reports candidate source/CheckPlan changed during verification. Do not reconstruct or fabricate historical authority. Resume after valid source evidence is restored and the RWB-108 candidate is reviewed."
     }
   ]
 }
