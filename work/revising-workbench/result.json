@@ -1,6 +1,6 @@
 {
   "work_id": "revising-workbench",
-  "commit_sha": "e0dead38a1e06fafe536f27461b558876d429e7e",
-  "result": "plan-revised",
-  "notes": "Sol/high proposed plan revised for three partial Astra/high findings: baseline discovery imports, stage-owned passage cases and nonrecursive flow mapping identity. Nine serialized tasks, 56 cases and 38 runners; graph/coverage/scopes and isolated collection of 22 regressions passed. Independent reviewer reached usage limit before final verdict. User requested stopping after revision; no new review round, promotion, pinning or implementation."
+  "commit_sha": "f085f12b376dc13a5b26cdead68d8da0d86e9d29",
+  "result": "blocked",
+  "notes": "RWB-108 is blocked because the genuine WB-003 execution ledger is unavailable; candidate verification passed 37 repository checks but workstream completion lacks candidate-bound independent review. RWB-109 remains pending; its browser fixture failures and human comprehension exercise are outstanding."
 }
