@@ -4,7 +4,7 @@
 
 - Browser benchmark candidate: `f52c441d780473bad86cae24abe4f0ae57d5a547`
 - RWB-108 test candidate: `9c92504605824eb7c9430108ea01c96b6f4cf007`
-- Latest recorded verification candidate: `0dff0d5cd1a24c5f265354ada63d85cf372a4a3c`
+- Latest recorded verification candidate: `f085f12b376dc13a5b26cdead68d8da0d86e9d29`
 - Workstream: `agent/revising-workbench`
 - Browser: `/usr/bin/google-chrome`
 - Test environment: `_ask/.venv`, installed from `_ask/ui/requirements.txt` and
@@ -54,13 +54,30 @@ execution ledger. The source workstream's existing
 be promoted as completed evidence. No ledger or historical completion record
 was reconstructed.
 
+The candidate traceability execution on `f085f12` recorded 70 final-green cases:
+64 passed, 5 failed, and 1 errored. The RWB-108 failures are
+`RWB-GENUINE-WB003` and `RWB-DEMO-PASSAGES`, both blocked by the absent WB-003
+ledger. RWB-109 also has three browser failures (`RWB-BROWSER-NAV`,
+`RWB-BROWSER-ACCESS`, and `RWB-BROWSER-PILOT`) because those cases open
+`work/ask-status` without an admitted engineering model; the browser app reports
+`EM001_MODEL_READ`. `RWB-BROWSER-BUDGETS` errors on the same missing historical
+WB-003 identity. These RWB-109 failures need correction under RWB-109's task
+scope after RWB-108 is completed.
+
 ## Kit verification
 
-`./ask verify` on `0dff0d5cd1a24c5f265354ada63d85cf372a4a3c` failed before running
-any checks with `candidate acceptance document differs from coordinator
-authority`: the candidate pin names contract `54d2e10`, while the coordinator
-ref names `54ef012`. An independent review artifact for the candidate contract
-exists, but the accepted ref was not advanced through the coordinator workflow.
-The inner-loop still marks RWB-108 running, so its plan's no-running-task gate
-must be followed before advancing that ref. This record does not alter the
-acceptance authority or task state.
+The RWB-107 amendment is now coordinator-pinned at contract `54d2e10`. The task
+was paused and readmitted under that reviewed pin in commits `b000e92` and
+`f085f12`, preserving its original base `7433097`.
+
+`./ask verify` on `f085f12b376dc13a5b26cdead68d8da0d86e9d29` passed all 37
+repository checks, then failed workstream completion because no independent
+review is recorded for that candidate at
+`work/revising-workbench/traceability/reviews/f085f12b376dc13a5b26cdead68d8da0d86e9d29.json`.
+The generated completion record is ignored runtime output at
+`work/revising-workbench/traceability/completion.json`. No review was
+self-authored or claimed.
+
+At the time of this record, RWB-108 remains the active task and RWB-109 remains
+pending. Final acceptance also still requires the candidate-bound human
+comprehension exercise.
