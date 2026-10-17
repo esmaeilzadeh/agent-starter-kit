@@ -55,6 +55,14 @@ class EntrypointTests(unittest.TestCase):
                 self.assertEqual(passed.returncode,0,passed.stdout+passed.stderr)
                 self.assertEqual(projection_snapshot(),before,'successful sync changed agent projections')
                 require_clean()
+
+                consumer_env=env.copy()
+                consumer_env['ASK_ROOT']=str(candidate)
+                consumer=subprocess.run(['bash','_ask/tests/test-askit-first-run.sh'],cwd=candidate,
+                                        env=consumer_env,text=True,capture_output=True)
+                self.assertEqual(consumer.returncode,0,consumer.stdout+consumer.stderr)
+                self.assertEqual(projection_snapshot(),before,'first-run consumer changed runtime agent projections')
+                require_clean()
             finally:
                 subprocess.run(['git','worktree','remove','--force',str(candidate)],cwd=root,
                                text=True,capture_output=True,check=False)
