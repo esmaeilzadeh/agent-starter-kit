@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+import inspect
 import os
 from pathlib import Path
 import shutil
@@ -51,6 +52,7 @@ def browser_session(model_root: Path = ROOT, work_id: str = "revising-workbench"
                     options["executable_path"] = executable
                 browser = playwright.chromium.launch(**options)
                 context = browser.new_context(viewport=viewport or {"width": 1280, "height": 900})
+                context.tracing.start(screenshots=True, snapshots=True, sources=True)
                 if block_external:
                     context.route("**/*", lambda route: route.continue_()
                                   if route.request.url.startswith(("http://127.0.0.1:", "http://localhost:"))
@@ -64,6 +66,26 @@ def browser_session(model_root: Path = ROOT, work_id: str = "revising-workbench"
                 expect(page.get_by_text("Validated inputs", exact=False)).to_be_visible(timeout=30000)
                 yield page, browser
             finally:
+                if context is not None:
+                    runtime = Path(os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT", ROOT)).resolve()
+                    artifact_dir = runtime / "work" / work_id / "traceability" / "rwb109" / "browser-traces"
+                    artifact_dir.mkdir(parents=True, exist_ok=True)
+                    case_name = "browser-journey"
+                    for frame in inspect.stack():
+                        case = frame.frame.f_locals.get("self")
+                        if callable(getattr(case, "id", None)):
+                            case_name = case.id().split(".")[-1]
+                            break
+                    safe_name = "".join(char if char.isalnum() or char in "-_" else "_" for char in case_name)
+                    if "page" in locals():
+                        try:
+                            page.screenshot(path=str(artifact_dir / f"{safe_name}.png"), full_page=True)
+                        except Exception:
+                            pass
+                    try:
+                        context.tracing.stop(path=str(artifact_dir / f"{safe_name}.zip"))
+                    except Exception:
+                        pass
                 if context is not None:
                     context.close()
                 if browser is not None:
