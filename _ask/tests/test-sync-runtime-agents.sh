@@ -2,32 +2,6 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-TMP="$(mktemp -d)"
-PROJECTION_DIRS=(
-  .cursor/agents
-  .claude/agents
-  .codex/agents
-  .opencode/agents
-)
-for index in "${!PROJECTION_DIRS[@]}"; do
-  projection_dir="${PROJECTION_DIRS[$index]}"
-  if [[ -d "$projection_dir" ]]; then
-    cp -a "$projection_dir" "$TMP/projection-$index"
-    touch "$TMP/present-$index"
-  fi
-done
-
-restore_projections() {
-  for index in "${!PROJECTION_DIRS[@]}"; do
-    projection_dir="${PROJECTION_DIRS[$index]}"
-    rm -rf "$projection_dir"
-    if [[ -e "$TMP/present-$index" ]]; then
-      cp -a "$TMP/projection-$index" "$projection_dir"
-    fi
-  done
-  rm -rf "$TMP"
-}
-trap restore_projections EXIT
 
 # Portable defaults and protocol must not name vendor slugs.
 if grep -qiE 'grok|composer-|claude-|gpt-|sonnet|opus|haiku|fable|muse-' \
@@ -66,11 +40,6 @@ env -u ASK_WORK_ID ASK_MODEL_07_REVIEW=thinking python3 _ask/scripts/sync-runtim
 grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
 grep -q 'model = "gpt-6.1-sol"' .codex/agents/kit-07-review.toml
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
-
-if [[ "${ASK_SYNC_TEST_FORCE_FAILURE:-0}" == "1" ]]; then
-  echo "FAIL: forced post-sync failure for cleanup verification" >&2
-  exit 97
-fi
 
 python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
 
