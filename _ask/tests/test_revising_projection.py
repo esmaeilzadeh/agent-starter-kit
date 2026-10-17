@@ -209,8 +209,11 @@ class ProjectionTests(unittest.TestCase):
                     "schema": "ask-inner-loop-state/v1", "work_id": "product",
                     "tasks": {"standalone": {"status": ["integrated"]}},
                 })
-                malformed_view = project(capture(collision_root, "product"), collision_root,
-                                         include_evidence=False)
+                try:
+                    malformed_view = project(capture(collision_root, "product"), collision_root,
+                                             include_evidence=False)
+                except TypeError as exc:
+                    self.fail(f"malformed runtime status must be reported as unavailable, not crash: {exc}")
                 malformed_rows = [row for row in malformed_view["workbench"]["tasks"]
                                   if row["id"] == "standalone"]
                 self.assertEqual(len(malformed_rows), 2)
