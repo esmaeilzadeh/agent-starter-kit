@@ -273,7 +273,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                            # Keep verifier code pinned to base, but load accepted
                            # obligations from the candidate. A reviewed amendment
                            # may be accepted after this task's original base.
-                           ASK_TRACEABILITY_ANCHOR_SHA=identity['base_sha'],
+                           ASK_TRACEABILITY_ANCHOR_SHA=identity['candidate_sha'],
                            ASK_TRACEABILITY_RUNTIME_ROOT=str(root), ASK_TRACEABILITY_SCOPE='task',
                            ASK_TRACEABILITY_TASK_ID=identity['task_id'])
                 with (out / 'output.log').open('w') as log:
