@@ -12,7 +12,7 @@ def _contains(model: dict) -> tuple[dict[str, list[str]], dict[str, str]]:
     children: dict[str, list[str]] = defaultdict(list)
     parent: dict[str, str] = {}
     for edge in model.get("edges", []):
-        if edge.get("type") == "contains":
+        if edge.get("type") in {"contains", "enables"}:
             children[edge.get("source")].append(edge.get("target"))
             parent[edge.get("target")] = edge.get("source")
     return children, parent
@@ -114,6 +114,8 @@ def build_outline(projection: dict) -> dict:
                     add_test(test_id, scenario_path, indent + 1, scenario_id)
 
     root_routes = []
+    emitted_stories: set[str] = set()
+    emitted_scenarios: set[str] = set()
     for root_id in roots:
         root = nodes[root_id]
         title = root.get("title") or root_id
@@ -132,6 +134,7 @@ def build_outline(projection: dict) -> dict:
         epic_stories = sorted(story_id for story_id in stories if story_id in descendants)
         story_scenarios: set[str] = set()
         for story_id in epic_stories:
+            emitted_stories.add(story_id)
             story = stories[story_id]
             story_title = story.get("title") or story_id
             story_path = [*epic_path, (story_id, story_title)]
@@ -139,16 +142,37 @@ def build_outline(projection: dict) -> dict:
                     indent=1)
             story_scenarios.update(scenario_ids_for_story(story_id))
             for scenario_id in scenario_ids_for_story(story_id):
+                emitted_scenarios.add(scenario_id)
                 add_scenario(scenario_id, story_path, 2)
 
+        orphan_stories = sorted(story_id for story_id in stories
+                                if story_id not in emitted_stories and story_id not in descendants)
+        if orphan_stories and root_id == root_routes[0]:
+            group_id = f"unassigned-stories:{root_id}"
+            group_label = "Stories without a recorded feature"
+            group_path = [*epic_path, (group_id, group_label)]
+            _append(entries, ancestors, group_id, group_label, "group", group_path, indent=1)
+            for story_id in orphan_stories:
+                story = stories[story_id]
+                story_title = story.get("title") or story_id
+                story_path = [*group_path, (story_id, story_title)]
+                _append(entries, ancestors, story_id, story_title, "story", story_path,
+                        indent=2)
+                emitted_stories.add(story_id)
+                for scenario_id in scenario_ids_for_story(story_id):
+                    if scenario_id not in emitted_scenarios:
+                        emitted_scenarios.add(scenario_id)
+                        add_scenario(scenario_id, story_path, 3)
+
         direct_scenarios = sorted(scenario_id for scenario_id in scenarios
-                                  if scenario_id in descendants and scenario_id not in story_scenarios)
+                                  if scenario_id not in emitted_scenarios)
         if direct_scenarios:
             group_id = f"unassigned-scenarios:{root_id}"
             group_label = "Scenarios without a recorded story"
             group_path = [*epic_path, (group_id, group_label)]
             _append(entries, ancestors, group_id, group_label, "group", group_path, indent=1)
             for scenario_id in direct_scenarios:
+                emitted_scenarios.add(scenario_id)
                 add_scenario(scenario_id, group_path, 2)
 
         unrelated_tasks = sorted(task_id for task_id, task in tasks.items()

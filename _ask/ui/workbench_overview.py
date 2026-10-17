@@ -34,6 +34,7 @@ def render_overview(projection: dict, *, work_id: str, on_filter=None,
     tasks = projection.get("workbench", {}).get("tasks", [])
 
     st.subheader((epic or {}).get("title") or "Epic")
+    st.caption("Choose a Story or Task from the outline, or follow a recorded Scenario to its delivery work.")
     st.caption("Purpose")
     if epic is None:
         st.info("No epic or purpose record is available in this workstream.")

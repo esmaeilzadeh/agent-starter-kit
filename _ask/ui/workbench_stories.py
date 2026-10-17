@@ -18,7 +18,13 @@ def render_story(projection: dict, story_id: str, *, on_open=None) -> None:
         st.warning("This story is not present in the captured workstream.")
         return
     st.subheader(story.get("title") or story.get("id"))
-    st.caption("Recorded story in the Engineering Model")
+    model_node = next((node for node in projection.get("model", {}).get("nodes", [])
+                       if str(node.get("id")) == str(story_id)
+                       and node.get("type") == "story"), {})
+    st.caption("Recorded Story in the Engineering Model")
+    if model_node.get("description"):
+        st.markdown("#### Outcome")
+        st.write(model_node["description"])
     st.markdown("#### Related scenarios")
     if not story["scenarios"]:
         st.info("No scenarios are recorded under this story.")

@@ -22,9 +22,9 @@ from engineering_model.admission import admit
 from engineering_model.projection import project
 from engineering_model.workbench_sources import discover_work, read_snapshot
 from workbench_context import (
-    STATE_COMMITTED_SOURCE_CACHE, STATE_FORM_IDENTITY, STATE_ROUTE, STATE_SOURCE,
-    STATE_SOURCE_SELECTION,
-    navigate, reset_for_work, route_to,
+    STATE_COMMITTED_SOURCE_CACHE, STATE_FORM_IDENTITY, STATE_ROUTE, STATE_ROUTE_HISTORY,
+    STATE_SOURCE, STATE_SOURCE_SELECTION, STATE_SUBJECT_ENTRY,
+    navigate, reset_for_work, resolve_subject_route, route_to,
 )
 from workbench_navigation import build_outline, render_breadcrumbs, render_outline
 from workbench_overview import render_overview
@@ -66,6 +66,31 @@ def _open_related_route(kind: str, identity: str) -> None:
     if selected is None:
         return
     navigate(st.session_state, selected["route_id"])
+
+
+def _apply_subject_entry(projection: dict, work_id: str, source_id: str) -> None:
+    """Apply a direct Story/Task URL once per captured work/source selection."""
+    subject = st.query_params.get("subject")
+    subject = subject if isinstance(subject, str) and subject else None
+    marker = (work_id, source_id, subject)
+    if st.session_state.get(STATE_SUBJECT_ENTRY) == marker:
+        return
+    st.session_state[STATE_SUBJECT_ENTRY] = marker
+    if subject is None:
+        st.session_state["_engineering_subject_notice"] = None
+        return
+    outline = build_outline(projection)
+    resolved = resolve_subject_route(outline, projection, subject)
+    if resolved is None:
+        st.session_state["_engineering_subject_notice"] = (
+            f"The requested subject {subject!r} is unavailable or ambiguous in this captured workstream. "
+            "Choose a recorded Story or Task from the outline."
+        )
+        return
+    route_id, ancestry = resolved
+    route_to(st.session_state, route_id)
+    st.session_state[STATE_ROUTE_HISTORY] = ancestry
+    st.session_state["_engineering_subject_notice"] = None
 
 
 def _model_root() -> Path:
@@ -961,6 +986,10 @@ if refresh_inputs:
     st.rerun()
 
 projection = view["projection"]
+_apply_subject_entry(projection, work_id, source_id)
+subject_notice = st.session_state.get("_engineering_subject_notice")
+if subject_notice:
+    st.warning(subject_notice)
 _render_workbench(projection, view, root, work_id, source_context)
 feedback = st.session_state.get(STATE_FEEDBACK, [])
 if feedback:
