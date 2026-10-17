@@ -276,22 +276,23 @@ class PilotIntegrationTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[2]
         snapshot = capture(root, "revising-workbench")
         self.assertEqual(snapshot.diagnostics(root), [])
-        admission = {"canonical_flow": {"work_id": "structured-agentic-environment",
-                                        "plan_digest": "a" * 64, "case_id": "WB-evidence-identity",
-                                        "executable_case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract"},
-                     "source_identities": {"candidate_sha": "b" * 40, "spec_digest": "c" * 64,
-                                           "plan_digest": "a" * 64, "source_digest": "d" * 64},
-                     "evidence_identities": {"report_digest": "e" * 64, "log_digests": ["f" * 64],
-                                             "contract_digest": "1" * 64, "review_digest": "2" * 64,
-                                             "run_id": "799924ec199b4717a3eabf4fb39a1bdc"}}
         gate = demo_gate(root, snapshot, "inspect-genuine-wb003",
                          expected_snapshot_digest=snapshot.identity["digest"],
-                         admission=admission, expected_admission=copy.deepcopy(admission))
+                         retained_root=os.environ.get("ASK_RWB_RETAINED_ROOT", root))
         self.assertEqual(gate["status"], "context_ready")
         self.assertFalse(gate["demo_complete"])
         self.assertEqual(gate["prerequisites"], [
-            {"id": "genuine_retained_result", "status": "not_evaluated"},
+            {"id": "genuine_retained_result", "status": "identity_verified_authority_not_evaluated"},
             {"id": "human_comprehension", "status": "not_recorded"}])
+        self.assertEqual(gate["admission_identities"]["canonical_flow"], {
+            "work_id": "structured-agentic-environment",
+            "plan_digest": "f2893d132abb68dc94d735bdad8ff8d41a981e6f7a131ff865d327945876bf7b",
+            "case_id": "WB-evidence-identity",
+            "executable_case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract"})
+        self.assertEqual(gate["admission_identities"]["evidence_identities"]["run_id"],
+                         "799924ec199b4717a3eabf4fb39a1bdc")
+        with self.assertRaises(TypeError):
+            demo_gate(root, snapshot, "inspect-genuine-wb003", admission={"report_digest": "f" * 64})
         spec = next(row["resolution"] for row in snapshot.passages.values()
                     if row.get("node_id") == "inspect-genuine-wb003" and row.get("role") == "spec"
                     and row["resolution"].get("selector", {}).get("path", [])[-1:] == ["Projections and evidence"])
@@ -301,13 +302,8 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertIn("WB-003", plan["text"])
 
         stale = demo_gate(root, snapshot, "inspect-genuine-wb003", expected_snapshot_digest="0" * 64,
-                          admission=admission, expected_admission=admission)
+                          retained_root=os.environ.get("ASK_RWB_RETAINED_ROOT", root))
         self.assertEqual(stale["status"], "blocked_context")
-        stale_admission = copy.deepcopy(admission)
-        stale_admission["source_identities"]["candidate_sha"] = "0" * 40
-        self.assertIn("representative admission identities are stale",
-                      demo_gate(root, snapshot, "inspect-genuine-wb003", admission=stale_admission,
-                                expected_admission=admission)["context_blockers"])
 
         from engineering_model.snapshot import capture
         missing_model = copy.deepcopy(snapshot.document)
