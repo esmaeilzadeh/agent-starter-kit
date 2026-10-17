@@ -1,8 +1,97 @@
 """Task list and detail panel for the connected Engineering Workbench."""
 from __future__ import annotations
 
+import html
+import re
+
 import streamlit as st
 from workbench_context import task_selection_id
+
+
+_TABLE_SEPARATOR = re.compile(r"^:?-{3,}:?$")
+_LINE_BREAK = re.compile(r"<br\s*/?>", re.IGNORECASE)
+_CODE_SPAN = re.compile(r"`([^`]+)`")
+
+
+def _table_cells(line: str) -> list[str]:
+    """Split a Markdown table row while preserving escaped literal pipes."""
+    value = line.strip()
+    if value.startswith("|"):
+        value = value[1:]
+    if value.endswith("|"):
+        value = value[:-1]
+    if "|" not in value:
+        return []
+    cells = re.split(r"(?<!\\)\|", value)
+    return [cell.strip().replace(r"\|", "|") for cell in cells]
+
+
+def _table_markup(headers: list[str], rows: list[dict[str, str]]) -> str:
+    """Build a safe, responsive HTML table from parsed Markdown cell text."""
+    def cell_markup(value: str) -> str:
+        chunks = []
+        cursor = 0
+        for match in _CODE_SPAN.finditer(value):
+            chunks.append(html.escape(value[cursor:match.start()]).replace("\n", "<br>"))
+            chunks.append(f"<code>{html.escape(match.group(1))}</code>")
+            cursor = match.end()
+        chunks.append(html.escape(value[cursor:]).replace("\n", "<br>"))
+        return "".join(chunks)
+
+    header_html = "".join(f"<th>{cell_markup(header)}</th>" for header in headers)
+    row_html = "".join(
+        "<tr>" + "".join(f"<td>{cell_markup(row.get(header, ''))}</td>" for header in headers) + "</tr>"
+        for row in rows
+    )
+    return (
+        '<div style="max-width:100%;overflow-x:auto">'
+        '<table class="ask-passage-table" style="width:100%;table-layout:fixed;border-collapse:collapse">'
+        '<thead><tr>' + header_html + '</tr></thead><tbody>' + row_html + '</tbody></table></div>'
+        '<style>'
+        '.ask-passage-table th,.ask-passage-table td{border:1px solid #d9e2e8;padding:.45rem;'
+        'text-align:left;vertical-align:top;overflow-wrap:anywhere;white-space:normal}'
+        '.ask-passage-table th{background:#f2f6f8;font-weight:600}'
+        '.ask-passage-table code{white-space:normal;overflow-wrap:anywhere}'
+        '</style>'
+    )
+
+
+def _render_markdown_passage(value: str) -> None:
+    """Render prose as Markdown and pipe tables as scrollable workbench tables."""
+    lines = value.splitlines()
+    cursor = 0
+    prose_start = 0
+    while cursor + 1 < len(lines):
+        headers = _table_cells(lines[cursor])
+        separators = _table_cells(lines[cursor + 1])
+        if (not headers or len(headers) != len(separators)
+                or not all(_TABLE_SEPARATOR.fullmatch(cell.replace(" ", ""))
+                           for cell in separators)):
+            cursor += 1
+            continue
+
+        prose = "\n".join(lines[prose_start:cursor]).strip()
+        if prose:
+            st.markdown(prose)
+        rows = []
+        row_index = cursor + 2
+        while row_index < len(lines):
+            cells = _table_cells(lines[row_index])
+            if len(cells) != len(headers):
+                break
+            rows.append({header: _LINE_BREAK.sub("\n", cell) for header, cell in zip(headers, cells)})
+            row_index += 1
+        if rows:
+            st.markdown(_table_markup(headers, rows), unsafe_allow_html=True)
+            cursor = row_index
+            prose_start = row_index
+        else:
+            cursor += 2
+            prose_start = cursor
+
+    trailing = "\n".join(lines[prose_start:]).strip()
+    if trailing:
+        st.markdown(trailing)
 
 
 def task_rows(projection: dict) -> list[dict]:
@@ -112,12 +201,12 @@ def _detail(row: dict, *, on_open=None, context: str = "tasks") -> None:
             st.markdown(f"**{role.title()} passage · {passage.get('state', 'unavailable')}**")
             st.caption(f"{passage.get('path', 'Path not recorded')} · revision {passage.get('revision', 'not recorded')} · selector {passage.get('selector', 'not recorded')}")
             if passage.get("text"):
-                st.text(passage["text"])
+                _render_markdown_passage(passage["text"])
                 if passage.get("surrounding_text"):
                     with st.expander(f"Show surrounding {role} text · {passage.get('path', '')}",
                                      expanded=False,
                                      key=f"{context}:passage:{row['selection_id']}:{role}:{passage_index}"):
-                        st.text(passage["surrounding_text"])
+                        _render_markdown_passage(passage["surrounding_text"])
             elif passage.get("message"):
                 st.info(str(passage["message"]))
 

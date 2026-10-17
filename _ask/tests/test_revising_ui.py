@@ -119,6 +119,12 @@ def _text(app) -> str:
     ) for item in group)
 
 
+def _has_rendered_table(app, expected: dict[str, str]) -> bool:
+    return any("<table" in str(item.value)
+               and all(value in str(item.value) for value in expected.values())
+               for item in app.markdown)
+
+
 class WorkbenchAppTests(unittest.TestCase):
     def test_shared_story_route_does_not_duplicate_navigation_keys(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -225,6 +231,8 @@ class WorkbenchAppTests(unittest.TestCase):
                  b"# After\nWorking-only surrounding text.\n")
             app = _run(root, "task:task")
             self.assertFalse(app.exception, app.exception)
+            self.assertTrue(_has_rendered_table(app, {"Task ID": "WB-003",
+                                                      "Outcome": "Publish the selected result"}))
             view = app.session_state["_engineering_displayed_view"]
             task = next(row for row in view["projection"]["workbench"]["tasks"]
                         if (row.get("product_identity") or {}).get("node_id") == "task")
@@ -318,7 +326,8 @@ class WorkbenchAppTests(unittest.TestCase):
             self.assertFalse(app.exception, app.exception)
             committed_text = _text(app)
             self.assertIn("A verified publication is visible to its intended readers.", committed_text)
-            self.assertIn("| WB-003 | Publish the selected result |", committed_text)
+            self.assertTrue(_has_rendered_table(app, {"Task ID": "WB-003",
+                                                      "Outcome": "Publish the selected result"}))
             self.assertIn("revision", committed_text)
 
             app = _run(root)
@@ -359,11 +368,12 @@ class WorkbenchAppTests(unittest.TestCase):
             for phrase in (
                 "Publish a result only after its contract is satisfied.",
                 "A verified publication is visible to its intended readers.",
-                "| WB-003 | Publish the selected result |",
                 "Dependencies", "WB-001", "Related Stories",
                 "scenario", "WB-publish", "WB-review", "Completion is not verified",
             ):
                 self.assertIn(phrase, rendered)
+            self.assertTrue(_has_rendered_table(app, {"Task ID": "WB-003",
+                                                      "Outcome": "Publish the selected result"}))
             self.assertTrue(any("src/publish.py" in str(table.value) for table in app.dataframe))
             overview = _run(root)
             _click(overview, root, "overview:summary:scenarios")
