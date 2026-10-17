@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 20,
-  "coordinator_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
+  "revision": 21,
+  "coordinator_sha": "a4c1d871f6c5bc3a6fa0ee8232c4e61f14a7675f",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
     "RWB-101": {
@@ -1201,11 +1201,11 @@
       }
     },
     "RWB-104": {
-      "status": "blocked",
-      "base_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
+      "status": "running",
+      "base_sha": "a4c1d871f6c5bc3a6fa0ee8232c4e61f14a7675f",
       "task_branch": "",
       "result_path": "",
-      "boundary_reject": "accepted_test_contract_changed: reviewed historical regression evidence mapping amendment pending pin",
+      "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {
@@ -1232,6 +1232,15 @@
           "wip_sha": "e7ed1101b6bd1ef8016cf5a6470e4392420d4e6a",
           "reviewed_amendment_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
           "reason": "Rebind RWB-HISTORICAL to unchanged baseline regression evidence under the independently reviewed test-plan amendment; preserve prior semantic review and refresh task evidence under the amended contract."
+        },
+        {
+          "event": "readmitted-under-reviewed-contract",
+          "original_base_sha": "3ab55340bb5cc594281b211d3664065e84f50bec",
+          "previous_candidate_sha": "e7ed1101b6bd1ef8016cf5a6470e4392420d4e6a",
+          "new_base_sha": "a4c1d871f6c5bc3a6fa0ee8232c4e61f14a7675f",
+          "reviewed_amendment_sha": "3520cb05f20e8c24ace6df4c65d8f724f439f059",
+          "review_whole_task_from_original_base": true,
+          "note": "Pre-amendment source remains in branch ancestry and is not exempt from final review; refresh TaskResult, red and green evidence under the amended accepted plan."
         }
       ]
     },
