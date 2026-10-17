@@ -270,7 +270,10 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                 report['checkplan_digest'], expected = plan_identity(checkout, runner)
                 env = dict(os.environ, ASK_ROOT=str(checkout), VERIFY_JSON=str(out / 'verification.json'),
                            VERIFY_OUT_DIR=str(out), ASK_WORK_ID=identity['work_id'],
-                           ASK_TRACEABILITY_ANCHOR_SHA=identity['base_sha'],
+                           # Keep verifier code pinned to base, but load accepted
+                           # obligations from the candidate. A reviewed amendment
+                           # may be accepted after this task's original base.
+                           ASK_TRACEABILITY_ANCHOR_SHA=identity['candidate_sha'],
                            ASK_TRACEABILITY_RUNTIME_ROOT=str(root), ASK_TRACEABILITY_SCOPE='task',
                            ASK_TRACEABILITY_TASK_ID=identity['task_id'])
                 with (out / 'output.log').open('w') as log:

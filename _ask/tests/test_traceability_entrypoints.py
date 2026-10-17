@@ -10,6 +10,42 @@ class EntrypointTests(unittest.TestCase):
     def consumer(self,**kwargs):c=Consumer(**kwargs);self.addCleanup(c.close);return c
     def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
     def require_fail(self,proc):self.assertNotEqual(proc.returncode,0,proc.stdout+proc.stderr)
+    def test_I08_integration_accepts_reviewed_contract_amended_after_task_base(self):
+        c=self.consumer(tasks=True)
+        base=c.sha
+        plan_review={'decision':'APPROVED','reviewer':'fixture-independent',
+                     'spec_digest':c.contracts['pin']['spec_digest'],
+                     'plan_digest':c.contracts['pin']['plan_digest']}
+        c.write('work/w/traceability/plan-review-amendment.json',plan_review)
+        graph=(c.root/'work/w/inner-loop/tasks.yaml').read_text()
+        c.write('work/w/inner-loop/tasks.yaml',graph.replace('owned_paths: [app.py]',
+                                                              'owned_paths: [app.py, test_app.py]'))
+        graph_revision=c.commit('amend reviewed task ownership')
+        from verification.traceability.evidence import accept_plan,load_accepted
+        accept_plan(c.root,'w',graph_revision,'fixture-independent','fixture-coordinator',
+                    'work/w/traceability/plan-review-amendment.json')
+        candidate=c.commit('pin reviewed task amendment')
+        c.sha=candidate;c.contracts=load_accepted(c.root,'w',candidate,candidate)
+
+        self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,
+                                    '--anchor-sha',candidate,'--scope','task','--task-id','a',
+                                    '--phase','red'))
+        review=c.make_review();review.update(scope='task',task_id='a')
+        c.write('work/w/traceability/review-input.json',review)
+        self.require_pass(c.command('traceability','record-review','w','--candidate-sha',candidate,
+                                    '--anchor-sha',candidate,'--scope','task','--task-id','a',
+                                    '--evidence','work/w/traceability/review-input.json',
+                                    '--recorded-by','fixture-coordinator'))
+        self.require_pass(c.command('traceability','run','w','--candidate-sha',candidate,
+                                    '--anchor-sha',candidate,'--scope','task','--task-id','a'))
+
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+        from inner_loop.evidence import Candidate,verify_candidate
+        result=Candidate({}, {'work_id':'w','task_id':'a','base_sha':base,
+                              'candidate_sha':candidate},'fixture-result-digest')
+        evidence=verify_candidate(c.root,result)
+        self.assertEqual(evidence['result'],'pass',evidence)
+
     def test_I05_all_normal_entrypoints_reject_omitted_e2e(self):
         c=self.consumer(omit_e2e=True,tasks=True)
         self.require_fail(c.command('verify'))

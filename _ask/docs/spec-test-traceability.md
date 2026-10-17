@@ -98,8 +98,11 @@ preflight replaces stale completion/Verify results with a fresh failure. Histori
 red attempts with collection failures or unsupported/unmapped cases remain retained
 and are listed as rejected attempts; they supply no TDD evidence. Later valid
 assertion red and final green can complete the same accepted case.
-Detached integration pins tooling and accepted contracts to the task's recorded
-coordinator base; missing runner capability is `migration_required`.
+Detached integration pins verifier tooling to the task's recorded coordinator
+base and checks accepted obligations against the immutable candidate pin and
+coordinator authority. This allows a separately reviewed contract amendment
+accepted after task start while still rejecting candidate-only obligation
+changes. Missing runner capability is `migration_required`.
 The existing FF-only, state-lock, review and postexecution lineage checks remain.
 
 Candidate-bound records and locks live only under `work/<work-id>/traceability/`.
