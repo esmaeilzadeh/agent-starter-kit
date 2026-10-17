@@ -24,6 +24,7 @@ class EntrypointTests(unittest.TestCase):
             try:
                 env=os.environ.copy()
                 env['ASK_WORK_ID']='revising-workbench'
+                env['ASK_ROOT']=str(candidate)
                 env['GIT_CONFIG_COUNT']='1'
                 env['GIT_CONFIG_KEY_0']='init.defaultBranch'
                 env['GIT_CONFIG_VALUE_0']='main'
