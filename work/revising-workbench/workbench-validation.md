@@ -1,8 +1,10 @@
 # RWB-109 validation
 
-## Candidate
+## Run identities
 
-- Code candidate: `f52c441d780473bad86cae24abe4f0ae57d5a547`
+- Browser benchmark candidate: `f52c441d780473bad86cae24abe4f0ae57d5a547`
+- RWB-108 test candidate: `9c92504605824eb7c9430108ea01c96b6f4cf007`
+- Latest recorded verification candidate: `0dff0d5cd1a24c5f265354ada63d85cf372a4a3c`
 - Workstream: `agent/revising-workbench`
 - Browser: `/usr/bin/google-chrome`
 - Test environment: `_ask/.venv`, installed from `_ask/ui/requirements.txt` and
@@ -41,11 +43,24 @@ The earlier successful browser suite and pre-`68a1cea` benchmark described in
 
 No human acceptance or successful RWB-109 validation is claimed here.
 
+## RWB-108 prerequisite check
+
+`python3 -m unittest _ask.tests.test_revising_pilot -v` ran 12 cases on the
+RWB-108 candidate: 8 passed and 4 failed. The failures were the genuine WB-003
+observation and representative passage gate; both depend on the absent retained
+execution ledger. The source workstream's existing
+`work/structured-agentic-environment/traceability/completion.json` records
+`candidate source/CheckPlan changed during verification`, so its reports cannot
+be promoted as completed evidence. No ledger or historical completion record
+was reconstructed.
+
 ## Kit verification
 
 `./ask verify` on `0dff0d5cd1a24c5f265354ada63d85cf372a4a3c` failed before running
 any checks with `candidate acceptance document differs from coordinator
-authority`. The branch's `traceability-accepted.json` contains a newer contract
-and plan review than `refs/ask/accepted-tests/revising-workbench`. The
-coordinator pin must be reconciled through its reviewed acceptance workflow
-before final verification can proceed; this validation record does not alter it.
+authority`: the candidate pin names contract `54d2e10`, while the coordinator
+ref names `54ef012`. An independent review artifact for the candidate contract
+exists, but the accepted ref was not advanced through the coordinator workflow.
+The inner-loop still marks RWB-108 running, so its plan's no-running-task gate
+must be followed before advancing that ref. This record does not alter the
+acceptance authority or task state.
