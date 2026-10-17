@@ -110,6 +110,7 @@ tasks:
       - _ask/ui/workbench_debug.py
       - _ask/ui/workbench_attention.py
       - _ask/ui/workbench_loading.py
+      - _ask/ui/workbench_tasks.py
       - _ask/tests/test_revising_detail.py
     completion_evidence: "AppTest proves flow-specific readable source/results, all honest states and collapsed identifiers; current decision persistence and invalid/stale/historical no-write cases pass; zero eager scans and tamper refresh asserted"
     test_ids: [RWB-APP-EVIDENCE, RWB-APP-DECISIONS, RWB-LAZY-CACHE]
