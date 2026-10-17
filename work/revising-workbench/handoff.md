@@ -1,50 +1,56 @@
-# Handoff: original blockers resolved; stopped for Luna
+# Handoff: continue workbench delivery
 
 Branch: `agent/revising-workbench`
-Tested code candidate: `e514444977dcfd09cfff6114ac2e45251378018e`
-Coordinator state: revision 66, RWB-108 `running`, RWB-109 `pending`.
-RWB-108 retains its original base `743309782b5f08f5a46fe03178651e106a7e3150`.
 
-The human requested stopping once the block was fixed so Luna can finish the
-remaining work. No new workstream was created. No task integration, complete
-workstream review, or human acceptance is claimed.
+Current HEAD: `32cb0b8` (`fix(ui): restore task selection helper import`)
 
-## Resolved
+## Direction for the next agent
 
-- Recovered the genuine historical WB-003 ledger byte-for-byte from Git history.
-  All 12 pilot tests now pass, including historical authority and context gates.
-- Fixed browser startup in detached candidate checkouts: select the requested
-  workstream and working-tree source, waiting for each Streamlit rerun before
-  changing the next dependent selector.
-- All five substantive browser cases passed in the final verification run:
-  navigation, guarded choices, helper/results inspection, keyboard/accessibility,
-  and the real WB-003 representative journey.
-- Narrow independent review approved the final fix. See
-  `inner-loop/evidence/unblock-review-e514444.md`; the earlier rejected review
-  remains as history. This is not whole-workstream approval.
+The user says to continue this workstream, not start new work. Treat all tasks
+except the one related to scaling as done. Scaling is not a concern for the
+current delivery. Focus on the end-to-end path and the interface that shows it;
+do not reopen boundary/gate debates or repeat completed work. The user values
+delivery over process checks for this first version of the flow.
 
-## Evidence and portability
+## Delivered
 
-The ledger is ignored runtime data. Recovery provenance, its original Git source
-and byte hash are in `inner-loop/evidence/RWB-108-ledger-recovery.md`. Recover
-those exact original bytes if another checkout lacks the ledger; preserve any
-existing ledger. A later failed workstream completion did not invalidate the
-separately approved historical WB-003 task result.
+- Added a connected, clickable delivery path to the workbench overview. It is
+  built from the same recorded relationships as the navigation outline, so
+  Story, Scenario, Task, Test, and Result entries appear under their actual
+  recorded parents. Clicking an entry opens its detail route.
+- Kept result evidence loading on demand.
+- Restored the `task_selection_id` import after the focused suite exposed its
+  accidental removal during the flow edit.
+- Relevant commits: `7853d69` (connected path), `32cb0b8` (import fix), with
+  `4900944` the earlier first-pass flow UI that was replaced by `7853d69`.
 
-Current execution logs are under `traceability/rwb109/`. The final `./ask verify`
-run was interrupted by the human's stop request during the benchmark. Its
-completed browser cases passed; it produced no final verification verdict or
-completed benchmark for this candidate. Do not reuse older benchmark JSON as a
-measurement for this candidate.
+## Test state
 
-## Remaining existing work
+Use the project environment under `_ask/.venv`; do not use a root-level venv.
+The focused command was:
 
-1. Check `./ask check-clean` and `./ask inner-loop status revising-workbench`.
-2. Complete RWB-108 TaskResult, whole-task boundary review, and integration under
-   the existing plan. Account for the RWB-109 source commits already present;
-   their presence does not establish task integration.
-3. Complete RWB-109's benchmark and validation, final independent workstream
-   review, and `./ask verify`/result recording.
-4. Obtain the real candidate-bound human comprehension exercise and human Accept.
+```sh
+PYTHONPATH=_ask/tests:_ask/ui:_ask/scripts _ask/.venv/bin/python -m unittest \
+  test_engineering_workbench_overview test_engineering_workbench_navigation \
+  test_engineering_ui -v
+```
 
-Use `_ask/.venv` for UI/test dependencies. No verification process remains running.
+Result: 14 tests ran; 13 passed and one failed. The failure is
+`test_overview_loads_results_on_demand_and_explains_debug_identifiers`, which
+spies on `projection_module.inspect_evidence`. The current selected-result
+loader calls `inspect_workstream_evidence` directly in
+`_ask/ui/workbench_loading.py`, so this spy does not observe the expected call.
+The failure is in the test's spy target; the UI test did not reach its later
+evidence-display assertions. Do not describe the suite as fully green.
+
+The initial system-Python run caught the missing import, then was interrupted
+when the user pointed out that test dependencies belong under `_ask`. The
+project-venv run above includes the import fix.
+
+## Historical context
+
+Earlier handoff notes documented recovered WB-003 data, completed browser
+cases, and pending RWB-108/RWB-109 administrative gates. Those notes predate
+the user's latest direction and are retained in Git history. For continuation,
+follow the direction above: assume all non-scaling work is done, and prioritize
+delivery of the visible flow. Do not claim the focused suite passed completely.
