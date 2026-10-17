@@ -1,0 +1,521 @@
+verify: running: _ask/tests/test-ask.sh
+check-clean-worktree: clean
+PASS: ask help, unknown-command, check-clean on clean temp repo
+verify: running: _ask/tests/test-askit-complete.sh
+PASS: askit wraps ./ask; completion is gated until the repo is ask-based
+verify: running: _ask/tests/test-askit-first-run.sh
+sync-runtime-agents: wrote /tmp/tmp.dPR0NvHNoG/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.dPR0NvHNoG/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.dPR0NvHNoG/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.dPR0NvHNoG/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.dPR0NvHNoG
+status: no live agent/* branches; no archived work/* on master
+PASS: first-run askit gates on git + confirm, then overlays
+verify: running: _ask/tests/test-askit-self-install.sh
+askit: kit /tmp/ask-candidate-3rtq0x0x/checkout @ HEAD
+askit: cache /tmp/tmp.ctXViy7XNu/.cache/askit/kit
+Cloning into '/tmp/tmp.ctXViy7XNu/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/revising-workbench'.
+askit: /tmp/tmp.ctXViy7XNu/.local/bin/askit -> /tmp/tmp.ctXViy7XNu/.cache/askit/kit/askit
+askit: /tmp/tmp.ctXViy7XNu/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.ctXViy7XNu/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)
+verify: running: _ask/tests/test-bindings-consumer-overlay.sh
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.fSD2ZGjhlk
+install-kit: skip existing .gitignore (use --force)
+install-kit: skip existing AGENTS.md (use --force)
+install-kit: skip existing ask (use --force)
+install-kit: skip existing ai-agent-engineering-guide.md (use --force)
+install-kit: skip existing ai-agent-starter-kit-spec.md (use --force)
+install-kit: skip existing .ask.env.example (use --force)
+install-kit: skip existing .ask/README.md (use --force)
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.fSD2ZGjhlk/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.fSD2ZGjhlk
+PASS: install-kit does not clobber consumer bindings/models.yaml
+verify: running: _ask/tests/test-check-clean-worktree.sh
+PASS: check-clean-worktree dirty-tree negative + clean positive
+verify: running: _ask/tests/test-check-workstream-confirmation.sh
+intent-confirmation: response must explicitly approve the complete intent and assumptions
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+intent-confirmation: human requested revisions; intent was not approved
+usage: intent-confirmation.py [-h] [--root ROOT] --work-id WORK_ID
+                              [--choice {approve,revise} | --response RESPONSE]
+                              {confirm,validate}
+intent-confirmation.py: error: argument --response: not allowed with argument --choice
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+PASS: workstream gate requires an explicit, current intent confirmation
+verify: running: _ask/tests/test-check-workstream-guidance.sh
+PASS: check-workstream missing spec is guidance wording, not a padlock
+verify: running: _ask/tests/test-codex-skill-parity.sh
+PASS: eleven Codex skills match Cursor stage bodies and overlays; sync is idempotent
+PASS: stale ASK skills cleaned; unrelated, unmarked and symlink skills protected
+PASS: reserved preparation names rejected before any installer runs
+PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages
+PASS: install and upgrade fail clearly on blocking consumer ignore rules without deleting them
+verify: running: _ask/tests/test-e2e-contract-sections.sh
+PASS: E2E contract and plan-to-task/test breakdown required before implementation
+verify: running: _ask/tests/test-grilling-skip-trivia-contracts.sh
+PASS: grilling-skip-trivia contracts mention ask-before-prepare, assume-list, ADR 0016
+verify: running: _ask/tests/test-humanizer-docs-specs.sh
+PASS: humanizer human-facing scope, writing-for-agents on machine-first files, ADR 0017
+verify: running: _ask/tests/test-inner-loop-reliability.sh
+.............................
+----------------------------------------------------------------------
+Ran 29 tests in 20.101s
+
+OK
+verify: running: _ask/tests/test-inner-loop.sh
+revision=0
+running=t revision=2
+PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume, driver
+verify: running: _ask/tests/test-install-kit-apply.sh
+install-kit: note — will not modify target docs/ (consumer-owned)
+sync-runtime-agents: wrote /tmp/tmp.Ao8MH9gwzD/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.Ao8MH9gwzD/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.Ao8MH9gwzD/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.Ao8MH9gwzD/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.Ao8MH9gwzD
+PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/
+verify: running: _ask/tests/test-install-kit-dry-run.sh
+PASS: install-kit dry-run excludes consumer docs
+verify: running: _ask/tests/test-install-user-completion.sh
+PASS: askit installs user completion files and a one-time rc hook
+verify: running: _ask/tests/test-later-inbox-gitignore.sh
+PASS: later-inbox cards are committable; README stays tracked
+verify: running: _ask/tests/test-prepare-skills-refuses-latest.sh
+PASS: prepare-skills refuses revision=latest
+verify: running: _ask/tests/test-record-result-refuses-missing-sha.sh
+PASS: record-result refuses missing commit SHA
+verify: running: _ask/tests/test-record-run-refuses-dirty.sh
+PASS: record-run refuses dirty tree
+verify: running: _ask/tests/test-record-run-refuses-missing-sha.sh
+PASS: record-run refuses missing commit SHA
+verify: running: _ask/tests/test-record-run-writes-manifest.sh
+check-clean-worktree: clean
+record-run: wrote demo @ 730f38726140a4f5fd552e2b834fdbb1dae0a7ad -> results/demo
+PASS: record-run writes manifest and refuses SHA ≠ HEAD
+verify: running: _ask/tests/test-setup-env-gitignore.sh
+PASS: setup env example is placeholders; secrets paths are ignored
+verify: running: _ask/tests/test-setup-human-only.sh
+PASS: setup --help works; non-TTY setup refuses and does not write .ask.env; verify scaffold refuses non-TTY
+verify: running: _ask/tests/test-stages-inner-loop.sh
+PASS: 06/07/08 call inner-loop with steering owned_paths
+verify: running: _ask/tests/test-start-work-from-develop.sh
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=d9a1df221ebb28a08540d61c6e0393d047e799a6
+start-work: workstream=work/demo
+PASS: start-work from develop or fail closed
+verify: running: _ask/tests/test-start-work-no-explore-map.sh
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=ba509a21ddba9070bc9b0d89cbec9034d4584b62
+start-work: workstream=work/demo
+PASS: start-work does not seed explore-map.md
+verify: running: _ask/tests/test-start-work-refuses-dirty.sh
+PASS: start-work refuses dirty tree without absorbing changes
+verify: running: _ask/tests/test-status.sh
+PASS: status lists live agent/* and archived work/* without checkout; later inbox on checkout
+verify: running: _ask/tests/test-sync-canonical-ask.sh
+PASS: sync prefers .agents/ask/stages over _ask/agents
+verify: running: _ask/tests/test-sync-off-path-command.sh
+PASS: sync copies /off-path as a session-only command
+verify: running: _ask/tests/test-sync-runtime-agents.sh
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.552s
+
+OK
+PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs
+verify: running: _ask/tests/test-verify-fail-closed.sh
+PASS: verify fail-closed; ask-kit named; no language CLIs in core
+verify: running: _ask/tests/test-verify-scaffold.sh
+verify-scaffold: wrote /tmp/tmp.p34DKJmlg0/.agents/verification.yaml
+rollback ok
+verify-scaffold: /tmp/tmp.p34DKJmlg0/.agents/verification.yaml exists; left in place (use --re-scaffold for a candidate)
+verify-scaffold: wrote /tmp/tmp.p34DKJmlg0/.agents/verification.yaml.candidate
+PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops
+verify: running: _ask/tests/test-workstream-smoke.sh
+check-clean-worktree: clean
+start-work: work-id=smoke-demo
+start-work: branch=agent/smoke-demo
+start-work: HEAD=f3bb3907753f89309fe1eadf00b12e0a0f42bb98
+start-work: workstream=work/smoke-demo
+handoff ok
+Recorded confirmation for work/smoke-demo/intent.md
+check-clean-worktree: clean
+intent-confirmation: valid work-id=smoke-demo
+check-workstream: ok work-id=smoke-demo branch=agent/smoke-demo
+{
+  "work_id": "smoke-demo",
+  "commit_sha": "bdbc5e796b7bf339c407104368daf9b0b09ace03",
+  "result": "handoff-checked",
+  "notes": ""
+}
+PASS: workstream smoke Explore handoff to verify SHA
+verify: running: python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'
+.........................
+----------------------------------------------------------------------
+Ran 25 tests in 35.254s
+
+OK
+verify: candidate source/CheckPlan changed during verification
+{
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "757462690641c6f6f823a1f6aec81fb0f83007d9",
+  "result": "fail",
+  "checks": [
+    {
+      "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/0.log",
+      "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-complete.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/1.log",
+      "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-first-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/2.log",
+      "output_digest": "19e5cdd130c86462d32e33fc395272a69cb1c60c67670c5cb4fd0c14a940cf34"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-self-install.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/3.log",
+      "output_digest": "f1efd15f770541705c24fb981e2fc100f293ca1a8f0f786f94367f9d1a662bc6"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/4.log",
+      "output_digest": "0572fba3e39ec6fce5eaa7f8784fecc723dde60ac373713f64564a581d870270"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-clean-worktree.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/5.log",
+      "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-confirmation.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/6.log",
+      "output_digest": "b8979a891f5697edb8f3d7b62d61dd1fcc368895f7f5bf8d0e0fca26f5c29a50"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-guidance.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/7.log",
+      "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/8.log",
+      "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/9.log",
+      "output_digest": "c762ce58bd9cfc80df3f2ae08cdb0f0cce4547c2d348213d71178c7747769e01"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/10.log",
+      "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-humanizer-docs-specs.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/11.log",
+      "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop-reliability.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/12.log",
+      "output_digest": "bae67a63106fe10abac6219198952b1bb1a75b863ff4a84ce5507f84aa31a14f"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/13.log",
+      "output_digest": "83b988f8bbb38e6b46d6c247a15a5e640ead5a8e0c22307cfea13e5b874383f8"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-apply.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/14.log",
+      "output_digest": "64760fb27ede1e0bdde40908a06bad37878767ff9945f8819826af3661693e9c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-dry-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/15.log",
+      "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-user-completion.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/16.log",
+      "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-later-inbox-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/17.log",
+      "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/18.log",
+      "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/19.log",
+      "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/20.log",
+      "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/21.log",
+      "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-writes-manifest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/22.log",
+      "output_digest": "38f122f4111e286c5679dce4540954e410a4d0b204f445d7cda32f448daaa9fb"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-env-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/23.log",
+      "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-human-only.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/24.log",
+      "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/25.log",
+      "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/26.log",
+      "output_digest": "12711d7d288b5e266c33ad08c7f7af18b9efadc50f13f5b1a19a5a4627407505"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-no-explore-map.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/27.log",
+      "output_digest": "21c376fdfdc82eabe2c2b0048206aeee70476514f435501eb2504bb6b401a3c7"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/28.log",
+      "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-status.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-status.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/29.log",
+      "output_digest": "2b725201c26ac19a1d5c92f3639a9fd83949377423a32bed93dfb6cf5ccd9cc5"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/30.log",
+      "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-off-path-command.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/31.log",
+      "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/32.log",
+      "output_digest": "5f53bfbc6990fd7386956532994e29d380fc604652dcaa7a91df0bc1af3f125b"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/33.log",
+      "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/34.log",
+      "output_digest": "b0341fbf3892447ed14ae1ca22a49dd28c0e1eecfe42b441907d9ac6e97305ad"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-workstream-smoke.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/35.log",
+      "output_digest": "8538c8486adbc87543bf2f9b9ed2de15c0a2ace855e3c9a6b0b23218a2ed0019"
+    },
+    {
+      "id": "traceability-cases",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/revising-workbench/traceability/static-runs/709143123ec34611915d810d598a82e9/36.log",
+      "output_digest": "e88ee4106763219f9e7797a29680991e2040ffb42f4795195e533ed10e931057"
+    }
+  ],
+  "error": "candidate source/CheckPlan changed during verification"
+}
+verify: commit_sha=757462690641c6f6f823a1f6aec81fb0f83007d9

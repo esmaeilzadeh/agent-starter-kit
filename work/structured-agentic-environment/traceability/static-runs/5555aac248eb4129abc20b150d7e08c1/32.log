@@ -1,0 +1,7 @@
+/home/mohammadesmailzade/.profile: line 31: /home/mohammadesmailzade/.deno/env___MY_VMOPTIONS_SHELL_FILE=/home/mohammadesmailzade/.jetbrains.vmoptions.sh: No such file or directory
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.341s
+
+OK
+PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs

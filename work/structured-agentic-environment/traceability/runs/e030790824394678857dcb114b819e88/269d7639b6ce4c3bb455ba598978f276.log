@@ -1,0 +1,28 @@
+test_bootstrap_admits_only_validated_state (test_engineering_guard.DocumentGuardTests) ... ok
+test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests) ... FAIL
+test_linked_spec_change_invalidates_admission (test_engineering_guard.DocumentGuardTests) ... ok
+test_duplicate_missing_illegal_cardinality_and_cycles (test_engineering_model.ModelValidationTests) ... ok
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... ok
+test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests) ... FAIL
+
+======================================================================
+FAIL: test_invalid_prestate_prevents_action (test_engineering_guard.DocumentGuardTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-ensrjt1c/candidate/_ask/tests/test_engineering_guard.py", line 23, in test_invalid_prestate_prevents_action
+    self.assertEqual(blocked.returncode, 1, "invalid prestate must produce an admission refusal")
+AssertionError: 2 != 1 : invalid prestate must produce an admission refusal
+
+======================================================================
+FAIL: test_valid_broad_model_and_external_refs (test_engineering_model.ModelValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-ensrjt1c/candidate/_ask/tests/test_engineering_model.py", line 93, in test_valid_broad_model_and_external_refs
+    self.assertEqual(len(coverage_errors), 1, errors)
+AssertionError: 0 != 1 : []
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.869s
+
+FAILED (failures=2)

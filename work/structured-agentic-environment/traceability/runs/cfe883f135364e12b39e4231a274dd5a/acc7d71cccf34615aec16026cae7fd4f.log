@@ -1,0 +1,25 @@
+test_navigation_does_not_refresh_stale_form_identity (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 02:10:56.136 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests) ... 2026-10-10 02:10:59.200 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+
+======================================================================
+FAIL: test_work_default_routes_and_context_reset (test_engineering_workbench_navigation.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-_iudpyxh/candidate/_ask/tests/test_engineering_workbench_navigation.py", line 207, in test_work_default_routes_and_context_reset
+    self.assertEqual(failures, [], "; ".join(failures))
+AssertionError: Lists differ: ['committed snapshots must expose canonica[98 chars]chy'] != []
+
+First list contains 2 additional elements.
+First extra element 0:
+'committed snapshots must expose canonical spec-to-plan admission errors'
+
++ []
+- ['committed snapshots must expose canonical spec-to-plan admission errors',
+-  'a rejected committed snapshot must not render its normal hierarchy'] : committed snapshots must expose canonical spec-to-plan admission errors; a rejected committed snapshot must not render its normal hierarchy
+
+----------------------------------------------------------------------
+Ran 2 tests in 5.868s
+
+FAILED (failures=1)

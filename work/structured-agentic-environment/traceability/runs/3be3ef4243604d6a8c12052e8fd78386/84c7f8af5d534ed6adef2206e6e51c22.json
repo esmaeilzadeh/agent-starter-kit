@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "test_engineering_workbench_tests.WorkbenchTests.test_identifiers_have_explanations_and_copy_actions", "outcome": "passed", "failure_kind": null}, {"case_id": "test_engineering_workbench_tests.WorkbenchTests.test_selected_test_shows_source_results_and_related_work", "outcome": "failed", "failure_kind": "behavior_assertion"}], "collection_status": "ok"}

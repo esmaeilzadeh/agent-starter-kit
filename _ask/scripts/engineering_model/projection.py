@@ -1,13 +1,16 @@
 """Deterministic machine and Markdown views over an admitted snapshot."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from pathlib import PurePosixPath
 
 from .domain import task_states
 from .evidence import inspect as inspect_evidence
-from .snapshot import decode
+from .identities import execution_identity
+from .snapshot import decode, read_input
+from .workbench import build_workbench
 
 
 def _captured_json(snapshot, path):
@@ -91,30 +94,82 @@ def _scenario_views(snapshot, model, evidence_by_reference):
     for edge in model.get("edges", []):
         if edge["type"] == "covers":
             covered_by.setdefault(edge["target"], []).append(edge["source"])
+    documents = {}
+    record_indexes = {}
+
+    def document(path):
+        if not isinstance(path, str):
+            return None
+        if path not in documents:
+            documents[path] = _captured_json(snapshot, path)
+        return documents[path]
+
+    def records_by_id(path, collection):
+        cache_key = (path, collection)
+        if cache_key not in record_indexes:
+            source = document(path)
+            records = source.get(collection, []) if isinstance(source, dict) else []
+            index = {}
+            if isinstance(records, list):
+                for item in records:
+                    if isinstance(item, dict) and isinstance(item.get("id"), str):
+                        index.setdefault(item["id"], item)
+            record_indexes[cache_key] = index
+        return record_indexes[cache_key]
+
     result = []
     for node in model.get("nodes", []):
         if node.get("type") != "scenario":
             continue
         reference = node.get("reference", {})
-        spec = _captured_json(snapshot, reference.get("path"))
+        spec = document(reference.get("path"))
         criteria = spec.get("criteria", []) if isinstance(spec, dict) else []
-        criterion = next((item for item in criteria
-                          if isinstance(item, dict) and item.get("id") == reference.get("id")), None)
+        criterion = records_by_id(reference.get("path"), "criteria").get(reference.get("id"))
         view = {"id": node["id"], "title": node["title"], "reference": reference}
         if criterion is not None:
-            for field in ("given", "when", "then", "verification_mode"):
-                view[field] = criterion[field]
             view["criterion_id"] = criterion["id"]
+            if model.get("schema") == "ask-engineering-model/v2":
+                view["criterion"] = {field: criterion[field] for field in
+                                     ("given", "when", "then", "verification_mode")
+                                     if field in criterion}
+            else:
+                for field in ("given", "when", "then", "verification_mode"):
+                    view[field] = criterion[field]
         else:
             view["canonical_status"] = "unavailable"
+        if model.get("schema") == "ask-engineering-model/v2":
+            selector = node.get("case")
+            if selector is None:
+                view["canonical_status"] = "not-selected" if node.get("lifecycle") == "draft" else "unavailable"
+            elif isinstance(selector, dict):
+                case_work = selector.get("work_id")
+                case_id = selector.get("case_id")
+                plan_path = f"work/{case_work}/test-plan.json" if isinstance(case_work, str) else None
+                plan = document(plan_path) if plan_path else None
+                actual_digest = (hashlib.sha256(json.dumps(
+                    plan, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+                    if isinstance(plan, dict) else None)
+                selected = records_by_id(plan_path, "tests").get(case_id)
+                if (isinstance(plan, dict) and plan.get("work_id") == case_work
+                        and actual_digest == selector.get("plan_digest") and selected is not None
+                        and isinstance(selected.get("scenario"), dict)):
+                    flow = selected["scenario"]
+                    for field in ("given", "when", "then"):
+                        if field in flow:
+                            view[field] = flow[field]
+                    view["canonical_case"] = {"work_id": case_work, "plan_digest": actual_digest,
+                                               "case_id": case_id}
+                    view["canonical_status"] = "available"
+                else:
+                    view["canonical_status"] = "unavailable"
+            else:
+                view["canonical_status"] = "unavailable"
         cases = []
         for test_id in sorted(covered_by.get(node["id"], [])):
             test_node = nodes.get(test_id)
             test_ref = test_node.get("reference", {}) if test_node else {}
-            plan = _captured_json(snapshot, test_ref.get("path"))
-            tests = plan.get("tests", []) if isinstance(plan, dict) else []
-            case = next((item for item in tests
-                         if isinstance(item, dict) and item.get("id") == test_ref.get("id")), None)
+            plan = document(test_ref.get("path"))
+            case = records_by_id(test_ref.get("path"), "tests").get(test_ref.get("id"))
             case_view = {"node_id": test_id, "reference": test_ref}
             if test_node:
                 case_view["title"] = test_node["title"]
@@ -133,6 +188,30 @@ def _scenario_views(snapshot, model, evidence_by_reference):
     return result
 
 
+def _task_context(snapshot, node_id):
+    selected = {"spec": [], "plan": []}
+    for record in snapshot.passages.values():
+        if record.get("node_id") != node_id or record.get("kind") != "context":
+            continue
+        role = record.get("role")
+        if role not in selected:
+            continue
+        resolution = record.get("resolution")
+        resolution = resolution if isinstance(resolution, dict) else {}
+        selected[role].append({
+            "path": record.get("path"),
+            "revision": record.get("revision"),
+            "selector": record.get("selector"),
+            "state": resolution.get("state", "unavailable"),
+            "text": resolution.get("text"),
+            "match_count": resolution.get("match_count"),
+            "start_line": resolution.get("start_line"),
+            "end_line": resolution.get("end_line"),
+            "source_sha256": record.get("sha256"),
+        })
+    return selected
+
+
 def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidence=True):
     """Project one immutable snapshot and a read-only evidence inspection."""
     model = snapshot.document
@@ -140,6 +219,44 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
     if node_id is not None and node_id not in nodes:
         raise ValueError(f"unknown Engineering Model node: {node_id}")
     tasks = task_states(model)
+    for task in tasks:
+        task["context"] = _task_context(snapshot, task["id"])
+    runtime_owners = {snapshot.work_id}
+    if isinstance(model.get("nodes"), list):
+        for node in model["nodes"]:
+            alias = execution_identity(node) if isinstance(node, dict) else None
+            if alias is not None:
+                runtime_owners.add(alias[0])
+    runtime_states = {}
+    repository = Path(root).resolve()
+    for owner in sorted(runtime_owners):
+        status_path = f"work/{owner}/inner-loop/state.json"
+        source_status, raw = read_input(repository, status_path)
+        if source_status != "present":
+            runtime_states[owner] = {"state": None,
+                                     "source": "no-runtime-record" if source_status == "missing"
+                                     else f"unavailable-{source_status}"}
+            continue
+        try:
+            state = decode(raw)
+        except (UnicodeError, ValueError, TypeError):
+            state = None
+        if (model.get("schema") == "ask-engineering-model/v1" and owner == snapshot.work_id
+                and isinstance(state, dict) and isinstance(state.get("tasks"), dict)
+                and state.get("schema") is None
+                and (state.get("work_id") is None or state.get("work_id") == owner)):
+            runtime_states[owner] = {"state": state, "source": "task-state"}
+            continue
+        if (not isinstance(state, dict) or state.get("schema") != "ask-inner-loop-state/v1"
+                or state.get("work_id") != owner or not isinstance(state.get("tasks"), dict)):
+            runtime_states[owner] = {"state": None, "source": "unavailable-malformed-owner-state"}
+        else:
+            runtime_states[owner] = {"state": state, "source": "inner-loop-state"}
+    workbench = build_workbench(snapshot, model, tasks, runtime_states)
+    for task in workbench.get("tasks", []):
+        product_node_id = task.get("product_node_id")
+        if product_node_id is not None:
+            task["context"] = _task_context(snapshot, product_node_id)
     evidence_work_ids = {snapshot.work_id}
     if include_evidence:
         for node in model.get("nodes", []):
@@ -189,6 +306,7 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
         "model": model,
         "hierarchy": _hierarchy(model, node_id),
         "tasks": tasks,
+        "workbench": workbench,
         "attention": attention,
         "scenarios": scenarios,
         "evidence": {"schema": "ask-engineering-evidence-set/v1",
@@ -217,10 +335,48 @@ def markdown(projection):
     for root in projection["hierarchy"]["roots"]:
         render_branch(root)
     lines.extend(["", "## Tasks"])
-    for task in projection["tasks"]:
-        lines.append(f"- `{task['id']}`: {task['status']} (lifecycle: {task['lifecycle']})")
-        for blocker in task["blockers"]:
-            lines.append(f"  - Blocked by `{blocker['id']}`: {blocker['reason']}")
+    projected_work = projection.get("workbench", {}).get("tasks", [])
+    if projection.get("model", {}).get("schema") != "ask-engineering-model/v2":
+        for task in projection["tasks"]:
+            lines.append(f"- `{task['id']}`: {task['status']} (lifecycle: {task['lifecycle']})")
+            for blocker in task["blockers"]:
+                lines.append(f"  - Blocked by `{blocker['id']}`: {blocker['reason']}")
+    elif projected_work:
+        for task in projected_work:
+            execution = task.get("execution_identity")
+            execution_label = (f"{execution.get('work_id')}:{execution.get('task_id')}"
+                               if isinstance(execution, dict) else "unbound")
+            product = task.get("product_identity")
+            product_label = (f"{product.get('work_id')}:{product.get('node_id')}"
+                             if isinstance(product, dict) else "unbound")
+            lines.append(f"- `{task['id']}`: {task['status']} (product `{product_label}`, execution `{execution_label}`)")
+            if "readiness_status" in task:
+                readiness = task.get("readiness_status") or "unavailable"
+                readiness_source = task.get("readiness_source", "unavailable")
+                lifecycle = task.get("model_lifecycle") or "unavailable"
+                runtime = task.get("runtime_status") or "unavailable"
+                verification = task.get("verification_status") or "unavailable"
+                lines.append(f"  - Readiness: {readiness} (source: {readiness_source}); definition lifecycle: {lifecycle}; "
+                             f"runtime status: {runtime} (source: {task.get('status_source', 'unavailable')}); "
+                             f"verification status: {verification} (source: {task.get('verification_source', 'unavailable')})")
+                for blocker in task.get("readiness_blockers", []):
+                    lines.append(f"  - Readiness blocker `{blocker['id']}`: {blocker['reason']}")
+            if task.get("outcome"):
+                lines.append(f"  - Outcome: {task['outcome']}")
+            if task.get("dependencies"):
+                lines.append("  - Depends on: " + ", ".join(f"`{item}`" for item in task["dependencies"]))
+            if task.get("owned_test_ids"):
+                lines.append("  - Scoped tests: " + ", ".join(f"`{item}`" for item in task["owned_test_ids"]))
+            for role, passages in task.get("context", {}).items():
+                for passage in passages:
+                    lines.append(f"  - {role.title()} passage ({passage['state']}): `{passage['path']}`")
+                    if passage.get("text"):
+                        lines.extend("    " + line for line in passage["text"].rstrip().splitlines())
+    else:
+        for task in projection["tasks"]:
+            lines.append(f"- `{task['id']}`: {task['status']} (lifecycle: {task['lifecycle']})")
+            for blocker in task["blockers"]:
+                lines.append(f"  - Blocked by `{blocker['id']}`: {blocker['reason']}")
     lines.extend(["", "## Attention"])
     for item in projection["attention"]:
         lines.append(f"- `{item['id']}` ({item['type']}): {item['reason']}")
@@ -228,6 +384,12 @@ def markdown(projection):
     for scenario in projection["scenarios"]:
         lines.extend([f"### `{scenario['id']}`: {scenario['title']}",
                       f"Reference: `{_reference_text(scenario['reference'])}`"])
+        if scenario.get("canonical_status") is not None:
+            if scenario.get("canonical_status") == "available":
+                case = scenario.get("canonical_case", {})
+                lines.append(f"Selected canonical case: `{case.get('work_id')}#{case.get('case_id')}`")
+            else:
+                lines.append(f"Selected canonical case: {scenario['canonical_status']}")
         for field in ("given", "when", "then"):
             if field in scenario:
                 value = scenario[field]

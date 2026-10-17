@@ -31,7 +31,7 @@ from inner_loop.state import (  # noqa: E402
     spawn_writer,
 )
 from engineering_model.actions import Refused
-from engineering_model.workflow import guarded_workflow, workflow_admission
+from engineering_model.workflow import adopted, branch_work_id, guarded_workflow, workflow_admission
 
 
 def repo_root(ns_root: str | None) -> Path:
@@ -78,9 +78,9 @@ def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
     return 0
 
 
-@guarded_workflow
 def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
-    doc = spawn_writer(root, work_id, task_id)
+    with workflow_admission(root, work_id, delivery_task_id=task_id):
+        doc = spawn_writer(root, work_id, task_id)
     print(f"running={task_id} revision={doc['revision']}")
     return 0
 
@@ -137,6 +137,7 @@ def main(argv: list[str] | None = None) -> int:
     ig = sub.add_parser("integrate", help="fast-forward only onto coordinator")
     ig.add_argument("--task-ref", required=True)
     ig.add_argument("--method", default="ff-only")
+    ig.add_argument("--task-id", help="qualified selected inner-loop Task identity")
 
     rs = sub.add_parser("resume-repair", help="abort dirty/in-progress to coordinator_sha")
     rs.add_argument("--coordinator-sha", required=True)
@@ -165,9 +166,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "spawn-writer":
             return cmd_spawn(root, args.work_id, args.task_id)
         if args.cmd == "record-review":
-            with workflow_admission(root,args.work_id):
+            with workflow_admission(root,args.work_id,delivery_task_id=args.task_id):
                 review = record_review(root, args.work_id, args.task_id, args.reviewer, args.policy,
-                                       args.evidence, args.verdict, args.boundary)
+                                       args.evidence, args.verdict, args.boundary,
+                                       delivery_task_id=args.task_id)
             print(f"review={review['verdict']} candidate={review['candidate_sha']}")
             return 0
         if args.cmd == "check-paths":
@@ -197,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.cmd == "integrate":
-            sha = integrate(root, args.task_ref, args.method)
+            sha = integrate(root, args.task_ref, args.method, delivery_task_id=args.task_id)
             print(sha)
             return 0
         if args.cmd == "resume-repair":

@@ -16,7 +16,8 @@ import tempfile
 from .actions import Refused
 from . import admission as publications
 from .admission import admit, load_published, validate_current
-from .validation import SLUG
+from .validation import SCHEMA_V2, SLUG
+from .passages import delivery_task_execution, required_task_passages, selected_task_node
 
 
 _active = ContextVar('engineering_workflow_admission', default={})
@@ -54,6 +55,28 @@ def _refuse(diagnostics):
             first.get('path', '$'))
         refusal.diagnostics = diagnostics
         raise refusal
+
+
+def _require_task_context(snapshot, selected_task_id=None, selected_execution=None, delivery_task_id=None):
+    # Nested guards use the snapshot returned by their own freshness check.
+    # Preserve v1 compatibility without consulting a separate generation.
+    if snapshot.document.get('schema') != SCHEMA_V2:
+        selected_execution = None
+    try:
+        if delivery_task_id is not None:
+            if selected_task_id is not None or selected_execution is not None:
+                raise ValueError('delivery and product Task selectors cannot be combined')
+            selected_execution = delivery_task_execution(snapshot, snapshot.work_id, delivery_task_id)
+        selected = selected_task_node(snapshot, selected_task_id=selected_task_id,
+                                      selected_execution=selected_execution)
+    except ValueError as exc:
+        raise Refused('EM015_TASK_ID', str(exc)) from exc
+    if selected is not None:
+        missing = required_task_passages(snapshot, selected['id'])
+        if missing:
+            raise Refused('EM015_CONTEXT_REQUIRED',
+                          'selected Task requires unique captured spec and plan passages: '
+                          + ', '.join(missing), snapshot.model_path)
 
 
 def _canonical(snapshot):
@@ -94,7 +117,8 @@ def _checked(root, work_id, base, base_publication, expected=None):
 
 
 @contextmanager
-def workflow_admission(root, work_id, expected=None):
+def workflow_admission(root, work_id, expected=None, *, selected_task_id=None, selected_execution=None,
+                       delivery_task_id=None):
     """Yield captured admitted inputs; publish only a valid workflow result.
 
     Nested calls validate at their own boundaries and share the outer snapshot
@@ -106,6 +130,8 @@ def workflow_admission(root, work_id, expected=None):
     """
     root = Path(root).resolve()
     if not adopted(root, work_id):
+        if selected_task_id is not None or selected_execution is not None:
+            raise Refused('EM015_TASK_ID', 'selected Task requires an adopted captured Engineering Model')
         yield None
         if adopted(root, work_id):
             _snapshot, diagnostics = validate_current(root, work_id)
@@ -118,8 +144,10 @@ def workflow_admission(root, work_id, expected=None):
     if nested:
         base, base_publication = active[key]
         captured = _checked(root, work_id, base, base_publication, expected)
+        _require_task_context(captured, selected_task_id, selected_execution, delivery_task_id)
     else:
-        captured, diagnostics = admit(root, work_id, expected)
+        captured, diagnostics = admit(root, work_id, expected, selected_task_id=selected_task_id,
+                                      selected_execution=selected_execution, delivery_task_id=delivery_task_id)
         _refuse(diagnostics)
         base = captured
         published = load_published(root, work_id)
@@ -159,12 +187,15 @@ def guarded_workflow(function):
     """Guard direct driver helpers as well as their CLI dispatchers."""
     @wraps(function)
     def guarded(root, work_id, *arguments, **options):
-        with workflow_admission(root, work_id):
+        selected_task_id = options.pop('selected_task_id', None)
+        selected_execution = options.pop('selected_execution', None)
+        with workflow_admission(root, work_id, selected_task_id=selected_task_id,
+                                selected_execution=selected_execution):
             return function(root, work_id, *arguments, **options)
     return guarded
 
 
-def validate_candidate(root, work_id, revision):
+def _validate_candidate(root, work_id, revision):
     """Validate candidate definitions and canonical freshness before any FF/reset."""
     root = Path(root).resolve()
     if work_id is None:
@@ -196,6 +227,21 @@ def validate_candidate(root, work_id, revision):
             if removed.returncode:
                 raise Refused('EM007_CANDIDATE', removed.stderr.strip())
     return sha
+
+
+def validate_candidate(root, work_id, revision, *, selected_task_id=None, selected_execution=None,
+                       delivery_task_id=None):
+    """Run candidate checks within the same explicit selected-task guard."""
+    if selected_task_id is None and selected_execution is None and delivery_task_id is None:
+        if adopted(root, work_id):
+            current, diagnostics = validate_current(root, work_id)
+            _refuse(diagnostics)
+            if current.document.get('schema') == SCHEMA_V2:
+                raise Refused('EM015_TASK_ID', 'adopted v2 Task candidate validation requires explicit selected identity')
+        return _validate_candidate(root, work_id, revision)
+    with workflow_admission(root, work_id, selected_task_id=selected_task_id,
+                            selected_execution=selected_execution, delivery_task_id=delivery_task_id):
+        return _validate_candidate(root, work_id, revision)
 
 
 def main(argv=None):

@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle", "outcome": "passed", "failure_kind": null}, {"case_id": "test_engineering_model.ModelValidationTests.test_reference_escape_and_missing_criterion", "outcome": "failed", "failure_kind": "behavior_assertion"}], "collection_status": "ok"}

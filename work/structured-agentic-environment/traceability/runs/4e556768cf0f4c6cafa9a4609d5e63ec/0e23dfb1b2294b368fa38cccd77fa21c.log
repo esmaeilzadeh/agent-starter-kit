@@ -1,0 +1,11 @@
+test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 05:40:46.208 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-10 05:40:48.265 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_summary_counts_open_exact_records (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 05:40:49.708 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-10 05:40:51.696 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 6.979s
+
+OK

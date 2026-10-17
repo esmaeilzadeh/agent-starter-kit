@@ -19,7 +19,7 @@ fi
 printf '%s\n' 'old-canary-do-not-emit' > "$TMP/_ask/agents/06-implement.md"
 printf '%s\n' 'new-canary-from-agents-ask' > "$TMP/.agents/ask/stages/06-implement.md"
 
-(cd "$TMP" && bash _ask/scripts/sync-cursor-binding.sh >/dev/null)
+(cd "$TMP" && ASK_ROOT="$TMP" bash _ask/scripts/sync-cursor-binding.sh >/dev/null)
 
 skill="$TMP/.cursor/skills/kit-06-implement/SKILL.md"
 grep -q 'new-canary-from-agents-ask' "$skill"

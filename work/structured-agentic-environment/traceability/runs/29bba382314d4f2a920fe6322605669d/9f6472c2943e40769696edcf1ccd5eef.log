@@ -1,0 +1,33 @@
+test_cross_branch_snapshot_is_consistent_and_read_only (test_engineering_workbench_sources.WorkbenchTests) ... FAIL
+test_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests) ... FAIL
+test_missing_blobs_and_unsafe_paths_are_explained (test_engineering_workbench_sources.WorkbenchTests) ... ERROR
+
+======================================================================
+ERROR: test_missing_blobs_and_unsafe_paths_are_explained (test_engineering_workbench_sources.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-do6vqp_3/candidate/_ask/tests/test_engineering_workbench_sources.py", line 91, in test_missing_blobs_and_unsafe_paths_are_explained
+    self.assertEqual(selected.files["work/pilot/engineering-model.json"], b'{"revision":1}')
+KeyError: 'work/pilot/engineering-model.json'
+
+======================================================================
+FAIL: test_cross_branch_snapshot_is_consistent_and_read_only (test_engineering_workbench_sources.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-do6vqp_3/candidate/_ask/tests/test_engineering_workbench_sources.py", line 77, in test_cross_branch_snapshot_is_consistent_and_read_only
+    self.assertEqual(selected.commit, first)
+AssertionError: '' != 'd84603559e9e7069c2e5af6f6656c8e237bb8d92'
++ d84603559e9e7069c2e5af6f6656c8e237bb8d92
+
+======================================================================
+FAIL: test_current_work_and_ref_archive_inventory (test_engineering_workbench_sources.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-do6vqp_3/candidate/_ask/tests/test_engineering_workbench_sources.py", line 50, in test_current_work_and_ref_archive_inventory
+    self.assertEqual(inventory["current_work_id"], "current")
+AssertionError: None != 'current'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.315s
+
+FAILED (failures=2, errors=1)

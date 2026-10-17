@@ -85,8 +85,11 @@ Commands:
   inner-loop validate|status|run|resume|cancel [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
 
-  model {validate|admit|show|edit|watch} --work-id <work-id>
+  model {validate|admit|show|edit|watch|context} --work-id <work-id>
       Validate the Engineering Model and its canonical references.
+
+  stage-intake --stage 00-explore|01-grill --work-id <work-id> --request <json>
+      Resolve initial-stage subject context without writing or assigning work.
 
   ui [streamlit options]
       Launch the local Engineering Model workbench.
@@ -273,6 +276,9 @@ case "$cmd" in
     ;;
   model)
     exec bash "$SCRIPTS/model.sh" "$@"
+    ;;
+  stage-intake)
+    exec python3 "$SCRIPTS/stage-intake.py" "$@"
     ;;
   ui)
     exec bash "$SCRIPTS/ui.sh" "$@"

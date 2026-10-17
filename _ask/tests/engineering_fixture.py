@@ -68,13 +68,25 @@ def workbench_model(root):
         "spec_digest": hashlib.sha256(json.dumps(spec, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
         "obligations": [{"criterion_id": "P-001", "required_types": ["unit"]}],
         "runners": [{"id": "fixture", "adapter": "unittest", "argv": ["python3", "-m", "unittest", "test_fixture"]}],
-        "task_scopes": [], "tests": [{"id": "CASE-1", "criterion_ids": ["P-001"], "type": "unit",
+        "task_scopes": [{"task_id": "build", "test_ids": ["CASE-1"]}],
+        "tests": [{"id": "CASE-1", "criterion_ids": ["P-001"], "type": "unit",
             "change_kind": "new", "runner_id": "fixture", "case_id": "test_fixture.Cases.test_behavior",
             "source_paths": ["test_fixture.py"],
             "scenario": {"given": "Valid input", "when": "Validate", "then": ["Accept"]},
             "expected_assertions": [{"criterion_id": "P-001", "checks": ["Exact accepted behavior"]}]}]}
     write_json(root, "work/pilot/engineering-model.json", model)
     write_json(root, "work/pilot/test-plan.json", plan)
+    task_graph = Path(root) / "work/pilot/inner-loop/tasks.yaml"
+    task_graph.parent.mkdir(parents=True, exist_ok=True)
+    task_graph.write_text(
+        "schema: ask-inner-loop-tasks/v1\n"
+        "work_id: pilot\n"
+        "tasks:\n"
+        "  - id: build\n"
+        "    depends_on: []\n"
+        "    owned_paths: [src/**]\n",
+        encoding="utf-8",
+    )
     source = Path(root) / "test_fixture.py"
     source.write_text(
         "class Cases:\n"

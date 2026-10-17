@@ -13,6 +13,9 @@ from streamlit.testing.v1 import AppTest
 from engineering_fixture import workbench_model, evidence_workbench, write_json
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "_ask/ui"))
+import workbench_loading as loading_module
+
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
 from engineering_model.admission import validate_current, load_published
 from engineering_model.actions import edit
@@ -25,53 +28,102 @@ def text(app):
                for element in getattr(app, kind)]
     visible.extend(element.value.to_string(index=False)
                    for collection in (app.dataframe, app.table) for element in collection)
+    visible.extend(f"{element.label}: {element.value}" for element in app.metric)
     visible.extend(str(element.value) for element in app.code)
+    visible.extend(str(element.label) for element in app.button)
     return "\n".join(visible)
+
+
+def open_route(app, route_id, *, timeout=15):
+    """Open one node in the connected Epic-to-Result outline."""
+    route = next((item for item in app.button if item.key == f"route:{route_id}"), None)
+    if route is None:
+        raise AssertionError(f"connected hierarchy route {route_id!r} is missing")
+    route.click().run(timeout=timeout)
+
+
+def required_widget(elements, predicate, description):
+    widget = next((item for item in elements if predicate(item)), None)
+    if widget is None:
+        raise AssertionError(f"required workbench control is missing: {description}")
+    return widget
 
 
 class UiIntegrationTests(unittest.TestCase):
     def test_historical_evidence_candidate_is_inspectable_without_being_current(self):
         consumer, historical_sha = evidence_workbench()
         self.addCleanup(consumer.close)
+        plan_path = consumer.root / "work/w/test-plan.json"
+        current_plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        current_plan["task_scopes"] = [{"task_id": "build", "test_ids": ["U"]},
+                                       {"task_id": "review-build", "test_ids": ["E"]}]
+        consumer.write("work/w/test-plan.json", current_plan)
+        consumer.write("work/w/inner-loop/tasks.yaml",
+                       "schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n"
+                       "  - id: build\n    depends_on: []\n    owned_paths: [app.py]\n"
+                       "  - id: review-build\n    depends_on: [build]\n    owned_paths: [app.py]\n")
+        consumer.commit("change current test ownership while retaining prior contract evidence")
         current_sha = consumer.git("rev-parse", "HEAD")
         with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertEqual(len(app.json), 0)
-            app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
+            open_route(app, "result:U", timeout=20)
             self.assertFalse(app.exception, app.exception)
-            self.assertIn("unavailable evidence", text(app))
-            self.assertIn(current_sha, text(app))
+            rendered = text(app)
+            self.assertIn("Selected test: U", rendered)
+            self.assertIn("Exact HELLO output", rendered)
+            self.assertIn("No retained execution matches the current test contract.", rendered)
+            self.assertIn("Historical contract evidence", rendered)
+            self.assertIn("These records do not verify the current contract.", rendered)
+            self.assertNotIn(current_sha, rendered)
+            self.assertNotIn(historical_sha, rendered,
+                             "candidate hashes remain hidden until explicit inspection")
+            candidate = required_widget(app.selectbox,
+                                        lambda item: item.label == "Historical contract candidate",
+                                        "historical contract candidate selector")
+            candidate.select(historical_sha).run(timeout=20)
+            self.assertNotIn(historical_sha, text(app),
+                             "selecting a candidate does not reveal identifiers before inspection")
+            inspect = required_widget(app.button, lambda item: item.label == "Inspect candidate",
+                                      "explicit historical candidate inspection")
+            inspect.click().run(timeout=20)
+            self.assertFalse(app.exception, app.exception)
+            inspected = text(app)
+            self.assertIn("Recorded historical outcome: Passed", inspected)
+            self.assertIn(historical_sha, inspected,
+                          "explicit inspection identifies the historical candidate")
+            self.assertNotIn(current_sha, inspected)
+            ledger = json.loads((consumer.root / "work/w/traceability/executions.json").read_text())
+            historical_finals = [entry for entry in ledger
+                                 if entry.get("candidate_sha") == historical_sha
+                                 and entry.get("phase") == "final_green"
+                                 and entry.get("scope") == "workstream"]
+            self.assertTrue(historical_finals, "fixture retains the exact historical final-green run")
+            selected_run = historical_finals[-1]
+            report_path = (consumer.root / "work/w/traceability/runs"
+                           / selected_run["run_id"] / "results.json")
+            report_before = report_path.read_bytes()
+            try:
+                report_path.write_bytes(report_before + b"tampered historical report")
+                app.run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                refreshed_candidate = required_widget(
+                    app.selectbox, lambda item: item.label == "Historical contract candidate",
+                    "historical candidate after retained evidence changes")
+                refreshed_candidate.select(historical_sha).run(timeout=20)
+                required_widget(app.button, lambda item: item.label == "Inspect candidate",
+                                "candidate reinspection").click().run(timeout=20)
+                self.assertFalse(app.exception, app.exception)
+                tampered = text(app)
+                self.assertIn("Historical candidate inspection: invalid", tampered,
+                              "tampered candidate is reported as invalid, not as an identity mismatch")
+                self.assertIn("Inspection diagnostic: migration_required: missing/invalid JSON", tampered)
+                self.assertNotIn("Recorded historical outcome: Passed", tampered,
+                                 "invalid history is not rendered as a verified pass")
+            finally:
+                report_path.write_bytes(report_before)
             self.assertEqual(len(app.json), 0)
-            app.segmented_control(key="workbench_section").select("Objects").run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            self.assertIn("Engineering objects", text(app))
-            app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            self.assertIn("Scenarios and planned tests", text(app))
-            self.assertIn("Uppercase assertion", text(app))
-            self.assertIn("Planned assertions for C1", text(app))
-            app.segmented_control(key="workbench_section").select("Evidence").run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            evidence_key = next(item.key for item in app.selectbox
-                                if item.key and item.key.startswith("item:Evidence:"))
-            app.text_input(key="candidate_sha").input(current_sha)
-            app.button(key="inspect_candidate").click().run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            self.assertIn("unavailable evidence", text(app))
-            self.assertIn(current_sha, text(app))
-            current_key = next(item.key for item in app.selectbox
-                               if item.key and item.key.startswith("item:Evidence:"))
-            app.text_input(key="candidate_sha").input(historical_sha)
-            app.button(key="inspect_candidate").click().run(timeout=20)
-            self.assertFalse(app.exception, app.exception)
-            self.assertIn("(historical)", text(app))
-            self.assertIn(historical_sha, text(app))
-            self.assertEqual(len(app.json), 0)
-            historical_key = next(item.key for item in app.selectbox
-                                  if item.key and item.key.startswith("item:Evidence:"))
-            self.assertNotEqual(evidence_key, historical_key)
-            self.assertNotEqual(current_key, historical_key)
 
     def test_planned_test_shows_its_source_in_the_detail_panel(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -79,41 +131,109 @@ class UiIntegrationTests(unittest.TestCase):
             workbench_model(root)
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
-                app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=15)
+                open_route(app, "test:CASE-1")
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("test_behavior", text(app))
+                self.assertIn("test_fixture.py", text(app))
                 self.assertIn("self.assertEqual(actual, 'accepted')", text(app))
+                self.assertIn("Expected assertions", text(app))
+                self.assertIn("P-001", text(app))
                 self.assertIn("Test source", text(app))
 
-    def test_overview_shortcuts_open_the_task_or_decision_they_count(self):
+    def test_overview_keeps_decision_resolution_in_the_objects_section(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workbench_model(root)
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
-                app.button(key="shortcut_blocked").click().run(timeout=15)
-                self.assertFalse(app.exception, app.exception)
-                self.assertEqual(app.segmented_control(key="workbench_section").value, "Overview")
                 self.assertIn("Build", text(app))
-                app.button(key="shortcut_open_decisions").click().run(timeout=15)
+                app.button(key="overview:attention:decision:choice").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertEqual(app.segmented_control(key="workbench_section").value, "Objects")
                 self.assertIn("Resolve decision", text(app))
                 self.assertIn("Choose", text(app))
+
+    def test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
+                app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                rendered = text(app)
+                for label in ("Epic", "Purpose", "Stories and scenarios", "Canonical behavior",
+                              "Task progress", "Build", "Scenarios: 1", "Tasks: 1",
+                              "Behavior assertion"):
+                    self.assertIn(label, rendered)
+                self.assertTrue(any(item.key == "route:test:CASE-1" for item in app.button),
+                                "overview outline includes the linked planned test")
+                self.assertTrue(any(item.key == "route:result:CASE-1" for item in app.button),
+                                "overview outline includes the linked result route")
+                self.assertNotIn("self.assertEqual(actual, 'accepted')", rendered)
+                open_route(app, "test:CASE-1")
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("self.assertEqual(actual, 'accepted')", text(app))
+                self.assertNotIn("Snapshot:", rendered)
+                self.assertNotRegex(rendered, r"\b[0-9a-f]{40}\b")
+
+    def test_overview_loads_results_on_demand_and_explains_debug_identifiers(self):
+        consumer, _historical = evidence_workbench()
+        self.addCleanup(consumer.close)
+        original_expander = st.expander
+
+        def expand_debug(*args, **kwargs):
+            if "Technical details and identifiers" in str(args[:1]):
+                kwargs["expanded"] = True
+            return original_expander(*args, **kwargs)
+
+        with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}),
+              patch.object(loading_module, "inspect_workstream_evidence",
+                           wraps=loading_module.inspect_workstream_evidence) as inspect,
+              patch.object(st, "expander", expand_debug)):
+            app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
+            self.assertFalse(app.exception, app.exception)
+            inspect.assert_not_called()
+            self.assertIn("Purpose", text(app))
+            open_route(app, "result:U")
+            self.assertFalse(app.exception, app.exception)
+            self.assertTrue(any(args[1] == "w" for args, _kwargs in inspect.call_args_list),
+                            "selected result route triggers workstream evidence inspection")
+            rendered = text(app)
+            self.assertIn("Recorded outcome: Passed", rendered)
+            self.assertIn("Output integrity: valid", rendered)
+            self.assertIn("Git candidate currency: historical", rendered)
+            self.assertIn("Historical evidence", rendered)
+            self.assertIn("Runner (validated against selected test):", rendered)
+            self.assertIn("Phase: final_green", rendered)
+            self.assertIn("Source revision: " + _historical, rendered)
+            self.assertIn("Execution ID: unavailable (not exposed by retained history)", rendered)
+            self.assertIn("Output artifact: work/w/traceability/runs/", rendered)
+            self.assertIn("Timestamp: unavailable", rendered)
+            self.assertIn("Duration: unavailable", rendered)
+            self.assertIn("Snapshot digest", rendered)
+            self.assertIn("Git revision", rendered)
+            self.assertIn("git show", rendered)
+            self.assertIn("./ask model show", rendered)
+            self.assertIn("./ask traceability check-completion", rendered)
 
     def test_repeated_nested_evidence_fields_do_not_duplicate_expanders(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workbench_model(root)
-            nested_evidence = {
-                "status": "invalid", "candidate_sha": "abc", "current_sha": "abc",
-                "historical": False, "current_completion": False,
-                "scenarios": [
-                    {"tests": [{"references": [{"id": "one"}]}]},
-                    {"tests": [{"references": [{"id": "two"}]}]},
-                ],
-                "completion": {"errors": ["migration_required: missing review JSON for candidate"]},
-            }
+            detail = {"candidate_sha": "abc", "source": {"status": "unavailable"},
+                      "evidence": {"status": "invalid", "diagnostic":
+                                   "migration_required: missing review JSON for candidate"},
+                      "execution_history": {"status": "invalid", "runs": [
+                          {"work_id": "pilot", "test_id": "CASE-1", "case_id": "test_fixture.Cases.test_behavior",
+                           "run_id": "run-one", "phase": "red", "outcome": "failed",
+                           "output_status": "invalid", "source_status": "unavailable",
+                           "diagnostic": "migration_required: missing review JSON for candidate",
+                           "output_artifact": "work/pilot/traceability/runs/run-one/execution-one.log"},
+                          {"work_id": "pilot", "test_id": "CASE-1", "case_id": "test_fixture.Cases.test_behavior",
+                           "run_id": "run-two", "phase": "final_green", "outcome": "passed",
+                           "output_status": "invalid", "source_status": "unavailable",
+                           "diagnostic": "migration_required: missing review JSON for candidate",
+                           "output_artifact": "work/pilot/traceability/runs/run-two/execution-two.log"},
+                      ]}}
             original_expander = st.expander
 
             def expand_all(*args, **kwargs):
@@ -121,11 +241,18 @@ class UiIntegrationTests(unittest.TestCase):
                 return original_expander(*args, **kwargs)
 
             with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}),
-                  patch.object(projection_module, "inspect_evidence", return_value=nested_evidence),
+                  patch("streamlit_app.workbench_loading.load_selected_detail", return_value=detail),
                   patch.object(st, "expander", expand_all)):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
-                app.segmented_control(key="workbench_section").select("Evidence").run(timeout=15)
+                open_route(app, "result:CASE-1")
                 self.assertFalse(app.exception, app.exception)
+                self.assertIn("Selected test: CASE-1", text(app))
+                expanders = [str(item.label) for item in app.expander]
+                execution_expanders = [label for label in expanders if label.startswith("Execution details ·")]
+                self.assertEqual(len(execution_expanders), 2,
+                                 "each retained execution has its own visible detail control")
+                self.assertEqual(len(execution_expanders), len(set(execution_expanders)),
+                                 "repeated nested fields do not duplicate execution control labels")
                 self.assertTrue(any("migration_required" in str(item.value) for item in app.warning))
                 self.assertFalse(any("migration_required" in str(item.value) for item in app.error))
 
@@ -143,10 +270,11 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("No tasks in this snapshot.", text(app))
-                app.segmented_control(key="workbench_section").select("Scenarios").run(timeout=15)
+                self.assertIn("No task records are available.", text(app))
+                self.assertIn("No canonical scenarios are recorded.", text(app))
+                app.button(key="overview:summary:scenarios").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("No canonical scenarios are linked in this snapshot.", text(app))
+                self.assertIn("No records match this summary.", text(app))
 
     def test_resolution_survives_new_session(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -159,22 +287,31 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("Build", text(app))
                 self.assertIn("Blocked", text(app))
-                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+                app.button(key="overview:attention:decision:choice").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                app.selectbox(key="option_id").select("one")
-                app.text_input(key="actor").input("Developer")
-                app.text_area(key="rationale").input("Measured fit for the pilot")
-                app.button(key="resolve").click().run(timeout=15)
+                option = required_widget(app.selectbox, lambda item: item.key.startswith("decision-option:"), "decision option")
+                actor = required_widget(app.text_input, lambda item: item.key.startswith("decision-actor:"), "decision actor")
+                rationale = required_widget(app.text_area, lambda item: item.key.startswith("decision-rationale:"), "decision rationale")
+                option.select("one")
+                actor.input("Developer")
+                rationale.input("Measured fit for the pilot")
+                app.button(key="decision:submit").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("resolved", text(app))
-                self.assertIn("Developer", text(app))
-                self.assertIn("Measured fit for the pilot", text(app))
+                persisted = load_published(root, "pilot")
+                choice = next(node for node in persisted.document["nodes"] if node["id"] == "choice")
+                self.assertEqual(choice["lifecycle"], "resolved")
+                self.assertEqual(choice["history"][-1]["actor"], "Developer")
+                self.assertEqual(choice["history"][-1]["rationale"], "Measured fit for the pilot")
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
                 self.assertIn("Ready", text(reloaded))
-                reloaded.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+                decision_route = next((item for item in reloaded.button
+                                       if item.key == "route:resolved-decision:choice"), None)
+                self.assertIsNotNone(decision_route, "resolved decision remains navigable in the hierarchy")
+                decision_route.click().run(timeout=15)
+                self.assertIn("Resolved option", text(reloaded))
+                self.assertIn("Developer", text(reloaded))
                 self.assertIn("Measured fit for the pilot", text(reloaded))
-                self.assertIn("resolved", text(reloaded))
 
     def test_gitless_model_root_keeps_workbench_usable_without_git_fatal(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -190,8 +327,9 @@ class UiIntegrationTests(unittest.TestCase):
                                   side_effect=AssertionError("overview must defer evidence scans")):
                     initial = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                     self.assertFalse(initial.exception, initial.exception)
-                app.segmented_control(key="workbench_section").select("Evidence").run(timeout=15)
+                open_route(app, "result:CASE-1")
                 self.assertFalse(app.exception, app.exception)
+                self.assertIn("Selected test: CASE-1", text(app))
                 rendered = text(app) + "\n" + "\n".join(str(item.value) for item in app.json)
                 self.assertIn("Git evidence inspection is unavailable", rendered)
                 self.assertNotIn("fatal: not a git repository", rendered)
@@ -205,11 +343,22 @@ class UiIntegrationTests(unittest.TestCase):
                 self.assertFalse(app.exception, app.exception)
                 self.assertIn("Build", text(app))
                 self.assertIn("Blocked", text(app))
-                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
+                app.button(key="overview:attention:decision:choice").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
 
                 before, diagnostics = validate_current(root, "pilot")
                 self.assertEqual(diagnostics, [], diagnostics)
+                model_before_spec_change = before.document
+                published = load_published(root, "pilot")
+                app.button(key="decision:submit").click().run(timeout=15)
+                self.assertFalse(app.exception, app.exception)
+                self.assertIn("Actor and rationale are required", text(app))
+                self.assertEqual(load_published(root, "pilot").identity, published.identity)
+                choice = next(node for node in published.document["nodes"] if node["id"] == "choice")
+                self.assertEqual(choice["lifecycle"], "open")
+                decision_before_spec_change = {
+                    key: choice.get(key) for key in ("id", "options", "lifecycle", "history")
+                }
                 spec["criteria"][0]["then"] = ["Reject invalid input"]
                 plan_path = root / "work/pilot/test-plan.json"
                 plan = json.loads(plan_path.read_text(encoding="utf-8"))
@@ -217,31 +366,56 @@ class UiIntegrationTests(unittest.TestCase):
                     json.dumps(spec, sort_keys=True, separators=(",", ":")).encode()
                 ).hexdigest()
                 external = edit(root, "pilot", before.identity["digest"], {
-                    "commands": [{"op": "revise_node", "id": "purpose",
-                                  "changes": {"title": "Concurrent spec amendment"}}],
+                    "commands": [],
                     "files": {"specs/current/pilot.json": json.dumps(spec),
                               "work/pilot/test-plan.json": json.dumps(plan)},
                 })
                 self.assertTrue(external["valid"], external)
                 published = load_published(root, "pilot")
-                app.selectbox(key="option_id").select("one")
-                app.text_input(key="actor").input("Developer")
-                app.text_area(key="rationale").input("Use the amended requirement")
-                app.button(key="resolve").click().run(timeout=15)
+                self.assertEqual(
+                    {key: published.document.get(key) for key in ("nodes", "edges")},
+                    {key: model_before_spec_change.get(key) for key in ("nodes", "edges")},
+                    "the linked-spec amendment leaves model nodes and relationships unchanged",
+                )
+                choice_after_spec_change = next(node for node in published.document["nodes"]
+                                                if node["id"] == "choice")
+                self.assertEqual({key: choice_after_spec_change.get(key) for key in decision_before_spec_change},
+                                 decision_before_spec_change,
+                                 "the linked-spec amendment leaves the decision unchanged")
+                option = required_widget(app.selectbox, lambda item: item.key.startswith("decision-option:"), "decision option")
+                actor = required_widget(app.text_input, lambda item: item.key.startswith("decision-actor:"), "decision actor")
+                rationale = required_widget(app.text_area, lambda item: item.key.startswith("decision-rationale:"), "decision rationale")
+                option.select("one")
+                actor.input("Developer")
+                rationale.input("Use the amended requirement")
+                app.button(key="decision:submit").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("did not succeed", text(app))
+                self.assertIn("stale", text(app))
+                self.assertIn("No change was saved", text(app))
                 self.assertEqual(load_published(root, "pilot").identity, published.identity)
                 choice = next(node for node in published.document["nodes"] if node["id"] == "choice")
                 self.assertEqual(choice["lifecycle"], "open")
 
                 app.button(key="refresh").click().run(timeout=15)
-                app.segmented_control(key="workbench_section").select("Objects").run(timeout=15)
-                app.selectbox(key="option_id").select("one")
-                app.text_input(key="actor").input("Developer")
-                app.text_area(key="rationale").input("Use the amended requirement")
-                app.button(key="resolve").click().run(timeout=15)
+                app.button(key="route:decision").click().run(timeout=15)
+                option = required_widget(app.selectbox, lambda item: item.key.startswith("decision-option:"), "decision option")
+                actor = required_widget(app.text_input, lambda item: item.key.startswith("decision-actor:"), "decision actor")
+                rationale = required_widget(app.text_area, lambda item: item.key.startswith("decision-rationale:"), "decision rationale")
+                option.select("one")
+                actor.input("Developer")
+                rationale.input("Use the amended requirement")
+                app.button(key="decision:submit").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("resolved", text(app))
+                resolved = load_published(root, "pilot")
+                choice = next(node for node in resolved.document["nodes"] if node["id"] == "choice")
+                self.assertEqual(choice["lifecycle"], "resolved")
+                self.assertEqual(choice["history"][-1]["rationale"], "Use the amended requirement")
                 reloaded = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(reloaded.exception, reloaded.exception)
                 self.assertIn("Ready", text(reloaded))
+                decision_route = next((item for item in reloaded.button
+                                       if item.key == "route:resolved-decision:choice"), None)
+                self.assertIsNotNone(decision_route, "resolved decision remains navigable after refreshed resolution")
+                decision_route.click().run(timeout=15)
+                self.assertIn("Resolved option", text(reloaded))
+                self.assertIn("Use the amended requirement", text(reloaded))

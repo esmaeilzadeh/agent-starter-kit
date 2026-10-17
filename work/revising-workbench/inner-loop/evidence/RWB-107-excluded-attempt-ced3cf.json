@@ -1,0 +1,18 @@
+{
+  "schema": "ask-historical-attempt-disposition/v1",
+  "work_id": "revising-workbench",
+  "task_id": "RWB-107",
+  "run_id": "ced3cf058da947bf9431237d3f676f34",
+  "report_digest": "5620a7b87f9a2d83005cd226bc7afcf4ac3da0307137ef929156d342b82a3bd2",
+  "candidate_sha": "6d4c8b3fcf0bcd943b409bba16c9449ab712daaa",
+  "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+  "plan_digest": "5af89843427a100e5b90c164167217520ad33ba88ad1721cf91022e91ed6809d",
+  "disposition": "excluded_from_active_tdd_evidence",
+  "reason": "The red candidate commit is detached and is not an ancestor of the reviewed candidate, so its failures cannot establish TDD continuity for that candidate. Preserve the run artifact for audit; do not include it in the active execution ledger.",
+  "superseded_by": [
+    "af8e9e805092426e94f826b4264187d2",
+    "a48cf93878c34363937f1193989b5e8c"
+  ],
+  "retained_report": "work/revising-workbench/traceability/runs/ced3cf058da947bf9431237d3f676f34/results.json",
+  "disposition_by": "/root"
+}

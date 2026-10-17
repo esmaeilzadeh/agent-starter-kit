@@ -1,0 +1,417 @@
+test_empty_task_and_scenario_tables_show_clear_states (test_engineering_ui.UiIntegrationTests.test_empty_task_and_scenario_tables_show_clear_states) ... 2026-10-12 12:02:24.525 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_gitless_model_root_keeps_workbench_usable_without_git_fatal (test_engineering_ui.UiIntegrationTests.test_gitless_model_root_keeps_workbench_usable_without_git_fatal) ... 2026-10-12 12:02:25.183 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:02:25.363 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_historical_evidence_candidate_is_inspectable_without_being_current (test_engineering_ui.UiIntegrationTests.test_historical_evidence_candidate_is_inspectable_without_being_current) ... 2026-10-12 12:02:26.276 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_overview_keeps_decision_resolution_in_the_objects_section (test_engineering_ui.UiIntegrationTests.test_overview_keeps_decision_resolution_in_the_objects_section) ... 2026-10-12 12:02:26.650 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_overview_loads_results_on_demand_and_explains_debug_identifiers (test_engineering_ui.UiIntegrationTests.test_overview_loads_results_on_demand_and_explains_debug_identifiers) ... 2026-10-12 12:02:26.915 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes (test_engineering_ui.UiIntegrationTests.test_overview_shows_epic_scenarios_tasks_and_tests_without_hashes) ... 2026-10-12 12:02:27.190 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+ok
+test_planned_test_shows_its_source_in_the_detail_panel (test_engineering_ui.UiIntegrationTests.test_planned_test_shows_its_source_in_the_detail_panel) ... 2026-10-12 12:02:27.461 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_referenced_spec_change_keeps_form_stale_until_refresh (test_engineering_ui.UiIntegrationTests.test_referenced_spec_change_keeps_form_stale_until_refresh) ... 2026-10-12 12:02:27.729 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:02:28.510 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_repeated_nested_evidence_fields_do_not_duplicate_expanders (test_engineering_ui.UiIntegrationTests.test_repeated_nested_evidence_fields_do_not_duplicate_expanders) ... 2026-10-12 12:02:28.681 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_resolution_survives_new_session (test_engineering_ui.UiIntegrationTests.test_resolution_survives_new_session) ... 2026-10-12 12:02:28.948 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:02:29.323 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_gitless_model_root_shows_actionable_evidence_unavailable_state (test_engineering_ui_browser.WorkbenchBrowserJourney.test_gitless_model_root_shows_actionable_evidence_unavailable_state) ... FAIL
+test_stale_spec_then_refresh_and_persist_in_new_browser_session (test_engineering_ui_browser.WorkbenchBrowserJourney.test_stale_spec_then_refresh_and_persist_in_new_browser_session) ... FAIL
+test_keyboard_narrow_layout_and_decision_journey (test_engineering_workbench_browser.WorkbenchTests.test_keyboard_narrow_layout_and_decision_journey) ... ok
+test_work_scenario_task_test_result_and_branch_journey (test_engineering_workbench_browser.WorkbenchTests.test_work_scenario_task_test_result_and_branch_journey) ... FAIL
+test_lazy_work_and_integrity_bound_cache_invalidation (test_engineering_workbench_performance.WorkbenchTests.test_lazy_work_and_integrity_bound_cache_invalidation) ... 2026-10-12 12:03:13.829 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-12 12:03:14.246 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_measured_pilot_latency_budgets (test_engineering_workbench_performance.WorkbenchTests.test_measured_pilot_latency_budgets) ... FAIL
+
+======================================================================
+FAIL: test_gitless_model_root_keeps_workbench_usable_without_git_fatal (test_engineering_ui.UiIntegrationTests.test_gitless_model_root_keeps_workbench_usable_without_git_fatal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui.py", line 269, in test_gitless_model_root_keeps_workbench_usable_without_git_fatal
+    self.assertIn("Git evidence inspection is unavailable", rendered)
+AssertionError: 'Git evidence inspection is unavailable' not found in 'Engineering workbench\nBehavior assertion\n<style>\nbutton:focus-visible,\n[role="button"]:focus-visible,\nsummary:focus-visible,\ninput:focus-visible,\ntextarea:focus-visible,\nselect:focus-visible {\n  outline: 3px solid #005e60 !important;\n  outline-offset: 2px !important;\n  box-shadow: none !important;\n}\n</style>\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Result / evidence**\nCase: `test_fixture.Cases.test_behavior` via `fixture`\n#### Expected assertions\n**P-001**\nExact accepted behavior\n#### Related scenarios\n#### Test source\n#### Recorded execution\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\n/\n/\n/\n/\n/\nSelected test: CASE-1 · revision-bound planned identity\nSelected source path: test_fixture.py\nCurrent evidence is unavailable for this selected test.\nNo recorded execution is attached to this selected test.\n    def test_behavior(self):\n        actual = validate_input(\'valid\')\n        self.assertEqual(actual, \'accepted\')\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000\u3000Build\n\u3000\u3000\u3000\u3000Behavior assertion\n\u3000\u3000\u3000\u3000\u3000Result / evidence\n\u3000Decision · Choose\nPurpose\nScenarios without a recorded story\nCanonical behavior\nBuild\nBehavior assertion\nBack\nOpen scenario scenario\n'
+
+======================================================================
+FAIL: test_overview_loads_results_on_demand_and_explains_debug_identifiers (test_engineering_ui.UiIntegrationTests.test_overview_loads_results_on_demand_and_explains_debug_identifiers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui.py", line 156, in test_overview_loads_results_on_demand_and_explains_debug_identifiers
+    self.assertIn("Passed", rendered)
+AssertionError: 'Passed' not found in 'Engineering workbench\nBehavior assertion\n<style>\nbutton:focus-visible,\n[role="button"]:focus-visible,\nsummary:focus-visible,\ninput:focus-visible,\ntextarea:focus-visible,\nselect:focus-visible {\n  outline: 3px solid #005e60 !important;\n  outline-offset: 2px !important;\n  box-shadow: none !important;\n}\n</style>\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Result / evidence**\nCase: `test_fixture.Cases.test_behavior` via `fixture`\n#### Expected assertions\n**P-001**\nExact accepted behavior\n#### Related scenarios\n#### Test source\n#### Recorded execution\n**Snapshot digest**\n**Git revision**\n**Inspect commands**\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\n/\n/\n/\n/\n/\nSelected test: CASE-1 · revision-bound planned identity\nSelected source path: test_fixture.py\nThe snapshot digest fingerprints admitted inputs; it is not a Git commit.\nSelected source: `test_fixture.py`\nNo recorded execution is attached to this selected test.\n    def test_behavior(self):\n        actual = validate_input(\'valid\')\n        self.assertEqual(actual, \'accepted\')\n1918e58f1a2054c7316b9b516400e5fc634cf1e6046b53332f6bb84721abdcc6\nunavailable\ngit show <commit-sha>\n./ask model show --work-id pilot --candidate <commit-sha>\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000\u3000Build\n\u3000\u3000\u3000\u3000Behavior assertion\n\u3000\u3000\u3000\u3000\u3000Result / evidence\n\u3000Decision · Choose\nPurpose\nScenarios without a recorded story\nCanonical behavior\nBuild\nBehavior assertion\nBack\nOpen scenario scenario'
+
+======================================================================
+FAIL: test_planned_test_shows_its_source_in_the_detail_panel (test_engineering_ui.UiIntegrationTests.test_planned_test_shows_its_source_in_the_detail_panel)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui.py", line 81, in test_planned_test_shows_its_source_in_the_detail_panel
+    self.assertIn("Planned assertions for C1", text(app))
+AssertionError: 'Planned assertions for C1' not found in 'Engineering workbench\nBehavior assertion\n<style>\nbutton:focus-visible,\n[role="button"]:focus-visible,\nsummary:focus-visible,\ninput:focus-visible,\ntextarea:focus-visible,\nselect:focus-visible {\n  outline: 3px solid #005e60 !important;\n  outline-offset: 2px !important;\n  box-shadow: none !important;\n}\n</style>\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Behavior assertion**\nCase: `test_fixture.Cases.test_behavior` via `fixture`\n#### Expected assertions\n**P-001**\nExact accepted behavior\n#### Related scenarios\n#### Test source\n#### Recorded execution\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\n/\n/\n/\n/\nSelected test: CASE-1 · revision-bound planned identity\nSelected source path: test_fixture.py\nCurrent evidence is unavailable for this selected test.\nNo recorded execution is attached to this selected test.\n    def test_behavior(self):\n        actual = validate_input(\'valid\')\n        self.assertEqual(actual, \'accepted\')\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000\u3000Build\n\u3000\u3000\u3000\u3000Behavior assertion\n\u3000\u3000\u3000\u3000\u3000Result / evidence\n\u3000Decision · Choose\nPurpose\nScenarios without a recorded story\nCanonical behavior\nBuild\nBack\nOpen scenario scenario'
+
+======================================================================
+FAIL: test_referenced_spec_change_keeps_form_stale_until_refresh (test_engineering_ui.UiIntegrationTests.test_referenced_spec_change_keeps_form_stale_until_refresh)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui.py", line 352, in test_referenced_spec_change_keeps_form_stale_until_refresh
+    self.assertIsNotNone(decision_route, "resolved decision remains navigable after refreshed resolution")
+AssertionError: unexpectedly None : resolved decision remains navigable after refreshed resolution
+
+======================================================================
+FAIL: test_repeated_nested_evidence_fields_do_not_duplicate_expanders (test_engineering_ui.UiIntegrationTests.test_repeated_nested_evidence_fields_do_not_duplicate_expanders)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui.py", line 192, in test_repeated_nested_evidence_fields_do_not_duplicate_expanders
+    self.assertTrue(any("migration_required" in str(item.value) for item in app.warning))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_resolution_survives_new_session (test_engineering_ui.UiIntegrationTests.test_resolution_survives_new_session)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui.py", line 245, in test_resolution_survives_new_session
+    self.assertIsNotNone(decision_route, "resolved decision remains navigable in the hierarchy")
+AssertionError: unexpectedly None : resolved decision remains navigable in the hierarchy
+
+======================================================================
+FAIL: test_gitless_model_root_shows_actionable_evidence_unavailable_state (test_engineering_ui_browser.WorkbenchBrowserJourney.test_gitless_model_root_shows_actionable_evidence_unavailable_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui_browser.py", line 236, in test_gitless_model_root_shows_actionable_evidence_unavailable_state
+    expect(page.get_by_text("Snapshot digest", exact=True)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_text("Snapshot digest", exact=True) with timeout 5000ms
+  - waiting for get_by_text("Snapshot digest", exact=True)
+
+Aria snapshot:
+- banner:
+  - button "Deploy"
+  - button "Main menu"
+- heading "Engineering workbench" [level=1]:
+  - text: Engineering workbench
+  - link "Link to heading":
+    - /url: "#engineering-workbench"
+- paragraph: Follow promised work through delivery tasks, tests, and recorded results.
+- group:
+  - combobox "Workstream": pilot
+  - button "Open"
+- group:
+  - combobox "Source": working-tree
+  - button "Open"
+- button "refresh Refresh":
+  - text: refresh
+  - paragraph: Refresh
+- paragraph:
+  - img "source icon": source
+  - text: Working tree
+- paragraph:
+  - img "check_circle icon": check_circle
+  - text: Validated inputs
+- paragraph:
+  - text: "Checkout:"
+  - code: unknown branch
+  - text: "· Workstream:"
+  - code: pilot
+- paragraph:
+  - strong: Epic
+- button "Purpose":
+  - paragraph: Purpose
+- paragraph: Scenarios without a recorded story
+- button "Canonical behavior":
+  - paragraph: Canonical behavior
+- button "Build":
+  - paragraph: Build
+- button "Behavior assertion":
+  - paragraph: Behavior assertion
+- button "Result / evidence":
+  - paragraph: Result / evidence
+- button "Decision · Choose":
+  - paragraph: Decision · Choose
+- button "Purpose":
+  - paragraph: Purpose
+- paragraph: /
+- button "Scenarios without a recorded story":
+  - paragraph: Scenarios without a recorded story
+- paragraph: /
+- button "Canonical behavior":
+  - paragraph: Canonical behavior
+- paragraph: /
+- button "Build":
+  - paragraph: Build
+- paragraph: /
+- button "Behavior assertion":
+  - paragraph: Behavior assertion
+- paragraph: /
+- paragraph:
+  - strong: Result / evidence
+- button "arrow_back Back":
+  - text: arrow_back
+  - paragraph: Back
+- heading "Behavior assertion" [level=3]:
+  - text: Behavior assertion
+  - link "Link to heading":
+    - /url: "#purpose"
+- paragraph: "Selected test: CASE-1 · revision-bound planned identity"
+- paragraph:
+  - text: "Case:"
+  - code: test_fixture.Cases.test_behavior
+  - text: via
+  - code: fixture
+- heading "Expected assertions" [level=4]:
+  - text: Expected assertions
+  - link "Link to heading":
+    - /url: "#stories-and-scenarios"
+- paragraph:
+  - strong: P-001
+- paragraph: Exact accepted behavior
+- heading "Related scenarios" [level=4]:
+  - text: Related scenarios
+  - link "Link to heading":
+    - /url: "#related-scenarios"
+- button "Open scenario scenario":
+  - paragraph: Open scenario scenario
+- heading "Test source" [level=4]:
+  - text: Test source
+  - link "Link to heading":
+    - /url: "#test-source"
+- paragraph: "Selected source path: test_fixture.py"
+- code: "def test_behavior(self): actual = validate_input('valid') self.assertEqual(actual, 'accepted')"
+- heading "Recorded execution" [level=4]:
+  - text: Recorded execution
+  - link "Link to heading":
+    - /url: "#needs-attention"
+- status:
+  - paragraph: Current evidence is unavailable for this selected test.
+- status:
+  - paragraph: No recorded execution is attached to this selected test.
+- group:
+  - text: keyboard_arrow_right
+  - paragraph: Technical details and identifiers
+
+======================================================================
+FAIL: test_stale_spec_then_refresh_and_persist_in_new_browser_session (test_engineering_ui_browser.WorkbenchBrowserJourney.test_stale_spec_then_refresh_and_persist_in_new_browser_session)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_ui_browser.py", line 115, in test_stale_spec_then_refresh_and_persist_in_new_browser_session
+    expect(first.get_by_text("Passed", exact=False)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: strict mode violation: get_by_text("Passed") resolved to 2 elements:
+    1) <p>Outcome: Passed</p> aka get_by_text("Outcome: Passed").first
+    2) <p>Outcome: Passed</p> aka get_by_text("Outcome: Passed").nth(1)
+ 
+Call log:
+  - Expect "to_be_visible" get_by_text("Passed") with timeout 5000ms
+  - waiting for get_by_text("Passed")
+
+
+======================================================================
+FAIL: test_work_scenario_task_test_result_and_branch_journey (test_engineering_workbench_browser.WorkbenchTests.test_work_scenario_task_test_result_and_branch_journey)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_workbench_browser.py", line 344, in test_work_scenario_task_test_result_and_branch_journey
+    expect(page.get_by_text("Passed", exact=False)).to_be_visible()
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/sync_api/_generated.py", line 23501, in to_be_visible
+    self._sync(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 852, in to_be_visible
+    await self._expect_impl(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 128, in _expect_impl
+    _record_soft_or_raise(
+  File "/tmp/ask-wb009-venv/lib/python3.12/site-packages/playwright/_impl/_assertions.py", line 60, in _record_soft_or_raise
+    raise error
+AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_text("Passed") with timeout 5000ms
+  - waiting for get_by_text("Passed")
+
+Aria snapshot:
+- banner:
+  - button "Deploy"
+  - button "Main menu"
+- heading "Engineering workbench" [level=1]:
+  - text: Engineering workbench
+  - link "Link to heading":
+    - /url: "#engineering-workbench"
+- paragraph: Follow promised work through delivery tasks, tests, and recorded results.
+- group:
+  - combobox "Workstream": w
+  - button "Open"
+- group:
+  - combobox "Source": working-tree
+  - button "Open"
+- button "refresh Refresh":
+  - text: refresh
+  - paragraph: Refresh
+- paragraph:
+  - img "source icon": source
+  - text: Working tree
+- paragraph:
+  - img "check_circle icon": check_circle
+  - text: Validated inputs
+- paragraph:
+  - text: "Checkout:"
+  - code: agent/w
+  - text: "· Workstream:"
+  - code: w
+- paragraph:
+  - strong: Epic
+- button "Purpose":
+  - paragraph: Purpose
+- button "Render uppercase text":
+  - paragraph: Render uppercase text
+- button "Uppercase behavior":
+  - paragraph: Uppercase behavior
+- button "Build":
+  - paragraph: Build
+- button "E":
+  - paragraph: E
+- button "Result / evidence":
+  - paragraph: Result / evidence
+- button "Uppercase assertion":
+  - paragraph: Uppercase assertion
+- button "Result / evidence":
+  - paragraph: Result / evidence
+- button "Review build":
+  - paragraph: Review build
+- paragraph: Scenarios without a recorded story
+- button "Second canonical behavior":
+  - paragraph: Second canonical behavior
+- button "Decision · Choose":
+  - paragraph: Decision · Choose
+- button "Purpose":
+  - paragraph: Purpose
+- paragraph: /
+- button "Render uppercase text":
+  - paragraph: Render uppercase text
+- paragraph: /
+- button "Uppercase behavior":
+  - paragraph: Uppercase behavior
+- paragraph: /
+- button "Build":
+  - paragraph: Build
+- paragraph: /
+- button "E":
+  - paragraph: E
+- paragraph: /
+- paragraph:
+  - strong: Result / evidence
+- button "arrow_back Back":
+  - text: arrow_back
+  - paragraph: Back
+- heading "E" [level=3]:
+  - text: E
+  - link "Link to heading":
+    - /url: "#purpose"
+- paragraph: "Selected test: E · revision-bound planned identity"
+- paragraph:
+  - text: "Case:"
+  - code: test_app.Cases.test_cli
+  - text: via
+  - code: r
+- heading "Expected assertions" [level=4]:
+  - text: Expected assertions
+  - link "Link to heading":
+    - /url: "#expected-assertions"
+- paragraph:
+  - strong: C1
+- paragraph: Exact HELLO output
+- heading "Related scenarios" [level=4]:
+  - text: Related scenarios
+  - link "Link to heading":
+    - /url: "#related-scenarios"
+- button "Open scenario scenario":
+  - paragraph: Open scenario scenario
+- heading "Test source" [level=4]:
+  - text: Test source
+  - link "Link to heading":
+    - /url: "#test-source"
+- paragraph: "Selected source path: test_app.py"
+- code: "def test_cli(self): p=subprocess.run([sys.executable,'app.py','hello'],capture_output=True,text=True) self.assertEqual(p.returncode,0) self.assertEqual(p.stdout.strip(),'HELLO')"
+- heading "Recorded execution" [level=4]:
+  - text: Recorded execution
+  - link "Link to heading":
+    - /url: "#recorded-execution"
+- status:
+  - paragraph: Current evidence is unavailable for this selected test.
+- status:
+  - paragraph: No recorded execution is attached to this selected test.
+- group:
+  - text: keyboard_arrow_right
+  - paragraph: Technical details and identifiers
+
+======================================================================
+FAIL: test_lazy_work_and_integrity_bound_cache_invalidation (test_engineering_workbench_performance.WorkbenchTests.test_lazy_work_and_integrity_bound_cache_invalidation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_workbench_performance.py", line 274, in test_lazy_work_and_integrity_bound_cache_invalidation
+    self.assertEqual(new_reds, [], "new workbench defects:\n- " + "\n- ".join(new_reds))
+AssertionError: Lists differ: ['tampered selected output is missing its [379 chars]per'] != []
+
+First list contains 6 additional elements.
+First extra element 0:
+'tampered selected output is missing its explicit invalid-integrity label'
+
++ []
+- ['tampered selected output is missing its explicit invalid-integrity label',
+-  'tampered selected output is missing its untrusted-state label',
+-  'actual recorded outcome is not presented separately from integrity state',
+-  'plan-only test does not resolve canonical workstream evidence',
+-  'current HEAD is missing from cache identity when no SHA is supplied',
+-  'resolved decision cannot be opened by the shared related-route helper'] : new workbench defects:
+- tampered selected output is missing its explicit invalid-integrity label
+- tampered selected output is missing its untrusted-state label
+- actual recorded outcome is not presented separately from integrity state
+- plan-only test does not resolve canonical workstream evidence
+- current HEAD is missing from cache identity when no SHA is supplied
+- resolved decision cannot be opened by the shared related-route helper
+
+======================================================================
+FAIL: test_measured_pilot_latency_budgets (test_engineering_workbench_performance.WorkbenchTests.test_measured_pilot_latency_budgets)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-t3oxd1m1/candidate/_ask/tests/test_engineering_workbench_performance.py", line 345, in test_measured_pilot_latency_budgets
+    self.assertEqual(report["run_status"], "complete", report.get("error"))
+AssertionError: 'failed' != 'complete'
+- failed
++ complete
+ : {'message': 'Locator expected to have count \'2\'\nActual value: 0 \nCall log:\n  - Expect "to_have_count" get_by_text("Recorded outcome: Passed", exact=True) with timeout 5000ms\n  - waiting for get_by_text("Recorded outcome: Passed", exact=True)\n    14 × locator resolved to 0 elements\n       - unexpected value "0"\n', 'type': 'AssertionError'}
+
+----------------------------------------------------------------------
+Ran 16 tests in 65.652s
+
+FAILED (failures=11)

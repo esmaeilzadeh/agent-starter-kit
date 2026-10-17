@@ -1,0 +1,34 @@
+test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests) ... FAIL
+test_qualified_source_matches_selected_revision (test_engineering_workbench_evidence.WorkbenchTests) ... ok
+test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests) ... FAIL
+
+======================================================================
+FAIL: test_missing_stale_tampered_and_refreshed_evidence (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-18d25wg8/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 221, in test_missing_stale_tampered_and_refreshed_evidence
+    self.assertEqual((old_implementation["source_status"], old_implementation["applicability"],
+AssertionError: Tuples differ: ('current', 'current', 'unavailable', 'unav[3089 chars]alse) != ('historical', 'historical', 'unavailable',[31 chars]True)
+
+First differing element 0:
+'current'
+'historical'
+
+Diff is 3702 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_results_match_work_test_run_and_contract (test_engineering_workbench_evidence.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-18d25wg8/candidate/_ask/tests/test_engineering_workbench_evidence.py", line 153, in test_results_match_work_test_run_and_contract
+    self.assertEqual(row["output_status"], "invalid")
+AssertionError: 'valid' != 'invalid'
+- valid
++ invalid
+? ++
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.481s
+
+FAILED (failures=2)

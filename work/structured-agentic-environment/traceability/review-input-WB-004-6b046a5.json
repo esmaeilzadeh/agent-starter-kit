@@ -1,0 +1,182 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "structured-agentic-environment",
+  "reviewer": "/root/review_wb001",
+  "recorded_by": "codex-coordinator",
+  "model": "gpt-6-astra",
+  "runtime": "codex",
+  "parent_model": "gpt-6-luna",
+  "scope": "task",
+  "task_id": "WB-004",
+  "candidate_sha": "6b046a50ed3ebb400af4faeabc36ebea09bb520d",
+  "task_base_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+  "base_sha": "55c11fad3e0391f8a47236166c8d5941d824ef73",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "test_ids": [
+    "WB-navigation",
+    "WB-form-context"
+  ],
+  "criterion_ids": [
+    "EM-006",
+    "EM-008",
+    "EM-009"
+  ],
+  "source_digests": {
+    "_ask/tests/test_engineering_workbench_navigation.py": "9a41242e70f1c781cf73d000929c6bb0b647ab2e87f553bbb9637d7b7af8cc31"
+  },
+  "inspected_sources": [
+    "_ask/scripts/engineering_model/workbench_evidence.py",
+    "_ask/scripts/engineering_model/workbench_sources.py",
+    "_ask/tests/test_engineering_workbench_evidence.py",
+    "_ask/tests/test_engineering_workbench_navigation.py",
+    "_ask/tests/test_engineering_workbench_sources.py",
+    "_ask/ui/streamlit_app.py",
+    "_ask/ui/workbench_context.py",
+    "_ask/ui/workbench_navigation.py"
+  ],
+  "changed_cases": [
+    "WB-evidence-identity",
+    "WB-evidence-states",
+    "WB-form-context",
+    "WB-inventory",
+    "WB-navigation",
+    "WB-snapshot",
+    "WB-source-errors",
+    "WB-source-version"
+  ],
+  "inventory_exclusions": {},
+  "decision": "REJECTED",
+  "boundary": "ok",
+  "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-004.json",
+  "task_result_sha256": "ece4abce67c6ad7f0149784de80e626b9ee4c3029a82f1efe5959dc9ec6f2e71",
+  "owned_source_digests": {
+    "_ask/tests/test_engineering_workbench_navigation.py": "9a41242e70f1c781cf73d000929c6bb0b647ab2e87f553bbb9637d7b7af8cc31",
+    "_ask/ui/.streamlit/config.toml": "4118213e373c3f93ce0f484656443566f07a789c72ae1b9b086f58cae588f2c6",
+    "_ask/ui/streamlit_app.py": "4124fb68d9e592d9484c04c5db232756c3c7ccf407331128aab1554d3b24ab4b",
+    "_ask/ui/workbench_context.py": "48795174d0d8bbad7bc816488fc2e4a81bddf83798c270535709e38efee72e9c",
+    "_ask/ui/workbench_navigation.py": "f12971e89879984158f427c09ee7af2f64521a09a336e1f37f73c7af9caa39ee"
+  },
+  "findings": [
+    {
+      "id": "R4",
+      "severity": "high",
+      "path": "_ask/ui/streamlit_app.py",
+      "line": 149,
+      "assessment": "Committed-source construction bypasses the shared snapshot validator. It constructs Snapshot and calls project directly, returning only initial read_snapshot path diagnostics. A stale spec-to-plan binding rejected for the same working-tree bytes becomes an ordinary committed hierarchy with no diagnostics. Validate the fully captured immutable snapshot through the existing shared authority before publishing its view; surface invalid/missing committed dependencies honestly without borrowing checkout inputs.",
+      "reproduction": "Create the existing pilot fixture on a live agent/pilot branch, increment specs/current/pilot.json revision without updating work/pilot/test-plan.json spec_digest, then commit. Opening working-tree source has projection=None. Select git:agent/pilot: projection is present and view.diagnostics=[]. Calling view.captured.diagnostics(root) returns [{code: EM001_CANONICAL_DEFINITION, path: work/pilot/test-plan.json, message: spec_digest_mismatch: }]. No invalid-source warning appears in committed mode.",
+      "related_test_ids": [
+        "WB-navigation"
+      ]
+    }
+  ],
+  "criteria": [
+    {
+      "id": "EM-006",
+      "coverage_decision": "APPROVED",
+      "assessment": "The assigned stale-edit slice still preserves captured identity through navigation, rejects a linked spec/plan stale submission through the shared guard without applying decision history, and explicitly recaptures on Refresh. Valid-choice/task-attention rendering remains later scope.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Actual AppTest form fields submit against changed linked inputs; digest and unchanged model decision history assertions discriminate stale rejection. The new Back assertion verifies rendered context as well."
+        }
+      }
+    },
+    {
+      "id": "EM-008",
+      "coverage_decision": "APPROVED",
+      "assessment": "The task navigator now retains distinct test/result paths for one task spanning two scenarios through context-specific task routes. Breadcrumbs retain story/scenario/task/test ancestry and callback-based Back restores visible detail in the same rerun. Later overview content and count navigation remain separately assigned.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The expanded real model/spec/plan fixture assigns CASE-1 and CASE-2 to the same task across two scenarios; AppTest opens second test/result and checks ancestor labels and rendered Back detail. Independent reproduction confirms both routes and same-rerun epic Back."
+        }
+      }
+    },
+    {
+      "id": "EM-009",
+      "coverage_decision": "REJECTED",
+      "assessment": "A separate committed-source selector now pins a full immutable SHA, preserves checkout, resets context and disables writes; moving a ref is reflected only after Refresh. However the manually assembled committed Snapshot is projected without shared validation. A stale canonical spec/plan binding that is rejected in working-tree mode is silently displayed in committed mode, violating the required validated source boundary.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The expanded source fixture compares committed versus working-draft story bytes and verifies full SHA/read-only decisions, but contains only valid committed inputs. It omits stale canonical bindings and fails to expose the reproduced EM001_CANONICAL_DEFINITION/spec_digest_mismatch diagnostic."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "WB-navigation",
+      "decision": "REJECTED",
+      "assertion_assessment": "The expanded fixture now follows a shared task across two canonical scenarios into distinct test/result routes, checks visible Back detail, distinguishes working-draft and committed story bytes, asserts pinned full SHA, disables committed decision submission and preserves checkout across work/source switches. These fix prior R1/R2/R3. It never commits an invalid spec/plan binding, so the new committed source path bypasses shared validation undetected.",
+      "counterexample": "Commit a valid JSON specification with incremented revision while retaining the prior test-plan spec_digest. Working-tree admission rejects it. Selecting the same immutable committed source renders the hierarchy with diagnostics=[], although captured.diagnostics(root) reports EM001_CANONICAL_DEFINITION at work/pilot/test-plan.json, message spec_digest_mismatch: .",
+      "tdd_continuity_assessment": "Remediation red 03333875786242e2bc771c816a81fbf7 at 19d45be51e4b69f71083bc07a688d54229a20a6f collects both mapped cases and fails by behavior_assertion (same-rerun Back detail and archive read-only source). Final green 117dad552c424c8ba36b2eb105bb568e passes both at exact candidate 6b046a50ed3ebb400af4faeabc36ebea09bb520d with identical mapped test-file bytes. Ledger/report/log/source digests verified. Existing continuity establishes the added assertions but does not cover invalid committed-source admission. No exemption."
+    },
+    {
+      "id": "WB-form-context",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case preserves captured digest across scenario and Back navigation, now asserts that Back displays the epic immediately, changes linked spec/plan inputs, submits actual form fields, checks stale feedback and unchanged decision history, then explicitly refreshes and verifies a changed digest/root. Historical noneditability is additionally exercised by the sibling assigned navigation case and independent committed decision inspection; this case itself targets the captured working-tree form.",
+      "counterexample": "Silently recapturing a digest during navigation would authorize an old form against changed inputs and fail the unchanged-identity/stale-history assertions. Deferring Back rendering until another interaction fails its new Purpose subheader assertion.",
+      "tdd_continuity_assessment": "Remediation red 03333875786242e2bc771c816a81fbf7 at 19d45be51e4b69f71083bc07a688d54229a20a6f collects both mapped cases and fails by behavior_assertion (same-rerun Back detail and archive read-only source). Final green 117dad552c424c8ba36b2eb105bb568e passes both at exact candidate 6b046a50ed3ebb400af4faeabc36ebea09bb520d with identical mapped test-file bytes. Ledger/report/log/source digests verified. Existing continuity establishes the added assertions but does not cover invalid committed-source admission. No exemption."
+    }
+  ],
+  "limitations": [
+    "Task-scoped review only. Earlier source/evidence reviews and later UI/content/verification duties remain separate.",
+    "UI checkpoint is prescribed after integration and is not the rejection reason.",
+    "TaskResult green summary retains 4.121s from the prior candidate; the actual captured final-green log reports 6.042s. Actual retained log/report digests and both passing case outcomes were verified.",
+    "No source changes, state recording, integration or commits. recorded_by identifies the intended coordinator only."
+  ],
+  "execution_evidence": {
+    "red": {
+      "run_id": "03333875786242e2bc771c816a81fbf7",
+      "candidate_sha": "19d45be51e4b69f71083bc07a688d54229a20a6f",
+      "canonical_report_digest": "7cc45db6aefa7654a72eb8237f5892396209a6191c72078fc86c7059f9f7f641",
+      "report_file_sha256": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+      "output_digest": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        },
+        "WB-navigation": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        }
+      }
+    },
+    "green": {
+      "run_id": "117dad552c424c8ba36b2eb105bb568e",
+      "candidate_sha": "6b046a50ed3ebb400af4faeabc36ebea09bb520d",
+      "canonical_report_digest": "a268d440a793f4f0aecabbd53ec8b432a406a8e9914e74d47cc052a2c3c0bfbc",
+      "report_file_sha256": "58ce830c89dadbe45bff2588fd1ae2ba85d299eea2d2f017f80afb33b6765ba8",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/117dad552c424c8ba36b2eb105bb568e/0ce577dc13e440a8b98131692ad30e86.log",
+      "output_digest": "5e30f075f0ccd0935585b964132847c25f38257151d18b783a7e6060710914a4",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "passed",
+          "failure_kind": null
+        },
+        "WB-navigation": {
+          "outcome": "passed",
+          "failure_kind": null
+        }
+      }
+    }
+  },
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "assessment": "Per-scenario task aliases and test/scenario emission keys retain CASE-1 and CASE-2 with distinct result routes for a shared task. The new AppTest follows the second test/result chain and checks context."
+    },
+    {
+      "id": "R2",
+      "assessment": "Outline and breadcrumb/Back mutations now use callbacks before page rendering. Independent scenario\u2192Back inspection produces route purpose and subheader Purpose in the same rerun."
+    },
+    {
+      "id": "R3",
+      "assessment": "The app now discovers source inventory, offers a separate Source selector, pins full resolved commit identity in session context, uses committed captured bytes and disables decision submission. Independent moving-ref test preserves the pinned old source until Refresh then resets to the new source/root. Source validation remains the new R4 blocker."
+    }
+  ]
+}

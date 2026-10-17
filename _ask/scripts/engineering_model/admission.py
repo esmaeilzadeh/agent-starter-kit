@@ -13,8 +13,9 @@ from pathlib import Path
 import tempfile
 from types import MappingProxyType
 
-from .snapshot import Snapshot, capture, is_current, safe_relative
-from .validation import RULES_VERSION
+from .snapshot import Snapshot, capture, is_current, read_input, safe_relative
+from .validation import RULES_VERSION, SCHEMA_V2
+from .passages import delivery_task_execution, required_task_passages, selected_task_node
 
 
 def _state_directory(root, work_id):
@@ -113,7 +114,20 @@ def guarded_publication_chain(root, work_id, base_digest, result_digest, *, base
     return digest == base_digest and _publication(state, selected)["result_digest"] == base_digest
 
 
-def _publish(state, snapshot, root, *, guarded_base=None):
+def _publish(state, snapshot, root, *, guarded_base=None, guarded_observations=None):
+    root = Path(root).resolve()
+    guarded_observations = guarded_observations or {}
+
+    def inputs_current():
+        if not is_current(snapshot, root):
+            return False
+        for path, expected in guarded_observations.items():
+            status, raw = read_input(root, path)
+            digest = hashlib.sha256(raw).hexdigest() if raw is not None else None
+            if status != expected.get("status") or digest != expected.get("sha256"):
+                return False
+        return True
+
     identity = snapshot.identity
     digest = identity["digest"]
     generations = state / "generations"
@@ -129,14 +143,14 @@ def _publish(state, snapshot, root, *, guarded_base=None):
             if raw is not None:
                 _durable_write(blobs / hashlib.sha256(raw).hexdigest(), raw)
         manifest = {"schema": "ask-engineering-generation/v1", "work_id": snapshot.work_id,
-                    "snapshot": identity}
+                    "snapshot": identity, "passages": dict(snapshot.passages)}
         _durable_write(staged / "manifest.json", json.dumps(manifest, sort_keys=True).encode())
         _sync_directory(blobs)
         _sync_directory(staged)
         os.replace(staged, destination)
         _sync_directory(generations)
     # Staging may take time. Recheck after it and immediately before publishing.
-    if not is_current(snapshot, root):
+    if not inputs_current():
         return False
     previous = _pointer(state)
     if previous is not None and previous["generation"] == digest and "publication" in previous:
@@ -156,13 +170,16 @@ def _publish(state, snapshot, root, *, guarded_base=None):
     else:
         _durable_write(event_path, raw)
         _sync_directory(publications)
-    if not is_current(snapshot, root):
+    if not inputs_current():
         return False
     descriptor, temporary = tempfile.mkstemp(prefix="pointer-", dir=state)
     with os.fdopen(descriptor, "wb") as stream:
         stream.write(json.dumps({"generation": digest, "publication": publication}, sort_keys=True).encode())
         stream.flush()
         os.fsync(stream.fileno())
+    if not inputs_current():
+        Path(temporary).unlink(missing_ok=True)
+        return False
     os.replace(temporary, state / "current.json")
     _sync_directory(state)
     return True
@@ -203,7 +220,11 @@ def _load_generation(state, work_id, digest):
         files[path], statuses[path] = raw, status
     if files.get(model_path) is None:
         raise ValueError("generation has no model")
-    snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
+    passages = manifest.get("passages", {})
+    if not isinstance(passages, dict):
+        raise ValueError("published passage map is invalid")
+    snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
+                        MappingProxyType(passages))
     if snapshot.identity != identity or identity["digest"] != digest:
         raise ValueError("published generation identity has changed")
     return snapshot
@@ -227,7 +248,33 @@ def validate_current(root, work_id, *, allow_pending=False):
     return snapshot, diagnostics
 
 
-def admit(root, work_id, expected=None):
+def _selected_diagnostics(snapshot, selected_task_id=None, selected_execution=None, delivery_task_id=None):
+    # Execution aliases belong to v2 documents. Decide from this exact
+    # validated snapshot so a generation change cannot switch schemas between
+    # a compatibility preflight and publication.
+    if snapshot.document.get("schema") != SCHEMA_V2:
+        selected_execution = None
+    try:
+        if delivery_task_id is not None:
+            if selected_task_id is not None or selected_execution is not None:
+                raise ValueError("delivery and product Task selectors cannot be combined")
+            selected_execution = delivery_task_execution(snapshot, snapshot.work_id, delivery_task_id)
+        selected = selected_task_node(snapshot, selected_task_id=selected_task_id,
+                                      selected_execution=selected_execution)
+    except ValueError as exc:
+        return [{"code": "EM015_TASK_ID", "path": snapshot.model_path, "message": str(exc)}]
+    if selected is None:
+        return []
+    missing = required_task_passages(snapshot, selected["id"])
+    if missing:
+        return [{"code": "EM015_CONTEXT_REQUIRED", "path": snapshot.model_path,
+                 "message": "selected Task requires unique captured spec and plan passages: "
+                            + ", ".join(missing)}]
+    return []
+
+
+def admit(root, work_id, expected=None, *, selected_task_id=None, selected_execution=None,
+          delivery_task_id=None):
     """Bootstrap/read admission; does not authorize or execute workflow actions."""
     snapshot, diagnostics = None, []
     try:
@@ -236,6 +283,9 @@ def admit(root, work_id, expected=None):
             from .actions import recover_locked
             recover_locked(Path(root).resolve(), work_id, state)
             snapshot, diagnostics = validate_current(root, work_id)
+            if not diagnostics:
+                diagnostics.extend(_selected_diagnostics(snapshot, selected_task_id, selected_execution,
+                                                         delivery_task_id))
             if not diagnostics and expected is not None and snapshot.identity["digest"] != expected:
                 diagnostics = [{"code": "EM007_STALE_INPUT", "path": snapshot.model_path,
                                 "message": "expected snapshot is no longer current"}]

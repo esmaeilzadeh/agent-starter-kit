@@ -1,0 +1,306 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "revising-workbench",
+  "candidate_sha": "fc091b98df336e6c1f61a2cfb4bedaabb4df4ca4",
+  "base_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
+  "spec_digest": "549e490b2e013957fea941921d41d48338d7faca98cf3e98d5baa5cfbf4475a1",
+  "plan_digest": "5af89843427a100e5b90c164167217520ad33ba88ad1721cf91022e91ed6809d",
+  "scope": "task",
+  "task_id": "RWB-107",
+  "reviewer": "/root/review_rwb107",
+  "runtime": "codex",
+  "model": "GPT-6 family; exact selectable identifier unavailable",
+  "configured_model": "gpt-6.1-sol",
+  "parent_model": "GPT-6 family; exact identifier unavailable",
+  "decision": "REJECTED",
+  "boundary": "glob_too_narrow",
+  "task_result_digest": "4978df42b178c90c3472fb40ce534f6db8cdf7efbf17302ac935ee8cae9de019",
+  "markdown_review": "work/revising-workbench/inner-loop/evidence/RWB-107-review-fc091b9.md",
+  "test_ids": [
+    "RWB-APP-EVIDENCE",
+    "RWB-APP-DECISIONS",
+    "RWB-LAZY-CACHE",
+    "RWB-INNER-LOOP-AMENDMENT",
+    "RWB-CANDIDATE-SYNC-CLEAN"
+  ],
+  "criterion_ids": [
+    "EM-002",
+    "EM-003",
+    "EM-005",
+    "EM-006",
+    "EM-007",
+    "EM-010",
+    "EM-011",
+    "EM-012",
+    "EM-019",
+    "EM-020"
+  ],
+  "source_digests": {
+    "_ask/scripts/install-kit.sh": "40415ae494a3f4dc2e253c62cc8cb3ec92287a43abb8c1cb8cd76d8f40f2b82a",
+    "_ask/tests/test-askit-first-run.sh": "c35e3edac27710043a103c8e849fd2525439204bcc4a7002816d61a2b66a83a9",
+    "_ask/tests/test-bindings-consumer-overlay.sh": "0d7ce9ba9fefdbed97822ece6538cb9ed1c4cbcb0d21a6d049e3358531993932",
+    "_ask/tests/test-sync-canonical-ask.sh": "f34eca4cd2ddb89bdef70a9c3caaf0404cefbbf5999bcc5a38be24275d6c5abe",
+    "_ask/tests/test-sync-off-path-command.sh": "94ad5e1d988c585bfff12af7ae518e3da387ce99442dfb152f4e1623b54976a3",
+    "_ask/tests/test-sync-runtime-agents.sh": "014546f38e0701e0b5ffae0ad0e52e48b9c5f0c2c3f952ddf935c1b6c972098e",
+    "_ask/tests/test_revising_detail.py": "024058a56d299d3ada986c8a2641d6d27873891d8f7f670e51fb3a4ae1f9e407",
+    "_ask/tests/test_traceability_entrypoints.py": "132c04c644a436cb336d776670572103f769f6a6565089578110f4097fa56359"
+  },
+  "inspected_sources": [
+    ".agents/ask/verification/traceability/service.py",
+    "_ask/tests/test_traceability_entrypoints.py",
+    "_ask/tests/test_traceability_evidence.py"
+  ],
+  "changed_cases": [
+    "RWB-CANDIDATE-SYNC-CLEAN",
+    "RWB-INNER-LOOP-AMENDMENT"
+  ],
+  "inventory_exclusions": {
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_E01_public_red_review_verify_record_accept_journey": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_E02_omitted_e2e_names_missing_case_and_never_records_pass": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I06_preflight_failure_replaces_old_pass": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I03_changed_candidate_invalidates_bound_semantic_review": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I04_task_scope_cannot_replace_final_or_narrow_accepted_obligations": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I05_task_review_ignores_unavailable_future_test_sources": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I06_task_review_completes_only_its_task": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I07_recorded_review_scope_cannot_be_relabelled": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I08_workstream_review_includes_review_only_criteria": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I09_task_review_can_acknowledge_unchanged_baseline_regression": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_I10_baseline_regression_exemption_rejects_changed_source": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_U04_every_required_outcome_collection_and_case_identity_matters": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_U05_setup_failure_and_missing_red_never_satisfy_tdd": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_U06_blanket_approval_missing_type_and_counterexample_are_rejected": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_U07_mutated_log_source_run_identity_or_revision_is_rejected": "Unchanged existing test method in shared test source; outside assigned task cases. This exclusion does not exempt the newly introduced U08 behavior.",
+    "_ask/tests/test_traceability_evidence.py.EvidenceTests.test_U08_unreachable_historical_red_is_rejected_without_poisoning_completion": "BLOCKING: newly introduced behavior case has no accepted criterion/runner/task mapping; cannot exclude it as unchanged regression."
+  },
+  "inspected_source_digests": {
+    ".agents/ask/verification/traceability/service.py": "a6ffde0130c6eafea509f9d631ccb6dca977d58a93894178097e53e2ebf9a198",
+    "_ask/tests/test_traceability_entrypoints.py": "132c04c644a436cb336d776670572103f769f6a6565089578110f4097fa56359",
+    "_ask/tests/test_traceability_evidence.py": "abf7b211d2fd34ed7fa03b0894f189b92c26258ec9bae6dac1927e96fc8a3f36"
+  },
+  "criteria": [
+    {
+      "id": "EM-002",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS drives the actual public AppTest resolution command, then verifies published decision actor/rationale and readiness in a new session; no alternate UI authority is introduced.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS drives the actual public AppTest resolution command, then verifies published decision actor/rationale and readiness in a new session; no alternate UI authority is introduced."
+        }
+      }
+    },
+    {
+      "id": "EM-003",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-EVIDENCE checks historical and invalid provenance through actual retained evidence fixtures and AppTest; digest-verified logs supply actual observations independently of display narrative.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-EVIDENCE checks historical and invalid provenance through actual retained evidence fixtures and AppTest; digest-verified logs supply actual observations independently of display narrative."
+        }
+      }
+    },
+    {
+      "id": "EM-005",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-EVIDENCE admits a real v2 snapshot and restores canonical accepted plan flow and model-declared helper context; assertions require selected test source and immutable commit provenance.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-EVIDENCE admits a real v2 snapshot and restores canonical accepted plan flow and model-declared helper context; assertions require selected test source and immutable commit provenance."
+        }
+      }
+    },
+    {
+      "id": "EM-006",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS asserts valid resolution changes dependent readiness, while missing actor/rationale and referenced-spec stale submissions preserve published state and lifecycle until explicit refresh.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS asserts valid resolution changes dependent readiness, while missing actor/rationale and referenced-spec stale submissions preserve published state and lifecycle until explicit refresh."
+        }
+      }
+    },
+    {
+      "id": "EM-007",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS exercises the shared guarded command through public UI with captured generation, a linked-only spec change and explicit refresh; stale and historical forms write no decision bytes.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS exercises the shared guarded command through public UI with captured generation, a linked-only spec change and explicit refresh; stale and historical forms write no decision bytes."
+        }
+      }
+    },
+    {
+      "id": "EM-010",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS checks actual Task blocker title/cause/options/latest actor/rationale plus persisted reasoned resolution and read-only historical forms; renderer changes preserve existing authority.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS checks actual Task blocker title/cause/options/latest actor/rationale plus persisted reasoned resolution and read-only historical forms; renderer changes preserve existing authority."
+        }
+      }
+    },
+    {
+      "id": "EM-011",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-EVIDENCE asserts same-revision test/setup/helper context, explicit selected flow, concrete sibling criterion-only exclusion, genuine retained output and explained collapsed provenance. Controlled AppTest state rows distinguish skipped/error/not-run without claiming real execution of those fixture outcomes.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-EVIDENCE asserts same-revision test/setup/helper context, explicit selected flow, concrete sibling criterion-only exclusion, genuine retained output and explained collapsed provenance. Controlled AppTest state rows distinguish skipped/error/not-run without claiming real execution of those fixture outcomes."
+        }
+      }
+    },
+    {
+      "id": "EM-012",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-LAZY-CACHE wraps real selected source/history loaders to assert zero initial scans, cache reuse and content-sensitive refresh after same-mtime source/log tampering. The evidence case additionally checks same-mtime curated-helper invalidation.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-LAZY-CACHE wraps real selected source/history loaders to assert zero initial scans, cache reuse and content-sensitive refresh after same-mtime source/log tampering. The evidence case additionally checks same-mtime curated-helper invalidation."
+        }
+      }
+    },
+    {
+      "id": "EM-019",
+      "coverage_decision": "REJECTED",
+      "assessment": "CHANGES: new traceability hardening changes verifier behavior outside accepted ownership and test obligations; original-base pinned verifier does not contain it, leaving retained unreachable-red failure in normal integration. Require explicit accepted scope/tooling migration design and mapped executed U08 evidence before approval.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "Five assigned cases passing does not exercise the new unmapped U08 behavior through original-base pinned integration. Candidate service changes do not replace the gate."
+        }
+      }
+    },
+    {
+      "id": "EM-020",
+      "coverage_decision": "APPROVED",
+      "assessment": "The actual shell sync check snapshots all four runtime agent directories and restores their exact original contents/presence through EXIT on both deliberate failure and success. I09 runs the real script in an immutable child candidate checkout with the work-specific overlay, requires exact exit 97 after sync writes, compares every projection file byte-for-byte, verifies no tracked/untracked changes, then requires successful invocation with the same restoration and cleanliness. Revision 4 adds actual first-run consumer execution under deliberately injected ASK_ROOT. Clearing that verifier-only root confines consumer writes to each temporary working directory; the integration case requires unchanged candidate projections/source afterward. Existing forced-failure cleanup assertions remain. Current revision 5 also covers shared install-kit target synchronization and canonical/off-path temporary-root callers. Their subprocess roots are explicit, work-specific outer context is cleared only for install target sync, and actual existing consumer canary/content assertions are retained under intentionally injected child ASK_ROOT.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Exercises real shell synchronization, generated projections, work-specific overlay and Git worktree integrity rather than mocked restoration. Failure/success cleanup directly protects the existing detached candidate gate. The actual first-run adoption/refusal script runs as a subprocess with inherited root injection, not a mocked success. Actual binding-overlay installation and both direct temporary-root sync checks now execute and assert expected output plus exact candidate preservation."
+        }
+      }
+    }
+  ],
+  "criteria_scope_note": "Task review assesses integration, the required type assigned to this task for every selected criterion. Unit/e2e obligations assigned to other accepted task scopes remain required and are not approved by this task review.",
+  "behavior_changes": [
+    "RWB-CANDIDATE-SYNC-CLEAN"
+  ],
+  "tests": [
+    {
+      "id": "RWB-APP-EVIDENCE",
+      "decision": "APPROVED",
+      "assertion_assessment": "Actual admitted v2 snapshot and canonical plan drive namespaced source, setup, helper, flow and commit assertions. Same-mtime external-helper edits must invalidate cached detail and refuse stale helper bytes. Two cases share EM-007 but have distinct canonical flows and scenario_ids; selected Test UI excludes sibling narrative/assertion. Genuine retained logs and historical/invalid fixtures test authority, with controlled AppTest rows supplying explicit skipped/error/not-run rendering semantics. Assertions remain independent of expected prose and do not equate pass with completion.",
+      "counterexample": "A broad criterion-based association would map WB-stale to scenario and fail exact scenario_ids assertions; showing its refusal narrative/source in selected WB-publish detail fails negative AppTest assertions. Ignoring curated-helper bytes leaves unchanged cache identity after same-mtime edits and fails the retained additional red. Unvalidated log bytes cannot supply output_text. Treating skipped/error/not-run as Passed fails explicit UI exclusions.",
+      "tdd_continuity_assessment": "APPROVED current revision-5 contract: recognized run ced3cf058da947bf9431237d3f676f34 records a collected behavior_assertion failure for this exact assigned case; exact final-green d4aa6ad8e4524b88a47bab5952b3e553 passes at 6f807cf9e95547356e8004148ac92212f478e3c2. Final Python assertion bytes are unchanged in the recognized red source. The red source preserves those assertions while restoring the faulty production source for the relevant seam. Logs/source hashes and report/ledger digests match. No setup failure, obsolete contract evidence or TDD exemption supplies current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-APP-DECISIONS",
+      "decision": "APPROVED",
+      "assertion_assessment": "Public AppTest resolution journeys verify actor/rationale persistence after new-session reload, dependent readiness and the actual Task blocker title/cause/options/latest attribution. Missing actor/rationale and linked-spec stale forms preserve published identity and open lifecycle until refresh. Committed revision inspection disables submission and preserves model bytes. Reused journeys are unchanged and their assertions execute within the assigned method.",
+      "counterexample": "Losing actor/rationale on reload, failing to change readiness, accepting a stale linked-spec generation, allowing historical submission or retaining only an opaque blocker ID would fail direct observable assertions.",
+      "tdd_continuity_assessment": "APPROVED current revision-5 contract: recognized run ced3cf058da947bf9431237d3f676f34 records a collected behavior_assertion failure for this exact assigned case; exact final-green d4aa6ad8e4524b88a47bab5952b3e553 passes at 6f807cf9e95547356e8004148ac92212f478e3c2. Final Python assertion bytes are unchanged in the recognized red source. The red source preserves those assertions while restoring the faulty production source for the relevant seam. Logs/source hashes and report/ledger digests match. No setup failure, obsolete contract evidence or TDD exemption supplies current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-LAZY-CACHE",
+      "decision": "APPROVED",
+      "assertion_assessment": "Spies wrap actual source parsing and execution-history loading. Initial Overview loads neither; selected route loads once, unchanged revisit reuses it, and same-mtime source/log mutations followed by refresh trigger new loads and invalid output labeling. Real retained output is required rather than only a call count. No dynamic subtests are used.",
+      "counterexample": "An eager Overview scan fails assert_not_called; ineffective cache reuse increases count; mtime-only freshness hides mutated bytes and fails refresh-count/invalid-output assertions; absent output rendering fails Captured execution output.",
+      "tdd_continuity_assessment": "APPROVED current revision-5 contract: recognized run ced3cf058da947bf9431237d3f676f34 records a collected behavior_assertion failure for this exact assigned case; exact final-green d4aa6ad8e4524b88a47bab5952b3e553 passes at 6f807cf9e95547356e8004148ac92212f478e3c2. Final Python assertion bytes are unchanged in the recognized red source. The red source preserves those assertions while restoring the faulty production source for the relevant seam. Logs/source hashes and report/ledger digests match. No setup failure, obsolete contract evidence or TDD exemption supplies current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-INNER-LOOP-AMENDMENT",
+      "decision": "APPROVED",
+      "assertion_assessment": "The assigned public integration test records a genuine independently accepted post-base ownership amendment, binds traceability review/execution to its candidate, requires detached verification pass and runner_sha==base, passes a separate unamended candidate through the same verifier, and requires the precise authority mismatch refusal for candidate-only accepted-pin bytes. Source confirms CheckPlan uses the candidate while actual verifier/imports use snapshot_runner(base).",
+      "counterexample": "Keeping the old base acceptance anchor rejects the approved amendment and fails the explicit evidence-presence assertion. Loading candidate verifier identity fails the base runner SHA assertion. Removing external authority equality permits the candidate-only mutation and fails assertRaisesRegex. Breaking ordinary integration fails the separate unamended pass assertion.",
+      "tdd_continuity_assessment": "APPROVED current revision-5 contract: recognized run ced3cf058da947bf9431237d3f676f34 records a collected behavior_assertion failure for this exact assigned case; exact final-green d4aa6ad8e4524b88a47bab5952b3e553 passes at 6f807cf9e95547356e8004148ac92212f478e3c2. Final Python assertion bytes are unchanged in the recognized red source. The red source preserves those assertions while restoring the faulty production source for the relevant seam. Logs/source hashes and report/ledger digests match. No setup failure, obsolete contract evidence or TDD exemption supplies current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-CANDIDATE-SYNC-CLEAN",
+      "decision": "APPROVED",
+      "assertion_assessment": "Public I09 creates a real detached child checkout at the tested candidate, activates the work-specific reviewer override, snapshots all files in all four runtime agent directories, invokes the actual shell check with explicit forced post-sync failure, requires exit 97 and marker, compares exact projection bytes and requires clean Git status. It then runs successfully and repeats exact-byte and tracked/untracked cleanliness checks. The shell restores complete directory snapshots and original presence through EXIT, not just the one observed changed reviewer file. Explicit ASK_ROOT binds synchronization to the asserted child candidate, including when the outer verifier exports a different root. The same real child environment deliberately exports ASK_ROOT to the candidate for the actual first-run shell check. That script still asserts non-git refusal, non-adopted refusal and explicit consumer adoption, and now unsets the inherited verifier root before those separate consumer operations. I09 requires success, unchanged projection bytes and completely clean child status afterward. I09 additionally runs the real binding-overlay, canonical-source and off-path shell checks under child ASK_ROOT. Every successful command is followed by exact projection snapshot equality and clean child Git status. Their original canary and canonical/off-path generated-content assertions remain. install-kit changes only its explicit target synchronization subprocess to ASK_ROOT=TARGET and an empty ASK_WORK_ID; unrelated install behavior and consumer binding preservation are unchanged.",
+      "counterexample": "Ignoring the forced post-sync failure returns 0 and fails the exit assertion. A missing/error-only/success-only cleanup trap or restoring only some files leaves projection bytes or candidate Git status changed and fails equality/cleanliness. Removing or adding generated files is detected by snapshot keys plus Git status. Weakening integrity to ignore generated paths is not implemented. Reintroducing inherited ASK_ROOT in the first-run shell points temporary-consumer sync at the candidate and fails the explicit projection equality assertion; current red demonstrates that exact failure after successful shell exit. The current red restores the old shared installer root behavior and demonstrates successful binding-overlay installation changing candidate Codex projection bytes, which fails I09. Reverting either direct temporary-root ASK_ROOT binding instead makes canonical/off-path checks miss their expected output in TMP or dirties the asserted candidate; each fails the retained content/snapshot/cleanliness assertions.",
+      "tdd_continuity_assessment": "APPROVED current revision-5 contract: recognized run af8e9e805092426e94f826b4264187d2 records a collected behavior_assertion failure for this exact assigned case; exact final-green d4aa6ad8e4524b88a47bab5952b3e553 passes at 6f807cf9e95547356e8004148ac92212f478e3c2. Final Python assertion bytes are unchanged in the recognized red source. The red source preserves those assertions while restoring the faulty production source for the relevant seam. Logs/source hashes and report/ledger digests match. No setup failure, obsolete contract evidence or TDD exemption supplies current completion. Current red af8e9e80 reaches binding-overlay after passing forced-failure sync, successful sync and first-run checks, then fails because inherited-root installation changes candidate projection bytes. Final scopes installer sync to TARGET and binds each direct temp-root sync to TMP; the same complete I09 assertions pass. Declared shell and installer source digests capture the intended source changes. Earlier first-run/hook reds are historical only.",
+      "tdd_exemption": null
+    }
+  ],
+  "execution_evidence": {
+    "final_green": {
+      "run_id": "b4f3dbdc916b4a5f9290afa9d0e0acb3",
+      "candidate_sha": "fc091b98df336e6c1f61a2cfb4bedaabb4df4ca4",
+      "report_digest": "4d63fec8c6884da3be91e0222e0b82411aa6b574e2fec00d92328a3f25096408",
+      "assessment": "Five assigned cases collected/pass; all source/log and ledger/report hashes checked. This does not supply mapped execution for the new U08 hardening."
+    }
+  },
+  "limitations": [
+    "REJECTED semantic decision; do not record as an APPROVED task review.",
+    "No tests run; only exact Git-source and retained evidence inspected. Current HEAD later reverts service change, but this decision binds immutable fc091 candidate only.",
+    "No source/state/TaskResult/pin mutations by reviewer."
+  ],
+  "complete_task_source_review": {
+    "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+    "inspected_sources": [
+      "_ask/scripts/inner_loop/evidence.py",
+      "_ask/scripts/install-kit.sh",
+      "_ask/tests/test-askit-first-run.sh",
+      "_ask/tests/test-bindings-consumer-overlay.sh",
+      "_ask/tests/test-sync-canonical-ask.sh",
+      "_ask/tests/test-sync-off-path-command.sh",
+      "_ask/tests/test-sync-runtime-agents.sh",
+      "_ask/tests/test_revising_detail.py",
+      "_ask/tests/test_traceability_entrypoints.py",
+      "_ask/ui/workbench_loading.py",
+      "_ask/ui/workbench_tasks.py",
+      "_ask/ui/workbench_tests.py"
+    ],
+    "source_digests": {
+      "_ask/scripts/inner_loop/evidence.py": "301b2d735039ae02bf8fa59c4cd7be401c6bd1a50e6137e3c230dac36d202936",
+      "_ask/scripts/install-kit.sh": "40415ae494a3f4dc2e253c62cc8cb3ec92287a43abb8c1cb8cd76d8f40f2b82a",
+      "_ask/tests/test-askit-first-run.sh": "c35e3edac27710043a103c8e849fd2525439204bcc4a7002816d61a2b66a83a9",
+      "_ask/tests/test-bindings-consumer-overlay.sh": "0d7ce9ba9fefdbed97822ece6538cb9ed1c4cbcb0d21a6d049e3358531993932",
+      "_ask/tests/test-sync-canonical-ask.sh": "f34eca4cd2ddb89bdef70a9c3caaf0404cefbbf5999bcc5a38be24275d6c5abe",
+      "_ask/tests/test-sync-off-path-command.sh": "94ad5e1d988c585bfff12af7ae518e3da387ce99442dfb152f4e1623b54976a3",
+      "_ask/tests/test-sync-runtime-agents.sh": "014546f38e0701e0b5ffae0ad0e52e48b9c5f0c2c3f952ddf935c1b6c972098e",
+      "_ask/tests/test_revising_detail.py": "024058a56d299d3ada986c8a2641d6d27873891d8f7f670e51fb3a4ae1f9e407",
+      "_ask/tests/test_traceability_entrypoints.py": "132c04c644a436cb336d776670572103f769f6a6565089578110f4097fa56359",
+      "_ask/ui/workbench_loading.py": "2c5ed87236494b1d8c01f86e3507c7a4c4b1e0d8c4e2205c489658eb15c9780d",
+      "_ask/ui/workbench_tasks.py": "6ee8ca172953b444f8564b3e182c053294e5f6c960a8080f1cbdc924e7a9607d",
+      "_ask/ui/workbench_tests.py": "794d61c130eac9d996d64227ae3299e6f0160f0f1441dfb973ca57b52e88b6b4"
+    },
+    "assessment": "Complete original-base UI/workflow/test/installer/documentation scope reviewed. All current source changes are accepted serialized RWB-107 ownership. Shared installer repair is limited to its explicit target sync subprocess; direct temporary-root tests bind their own TMP roots without dropping original content assertions. Administrative contract/pin history is independently accepted; candidate integrity authority remains intact."
+  },
+  "recognized_execution_report_ids": [],
+  "rejected_attempts": [],
+  "fixture_root_assessment": "I09 always sets ASK_ROOT to its child checkout before actual subprocess checks. The first-run shell removes inherited verifier root for separate consumers; installer sync explicitly uses TARGET with cleared ASK_WORK_ID; direct canonical/off-path tests use TMP. These distinct operation boundaries target actual written repositories, retaining outer candidate integrity and existing consumer-owned canary.",
+  "runtime_only_rebind_assessment": "This candidate is not a runtime-only rebind: it adds verifier service logic and an unmapped new unit test. Existing implementation approval cannot authorize those changes.",
+  "verdict": "CHANGES",
+  "blocking_findings": [
+    {
+      "severity": "P1",
+      "finding": "Unowned verifier service and test source; new U08 behavior is not mapped into accepted obligations or task scope.",
+      "paths": [
+        ".agents/ask/verification/traceability/service.py",
+        "_ask/tests/test_traceability_evidence.py"
+      ],
+      "required_change": "Narrow independently accepted contract/ownership amendment and actual typed red/green obligation, or revert/sequence separately."
+    },
+    {
+      "severity": "P1",
+      "finding": "Candidate service hardening is absent from snapshot_runner(original_task_base), so it cannot fix the integration gate validating itself.",
+      "required_change": "Use an explicitly approved verifier-tooling migration strategy or another authority-preserving solution. Do not silently load candidate verifier imports."
+    }
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "structured-agentic-environment",
+  "reviewer": "/root/review_wb001",
+  "recorded_by": "codex-coordinator",
+  "model": "gpt-6-astra",
+  "runtime": "codex",
+  "parent_model": "gpt-6-luna",
+  "scope": "task",
+  "task_id": "WB-004",
+  "candidate_sha": "071534be14a0f1bed576adac8da97391b95bc6ec",
+  "task_base_sha": "70dd295aacff869857081a94870d02fcbf4d640c",
+  "base_sha": "55c11fad3e0391f8a47236166c8d5941d824ef73",
+  "spec_digest": "f2707008c69698e6f659bc071f42b2dd0bbfac8b381d8a5ca5efa5d4d6adcaeb",
+  "plan_digest": "4845c9f46fb7ecfe4f368e006c1a8d89b2f7c3ea5beefe1478b08ea184eb09e8",
+  "test_ids": [
+    "WB-navigation",
+    "WB-form-context"
+  ],
+  "criterion_ids": [
+    "EM-006",
+    "EM-008",
+    "EM-009"
+  ],
+  "source_digests": {
+    "_ask/tests/test_engineering_workbench_navigation.py": "fcb38c41d382ed344e11455f923ca84b09c70a7e3d4d2db7382f218e065a33a6"
+  },
+  "inspected_sources": [
+    "_ask/scripts/engineering_model/workbench_evidence.py",
+    "_ask/scripts/engineering_model/workbench_sources.py",
+    "_ask/tests/test_engineering_workbench_evidence.py",
+    "_ask/tests/test_engineering_workbench_navigation.py",
+    "_ask/tests/test_engineering_workbench_sources.py",
+    "_ask/ui/streamlit_app.py",
+    "_ask/ui/workbench_context.py",
+    "_ask/ui/workbench_navigation.py"
+  ],
+  "changed_cases": [
+    "WB-evidence-identity",
+    "WB-evidence-states",
+    "WB-form-context",
+    "WB-inventory",
+    "WB-navigation",
+    "WB-snapshot",
+    "WB-source-errors",
+    "WB-source-version"
+  ],
+  "inventory_exclusions": {},
+  "decision": "REJECTED",
+  "boundary": "ok",
+  "task_result_path": "work/structured-agentic-environment/inner-loop/results/WB-004.json",
+  "task_result_sha256": "a18011abf8f863d4f04dc715f851960d052e2e1667749c70db867fb72d548049",
+  "owned_source_digests": {
+    "_ask/tests/test_engineering_workbench_navigation.py": "fcb38c41d382ed344e11455f923ca84b09c70a7e3d4d2db7382f218e065a33a6",
+    "_ask/ui/.streamlit/config.toml": "4118213e373c3f93ce0f484656443566f07a789c72ae1b9b086f58cae588f2c6",
+    "_ask/ui/streamlit_app.py": "43ec237ae2cee40f0c5b9eca6dbfacdc14c0234e0c92f81824b6d43935c29c2b",
+    "_ask/ui/workbench_context.py": "b95fe241ce2eea37ce77fd9b338b0f35efff9f45fcf3ee4b9e2f98f999cd9f8e",
+    "_ask/ui/workbench_navigation.py": "42f69d36611cab388836e3187a4f43d65dd64b84885c36a6d4e15c21286e7b6b"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "path": "_ask/ui/workbench_navigation.py",
+      "line": 80,
+      "assessment": "Task deduplication drops tests and result routes belonging to later scenarios of the same task. add_task returns before expanding scenario-specific tests, and add_scenario fallback skips the owned test because its owner is already in linked_tasks. Preserve all mapped tests and many-to-many context while deduplicating canonical records.",
+      "reproduction": "Build an epic/story containing s1 and s2; task relates to both; T1 is owned by task and covers s1, T2 is owned by the same task and covers s2. build_outline returns epic, story, s1, task, test:T1, result:T1, s2, with neither test:T2 nor result:T2.",
+      "related_test_ids": [
+        "WB-navigation"
+      ]
+    },
+    {
+      "id": "R2",
+      "severity": "medium",
+      "path": "_ask/ui/workbench_navigation.py",
+      "line": 198,
+      "assessment": "Back and breadcrumb clicks change session route after streamlit_app has captured local route_id, so detail and breadcrumb render the old selection until a separate rerun. Apply route mutation before route-dependent rendering or trigger a rerun.",
+      "reproduction": "Using the assigned AppTest fixture, click route:scenario then route:back. Session route becomes purpose but app.subheader still contains Canonical behavior; an extra app.run() finally displays Purpose. streamlit_app.py:699 captures route_id before render_breadcrumbs at 705 and selects detail using the old value at 707.",
+      "related_test_ids": [
+        "WB-navigation"
+      ]
+    },
+    {
+      "id": "R3",
+      "severity": "high",
+      "path": "_ask/ui/streamlit_app.py",
+      "line": 644,
+      "assessment": "The accepted committed-source switch and historical read-only journey is absent. The header offers only checkout-local Workstream and Refresh; _capture_view admits working-tree data, all reset_for_work calls use working-tree, and the source badge never exposes an immutable selected revision. Connect the existing source inspector to app-level source selection, reset route/caches on explicit source change, and make committed sources noneditable.",
+      "reproduction": "Open the assigned multi-work AppTest fixture. The complete selector list is [(Workstream, work_id)] and no text source/revision input exists; no action selects a branch or committed revision. workbench_context.identity_for ignores its source argument and derives editable solely from view.editable, so even its prospective source argument does not enforce the historical guard. The form test never enters historical mode.",
+      "related_test_ids": [
+        "WB-navigation",
+        "WB-form-context"
+      ]
+    }
+  ],
+  "criteria": [
+    {
+      "id": "EM-006",
+      "coverage_decision": "APPROVED",
+      "assessment": "The assigned stale-edit contribution preserves captured admission digest across navigation. The integration test changes linked spec/plan inputs, submits through the shared edit guard, observes stale feedback and unchanged decision history, then explicitly refreshes to recapture. This does not approve later valid-choice/task-attention UI obligations.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The AppTest uses actual linked input changes and a submitted decision form, rather than mocking a guard result. Captured digest remains unchanged until explicit Refresh and rejected submission leaves model decision history empty."
+        }
+      }
+    },
+    {
+      "id": "EM-008",
+      "coverage_decision": "REJECTED",
+      "assessment": "A connected outline and meaningful initial labels exist, but many-to-many task/scenario mappings drop later tests/results, and Back renders stale detail. The single-scenario fixture cannot establish the accepted connected hierarchy behavior.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "The assigned test checks a scenario route and session state after Back; it neither follows Task/Test/Result nor checks rendered detail after Back, and it lacks a task spanning multiple scenarios. Independent fixtures reproduce R1 and R2."
+        }
+      }
+    },
+    {
+      "id": "EM-009",
+      "coverage_decision": "REJECTED",
+      "assessment": "Exact branch-matched local work selection, work switch/reset and checkout preservation are covered, but committed cross-branch/historical source selection and immutable source identity are not implemented. The displayed Working tree badge cannot satisfy inspected-source distinction or historical noneditability.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "REJECTED",
+          "assessment": "Neither assigned test selects a committed source or enters historical read-only mode. The header has only the local Workstream chooser, with no source control, so the accepted source-switch journey cannot be executed."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "WB-navigation",
+      "decision": "REJECTED",
+      "assertion_assessment": "The test usefully checks branch-matched work, story/source labels, scenario breadcrumbs, absence of peer tabs, work reset, missing inputs and unchanged checkout. It does not follow the Task/Test/Result chain, preserve multiple scenario relationships, inspect displayed detail after Back or select an immutable source. The current passing assertions leave three reproduced behavior gaps.",
+      "counterexample": "One task relates to s1 and s2, with distinct owned tests T1 and T2. The outline drops T2/result:T2. In AppTest, Back from scenario leaves Canonical behavior detail visible while route state says purpose. The only source selector is local Workstream, so no committed-source journey is possible.",
+      "tdd_continuity_assessment": "Accepted red 604e01643a55459bbe487fc38424353c at 80f716ce22f53b547173c3cc0418c8eecaa26812 collects both task cases and fails by behavior_assertion. Final green 431781c0381f4ded8fb3992e04684237 passes both at exact candidate 071534be14a0f1bed576adac8da97391b95bc6ec with identical mapped test-file bytes. Ledger canonical report digests, actual log digests and candidate source-blob digests verified. Genuine continuity covers existing assertions but does not cover the omitted counterexamples. No exemption."
+    },
+    {
+      "id": "WB-form-context",
+      "decision": "REJECTED",
+      "assertion_assessment": "Captured identity preservation, shared stale submission rejection and explicit refresh recapture are asserted through AppTest and pass independently. The accepted historical-source noneditable assertion is missing, and no source switch can put the UI into that required state. Empty decision history proves the checked stale action was not applied; it does not establish historical-mode authority.",
+      "counterexample": "Attempt to inspect a committed/historical branch source and open a decision form: there is no source/revision selection path in the UI. The context helper accepts a source argument but ignores it when deriving editability, leaving historical noneditability unestablished.",
+      "tdd_continuity_assessment": "Accepted red 604e01643a55459bbe487fc38424353c at 80f716ce22f53b547173c3cc0418c8eecaa26812 collects both task cases and fails by behavior_assertion. Final green 431781c0381f4ded8fb3992e04684237 passes both at exact candidate 071534be14a0f1bed576adac8da97391b95bc6ec with identical mapped test-file bytes. Ledger canonical report digests, actual log digests and candidate source-blob digests verified. Genuine continuity covers existing assertions but does not cover the omitted counterexamples. No exemption."
+    }
+  ],
+  "limitations": [
+    "Task-scoped rejection only; existing WB-002/WB-003 approvals and inherited inventory remain separate.",
+    "The accepted UI checkpoint occurs after integration. Its absent screenshot is not the reason for this rejection.",
+    "TaskResult output fields are summaries; assertions and digests were verified against actual retained logs/reports.",
+    "No implementation changes, coordinator recording, integration or commits were performed. recorded_by identifies the intended recording coordinator only."
+  ],
+  "execution_evidence": {
+    "red": {
+      "run_id": "604e01643a55459bbe487fc38424353c",
+      "candidate_sha": "80f716ce22f53b547173c3cc0418c8eecaa26812",
+      "canonical_report_digest": "3237087313ce38e3186d84e6e1c3280ec35c03288c201f74e96db1d6c0edd1f0",
+      "report_file_sha256": "af14ec2297bc40147a3ab8073d85711861ae5439d9f938430d0a3c0ae3094737",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/604e01643a55459bbe487fc38424353c/8c1b1fb370a44bcf8fb947fac9e41e16.log",
+      "output_digest": "3f506c0fac6c25300a072ad97c3664e81142a0ab8dda4c793266d01dd2a5d01f",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        },
+        "WB-navigation": {
+          "outcome": "failed",
+          "failure_kind": "behavior_assertion"
+        }
+      }
+    },
+    "green": {
+      "run_id": "431781c0381f4ded8fb3992e04684237",
+      "candidate_sha": "071534be14a0f1bed576adac8da97391b95bc6ec",
+      "canonical_report_digest": "ce70a6f8ea9a4bf55b67ff57edbc573d85ee51f6fe097fbd7f8e682681b67691",
+      "report_file_sha256": "10af20d2c993738aec21ddc1e2be420d4ad6508003eb35e9df1e7c0d7b8573c5",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/431781c0381f4ded8fb3992e04684237/f2c13c8c519548a08acbd015d141b217.log",
+      "output_digest": "868514371c657094302045262de3a3ff536aaaf4a1f4e9acf79d903fb456b869",
+      "outcomes": {
+        "WB-form-context": {
+          "outcome": "passed",
+          "failure_kind": null
+        },
+        "WB-navigation": {
+          "outcome": "passed",
+          "failure_kind": null
+        }
+      }
+    }
+  }
+}

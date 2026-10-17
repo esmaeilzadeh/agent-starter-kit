@@ -1,0 +1,15 @@
+test_malformed_fields_and_lifecycle (test_engineering_model.ModelValidationTests) ... ok
+test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests) ... FAIL
+
+======================================================================
+FAIL: test_reference_escape_and_missing_criterion (test_engineering_model.ModelValidationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-v6p2psmg/candidate/_ask/tests/test_engineering_model.py", line 65, in test_reference_escape_and_missing_criterion
+    self.assertEqual(status, 1, "a concurrent referenced-file edit cannot receive a valid receipt")
+AssertionError: 0 != 1 : a concurrent referenced-file edit cannot receive a valid receipt
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.008s
+
+FAILED (failures=1)

@@ -108,7 +108,9 @@ if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   fi
 fi
 if [[ -x "$TARGET/_ask/scripts/sync-cursor-binding.sh" ]]; then
-  (cd "$TARGET" && ./_ask/scripts/sync-cursor-binding.sh)
+  # A caller such as detached verification may export ASK_ROOT/ASK_WORK_ID for
+  # itself. Generated runtime agents belong to the explicit install target.
+  (cd "$TARGET" && ASK_ROOT="$TARGET" ASK_WORK_ID= ./_ask/scripts/sync-cursor-binding.sh)
 fi
 
 python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --check-trackability

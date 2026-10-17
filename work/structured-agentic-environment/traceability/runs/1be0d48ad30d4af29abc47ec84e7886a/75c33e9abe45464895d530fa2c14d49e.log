@@ -1,0 +1,25 @@
+test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 04:59:58.266 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+test_summary_counts_open_exact_records (test_engineering_workbench_overview.WorkbenchTests) ... 2026-10-10 05:00:00.130 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+FAIL
+
+======================================================================
+FAIL: test_overview_is_comprehensive_and_lazy (test_engineering_workbench_overview.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kj347533/candidate/_ask/tests/test_engineering_workbench_overview.py", line 65, in test_overview_is_comprehensive_and_lazy
+    self.assertIn(phrase, rendered)
+AssertionError: 'Make delivery decisions and proof easy to inspect.' not found in 'Engineering workbench\nPurpose\n:blue-badge[:material/source: Working tree]\n:green-badge[:material/check_circle: Validated inputs]\n**Epic**\n**Purpose**\n**Purpose**\nPurpose\nFollow promised work through delivery tasks, tests, and recorded results.\nCheckout: `unknown branch` · Workstream: `pilot`\nScenarios without a recorded story\nEpic · root of the selected workstream hierarchy\nRefresh\nPurpose\n\u3000\u3000Canonical behavior\n\u3000\u3000\u3000Build\n\u3000\u3000\u3000\u3000Behavior assertion\n\u3000\u3000\u3000\u3000\u3000Result / evidence\n\u3000Decision · Choose\nBack'
+
+======================================================================
+FAIL: test_summary_counts_open_exact_records (test_engineering_workbench_overview.WorkbenchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kj347533/candidate/_ask/tests/test_engineering_workbench_overview.py", line 86, in test_summary_counts_open_exact_records
+    self.assertIn("overview:summary:blocked", controls,
+AssertionError: 'overview:summary:blocked' not found in {'refresh': Button(key='refresh', label='Refresh'), 'route:purpose': Button(key='route:purpose', label='Purpose'), 'route:scenario': Button(key='route:scenario', label='\u3000\u3000Canonical behavior'), 'route:build': Button(key='route:build', label='\u3000\u3000\u3000Build'), 'route:test:CASE-1': Button(key='route:test:CASE-1', label='\u3000\u3000\u3000\u3000Behavior assertion'), 'route:result:CASE-1': Button(key='route:result:CASE-1', label='\u3000\u3000\u3000\u3000\u3000Result / evidence'), 'route:decision': Button(key='route:decision', label='\u3000Decision · Choose'), 'route:back': Button(key='route:back', disabled=True, label='Back')} : blocked-task summary must open its stable-ID filtered records
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.034s
+
+FAILED (failures=2)

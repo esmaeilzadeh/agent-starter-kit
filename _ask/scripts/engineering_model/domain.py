@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 
 from .validation import LIFECYCLES
+from .identities import execution_identity
 
 
 def task_states(document):
@@ -23,7 +24,14 @@ def task_states(document):
                 blockers.append({"id": target, "type": prerequisite["type"], "lifecycle": prerequisite["lifecycle"],
                                  "reason": f"{target} is {prerequisite['lifecycle']}; requires {expected}"})
         status = node["lifecycle"] if node["lifecycle"] in ("done", "retired") else "blocked" if blockers else "ready"
-        result.append({"id": identity, "lifecycle": node["lifecycle"], "status": status, "blockers": blockers})
+        item = {"id": identity, "lifecycle": node["lifecycle"], "status": status, "blockers": blockers}
+        if document.get("schema") == "ask-engineering-model/v2":
+            from .identities import product_identity
+            item["product_identity"] = product_identity(document["work_id"], identity)
+            execution = execution_identity(node)
+            item["execution_identity"] = ({"work_id": execution[0], "task_id": execution[1]}
+                                           if execution is not None else None)
+        result.append(item)
     return result
 
 
@@ -76,6 +84,60 @@ def apply_batch(document, commands, *, timestamp=None, changed_references=()):
             if not isinstance(command, dict):
                 raise ValueError("command must be an object")
             op = command.get("op")
+            if op == "associate_subject":
+                allowed = {"op", "subject", "revision", "snapshot_digest", "contribution",
+                           "subject_snapshot_digest", "exclusions", "execution_owner", "actor", "rationale"}
+                if set(command) != allowed:
+                    raise ValueError("associate_subject requires a qualified subject, captured revision, bounded intent and attribution")
+                actor, reason = _attribution(command)
+                subject = command["subject"]
+                if (not isinstance(subject, dict) or set(subject) != {"work_id", "node_id"}
+                        or not isinstance(subject.get("work_id"), str) or not subject["work_id"]
+                        or not isinstance(subject.get("node_id"), str) or not subject["node_id"]):
+                    raise ValueError("associate_subject requires a qualified subject identity")
+                # Foreign pointers are validated against their owning captured
+                # model by the guarded action before this semantic batch.
+                if subject["work_id"] == candidate.get("work_id") and subject["node_id"] not in nodes:
+                    raise ValueError("associate_subject must select an existing node")
+                if command.get("revision") != "snapshot" or not isinstance(command.get("snapshot_digest"), str):
+                    raise ValueError("association must bind the captured model snapshot")
+                subject_digest = command.get("subject_snapshot_digest")
+                if (not isinstance(subject_digest, str) or len(subject_digest) != 64
+                        or any(char not in "0123456789abcdef" for char in subject_digest)):
+                    raise ValueError("association must bind the captured subject owner snapshot")
+                if not isinstance(command.get("contribution"), str) or not command["contribution"].strip():
+                    raise ValueError("association contribution must be nonempty")
+                exclusions = command.get("exclusions")
+                if not isinstance(exclusions, list) or any(not isinstance(item, str) or not item.strip() for item in exclusions):
+                    raise ValueError("association exclusions must be nonempty strings")
+                owner = command.get("execution_owner")
+                if owner is not None and (not isinstance(owner, dict) or set(owner) != {"work_id", "task_id"}
+                                          or any(not isinstance(v, str) or not v for v in owner.values())):
+                    raise ValueError("execution_owner must be a qualified execution identity")
+                if owner is not None and not any(execution_identity(node) == (owner["work_id"], owner["task_id"])
+                                                 for node in nodes.values()):
+                    raise ValueError("execution_owner must resolve through an explicit Task execution alias")
+                prior = candidate.get("subject_association")
+                if prior is not None and (not isinstance(prior, dict)
+                                          or not isinstance(prior.get("history"), list)):
+                    raise ValueError("prior subject association history must be an array")
+                history = deepcopy(prior.get("history", [])) if isinstance(prior, dict) else []
+                if any(not isinstance(event, dict)
+                       or any(not isinstance(event.get(key), str) or not event[key].strip()
+                              for key in ("actor", "rationale", "timestamp"))
+                       for event in history):
+                    raise ValueError("prior subject association history entries require actor, rationale and timestamp")
+                history.append({"actor": actor, "rationale": reason, "timestamp": timestamp})
+                candidate["subject_association"] = {
+                    "subject": deepcopy(subject), "revision": "snapshot",
+                    "snapshot_digest": command["snapshot_digest"],
+                    "subject_snapshot_digest": subject_digest,
+                    "contribution": command["contribution"].strip(),
+                    "exclusions": deepcopy(exclusions), "execution_owner": deepcopy(owner),
+                    "history": history,
+                }
+                effects.append({"op": op, "id": subject["node_id"]})
+                continue
             if op == "add_node":
                 node = command.get("node")
                 if set(command) != {"op", "node"} or not isinstance(node, dict) or not isinstance(node.get("id"), str):

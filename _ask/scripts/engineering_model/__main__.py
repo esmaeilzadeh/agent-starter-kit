@@ -23,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
     admit_parser.add_argument("--work-id", required=True)
     admit_parser.add_argument("--expected", help="refuse if the complete input digest has changed")
     admit_parser.add_argument("--action", help="label a cooperating implementation or review action")
+    admit_parser.add_argument("--task-node", help="explicit product Task node whose selected context is required")
     admit_parser.add_argument("action_command", nargs=argparse.REMAINDER, help="action argv after -- (no shell)")
     show_parser = commands.add_parser("show", help="read a validated generation; invalid working inputs are noneditable")
     show_parser.add_argument("--work-id", required=True)
@@ -36,11 +37,47 @@ def main(argv: list[str] | None = None) -> int:
     watch_parser = commands.add_parser("watch", help="validate external saves with native observation and freshness fallback")
     watch_parser.add_argument("--work-id", required=True)
     watch_parser.add_argument("--once", action="store_true")
+    context_parser = commands.add_parser("context", help="resolve a subject read-only for initial stage intake")
+    context_parser.add_argument("--work-id", required=True)
+    context_parser.add_argument("--request", required=True, help="structured request JSON file")
+    context_parser.add_argument("--branch", help="execution locator only")
+    migrate_parser = commands.add_parser("migrate", help="apply an explicitly reviewed v1-to-v2 migration")
+    migrate_parser.add_argument("--work-id", required=True)
+    migrate_parser.add_argument("--expected", required=True, help="current admitted snapshot digest")
+    migrate_parser.add_argument("--target", required=True, help="proposed v2 model JSON")
+    migrate_parser.add_argument("--review", required=True, help="digest-bound migration review JSON")
+    migrate_parser.add_argument("--task-node", help="Task whose captured spec and plan passages are required")
     args = parser.parse_args(argv)
 
     root = Path.cwd().resolve()
     if not SLUG.fullmatch(args.work_id):
         parser.error("--work-id must be a lowercase hyphenated slug")
+    if args.command == "context":
+        try:
+            request = json.loads(Path(args.request).read_bytes())
+            if not isinstance(request, dict):
+                raise ValueError("request JSON must be an object")
+            from .context import resolve
+            result = resolve(root, args.work_id, request, branch=args.branch)
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as exc:
+            print(json.dumps({"valid": False, "diagnostics": [{"code": "EM018_REQUEST", "message": str(exc)}]}),
+                  file=sys.stderr)
+            return 1
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.command == "migrate":
+        try:
+            from .migration import migrate
+            target = decode(Path(args.target).read_bytes())
+            review = decode(Path(args.review).read_bytes())
+            result = migrate(root, args.work_id, args.expected, target, review,
+                             selected_task_id=args.task_node)
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError) as exc:
+            print(json.dumps({"valid": False, "diagnostics": [{"code": "EM020_MIGRATION", "message": str(exc)}]}),
+                  file=sys.stderr)
+            return 1
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0 if result["valid"] else 1
     if args.command == "admit" and (args.action or args.action_command):
         if not args.action or not args.action_command:
             parser.error("--action requires an action command after --")
@@ -51,7 +88,8 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("action command cannot be empty")
         from .workflow import workflow_admission
         try:
-            with workflow_admission(root, args.work_id, args.expected) as admitted:
+            with workflow_admission(root, args.work_id, args.expected,
+                                     selected_task_id=args.task_node) as admitted:
                 if admitted is None:
                     raise ValueError("action requires an adopted Engineering Model")
                 process = subprocess.run(action_command, cwd=root)

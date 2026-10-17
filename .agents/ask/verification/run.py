@@ -20,7 +20,8 @@ from verification.traceability.evidence import load_accepted,source_changes,writ
 from verification.traceability.service import check_completion
 
 
-def workflow_context(root, work_id, *, code_root=None):
+def workflow_context(root, work_id, *, code_root=None, selected_task_id=None,
+                     selected_execution=None, delivery_task_id=None):
     """Load shared admission; older standalone, unadopted verifiers stay usable."""
     if work_id is None:
         return nullcontext()
@@ -28,7 +29,7 @@ def workflow_context(root, work_id, *, code_root=None):
     if (scripts/'engineering_model/workflow.py').is_file():
         sys.path.insert(0,str(scripts))
     try:
-        from engineering_model.workflow import workflow_admission
+        from engineering_model.workflow import adopted, workflow_admission
     except ModuleNotFoundError as exc:
         if exc.name not in {'engineering_model','engineering_model.workflow'}:raise
         # Older consumers may ship only the verification package. Missing shared
@@ -39,7 +40,10 @@ def workflow_context(root, work_id, *, code_root=None):
         if model.exists() or model.is_symlink() or pointer.exists() or pointer.is_symlink() or tracked.returncode==0:
             raise Invalid('EM007_ADMISSION: adopted work requires the shared document workflow module') from exc
         return nullcontext()
-    return workflow_admission(root,work_id)
+    if not adopted(root,work_id):
+        return workflow_admission(root,work_id)
+    return workflow_admission(root,work_id,selected_task_id=selected_task_id,
+                              selected_execution=selected_execution,delivery_task_id=delivery_task_id)
 
 
 def main():
@@ -52,14 +56,17 @@ def main():
     work_id=os.environ.get('ASK_WORK_ID') or (branch.split('/')[1] if branch.startswith('agent/') else None)
     anchor=os.environ.get('ASK_TRACEABILITY_ANCHOR_SHA') or sha
     scope=os.environ.get('ASK_TRACEABILITY_SCOPE','workstream');task_id=os.environ.get('ASK_TRACEABILITY_TASK_ID')
+    delivery_task_id=task_id if scope=='task' and work_id else None
     doc={'schema':'ask-verify-result/v1','commit_sha':sha,'result':'fail','checks':[]}
     receipt={'candidate_sha':sha,'result':'fail'}
     completion=None
     checkout=None;tmp=None
     try:
         with ExitStack() as admission:
-            admission.enter_context(workflow_context(runtime,work_id,code_root=runtime))
-            if root!=runtime:admission.enter_context(workflow_context(root,work_id,code_root=runtime))
+            admission.enter_context(workflow_context(runtime,work_id,code_root=runtime,
+                                                     delivery_task_id=delivery_task_id))
+            if root!=runtime:admission.enter_context(workflow_context(root,work_id,code_root=runtime,
+                                                                       delivery_task_id=delivery_task_id))
             plan=load_plan(root);checks=expand_plan(root,plan)
             if not checks or not any(c.get('tier','mandatory')=='mandatory' for c in checks):raise Invalid('empty CheckPlan or zero mandatory checks')
             check_isolation(root,plan,[c.get('command','') for c in checks])

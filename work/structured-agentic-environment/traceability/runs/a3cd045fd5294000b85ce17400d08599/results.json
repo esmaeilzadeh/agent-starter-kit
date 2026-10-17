@@ -1,0 +1,67 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "a3cd045fd5294000b85ce17400d08599",
+  "scope": "workstream",
+  "task_id": null,
+  "candidate_sha": "f524b036f64acf23570a7b762a2f43da9adb8703",
+  "spec_digest": "48069b2de6b303090b8813435f375eb9f2137d4bfa7f132ea2586f2dd71f7c5b",
+  "plan_digest": "18c114a43b0f2118eb7c0dbfaf18735ad3bc02f98ac57f251c1e0417c71d3e58",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "806116bfdbfd462fb816c8035b2e2e61",
+      "runner_id": "engineering-model",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/structured-agentic-environment/traceability/runs/a3cd045fd5294000b85ce17400d08599/806116bfdbfd462fb816c8035b2e2e61.json",
+        "null",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_engineering_*.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "f524b036f64acf23570a7b762a2f43da9adb8703",
+      "exit_code": 1,
+      "collection_status": "ok",
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/a3cd045fd5294000b85ce17400d08599/806116bfdbfd462fb816c8035b2e2e61.log",
+      "output_digest": "dc6f82d56f8781f4baff163b578552a7970773ca251479e567264ad8a452a637"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_engineering_model.ModelValidationTests.test_malformed_fields_and_lifecycle",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "MV-fields",
+      "runner_id": "engineering-model",
+      "execution_id": "806116bfdbfd462fb816c8035b2e2e61",
+      "phase": "red",
+      "source_sha": "f524b036f64acf23570a7b762a2f43da9adb8703",
+      "source_digests": {
+        "_ask/tests/test_engineering_model.py": "618a71a5176d3dbdb293a4e7b30c744823ba0a6f923ab1b9a7d9878b675c819a",
+        "_ask/tests/engineering_fixture.py": "f8184a5d9c2cde97c840ce2f3f31f8dfdb960a8b52f92cffdf5788cb590c58af"
+      },
+      "output_artifact": "work/structured-agentic-environment/traceability/runs/a3cd045fd5294000b85ce17400d08599/806116bfdbfd462fb816c8035b2e2e61.log",
+      "output_digest": "dc6f82d56f8781f4baff163b578552a7970773ca251479e567264ad8a452a637"
+    }
+  ]
+}

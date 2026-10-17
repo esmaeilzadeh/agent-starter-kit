@@ -15,6 +15,12 @@
       "skillPath": "developing-with-streamlit/SKILL.md",
       "computedHash": "9f8006c37398b5c6a27043bdfe3a25d4aafdfb53413618c88d2c978932f9d08e"
     },
+    "domain-modeling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+      "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
+    },
     "grilling": {
       "source": "mattpocock/skills",
       "ref": "v1.2.3",

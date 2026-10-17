@@ -1,0 +1,240 @@
+{
+  "schema": "ask-test-review/v2",
+  "work_id": "revising-workbench",
+  "candidate_sha": "145870789d320eeeb207bc09d8960f0714bd8d4a",
+  "base_sha": "7bc129462ca214eca697cf1b728fcb690972eddb",
+  "spec_digest": "eb887b8d8779f3b7e0a29274238b2f6dd619b4696ba3d4877a1d2eaf8e16d544",
+  "plan_digest": "10fcf11fb3060c40dda46f95a1e662a6eb449cc171e8d1e14817adbb9d82cebc",
+  "scope": "task",
+  "task_id": "RWB-107",
+  "reviewer": "/root/review_rwb107",
+  "runtime": "codex",
+  "model": "GPT-6 family; exact selectable identifier unavailable",
+  "configured_model": "gpt-6.1-sol",
+  "parent_model": "GPT-6 family; exact identifier unavailable",
+  "decision": "APPROVED",
+  "boundary": "ok",
+  "task_result_digest": "b8a2b1f65321462a23fc3f80e76a8106cee90586dbd47d9f9a0e8ed90a5703c7",
+  "markdown_review": "work/revising-workbench/inner-loop/evidence/RWB-107-review-1458707.md",
+  "test_ids": [
+    "RWB-APP-EVIDENCE",
+    "RWB-APP-DECISIONS",
+    "RWB-LAZY-CACHE",
+    "RWB-INNER-LOOP-AMENDMENT"
+  ],
+  "criterion_ids": [
+    "EM-002",
+    "EM-003",
+    "EM-005",
+    "EM-006",
+    "EM-007",
+    "EM-010",
+    "EM-011",
+    "EM-012",
+    "EM-019"
+  ],
+  "source_digests": {
+    "_ask/tests/test_revising_detail.py": "024058a56d299d3ada986c8a2641d6d27873891d8f7f670e51fb3a4ae1f9e407",
+    "_ask/tests/test_traceability_entrypoints.py": "c96cc2d0a700355505df907f00c01fbc7e863b8e655ddc5eda5426a5c21790d3"
+  },
+  "inspected_sources": [],
+  "changed_cases": [],
+  "inventory_exclusions": {},
+  "inspected_source_digests": {},
+  "criteria": [
+    {
+      "id": "EM-002",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS drives the actual public AppTest resolution command, then verifies published decision actor/rationale and readiness in a new session; no alternate UI authority is introduced.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS drives the actual public AppTest resolution command, then verifies published decision actor/rationale and readiness in a new session; no alternate UI authority is introduced."
+        }
+      }
+    },
+    {
+      "id": "EM-003",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-EVIDENCE checks historical and invalid provenance through actual retained evidence fixtures and AppTest; digest-verified logs supply actual observations independently of display narrative.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-EVIDENCE checks historical and invalid provenance through actual retained evidence fixtures and AppTest; digest-verified logs supply actual observations independently of display narrative."
+        }
+      }
+    },
+    {
+      "id": "EM-005",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-EVIDENCE admits a real v2 snapshot and restores canonical accepted plan flow and model-declared helper context; assertions require selected test source and immutable commit provenance.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-EVIDENCE admits a real v2 snapshot and restores canonical accepted plan flow and model-declared helper context; assertions require selected test source and immutable commit provenance."
+        }
+      }
+    },
+    {
+      "id": "EM-006",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS asserts valid resolution changes dependent readiness, while missing actor/rationale and referenced-spec stale submissions preserve published state and lifecycle until explicit refresh.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS asserts valid resolution changes dependent readiness, while missing actor/rationale and referenced-spec stale submissions preserve published state and lifecycle until explicit refresh."
+        }
+      }
+    },
+    {
+      "id": "EM-007",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS exercises the shared guarded command through public UI with captured generation, a linked-only spec change and explicit refresh; stale and historical forms write no decision bytes.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS exercises the shared guarded command through public UI with captured generation, a linked-only spec change and explicit refresh; stale and historical forms write no decision bytes."
+        }
+      }
+    },
+    {
+      "id": "EM-010",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-DECISIONS checks actual Task blocker title/cause/options/latest actor/rationale plus persisted reasoned resolution and read-only historical forms; renderer changes preserve existing authority.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-DECISIONS checks actual Task blocker title/cause/options/latest actor/rationale plus persisted reasoned resolution and read-only historical forms; renderer changes preserve existing authority."
+        }
+      }
+    },
+    {
+      "id": "EM-011",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-APP-EVIDENCE asserts same-revision test/setup/helper context, explicit selected flow, concrete sibling criterion-only exclusion, genuine retained output and explained collapsed provenance. Controlled AppTest state rows distinguish skipped/error/not-run without claiming real execution of those fixture outcomes.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-APP-EVIDENCE asserts same-revision test/setup/helper context, explicit selected flow, concrete sibling criterion-only exclusion, genuine retained output and explained collapsed provenance. Controlled AppTest state rows distinguish skipped/error/not-run without claiming real execution of those fixture outcomes."
+        }
+      }
+    },
+    {
+      "id": "EM-012",
+      "coverage_decision": "APPROVED",
+      "assessment": "RWB-LAZY-CACHE wraps real selected source/history loaders to assert zero initial scans, cache reuse and content-sensitive refresh after same-mtime source/log tampering. The evidence case additionally checks same-mtime curated-helper invalidation.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "This task requires integration coverage for this criterion. RWB-LAZY-CACHE wraps real selected source/history loaders to assert zero initial scans, cache reuse and content-sensitive refresh after same-mtime source/log tampering. The evidence case additionally checks same-mtime curated-helper invalidation."
+        }
+      }
+    },
+    {
+      "id": "EM-019",
+      "coverage_decision": "APPROVED",
+      "assessment": "The real detached verifier accepts an independently approved post-base contract amendment while preserving base-pinned runner identity, passes unamended integration, and refuses a committed candidate-only accepted-pin mutation through the external coordinator authority check. Source inspection confirms verifier imports are snapshotted from base and CheckPlan remains candidate-derived.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Git revisions, accepted authority, verifier snapshot and detached worktree execution are exercised through actual entrypoints. Integration is the accepted required type; the positive amended journey, explicit base SHA assertion, unamended journey and candidate-only rejection cover the changed seam."
+        }
+      }
+    }
+  ],
+  "criteria_scope_note": "Task review assesses integration, the required type assigned to this task for every selected criterion. Unit/e2e obligations assigned to other accepted task scopes remain required and are not approved by this task review.",
+  "behavior_changes": [],
+  "tests": [
+    {
+      "id": "RWB-APP-EVIDENCE",
+      "decision": "APPROVED",
+      "assertion_assessment": "Actual admitted v2 snapshot and canonical plan drive namespaced source, setup, helper, flow and commit assertions. Same-mtime external-helper edits must invalidate cached detail and refuse stale helper bytes. Two cases share EM-007 but have distinct canonical flows and scenario_ids; selected Test UI excludes sibling narrative/assertion. Genuine retained logs and historical/invalid fixtures test authority, with controlled AppTest rows supplying explicit skipped/error/not-run rendering semantics. Assertions remain independent of expected prose and do not equate pass with completion.",
+      "counterexample": "A broad criterion-based association would map WB-stale to scenario and fail exact scenario_ids assertions; showing its refusal narrative/source in selected WB-publish detail fails negative AppTest assertions. Ignoring curated-helper bytes leaves unchanged cache identity after same-mtime edits and fails the retained additional red. Unvalidated log bytes cannot supply output_text. Treating skipped/error/not-run as Passed fails explicit UI exclusions.",
+      "tdd_continuity_assessment": "APPROVED: current-contract UI assertion-red run 13cb7b9a0992490893d2d0bac926a573 at 1eb46a8d4c6d527df82a4eacaa2f877c491a1f41 records successful collection and behavior_assertion failure for this exact assigned case. It uses the final test source bytes with recorded preimplementation UI production files. Exact final-green run bac7825621694ad78f1c9e0b006c1386 at 145870789d320eeeb207bc09d8960f0714bd8d4a passes the same assertions with successful collection and exit 0. Test sources are identical between red and final; retained source/log hashes and report/ledger digests match. Earlier prior-contract reds remain history and are not relied on for current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-APP-DECISIONS",
+      "decision": "APPROVED",
+      "assertion_assessment": "Public AppTest resolution journeys verify actor/rationale persistence after new-session reload, dependent readiness and the actual Task blocker title/cause/options/latest attribution. Missing actor/rationale and linked-spec stale forms preserve published identity and open lifecycle until refresh. Committed revision inspection disables submission and preserves model bytes. Reused journeys are unchanged and their assertions execute within the assigned method.",
+      "counterexample": "Losing actor/rationale on reload, failing to change readiness, accepting a stale linked-spec generation, allowing historical submission or retaining only an opaque blocker ID would fail direct observable assertions.",
+      "tdd_continuity_assessment": "APPROVED: current-contract UI assertion-red run 13cb7b9a0992490893d2d0bac926a573 at 1eb46a8d4c6d527df82a4eacaa2f877c491a1f41 records successful collection and behavior_assertion failure for this exact assigned case. It uses the final test source bytes with recorded preimplementation UI production files. Exact final-green run bac7825621694ad78f1c9e0b006c1386 at 145870789d320eeeb207bc09d8960f0714bd8d4a passes the same assertions with successful collection and exit 0. Test sources are identical between red and final; retained source/log hashes and report/ledger digests match. Earlier prior-contract reds remain history and are not relied on for current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-LAZY-CACHE",
+      "decision": "APPROVED",
+      "assertion_assessment": "Spies wrap actual source parsing and execution-history loading. Initial Overview loads neither; selected route loads once, unchanged revisit reuses it, and same-mtime source/log mutations followed by refresh trigger new loads and invalid output labeling. Real retained output is required rather than only a call count. No dynamic subtests are used.",
+      "counterexample": "An eager Overview scan fails assert_not_called; ineffective cache reuse increases count; mtime-only freshness hides mutated bytes and fails refresh-count/invalid-output assertions; absent output rendering fails Captured execution output.",
+      "tdd_continuity_assessment": "APPROVED: current-contract UI assertion-red run 13cb7b9a0992490893d2d0bac926a573 at 1eb46a8d4c6d527df82a4eacaa2f877c491a1f41 records successful collection and behavior_assertion failure for this exact assigned case. It uses the final test source bytes with recorded preimplementation UI production files. Exact final-green run bac7825621694ad78f1c9e0b006c1386 at 145870789d320eeeb207bc09d8960f0714bd8d4a passes the same assertions with successful collection and exit 0. Test sources are identical between red and final; retained source/log hashes and report/ledger digests match. Earlier prior-contract reds remain history and are not relied on for current completion.",
+      "tdd_exemption": null
+    },
+    {
+      "id": "RWB-INNER-LOOP-AMENDMENT",
+      "decision": "APPROVED",
+      "assertion_assessment": "The assigned public integration test records a genuine independently accepted post-base ownership amendment, binds traceability review/execution to its candidate, requires detached verification pass and runner_sha==base, passes a separate unamended candidate through the same verifier, and requires the precise authority mismatch refusal for candidate-only accepted-pin bytes. Source confirms CheckPlan uses the candidate while actual verifier/imports use snapshot_runner(base).",
+      "counterexample": "Keeping the old base acceptance anchor rejects the approved amendment and fails the explicit evidence-presence assertion. Loading candidate verifier identity fails the base runner SHA assertion. Removing external authority equality permits the candidate-only mutation and fails assertRaisesRegex. Breaking ordinary integration fails the separate unamended pass assertion.",
+      "tdd_continuity_assessment": "APPROVED: current-contract run a46e866935304248b4e8c830c568be9a at 69ac89ad98f72fc112a1554a3ed68ee346edeab0 collects this case and records behavior_assertion failure at authority-approved amended candidate must integrate, with the old base anchor restored. Final source 145870789d320eeeb207bc09d8960f0714bd8d4a restores only candidate acceptance anchoring and run bac7825621694ad78f1c9e0b006c1386 passes. Test source bytes are identical in red/final; failure is an explicit behavior assertion rather than import/setup failure. Source/log/report/ledger hashes match.",
+      "tdd_exemption": null
+    }
+  ],
+  "execution_evidence": {
+    "ui_red": {
+      "run_id": "13cb7b9a0992490893d2d0bac926a573",
+      "candidate_sha": "1eb46a8d4c6d527df82a4eacaa2f877c491a1f41",
+      "report_digest": "d49f802afb42dd08b1c25c0905897b1733e10a7debd67fa137ea39b3cd4b54a4"
+    },
+    "amendment_red": {
+      "run_id": "a46e866935304248b4e8c830c568be9a",
+      "candidate_sha": "69ac89ad98f72fc112a1554a3ed68ee346edeab0",
+      "report_digest": "68234c67ba4aa4d4ca09145ca3bc82896b8635d088517118761baaf78d6b606d"
+    },
+    "final_green": {
+      "run_id": "bac7825621694ad78f1c9e0b006c1386",
+      "candidate_sha": "145870789d320eeeb207bc09d8960f0714bd8d4a",
+      "report_digest": "6d5729273ff4ec4a95a821cac8f392804c686eec41fa1be1010a217456559ff1"
+    }
+  },
+  "limitations": [
+    "Independent semantic and retained-evidence review; coordinator recording/integration and outer Verify/Accept remain required.",
+    "Current service recognizes all four current-contract assertion-red/final-green pairs; older-contract evidence is historical only.",
+    "Canonical inventory is empty relative to the accepted contract; supplemental original-base inspection records the complete implementation scope.",
+    "No tests run by reviewer and no source/state/TaskResult/pins changed."
+  ],
+  "complete_task_source_review": {
+    "base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
+    "inspected_sources": [
+      "_ask/scripts/inner_loop/evidence.py",
+      "_ask/tests/test_revising_detail.py",
+      "_ask/tests/test_traceability_entrypoints.py",
+      "_ask/ui/workbench_loading.py",
+      "_ask/ui/workbench_tasks.py",
+      "_ask/ui/workbench_tests.py"
+    ],
+    "source_digests": {
+      "_ask/scripts/inner_loop/evidence.py": "301b2d735039ae02bf8fa59c4cd7be401c6bd1a50e6137e3c230dac36d202936",
+      "_ask/tests/test_revising_detail.py": "024058a56d299d3ada986c8a2641d6d27873891d8f7f670e51fb3a4ae1f9e407",
+      "_ask/tests/test_traceability_entrypoints.py": "c96cc2d0a700355505df907f00c01fbc7e863b8e655ddc5eda5426a5c21790d3",
+      "_ask/ui/workbench_loading.py": "2c5ed87236494b1d8c01f86e3507c7a4c4b1e0d8c4e2205c489658eb15c9780d",
+      "_ask/ui/workbench_tasks.py": "6ee8ca172953b444f8564b3e182c053294e5f6c960a8080f1cbdc924e7a9607d",
+      "_ask/ui/workbench_tests.py": "794d61c130eac9d996d64227ae3299e6f0160f0f1441dfb973ca57b52e88b6b4"
+    },
+    "assessment": "Complete original-base diff independently inspected, including UI loader/task/test rendering, all tests, authority anchor repair, documentation and accepted contract history. Canonical inventory fields correctly remain empty relative to accepted 7bc1294 because final source equals that accepted baseline. Other public methods in shared traceability entrypoints file are unchanged from original task base and retain their existing regression responsibilities; no hidden new unmapped behavior test was added."
+  },
+  "recognized_execution_report_ids": [
+    "a46e866935304248b4e8c830c568be9a",
+    "13cb7b9a0992490893d2d0bac926a573",
+    "bac7825621694ad78f1c9e0b006c1386"
+  ],
+  "rejected_attempts": [
+    {
+      "run_id": "9725a11bbce0430b9fe7e2a6d29f31ff",
+      "candidate_sha": "69ac89ad98f72fc112a1554a3ed68ee346edeab0",
+      "reasons": [
+        "collection failure or zero cases"
+      ],
+      "report_digest": "7501751f678926571d80924c72bd8e8ccc6de1bddc19ba3873bf56db132be963",
+      "retained_report": "work/revising-workbench/traceability/runs/9725a11bbce0430b9fe7e2a6d29f31ff/results.json"
+    }
+  ]
+}
