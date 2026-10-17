@@ -35,17 +35,10 @@ PYTHONPATH=_ask/tests:_ask/ui:_ask/scripts _ask/.venv/bin/python -m unittest \
   test_engineering_ui -v
 ```
 
-Result: 14 tests ran; 13 passed and one failed. The failure is
-`test_overview_loads_results_on_demand_and_explains_debug_identifiers`, which
-spies on `projection_module.inspect_evidence`. The current selected-result
-loader calls `inspect_workstream_evidence` directly in
-`_ask/ui/workbench_loading.py`, so this spy does not observe the expected call.
-The failure is in the test's spy target; the UI test did not reach its later
-evidence-display assertions. Do not describe the suite as fully green.
-
-The initial system-Python run caught the missing import, then was interrupted
-when the user pointed out that test dependencies belong under `_ask`. The
-project-venv run above includes the import fix.
+The focused command passed: 14 tests ran, all passed. The result-loading test
+now spies on `workbench_loading.inspect_workstream_evidence`, the function the
+selected-result loader actually calls, and verifies the evidence display.
+Dependencies and test execution stay in `_ask/.venv`.
 
 ## Historical context
 

@@ -13,6 +13,9 @@ from streamlit.testing.v1 import AppTest
 from engineering_fixture import workbench_model, evidence_workbench, write_json
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "_ask/ui"))
+import workbench_loading as loading_module
+
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
 from engineering_model.admission import validate_current, load_published
 from engineering_model.actions import edit
@@ -183,8 +186,8 @@ class UiIntegrationTests(unittest.TestCase):
             return original_expander(*args, **kwargs)
 
         with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}),
-              patch.object(projection_module, "inspect_evidence",
-                           wraps=projection_module.inspect_evidence) as inspect,
+              patch.object(loading_module, "inspect_workstream_evidence",
+                           wraps=loading_module.inspect_workstream_evidence) as inspect,
               patch.object(st, "expander", expand_debug)):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
             self.assertFalse(app.exception, app.exception)
