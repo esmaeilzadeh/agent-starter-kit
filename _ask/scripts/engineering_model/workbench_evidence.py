@@ -222,8 +222,6 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
                        "scope": report.get("scope"), "task_id": report.get("task_id"),
                        "source_sha": case.get("source_sha"), "phase": case["phase"],
                        "outcome": case.get("outcome"), "failure_kind": case.get("failure_kind"),
-                       "execution_exit_code": execution.get("exit_code"),
-                       "collection_status": execution.get("collection_status"),
                        "recorded_at": report.get("recorded_at"),
                        "recorded_at_status": "available" if report.get("recorded_at") else "unavailable",
                        "duration": case.get("duration"), "completion": "not_evaluated",
@@ -237,20 +235,6 @@ def execution_history(root, work_id, test, *, spec_digest, plan_digest, candidat
                         or execution.get("output_artifact") != case.get("output_artifact")
                         or execution.get("output_digest") != case.get("output_digest")):
                     row["diagnostic"] = "case and execution identity differ"
-                    result["runs"].append(row)
-                    continue
-                if type(execution.get("exit_code")) is not int:
-                    row["diagnostic"] = "retained execution exit code is invalid"
-                    result["runs"].append(row)
-                    continue
-                if execution.get("collection_status") != "ok":
-                    row["diagnostic"] = "retained test collection did not complete successfully"
-                    result["runs"].append(row)
-                    continue
-                if case.get("outcome") not in {"passed", "failed", "error", "skipped",
-                                                "expected_failure", "unexpected_success",
-                                                "unsupported_subtest"}:
-                    row["diagnostic"] = "retained case outcome is unavailable or invalid"
                     result["runs"].append(row)
                     continue
                 if case.get("source_sha") != report.get("candidate_sha"):
