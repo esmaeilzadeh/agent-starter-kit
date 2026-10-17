@@ -15,7 +15,7 @@ from types import MappingProxyType
 
 from .snapshot import Snapshot, capture, is_current, read_input, safe_relative
 from .validation import RULES_VERSION, SCHEMA_V2
-from .passages import required_task_passages, selected_task_node
+from .passages import delivery_task_execution, required_task_passages, selected_task_node
 
 
 def _state_directory(root, work_id):
@@ -248,13 +248,17 @@ def validate_current(root, work_id, *, allow_pending=False):
     return snapshot, diagnostics
 
 
-def _selected_diagnostics(snapshot, selected_task_id=None, selected_execution=None):
+def _selected_diagnostics(snapshot, selected_task_id=None, selected_execution=None, delivery_task_id=None):
     # Execution aliases belong to v2 documents. Decide from this exact
     # validated snapshot so a generation change cannot switch schemas between
     # a compatibility preflight and publication.
     if snapshot.document.get("schema") != SCHEMA_V2:
         selected_execution = None
     try:
+        if delivery_task_id is not None:
+            if selected_task_id is not None or selected_execution is not None:
+                raise ValueError("delivery and product Task selectors cannot be combined")
+            selected_execution = delivery_task_execution(snapshot, snapshot.work_id, delivery_task_id)
         selected = selected_task_node(snapshot, selected_task_id=selected_task_id,
                                       selected_execution=selected_execution)
     except ValueError as exc:
@@ -269,7 +273,8 @@ def _selected_diagnostics(snapshot, selected_task_id=None, selected_execution=No
     return []
 
 
-def admit(root, work_id, expected=None, *, selected_task_id=None, selected_execution=None):
+def admit(root, work_id, expected=None, *, selected_task_id=None, selected_execution=None,
+          delivery_task_id=None):
     """Bootstrap/read admission; does not authorize or execute workflow actions."""
     snapshot, diagnostics = None, []
     try:
@@ -279,7 +284,8 @@ def admit(root, work_id, expected=None, *, selected_task_id=None, selected_execu
             recover_locked(Path(root).resolve(), work_id, state)
             snapshot, diagnostics = validate_current(root, work_id)
             if not diagnostics:
-                diagnostics.extend(_selected_diagnostics(snapshot, selected_task_id, selected_execution))
+                diagnostics.extend(_selected_diagnostics(snapshot, selected_task_id, selected_execution,
+                                                         delivery_task_id))
             if not diagnostics and expected is not None and snapshot.identity["digest"] != expected:
                 diagnostics = [{"code": "EM007_STALE_INPUT", "path": snapshot.model_path,
                                 "message": "expected snapshot is no longer current"}]

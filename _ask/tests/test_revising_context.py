@@ -312,6 +312,33 @@ class PassageTests(unittest.TestCase):
                              "a committed symlink is not an admissible historical source")
 
 class PassageAdmissionTests(unittest.TestCase):
+    def test_delivery_scope_without_product_alias_does_not_select_foreign_task(self):
+        from _ask.scripts.engineering_model.workflow import workflow_admission
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _repo(root, spec_text=None)
+            plan_path = root / "work/product/test-plan.json"
+            plan = json.loads(plan_path.read_text())
+            plan["task_scopes"].append({"task_id": "RWB-108", "test_ids": []})
+            _put(root, "work/product/test-plan.json", plan)
+            _put(root, "work/product/inner-loop/tasks.yaml",
+                 b"schema: ask-inner-loop-tasks/v1\nwork_id: product\ntasks:\n"
+                 b"  - id: WB-003\n    depends_on: []\n    owned_paths: [task-result.md]\n"
+                 b"  - id: RWB-108\n    depends_on: []\n    owned_paths: [pilot-result.md]\n")
+            model_path = root / "work/product/engineering-model.json"
+            document = json.loads(model_path.read_text())
+            document["nodes"][2]["case"]["plan_digest"] = digest(plan)
+            _put(root, "work/product/engineering-model.json", document)
+
+            with workflow_admission(root, "product", delivery_task_id="RWB-108"):
+                pass
+            with self.assertRaises(Exception) as selected:
+                with workflow_admission(root, "product", delivery_task_id="WB-003"):
+                    pass
+            self.assertEqual(getattr(selected.exception, "diagnostic", {}).get("code"),
+                             "EM015_CONTEXT_REQUIRED")
+
     def test_required_passages_block_only_dependent_actions(self):
         from _ask.scripts.engineering_model.workflow import workflow_admission
         from _ask.scripts.engineering_model.actions import edit

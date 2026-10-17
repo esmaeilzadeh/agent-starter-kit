@@ -159,18 +159,19 @@ def _record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy
 
 def record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy: str,
                   evidence: str, verdict: str = 'APPROVED', boundary: str = 'ok', *,
-                  selected_task_id=None, selected_execution=None) -> dict:
+                  selected_task_id=None, selected_execution=None, delivery_task_id=None) -> dict:
     """Bind adopted task review to its explicit captured Task identity."""
     try:
         from engineering_model.workflow import adopted, workflow_admission
     except ModuleNotFoundError:
         from _ask.scripts.engineering_model.workflow import adopted, workflow_admission
-    if selected_task_id is None and selected_execution is None and adopted(root, work_id):
-        selected_execution = {"work_id": work_id, "task_id": task_id}
-    if selected_task_id is None and selected_execution is None:
+    if (selected_task_id is None and selected_execution is None
+            and delivery_task_id is None and adopted(root, work_id)):
+        delivery_task_id = task_id
+    if selected_task_id is None and selected_execution is None and delivery_task_id is None:
         return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
     with workflow_admission(root, work_id, selected_task_id=selected_task_id,
-                            selected_execution=selected_execution):
+                            selected_execution=selected_execution, delivery_task_id=delivery_task_id):
         return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
 
 

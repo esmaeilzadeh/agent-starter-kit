@@ -79,9 +79,7 @@ def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
 
 
 def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
-    selected_execution = ({"work_id": work_id, "task_id": task_id}
-                          if adopted(root, work_id) else None)
-    with workflow_admission(root, work_id, selected_execution=selected_execution):
+    with workflow_admission(root, work_id, delivery_task_id=task_id):
         doc = spawn_writer(root, work_id, task_id)
     print(f"running={task_id} revision={doc['revision']}")
     return 0
@@ -168,12 +166,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "spawn-writer":
             return cmd_spawn(root, args.work_id, args.task_id)
         if args.cmd == "record-review":
-            selected_execution = ({"work_id": args.work_id, "task_id": args.task_id}
-                                  if adopted(root,args.work_id) else None)
-            with workflow_admission(root,args.work_id,selected_execution=selected_execution):
+            with workflow_admission(root,args.work_id,delivery_task_id=args.task_id):
                 review = record_review(root, args.work_id, args.task_id, args.reviewer, args.policy,
                                        args.evidence, args.verdict, args.boundary,
-                                       selected_execution=selected_execution)
+                                       delivery_task_id=args.task_id)
             print(f"review={review['verdict']} candidate={review['candidate_sha']}")
             return 0
         if args.cmd == "check-paths":
@@ -203,8 +199,7 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         if args.cmd == "integrate":
-            sha = integrate(root, args.task_ref, args.method, selected_execution=(
-                {"work_id": branch_work_id(root), "task_id": args.task_id} if args.task_id else None))
+            sha = integrate(root, args.task_ref, args.method, delivery_task_id=args.task_id)
             print(sha)
             return 0
         if args.cmd == "resume-repair":

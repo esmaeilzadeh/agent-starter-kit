@@ -144,6 +144,7 @@ def _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,record
 
 
 def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,*,selected_execution=None,
+                       delivery_task_id=None,
                        review_document=None):
     """Bind task-scoped review publication to the task named by its review body."""
     # Resolve identity, semantic checks, and persisted review from one captured
@@ -157,16 +158,19 @@ def record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorde
         body_execution = {'work_id':work_id,'task_id':task_id}
         if selected_execution is not None and selected_execution != body_execution:
             raise Invalid('selected execution does not match task-scoped review body')
-        selected_execution = body_execution
+        if delivery_task_id is not None and delivery_task_id != task_id:
+            raise Invalid('selected delivery task does not match task-scoped review body')
+        delivery_task_id = task_id
     elif scope == 'workstream':
-        if selected_execution is not None:
+        if selected_execution is not None or delivery_task_id is not None:
             raise Invalid('workstream review cannot be bound to a task execution')
     elif scope is not None:
         raise Invalid('review body has an unknown scope')
-    if selected_execution is None:
+    if selected_execution is None and delivery_task_id is None:
         return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,review)
     from verification.run import workflow_context
-    with workflow_context(root,work_id,selected_execution=selected_execution):
+    with workflow_context(root,work_id,selected_execution=selected_execution,
+                          delivery_task_id=None if selected_execution else delivery_task_id):
         return _record_test_review(root,work_id,candidate_sha,anchor_sha,review_path,recorded_by,review)
 
 

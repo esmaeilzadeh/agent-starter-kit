@@ -199,7 +199,9 @@ class PilotIntegrationTests(unittest.TestCase):
         from engineering_model.readable_tests import read_test
         from engineering_model.workbench_evidence import execution_history, qualified_source
 
-        root = Path(os.environ.get("ASK_RWB_RETAINED_ROOT", Path(__file__).resolve().parents[2])).resolve()
+        root = Path(os.environ.get("ASK_RWB_RETAINED_ROOT")
+                    or os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT")
+                    or Path(__file__).resolve().parents[2]).resolve()
         work = root / "work/structured-agentic-environment"
         result_path = work / "inner-loop/results/WB-003.json"
         state_path = work / "inner-loop/state.json"
@@ -278,7 +280,8 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertEqual(snapshot.diagnostics(root), [])
         gate = demo_gate(root, snapshot, "inspect-genuine-wb003",
                          expected_snapshot_digest=snapshot.identity["digest"],
-                         retained_root=os.environ.get("ASK_RWB_RETAINED_ROOT", root))
+                         retained_root=(os.environ.get("ASK_RWB_RETAINED_ROOT")
+                                        or os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT") or root))
         self.assertEqual(gate["status"], "context_ready")
         self.assertFalse(gate["demo_complete"])
         self.assertEqual(gate["prerequisites"], [
@@ -302,7 +305,8 @@ class PilotIntegrationTests(unittest.TestCase):
         self.assertIn("WB-003", plan["text"])
 
         stale = demo_gate(root, snapshot, "inspect-genuine-wb003", expected_snapshot_digest="0" * 64,
-                          retained_root=os.environ.get("ASK_RWB_RETAINED_ROOT", root))
+                          retained_root=(os.environ.get("ASK_RWB_RETAINED_ROOT")
+                                         or os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT") or root))
         self.assertEqual(stale["status"], "blocked_context")
 
         from engineering_model.snapshot import capture

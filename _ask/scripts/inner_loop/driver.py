@@ -94,9 +94,7 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
     # side effects. A crash after FF leaves old valid state and is retryable.
     if task_id is None:
         raise NotIntegrable('selected task identity is required before integration')
-    selected_execution = {'work_id': work_id, 'task_id': task_id}
-    selection = selected_execution if adopted(root, work_id) else None
-    with workflow_admission(root, work_id, selected_execution=selection), \
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
             state_transaction(root, work_id) as doc:
         running = _running(doc)
         if len(running) != 1 or task_id not in running:
@@ -115,7 +113,7 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
         sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
-                            selected_execution=selection)
+                            delivery_task_id=task_id)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
             raise Escalate('integrated HEAD/tree differs from verified candidate')
         evidence['resulting_sha'] = sha
@@ -157,9 +155,7 @@ def run_once(root: Path, work_id: str) -> str:
             ensure_state(root, work_id)
             return "quiescent"
     tid = ready[0]
-    selected_execution = {"work_id": work_id, "task_id": tid}
-    selection = selected_execution if adopted(root, work_id) else None
-    with workflow_admission(root, work_id, selected_execution=selection):
+    with workflow_admission(root, work_id, delivery_task_id=tid):
         ensure_state(root, work_id)
         spawn_writer(root, work_id, tid)
     return f"running={tid}"

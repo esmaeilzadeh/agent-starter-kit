@@ -230,3 +230,21 @@ def selected_task_node(snapshot, *, selected_task_id=None, selected_execution=No
     if len(matches) != 1:
         raise ValueError("selected identity must resolve to exactly one captured Task")
     return matches[0]
+
+
+def delivery_task_execution(snapshot, work_id, task_id):
+    """Select a product Task only when a delivery Task has an explicit alias.
+
+    Inner-loop and traceability task scopes may describe implementation work
+    without being product Tasks in the captured model. The model's exact
+    execution alias is the only authority for applying product Task passages.
+    """
+    if not isinstance(task_id, str) or not task_id.strip():
+        raise ValueError("delivery task ID must be nonempty text")
+    if snapshot.document.get("schema") != "ask-engineering-model/v2":
+        return None
+    execution = {"work_id": work_id, "task_id": task_id}
+    if any(isinstance(node, dict) and node.get("type") == "task"
+           and node.get("execution") == execution for node in snapshot.document.get("nodes", [])):
+        return execution
+    return None

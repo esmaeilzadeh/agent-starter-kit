@@ -32,7 +32,7 @@ def main(argv=None):
     try:
         if not slug(args.work_id):raise Invalid('invalid work_id')
         managed=args.command not in {'validate-plan','record-result'} or (args.command=='record-result' and args.result=='pass')
-        selected_execution=None
+        delivery_task_id=None
         if args.command=='record-review':
             # Refuse invalid adopted definitions before reporting an input
             # scope mismatch, but do not publish a workflow generation until
@@ -61,12 +61,12 @@ def main(argv=None):
                 raise Invalid('CLI review scope/task must match the review body')
             args._review_document=review
             if body_scope=='task':
-                selected_execution={'work_id':args.work_id,'task_id':body_task}
+                delivery_task_id=body_task
         if getattr(args,'scope',None)=='task':
             if not getattr(args,'task_id',None):raise Invalid('task-scoped operation requires --task-id')
             if args.command!='record-review':
-                selected_execution={'work_id':args.work_id,'task_id':args.task_id}
-        with workflow_context(root,args.work_id,selected_execution=selected_execution) if managed else nullcontext():
+                delivery_task_id=args.task_id
+        with workflow_context(root,args.work_id,delivery_task_id=delivery_task_id) if managed else nullcontext():
             document,status=execute(args,root)
         print(json.dumps(document,indent=2))
         return status
@@ -93,9 +93,9 @@ def execute(args,root):
         body_task=review.get('task_id') if isinstance(review,dict) else None
         if body_scope!=args.scope or (args.scope=='task' and body_task!=args.task_id):
             raise Invalid('CLI review scope/task must match the review body')
-        selected=({'work_id':args.work_id,'task_id':body_task} if body_scope=='task' else None)
         doc=record_test_review(root,args.work_id,sha,anchor,args.evidence,args.recorded_by,
-                               selected_execution=selected,review_document=review)
+                               delivery_task_id=body_task if body_scope=='task' else None,
+                               review_document=review)
     elif args.command=='run':
         contracts=load_accepted(root,args.work_id,anchor)
         if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
