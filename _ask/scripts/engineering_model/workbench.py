@@ -161,6 +161,8 @@ def build_workbench(snapshot, model, model_task_states, runtime_state=None):
             row.update(
                 product_identity=(product_identity(work_id, product_node["id"]) if product_node else None),
                 execution_identity={"work_id": identity[0], "task_id": identity[1]},
+                execution_source=("engineering-model-task-alias" if product_node
+                                  else "inner-loop-task-graph"),
                 identity_source="task-graph-execution-alias",
                 product_node_id=product_node.get("id") if product_node else None,
                 model_lifecycle=product_node.get("lifecycle") if product_node else None,
