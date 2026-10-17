@@ -95,12 +95,16 @@ def _acyclic(edges: list[tuple[str, str]], ids: set[str]) -> list[list[str]]:
 
 def validate(document: object, root: str | Path, work_id: str, *, reference_bytes=None) -> list[dict]:
     """Dispatch the exact model version while retaining the original v1 rules."""
+    reference_indexes = {}
     if isinstance(document, dict) and document.get("schema") == SCHEMA_V2:
-        return _validate_v2(document, root, work_id, reference_bytes=reference_bytes)
-    return _validate_v1(document, root, work_id, reference_bytes=reference_bytes)
+        return _validate_v2(document, root, work_id, reference_bytes=reference_bytes,
+                            reference_indexes=reference_indexes)
+    return _validate_v1(document, root, work_id, reference_bytes=reference_bytes,
+                        reference_indexes=reference_indexes)
 
 
-def _validate_v1(document: object, root: str | Path, work_id: str, *, reference_bytes=None) -> list[dict]:
+def _validate_v1(document: object, root: str | Path, work_id: str, *, reference_bytes=None,
+                 reference_indexes=None) -> list[dict]:
     """Return deterministic diagnostics; never modify the document or files."""
     errors: list[dict] = []
     if not isinstance(document, dict):
@@ -166,9 +170,11 @@ def _validate_v1(document: object, root: str | Path, work_id: str, *, reference_
             self_errors = _decision_diagnostics(node, path, node_id)
             errors.extend(self_errors)
         if node_type == "implementation":
-            _validate_reference(node, path, node_id, "implementation", root, work_id, errors, reference_bytes)
+            _validate_reference(node, path, node_id, "implementation", root, work_id, errors,
+                                reference_bytes, reference_indexes)
         elif node_type in {"requirement", "scenario", "test", "test_run", "evidence"}:
-            _validate_reference(node, path, node_id, node_type, root, work_id, errors, reference_bytes)
+            _validate_reference(node, path, node_id, node_type, root, work_id, errors,
+                                reference_bytes, reference_indexes)
 
     intent_ids = [node_id for node_id, node in by_id.items() if node.get("type") == "intent"]
     if len(intent_ids) != 1:
@@ -236,7 +242,8 @@ def _validate_v1(document: object, root: str | Path, work_id: str, *, reference_
     return errors
 
 
-def _validate_v2(document: object, root: str | Path, work_id: str, *, reference_bytes=None) -> list[dict]:
+def _validate_v2(document: object, root: str | Path, work_id: str, *, reference_bytes=None,
+                 reference_indexes=None) -> list[dict]:
     """Validate the v2 relationship graph and its qualified aliases."""
     from .identities import identity_diagnostics
     from .flows import flow_diagnostics
@@ -288,7 +295,8 @@ def _validate_v2(document: object, root: str | Path, work_id: str, *, reference_
         if node_type == "decision": errors.extend(_decision_diagnostics(node, path, node_id))
         errors.extend(_v2_metadata_diagnostics(node, path, node_id))
         if node_type == "implementation":
-            _validate_reference(node, path, node_id, node_type, root, work_id, errors, reference_bytes)
+            _validate_reference(node, path, node_id, node_type, root, work_id, errors,
+                                reference_bytes, reference_indexes)
         elif node_type == "test" and isinstance(node.get("reference"), dict) and (
                 "work_id" in node["reference"] or "plan_digest" in node["reference"]):
             reference = node["reference"]
@@ -299,10 +307,12 @@ def _validate_v2(document: object, root: str | Path, work_id: str, *, reference_
                 errors.append(_diagnostic("EM001_REFERENCE", f"{path}.reference", "qualified Test reference needs path, id, work_id, and plan_digest", node_id))
             normalized = dict(node)
             normalized["reference"] = {key: reference[key] for key in ("path", "id") if key in reference}
-            _validate_reference(normalized, path, node_id, node_type, root, work_id, errors, reference_bytes)
+            _validate_reference(normalized, path, node_id, node_type, root, work_id, errors,
+                                reference_bytes, reference_indexes)
         elif node_type in {"requirement", "scenario", "test", "test_run", "evidence"}:
             # In v2 a draft Scenario can omit its canonical case/reference.
-            _validate_reference(node, path, node_id, node_type, root, work_id, errors, reference_bytes)
+            _validate_reference(node, path, node_id, node_type, root, work_id, errors,
+                                reference_bytes, reference_indexes)
 
     intents = [identity for identity, node in by_id.items() if node.get("type") == "intent"]
     if len(intents) > 1:
@@ -497,7 +507,8 @@ def _utc_timestamp(value) -> bool:
 
 
 def _validate_reference(node: dict, node_path: str, node_id: str, node_type: str,
-                        root: str | Path, work_id: str, errors: list[dict], reference_bytes=None) -> None:
+                        root: str | Path, work_id: str, errors: list[dict], reference_bytes=None,
+                        reference_indexes=None) -> None:
     reference = node.get("reference")
     required = node.get("lifecycle") != "draft" if node_type in {"requirement", "scenario"} else True
     if reference is None:
@@ -557,26 +568,43 @@ def _validate_reference(node: dict, node_path: str, node_id: str, node_type: str
                                       "implementation source is unavailable", node_id))
     if node_type in {"requirement", "scenario"} and "id" in reference:
         _check_id(resolved, reference["id"], "criteria", node_path, node_id, errors,
-                  captured=reference_bytes, relative=raw_path)
+                  captured=reference_bytes, relative=raw_path, index_cache=reference_indexes)
     elif node_type == "test" and "id" in reference:
         _check_id(resolved, reference["id"], "tests", node_path, node_id, errors,
-                  captured=reference_bytes, relative=raw_path)
+                  captured=reference_bytes, relative=raw_path, index_cache=reference_indexes)
 
 
 def _check_id(path: Path, identity: object, collection: str, node_path: str,
-              node_id: str, errors: list[dict], key: str = "id", *, captured=None, relative=None) -> None:
+              node_id: str, errors: list[dict], key: str = "id", *, captured=None, relative=None,
+              index_cache=None) -> None:
     if not isinstance(identity, str) or not identity:
         errors.append(_diagnostic("EM001_REFERENCE_ID", f"{node_path}.reference.id", "reference id must be nonempty", node_id))
         return
-    try:
-        from .snapshot import decode
-        raw = path.read_bytes() if captured is None else captured.get(relative)
-        if raw is None:
-            raise ValueError("missing captured definition")
-        value = decode(raw)
-    except (OSError, UnicodeError, ValueError):
-        errors.append(_diagnostic("EM001_REFERENCE_MISSING", f"{node_path}.reference.path", "referenced definition is unavailable", node_id))
+    from .snapshot import decode
+    cache_key = (str(relative) if relative is not None else str(path), collection, key)
+    if index_cache is not None and cache_key in index_cache:
+        ids = index_cache[cache_key]
+    else:
+        try:
+            raw = path.read_bytes() if captured is None else captured.get(relative)
+            if raw is None:
+                raise ValueError("missing captured definition")
+            value = decode(raw)
+        except (OSError, UnicodeError, ValueError):
+            if index_cache is not None:
+                index_cache[cache_key] = None
+            errors.append(_diagnostic("EM001_REFERENCE_MISSING", f"{node_path}.reference.path",
+                                      "referenced definition is unavailable", node_id))
+            return
+        records = value.get(collection) if isinstance(value, dict) else None
+        ids = ({item[key] for item in records
+                if isinstance(item, dict) and isinstance(item.get(key), str)}
+               if isinstance(records, list) else set())
+        if index_cache is not None:
+            index_cache[cache_key] = ids
+    if ids is None:
+        errors.append(_diagnostic("EM001_REFERENCE_MISSING", f"{node_path}.reference.path",
+                                  "referenced definition is unavailable", node_id))
         return
-    records = value.get(collection) if isinstance(value, dict) else None
-    if not isinstance(records, list) or not any(isinstance(item, dict) and item.get(key) == identity for item in records):
+    if identity not in ids:
         errors.append(_diagnostic("EM001_REFERENCE_ID", f"{node_path}.reference.id", "canonical reference id does not exist", node_id))

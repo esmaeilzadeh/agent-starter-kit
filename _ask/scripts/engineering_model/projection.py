@@ -94,15 +94,37 @@ def _scenario_views(snapshot, model, evidence_by_reference):
     for edge in model.get("edges", []):
         if edge["type"] == "covers":
             covered_by.setdefault(edge["target"], []).append(edge["source"])
+    documents = {}
+    record_indexes = {}
+
+    def document(path):
+        if not isinstance(path, str):
+            return None
+        if path not in documents:
+            documents[path] = _captured_json(snapshot, path)
+        return documents[path]
+
+    def records_by_id(path, collection):
+        cache_key = (path, collection)
+        if cache_key not in record_indexes:
+            source = document(path)
+            records = source.get(collection, []) if isinstance(source, dict) else []
+            index = {}
+            if isinstance(records, list):
+                for item in records:
+                    if isinstance(item, dict) and isinstance(item.get("id"), str):
+                        index.setdefault(item["id"], item)
+            record_indexes[cache_key] = index
+        return record_indexes[cache_key]
+
     result = []
     for node in model.get("nodes", []):
         if node.get("type") != "scenario":
             continue
         reference = node.get("reference", {})
-        spec = _captured_json(snapshot, reference.get("path"))
+        spec = document(reference.get("path"))
         criteria = spec.get("criteria", []) if isinstance(spec, dict) else []
-        criterion = next((item for item in criteria
-                          if isinstance(item, dict) and item.get("id") == reference.get("id")), None)
+        criterion = records_by_id(reference.get("path"), "criteria").get(reference.get("id"))
         view = {"id": node["id"], "title": node["title"], "reference": reference}
         if criterion is not None:
             view["criterion_id"] = criterion["id"]
@@ -123,17 +145,15 @@ def _scenario_views(snapshot, model, evidence_by_reference):
                 case_work = selector.get("work_id")
                 case_id = selector.get("case_id")
                 plan_path = f"work/{case_work}/test-plan.json" if isinstance(case_work, str) else None
-                plan = _captured_json(snapshot, plan_path) if plan_path else None
+                plan = document(plan_path) if plan_path else None
                 actual_digest = (hashlib.sha256(json.dumps(
                     plan, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
                     if isinstance(plan, dict) else None)
-                tests_for_case = (plan.get("tests", []) if isinstance(plan, dict) else [])
-                selected = [item for item in tests_for_case if isinstance(item, dict)
-                            and item.get("id") == case_id] if isinstance(tests_for_case, list) else []
+                selected = records_by_id(plan_path, "tests").get(case_id)
                 if (isinstance(plan, dict) and plan.get("work_id") == case_work
-                        and actual_digest == selector.get("plan_digest") and len(selected) == 1
-                        and isinstance(selected[0].get("scenario"), dict)):
-                    flow = selected[0]["scenario"]
+                        and actual_digest == selector.get("plan_digest") and selected is not None
+                        and isinstance(selected.get("scenario"), dict)):
+                    flow = selected["scenario"]
                     for field in ("given", "when", "then"):
                         if field in flow:
                             view[field] = flow[field]
@@ -148,10 +168,8 @@ def _scenario_views(snapshot, model, evidence_by_reference):
         for test_id in sorted(covered_by.get(node["id"], [])):
             test_node = nodes.get(test_id)
             test_ref = test_node.get("reference", {}) if test_node else {}
-            plan = _captured_json(snapshot, test_ref.get("path"))
-            tests = plan.get("tests", []) if isinstance(plan, dict) else []
-            case = next((item for item in tests
-                         if isinstance(item, dict) and item.get("id") == test_ref.get("id")), None)
+            plan = document(test_ref.get("path"))
+            case = records_by_id(test_ref.get("path"), "tests").get(test_ref.get("id"))
             case_view = {"node_id": test_id, "reference": test_ref}
             if test_node:
                 case_view["title"] = test_node["title"]
