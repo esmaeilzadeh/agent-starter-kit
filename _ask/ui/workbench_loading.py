@@ -558,12 +558,18 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
         base["evidence"]["diagnostic"] = "linked Test has no qualified representative Task and workstream"
         return base
 
+    cache_key = _representative_cache_key(root, retained_root, snapshot, task_node_id)
+    if cache is not None and cache_key in cache:
+        cache.move_to_end(cache_key)
+        return cache[cache_key]
+
     gate = demo_gate(root, snapshot, task_node_id, retained_root=retained_root)
     base["demo_gate"] = gate
     if gate.get("status") != "context_ready":
         detail = "; ".join(gate.get("context_blockers", [])) or "representative context is unavailable"
         base["evidence"].update(status="unavailable", diagnostic=detail)
         base["execution_history"]["diagnostic"] = detail
+        _cache_representative_detail(cache, cache_key, base)
         return base
 
     identities = gate.get("admission_identities") or {}
@@ -635,6 +641,7 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
                             "test_id": selected_test.get("id"), "run_id": selected_run,
                             "report_digest": evidence_ids.get("report_digest"),
                             "log_digest": evidence_ids.get("log_digest")}
+        _cache_representative_detail(cache, cache_key, base)
         return base
     except (OSError, UnicodeError, ValueError, TypeError, KeyError, AttributeError) as exc:
         message = str(exc)
@@ -642,7 +649,87 @@ def _load_referenced_test_detail(root: Path, snapshot, test: dict, source_contex
         base["readable_test"]["diagnostic"] = message
         base["evidence"].update(status="unavailable", diagnostic=message)
         base["execution_history"]["diagnostic"] = message
+        _cache_representative_detail(cache, cache_key, base)
         return base
+
+
+def _representative_cache_key(root: Path, retained_root: Path, snapshot, task_node_id: str) -> str:
+    """Hash every mutable authority input before reusing a retained pilot inspection."""
+    from engineering_model.readability import REPRESENTATIVE_RUN_ID
+
+    identities = [str(snapshot.identity.get("digest", "")),
+                  str(_git(root, "rev-parse", "HEAD") or b"unversioned"),
+                  str(_git(retained_root, "rev-parse", "HEAD") or b"unversioned")]
+    try:
+        model = json.loads(snapshot.files[f"work/{snapshot.work_id}/engineering-model.json"])
+        node = next(item for item in model.get("nodes", [])
+                    if item.get("id") == task_node_id and item.get("type") == "task")
+        execution = node.get("execution", {})
+        owner, task_id = execution.get("work_id"), execution.get("task_id")
+        if not isinstance(owner, str) or not isinstance(task_id, str):
+            raise ValueError
+        task_result_path = f"work/{owner}/inner-loop/results/{task_id}.json"
+        state_path = f"work/{owner}/inner-loop/state.json"
+        task_result = _external_json(retained_root, task_result_path, identities)
+        state = _external_json(retained_root, state_path, identities)
+        candidate = task_result.get("candidate_sha")
+        review_path = f"work/{owner}/traceability/reviews/{candidate}.json"
+        review_envelope = _external_json(retained_root, review_path, identities)
+        task_state = state.get("tasks", {}).get(task_id, {})
+        evidence = task_state.get("evidence", {})
+        verification = evidence.get("verification", {})
+        paths = [f"work/{owner}/engineering-model.json", f"work/{owner}/test-plan.json",
+                 f"work/{owner}/traceability-accepted.json",
+                 f"work/{owner}/traceability/executions.json", review_path,
+                 str(evidence.get("review", {}).get("evidence", "")),
+                 str(verification.get("record_path", ""))]
+        paths.extend(str(item.get("evidence", "")) for item in verification.get("checks", [])
+                     if isinstance(item, dict))
+        paths.extend(path.relative_to(retained_root).as_posix()
+                     for path in sorted((retained_root / "specs/current").glob("*.json"))
+                     if path.is_file())
+        report_path = (f"work/{owner}/traceability/runs/{REPRESENTATIVE_RUN_ID}/results.json")
+        report = _external_json(retained_root, report_path, identities)
+        paths.append(report_path)
+        for item in [*report.get("executions", []), *report.get("cases", [])]:
+            if isinstance(item, dict) and isinstance(item.get("output_artifact"), str):
+                paths.append(item["output_artifact"])
+        # Bind the reviewed source tree through its immutable candidate SHA.
+        identities.append(str(candidate or "missing-candidate"))
+        identities.append(str(review_envelope.get("review_digest", "")))
+        for relative in sorted(set(path for path in paths if path)):
+            _external_bytes(retained_root, relative, identities)
+    except (KeyError, StopIteration, OSError, ValueError, TypeError, AttributeError):
+        identities.append("representative-inputs-incomplete")
+    digest = hashlib.sha256()
+    for identity in identities:
+        digest.update(identity.encode("utf-8", "replace") + b"\0")
+    return "representative:" + digest.hexdigest()
+
+
+def _external_json(root: Path, relative: str, identities: list[str]) -> dict:
+    raw = _external_bytes(root, relative, identities)
+    value = json.loads(raw.decode("utf-8"))
+    return value if isinstance(value, dict) else {}
+
+
+def _external_bytes(root: Path, relative: str, identities: list[str]) -> bytes:
+    path = _confined_file(root, relative)
+    if path is None or not path.is_file():
+        identities.append(relative + "=missing-or-unsafe")
+        return b""
+    raw = path.read_bytes()
+    identities.append(relative + "=" + _sha(raw))
+    return raw
+
+
+def _cache_representative_detail(cache, key: str, detail: dict) -> None:
+    if cache is None:
+        return
+    cache[key] = detail
+    cache.move_to_end(key)
+    while len(cache) > _CACHE_LIMIT:
+        cache.popitem(last=False)
 
 
 def clear_detail_cache(cache: OrderedDict | None) -> None:
