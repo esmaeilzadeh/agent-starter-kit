@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import streamlit as st
+from workbench_context import task_selection_id
 from workbench_navigation import build_outline
 
 
