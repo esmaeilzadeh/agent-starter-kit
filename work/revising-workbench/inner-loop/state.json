@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "revising-workbench",
-  "revision": 62,
+  "revision": 63,
   "coordinator_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
   "coordinator_branch": "agent/revising-workbench",
   "tasks": {
@@ -2791,7 +2791,7 @@
       }
     },
     "RWB-108": {
-      "status": "running",
+      "status": "blocked",
       "base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
       "task_branch": "",
       "result_path": "",
@@ -2843,6 +2843,14 @@
       "new_base_sha": "bf197e62a7cfcb7046901535e1e16ea1c4c6cebf",
       "contract_sha": "54ef012b0517758ee548a2a4ee79b28e698990ff",
       "reason": "Resumed the same writer under the previously accepted, now locally restored contract authority; no contract bytes changed."
+    },
+    {
+      "event": "blocked-for-reviewed-contract-amendment",
+      "task_id": "RWB-108",
+      "original_task_base_sha": "743309782b5f08f5a46fe03178651e106a7e3150",
+      "wip_sha": "10ec0cca24ec68156cd6a23edf6b511a1720d498",
+      "reviewed_amendment_sha": "54d2e10c9f80317967426acab37b3017d55aaa2b",
+      "reason": "Pause the existing RWB-108 writer so the coordinator can accept the independently reviewed RWB-107 contract amendment under the no-running-task gate; preserve the WIP, task base, and evidence."
     }
   ]
 }
