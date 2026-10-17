@@ -8,7 +8,8 @@ from pathlib import PurePosixPath
 
 from .domain import task_states
 from .evidence import inspect as inspect_evidence
-from .snapshot import decode
+from .identities import execution_identity
+from .snapshot import decode, read_input
 from .workbench import build_workbench
 
 
@@ -202,13 +203,32 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
     tasks = task_states(model)
     for task in tasks:
         task["context"] = _task_context(snapshot, task["id"])
-    runtime_state = None
-    try:
-        runtime_state = json.loads((Path(root) / "work" / snapshot.work_id / "inner-loop" / "state.json")
-                                  .read_text(encoding="utf-8"))
-    except (OSError, UnicodeError, ValueError):
-        pass
-    workbench = build_workbench(snapshot, model, tasks, runtime_state)
+    runtime_owners = {snapshot.work_id}
+    if isinstance(model.get("nodes"), list):
+        for node in model["nodes"]:
+            alias = execution_identity(node) if isinstance(node, dict) else None
+            if alias is not None:
+                runtime_owners.add(alias[0])
+    runtime_states = {}
+    repository = Path(root).resolve()
+    for owner in sorted(runtime_owners):
+        status_path = f"work/{owner}/inner-loop/state.json"
+        source_status, raw = read_input(repository, status_path)
+        if source_status != "present":
+            runtime_states[owner] = {"state": None,
+                                     "source": "no-runtime-record" if source_status == "missing"
+                                     else f"unavailable-{source_status}"}
+            continue
+        try:
+            state = decode(raw)
+        except (UnicodeError, ValueError, TypeError):
+            state = None
+        if (not isinstance(state, dict) or state.get("schema") != "ask-inner-loop-state/v1"
+                or state.get("work_id") != owner or not isinstance(state.get("tasks"), dict)):
+            runtime_states[owner] = {"state": None, "source": "unavailable-malformed-owner-state"}
+        else:
+            runtime_states[owner] = {"state": state, "source": "inner-loop-state"}
+    workbench = build_workbench(snapshot, model, tasks, runtime_states)
     for task in workbench.get("tasks", []):
         product_node_id = task.get("product_node_id")
         if product_node_id is not None:
