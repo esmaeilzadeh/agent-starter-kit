@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "revising-workbench",
-  "spec_digest": "626fab82df682bdc7b382e4188bc822e488a8bf4ca9682a209be535fcea119bd",
+  "spec_digest": "2c5aa0488f080f6516b04a2bae6255e162aea1e086b2937eaf32451a6e841472",
   "obligations": [
     {
       "criterion_id": "EM-001",
@@ -135,6 +135,12 @@
         "unit",
         "integration",
         "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EM-019",
+      "required_types": [
+        "integration"
       ]
     }
   ],
@@ -533,6 +539,20 @@
         "-m",
         "unittest",
         "_ask.tests.test_revising_pilot.RepresentativeTests.test_required_passages_gate_demo_without_fabricated_success"
+      ]
+    },
+    {
+      "id": "rwb-inner-loop-amendment",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability_entrypoints.py"
       ]
     }
   ],
@@ -2561,6 +2581,37 @@
       "source_paths": [
         "_ask/tests/test_revising_pilot.py"
       ]
+    },
+    {
+      "id": "RWB-INNER-LOOP-AMENDMENT",
+      "criterion_ids": [
+        "EM-019"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "A task base has the earlier accepted pin and a reviewed candidate carries a later coordinator-approved amendment",
+        "when": "The coordinator runs normal detached integration verification",
+        "then": [
+          "Verifier code is loaded from the task base",
+          "The candidate and coordinator authority pins agree and accepted checks pass",
+          "The existing unamended integration journey still passes"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "EM-019",
+          "checks": [
+            "Detached integration succeeds for the authority-matching amended candidate while retaining base-pinned verifier code",
+            "Unamended integration remains successful"
+          ]
+        }
+      ],
+      "runner_id": "rwb-inner-loop-amendment",
+      "case_id": "test_traceability_entrypoints.EntrypointTests.test_I08_integration_accepts_reviewed_contract_amended_after_task_base",
+      "source_paths": [
+        "_ask/tests/test_traceability_entrypoints.py"
+      ]
     }
   ],
   "task_scopes": [
@@ -2639,7 +2690,8 @@
       "test_ids": [
         "RWB-APP-EVIDENCE",
         "RWB-APP-DECISIONS",
-        "RWB-LAZY-CACHE"
+        "RWB-LAZY-CACHE",
+        "RWB-INNER-LOOP-AMENDMENT"
       ]
     },
     {

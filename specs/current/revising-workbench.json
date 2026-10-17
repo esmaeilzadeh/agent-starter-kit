@@ -191,6 +191,17 @@
         "External identity/coordination context is labeled by availability and never introduces automatic API integration, synchronization, status ownership or authority transfer"
       ],
       "verification_mode": "tests"
+    },
+    {
+      "id": "EM-019",
+      "given": "A task has a recorded coordinator base and a later contract amendment approved through the independent review and authority flow",
+      "when": "The coordinator verifies the immutable task candidate for integration",
+      "then": [
+        "Verifier code and CheckPlan remain pinned to the recorded task base",
+        "Accepted obligations are loaded from the candidate pin and must exactly match coordinator authority",
+        "A candidate-only or otherwise unapproved obligation change is rejected"
+      ],
+      "verification_mode": "tests"
     }
   ]
 }

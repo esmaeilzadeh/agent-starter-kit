@@ -109,3 +109,6 @@ and its applicability; successful human comprehension without chat assistance.
 Use test-owned temporary repositories, fixtures and browser/server processes with
 teardown. Preserve genuine committed pilot and historical evidence. Automated
 checks and a candidate-bound human readability exercise are both required.
+
+
+The human later instructed: “fix the main workflow first, then continue.” This explicitly adds the approved post-base contract-amendment integration behavior recorded in `spec-change-workflow-amendment.md`.
