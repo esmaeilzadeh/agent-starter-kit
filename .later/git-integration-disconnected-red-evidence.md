@@ -33,22 +33,23 @@ second parent in history-only merge `ec1c2d6`; the resulting tree remained
 candidate. This made the red commit an ancestor without editing its report or
 test bytes. CheckPlan has not yet been rerun against that resulting candidate.
 
-The investigation should decide how Git/traceability integration ought to
-handle disconnected red candidates. It should determine whether the evidence
+The remaining investigation should decide how Git/traceability integration ought
+to handle disconnected red candidates. It should determine whether the evidence
 ledger should reject such runs at registration, completion should classify and
 retain them as rejected historical attempts, or identical source trees can
 provide a safe lineage proof. Any solution must preserve failed reports and
-avoid rewriting/deleting evidence merely to make completion pass. It should
-also replace the empty diagnostic with a useful explanation and cover detached
-worktree/red-run workflows.
+avoid rewriting/deleting evidence merely to make completion pass. The empty
+non-ancestor diagnostic has been fixed in a separate bounded change; detached
+worktree/red-run policy and broader lineage cases remain open.
 
 ## Proposed What (unapproved)
 
 Investigate and specify reliable Git ancestry and source-identity rules for
-traceability red evidence, including actionable diagnostics and tests for
-detached candidate commits, duplicate trees, true non-ancestor source changes,
-and retained rejected attempts. Implement only after the investigation settles
-the evidence contract and ownership scope.
+traceability red evidence, with broader tests for detached candidate commits,
+duplicate trees, true non-ancestor source changes, and retained rejected
+attempts. The focused non-ancestor diagnostic is already implemented. Proceed
+with policy changes only after the investigation settles the evidence contract
+and ownership scope.
 
 ## Note
 
@@ -56,3 +57,8 @@ This card is separate from the active `revising-workbench` branch. The workstrea
 is currently at candidate `ec1c2d6`; the previous candidate `fcde3a4` failed
 only the completion gate described above after the candidate-bound review was
 recorded. No push, merge to a shared branch, or deployment occurred.
+
+
+## Diagnostic status (2026-10-18)
+
+The empty errors-array symptom is fixed by a separate diagnostic-only change. A recognized red source that is not an ancestor still fails completion, now with the source and final candidate SHA in the error. No evidence policy or eligibility rule changed. This card remains parked for the unresolved ancestry and retained-attempt contract.
