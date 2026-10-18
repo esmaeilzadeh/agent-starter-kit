@@ -54,6 +54,6 @@ None.
 
 ## E2E
 
-Applicability: not_applicable
+Applicability: applies
 
-Reason: this work changes no product runtime or user-facing behavior; the relevant isolated Git checkout is covered by the integration test.
+Journey: run the existing cleanup regression against a disposable committed candidate, including its forced exit-97 path; inspect exact projection bytes and Git status before the checkout is cleaned up. The full CheckPlan then verifies the committed candidate in isolation. Historical candidate f761709 supplies the reproduction; the current candidate supplies the green comparison.
