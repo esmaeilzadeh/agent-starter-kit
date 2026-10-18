@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "refactor-inner-loop",
-  "spec_digest": "f7c6b47e78cf7fe039feb0a29f6c54b8334f02f30f492395c5b03b80b7b7f21f",
+  "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
   "obligations": [
     {
       "criterion_id": "RF-005",

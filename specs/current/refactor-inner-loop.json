@@ -106,7 +106,13 @@
         "If no usable native control exists, numbered options accept the selected option and additional text in one response"
       ],
       "verification_mode": "review",
-      "reason": "The user-facing choice interaction and preservation of write-in responses require an independent prompt walkthrough; static strings alone cannot prove the interaction."
+      "reason": "The user-facing choice interaction and preservation of write-in responses require an independent prompt walkthrough; static strings alone cannot prove the interaction.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "reviewer": "amended-plan-review",
+        "recorded_by": "root-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
     },
     {
       "id": "RF-009",
@@ -117,7 +123,13 @@
         "An explicit plan stop is reported as completion within scope without describing the future gate as missing"
       ],
       "verification_mode": "review",
-      "reason": "Continuation behavior depends on interpreting authorization and stop boundaries; an independent scenario walkthrough is required."
+      "reason": "Continuation behavior depends on interpreting authorization and stop boundaries; an independent scenario walkthrough is required.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "reviewer": "amended-plan-review",
+        "recorded_by": "root-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
     }
   ]
 }
