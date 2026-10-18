@@ -32,3 +32,11 @@ These observations support a clarity problem; they do not establish that every r
 The human requested: "add it to latter inbox: refactor to fix such conflicts in prompt,skill and rules and make the decision straitforward for the agent".
 
 An explicit nested task sequence (Implement → Review → Fix as needed → Verify → Integrate, followed by workstream verification and acceptance) is a candidate to investigate, not an approved redesign. This card parks the refactor; it does not start implementation or change the current workflow.
+
+
+## Resolved bug slices (2026-10-18)
+
+- Continuation recovery is implemented in continuation-context-loss: a clear “continue” resumes the uniquely active authorized workstream instead of restarting new-task intake.
+- Every required workflow confirmation now uses selectable choices; written approval sentences are never required. If native controls are unavailable, agents offer numbered choices. Unsolicited concise text approval remains supported, and conditional/negative replies remain rejected. See the active workstream `agent/agent-decision-clarity` for this implementation.
+
+The broader inventory and workflow nesting review in this card remains open.

@@ -44,7 +44,7 @@ Turn ambiguous human intent into an explicit Intent Artifact.
 Must:
 
 ```text
-before the first numbered question: propose related extra Community Skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+before the first numbered question: offer related extra Community Skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
 ask only load-bearing questions (hard to reverse, What/Why/non-goal, recommendation might be wrong, or blocks other decisions)
 expand each numbered question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
 state a short “I’ll assume…” list; “defaults OK” covers it
@@ -54,8 +54,8 @@ identify non-goals
 identify unresolved decisions
 for every user-facing deliverable, including a UI, grill its intended user, essential jobs/workflows, and interaction expectations when these are not already clear; approval of product direction or implementation order does not approve these design decisions
 stop when human judgment is required
-before advancing to Spec, present the complete intent and every assumption; ask “Do you approve the complete intent and every listed assumption as written?” using the runtime choice control with “Approve complete intent and assumptions” and “Request changes”; wait for the submitted choice (a preselected option is not approval)
-record a submitted approval choice with `./ask confirm-intent --work-id <id> --choice approve`; if choice controls are unavailable or the human replies in text, record their exact clear affirmative response (including “approve”) with `--response "<exact response>"`. Never infer approval from a request to implement or a preselected option
+before advancing to Spec, present the complete intent and every assumption as a confirmation question with selectable choices “Approve complete intent and assumptions” and “Request changes”; use the runtime choice control and wait for the submitted choice (a preselected option is not approval)
+record a submitted approval choice with `./ask confirm-intent --work-id <id> --choice approve`; if the runtime lacks choice controls, present numbered options and accept the selected number/label. Accept unsolicited concise affirmative text for compatibility and record it with `--response`; never ask the human to write or repeat a confirmation sentence. Reject conditional or negative wording. Never infer approval from a request to implement alone or a preselected option.
 never treat “all ok” as valid if a load-bearing question was never expanded
 ```
 
@@ -85,7 +85,7 @@ work/<work-id>/intent.md
 
 **Two blocks:** (1) expanded load-bearing questions; (2) short “I’ll assume…”. “Defaults OK” / “all recs” covers the assume-list. Only numbered questions need alternatives/tradeoffs/failure modes. Never auto-approve a real decision. Never treat “all ok” as valid if a **load-bearing** question was never expanded.
 
-A confirmed “I approve these defaults are OK” (or “all recs” after an expanded load-bearing frontier) is the **first on-path confirm**. Prefer the runtime choice control for this confirmation and record the submitted choice with `./ask confirm-intent --work-id <id> --choice approve` against the exact `intent.md` digest. Use `--response` for an explicit text reply; do not ask the human to repeat a clear approval in special wording. Any edit to `intent.md` invalidates that confirmation; present the changed intent and obtain a new explicit response. `./ask check-workstream` is a hard implementation gate for a valid current confirmation. Then prepare later artifacts without re-blessing until Accept. See `_ask/policies/workflow.md`. ADR: `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
+A submitted “Approve defaults” choice (or “Approve all recommendations” after an expanded load-bearing frontier) is the first on-path confirmation. Record it with `./ask confirm-intent --work-id <id> --choice approve` against the exact intent digest. If the runtime has no choice controls, offer numbered options and accept the selected number or label. Do not ask for an approval sentence. Any edit to `intent.md` invalidates that confirmation; present the changed intent as choices and obtain a new submitted choice. `./ask check-workstream` is the hard implementation gate. Then prepare later artifacts without re-confirming until Accept.
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
 
@@ -95,4 +95,4 @@ When this stage’s resolved model differs from the parent, or `work/<id>/models
 
 ## E2E
 
-Record whether E2E `applies` or `not_applicable` plus reason on `intent.md`. If it applies, gather journeys, observable outcomes, environment, test data, and reset. The human confirms that contract with the specification. Missing E2E with no reason refuses Plan/Implement.
+Record whether E2E `applies` or `not_applicable` plus reason on `intent.md`. If it applies, gather journeys, observable outcomes, environment, test data, and reset. Include this contract in the complete intent confirmation; do not request a separate written confirmation. If it changes afterward, use the Spec Change choice. Missing E2E with no reason refuses Plan/Implement.

@@ -334,7 +334,7 @@ Skip `00` when the human already has a destination sharp enough for Intent → G
 | Entry | Behavior |
 | --- | --- |
 | `/00-explore` or explicit “00-explore” | Start 00 immediately. Do not ask whether Explore is needed. Create `work/<id>/explore-map.md` from the template if missing. |
-| Free on-path new task | Agent announces foggy vs clear (short rationale). **Wait for confirm.** Then 00 or real skip to 01. |
+| Free on-path new task | Agent announces foggy vs clear (short rationale), then offers **Start Explore** / **Start Grill** as selectable choices. Then 00 or real skip to 01. |
 | `/01-grill` while foggy | Do not skip 00. Run 00 or stop and say the dest is foggy. |
 | Real skip | Omit 00. Do not create or fill `explore-map.md`. `intent.md` contains `Explore skipped: destination already clear.` |
 

@@ -8,12 +8,13 @@ Before any of that work:
 
 1. Run `./ask check-clean` (or equivalent `git status --porcelain` check).
 2. If the tree is dirty, **stop**. Do not stash, reset, or absorb changes silently.
-3. **Grill the human** on what to do with every uncommitted and untracked path. Present the file list and ask them to choose per item or batch, for example:
-   - commit now (with an agreed message)
-   - stash (explicit human request only)
-   - discard (explicit human request only)
+3. Present the file list and request a submitted choice for every uncommitted and untracked path, individually or in a batch. Offer options such as:
+   - commit now (with a proposed message to approve or revise)
+   - stash (only after the human selects this option)
+   - discard (only after the human selects this option)
    - move to another branch / workstream
    - leave for a different work-id (then switch away without touching those files)
+   Use selectable buttons where available, or numbered options; never ask for a written confirmation sentence.
 4. Resume only after `./ask check-clean` exits 0.
 
 ## One plan → one branch

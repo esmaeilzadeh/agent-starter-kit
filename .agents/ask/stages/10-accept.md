@@ -22,7 +22,7 @@ REJECT
 
 The agent must explain the outcome and cite evidence.
 
-Human approval remains mandatory where delegation policy requires it.
+Human approval remains mandatory where delegation policy requires it. Ask it as a choice question with “Accept workstream” / “Request changes” options; never ask the human to write an approval sentence. If buttons are unavailable, offer numbered options and accept the number or option label.
 
 ## Context-engineering audit
 
@@ -34,7 +34,7 @@ link. Record the audit path and SHA on `acceptance.md`.
 
 ## Kit path
 
-See `_ask/policies/workflow.md`. **Accept is the second on-path confirm** (after defaults-OK). Do not auto-close the workstream without it unless delegation says AUTO_ACCEPT_ELIGIBLE **and** policy allows.
+See `_ask/policies/workflow.md`. **Accept is the second on-path confirm** (after defaults-OK). Present “Accept workstream” / “Request changes” as selectable choices and wait for a submitted Accept choice; do not auto-close without it unless delegation says AUTO_ACCEPT_ELIGIBLE and policy allows.
 
 ## Structured test evidence
 

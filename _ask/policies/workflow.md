@@ -10,10 +10,10 @@ If the human is using the kit:
 
 1. **Artifacts are not optional** on the Engineering Pipeline (`01`–`10`). Each next stage stands on the previous document (intent, spec, plan, …). Skipping those files is meaningless — there is nothing to move forward on.
    **00 Explore is the exception:** it is an optional on-ramp. When the destination is already clear enough for Intent, **omit 00** (real skip). That is not “on-path with a missing explore-map.” When 00 *runs*, `explore-map.md` is required and Handoff must be non-empty before 01. See `AGENTS.md` item 1 and `.agents/ask/stages/00-explore.md`.
-2. **Prepare, then continue.** The agent writes the artifact for the current stage and proceeds to the next. Auto-continue in the same conversation after exit criteria; stop for human judgment at the confirms below (and escalation).
-3. **Skip = skip extra approvals, not documents.** After presenting the complete intent and assumptions, offer **Approve complete intent and assumptions** / **Request changes** using the runtime's choice control. Record the submitted approval with `./ask confirm-intent --work-id <id> --choice approve`. A preselected option is not a response. If choice controls are unavailable, accept a clear affirmative reply (including “approve”) and record its exact text with `--response`. This one confirmation covers later prepared artifacts (spec marked CURRENT unless they asked to stop, plan, review). Do not re-ask a bless on Plan / Review / Refactor.
-4. **Second confirm: Accept.** Close the workstream with `10 Accept` (evidence + commit SHA).
-5. **Missing artifacts but still on the path:** prepare them from the accepted defaults, confirm once if that confirm has not happened yet, then continue. Do not jump to implementation with empty `plan.md` / no spec.
+2. **Prepare, then continue.** The agent writes the artifact for the current stage and proceeds to the next. Auto-continue in the same conversation after exit criteria; stop for human judgment at the required choice questions below (and escalation).
+3. **Skip = skip extra approvals, not documents.** Every required confirmation is a question with explicit selectable choices, such as **Approve complete intent and assumptions** / **Request changes**. Wait for a submitted choice; a preselected option is not approval. Never ask the human to write or repeat a confirmation sentence. If the runtime has no choice controls, present numbered options and accept the selected number or label. Accept concise affirmative text sent unsolicited for compatibility, record its exact text with `--response`, and never make the human restate it. Record intent approval with `./ask confirm-intent --work-id <id> --choice approve`. This one confirmation covers later prepared artifacts (spec marked CURRENT unless the human chose to stop, plan, review). Do not re-ask a bless on Plan / Review / Refactor.
+4. **Second confirm: Accept.** Present **Accept workstream** / **Request changes** as selectable choices and close only after a submitted Accept choice, subject to delegation policy (evidence + commit SHA).
+5. **Missing artifacts but still on the path:** prepare them from the accepted defaults, present a required choice only if its decision has not happened yet, then continue. Do not jump to implementation with empty `plan.md` / no spec.
 
 `./ask check-workstream <work-id>` is the machine check that the **default path is complete**. Exit non-zero means “incomplete,” not “forbidden.” On-path response: prepare what is missing.
 
@@ -28,7 +28,7 @@ A new chat is on-path again. Saying “skip the kit” / “just code” in an o
 ## Still hard (safety, not ceremony)
 
 - Dirty worktree without grilling (`_ask/policies/worktree.md`)
-- Explicit Grill confirmation of the complete intent and assumptions, recorded against the exact `intent.md` digest. `./ask check-workstream` refuses implementation when it is missing or stale; implementation permission or a broad direction choice is not a substitute.
+- Explicit Grill choice approving the complete intent and assumptions, recorded against the exact `intent.md` digest. `./ask check-workstream` refuses implementation when it is missing or stale; implementation permission or a broad direction choice is not a substitute.
 - Silent stash/reset
 - Claiming verify/accept without running checks or recording a commit SHA
 - Changing What/Why or acceptance criteria without Spec Change (or a new defaults confirm that owns that change)

@@ -1,73 +1,33 @@
-# Intent: Make agent workflow decisions straightforward
+# Intent: Make every agent confirmation a selectable choice
 
 ## What
 
-Refactor and reconcile agent-facing workflow instructions so that an agent can
-identify its current state, next action, responsible role, required inputs and
-evidence, exit condition, and escalation or human-confirmation condition from
-clear, authoritative guidance. Cover overlapping stage contracts, policies,
-templates, skills, and generated runtime bindings, including the boundary
-between the task loop and the outer workstream lifecycle.
+Present every required confirmation across the Agent Starter Kit workflow as a question with selectable button options, including entry routing, intent approval, spec changes, runtime/model selection, worktree choices, skill preparation, and acceptance. Never ask the human to write or repeat a prescribed approval sentence. If the interface cannot provide choice controls, offer numbered choices and accept a number or option label. Keep the existing approval boundaries, workstream digest binding, conditional/negative rejection, and exact-scope enforcement. Update canonical protocol and policy sources and regenerate every derived Agent and Cursor bundle.
 
 ## Why
 
-Overlapping and conditional instructions currently make agents assemble an
-implicit workflow from several documents. This leads to hesitation, repeated
-work, unnecessary confirmation requests, and inconsistent execution.
+The agent repeatedly requested typed sentences and redundant confirmations across its workflow, including after the user had already clearly authorized the complete intent. Choice-based prompts remove that friction while preserving existing decisions and approval scope.
 
 ## Non-goals
 
-- Remove or weaken existing safety, approval, verification, evidence, clean
-  worktree, branch, or commit requirements.
-- Adopt the candidate nested task sequence as a redesign without review.
-- Change product behavior or domain requirements unrelated to workflow
-  instruction clarity.
-- Treat generated runtime bindings as independent sources of truth.
+Removing intent confirmation, accepting conditional approval, weakening stale-intent invalidation, or changing merge/push authority.
 
 ## Known assumptions
 
-- Existing safety and acceptance requirements remain in force unless a
-  separately approved change explicitly changes them.
-- `.agents/ask/stages/` remains authoritative for stage contracts;
-  `_ask/policies/` remains authoritative for cross-cutting policy; operational
-  reference material stays with its owning protocol docs. A new lifecycle
-  transition reference may define cross-stage transitions and be linked from
-  those owners. Generated runtime bindings remain projections.
-- The refactor clarifies the intended current behavior. Where the intended
-  behavior cannot be inferred from the existing contracts, surface the
-  decision for approval instead of choosing a behavior change implicitly.
-- The documented flow must distinguish task completion from workstream
-  completion and cover review, correction, verification, integration, retry,
-  and resume transitions.
-- Validation should include the seven scenarios listed in the later card:
-  single task, dependent tasks, rejected review and correction, failed
-  verification, interruption and resume, stale approval, and dirty source
-  versus expected runtime evidence.
-- The final design may reorganize instructions and add a canonical transition
-  reference, but the precise source-of-truth arrangement belongs in Spec.
+Where the interface lacks native choice buttons, numbered choices serve as the selectable fallback; unsolicited typed approval remains accepted.
 
 ## Open questions
 
-- Does the human approve the stated authority arrangement and the constraint
-  to preserve existing behavior unless an explicit decision authorizes a
-  change?
-- Are the seven scenario walkthroughs and their observable next-action,
-  responsible-role, evidence, exit, and escalation fields sufficient
-  acceptance evidence?
+None for this bounded parser and instruction fix.
 
 ## Human decisions
 
-- The later card is now active at the user's request. Its proposed What was
-  explicitly marked unapproved; this intent presents that scope for approval
-  before Spec and implementation.
-- Approval is requested for this complete intent and its listed assumptions.
+All workflow confirmation points are in scope; no workflow approvals are removed.
 
 ## E2E
 
-Applicability: `not_applicable`
+Explore skipped: destination already clear.
 
-If `not_applicable`, reason: Documentation and workflow-instruction changes;
-the acceptance evidence is consistency checks and scenario walkthroughs, not
-a user-facing product journey.
+Applicability: not_applicable
 
-If `applies`: journeys, observable outcomes, environment, test data, reset:
+If not_applicable, reason: The isolated confirmation test exercises the parser and workstream gate with a temporary repository.

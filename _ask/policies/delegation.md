@@ -14,6 +14,8 @@ Forbidden actions
 Required evidence
 Escalation conditions
 Human approval conditions
+
+Request each required confirmation as a question with selectable choices. Never ask the human to write or repeat a prescribed approval sentence. If the active runtime lacks choice controls, offer numbered choices and accept the number or option label. A preselected choice is not approval. For any selected option that authorizes a consequential action, act only within the exact option's stated scope.
 ```
 
 Conservative default:

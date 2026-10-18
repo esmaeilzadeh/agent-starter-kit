@@ -175,6 +175,8 @@ Escalation triggers
 Human approval conditions
 ```
 
+Present each required approval as a question with explicit selectable options. Do not ask for a written approval sentence; use numbered choices if the interface has no choice controls.
+
 A conservative default risk policy is:
 
 ```text

@@ -19,4 +19,4 @@ The user wants questions presented as selectable options with buttons, especiall
 
 ## Note
 
-This card records future work; it does not approve a spec change or implement changes to the question flows. Cover ordinary questions, yes/no confirmations, and important spec-change decisions when implementing.
+The confirmation portions are implemented in `agent/agent-decision-clarity`: every required confirmation uses selectable choices, with numbered options if the runtime has no buttons. Remaining scope is ordinary yes/no questions and clear alerts for important decisions. This card stays parked for that remaining work.
