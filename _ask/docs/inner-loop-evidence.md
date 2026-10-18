@@ -52,6 +52,13 @@ an evidence artifact, and reports the verdict/boundary to the coordinator.
 Review commits nothing. Under `_ask/policies/delegation.md`, the coordinator
 records the delegated decision:
 
+For broader-refactor suggestions, the same candidate-bound review artifact is
+the durable handoff. Include stable slug, source task, reviewer/finding
+identity, candidate SHA, affected responsibilities, proposed What/Why, and
+publication status. Do not materialize a `.later` source card until every task
+candidate is integrated and no writer or resumable candidate remains; dedupe by
+slug and substance at publication.
+
 ```sh
 ./ask inner-loop record-review example docs \
   --reviewer review-agent-identity \

@@ -11,7 +11,14 @@ revision, implement the smallest Green change, then Refactor while preserving
 behavior and keeping the checks green. Once the task's slices are complete,
 request an independent review of the current candidate. A structural cleanup
 does not need a manufactured behavior test; explain its classification and keep
-existing checks green.
+existing checks green. Record an explicit no-applicable-cleanup outcome when a
+Refactor pass finds nothing useful to change; do not invent cosmetic edits.
+
+Classify by task responsibility, not only by file ownership. A local suggestion
+is code introduced or directly affected by this task, within its task outcome.
+A broader suggestion concerns work beyond the task outcome, even when its files
+match a wide `owned_paths` glob. If the boundary is ambiguous or a required fix
+is unsafe, stop and escalate instead of treating it as local cleanup.
 
 Resolve review findings by class:
 
@@ -33,10 +40,17 @@ candidate. The coordinator integrates only after the current candidate has
 approved review and passing checks. Failed checks, stale/rejected approval, or
 exhausted retries block or escalate; they never authorize integration.
 
-The coordinator retains attributed later-card drafts and publication status
-across interruptions. Publish those cards through normal `develop` integration
-only after all task candidates have integrated and no writer or resumable
-candidate remains. Do not switch a task writer's branch to publish a card.
+The reviewer records broader-refactor drafts in the candidate-bound runtime
+review evidence at `work/<work-id>/inner-loop/evidence/`, including a stable
+slug, source task, reviewer/finding identity, candidate SHA, affected task
+responsibilities, proposed What/Why, and publication status. On interruption,
+the coordinator recovers this handoff from the exact candidate review evidence,
+deduplicates it against existing cards by slug and substance, and preserves its
+status. Do not create or commit `.later` source cards while any writer or
+resumable candidate remains. Only after all candidates integrate and no writer
+remains may the coordinator materialize drafts from `_ask/templates/later-work.md`
+and publish them through normal `develop` integration. Do not switch a task
+writer's branch to publish a card.
 
 The outer workflow still performs aggregate verification and Accept. It does
 not add unconditional task Review or Refactor passes outside this loop.
