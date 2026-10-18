@@ -133,7 +133,7 @@
         "RF-006"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Prepared skills and manifest byte snapshots before SKIP_INSTALL=1",
         "when": "Invoke ./ask prepare in a disposable consumer with a controlled installer",
@@ -193,7 +193,7 @@
         "RF-006"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "An absent optional TDD skill and failing installer",
         "when": "Invoke ./ask prepare in a disposable consumer with a controlled installer",
@@ -405,7 +405,7 @@
         "RF-006"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "A required TDD installer returns zero without creating its required primary .agents skill output; an old Cursor view may remain",
         "when": "Invoke ./ask prepare in a disposable consumer",

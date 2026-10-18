@@ -49,15 +49,18 @@ The exact owned-path globs are in inner-loop/tasks.yaml.
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
 | RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates | none, reviewed criteria RF-001..004 | Independent scenario walkthrough with criterion-by-criterion decisions; no implementation or state transitions claimed by text checks |
-| RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..06 | Actual behavior assertion Red then final Green for each new CLI preparation scenario |
+| RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..06 | Behavior assertion Red/Green for PREP-01/02/04; current execution for PREP-03/05/06 unchanged regressions |
 | RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; generated Agent/Cursor/Claude/Codex/OpenCode paths; two new integration test modules | LOOP-01..05, BUNDLE-01..02 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
 
 RF-01 deliberately has no executable test: its claims are semantic agent
 instructions, not a new runner API. An independent reviewer must walk the
 scenarios below. Literal string assertions would not establish those claims.
 RF-02/03 use public CLI seams and temporary consumers; no tests are written or
-executed in this planning stage. LOOP tests cover unchanged integration behavior
-and are explicitly baseline regressions, not evidence of new runtime behavior.
+executed in this planning stage. PREP-01/02 add overrides; PREP-04 fixes stale-file
+masking of nonzero installer failure and therefore requires behavior Red/Green.
+PREP-03/05/06 preserve existing dry-run/optional/missing-primary semantics and
+are baseline regressions, as are LOOP tests. They require current execution, not
+a manufactured Red or proof of newly changed behavior.
 
 ## Review scenarios
 
