@@ -63,9 +63,11 @@ def apply_tdd_override(skill):
         raise RuntimeError(f'missing repository TDD override: {override_path}')
     body = override_path.read_text(encoding='utf-8').strip()
     block = f'{start}\n{body}\n{end}'
-    for path in (Path('.agents/skills/tdd/SKILL.md'), Path('.cursor/skills/tdd/SKILL.md')):
-        if not path.is_file():
-            continue
+    paths = (Path('.agents/skills/tdd/SKILL.md'), Path('.cursor/skills/tdd/SKILL.md'))
+    missing = [str(path) for path in paths if not path.is_file()]
+    if missing:
+        raise RuntimeError('missing prepared TDD skill view(s): ' + ', '.join(missing))
+    for path in paths:
         content = path.read_text(encoding='utf-8')
         starts, ends = content.count(start), content.count(end)
         if starts != ends or starts > 1:
@@ -103,6 +105,11 @@ for e in entries:
         continue
     if not skill_md.is_file():
         print(f"prepare-skills: missing required primary .agents skill output for {skill}", file=sys.stderr)
+        if e.get('required', False):
+            failed = True
+        continue
+    if skill == 'tdd' and not Path('.cursor/skills/tdd/SKILL.md').is_file():
+        print('prepare-skills: missing required Cursor TDD skill output', file=sys.stderr)
         if e.get('required', False):
             failed = True
         continue
