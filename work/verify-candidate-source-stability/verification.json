@@ -1,7 +1,7 @@
 {
-  "work_id": "",
-  "commit_sha": "",
+  "work_id": "verify-candidate-source-stability",
+  "commit_sha": "pending",
   "checks": [],
   "result": "pending",
-  "notes": ""
+  "notes": "Final candidate verification pending."
 }
