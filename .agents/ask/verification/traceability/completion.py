@@ -1,11 +1,22 @@
 """One policy evaluator for Verify, integration, acceptance and result recording."""
 from __future__ import annotations
 from pathlib import Path
+import subprocess
 from . import CAPABILITY
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
 from .coverage import scoped_tests, validate_plan
 from .evidence import (file_digest_bytes, git, read_at, review_errors, source_changes,
                        source_digests,load_accepted)
+
+
+def _require_red_source_ancestor(root, red_sha, candidate_sha):
+    command=['git','merge-base','--is-ancestor',red_sha,candidate_sha]
+    result=subprocess.run(command,cwd=root,capture_output=True,text=True)
+    if result.returncode==0:return
+    if result.returncode==1:
+        raise Invalid(f'red source commit {red_sha} is not an ancestor of final candidate {candidate_sha}')
+    detail=result.stderr.strip() or f"{' '.join(command)} failed with exit code {result.returncode}"
+    raise Invalid(detail)
 
 
 def evidence_state(error):
@@ -109,7 +120,7 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                     if any(case['source_digests'].get(n)!=sources[n] for n in test['source_paths']):errors.append(f'{tid}: changed final test source')
                 elif case.get('phase')=='red':
                     if case['outcome']=='failed' and case.get('failure_kind')=='behavior_assertion' and run['exit_code']!=0:
-                        git(root,'merge-base','--is-ancestor',case['source_sha'],sha)
+                        _require_red_source_ancestor(root,case['source_sha'],sha)
                         if case['source_sha']==sha:errors.append(f'{tid}: red equals final candidate')
                         reds.setdefault(tid,[]).append(case)
                 else:errors.append(f'{tid}: unknown test phase')
