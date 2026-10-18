@@ -42,10 +42,19 @@ class PreparationTests(unittest.TestCase):
         npx.write_text(textwrap.dedent("""\
             #!/usr/bin/env bash
             set -euo pipefail
-            content='# TDD upstream\n\nUPSTREAM-CANARY-START\nKeep this content.\nUPSTREAM-CANARY-END\n\n## Refactoring\nRefactoring is not part of the loop.\n'
+            touch "$PWD/npx-called"
             for view in .agents/skills/tdd/SKILL.md .cursor/skills/tdd/SKILL.md; do
               mkdir -p "$(dirname "$view")"
-              printf '%b' "$content" > "$view"
+              cat > "$view" <<'SKILL'
+            # TDD upstream
+
+            UPSTREAM-CANARY-START
+            Keep this content.
+            UPSTREAM-CANARY-END
+
+            ## Refactoring
+            Refactoring is not part of the loop.
+            SKILL
             done
             """), encoding="utf-8")
         npx.chmod(0o755)
@@ -61,6 +70,7 @@ class PreparationTests(unittest.TestCase):
         result = self.prepare()
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((self.root / "npx-called").is_file(), "controlled installer was not invoked")
         for relative in self.installed_views:
             content = (self.root / relative).read_text(encoding="utf-8")
             self.assertIn("UPSTREAM-CANARY-START\nKeep this content.\nUPSTREAM-CANARY-END", content)
