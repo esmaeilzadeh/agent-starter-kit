@@ -151,3 +151,23 @@ The decision and assessments are recorded in plan-review.json. Stop at Plan as
 requested; normal implementation authority and candidate evidence remain future
 gates. No production code, behavior tests, task runtime state, or delivery refs
 were changed by this review.
+
+## Spec-change amendment review
+
+The amendment at `2b2f3a46040216da6b44333df3cf4a779786b2b5` was independently
+reviewed by `amended-plan-review` (gpt-6-astra, codex, high). The first review
+identified a stale test-plan digest; the coordinator corrected it and committed
+the exact reviewed contract at `88b314597f9b39cba1da895c7e86bb6da8cb6faf`.
+The reviewer confirmed the final spec/test-plan binding and approved the amended
+intent, task ownership, test mappings, continuation boundaries, and authorized
+implementation/merge/push scope.
+
+Review-only criteria RF-001..004 and RF-008..009 are APPROVED for independent
+semantic review under `_ask/policies/delegation.md`. The added criteria require
+walkthroughs of combined option-and-comment responses, runtime capability for
+the current question, fallback behavior, and explicit plan stops. Final digests:
+
+```text
+spec_digest: dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d
+plan_digest: aa1e74ae33c96e95d1b7c7fc529d603f185fe90a243597f81048963304f4089b
+```
