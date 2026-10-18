@@ -1,6 +1,6 @@
 # Specification Challenge: refactor-inner-loop
 
-## Review identity and scope
+## Model
 
 Reviewer: refactor-spec-challenge (/root/refactor_spec_challenge).
 Model: gpt-6-astra. Runtime: codex. Reasoning effort: high.
@@ -101,3 +101,53 @@ reviewed amendment; this classification does not exempt that new behavior.
 Pending coordinator corrections, replacement of PENDING classification decisions,
 and final canonical spec/test-plan/TaskGraph digests. No plan-review.json approval
 has been written. No behavior tests or implementation verification were run.
+
+
+## Second review of ade4444fd00fa13aef10d795a6c01de11ec9bec3
+
+C-01 resolved: tagged drafts stay in persisted runtime review evidence throughout
+active, blocked, escalated, and interrupted task work. Coordinator source commits
+are deferred until all candidates integrate and no writer/resumable candidate
+remains. C-02 resolved by LOOP-05. C-03 resolved by PREP-04 and PREP-06, including
+nonzero installation with stale output in PREP-04. Their task assignments agree
+with RF-02 and RF-03 ownership. Independently recomputed spec, plan, and graph
+digests match the coordinator's supplied values.
+
+### C-04 — Classify unchanged preparation behavior as regression
+
+PREP-03 validation-only nonmutation, PREP-05 missing optional output, and PREP-06
+zero-exit installation missing primary output already satisfy their described
+outcomes in the current preparation script. They are marked new and the RF-02
+plan requires behavior Red for each. Requiring an artificial failure would confuse
+new test source with changed product behavior. Classify these unchanged scenarios
+as regression coverage, consistent with LOOP cases, and retain executed current
+candidate evidence plus independent assertion review. Keep new override behavior
+and the stale-output installer-failure fix under actual behavior Red/Green.
+
+Second verdict: REJECTED solely pending C-04 metadata/evidence wording correction.
+The RF-001..004 classification authorization remains valid. No implementation or
+behavior-case execution has been performed.
+
+
+## Final exact-contract decision
+
+APPROVED for planning at commit d754f11c4a2b4568ae37f5753f41389edf14ae04.
+
+C-04 resolved: PREP-03/05/06 now correctly classify unchanged behavior as
+regression coverage. PREP-01/02/04 retain actual behavior Red/Green obligations;
+the Plan explains the distinction. C-01, C-02, and C-03 remain resolved.
+RF-001..004 review-only classification is independently APPROVED under
+_ask/policies/delegation.md. There are no unresolved challenge findings.
+
+Independently recomputed canonical digests:
+
+- spec_digest: 6909c47a0698ce79b99c87f7ac6997e7d0136c3d3a03b12baa6780e5d760cc37
+- plan_digest: b5cf5ecd89eab56758e9fd29475347064500b3bced8dad3c0b3cc4ac8ab69e49
+- graph_digest: 574d65df8f5811094c250a24038ce16edcacfb7b6aa1b4020cdc12ad791d78f4
+
+Graph and spec/test mapping validation passed. This is metadata validation and
+independent Plan approval, not implementation verification or execution evidence.
+The decision and assessments are recorded in plan-review.json. Stop at Plan as
+requested; normal implementation authority and candidate evidence remain future
+gates. No production code, behavior tests, task runtime state, or delivery refs
+were changed by this review.
