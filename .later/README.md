@@ -1,6 +1,6 @@
 # Later work
 
-Not a live workstream. `./ask status` lists these cards as a later block (checkout `.later/*.md`, skip this README). `--later-only` prints only that block. `--work-only` prints only workstreams.
+Not a live workstream. `./ask status` lists committed cards from `develop` (or `origin/develop` when needed), regardless of the current checkout; `README.md` is skipped. `--later-only` prints only that block. `--work-only` prints only workstreams.
 
 Cards are durable coordination state. Commit them to `develop` (or the
 repository's configured Git-flow integration branch) and mirror each card to
