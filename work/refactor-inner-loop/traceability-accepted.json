@@ -1,32 +1,30 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "d754f11c4a2b4568ae37f5753f41389edf14ae04",
+  "contract_sha": "b21d2f3071a2ca32effc9421a211c54c56c7680c",
   "work_id": "refactor-inner-loop",
-  "reviewer": "refactor-spec-challenge",
+  "reviewer": "amended-plan-review",
   "recorded_by": "root-coordinator",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
   "plan_review": {
     "decision": "APPROVED",
-    "reviewer": "refactor-spec-challenge",
-    "reviewed_commit": "d754f11c4a2b4568ae37f5753f41389edf14ae04",
-    "spec_digest": "6909c47a0698ce79b99c87f7ac6997e7d0136c3d3a03b12baa6780e5d760cc37",
-    "plan_digest": "b5cf5ecd89eab56758e9fd29475347064500b3bced8dad3c0b3cc4ac8ab69e49",
+    "reviewer": "amended-plan-review",
+    "reviewed_commit": "88b314597f9b39cba1da895c7e86bb6da8cb6faf",
+    "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
+    "plan_digest": "aa1e74ae33c96e95d1b7c7fc529d603f185fe90a243597f81048963304f4089b",
     "graph_digest": "574d65df8f5811094c250a24038ce16edcacfb7b6aa1b4020cdc12ad791d78f4",
     "model": "gpt-6-astra",
     "runtime": "codex",
     "reasoning_effort": "high",
     "parent_model": "not exposed",
     "assessments": {
-      "intent_alignment": "Red -> Green -> Refactor and independent task code review are nested within task execution; all valid local findings require completion, broader behavior-preserving proposals are parked with refactoring tag, and necessary contract redesign uses Spec Change.",
-      "scope_and_retries": "Existing candidate review, verification, ownership, FF integration and bounded retry semantics remain; no unnecessary runner states or CLI return changes are planned.",
-      "parking": "Complete attributed tagged drafts and pending publication status persist in runtime review evidence until all candidates integrate and no writer or resumable candidate remains. Terminal coordinator materialization preserves task FF eligibility and interruption recovery.",
-      "test_classification": "RF-005/006/007 have public CLI integration obligations. PREP-01/02/04 require behavior Red/Green; PREP-03/05/06 and LOOP-01..05 are unchanged behavior regressions requiring current execution. BUNDLE-01/02 test changed installation/upgrade delivery.",
-      "failure_coverage": "Explicit cases cover rejected/stale review, approved candidate failed checks, retry bounds, nonzero required installation with stale files, zero-exit missing required primary output, optional missing output and validation-only nonmutation.",
-      "task_graph": "RF-01 -> RF-02 -> RF-03 is serial; exact graph and test scopes agree. Every executable case has its planned task owner; RF-01 has independent semantic-review obligations.",
-      "bundles": "Canonical lifecycle rules are referenced by stages and all runtime projections. Preparation override is idempotent, preserves upstream pins and unrelated content, and is verified in both prepared skill views. Install/upgrade checks preserve consumer overlays.",
-      "planning_stop": "Approval covers the reviewed Plan only. No implementation, behavior tests, task initialization, merge, push, or implementation completion is authorized or claimed."
+      "intent_alignment": "Nested task TDD/review requirements remain intact. The amendment adds selectable Grill decisions with same-response optional text and distinguishes authorized missing gates from explicit plan stops.",
+      "scope_and_retries": "Existing task ownership, bounded retries, evidence checks, and integration gates remain unchanged.",
+      "test_classification": "RF-005..007 retain public integration obligations. RF-001..004 and RF-008..009 are semantic review criteria with independent authorizations.",
+      "bundles": "BUNDLE-03 covers projection of Grill and continuation contracts; RF-03 owns generated delivery and parity.",
+      "interaction": "Native choice controls are used only when callable in the current mode and question type and able to preserve a selected option plus added text. A mutually exclusive Other is insufficient; fallback accepts a numbered choice plus text in one reply.",
+      "continuation": "An authorized next action blocked by stale or missing confirmation is asked with a choice control. An explicit plan stop is reported as complete within scope."
     },
     "review_only_authorizations": [
       {
@@ -34,40 +32,55 @@
         "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "policy": "_ask/policies/delegation.md",
-        "reason": "Semantic agent protocol and scenario classification require independent walkthrough; executable changes beyond this scope require an amended tested contract."
+        "reason": "Independent walkthrough authorized nested TDD/review semantics and outer flow."
       },
       {
         "criterion_id": "RF-002",
         "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "policy": "_ask/policies/delegation.md",
-        "reason": "Semantic agent protocol and scenario classification require independent walkthrough; executable changes beyond this scope require an amended tested contract."
+        "reason": "Independent walkthrough authorized local versus broad finding classification."
       },
       {
         "criterion_id": "RF-003",
         "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "policy": "_ask/policies/delegation.md",
-        "reason": "Semantic agent protocol and scenario classification require independent walkthrough; executable changes beyond this scope require an amended tested contract."
+        "reason": "Independent walkthrough authorized coordinator card publication and interruption handoff semantics."
       },
       {
         "criterion_id": "RF-004",
         "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "policy": "_ask/policies/delegation.md",
-        "reason": "Semantic agent protocol and scenario classification require independent walkthrough; executable changes beyond this scope require an amended tested contract."
+        "reason": "Independent walkthrough authorized existing-contract correction versus redesign classification."
+      },
+      {
+        "criterion_id": "RF-008",
+        "decision": "APPROVED",
+        "reviewer": "amended-plan-review",
+        "policy": "_ask/policies/delegation.md",
+        "reason": "Independent review authorized native capability, combined selection/comment, and fallback semantics."
+      },
+      {
+        "criterion_id": "RF-009",
+        "decision": "APPROVED",
+        "reviewer": "amended-plan-review",
+        "policy": "_ask/policies/delegation.md",
+        "reason": "Independent review authorized distinct handling for explicit stops and missing gates on authorized actions."
       }
     ],
     "resolved_findings": [
       "C-01",
       "C-02",
       "C-03",
-      "C-04"
+      "C-04",
+      "PLAN-DIGEST-01"
     ],
     "unresolved_findings": []
   },
-  "plan_review_digest": "d53b6c391e4b4196c0a4c6858b6a29c7242a0fe40901b841bd1cc8001984f415",
-  "spec_digest": "6909c47a0698ce79b99c87f7ac6997e7d0136c3d3a03b12baa6780e5d760cc37",
-  "plan_digest": "b5cf5ecd89eab56758e9fd29475347064500b3bced8dad3c0b3cc4ac8ab69e49",
+  "plan_review_digest": "1208748167f8527e4fa06e3c83e374d8feed496ea15ce3d978462bdde6d89399",
+  "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
+  "plan_digest": "aa1e74ae33c96e95d1b7c7fc529d603f185fe90a243597f81048963304f4089b",
   "graph_digest": "574d65df8f5811094c250a24038ce16edcacfb7b6aa1b4020cdc12ad791d78f4"
 }
