@@ -89,7 +89,27 @@ class PreparationTests(unittest.TestCase):
             self.assertEqual(content.count("<!-- ASK TDD OVERRIDE END -->"), 1)
         self.assertEqual((self.root / "_ask/skills/manifest.yaml").read_bytes(), manifest_before)
 
+        self.set_installer('''
+mkdir -p .agents/skills/tdd
+cat > .agents/skills/tdd/SKILL.md <<'SKILL'
+# TDD upstream
+SKILL
+''')
+        (self.root / self.installed_views[1]).unlink()
+        missing_view = self.prepare()
+        self.assertNotEqual(missing_view.returncode, 0, missing_view.stdout)
+        self.assertIn("missing required Cursor TDD skill output", missing_view.stderr)
+
     def test_repeated_prepare_replaces_managed_override(self):
+        self.set_installer('''
+if [[ ! -f "$PWD/first-install" ]]; then
+  touch "$PWD/first-install"
+  for view in .agents/skills/tdd/SKILL.md .cursor/skills/tdd/SKILL.md; do
+    mkdir -p "$(dirname "$view")"
+    printf '# TDD upstream\\n\\nUPSTREAM-CANARY\\n' > "$view"
+  done
+fi
+''')
         first = self.prepare()
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
         view = self.root / self.installed_views[0]
