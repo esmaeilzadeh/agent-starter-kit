@@ -96,16 +96,16 @@ for e in entries:
         continue
     r = subprocess.run(cmd)
     skill_md = Path('.agents/skills') / skill / 'SKILL.md'
-    # also check nested paths
-    if r.returncode != 0 or not skill_md.exists():
-        # search
-        matches = list(Path('.agents/skills').glob(f'**/SKILL.md')) if Path('.agents/skills').exists() else []
-        ok = any(skill in str(p) for p in matches)
-        if not ok:
-            print(f"prepare-skills: failed to verify SKILL.md for {skill}", file=sys.stderr)
-            if e.get('required', False):
-                failed = True
-            continue
+    if r.returncode != 0:
+        print(f"prepare-skills: installer failed for {skill} (exit {r.returncode})", file=sys.stderr)
+        if e.get('required', False):
+            failed = True
+        continue
+    if not skill_md.is_file():
+        print(f"prepare-skills: missing required primary .agents skill output for {skill}", file=sys.stderr)
+        if e.get('required', False):
+            failed = True
+        continue
     try:
         apply_tdd_override(skill)
     except RuntimeError as exc:
