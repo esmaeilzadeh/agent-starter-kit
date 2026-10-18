@@ -28,6 +28,14 @@ work, unnecessary confirmation requests, and inconsistent execution.
 
 - Existing safety and acceptance requirements remain in force unless a
   separately approved change explicitly changes them.
+- `.agents/ask/stages/` remains authoritative for stage contracts;
+  `_ask/policies/` remains authoritative for cross-cutting policy; operational
+  reference material stays with its owning protocol docs. A new lifecycle
+  transition reference may define cross-stage transitions and be linked from
+  those owners. Generated runtime bindings remain projections.
+- The refactor clarifies the intended current behavior. Where the intended
+  behavior cannot be inferred from the existing contracts, surface the
+  decision for approval instead of choosing a behavior change implicitly.
 - The documented flow must distinguish task completion from workstream
   completion and cover review, correction, verification, integration, retry,
   and resume transitions.
@@ -40,18 +48,19 @@ work, unnecessary confirmation requests, and inconsistent execution.
 
 ## Open questions
 
-- Where should cross-stage transition authority live, and how should stage
-  contracts, policies, skills, and runtime projections reference it?
-- Should conflicting existing instructions be resolved to the current
-  intended behavior only, or is any behavior change desired?
-- What observable result demonstrates a scenario has exactly one applicable
-  next action and owner?
+- Does the human approve the stated authority arrangement and the constraint
+  to preserve existing behavior unless an explicit decision authorizes a
+  change?
+- Are the seven scenario walkthroughs and their observable next-action,
+  responsible-role, evidence, exit, and escalation fields sufficient
+  acceptance evidence?
 
 ## Human decisions
 
 - The later card is now active at the user's request. Its proposed What was
   explicitly marked unapproved; this intent presents that scope for approval
   before Spec and implementation.
+- Approval is requested for this complete intent and its listed assumptions.
 
 ## E2E
 
@@ -62,4 +71,3 @@ the acceptance evidence is consistency checks and scenario walkthroughs, not
 a user-facing product journey.
 
 If `applies`: journeys, observable outcomes, environment, test data, reset:
-
