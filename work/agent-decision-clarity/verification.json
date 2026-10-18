@@ -1,12 +1,14 @@
 {
   "work_id": "agent-decision-clarity",
-  "commit_sha": "33173a22695c0836b1493e4c33ac73b9970ea498",
+  "commit_sha": "fcf268b25a94c71139f4b67fb33a39d91b53ee66",
   "checks": [
     {"command": "bash _ask/tests/test-check-workstream-confirmation.sh", "result": "pass", "notes": "Includes compound approval plus next-action, exact response persistence, conditional rejection, negative rejection, and stale digest rejection."},
     {"command": "bash _ask/tests/test-workstream-smoke.sh", "result": "pass", "notes": "Workstream smoke and handoff passed."},
     {"command": "./ask prepare && ./ask sync", "result": "partial", "notes": "Sync regenerated Agent and Cursor bundles. Prepare handled pinned skills, but the configured frontend-design revision could not be cloned (remote branch not found)."},
-    {"command": "./ask verify", "result": "blocked", "notes": "Stopped before checks: migration_required: missing coordinator accepted-tests ref."}
+    {"command": "python3 -m unittest test_traceability_evidence", "result": "pass", "notes": "13 tests passed when run from _ask/tests."},
+    {"command": "bash _ask/tests/test-status.sh", "result": "pass", "notes": "Later inbox is visible from a feature branch."},
+    {"command": "./ask verify", "result": "fail", "notes": "Stopped before checks: migration_required: missing coordinator accepted-tests ref."}
   ],
-  "result": "pass_with_documented_verification_blocker",
-  "notes": "The original parser failure was reproduced before the fix; focused tests now pass."
+  "result": "fail",
+  "notes": "Focused confirmation, workstream, status, and traceability tests pass. Full verification cannot run until the coordinator accepted-tests ref is registered."
 }

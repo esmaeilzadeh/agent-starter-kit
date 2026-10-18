@@ -22,7 +22,7 @@ The canonical stage contracts, workflow/delegation/worktree policies, guide/spec
 
 ## Acceptance decision
 
-Accepted for the reported approval friction and parser defect.
+The choice-based confirmation fix and focused checks are complete. Full workstream acceptance remains blocked because `./ask verify` cannot run without the coordinator accepted-tests ref.
 
 ## Accepted commit SHA
 
