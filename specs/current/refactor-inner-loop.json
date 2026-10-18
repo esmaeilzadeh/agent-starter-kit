@@ -100,8 +100,10 @@
       "when": "The agent asks the human to resolve it",
       "then": [
         "Selectable answer options are presented using the active runtime's structured choice control",
-        "A free-text response path remains available even when an option is selected",
-        "If the runtime has no choice controls, numbered options and an explicit write-in path are provided"
+        "An optional free-text path can accompany a selected option in the same response",
+        "A mutually exclusive Other option alone does not satisfy the free-text requirement",
+        "The native control is used only when callable for the current mode and question type and capable of preserving both values",
+        "If no usable native control exists, numbered options accept the selected option and additional text in one response"
       ],
       "verification_mode": "review",
       "reason": "The user-facing choice interaction and preservation of write-in responses require an independent prompt walkthrough; static strings alone cannot prove the interaction."

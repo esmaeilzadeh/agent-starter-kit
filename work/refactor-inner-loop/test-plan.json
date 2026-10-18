@@ -1,7 +1,7 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "refactor-inner-loop",
-  "spec_digest": "6909c47a0698ce79b99c87f7ac6997e7d0136c3d3a03b12baa6780e5d760cc37",
+  "spec_digest": "f7c6b47e78cf7fe039feb0a29f6c54b8334f02f30f492395c5b03b80b7b7f21f",
   "obligations": [
     {
       "criterion_id": "RF-005",
@@ -410,7 +410,7 @@
         "given": "Canonical Grill and continuation prompt contracts have been updated",
         "when": "Invoke ./ask sync for all supported runtimes",
         "then": [
-          "Generated Grill prompts retain the selectable-options and always-available write-in requirement",
+          "Generated Grill prompts retain selectable options and optional added text that can accompany a selected option in one response",
           "Generated continuation prompts retain the authorized-next-step versus explicit-stop distinction"
         ]
       },
@@ -418,7 +418,7 @@
         {
           "criterion_id": "RF-007",
           "checks": [
-            "Generated Grill prompt projections include the canonical choice interaction contract",
+            "Generated Grill prompt projections include the combined choice-and-comment contract",
             "Generated continuation prompt projections include the canonical stop-boundary contract"
           ]
         }

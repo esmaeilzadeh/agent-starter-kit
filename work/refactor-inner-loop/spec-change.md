@@ -11,10 +11,12 @@ that explicitly stops before that step.
 ## Proposed change
 
 Extend the workstream to make every load-bearing Grill decision an interactive
-choice question. Render alternatives as selectable options and retain a free
-text path so the human can add nuance or a different answer even after choosing
-an option. Use the active runtime's structured choice control; use numbered
-options and an explicit write-in path only when the runtime has no such control.
+choice question. Render alternatives as selectable options and retain an
+optional text path that can accompany the selected option in the same response.
+A mutually exclusive “Other” option alone does not satisfy this. Use the active
+runtime's structured choice control only when callable in the current mode and
+question type and capable of preserving both values; otherwise accept numbered
+options plus added text in one response.
 
 Clarify continuation handling: resume an authorized stage without repeating a
 valid approval. If the authorized next step requires a missing or stale

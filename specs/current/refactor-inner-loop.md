@@ -147,9 +147,12 @@ idempotently, retaining pins/upstream text and respecting dry-run/failure cases.
 RF-007: Install/sync deliver consistent canonical task-loop references and
 stage projections to every supported runtime.
 RF-008: Every load-bearing Grill decision uses selectable answer options and
-keeps a free-text path available regardless of the selected option. Use the
-active runtime's structured choice control; when unavailable, provide numbered
-options plus an explicit write-in path.
+keeps an optional free-text path in the same response regardless of the
+selected option. A mutually exclusive “Other” option alone is insufficient.
+Use the active runtime's structured choice control only when callable for the
+current mode and question type and capable of preserving both values. Otherwise
+provide numbered options and accept the selected option with additional text in
+one response.
 RF-009: Continuation asks for missing or stale confirmation only when it blocks
 an otherwise authorized next step. An explicit plan stop is reported as
 complete within scope, without presenting a future gate as currently missing.

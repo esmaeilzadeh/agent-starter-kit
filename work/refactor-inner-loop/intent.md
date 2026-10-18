@@ -15,12 +15,15 @@ retry dispatch where necessary, workflow references, repository-specific TDD
 guidance, and every generated runtime bundle.
 
 For every load-bearing Grill decision, present selectable answer options and
-keep a free-text path available even when the human selects an option. Use the
-active runtime's structured choice control; if it has none, offer numbered
-options plus an explicit write-in path. During continuation, ask for a missing
-or stale confirmation only when it blocks an otherwise authorized next step.
-When the approved plan explicitly stops before that step, report the authorized
-work as complete without describing the future gate as missing.
+keep an optional free-text path available in the same response even when the
+human selects an option. Use the active runtime's structured choice control
+only when it can be called for the current mode and question type and can
+preserve both selection and added text. If it cannot, offer numbered options
+and accept a combined answer such as `2 — <additional context>`. During
+continuation, ask for a missing or stale confirmation only when it blocks an
+otherwise authorized next step. When the approved plan explicitly stops before
+that step, report the authorized work as complete without describing the future
+gate as missing.
 
 ## Why
 
@@ -58,8 +61,9 @@ the entire workflow, or renumbering stage identifiers.
 - Reconcile conflicting prepared TDD instructions through repository-owned
   guidance or preparation overlays, preserving pinned upstream skill sources.
 - All generated runtime bundles derive from the updated canonical contracts.
-- Grill choices preserve both option selection and user-supplied nuance; the
-  generated runtime prompts follow the same contract.
+- Grill choices preserve both option selection and user-supplied nuance in one
+  response; an exclusive “Other” option alone does not meet this requirement.
+  Generated runtime prompts follow the same contract.
 - Continuation distinguishes a missing gate for an authorized next action from
   an explicit plan stop.
 - Required confirmations remain selectable questions; this change adds no

@@ -40,10 +40,12 @@ Independent review and contract pinning are recorded separately.
    ./ask sync. Verify install/upgrade ship the canonical contract and preserve
    consumer overlays. Fixtures must exclude local virtualenvs from Git snapshots.
 8. Make every load-bearing Grill question a runtime-native choice interaction
-   with selectable alternatives and an always-available write-in path. Clarify
-   continuation handling so only a missing gate for an authorized next action
-   is presented as pending; an explicit plan stop is reported as complete.
-   Regenerate all runtime projections and independently walk these scenarios.
+   with selectable alternatives and an optional comment that can accompany the
+   selected option in one response. Use the control only when callable in the
+   current mode and capable of both values; otherwise accept a numbered option
+   with added text in one reply. Clarify continuation handling so only a missing
+   gate for an authorized next action is presented as pending; an explicit plan
+   stop is reported as complete. Regenerate projections and walk these cases.
 
 ## Work breakdown
 
@@ -87,9 +89,10 @@ a manufactured Red or proof of newly changed behavior.
   or retry limits are exhausted: existing gates refuse integration.
 - Interruption before later-card publication retains its draft and publication
   status; resumption publishes once through normal integration.
-- Every load-bearing Grill decision uses selectable options and retains a write-in
-  path when an option is selected; numbered choices are the fallback only when
-  the runtime offers no native choice control.
+- Every load-bearing Grill decision uses selectable options and allows optional
+  added text alongside a selected option in one response. A mutually exclusive
+  “Other” is insufficient; use the native control only if it can carry both
+  values, otherwise accept a numbered option plus text in one reply.
 - A plan that explicitly stops reports completion within its scope. A missing
   confirmation is asked only when it blocks an otherwise authorized next step.
 
