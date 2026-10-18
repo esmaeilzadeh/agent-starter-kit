@@ -10,6 +10,9 @@ tasks:
       - _ask/docs/inner-loop-evidence.md
       - _ask/templates/review.md
       - _ask/templates/later-work.md
+      - .agents/skills/kit-*/**
+      - .cursor/commands/**
+      - .cursor/skills/kit-*/**
   - id: RF-02
     depends_on: [RF-01]
     owned_paths:
@@ -23,9 +26,6 @@ tasks:
       - _ask/guide/**
       - _ask/spec/**
       - _ask/docs/demo/**
-      - .agents/skills/kit-*/**
-      - .cursor/commands/**
-      - .cursor/skills/kit-*/**
       - .cursor/agents/**
       - .claude/agents/**
       - .codex/agents/**

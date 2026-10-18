@@ -27,6 +27,9 @@ Independent review and contract pinning are recorded separately.
 4. Have 06 Implement, 07 Review, and 08 Refactor reference the canonical contract.
    The outer workflow contains task execution, not separate unconditional task
    Review/Refactor phases. Retain cross-task assessment and final Verify/Accept.
+   Generate stage projections alongside the canonical Grill/continuation sources
+   in RF-01 so its candidate already satisfies repository sync checks; RF-03
+   owns the remaining consumer/agent bundle work and bundle integration tests.
 5. Preserve current retry CLI return values and bounded attempts. Existing
    implement/debug dispatch returns into the documented correction/TDD cycle.
    Existing candidate-bound review and checks remain the integration gate; no
@@ -36,9 +39,11 @@ Independent review and contract pinning are recorded separately.
    installed .agents and Cursor views. Make repeated preparation idempotent;
    preserve pins, unrelated skill content, and SKIP_INSTALL validation semantics.
    Do not commit generated upstream skill trees or change their upstream pins.
-7. Update guide/spec/demo/root references; regenerate all runtime bundles using
-   ./ask sync. Verify install/upgrade ship the canonical contract and preserve
-   consumer overlays. Fixtures must exclude local virtualenvs from Git snapshots.
+7. RF-01 regenerates the corresponding stage projections using ./ask sync so
+   each candidate remains internally consistent. RF-03 updates guide/spec/demo/
+   root references, verifies install/upgrade ship the canonical contract and
+   preserve consumer overlays, and runs the final all-runtime sync. Fixtures
+   must exclude local virtualenvs from Git snapshots.
 8. Make every load-bearing Grill question a runtime-native choice interaction
    with selectable alternatives and an optional comment that can accompany the
    selected option in one response. Use the control only when callable in the
@@ -56,13 +61,15 @@ The exact owned-path globs are in inner-loop/tasks.yaml.
 
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
-| RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references, structured Grill questions, continuation stop-boundary behavior | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates | none, reviewed criteria RF-001..004, RF-008..009 | Independent scenario walkthrough with criterion-by-criterion decisions; no implementation or state transitions claimed by text checks |
+| RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references, structured Grill questions, continuation stop-boundary behavior, and matching stage projections | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates; .agents/skills/kit-*/**; .cursor/commands/**; .cursor/skills/kit-*/** | no task-local executable test; reviewed criteria RF-001..004, RF-008..009; candidate CheckPlan must pass existing repository sync/traceability checks | Independent scenario walkthrough with criterion-by-criterion decisions; matching generated stage projections; candidate CheckPlan passes |
 | RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..06 | Behavior assertion Red/Green for PREP-01/02/04; current execution for PREP-03/05/06 unchanged regressions |
-| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; generated Agent/Cursor/Claude/Codex/OpenCode paths; two new integration test modules | LOOP-01..05, BUNDLE-01..03 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
+| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; .cursor/agents/**; .claude/agents/**; .codex/agents/**; .opencode/agents/**; two new integration test modules | LOOP-01..05, BUNDLE-01..03 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
 
-RF-01 deliberately has no executable test: its claims are semantic agent
-instructions, not a new runner API. An independent reviewer must walk the
-scenarios below. Literal string assertions would not establish those claims.
+RF-01 adds no task-local executable test: its claims are semantic agent
+instructions, not a new runner API. Its candidate still must pass the existing
+CheckPlan, including sync and traceability checks. An independent reviewer must
+walk the scenarios below; literal string assertions would not establish those
+semantic claims.
 RF-02/03 use public CLI seams and temporary consumers; no tests are written or
 executed in this planning stage. PREP-01/02 add overrides; PREP-04 fixes stale-file
 masking of nonzero installer failure and therefore requires behavior Red/Green.
