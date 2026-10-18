@@ -39,4 +39,12 @@ An explicit nested task sequence (Implement → Review → Fix as needed → Ver
 - Continuation recovery is implemented in continuation-context-loss: a clear “continue” resumes the uniquely active authorized workstream instead of restarting new-task intake.
 - Every required workflow confirmation now uses selectable choices; written approval sentences are never required. If native controls are unavailable, agents offer numbered choices. Unsolicited concise text approval remains supported, and conditional/negative replies remain rejected. See the active workstream `agent/agent-decision-clarity` for this implementation.
 
-The broader inventory and workflow nesting review in this card remains open.
+## Additional observed friction (2026-10-18)
+
+The `verify-candidate-source-stability` follow-up supplied a concrete case for this card. The historical mutation reproduced and all 37 checks passed. The user approved the intent and directed merge to `main` plus push, but the agent spent several turns on artifacts before acting. Specific remaining friction to investigate:
+
+- Define a straightforward evidence-only completion route and when structured test provenance applies.
+- Avoid self-created dirty-tree blockers by sequencing state-writing operations so the agent closes its own clean-tree boundary promptly.
+- Prefer the concrete next action and report only real blockers after the user has authorized it.
+
+These examples do not approve removing intent confirmation, clean-worktree protection, evidence requirements, or other safety rules. The broader inventory and workflow nesting review remains open.
