@@ -39,6 +39,10 @@ Spawn the generated Review subagent for the current runtime. Present the model p
 
 When `work/<work-id>/inner-loop/tasks.yaml` exists, review the **current** writer only (`./ask inner-loop status`).
 
+Use the classification and completion rules in `.agents/ask/task-loop.md`.
+Report local structural suggestions, broader horizontal refactors, existing-spec
+behavior defects, required redesign, and evidence-backed withdrawals separately.
+
 **Steering boundary:** run `git diff --name-only` and match those paths to the task’s `owned_paths` globs (seam/module patterns, not a file list). Verdict is `APPROVED` or `REJECTED`.
 
 - Outside glob and not required → extras; revert; one remediation.
