@@ -15,6 +15,16 @@ When the destination is foggy, chart decisions (and run research/prototypes)
 until What/Why can be owned — then hand off into Intent / 01 Grill.
 ```
 
+## Continuation recovery (before new-task intake)
+
+When the human says “continue,” “resume,” or equivalent, first inspect the
+current branch, workstream artifacts, inner-loop state, and recent commits. If
+those sources identify one active authorized workstream, resume its exact stage
+and task; retain prior approvals and do not restart new-task intake. If multiple
+active workstreams remain plausible, ask only which one to resume after checking
+the available evidence. Apply the Explore/Grill entry gate only after establishing
+that the request starts a genuinely new task.
+
 ## Adopted subject intake
 
 Before choosing or creating execution work, recording intent, or admitting a
