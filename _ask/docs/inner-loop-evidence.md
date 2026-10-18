@@ -1,5 +1,9 @@
 # Inner-loop candidate evidence and local state
 
+Task lifecycle and finding classification are defined in
+`.agents/ask/task-loop.md`; this document defines the state/evidence mechanics
+that support that lifecycle.
+
 This is the operating contract for future inner-loop results. Historical
 `ask-task-result/v1` files remain review records; the runner refuses them for
 new integrations. Implementation: `_ask/scripts/inner_loop/`.

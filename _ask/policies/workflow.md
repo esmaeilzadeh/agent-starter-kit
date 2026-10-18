@@ -11,11 +11,18 @@ If the human is using the kit:
 1. **Artifacts are not optional** on the Engineering Pipeline (`01`–`10`). Each next stage stands on the previous document (intent, spec, plan, …). Skipping those files is meaningless — there is nothing to move forward on.
    **00 Explore is the exception:** it is an optional on-ramp. When the destination is already clear enough for Intent, **omit 00** (real skip). That is not “on-path with a missing explore-map.” When 00 *runs*, `explore-map.md` is required and Handoff must be non-empty before 01. See `AGENTS.md` item 1 and `.agents/ask/stages/00-explore.md`.
 2. **Prepare, then continue.** The agent writes the artifact for the current stage and proceeds to the next. Auto-continue in the same conversation after exit criteria; stop for human judgment at the required choice questions below (and escalation).
-3. **Skip = skip extra approvals, not documents.** Every required confirmation is a question with explicit selectable choices, such as **Approve complete intent and assumptions** / **Request changes**. Wait for a submitted choice; a preselected option is not approval. Never ask the human to write or repeat a confirmation sentence. If the runtime has no choice controls, present numbered options and accept the selected number or label. Accept concise affirmative text sent unsolicited for compatibility, record its exact text with `--response`, and never make the human restate it. Record intent approval with `./ask confirm-intent --work-id <id> --choice approve`. This one confirmation covers later prepared artifacts (spec marked CURRENT unless the human chose to stop, plan, review). Do not re-ask a bless on Plan / Review / Refactor.
+3. **Skip = skip extra approvals, not documents.** Every required confirmation is a question with explicit selectable choices, such as **Approve complete intent and assumptions** / **Request changes**, plus an optional comment that can accompany a selected choice in the same response. A preselected option is not approval. Never ask the human to write or repeat a confirmation sentence. Use a native choice control only when callable for the current mode/question and capable of retaining both values; otherwise present numbered options and invite the selected number or label plus added text in the same reply. Accept concise affirmative text sent unsolicited for compatibility, record its exact text with `--response`, and never make the human restate it. Record intent approval with `./ask confirm-intent --work-id <id> --choice approve`. This one confirmation covers later prepared artifacts (spec marked CURRENT unless the human chose to stop, plan, review). Do not re-ask a bless on Plan / Review / Refactor.
 4. **Second confirm: Accept.** Present **Accept workstream** / **Request changes** as selectable choices and close only after a submitted Accept choice, subject to delegation policy (evidence + commit SHA).
 5. **Missing artifacts but still on the path:** prepare them from the accepted defaults, present a required choice only if its decision has not happened yet, then continue. Do not jump to implementation with empty `plan.md` / no spec.
 
 `./ask check-workstream <work-id>` is the machine check that the **default path is complete**. Exit non-zero means “incomplete,” not “forbidden.” On-path response: prepare what is missing.
+
+When continuing an identified workstream, first inspect its branch, artifacts,
+inner-loop state, and recent commits. If an authorized next action is blocked by
+a missing or stale confirmation, present that exact confirmation as selectable
+choices with an optional same-response comment. If the accepted plan explicitly
+stops before the next action, report that authorized scope as complete; do not
+present a later-stage gate as currently missing.
 
 ## Off the path (this session only)
 

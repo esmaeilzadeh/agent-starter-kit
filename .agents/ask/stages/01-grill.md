@@ -39,6 +39,8 @@ Must:
 ```text
 before the first numbered question: offer related extra Community Skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
 ask only load-bearing questions (hard to reverse, What/Why/non-goal, recommendation might be wrong, or blocks other decisions)
+ask every load-bearing Grill question with selectable answer options and an optional free-text field that can accompany a selected option in the same response; selecting an option must not remove the chance to add context
+use the current runtime's structured choice control only when it is callable for this question and preserves both the selection and added text; otherwise present numbered options and explicitly invite a combined answer such as `2 — <additional context>`
 expand each numbered question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
 state a short “I’ll assume…” list; “defaults OK” covers it
 do not ask facts already in the repo
@@ -47,8 +49,8 @@ identify non-goals
 identify unresolved decisions
 for every user-facing deliverable, including a UI, grill its intended user, essential jobs/workflows, and interaction expectations when these are not already clear; approval of product direction or implementation order does not approve these design decisions
 stop when human judgment is required
-before advancing to Spec, present the complete intent and every assumption as a confirmation question with selectable choices “Approve complete intent and assumptions” and “Request changes”; use the runtime choice control and wait for the submitted choice (a preselected option is not approval)
-record a submitted approval choice with `./ask confirm-intent --work-id <id> --choice approve`; if the runtime lacks choice controls, present numbered options and accept the selected number/label. Accept unsolicited concise affirmative text for compatibility and record it with `--response`; never ask the human to write or repeat a confirmation sentence. Reject conditional or negative wording. Never infer approval from a request to implement alone or a preselected option.
+before advancing to Spec, present the complete intent and every assumption as a confirmation question with selectable choices “Approve complete intent and assumptions” and “Request changes”; use the runtime choice control with an optional comment, and wait for the submitted choice (a preselected option is not approval)
+record a submitted approval choice with `./ask confirm-intent --work-id <id> --choice approve`; if the runtime lacks choice controls, present numbered options and accept the selected number/label with optional added text. Accept unsolicited concise affirmative text for compatibility and record its exact text with `--response`; never ask the human to write or repeat a confirmation sentence. Reject conditional or negative wording. Never infer approval from a request to implement alone or a preselected option.
 never treat “all ok” as valid if a load-bearing question was never expanded
 ```
 
@@ -78,7 +80,7 @@ work/<work-id>/intent.md
 
 **Two blocks:** (1) expanded load-bearing questions; (2) short “I’ll assume…”. “Defaults OK” / “all recs” covers the assume-list. Only numbered questions need alternatives/tradeoffs/failure modes. Never auto-approve a real decision. Never treat “all ok” as valid if a **load-bearing** question was never expanded.
 
-A submitted “Approve defaults” choice (or “Approve all recommendations” after an expanded load-bearing frontier) is the first on-path confirmation. Record it with `./ask confirm-intent --work-id <id> --choice approve` against the exact intent digest. If the runtime has no choice controls, offer numbered options and accept the selected number or label. Do not ask for an approval sentence. Any edit to `intent.md` invalidates that confirmation; present the changed intent as choices and obtain a new submitted choice. `./ask check-workstream` is the hard implementation gate. Then prepare later artifacts without re-confirming until Accept.
+A submitted “Approve defaults” choice (or “Approve all recommendations” after an expanded load-bearing frontier) is the first on-path confirmation. Record it with `./ask confirm-intent --work-id <id> --choice approve` against the exact intent digest. Keep an optional comment available alongside the selected choice. If the runtime cannot carry both, offer numbered options and invite the selected number or label plus added text in the same reply. Do not ask for an approval sentence. Any edit to `intent.md` invalidates that confirmation; present the changed intent as choices and obtain a new submitted choice. `./ask check-workstream` is the hard implementation gate. Then prepare later artifacts without re-confirming until Accept.
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
 

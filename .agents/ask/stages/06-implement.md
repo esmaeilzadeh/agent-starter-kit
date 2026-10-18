@@ -52,7 +52,7 @@ At meaningful milestones, create commits so that important engineering states ar
 
 ## Kit emphasis
 
-- A missing or stale explicit intent confirmation is a hard stop: present the full current intent and assumptions as a choice question with “Approve complete intent and assumptions” / “Request changes” buttons, wait for a submitted approval, record it with ./ask confirm-intent --work-id <id> --choice approve, and re-run the gate. If buttons are unavailable, offer numbered choices and accept the number or option label, never a written confirmation sentence. A preselected option is not approval. Never infer confirmation from an implementation request or a prior approval of only the direction/order.
+- A missing or stale explicit intent confirmation blocks an otherwise authorized next step: present the full current intent and assumptions as a choice question with “Approve complete intent and assumptions” / “Request changes” buttons, keep an optional comment available alongside the choice, wait for a submitted approval, record it with ./ask confirm-intent --work-id <id> --choice approve, and re-run the gate. If the runtime cannot preserve both values, offer numbered choices and invite the selected number or option label plus added text in the same reply. Accept unsolicited concise affirmative text for compatibility and record the exact response with `--response`; never ask the human to write or repeat a confirmation sentence. A preselected option is not approval. Never infer confirmation from a request to implement alone or a prior approval of only the direction/order. If the approved plan explicitly stops before implementation or another future action, report completion within that scope instead of describing the future gate as missing.
 
 - **Default:** run `./ask check-workstream <work-id>` before implementing. If it fails for missing spec/plan and they are still on the kit path, **prepare** those artifacts from accepted defaults (if intent is not yet approved, present its choice question once), then continue — do not implement on empty paper. Off-path (“just code”) only if they explicitly left: warn once and follow.
 - If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset). That refusal is safety, not workflow theater.
@@ -63,7 +63,7 @@ At meaningful milestones, create commits so that important engineering states ar
 
 **Steering `owned_paths`:** seam/module globs in `work/<work-id>/inner-loop/tasks.yaml` (project memory, not a file census). Expand at spawn. Files created inside a glob are in scope.
 
-When that TaskGraph file exists, run `./ask inner-loop run` (or `resume`). Scheduling, retry, CAS, and evidence fold live in `_ask/scripts/inner_loop/`. This contract does not copy the DAG.
+When that TaskGraph file exists, follow `.agents/ask/task-loop.md` and run `./ask inner-loop run` (or `resume`). Scheduling, retry, CAS, and evidence fold live in `_ask/scripts/inner_loop/`. This contract does not copy the DAG.
 
 One committing writer. Done when the current task is `integrated`, `blocked`, or `escalated`.
 

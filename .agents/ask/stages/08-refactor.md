@@ -4,6 +4,11 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Correction labor against review findings; stay within accepted spec.
 
+When an inner-loop task graph is active, follow `.agents/ask/task-loop.md`:
+finish every valid task-local finding, repeat review for a changed candidate,
+park broader horizontal refactors for coordinator handling, and stop for Spec
+Change when meaning, behavior, or contract must change.
+
 ## 15.8 08 Refactor Agent
 
 Purpose:
@@ -21,7 +26,7 @@ current code
 project rules
 ```
 
-For each finding:
+For findings outside an active task graph, classify each as:
 
 ```text
 FIX
