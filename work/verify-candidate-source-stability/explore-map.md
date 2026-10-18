@@ -22,7 +22,7 @@ Identify the source mutation recorded in the later card and establish whether cu
 
 ## Not yet specified
 
-- Full current CheckPlan outcome and any additional source mutators; verification is running.
+- No unresolved technical questions: full CheckPlan passed all 37 checks at 8c5d8d019bdef67587a052fe9df7eeb9508df2ca in a detached candidate checkout, and Git status including untracked files remained clean. This is investigation evidence, not final workstream completion evidence.
 
 ## Out of scope
 
