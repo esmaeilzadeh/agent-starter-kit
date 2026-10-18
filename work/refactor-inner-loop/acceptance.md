@@ -1,3 +1,5 @@
+<!-- Planning stop: Workstream acceptance has not started. Do not interpret this unfilled template as evidence. -->
+
 # Acceptance
 
 ## Workstream
