@@ -18,8 +18,10 @@ before Implement. Independent review and contract pinning are recorded separatel
    behavior/contracts. Behavior corrections use TDD; necessary redesign requires
    Spec Change. All valid local refactor findings must be fixed, not waived.
 3. Park broader candidates as attributed later-card drafts tagged refactoring.
-   Coordinator, not task writer, commits/publishes cards through normal develop
-   integration. Preserve draft/publication status across interruptions; dedupe
+   Coordinator, not task writer, materializes cards only after all task candidates
+   integrate and no writer/resumable candidate remains, then publishes through
+   normal develop integration. Retain complete drafts and publication status in
+   persisted runtime review evidence during task execution and interruptions; dedupe
    against existing cards. Do not expand the task or add a card-creation CLI.
 4. Have 06 Implement, 07 Review, and 08 Refactor reference the canonical contract.
    The outer workflow contains task execution, not separate unconditional task
@@ -47,8 +49,8 @@ The exact owned-path globs are in inner-loop/tasks.yaml.
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
 | RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates | none, reviewed criteria RF-001..004 | Independent scenario walkthrough with criterion-by-criterion decisions; no implementation or state transitions claimed by text checks |
-| RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..05 | Actual behavior assertion Red then final Green for each new CLI preparation scenario |
-| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; generated Agent/Cursor/Claude/Codex/OpenCode paths; two new integration test modules | LOOP-01..04, BUNDLE-01..02 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
+| RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..06 | Actual behavior assertion Red then final Green for each new CLI preparation scenario |
+| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; generated Agent/Cursor/Claude/Codex/OpenCode paths; two new integration test modules | LOOP-01..05, BUNDLE-01..02 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
 
 RF-01 deliberately has no executable test: its claims are semantic agent
 instructions, not a new runner API. An independent reviewer must walk the
@@ -105,7 +107,9 @@ workstream completion pin. Semantic review and executed tests are separate.
 - Advisory local suggestions are waived: require completion or evidence-backed
   reviewer withdrawal; existing bounded retries stop non-converging work.
 - Later cards violate clean-tree/single-writer rules: the coordinator parks them
-  after the active writer integrates/stops and publishes through develop.
+  only at the final no-writer/no-resumable-candidate workstream boundary and
+  publishes through develop. Runtime drafts do not advance coordinator source HEAD
+  during an interrupted or blocked task.
 - Updated generated files mask stale canonical rules: inspect canonical stages,
   preparation views, install/upgrade outputs, and every runtime pointer chain.
 

@@ -62,14 +62,19 @@ motivation, affected responsibilities, suggested scope, and source work/task.
 Existing matching cards are referenced rather than duplicated. This work is a
 proposal, never approval to execute the broader refactor.
 
-The coordinator owns parking and publication. It preserves the card draft with
-the review evidence and, after the current writer integrates or stops, commits
-an attributed .later/<slug>.md draft on the coordinator branch. The normal
-workstream integration publishes those cards on develop, where status reads the
-shared inbox. The task writer does not switch branches, edit unowned paths, or
-start another workstream to publish a card. Publication status and pending drafts
-remain in the handoff if work is interrupted. The broader refactor itself never
-blocks the task; preserving its suggestion is required evidence.
+The coordinator owns parking and publication. It preserves complete tagged card
+drafts and their pending publication status in persisted candidate-bound runtime
+review evidence while any task candidate may resume. It makes no out-of-band
+source commit to park cards during task execution, including blocked/escalated
+states. After all task candidates integrate and no writer or resumable candidate
+remains, it materializes attributed .later/<slug>.md cards at the clean normal
+workstream integration boundary. Integration then publishes them on develop,
+where status reads the shared inbox. The task writer does not switch branches,
+edit unowned paths, or start another workstream to publish a card. Complete
+drafts, stable slugs, and pending publication status remain in the persisted
+runtime handoff if work is interrupted or cancelled; local recovery durability
+does not claim remote publication before integration. The broader refactor itself
+never blocks the task; preserving its suggestion is required evidence.
 
 ### Outer workflow and compatibility
 

@@ -13,7 +13,7 @@
       "verification_mode": "review",
       "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
       "review_decision": {
-        "decision": "PENDING",
+        "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "recorded_by": "root-coordinator",
         "policy": "_ask/policies/delegation.md"
@@ -29,7 +29,7 @@
       "verification_mode": "review",
       "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
       "review_decision": {
-        "decision": "PENDING",
+        "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "recorded_by": "root-coordinator",
         "policy": "_ask/policies/delegation.md"
@@ -45,7 +45,7 @@
       "verification_mode": "review",
       "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
       "review_decision": {
-        "decision": "PENDING",
+        "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "recorded_by": "root-coordinator",
         "policy": "_ask/policies/delegation.md"
@@ -61,7 +61,7 @@
       "verification_mode": "review",
       "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
       "review_decision": {
-        "decision": "PENDING",
+        "decision": "APPROVED",
         "reviewer": "refactor-spec-challenge",
         "recorded_by": "root-coordinator",
         "policy": "_ask/policies/delegation.md"
