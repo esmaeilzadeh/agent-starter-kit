@@ -27,7 +27,7 @@ def affirmative(response: str) -> bool:
         return True
     # A direct approval may include the user's next-action instruction. Do not
     # make the human repeat the approval prompt to get that clear response recorded.
-    if re.match(r"^(?:i\s+)?approve(?:d)?\b", value):
+    if re.match(r"^(?:(?:i\s+)?approve(?:d)?|permission\s+granted)\b", value):
         return re.search(r"\b(?:if|unless|but|not|no|except|provided that|subject to)\b", value) is None
     return False
 
