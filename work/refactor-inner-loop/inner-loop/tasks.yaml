@@ -1,0 +1,34 @@
+schema: ask-inner-loop-tasks/v1
+work_id: refactor-inner-loop
+tasks:
+  - id: RF-01
+    depends_on: []
+    owned_paths:
+      - .agents/ask/task-loop.md
+      - .agents/ask/stages/**
+      - _ask/policies/workflow.md
+      - _ask/docs/inner-loop-evidence.md
+      - _ask/templates/review.md
+      - _ask/templates/later-work.md
+  - id: RF-02
+    depends_on: [RF-01]
+    owned_paths:
+      - _ask/skills/**
+      - _ask/tests/test_tdd_preparation_overlay.py
+  - id: RF-03
+    depends_on: [RF-01, RF-02]
+    owned_paths:
+      - AGENTS.md
+      - README.md
+      - _ask/guide/**
+      - _ask/spec/**
+      - _ask/docs/demo/**
+      - .agents/skills/kit-*/**
+      - .cursor/commands/**
+      - .cursor/skills/kit-*/**
+      - .cursor/agents/**
+      - .claude/agents/**
+      - .codex/agents/**
+      - .opencode/agents/**
+      - _ask/tests/test_refactor_bundle_parity.py
+      - _ask/tests/test_refactor_loop_integration.py

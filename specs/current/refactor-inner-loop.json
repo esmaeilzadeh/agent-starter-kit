@@ -1,0 +1,98 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "refactor-inner-loop",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "RF-001",
+      "given": "A task has a behavioral slice and later code review",
+      "when": "The agent executes the task",
+      "then": [
+        "Red, Green, and behavior-preserving Refactor run before task review; review and correction remain inside the loop; no unconditional outer Refactor pass remains"
+      ],
+      "verification_mode": "review",
+      "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
+      "review_decision": {
+        "decision": "PENDING",
+        "reviewer": "refactor-spec-challenge",
+        "recorded_by": "root-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "RF-002",
+      "given": "Review reports local and broader structural suggestions",
+      "when": "The writer resolves the review",
+      "then": [
+        "Every valid local suggestion is fixed and re-reviewed; broader horizontal refactors are excluded from the implementation"
+      ],
+      "verification_mode": "review",
+      "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
+      "review_decision": {
+        "decision": "PENDING",
+        "reviewer": "refactor-spec-challenge",
+        "recorded_by": "root-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "RF-003",
+      "given": "Review identifies a broader horizontal refactor",
+      "when": "The coordinator parks the proposal",
+      "then": [
+        "An attributed later-card draft has tag refactoring and is published on develop through normal integration without breaking writer ownership; interrupted publication retains a handoff"
+      ],
+      "verification_mode": "review",
+      "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
+      "review_decision": {
+        "decision": "PENDING",
+        "reviewer": "refactor-spec-challenge",
+        "recorded_by": "root-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "RF-004",
+      "given": "A suggestion would change meaning, behavior, or contracts",
+      "when": "The task classifies and handles it",
+      "then": [
+        "Existing-spec defects use TDD correction; necessary redesign enters Spec Change before implementation; neither is silently deferred as optional refactoring"
+      ],
+      "verification_mode": "review",
+      "reason": "Agent semantic behavior and classification require an independent scenario walkthrough; string-matching documents cannot prove these claims.",
+      "review_decision": {
+        "decision": "PENDING",
+        "reviewer": "refactor-spec-challenge",
+        "recorded_by": "root-coordinator",
+        "policy": "_ask/policies/delegation.md"
+      }
+    },
+    {
+      "id": "RF-005",
+      "given": "A candidate has rejected/stale approval or failing checks, or the retry limit is reached",
+      "when": "The public inner-loop commands dispatch and attempt integration",
+      "then": [
+        "Rejected/stale/failed candidates do not integrate; a freshly approved checked candidate can integrate; retry limits and CLI vocabulary remain unchanged"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "RF-006",
+      "given": "Pinned TDD skills are prepared for this repository",
+      "when": "Public prepare runs, repeats, validates only, or encounters installation failure",
+      "then": [
+        "Both installed skill views receive one authoritative TDD override; pins and unrelated upstream content remain; validation-only runs do not mutate outputs and failures are explicit"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "RF-007",
+      "given": "A consumer installs, syncs, or upgrades the kit",
+      "when": "Public install/sync/upgrade regenerate runtime bindings",
+      "then": [
+        "The canonical task-loop contract ships and each supported runtime follows it consistently without losing consumer overlays"
+      ],
+      "verification_mode": "tests"
+    }
+  ]
+}

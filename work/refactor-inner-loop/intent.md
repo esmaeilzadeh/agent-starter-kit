@@ -4,10 +4,10 @@
 
 Place TDD and task code review inside the inner loop. For each behavioral slice,
 use Red -> Green -> Refactor, keeping tests green through refactoring. After the
-task's slices are complete, independently review its current candidate. Review
-suggestions return the same task for correction and refactoring, then fresh code
-review and applicable verification. Repeat until review has no unresolved
-suggestions and the candidate passes verification; only then integrate it.
+task's slices are complete, independently review its current candidate. Local review suggestions return the same task for correction and refactoring,
+then fresh code review and applicable verification. Park broader horizontal
+refactoring suggestions as later-inbox cards tagged refactoring. Repeat until
+review has no unresolved local suggestions and the candidate passes verification; only then integrate it.
 
 Remove Refactor's separate placement in the outer workstream sequence. Make
 task code review explicitly part of the inner loop too. Align canonical stages,
@@ -37,7 +37,11 @@ the entire workflow, or renumbering stage identifiers.
   refactoring preserves behavior and keeps existing tests green.
 - A changed candidate requires fresh independent code review and applicable
   verification before integration. Stale approval cannot authorize it.
-- Review/refactor repeats until there are no unresolved suggestions. Existing
+- Complete all task-local refactor suggestions; broader horizontal refactors are
+  suggested as parked .later cards tagged refactoring and do not block the task.
+- Refactoring preserves behavior, meaning, and contracts. A necessary change to
+  any of those is redesign and requires Spec Change before proceeding.
+- Review/refactor repeats until there are no unresolved local suggestions. Existing
   retry limits remain safety stops: exhausting them blocks or escalates the
   task and never permits integration with unresolved findings.
 - Task code review belongs inside the loop. Workstream-wide assessment,
@@ -57,10 +61,14 @@ None. The user clarified TDD placement and the review/correction exit condition.
 
 ## Human decisions
 
-The user specified Red -> Green -> Refactor inside the inner loop, with code
-review also inside the loop and corrections repeated until review has no
-remaining suggestions. Complete intent approval is pending; implementation has
-not started.
+The user specified Red -> Green -> Refactor and code review inside the inner
+loop; all local refactors must be completed, while broader horizontal refactors
+are parked as later cards tagged refactoring. Necessary changes to meaning,
+behavior, or contracts require Spec Change. The exact instruction "go till
+finishing the plan and stop" authorizes preparing Spec, Challenge, and Plan.
+Implementation is not authorized by that instruction. No complete-intent
+confirmation has been fabricated; record it through the normal gate before any
+future implementation if still missing.
 
 ## E2E
 
