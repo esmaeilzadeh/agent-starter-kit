@@ -18,10 +18,13 @@ class PreparationTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         (self.root / "_ask/skills").mkdir(parents=True)
+        (self.root / "_ask/scripts").mkdir(parents=True)
         (self.root / "bin").mkdir()
         shutil.copy2(ROOT / "ask", self.root / "ask")
         shutil.copy2(ROOT / "_ask/skills/prepare-skills.sh",
                      self.root / "_ask/skills/prepare-skills.sh")
+        shutil.copy2(ROOT / "_ask/scripts/ask-complete.sh",
+                     self.root / "_ask/scripts/ask-complete.sh")
         (self.root / "_ask/skills/manifest.yaml").write_text(textwrap.dedent("""\
             skills:
               tdd:
