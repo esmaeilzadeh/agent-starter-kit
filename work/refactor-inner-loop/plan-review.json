@@ -1,21 +1,22 @@
 {
   "decision": "APPROVED",
   "reviewer": "amended-plan-review",
-  "reviewed_commit": "88b314597f9b39cba1da895c7e86bb6da8cb6faf",
+  "reviewed_commit": "7ee9881eef11c46f040fba1f6520cde053bbec77",
   "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
   "plan_digest": "aa1e74ae33c96e95d1b7c7fc529d603f185fe90a243597f81048963304f4089b",
-  "graph_digest": "574d65df8f5811094c250a24038ce16edcacfb7b6aa1b4020cdc12ad791d78f4",
+  "graph_digest": "475bb014349334d9c48bfd39d2430bfbd89200c29579666d77425f905d6374f0",
   "model": "gpt-6-astra",
   "runtime": "codex",
   "reasoning_effort": "high",
   "parent_model": "not exposed",
   "assessments": {
     "intent_alignment": "Nested task TDD/review requirements remain intact. The amendment adds selectable Grill decisions with same-response optional text and distinguishes authorized missing gates from explicit plan stops.",
-    "scope_and_retries": "Existing task ownership, bounded retries, evidence checks, and integration gates remain unchanged.",
+    "scope_and_retries": "Stage projection ownership moves from RF-03 to RF-01 so canonical stage changes and their generated views can pass the existing candidate CheckPlan together. Ownership is non-overlapping across all task pairs. Bounded retries, evidence checks, and integration gates remain unchanged.",
     "test_classification": "RF-005..007 retain public integration obligations. RF-001..004 and RF-008..009 are semantic review criteria with independent authorizations.",
-    "bundles": "BUNDLE-03 covers projection of Grill and continuation contracts; RF-03 owns generated delivery and parity.",
+    "bundles": "RF-01 owns generated stage skills and Cursor commands alongside their canonical stage sources. RF-03 retains remaining runtime agent projections, consumer delivery, BUNDLE-01..03, and final all-runtime parity verification. BUNDLE-03 still covers Grill and continuation projections.",
     "interaction": "Native choice controls are used only when callable in the current mode and question type and able to preserve a selected option plus added text. A mutually exclusive Other is insufficient; fallback accepts a numbered choice plus text in one reply.",
-    "continuation": "An authorized next action blocked by stale or missing confirmation is asked with a choice control. An explicit plan stop is reported as complete within scope."
+    "continuation": "An authorized next action blocked by stale or missing confirmation is asked with a choice control. An explicit plan stop is reported as complete within scope.",
+    "sequencing_amendment": "APPROVED: exact-commit contracts pass validate_plan and the graph validator returns ok. Pairwise ownership checks find no overlaps, including serialized tasks. RF-02 depends on RF-01; RF-03 depends on RF-01 and RF-02. The spec and complete executable test plan are unchanged from the prior approved contract, so prior semantic authorizations and test obligations remain intact. Moving generated stage projections earlier satisfies the existing sync gate without deferring or weakening candidate checks."
   },
   "review_only_authorizations": [
     {
@@ -68,5 +69,17 @@
     "C-04",
     "PLAN-DIGEST-01"
   ],
-  "unresolved_findings": []
+  "unresolved_findings": [],
+  "review_history": [
+    {
+      "reviewed_commit": "88b314597f9b39cba1da895c7e86bb6da8cb6faf",
+      "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
+      "plan_digest": "aa1e74ae33c96e95d1b7c7fc529d603f185fe90a243597f81048963304f4089b",
+      "graph_digest": "574d65df8f5811094c250a24038ce16edcacfb7b6aa1b4020cdc12ad791d78f4",
+      "sequencing_assessments": {
+        "scope_and_retries": "Existing task ownership, bounded retries, evidence checks, and integration gates remain unchanged.",
+        "bundles": "BUNDLE-03 covers projection of Grill and continuation contracts; RF-03 owns generated delivery and parity."
+      }
+    }
+  ]
 }
