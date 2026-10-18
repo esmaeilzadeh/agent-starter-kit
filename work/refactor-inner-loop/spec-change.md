@@ -68,4 +68,6 @@ write-in path. Existing explicit stop boundaries remain authoritative.
 
 ## Decision
 
-Pending human choice: **Approve spec change** / **Keep current spec**.
+Approved by the human's submitted response `approve` on 2026-10-19. This
+approval authorizes updating the workstream specification and plan; it does not
+replace the amended complete-intent confirmation required before implementation.
