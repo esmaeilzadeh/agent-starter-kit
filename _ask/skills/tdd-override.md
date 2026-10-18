@@ -1,0 +1,3 @@
+Follow the repository task loop in `.agents/ask/task-loop.md`. For each behavior slice, use **Red -> Green -> Refactor**: first capture the missing behavior with a failing test, then make the smallest change that passes, then check whether a behavior-preserving refactor is useful. Keep the checks green and work one slice at a time.
+
+After the task's implementation slices, request an independent review. Fix every valid local finding and obtain a fresh review after changes. Escalate findings outside the task boundary. Record an empty Refactor pass when no behavior-preserving cleanup is useful; do not invent edits to satisfy the stage.

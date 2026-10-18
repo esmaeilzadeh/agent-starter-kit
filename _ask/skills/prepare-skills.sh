@@ -52,6 +52,30 @@ for e in entries:
         sys.exit(1)
 
 failed = False
+
+def apply_tdd_override(skill):
+    if skill != 'tdd':
+        return
+    start = '<!-- ASK TDD OVERRIDE START -->'
+    end = '<!-- ASK TDD OVERRIDE END -->'
+    override_path = Path('_ask/skills/tdd-override.md')
+    if not override_path.is_file():
+        raise RuntimeError(f'missing repository TDD override: {override_path}')
+    body = override_path.read_text(encoding='utf-8').strip()
+    block = f'{start}\n{body}\n{end}'
+    for path in (Path('.agents/skills/tdd/SKILL.md'), Path('.cursor/skills/tdd/SKILL.md')):
+        if not path.is_file():
+            continue
+        content = path.read_text(encoding='utf-8')
+        starts, ends = content.count(start), content.count(end)
+        if starts != ends or starts > 1:
+            raise RuntimeError(f'malformed or duplicate TDD override markers in {path}')
+        if starts:
+            content = re.sub(re.escape(start) + r'.*?' + re.escape(end), '', content, count=1, flags=re.S).rstrip()
+        updated = content.rstrip() + '\n\n' + block + '\n'
+        if updated != path.read_text(encoding='utf-8'):
+            path.write_text(updated, encoding='utf-8')
+
 for e in entries:
     rev = e.get('revision', '')
     if not rev or rev.lower() == 'latest':
@@ -82,6 +106,12 @@ for e in entries:
             if e.get('required', False):
                 failed = True
             continue
+    try:
+        apply_tdd_override(skill)
+    except RuntimeError as exc:
+        print(f'prepare-skills: {exc}', file=sys.stderr)
+        failed = True
+        continue
     print(f"prepare-skills: ok {skill} @ {rev}")
 
 if failed:

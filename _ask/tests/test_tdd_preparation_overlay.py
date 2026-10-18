@@ -23,6 +23,8 @@ class PreparationTests(unittest.TestCase):
         shutil.copy2(ROOT / "ask", self.root / "ask")
         shutil.copy2(ROOT / "_ask/skills/prepare-skills.sh",
                      self.root / "_ask/skills/prepare-skills.sh")
+        shutil.copy2(ROOT / "_ask/skills/tdd-override.md",
+                     self.root / "_ask/skills/tdd-override.md")
         shutil.copy2(ROOT / "_ask/scripts/ask-complete.sh",
                      self.root / "_ask/scripts/ask-complete.sh")
         (self.root / "_ask/skills/manifest.yaml").write_text(textwrap.dedent("""\
