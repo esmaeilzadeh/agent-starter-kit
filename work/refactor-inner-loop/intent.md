@@ -14,6 +14,14 @@ task code review explicitly part of the inner loop too. Align canonical stages,
 retry dispatch where necessary, workflow references, repository-specific TDD
 guidance, and every generated runtime bundle.
 
+For every load-bearing Grill decision, present selectable answer options and
+keep a free-text path available even when the human selects an option. Use the
+active runtime's structured choice control; if it has none, offer numbered
+options plus an explicit write-in path. During continuation, ask for a missing
+or stale confirmation only when it blocks an otherwise authorized next step.
+When the approved plan explicitly stops before that step, report the authorized
+work as complete without describing the future gate as missing.
+
 ## Why
 
 The Refactor contract refers to the current task, while the outer path lists it
@@ -50,6 +58,10 @@ the entire workflow, or renumbering stage identifiers.
 - Reconcile conflicting prepared TDD instructions through repository-owned
   guidance or preparation overlays, preserving pinned upstream skill sources.
 - All generated runtime bundles derive from the updated canonical contracts.
+- Grill choices preserve both option selection and user-supplied nuance; the
+  generated runtime prompts follow the same contract.
+- Continuation distinguishes a missing gate for an authorized next action from
+  an explicit plan stop.
 - Required confirmations remain selectable questions; this change adds no
   per-task human approval gate.
 - Test the public inner-loop CLI transitions and integration gates, plus
@@ -65,10 +77,13 @@ The user specified Red -> Green -> Refactor and code review inside the inner
 loop; all local refactors must be completed, while broader horizontal refactors
 are parked as later cards tagged refactoring. Necessary changes to meaning,
 behavior, or contracts require Spec Change. The exact instruction "go till
-finishing the plan and stop" authorizes preparing Spec, Challenge, and Plan.
-Implementation is not authorized by that instruction. No complete-intent
-confirmation has been fabricated; record it through the normal gate before any
-future implementation if still missing.
+finishing the plan and stop" originally authorized preparing Spec, Challenge,
+and Plan only. On 2026-10-19 the human approved a Spec Change proposal to add
+selectable Grill decisions with a write-in path and correct explicit-stop
+handling, then explicitly authorized implementation, pushing the work branch,
+merging into `develop`, and pushing `develop`. This amended intent now includes
+that work. Record the complete-intent choice against this exact intent before
+implementation; no approval has been fabricated.
 
 ## E2E
 
@@ -77,4 +92,3 @@ Applicability: `not_applicable`
 If `not_applicable`, reason: This changes protocol and CLI task transitions,
 not a user-facing application journey. Verification will cover task dispatch,
 review/correction transitions, evidence invalidation, and generated bundle parity.
-

@@ -2,8 +2,8 @@
 
 ## Status
 
-CURRENT for planning under the user's instruction to finish the plan and stop.
-Implementation remains unstarted and subject to its normal intent gate.
+CURRENT, revision 2. The human approved the 2026-10-19 Spec Change proposal.
+Implementation remains subject to the updated complete-intent confirmation.
 
 ## Goal
 
@@ -146,6 +146,13 @@ RF-006: Preparation applies the canonical TDD override to both local skill views
 idempotently, retaining pins/upstream text and respecting dry-run/failure cases.
 RF-007: Install/sync deliver consistent canonical task-loop references and
 stage projections to every supported runtime.
+RF-008: Every load-bearing Grill decision uses selectable answer options and
+keeps a free-text path available regardless of the selected option. Use the
+active runtime's structured choice control; when unavailable, provide numbered
+options plus an explicit write-in path.
+RF-009: Continuation asks for missing or stale confirmation only when it blocks
+an otherwise authorized next step. An explicit plan stop is reported as
+complete within scope, without presenting a future gate as currently missing.
 
 ## Open questions
 

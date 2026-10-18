@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "refactor-inner-loop",
-  "revision": 1,
+  "revision": 2,
   "criteria": [
     {
       "id": "RF-001",
@@ -93,6 +93,29 @@
         "The canonical task-loop contract ships and each supported runtime follows it consistently without losing consumer overlays"
       ],
       "verification_mode": "tests"
+    },
+    {
+      "id": "RF-008",
+      "given": "The Grill stage reaches a load-bearing decision",
+      "when": "The agent asks the human to resolve it",
+      "then": [
+        "Selectable answer options are presented using the active runtime's structured choice control",
+        "A free-text response path remains available even when an option is selected",
+        "If the runtime has no choice controls, numbered options and an explicit write-in path are provided"
+      ],
+      "verification_mode": "review",
+      "reason": "The user-facing choice interaction and preservation of write-in responses require an independent prompt walkthrough; static strings alone cannot prove the interaction."
+    },
+    {
+      "id": "RF-009",
+      "given": "A workstream is resumed near a confirmation gate",
+      "when": "The current plan's authorized scope is evaluated",
+      "then": [
+        "A missing or stale confirmation is asked only if it blocks an otherwise authorized next action",
+        "An explicit plan stop is reported as completion within scope without describing the future gate as missing"
+      ],
+      "verification_mode": "review",
+      "reason": "Continuation behavior depends on interpreting authorization and stop boundaries; an independent scenario walkthrough is required."
     }
   ]
 }

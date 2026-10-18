@@ -3,9 +3,10 @@
 ## Specification
 
 specs/current/refactor-inner-loop.md and its canonical criterion metadata
-specs/current/refactor-inner-loop.json, revision 1. Risk: MEDIUM because agent
-workflow changes apply across runtimes. User authorized planning only; stop
-before Implement. Independent review and contract pinning are recorded separately.
+specs/current/refactor-inner-loop.json, revision 2. Risk: MEDIUM because agent
+workflow changes apply across runtimes. The human authorized implementation,
+develop integration, and push on 2026-10-19, subject to the updated intent gate.
+Independent review and contract pinning are recorded separately.
 
 ## Approach
 
@@ -38,6 +39,11 @@ before Implement. Independent review and contract pinning are recorded separatel
 7. Update guide/spec/demo/root references; regenerate all runtime bundles using
    ./ask sync. Verify install/upgrade ship the canonical contract and preserve
    consumer overlays. Fixtures must exclude local virtualenvs from Git snapshots.
+8. Make every load-bearing Grill question a runtime-native choice interaction
+   with selectable alternatives and an always-available write-in path. Clarify
+   continuation handling so only a missing gate for an authorized next action
+   is presented as pending; an explicit plan stop is reported as complete.
+   Regenerate all runtime projections and independently walk these scenarios.
 
 ## Work breakdown
 
@@ -48,9 +54,9 @@ The exact owned-path globs are in inner-loop/tasks.yaml.
 
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
-| RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates | none, reviewed criteria RF-001..004 | Independent scenario walkthrough with criterion-by-criterion decisions; no implementation or state transitions claimed by text checks |
+| RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references, structured Grill questions, continuation stop-boundary behavior | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates | none, reviewed criteria RF-001..004, RF-008..009 | Independent scenario walkthrough with criterion-by-criterion decisions; no implementation or state transitions claimed by text checks |
 | RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..06 | Behavior assertion Red/Green for PREP-01/02/04; current execution for PREP-03/05/06 unchanged regressions |
-| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; generated Agent/Cursor/Claude/Codex/OpenCode paths; two new integration test modules | LOOP-01..05, BUNDLE-01..02 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
+| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; generated Agent/Cursor/Claude/Codex/OpenCode paths; two new integration test modules | LOOP-01..05, BUNDLE-01..03 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
 
 RF-01 deliberately has no executable test: its claims are semantic agent
 instructions, not a new runner API. An independent reviewer must walk the
@@ -81,6 +87,11 @@ a manufactured Red or proof of newly changed behavior.
   or retry limits are exhausted: existing gates refuse integration.
 - Interruption before later-card publication retains its draft and publication
   status; resumption publishes once through normal integration.
+- Every load-bearing Grill decision uses selectable options and retains a write-in
+  path when an option is selected; numbered choices are the fallback only when
+  the runtime offers no native choice control.
+- A plan that explicitly stops reports completion within its scope. A missing
+  confirmation is asked only when it blocks an otherwise authorized next step.
 
 ## Verification approach
 
@@ -126,9 +137,9 @@ separate explicit decision.
 
 ## Out of scope for this plan
 
-Implementation during this session; merging/pushing this work; broader horizontal
-refactor execution; changing product behavior; renumbering stages; replacing the
-scheduler or evidence system; a new inbox/tracker feature.
+Broader horizontal refactor execution; changing product behavior; renumbering
+stages; replacing the scheduler or evidence system; a new inbox/tracker feature;
+merging or pushing to `main`.
 
 ## E2E
 
@@ -139,8 +150,9 @@ scenario review verifies agent semantics that execution tests cannot establish.
 
 ## Stop boundary
 
-Stop when Spec, independent Challenge, task graph, test mapping, and Plan are
-committed and validated. Do not initialize task runtime state, spawn a task writer,
-write behavior tests, modify implementation/protocol production sources, or run
-any implementation stage. Implementation intent confirmation remains a future
-entry gate if not already valid; no approval response may be fabricated.
+Do not begin implementation until the amended complete intent is explicitly
+approved and recorded against its current digest, the amended plan is
+independently reviewed and pinned, and `./ask check-workstream` passes. Then run
+the task graph serially. After verification and acceptance, merge the completed
+work branch into `develop` and push both `develop` and the work branch as
+explicitly authorized by the human.

@@ -400,6 +400,36 @@
       ]
     },
     {
+      "id": "BUNDLE-03",
+      "criterion_ids": [
+        "RF-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Canonical Grill and continuation prompt contracts have been updated",
+        "when": "Invoke ./ask sync for all supported runtimes",
+        "then": [
+          "Generated Grill prompts retain the selectable-options and always-available write-in requirement",
+          "Generated continuation prompts retain the authorized-next-step versus explicit-stop distinction"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "RF-007",
+          "checks": [
+            "Generated Grill prompt projections include the canonical choice interaction contract",
+            "Generated continuation prompt projections include the canonical stop-boundary contract"
+          ]
+        }
+      ],
+      "runner_id": "bundles",
+      "case_id": "test_refactor_bundle_parity.BundleTests.test_choice_and_stop_contracts_project_to_runtimes",
+      "source_paths": [
+        "_ask/tests/test_refactor_bundle_parity.py"
+      ]
+    },
+    {
       "id": "PREP-06",
       "criterion_ids": [
         "RF-006"
@@ -485,6 +515,7 @@
         "LOOP-04",
         "BUNDLE-01",
         "BUNDLE-02",
+        "BUNDLE-03",
         "LOOP-05"
       ]
     }
