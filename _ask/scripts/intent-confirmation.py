@@ -20,9 +20,16 @@ PROMPT = "Do you approve the complete intent and every listed assumption as writ
 def affirmative(response: str) -> bool:
     value = " ".join(unicodedata.normalize("NFKC", response).casefold().split())
     value = value.rstrip(".! ")
-    return value in {"yes", "yes, i approve", "yes, defaults ok", "approve", "approved", "confirmed", "defaults ok", "all recs",
-                      "i approve these defaults are ok",
-                      "i approve the complete intent and every listed assumption as written"}
+    accepted = {"yes", "yes, i approve", "yes, defaults ok", "approve", "approved", "confirmed", "defaults ok", "all recs",
+                "i approve these defaults are ok",
+                "i approve the complete intent and every listed assumption as written"}
+    if value in accepted:
+        return True
+    # A direct approval may include the user's next-action instruction. Do not
+    # make the human repeat the approval prompt to get that clear response recorded.
+    if re.match(r"^(?:i\s+)?approve(?:d)?\b", value):
+        return re.search(r"\b(?:if|unless|but|not|no|except|provided that|subject to)\b", value) is None
+    return False
 
 
 def intent_paths(root: Path, work_id: str) -> tuple[Path, Path]:
@@ -72,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
     answer = parser.add_mutually_exclusive_group()
     answer.add_argument("--choice", choices=("approve", "revise"),
                         help="explicit human selection from the complete-intent approval choices")
-    answer.add_argument("--response", help="exact human response when choice controls are unavailable")
+    answer.add_argument("--response", help="clear affirmative response when choice controls are unavailable; concise approval is sufficient")
     args = parser.parse_args(argv)
     root = args.root.resolve()
     try:

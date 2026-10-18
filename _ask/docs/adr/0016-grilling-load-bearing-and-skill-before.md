@@ -8,7 +8,7 @@ Kit grilling (`01 Grill`, Explore decision grilling) was reading ADR 0007 as “
 - Each round: expanded numbered questions + a short “I’ll assume…” list. “Defaults OK” covers the assume-list.
 - Do not ask facts already in the repo. Cap depth at destination, constraints, non-goals.
 - Never auto-approve a real decision. “All ok” is invalid if a load-bearing question was never expanded.
-- Before the first numbered question: propose extra related Community Skills that would change What/Why; **ask before prepare**; pin accepted skills in `_ask/skills/manifest.yaml` (explicit revision, never `latest`) so later sessions in this repo use them.
+- Before the first numbered question: offer extra related Community Skills that would change What/Why as selectable choices; prepare only selected skills, pinning them in `_ask/skills/manifest.yaml` (explicit revision, never `latest`) so later sessions in this repo use them.
 - Do not fork the pinned Community `grilling` skill. Kit contracts override it on kit stages.
 
 ADR 0007 still applies to **numbered** questions only.

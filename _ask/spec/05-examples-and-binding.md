@@ -168,7 +168,7 @@ If the destination is foggy:
 - run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
 - prepare Community Skills from _ask/skills/manifest.yaml (do not vendor by default).
 If the destination is already clear: omit 00; do not write explore-map.md; record the skip in intent.md.
-Free on-path chat: announce 00 vs 01 and wait for confirm. `/00-explore` starts Explore immediately.
+Free on-path chat: announce foggy vs clear, then offer **Start Explore** / **Start Grill** as selectable choices. `/00-explore` starts Explore immediately.
 
 Before independent Engineering Pipeline work:
 - invoke kit operations via `./ask` (not a generic root scripts/ folder);

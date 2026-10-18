@@ -18,7 +18,7 @@ treat Explore as decision work, not implementation
 keep a durable map (explore-map artifact and/or tracker map)
 separate human decisions from research facts
 prepare Community Skills declared for Explore via Skill Preparation
-before Explore decision grilling: propose extra related skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+before Explore decision grilling: offer extra related skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
 expand only load-bearing Explore decisions (Grilling Expansion: two-block + assume-list)
 stop and hand off when the destination is clear
 ```
@@ -66,7 +66,7 @@ Turn ambiguous human intent into an explicit Intent Artifact.
 Must:
 
 ```text
-before the first numbered question: propose related extra Community Skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+before the first numbered question: offer related extra Community Skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
 ask only load-bearing questions
 expand each numbered question before resolution (alternatives, tradeoffs, failure modes — not bare A/B/C alone)
 state a short “I’ll assume…” list; “defaults OK” covers it

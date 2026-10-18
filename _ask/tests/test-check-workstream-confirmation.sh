@@ -42,6 +42,21 @@ python3 -c 'import json; assert json.load(open("work/demo/intent-confirmation.js
 git add . && git commit -qm 'record exact terse approval'
 ./_ask/scripts/check-workstream.sh demo >/dev/null
 
+python3 _ask/scripts/intent-confirmation.py confirm --root "$TMP" --work-id demo \
+  --response 'approve and merge back to main and push'
+python3 - <<'PY_ASSERT'
+import json
+record=json.load(open('work/demo/intent-confirmation.json'))
+assert record['human_response']=='approve and merge back to main and push'
+PY_ASSERT
+git add . && git commit -qm 'record concise approval with follow-on direction'
+./_ask/scripts/check-workstream.sh demo >/dev/null
+if python3 _ask/scripts/intent-confirmation.py confirm --root "$TMP" --work-id demo \
+  --response 'I approve if you also change the accepted scope'; then
+  echo 'FAIL: conditional approval was accepted' >&2
+  exit 1
+fi
+
 cp work/demo/intent-confirmation.json prior-confirmation.json
 if python3 _ask/scripts/intent-confirmation.py confirm --root "$TMP" --work-id demo \
   --choice revise; then
