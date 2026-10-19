@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "refactor-inner-loop",
-  "revision": 17,
+  "revision": 18,
   "coordinator_sha": "b16399d3c129e736987b291ad8abc417cc79af9c",
   "coordinator_branch": "agent/refactor-inner-loop",
   "tasks": {
@@ -792,7 +792,7 @@
       }
     },
     "RF-03": {
-      "status": "running",
+      "status": "ready",
       "base_sha": "b16399d3c129e736987b291ad8abc417cc79af9c",
       "task_branch": "",
       "result_path": "",
