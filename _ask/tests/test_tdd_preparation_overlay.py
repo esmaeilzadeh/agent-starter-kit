@@ -112,18 +112,27 @@ fi
 ''')
         first = self.prepare()
         self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
-        view = self.root / self.installed_views[0]
-        content = view.read_text(encoding="utf-8").replace("Red -> Green -> Refactor", "STALE OVERRIDE")
-        view.write_text(content, encoding="utf-8")
+        for relative in self.installed_views:
+            view = self.root / relative
+            content = view.read_text(encoding="utf-8").replace("Red -> Green -> Refactor", "STALE OVERRIDE")
+            view.write_text(content, encoding="utf-8")
 
         second = self.prepare()
         self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
+        second_snapshots = {}
         for relative in self.installed_views:
             content = (self.root / relative).read_text(encoding="utf-8")
+            self.assertIn("UPSTREAM-CANARY", content)
             self.assertEqual(content.count("<!-- ASK TDD OVERRIDE START -->"), 1)
             self.assertEqual(content.count("<!-- ASK TDD OVERRIDE END -->"), 1)
             self.assertIn("Red -> Green -> Refactor", content)
             self.assertNotIn("STALE OVERRIDE", content)
+            second_snapshots[relative] = content.encode("utf-8")
+
+        third = self.prepare()
+        self.assertEqual(third.returncode, 0, third.stdout + third.stderr)
+        self.assertEqual({path: (self.root / path).read_bytes() for path in self.installed_views},
+                         second_snapshots)
 
     def test_skip_install_only_validates_pins(self):
         initial = self.prepare()
