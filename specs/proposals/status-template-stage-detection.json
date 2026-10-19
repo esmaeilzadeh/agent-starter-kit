@@ -5,7 +5,7 @@
   "criteria": [
     {
       "id": "STATUS-001",
-      "given": "A workstream has untouched intent and Explore handoff, no result or acceptance evidence, and no meaningful plan approach, populated task row, or review verdict, even if stock guidance, incomplete rows, or findings without a verdict are present",
+      "given": "A workstream has no earlier substantive intent or Explore handoff, no result or acceptance evidence, and no meaningful plan approach, populated task row, or review verdict, even if stock guidance, incomplete rows, or findings without a verdict are present",
       "when": "./ask status reports its stage",
       "then": [
         "The reported stage is seeded"
