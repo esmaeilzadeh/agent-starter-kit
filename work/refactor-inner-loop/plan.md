@@ -66,7 +66,7 @@ The exact owned-path globs are in inner-loop/tasks.yaml.
 | --- | --- | --- | --- | --- | --- |
 | RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references, structured Grill questions, continuation stop-boundary behavior, and matching stage projections | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates; .agents/skills/kit-*/**; .cursor/commands/**; .cursor/skills/kit-*/** | no task-local executable test; reviewed criteria RF-001..004, RF-008..009; candidate CheckPlan must pass existing repository sync/traceability checks | Independent scenario walkthrough with criterion-by-criterion decisions; matching generated stage projections; candidate CheckPlan passes |
 | RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently; traceability inventory honors planned unchanged regression cases | RF-01 | _ask/skills/**; .agents/ask/verification/traceability/evidence.py; test_tdd_preparation_overlay.py; test_traceability_inventory.py; approved RF-02 plan amendment artifacts | PREP-01..06, TRACE-01 | Behavior assertion Red/Green for PREP-01/02/04 and TRACE-01; current execution for PREP-03/05/06 unchanged regressions |
-| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; .cursor/agents/**; .claude/agents/**; .codex/agents/**; .opencode/agents/**; two new integration test modules | LOOP-01..05, BUNDLE-01..03 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
+| RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; .cursor/agents/**; .claude/agents/**; .codex/agents/**; .opencode/agents/**; two new integration test modules; RF-03 plan amendment artifacts | LOOP-01..05, BUNDLE-01..03 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
 
 RF-01 adds no task-local executable test: its claims are semantic agent
 instructions, not a new runner API. Its candidate still must pass the existing
@@ -79,6 +79,12 @@ masking of nonzero installer failure and therefore requires behavior Red/Green.
 PREP-03/05/06 preserve existing dry-run/optional/missing-primary semantics and
 are baseline regressions, as are LOOP tests. They require current execution, not
 a manufactured Red or proof of newly changed behavior.
+
+RF-03's BUNDLE-03 case is baseline regression coverage: it verifies that RF-01's
+already-updated Grill and continuation contracts survive runtime projection. It
+must remain assigned to RF-007 and execute final-green, but does not require a
+manufactured behavior Red. RF-03 owns the narrow amendment artifacts needed to
+record this classification and keep the accepted plan digests current.
 
 ## Review scenarios
 

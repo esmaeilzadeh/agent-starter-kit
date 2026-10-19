@@ -419,7 +419,7 @@
         "RF-007"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Canonical Grill and continuation prompt contracts have been updated",
         "when": "Invoke ./ask sync for all supported runtimes",
