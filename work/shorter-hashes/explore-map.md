@@ -2,7 +2,7 @@
 
 ## Destination
 
-Define compact, unambiguous references for work-owned items. Prefer hierarchical, work-qualified IDs for tasks and tests over hashes, for example `shorter-hashes/task/<task-id>` and `shorter-hashes/test/<task-id>/<test-id>`. Choose a numeric format that supports easy string sorting without imposing a practical count cap. For any references that still use hashes, keep uniqueness scoped to the owning work, make the minimum prefix configurable below eight characters, and allow it to grow when collisions occur.
+Replace opaque hash identifiers with readable, work-scoped references wherever the identifier names a domain item such as a task or test. Prefer hierarchical IDs such as `shorter-hashes/task/<task-id>` and `shorter-hashes/test/<task-id>/<test-id>`, using unpadded numeric components. Keep hashes for content-integrity checks and any remaining references that truly need them; make abbreviated reference length configurable below eight characters and expandable on collisions within the work.
 
 ## Notes
 
@@ -17,6 +17,7 @@ Define compact, unambiguous references for work-owned items. Prefer hierarchical
 - Test references should use `<work-id>/test/<task-id>/<test-id>`.
 - Use unpadded numeric IDs; tools that order them must use numeric-aware sorting.
 - Work qualification makes references unambiguous across work boundaries; task/test references need no hash prefix.
+- Hashes are poor domain identifiers because they are opaque and add no useful meaning to tasks, tests, or similar work items. Prefer readable identifiers there; retain hashes for content integrity.
 - Any remaining hash-reference collision domain is the containing work, not the repository as a whole. Its configurable minimum may be less than eight and must be adjustable upward after a collision.
 
 ## Not yet specified
