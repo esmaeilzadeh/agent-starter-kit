@@ -133,7 +133,7 @@
         "STATUS-002"
       ],
       "type": "e2e",
-      "change_kind": "regression",
+      "change_kind": "new",
       "scenario": {
         "given": "A committed plan has a meaningful Approach and no task rows",
         "when": "The actual status command reports its stage",
@@ -162,7 +162,7 @@
         "STATUS-002"
       ],
       "type": "e2e",
-      "change_kind": "regression",
+      "change_kind": "new",
       "scenario": {
         "given": "A committed plan has a task ID and outcome in a row, with an empty dependency field",
         "when": "The actual status command reports its stage",

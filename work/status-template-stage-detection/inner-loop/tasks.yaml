@@ -8,7 +8,7 @@ tasks:
     owned_paths:
       - _ask/scripts/status.sh
       - _ask/tests/test_status_stage_detection.py
-    completion_evidence: "Blank and incomplete-evidence temporary-Git CLI cases have immutable behavioral red and final-green evidence; preserved Approach, populated-row, and verdict behaviors run as final-green regression cases; existing status shell checks pass"
+    completion_evidence: "Blank, findings-only, incomplete-row, Approach-with-stock-review, and populated-row-with-stock-review CLI cases have immutable behavioral red and final-green evidence; substantive verdict preservation runs as final-green regression; existing status shell checks pass"
     test_ids: [STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT]
   - id: approval-checkpoint
     title: "Checkpoint prepared intent before approval pauses"
