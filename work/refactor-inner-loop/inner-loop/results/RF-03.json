@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "refactor-inner-loop",
+  "task_id": "RF-03",
+  "base_sha": "b16399d3c129e736987b291ad8abc417cc79af9c",
+  "candidate_sha": "020aca2bb83419b91bd9605bc4369434a86dca38",
+  "tdd": {
+    "seam": "Update human-facing workflow/spec/demo references and ship the canonical per-task lifecycle consistently through install, upgrade, sync, and all runtime projections.",
+    "red": {
+      "command": "./ask traceability run refactor-inner-loop --candidate-sha d73c28db245402317c0fb317ea714351f130f861 --anchor-sha 020aca2bb83419b91bd9605bc4369434a86dca38 --revision 4a513749673f3548aac833d410ca5ae091f271f2 --scope task --task-id RF-03 --phase red",
+      "output": "work/refactor-inner-loop/traceability/runs/c7c6c8d9d7fb4378a51986565f47c2d0/results.json: BUNDLE-01 and BUNDLE-02 failed as behavior assertions; all other RF-03 cases passed.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run refactor-inner-loop --candidate-sha 020aca2bb83419b91bd9605bc4369434a86dca38 --anchor-sha 020aca2bb83419b91bd9605bc4369434a86dca38 --revision 4a513749673f3548aac833d410ca5ae091f271f2 --scope task --task-id RF-03 --phase final_green",
+      "output": "work/refactor-inner-loop/traceability/runs/40311c290a974faab59240053e4d518c/results.json: LOOP-01..05 and BUNDLE-01..03 passed (8/8), with no unsupported cases.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "BUNDLE-01 and BUNDLE-02 have accepted-plan-bound behavior assertion Red at d73c28d and pass final-green at this candidate. The two test source files are unchanged between Red and final candidate. BUNDLE-03 remains unchanged projection regression coverage and passed final-green. Independent candidate review approved with no findings."
+}
