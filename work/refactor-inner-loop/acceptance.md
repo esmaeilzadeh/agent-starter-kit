@@ -25,7 +25,7 @@ Accepted specification: `specs/current/refactor-inner-loop.md`, revision 2, with
 
 ## Context-engineering audit
 
-Path `work/refactor-inner-loop/context-audit.md`. CE-01 through CE-06 pass; none open.
+Path `work/refactor-inner-loop/context-audit.md`, SHA `e21e064ba933e85ec6e585d5c574fd11cff8e610a541b47d05260072bcdba39e`. CE-01 through CE-06 pass; none open.
 
 ## Acceptance decision
 
