@@ -113,7 +113,12 @@ for e in entries:
         if e.get('required', False):
             failed = True
         continue
-    # Red-stage candidate: exercise the test suite before applying the override.
+    try:
+        apply_tdd_override(skill)
+    except RuntimeError as exc:
+        print(f'prepare-skills: {exc}', file=sys.stderr)
+        failed = True
+        continue
     print(f"prepare-skills: ok {skill} @ {rev}")
 
 if failed:
