@@ -53,12 +53,6 @@
           "checks": [
             "JSON stage equals the literal seeded"
           ]
-        },
-        {
-          "criterion_id": "STATUS-002",
-          "checks": [
-            "Findings without a verdict do not report reviewed; JSON stage remains seeded"
-          ]
         }
       ],
       "runner_id": "status-cli-integration",
@@ -88,6 +82,12 @@
           "criterion_id": "STATUS-001",
           "checks": [
             "JSON stage equals the literal seeded"
+          ]
+        },
+        {
+          "criterion_id": "STATUS-002",
+          "checks": [
+            "Findings without a verdict do not report reviewed; JSON stage remains seeded"
           ]
         }
       ],
