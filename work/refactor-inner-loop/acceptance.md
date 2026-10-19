@@ -29,9 +29,9 @@ Path `work/refactor-inner-loop/context-audit.md`, SHA `e21e064ba933e85ec6e585d5c
 
 ## Acceptance decision
 
-Awaiting the required human choice: Accept workstream or Request changes.
+Accepted by the human on 2026-10-19. The submitted choice was “Accept workstream.”
 
 ## Accepted commit SHA
 
-Pending human acceptance.
+`385cfd5b17d4d89ca99a47165567756fd087e68c` — verified candidate reviewed by the independent workstream reviewer. Subsequent commits preserve the runtime evidence and acceptance record.
 
