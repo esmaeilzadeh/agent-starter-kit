@@ -37,4 +37,4 @@ PAUSE-001 is suitable for review-only evidence from direct inspection of the can
 
 ## Challenge verdict
 
-PASS for canonical spec revision 1 at SHA `146b54d` (digest `800d17b8d48327cf85636856adbaaf6194ff8666d5afad491829b127f10f8ea5`). The follow-up caught and corrected a STATUS-001 fixture-precondition gap. A final digest-bound recheck is pending for the committed criterion wording. STATUS-002 covers meaningful approach, populated task rows, verdicts, and findings without verdicts. PAUSE-001 is approved for review-only verification. This decision does not approve the test plan.
+PASS for canonical spec revision 1 at commit `f1b1ecb` (digest `25d12bcc72365a30f460afc306344d5dc79c2e2ff07ed9b21c2bdb6d4a031468`). The digest-bound follow-up confirmed STATUS-001 excludes substantive earlier-stage content and result/acceptance evidence, preserving stage precedence. STATUS-002 covers meaningful approach, populated task rows, verdicts, and findings without verdicts. PAUSE-001 is approved for review-only verification. This decision does not approve the test plan.
