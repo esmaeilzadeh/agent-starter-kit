@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "4d8121d7f1639342b9a65c59396184a23f0a10cd",
+  "contract_sha": "f59a61ca9bd2caa10ff91942c17393ef1ada3ff9",
   "work_id": "status-template-stage-detection",
   "reviewer": "gpt-6.1-sol / independent Spec Challenge",
   "recorded_by": "Codex coordinator",
@@ -16,5 +16,5 @@
   "plan_review_digest": "a359d38993d104d0c1f056f015d4b192651deca3afeb4f58728fc44dbb726f3a",
   "spec_digest": "25d12bcc72365a30f460afc306344d5dc79c2e2ff07ed9b21c2bdb6d4a031468",
   "plan_digest": "df94466cd97c6d68b29ab579d05d0c78aa1c9a69c408ee09503753d2d522836b",
-  "graph_digest": "c3cf1c06b3ce7593e6f3b7dcac80513da5598c8fd1c75a282eb996b663ba8a01"
+  "graph_digest": "77160fcd97de3c29fe5e9b722f32b894134525a84580fddbe1cd6f9291cec16a"
 }
