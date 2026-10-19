@@ -5,7 +5,7 @@
   "criteria": [
     {
       "id": "STATUS-001",
-      "given": "A workstream has untouched stock plan.md and review.md templates and no earlier substantive artifact",
+      "given": "A workstream has no meaningful plan approach, populated task row, or review verdict, even if stock guidance, incomplete rows, or findings without a verdict are present",
       "when": "./ask status reports its stage",
       "then": [
         "The reported stage is seeded"
@@ -14,11 +14,13 @@
     },
     {
       "id": "STATUS-002",
-      "given": "A workstream has a populated plan task row or a substantive review verdict",
+      "given": "A workstream has a meaningful plan approach, a populated plan task row, a substantive review verdict, or findings without a verdict",
       "when": "./ask status reports its stage",
       "then": [
         "A populated task row advances the stage to planned",
-        "A substantive verdict advances the stage to reviewed"
+        "A meaningful approach advances the stage to planned",
+        "A substantive verdict advances the stage to reviewed",
+        "Findings without a verdict do not advance the stage to reviewed"
       ],
       "verification_mode": "tests"
     },
@@ -30,8 +32,14 @@
         "The intent and generated workstream scaffold are committed on the dedicated branch before the question is presented",
         "A requested revision is committed before another approval question is presented"
       ],
-      "verification_mode": "review_only",
-      "review_only_reason": "This is an agent workflow instruction; the appropriate evidence is direct inspection of the canonical stage contract and its generated runtime projection."
+      "verification_mode": "review",
+      "reason": "This is an agent workflow instruction; the appropriate evidence is direct inspection of the canonical stage contract and its generated runtime projection.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "gpt-6.1-sol / independent Spec Challenge",
+        "recorded_by": "Codex coordinator"
+      }
     }
   ]
 }

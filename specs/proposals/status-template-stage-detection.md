@@ -17,8 +17,8 @@ Make `./ask status` report a stage only when its artifact contains evidence of t
 
 ## Behavior
 
-- A stock `review.md` with only headings and instructional text does not count as a completed review. Review stage evidence is a meaningful `## Review verdict` section.
-- A stock `plan.md` with only guidance, a table header, and a separator does not count as a completed plan. A meaningful approach or at least one populated work breakdown row does count.
+- A review counts as complete only when `## Review verdict` has meaningful content. Stock instructions or findings without a verdict do not count.
+- A plan counts as complete when `## Approach` has meaningful content or `## Work breakdown` contains a populated task row with both a task ID and outcome. Stock guidance, table headers, separators, blank rows, and incomplete rows do not count.
 - Meaningful plan and review content continues to advance the inferred stage.
 - Before asking for the required intent approval choice, the agent commits the prepared intent and generated workstream scaffold on the dedicated work branch. Approval is still tied to the exact intent content; any requested edit is committed before asking again.
 
@@ -43,14 +43,15 @@ Make `./ask status` report a stage only when its artifact contains evidence of t
 ## Failure cases
 
 - Untouched plan and review templates are reported as `seeded` (or the highest earlier stage with substantive evidence).
-- A malformed or empty plan row does not advance the stage.
+- Findings without a review verdict and incomplete plan rows do not advance the stage.
 - A meaningful verdict advances status to `reviewed`.
 - A dirty checkout is not silently stashed or discarded to satisfy the pause checkpoint.
 
 ## Acceptance criteria
 
 - `./ask status` on a Git fixture containing untouched stock plan and review templates reports `seeded`.
-- A fixture with a populated task row reports at least `planned`; a fixture with a recorded verdict reports `reviewed`.
+- A fixture with a populated task row or meaningful approach reports at least `planned`; a fixture with a recorded verdict reports `reviewed`.
+- Findings without a verdict and incomplete task rows do not advance to `reviewed` or `planned`.
 - The 01 Grill contract explicitly requires committing the completed intent and generated scaffold before presenting the approval choice, and committing revisions before re-presenting it.
 
 ## Open questions
