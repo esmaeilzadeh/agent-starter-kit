@@ -20,6 +20,12 @@ tasks:
       - _ask/tests/test_tdd_preparation_overlay.py
       - .agents/ask/verification/traceability/evidence.py
       - _ask/tests/test_traceability_inventory.py
+      - work/refactor-inner-loop/plan.md
+      - work/refactor-inner-loop/test-plan.json
+      - work/refactor-inner-loop/inner-loop/tasks.yaml
+      - work/refactor-inner-loop/plan-review.json
+      - work/refactor-inner-loop/plan-amendment-review.json
+      - work/refactor-inner-loop/traceability-accepted.json
   - id: RF-03
     depends_on: [RF-01, RF-02]
     owned_paths:
