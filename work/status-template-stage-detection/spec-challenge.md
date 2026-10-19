@@ -37,4 +37,4 @@ PAUSE-001 is suitable for review-only evidence from direct inspection of the can
 
 ## Challenge verdict
 
-PASS. The criteria align with the approved intent and have observable CLI outcomes. This decision covers the stated spec; it does not approve a future test plan.
+PASS for canonical spec revision 1 at SHA `146b54d` (digest `800d17b8d48327cf85636856adbaaf6194ff8666d5afad491829b127f10f8ea5`). The follow-up caught and corrected a STATUS-001 fixture-precondition gap. A final digest-bound recheck is pending for the committed criterion wording. STATUS-002 covers meaningful approach, populated task rows, verdicts, and findings without verdicts. PAUSE-001 is approved for review-only verification. This decision does not approve the test plan.

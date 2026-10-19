@@ -6,13 +6,13 @@
 
 ## Approach
 
-Make stage evidence specific to the artifact contract. A plan counts only when its Approach is meaningful or a complete work breakdown row contains both task ID and outcome. A review counts only when its Review verdict section is meaningful. Exercise the actual `./ask status` command in committed temporary Git fixtures copied from the stock templates. Update the canonical 01 Grill contract to checkpoint the prepared intent and scaffold before approval questions, including re-approval after requested edits; regenerate its runtime projection.
+Make stage evidence specific to the artifact contract. A plan counts only when its Approach is meaningful or a complete work breakdown row contains both task ID and outcome. A review counts only when its Review verdict section is meaningful. Exercise the actual `./ask status` command end to end in committed temporary Git fixtures copied from the stock templates. Update the canonical 01 Grill contract to checkpoint the prepared intent and scaffold before approval questions, including re-approval after requested edits; regenerate its runtime projection.
 
 ## Work breakdown
 
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
-| stage-inference | Evidence-based plan and review stage classification | none | `_ask/scripts/status.sh`, `_ask/tests/test_status_stage_detection.py` | STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT | Red/green execution of every mapped CLI case; existing status shell contract remains green |
+| stage-inference | Evidence-based plan and review stage classification | none | `_ask/scripts/status.sh`, `_ask/tests/test_status_stage_detection.py` | STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT | Red/green execution of every mapped end-to-end CLI case; existing status shell contract remains green |
 | approval-checkpoint | Clean resumable intent approval pause | none | `.agents/ask/stages/01-grill.md`, `.cursor/skills/kit-01-grill/SKILL.md` | — | Canonical stage and generated projection both require commit before initial approval and before renewed approval after edits; direct independent review |
 
 The task graph and test mapping are committed at `work/status-template-stage-detection/inner-loop/tasks.yaml` and `work/status-template-stage-detection/test-plan.json`. The approval-checkpoint task has no executable behavior test because its outcome is a model-facing protocol instruction; direct source/projection review is the appropriate evidence.
