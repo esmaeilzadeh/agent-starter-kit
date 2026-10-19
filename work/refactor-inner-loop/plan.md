@@ -39,6 +39,9 @@ Independent review and contract pinning are recorded separately.
    installed .agents and Cursor views. Make repeated preparation idempotent;
    preserve pins, unrelated skill content, and SKIP_INSTALL validation semantics.
    Do not commit generated upstream skill trees or change their upstream pins.
+   Also correct traceability test inventory so newly added test cases do not
+   masquerade as changed behavior when the accepted plan classifies them as
+   unchanged regression coverage. Add a regression test for the inventory rule.
 7. RF-01 regenerates the corresponding stage projections using ./ask sync so
    each candidate remains internally consistent. RF-03 updates guide/spec/demo/
    root references, verifies install/upgrade ship the canonical contract and
@@ -62,7 +65,7 @@ The exact owned-path globs are in inner-loop/tasks.yaml.
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
 | RF-01 | Canonical nested TDD/review loop, finding classification, coordinator parking, stage/template references, structured Grill questions, continuation stop-boundary behavior, and matching stage projections | none | .agents/ask/task-loop.md; .agents/ask/stages/**; workflow policy; inner-loop evidence doc; review/later templates; .agents/skills/kit-*/**; .cursor/commands/**; .cursor/skills/kit-*/** | no task-local executable test; reviewed criteria RF-001..004, RF-008..009; candidate CheckPlan must pass existing repository sync/traceability checks | Independent scenario walkthrough with criterion-by-criterion decisions; matching generated stage projections; candidate CheckPlan passes |
-| RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently | RF-01 | _ask/skills/**; test_tdd_preparation_overlay.py | PREP-01..06 | Behavior assertion Red/Green for PREP-01/02/04; current execution for PREP-03/05/06 unchanged regressions |
+| RF-02 | Pinned TDD preparation override applied to installed views, safely and idempotently; traceability inventory honors planned unchanged regression cases | RF-01 | _ask/skills/**; .agents/ask/verification/traceability/evidence.py; test_tdd_preparation_overlay.py; test_traceability_inventory.py | PREP-01..06, TRACE-01 | Behavior assertion Red/Green for PREP-01/02/04 and TRACE-01; current execution for PREP-03/05/06 unchanged regressions |
 | RF-03 | Consistent guides/bundles/consumer installs plus preserved integration gates | RF-01, RF-02 | root guidance; _ask/guide/**; _ask/spec/**; demo docs; .cursor/agents/**; .claude/agents/**; .codex/agents/**; .opencode/agents/**; two new integration test modules | LOOP-01..05, BUNDLE-01..03 | Install/upgrade behavior Red/Green where changed; current integration regression execution; generated parity checks |
 
 RF-01 adds no task-local executable test: its claims are semantic agent

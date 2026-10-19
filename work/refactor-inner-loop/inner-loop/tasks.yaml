@@ -18,6 +18,8 @@ tasks:
     owned_paths:
       - _ask/skills/**
       - _ask/tests/test_tdd_preparation_overlay.py
+      - .agents/ask/verification/traceability/evidence.py
+      - _ask/tests/test_traceability_inventory.py
   - id: RF-03
     depends_on: [RF-01, RF-02]
     owned_paths:
