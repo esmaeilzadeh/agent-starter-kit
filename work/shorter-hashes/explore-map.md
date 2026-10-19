@@ -15,12 +15,13 @@ Define a consistent, configurable way to shorten hash references used inside a w
 
 - Collision domain is the containing work, not the repository as a whole.
 - The configured prefix length may be less than eight and must be adjustable upward after a collision.
+- References that cross work boundaries include both the work ID and short hash (for example, `shorter-hashes/b6c5d9`). Within one work, the short hash alone is sufficient.
 
 ## Not yet specified
 
 - Whether the setting is per-work, repository-wide with per-work collision expansion, or both.
 - Whether to shorten only human-facing references or also serialized references inside work artifacts.
-- Whether collision handling expands just the colliding references or raises the configured minimum for the whole work.
+- Whether collision handling expands just the colliding references or raises the configured minimum for the whole work. Cross-work collisions are separated by the work ID namespace.
 - Which hash-bearing surfaces are in scope beyond tasks, specs, prompts, artifacts, and CLI output.
 - Initial default length (six is a recommendation, not yet confirmed).
 
