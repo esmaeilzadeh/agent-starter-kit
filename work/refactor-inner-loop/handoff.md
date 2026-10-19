@@ -1,59 +1,37 @@
-# Planning handoff: refactor-inner-loop
+# Handoff: refactor-inner-loop complete
 
-## Stop reached
+## Current state
 
-Stage 05 Plan is complete. The user instructed: "go till finishing the plan and
-stop". No implementation has started, no task runtime state has been initialized,
-and no planned behavior test has been written or executed. No merge or push was
-performed for this workstream.
+- Workstream: `refactor-inner-loop`.
+- Accepted and independently reviewed candidate: `385cfd5b17d4d89ca99a47165567756fd087e68c`.
+- Current integrated tip: `9cf21de7dda5bde6588af35b4bc89da1d48e9d3a`.
+- The work branch and `develop` were pushed to `origin`; both pointed to `9cf21de` after integration.
+- Human acceptance is recorded in `work/refactor-inner-loop/acceptance.md`.
 
-## Reviewed contract
+## Delivered
 
-- Intent: work/refactor-inner-loop/intent.md.
-- Specification: specs/current/refactor-inner-loop.md and .json, revision 1.
-- Plan: work/refactor-inner-loop/plan.md.
-- TaskGraph: work/refactor-inner-loop/inner-loop/tasks.yaml.
-- Test map: work/refactor-inner-loop/test-plan.json, 13 declared cases.
-- Independent challenge: work/refactor-inner-loop/spec-challenge.md, APPROVED.
-- Exact-contract decision: work/refactor-inner-loop/plan-review.json, APPROVED.
-- Reviewed source revision: d754f11c4a2b4568ae37f5753f41389edf14ae04.
-- Coordinator pin: work/refactor-inner-loop/traceability-accepted.json and local
-  refs/ask/accepted-tests/refactor-inner-loop.
+- Canonical task lifecycle in `.agents/ask/task-loop.md`: Red → Green → Refactor, independent task Review, correction and re-review, plus the boundary between local refactors and broader later work.
+- Updated 06–08 stage contracts and generated runtime guidance to delegate to the canonical task-loop contract.
+- Repository-owned TDD preparation override and traceability inventory correction, with Red/Green behavior evidence and regression coverage.
+- Guide, spec, demo, and runtime bundle updates for selectable Grill decisions with accompanying free text and accurate handling of explicit plan stops.
+- RF-01 through RF-03 integrated; final candidate traceability completion passed with no missing evidence.
 
-## Execution sequence for a later authorized session
+## Verification and review
 
-RF-01 defines canonical Red -> Green -> Refactor -> independent task review,
-local/broad/redesign classification, coordinator parking, and source contracts.
-RF-02 applies and tests the idempotent pinned-TDD override in both installed views.
-RF-03 updates every runtime bundle/reference and verifies consumer delivery and
-existing candidate integration gates. Execute serially on this workstream branch.
+- `GIT_CONFIG_GLOBAL=/dev/null ./ask verify` passed at `385cfd5b17d4d89ca99a47165567756fd087e68c`.
+- `./ask record-result --work-id refactor-inner-loop --commit-sha 385cfd5b17d4d89ca99a47165567756fd087e68c --result pass` succeeded.
+- `./ask traceability check-completion` passed at the accepted candidate with the accepted plan revision.
+- The independent workstream review approved the exact candidate; acceptance-packet review also approved the audit SHA binding.
+- Context audit CE-01 through CE-06 passed: `work/refactor-inner-loop/context-audit.md`. Its SHA is recorded in `acceptance.md`.
+- Runtime TDD, review, and coordinator evidence was committed at the user's request in `809c04a`.
 
-All valid local refactors are required. Broader horizontal refactors are proposals
-parked with tag refactoring; they do not expand or block local implementation.
-Required meaning/behavior/contract changes use Spec Change. Review and verification
-must bind to the current candidate; existing bounded retries still block/escalate
-unfinished work. Keep broad-card drafts in persisted runtime evidence during
-resumable task work; materialize them only at the final safe no-writer boundary.
+## Relevant commits
 
-## Gates preserved
+- `020aca2` — integrated RF-01 through RF-03 candidate.
+- `385cfd5` — acceptance packet with audit SHA, independently reviewed and verified.
+- `809c04a` — preserved local runtime evidence at the user's request.
+- `9cf21de` — recorded human acceptance; branch and `develop` were pushed to this tip.
 
-The planning instruction authorized document preparation, not implementation.
-The complete-intent confirmation file is deliberately absent: no approval choice
-was fabricated from an instruction to prepare a plan. Before a future Implement
-stage, satisfy the existing check-workstream gate against the final intent using
-an actual submitted approval choice if still required. Do not ask for that choice
-now; the requested stopping point has been reached.
+## Continuation boundary
 
-The accepted-tests authority ref is local Git metadata. A different clone must
-recover/register the reviewed coordinator authority through the documented process;
-a source acceptance file alone cannot create that authority. Do not fabricate a
-new review or claim tests passed to work around a missing ref.
-
-## Validation and limitations
-
-TaskGraph validation, canonical spec/test-plan validation, independent semantic
-classification review, and exact reviewed-contract pin checks pass. Four semantic
-criteria use independently authorized review-only evidence; 13 executable cases
-are future obligations, not completed test evidence. New preparation/consumer
-behavior requires actual assertion Red/Green; unchanged safeguards are regression
-coverage. Outer workstream Verify and Accept are not reached.
+No implementation or acceptance work remains for this workstream. Do not reopen it unless the user requests a follow-up. This work was merged into `develop`, not `main`; release policy keeps `main` human-controlled.
