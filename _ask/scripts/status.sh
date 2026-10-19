@@ -120,6 +120,20 @@ def meaningful(text):
         return True
     return False
 
+def has_task_row(text):
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) < 2 or all(re.fullmatch(r":?-{3,}:?", cell) for cell in cells):
+            continue
+        if cells[0].casefold() in {"task id", "task", "id"}:
+            continue
+        if cells[0] and cells[1]:
+            return True
+    return False
+
 def sha_in(text):
     return bool(re.search(r"\b[0-9a-f]{7,40}\b", text or "", re.I))
 
@@ -138,9 +152,8 @@ def artifacts(ref, work_id):
         "explore_handoff": meaningful(section_after(explore or "", "Handoff to Intent")),
         "intent": meaningful(section_after(intent or "", "What")),
         "plan": meaningful(section_after(plan or "", "Approach"))
-            or meaningful(section_after(plan or "", "Work breakdown")),
-        "review": meaningful(section_after(review or "", "Review verdict"))
-            or meaningful(section_after(review or "", "Findings")),
+            or has_task_row(section_after(plan or "", "Work breakdown")),
+        "review": meaningful(section_after(review or "", "Review verdict")),
         "result": False,
         "result_sha": "",
         "accepted": False,

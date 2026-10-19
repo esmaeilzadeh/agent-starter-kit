@@ -1,0 +1,6 @@
+{
+  "work_id": "status-template-stage-detection",
+  "commit_sha": "5076ffa65fbcd5dd8bf56fbef3b0099a7278faa5",
+  "result": "pass",
+  "notes": "All mandatory ./ask verify checks passed; Standards and Spec reviews approved; both inner-loop tasks integrated."
+}

@@ -1,0 +1,23 @@
+schema: ask-inner-loop-tasks/v1
+work_id: status-template-stage-detection
+tasks:
+  - id: stage-inference
+    title: "Classify plan and review stages from completed evidence"
+    outcome: "Stock guidance, blank rows, and findings without verdict do not advance status; meaningful approach, complete task row, and verdict do"
+    depends_on: []
+    owned_paths:
+      - _ask/scripts/status.sh
+      - _ask/tests/test_status_stage_detection.py
+    completion_evidence: "Blank, findings-only, incomplete-row, Approach-with-stock-review, and populated-row-with-stock-review CLI cases have immutable behavioral red and final-green evidence; substantive verdict preservation runs as final-green regression; existing status shell checks pass"
+    test_ids: [STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT]
+  - id: approval-checkpoint
+    title: "Checkpoint prepared intent before approval pauses"
+    outcome: "Canonical 01 Grill stage and generated projection require committing the prepared intent and scaffold before asking, and commit each revision before asking again"
+    depends_on: []
+    owned_paths:
+      - .agents/ask/stages/01-grill.md
+      - .agents/skills/kit-01-grill/SKILL.md
+      - .cursor/skills/kit-01-grill/SKILL.md
+      - .cursor/commands/01-grill.md
+    completion_evidence: "Independent review confirms the canonical stage and every generated runtime projection require checkpointing before both the initial and revised approval questions; sync produces no unrelated generated changes"
+    test_ids: []
