@@ -124,7 +124,8 @@ def inventory(root,base,sha,plan):
                 matches=[t['id'] for t in plan['tests'] if path in t['source_paths'] and t['case_id'].endswith(suffix)]
                 if len(matches)==1:
                     cases.extend(matches)
-                    if old_methods.get(f'{cls.name}.{method.name}')!=ast.dump(method,include_attributes=False):behavior_changes.extend(matches)
+                    previous=old_methods.get(f'{cls.name}.{method.name}')
+                    if previous is not None and previous!=ast.dump(method,include_attributes=False):behavior_changes.extend(matches)
                 else:unmapped.append(path+suffix)
     return {'inspected_sources':inspected,'changed_cases':sorted(set(cases)),'unmapped_cases':sorted(unmapped),'behavior_changes':sorted(set(behavior_changes))}
 
