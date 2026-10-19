@@ -19,6 +19,12 @@ When an inner-loop TaskGraph is active, follow `.agents/ask/task-loop.md` for pe
 
 `ask` is the Agent Starter Kit dispatcher. Implementation stays under `_ask/scripts/`. **Do not run `./ask setup`** — that wizard is human-only (needs a TTY).
 
+## Asking the user to decide
+
+- Prefer the native `request_user_input` tool with explicit selectable options whenever it is available. Keep an optional text field available in the same response so the user can add nuance with any selection. If the tool is unavailable, present numbered options and invite an added-text response alongside the selected number or label.
+- Ask one question per decision. For architecture and design decisions, offer 2–4 meaningful choices, mark the recommended choice, and briefly explain each choice’s trade-offs.
+- **During Grill, apply this to every grilling question:** provide selectable options and accept accompanying free text even when an option already fits. Do not ask grilling questions as plain text or require the user to choose “Other” before adding nuance.
+
 ## Progress feedback
 
 During active work, send a concise progress update at least every 60 seconds and after meaningful results or changes of direction. Name the specific task, the actual operation or check underway, the latest result, and the next step. A generic “Working” indicator is insufficient feedback. If work is blocked or awaiting input, report the blocker promptly.
