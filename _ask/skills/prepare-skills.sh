@@ -100,7 +100,8 @@ for e in entries:
     skill_md = Path('.agents/skills') / skill / 'SKILL.md'
     if r.returncode != 0:
         print(f"prepare-skills: installer failed for {skill} (exit {r.returncode})", file=sys.stderr)
-        # Immutable Red-stage omission: required installer failure is not surfaced.
+        if e.get('required', False):
+            failed = True
         continue
     if not skill_md.is_file():
         print(f"prepare-skills: missing required primary .agents skill output for {skill}", file=sys.stderr)
@@ -113,8 +114,7 @@ for e in entries:
             failed = True
         continue
     try:
-        # Immutable Red-stage omission: repository override is not applied.
-        pass
+        apply_tdd_override(skill)
     except RuntimeError as exc:
         print(f'prepare-skills: {exc}', file=sys.stderr)
         failed = True
