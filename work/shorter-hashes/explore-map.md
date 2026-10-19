@@ -2,27 +2,30 @@
 
 ## Destination
 
-Define a consistent, configurable way to shorten hash references used inside a workstream, such as references among tasks and specifications. The relevant uniqueness boundary is one workstream, not the whole repository or universe. The minimum prefix length must be configurable below eight characters and must be possible to increase when a collision is encountered.
+Define compact, unambiguous references for work-owned items. Prefer hierarchical, work-qualified IDs for tasks and tests over hashes, for example `shorter-hashes/task/0001` and `shorter-hashes/test/0001/0001` (work/task and work/task/test). For any references that still use hashes, keep uniqueness scoped to the owning work, make the minimum prefix configurable below eight characters, and allow it to grow when collisions occur.
 
 ## Notes
 
 - Standing preference: keep agent-facing context compact; do not pay for global uniqueness when references are scoped to one work.
 - Recovered source: `.later/shorter-hashes.md` was deleted at `c39dcf2` after `refactor-inner-loop` deferred it until integration. It proposed reviewing prompts, artifacts, and CLI output while preserving full hashes where needed for durable identity, audit evidence, or exact Git operations.
-- Current assumption to confirm: short prefixes are work-scoped references; full cryptographic digests remain available wherever integrity verification or exact Git identity depends on them.
-- Initial configurable minimum: recommend six hexadecimal characters, with collision detection increasing the shown/recorded prefix length as needed within that work.
+- Current assumption to confirm: hierarchical IDs replace hashes for task/test references; full cryptographic digests remain available wherever integrity verification or exact Git identity depends on them.
+- For hashes that remain as references, recommend a configurable six-character minimum, with collision detection increasing prefixes as needed within the work.
 
 ## Decisions so far
 
-- Collision domain is the containing work, not the repository as a whole.
-- The configured prefix length may be less than eight and must be adjustable upward after a collision.
-- References that cross work boundaries include both the work ID and short hash (for example, `shorter-hashes/b6c5d9`). Within one work, the short hash alone is sufficient.
+- Task references should use `<work-id>/task/<task-id>`, for example `shorter-hashes/task/0001`.
+- Test references should use `<work-id>/test/<task-id>/<test-id>`, for example `shorter-hashes/test/0001/0001`.
+- Work qualification makes references unambiguous across work boundaries; task/test references need no hash prefix.
+- Any remaining hash-reference collision domain is the containing work, not the repository as a whole. Its configurable minimum may be less than eight and must be adjustable upward after a collision.
 
 ## Not yet specified
 
-- Whether the setting is per-work, repository-wide with per-work collision expansion, or both.
-- Whether to shorten only human-facing references or also serialized references inside work artifacts.
-- Whether collision handling expands just the colliding references or raises the configured minimum for the whole work. Cross-work collisions are separated by the work ID namespace.
-- Which hash-bearing surfaces are in scope beyond tasks, specs, prompts, artifacts, and CLI output.
+- Whether the hierarchical task/test IDs are canonical serialized IDs or compact references projected from existing IDs.
+- Whether specs and other work-owned artifacts should use a similar hierarchical ID form.
+- Where configurable shortening applies to hash references that remain (per-work setting or repository default with per-work expansion).
+- Whether shortening applies to serialized references, human-facing output, or both.
+- Whether collision handling expands only colliding hashes or raises the configured minimum for the whole work.
+- Which hash-bearing surfaces still need compact references beyond task/test identity.
 - Initial default length (six is a recommendation, not yet confirmed).
 
 ## Out of scope
@@ -32,4 +35,4 @@ Define a consistent, configurable way to shorten hash references used inside a w
 
 ## Handoff to Intent
 
-The destination is to reduce hash noise in work-local references while preserving uniqueness within each work. Intent should define a configurable minimum prefix length below eight, explain how collisions expand that length, and identify whether shortening affects display only or serialized references too. The recovered card provides the original rationale and surfaces; this map records the human's clarified work-local collision boundary.
+Prefer short hierarchical IDs for work-owned tasks and tests, carrying the work ID in references that cross the work boundary. Determine whether specs and other artifacts follow the same pattern. For remaining hash references, define the configurable work-local prefix length and collision behavior, while retaining full cryptographic digests where integrity or exact Git identity requires them. The recovered card provides the original rationale and surfaces; this map records the human's scope and ID examples.
