@@ -2,7 +2,7 @@
 
 ## Destination
 
-Define compact, unambiguous references for work-owned items. Prefer hierarchical, work-qualified IDs for tasks and tests over hashes, for example `shorter-hashes/task/1` and `shorter-hashes/test/1/1` (work/task and work/task/test). Use unpadded numeric components so the sequence can grow without a fixed-width cap. For any references that still use hashes, keep uniqueness scoped to the owning work, make the minimum prefix configurable below eight characters, and allow it to grow when collisions occur.
+Define compact, unambiguous references for work-owned items. Prefer hierarchical, work-qualified IDs for tasks and tests over hashes, for example `shorter-hashes/task/<task-id>` and `shorter-hashes/test/<task-id>/<test-id>`. Choose a numeric format that supports easy string sorting without imposing a practical count cap. For any references that still use hashes, keep uniqueness scoped to the owning work, make the minimum prefix configurable below eight characters, and allow it to grow when collisions occur.
 
 ## Notes
 
@@ -13,15 +13,15 @@ Define compact, unambiguous references for work-owned items. Prefer hierarchical
 
 ## Decisions so far
 
-- Task references should use `<work-id>/task/<task-id>`, for example `shorter-hashes/task/1`.
-- Test references should use `<work-id>/test/<task-id>/<test-id>`, for example `shorter-hashes/test/1/1`.
-- Numeric ID components are unpadded and may grow beyond four digits; ordering is numeric when sorted.
+- Task references should use `<work-id>/task/<task-id>`.
+- Test references should use `<work-id>/test/<task-id>/<test-id>`.
 - Work qualification makes references unambiguous across work boundaries; task/test references need no hash prefix.
 - Any remaining hash-reference collision domain is the containing work, not the repository as a whole. Its configurable minimum may be less than eight and must be adjustable upward after a collision.
 
 ## Not yet specified
 
 - Whether the hierarchical task/test IDs are canonical serialized IDs or compact references projected from existing IDs.
+- How IDs stay lexically sortable without a practical maximum: fixed-width zero padding sorts simply but needs a width policy; unpadded decimals grow freely but require numeric-aware sorting; a length-prefixed decimal format can support both at the cost of longer, less familiar IDs.
 - Whether specs and other work-owned artifacts should use a similar hierarchical ID form.
 - Where configurable shortening applies to hash references that remain (per-work setting or repository default with per-work expansion).
 - Whether shortening applies to serialized references, human-facing output, or both.
@@ -36,4 +36,4 @@ Define compact, unambiguous references for work-owned items. Prefer hierarchical
 
 ## Handoff to Intent
 
-Prefer short hierarchical IDs for work-owned tasks and tests, carrying the work ID in references that cross the work boundary. Determine whether specs and other artifacts follow the same pattern. For remaining hash references, define the configurable work-local prefix length and collision behavior, while retaining full cryptographic digests where integrity or exact Git identity requires them. The recovered card provides the original rationale and surfaces; this map records the human's scope and ID examples.
+Prefer short hierarchical IDs for work-owned tasks and tests, carrying the work ID in references that cross the work boundary. Resolve the numeric encoding tradeoff between lexical sorting and unbounded growth. Determine whether specs and other artifacts follow the same pattern. For remaining hash references, define the configurable work-local prefix length and collision behavior, while retaining full cryptographic digests where integrity or exact Git identity requires them. The recovered card provides the original rationale and surfaces; this map records the human's scope and ID examples.
