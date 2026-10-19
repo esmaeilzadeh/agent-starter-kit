@@ -1,0 +1,14 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "refactor-inner-loop",
+  "task_id": "RF-01",
+  "base_sha": "b6ef8fd1a805240983cd4e8d955994a907d7148b",
+  "candidate_sha": "9bd14251fa2c391433cbfd4788133dfc4026f208",
+  "tdd": null,
+  "exemption": {
+    "kind": "documentation-only",
+    "reason": "RF-01 changes semantic protocol documentation and templates; no executable behavior changed.",
+    "reviewer_ack": true
+  },
+  "notes": "Independent semantic review approved RF-001..004 and RF-008..009 at the exact candidate."
+}

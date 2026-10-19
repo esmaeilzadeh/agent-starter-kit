@@ -1,0 +1,17 @@
+{
+  "work_id": "refactor-inner-loop",
+  "task_id": "RF-01",
+  "base_sha": "b6ef8fd1a805240983cd4e8d955994a907d7148b",
+  "candidate_sha": "9bd14251fa2c391433cbfd4788133dfc4026f208",
+  "schema": "ask-integration-evidence/v1",
+  "result": "fail",
+  "result_digest": "026ddee727753b9f279d36d4064003c4a836524da42b7c4b5e3186503bc2c9b8",
+  "checks": [],
+  "evidence_path": "work/refactor-inner-loop/inner-loop/evidence/verify-n8skovgu/verification.json",
+  "log_path": "work/refactor-inner-loop/inner-loop/evidence/verify-n8skovgu/output.log",
+  "runner_digest": "8a8f5eca10e95cd0b786dbef788d7d4dbe6904724f69099dfd02d466aa4509a2",
+  "runner_sha": "b6ef8fd1a805240983cd4e8d955994a907d7148b",
+  "tree_sha": "3dea672fbdd6ac10d74446e3f4da3cfa4dcbe8d4",
+  "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
+  "record_path": "work/refactor-inner-loop/inner-loop/evidence/verify-n8skovgu/integration.json"
+}

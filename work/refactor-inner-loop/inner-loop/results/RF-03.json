@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "refactor-inner-loop",
+  "task_id": "RF-03",
+  "base_sha": "b16399d3c129e736987b291ad8abc417cc79af9c",
+  "candidate_sha": "163817ba81d3bc6952c38b16da20b84867632fc2",
+  "tdd": {
+    "seam": "Update human-facing workflow/spec/demo references and ship the canonical per-task lifecycle consistently through install, upgrade, sync, and all runtime projections.",
+    "red": {
+      "command": "./ask traceability run refactor-inner-loop --candidate-sha b728568724ed36caf3702d75c4fd227e4ab29cb3 --anchor-sha b728568724ed36caf3702d75c4fd227e4ab29cb3 --revision b728568724ed36caf3702d75c4fd227e4ab29cb3 --scope task --task-id RF-03 --phase red",
+      "output": "work/refactor-inner-loop/traceability/runs/c33a6f9abbf349c1bda0713194f7358b/22ea11e4f79d45f6b2d3ee4845b8402d.log: BUNDLE-01 and BUNDLE-02 failed as behavior assertions because installed and upgraded consumer guides lacked the task-scoped review lifecycle.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run refactor-inner-loop --candidate-sha 163817ba81d3bc6952c38b16da20b84867632fc2 --anchor-sha 163817ba81d3bc6952c38b16da20b84867632fc2 --revision 163817ba81d3bc6952c38b16da20b84867632fc2 --scope task --task-id RF-03 --phase final_green",
+      "output": "work/refactor-inner-loop/traceability/runs/4e0c64420ff447fe85cbf55e35817649: all LOOP-01..05 and BUNDLE-01..03 passed with no unsupported cases.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "BUNDLE-01 and BUNDLE-02 have an accepted-plan-bound Red on b728568 and passed after the guide/spec/demo/root references were updated. BUNDLE-03 verifies generated runtime projections contain the canonical selectable-choice plus comment and continuation stop contracts. LOOP-01..05 execute regression scenarios for review rejection, stale approval, successful checks and integration, retry bounds, and failed candidate checks. The first final-green capture at 10816d3 included unsupported unittest subtest events; the retry compatibility case was refactored into individually traceable assertions with identical expected actions. Candidate 163817b final-green run has no unsupported cases and all eight planned tests passed."
+}
