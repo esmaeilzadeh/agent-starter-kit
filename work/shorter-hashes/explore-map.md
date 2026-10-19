@@ -2,7 +2,7 @@
 
 ## Destination
 
-Define compact, unambiguous references for work-owned items. Prefer hierarchical, work-qualified IDs for tasks and tests over hashes, for example `shorter-hashes/task/0001` and `shorter-hashes/test/0001/0001` (work/task and work/task/test). For any references that still use hashes, keep uniqueness scoped to the owning work, make the minimum prefix configurable below eight characters, and allow it to grow when collisions occur.
+Define compact, unambiguous references for work-owned items. Prefer hierarchical, work-qualified IDs for tasks and tests over hashes, for example `shorter-hashes/task/1` and `shorter-hashes/test/1/1` (work/task and work/task/test). Use unpadded numeric components so the sequence can grow without a fixed-width cap. For any references that still use hashes, keep uniqueness scoped to the owning work, make the minimum prefix configurable below eight characters, and allow it to grow when collisions occur.
 
 ## Notes
 
@@ -13,8 +13,9 @@ Define compact, unambiguous references for work-owned items. Prefer hierarchical
 
 ## Decisions so far
 
-- Task references should use `<work-id>/task/<task-id>`, for example `shorter-hashes/task/0001`.
-- Test references should use `<work-id>/test/<task-id>/<test-id>`, for example `shorter-hashes/test/0001/0001`.
+- Task references should use `<work-id>/task/<task-id>`, for example `shorter-hashes/task/1`.
+- Test references should use `<work-id>/test/<task-id>/<test-id>`, for example `shorter-hashes/test/1/1`.
+- Numeric ID components are unpadded and may grow beyond four digits; ordering is numeric when sorted.
 - Work qualification makes references unambiguous across work boundaries; task/test references need no hash prefix.
 - Any remaining hash-reference collision domain is the containing work, not the repository as a whole. Its configurable minimum may be less than eight and must be adjustable upward after a collision.
 
