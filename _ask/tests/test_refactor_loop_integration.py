@@ -37,13 +37,12 @@ class LoopTests(unittest.TestCase):
             (0, 0, "REJECTED", "glob_too_narrow", "blocked"),
         ]
         for review, debug, verdict, boundary, expected in cases:
-            with self.subTest(review=review, debug=debug, verdict=verdict, boundary=boundary):
-                output = subprocess.run(
-                    [str(ROOT / "ask"), "inner-loop", "next-action", "--review-round", str(review),
-                     "--debug-round", str(debug), "--verdict", verdict, "--boundary", boundary],
-                    cwd=ROOT, text=True, capture_output=True, check=True,
-                ).stdout.strip()
-                self.assertEqual(output, expected)
+            output = subprocess.run(
+                [str(ROOT / "ask"), "inner-loop", "next-action", "--review-round", str(review),
+                 "--debug-round", str(debug), "--verdict", verdict, "--boundary", boundary],
+                cwd=ROOT, text=True, capture_output=True, check=True,
+            ).stdout.strip()
+            self.assertEqual(output, expected, f"retry contract changed for {(review, debug, verdict, boundary)}")
 
     def test_approved_candidate_with_failed_checks_does_not_integrate(self):
         self.run_existing_scenario("test_failed_candidate_checks_prevent_fast_forward_and_state_fold")
