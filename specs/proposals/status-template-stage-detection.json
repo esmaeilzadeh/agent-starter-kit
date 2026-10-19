@@ -1,0 +1,37 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "status-template-stage-detection",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "STATUS-001",
+      "given": "A workstream has untouched stock plan.md and review.md templates and no earlier substantive artifact",
+      "when": "./ask status reports its stage",
+      "then": [
+        "The reported stage is seeded"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "STATUS-002",
+      "given": "A workstream has a populated plan task row or a substantive review verdict",
+      "when": "./ask status reports its stage",
+      "then": [
+        "A populated task row advances the stage to planned",
+        "A substantive verdict advances the stage to reviewed"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "PAUSE-001",
+      "given": "The agent has prepared or revised the intent and is about to ask for its required approval choice",
+      "when": "The agent reaches that choice",
+      "then": [
+        "The intent and generated workstream scaffold are committed on the dedicated branch before the question is presented",
+        "A requested revision is committed before another approval question is presented"
+      ],
+      "verification_mode": "review_only",
+      "review_only_reason": "This is an agent workflow instruction; the appropriate evidence is direct inspection of the canonical stage contract and its generated runtime projection."
+    }
+  ]
+}
