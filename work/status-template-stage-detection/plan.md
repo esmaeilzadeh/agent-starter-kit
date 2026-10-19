@@ -12,7 +12,7 @@ Make stage evidence specific to the artifact contract. A plan counts only when i
 
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
-| stage-inference | Evidence-based plan and review stage classification | none | `_ask/scripts/status.sh`, `_ask/tests/test_status_stage_detection.py` | STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT | Red/green execution of every mapped end-to-end CLI case; existing status shell contract remains green |
+| stage-inference | Evidence-based plan and review stage classification | none | `_ask/scripts/status.sh`, `_ask/tests/test_status_stage_detection.py` | STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT | Capture genuine Red then final Green for blank/incomplete evidence cases; run preserved Approach, populated-row, and verdict behavior as regression cases at final Green; existing status shell contract remains green |
 | approval-checkpoint | Clean resumable intent approval pause | none | `.agents/ask/stages/01-grill.md`, `.cursor/skills/kit-01-grill/SKILL.md` | — | Canonical stage and generated projection both require commit before initial approval and before renewed approval after edits; direct independent review |
 
 The task graph and test mapping are committed at `work/status-template-stage-detection/inner-loop/tasks.yaml` and `work/status-template-stage-detection/test-plan.json`. The approval-checkpoint task has no executable behavior test because its outcome is a model-facing protocol instruction; direct source/projection review is the appropriate evidence.
@@ -38,6 +38,6 @@ The task graph and test mapping are committed at `work/status-template-stage-det
 
 ## E2E
 
-Applicability: not_applicable
+Applicability: applicable
 
-If not_applicable, reason: The repository-local CLI and protocol projection are fully exercised through temporary Git fixtures and direct generated-contract inspection; there is no external system journey.
+Applicability: The mapped cases themselves run a complete local end-to-end journey through the public CLI using committed temporary Git fixtures. No additional external system journey applies.

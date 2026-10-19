@@ -53,6 +53,12 @@
           "checks": [
             "JSON stage equals the literal seeded"
           ]
+        },
+        {
+          "criterion_id": "STATUS-002",
+          "checks": [
+            "Findings without a verdict do not report reviewed; JSON stage remains seeded"
+          ]
         }
       ],
       "runner_id": "status-cli-integration",
@@ -65,22 +71,23 @@
     {
       "id": "STATUS-FINDINGS",
       "criterion_ids": [
-        "STATUS-001"
+        "STATUS-001",
+        "STATUS-002"
       ],
       "type": "e2e",
       "change_kind": "new",
       "scenario": {
-        "given": "A committed review has findings but an empty verdict, and plan has no meaningful content",
+        "given": "A committed review has findings but an empty verdict, while intent and Explore handoff are non-substantive, plan has no meaningful content, and result/acceptance evidence is absent",
         "when": "The actual status command reports its stage",
         "then": [
-          "Findings alone do not advance the stage to reviewed"
+          "The exact stage is seeded, and findings alone do not advance review"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "STATUS-001",
           "checks": [
-            "JSON stage is not reviewed"
+            "JSON stage equals the literal seeded"
           ]
         }
       ],
@@ -99,17 +106,17 @@
       "type": "e2e",
       "change_kind": "new",
       "scenario": {
-        "given": "A committed plan contains a task row with an ID but no outcome",
+        "given": "A committed plan contains a task row with an ID but no outcome, while intent and Explore handoff are non-substantive, review verdict is empty, and result/acceptance evidence is absent",
         "when": "The actual status command reports its stage",
         "then": [
-          "The incomplete row does not advance the stage to planned"
+          "The exact stage is seeded, and the incomplete row does not advance planning"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "STATUS-001",
           "checks": [
-            "JSON stage is not planned"
+            "JSON stage equals the literal seeded"
           ]
         }
       ],
@@ -126,7 +133,7 @@
         "STATUS-002"
       ],
       "type": "e2e",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "A committed plan has a meaningful Approach and no task rows",
         "when": "The actual status command reports its stage",
@@ -155,7 +162,7 @@
         "STATUS-002"
       ],
       "type": "e2e",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "A committed plan has a task ID and outcome in a row, with an empty dependency field",
         "when": "The actual status command reports its stage",
@@ -184,7 +191,7 @@
         "STATUS-002"
       ],
       "type": "e2e",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "A committed review contains a substantive verdict",
         "when": "The actual status command reports its stage",
