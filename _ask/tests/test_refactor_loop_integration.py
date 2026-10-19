@@ -1,9 +1,10 @@
 """Public regressions for the accepted inner-loop lifecycle and retry behavior."""
 from pathlib import Path
 import subprocess
+import sys
 import unittest
 
-from inner_loop_reliability import IntegrationTests
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -11,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class LoopTests(unittest.TestCase):
     def run_existing_scenario(self, method):
+        from inner_loop_reliability import IntegrationTests
         case = IntegrationTests(methodName=method)
         result = unittest.TestResult()
         case.run(result)
