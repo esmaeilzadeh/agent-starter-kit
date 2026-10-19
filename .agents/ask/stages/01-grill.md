@@ -49,7 +49,8 @@ identify non-goals
 identify unresolved decisions
 for every user-facing deliverable, including a UI, grill its intended user, essential jobs/workflows, and interaction expectations when these are not already clear; approval of product direction or implementation order does not approve these design decisions
 stop when human judgment is required
-before advancing to Spec, present the complete intent and every assumption as a confirmation question with selectable choices “Approve complete intent and assumptions” and “Request changes”; use the runtime choice control with an optional comment, and wait for the submitted choice (a preselected option is not approval)
+before presenting the initial intent approval question, finish and commit the complete prepared intent and required scaffold on the work branch; then present the complete intent and every assumption as a confirmation question with selectable choices “Approve complete intent and assumptions” and “Request changes”; use the runtime choice control with an optional comment, and wait for the submitted choice (a preselected option is not approval)
+if changes are requested, update the intent and any affected prepared artifacts, commit that revision on the work branch, and only then present the revised intent approval question; never leave either approval pause with uncommitted prepared work
 record a submitted approval choice with `./ask confirm-intent --work-id <id> --choice approve`; if the runtime lacks choice controls, present numbered options and accept the selected number/label with optional added text. Accept unsolicited concise affirmative text for compatibility and record its exact text with `--response`; never ask the human to write or repeat a confirmation sentence. Reject conditional or negative wording. Never infer approval from a request to implement alone or a preselected option.
 never treat “all ok” as valid if a load-bearing question was never expanded
 ```
