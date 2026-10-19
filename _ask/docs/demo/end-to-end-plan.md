@@ -93,7 +93,11 @@ Repeat for `moons-wide` with `hidden_layer_sizes: [32]` (new commit, then train,
 
 Do **not** train on a dirty tree. `record-run` will refuse.
 
-### A6–A9. Review, verify, record-result, Accept
+### A6–A9. Task review, verify, record-result, Accept
+
+When a TaskGraph is active, `06 Implement` completes Red → Green → Refactor,
+independent Review, and local corrections for each task before integration.
+After all tasks integrate, run aggregate Verify, record the result, and Accept.
 
 `./ask verify` is kit tests (does not require sklearn).  
 `./ask record-result --work-id demo-moons-run --commit-sha "$(git rev-parse HEAD)" --result pass` closes the **workstream**.  

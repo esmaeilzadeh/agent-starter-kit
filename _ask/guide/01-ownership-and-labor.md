@@ -58,13 +58,11 @@ Human
   → implementation plan
 
 06 Implement Agent
-  → coding labor
+  → each task runs Red → Green → Refactor
+  → independent Review and local correction repeat inside the task loop
 
-07 Review Agent
-  → review labor
-
-08 Refactor Agent
-  → correction labor
+07 Review Agent and 08 Refactor Agent
+  → provide specialized review and correction labor within each task
 
 09 Verify Agent + deterministic tooling
   → evidence
@@ -92,6 +90,12 @@ into:
 # 2. Division of Engineering Labor
 
 ## 2.1 Labor is not one thing
+
+When an inner-loop TaskGraph is active, the task loop is the lifecycle boundary:
+each behavioral slice receives Red → Green → Refactor, then independent Review
+and correction before integration. The outer pipeline retains aggregate Verify
+and human Accept; it does not add unconditional Review and Refactor passes after
+all tasks.
 
 Engineering contains different classes of work. A useful decomposition is:
 

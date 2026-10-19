@@ -100,11 +100,14 @@ Intent
 → Spec Challenge
 → Plan
 → Implement
-→ Review
-→ Refactor
 → Verify
 → Accept
 ```
+
+With an active TaskGraph, `Implement` runs Red → Green → Refactor and
+independent Review/correction inside each task before integration. `Review` and
+`Refactor` remain named specialized roles, but are not added as unconditional
+outer phases. See the canonical [`task-loop.md`](../../.agents/ask/task-loop.md).
 
 without relying on the previous chat conversation as canonical state.
 

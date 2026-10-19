@@ -48,11 +48,10 @@ Human
   → branch agent/cancel-order
   → commit C1
 
-07 Review
-  → work/cancel-order/review.md
-
-08 Refactor
-  → commit C2
+06 Implement task loop
+  → Red → Green → Refactor
+  → 07 Review → local correction and fresh review
+  → integrate task candidate
 
 09 Verify
   → work/cancel-order/verification.json

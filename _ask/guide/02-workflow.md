@@ -26,15 +26,17 @@ Specification Challenge (03)
 Plan (05)
   ↓
 Implement (06)
-  ↓
-Review (07)
-  ↓
-Refactor (08)
+  ↳ task loop: Red → Green → Refactor → independent Review → correction/review
   ↓
 Verify (09)
   ↓
 Accept (10)
 ```
+
+When the task graph is active, follow the [canonical task loop](../../.agents/ask/task-loop.md).
+Review and Refactor happen inside each task, before integration. The outer
+workflow runs aggregate Verify and then Accept; it does not schedule another
+unconditional Review/Refactor pair.
 
 Explore binds community methods (for example wayfinder, research, prototype, grilling) via a versioned skill manifest and agent-driven skill preparation — it does not require reinventing those methods inside every product repo. Discovery indexes such as [skills.sh](https://www.skills.sh/) are a starting point for finding pins; the project owns the pin and the preparation instruction.
 
@@ -372,6 +374,12 @@ This is not merely Git hygiene. In an AI workforce it is **coordination and prov
 
 # 13. Review output should be executable downstream
 
+With an active TaskGraph, this handoff happens inside each task before
+integration. The independent reviewer checks the current candidate, the writer
+resolves valid local findings, and any changed candidate receives a fresh
+review. The outer workflow performs aggregate Verify and Accept after tasks
+integrate.
+
 A review should not merely produce prose such as:
 
 > "The architecture could be cleaner."
@@ -388,7 +396,7 @@ Suggested correction
 Status
 ```
 
-That allows:
+That allows (within each task when a TaskGraph is active):
 
 ```text
 Review Agent
@@ -408,7 +416,7 @@ The question is whether the artifact is trustworthy enough and sufficiently stru
 
 ---
 
-# 14. Refactoring is delegated correction
+# 14. Refactoring is delegated correction inside the task loop
 
 The Refactor Agent consumes:
 

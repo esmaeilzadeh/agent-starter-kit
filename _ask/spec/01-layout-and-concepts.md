@@ -290,6 +290,13 @@ The exact logical agent names are:
 
 Preserve `01`–`10` names for Guide ↔ kit mapping stability. `00 Explore` is the first-class on-ramp for foggy / R&D work; it does not renumber the Engineering Pipeline.
 
+When an inner-loop TaskGraph is active, `06 Implement` runs each task through
+Red → Green → Refactor, independent Review, and local correction before
+integration. `07 Review` and `08 Refactor` remain available as specialized task
+roles; they are not unconditional outer-workstream phases. The outer pipeline
+retains aggregate Verify and Accept. See the canonical
+[`task-loop.md`](../../.agents/ask/task-loop.md) contract.
+
 ## 5.1 Explore Phase (`00`)
 
 Use Explore when the destination is not yet clear enough to own What/Why as Intent:
