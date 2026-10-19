@@ -16,6 +16,8 @@ tasks:
     depends_on: []
     owned_paths:
       - .agents/ask/stages/01-grill.md
+      - .agents/skills/kit-01-grill/SKILL.md
       - .cursor/skills/kit-01-grill/SKILL.md
-    completion_evidence: "Independent review confirms the canonical stage and generated projection require checkpointing before both the initial and revised approval questions; no unrelated generated output changes"
+      - .cursor/commands/01-grill.md
+    completion_evidence: "Independent review confirms the canonical stage and every generated runtime projection require checkpointing before both the initial and revised approval questions; sync produces no unrelated generated changes"
     test_ids: []

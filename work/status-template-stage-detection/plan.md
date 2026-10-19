@@ -13,7 +13,7 @@ Make stage evidence specific to the artifact contract. A plan counts only when i
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
 | stage-inference | Evidence-based plan and review stage classification | none | `_ask/scripts/status.sh`, `_ask/tests/test_status_stage_detection.py` | STATUS-BLANK, STATUS-FINDINGS, STATUS-PARTIAL-ROW, STATUS-APPROACH, STATUS-ROW, STATUS-VERDICT | Capture genuine Red then final Green for blank/incomplete evidence cases; run preserved Approach, populated-row, and verdict behavior as regression cases at final Green; existing status shell contract remains green |
-| approval-checkpoint | Clean resumable intent approval pause | none | `.agents/ask/stages/01-grill.md`, `.cursor/skills/kit-01-grill/SKILL.md` | — | Canonical stage and generated projection both require commit before initial approval and before renewed approval after edits; direct independent review |
+| approval-checkpoint | Clean resumable intent approval pause | none | `.agents/ask/stages/01-grill.md`, `.agents/skills/kit-01-grill/SKILL.md`, `.cursor/skills/kit-01-grill/SKILL.md`, `.cursor/commands/01-grill.md` | — | Canonical stage and every generated runtime projection require commit before initial approval and before renewed approval after edits; direct independent review confirms all four files are synchronized |
 
 The task graph and test mapping are committed at `work/status-template-stage-detection/inner-loop/tasks.yaml` and `work/status-template-stage-detection/test-plan.json`. The approval-checkpoint task has no executable behavior test because its outcome is a model-facing protocol instruction; direct source/projection review is the appropriate evidence.
 
