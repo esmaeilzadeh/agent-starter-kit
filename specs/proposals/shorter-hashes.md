@@ -2,12 +2,16 @@
 
 ## Status
 
-PROPOSED — revision 6. The user approved the numeric identity/revision correction
-with “yes apply it”; the decision and prior source are recorded in
-`work/shorter-hashes/spec-change.md`. Complete-intent confirmation, an independent
-challenge of revision 6, and an accepted implementation plan remain outstanding.
-The revision-5 challenge applies only to its recorded revision-5 digests.
-This document records requirements, not implementation or execution evidence.
+SPECIFICATION CANDIDATE — revision 7. This revision closes the behavioral gaps
+identified when the revision-6 challenge was reopened: item equivalence,
+propagation stopping, and coherent project discovery. The user authorized closure
+with “continue till spec sealed”, then extended the stop point to a consolidated
+plan and clear tasks. `work/shorter-hashes/spec-seal.md` records the exact reviewed
+contract and closure decision once independent review is complete.
+
+Specification closure does not supply complete-intent confirmation, an accepted
+implementation/test-plan pin, execution evidence, or final workstream acceptance.
+The scoped endpoint is planning readiness; implementation is outside this run.
 
 ## Goal
 
@@ -49,10 +53,12 @@ changes do not by themselves rename or revise every descendant. Exact upstream
 versions are pinned in dependency bindings.
 
 A meaningful item-content or dependency-binding change publishes a fresh revision
-for that item. Unrelated edits, formatting changes allowed by the item's comparison
-rules, and repository commit changes alone do not increment its revision. A retain
-assessment preserves the item's revision when both content and bindings are
-unchanged; a new binding is recorded as a new revision even if payload is retained.
+for that item under the comparison rules below. Revision numbers increase within
+the same logical identity; concurrent publication cannot reuse an existing number.
+Unrelated edits, explicitly permitted presentation differences, and repository
+commit changes alone do not increment its revision. A new binding publishes a new
+revision even when the item's payload is retained. Historical revisions keep their
+original source and bindings; they are not relocated to the latest snapshot.
 Existing exact-byte approval/evidence semantics still apply.
 
 Ordinary workflow references use these numeric identities and revisions. Hashes
@@ -120,12 +126,43 @@ duplicate IDs cannot be resolved by guessing. Compare against an explicitly
 selected candidate snapshot, not whichever commit HEAD happens to name during validation.
 
 A different repository commit or file's last modifying commit is not an
-invalidation decision. Compare the file's Git blob IDs at the recorded and
-candidate snapshots as a fast unchanged-content check. If different, compare the
-referenced item's meaningful content and declared dependency bindings using the
-format's deterministic equivalence rules. Unrelated section edits and permitted
-formatting/reordering leave that item valid. Intent approval and other explicitly
-byte-bound checks retain their existing exact-byte semantics.
+invalidation decision. Identical file blobs supply a payload fast path only;
+external dependency declarations, applicable shared constraints, comparison-profile
+identity, and exact-byte authority rules must still be checked independently.
+
+### Normative item comparison
+
+Compare two versions of one logical item using its payload and complete declared
+input bindings. Payload includes all behavior-, obligation-, assertion-, and
+lifecycle-bearing fields of that item. Bindings include each actual input's
+qualified identity, exact revision, and dependency role, including global/shared
+constraints stored outside the item's file. Ownership and ordinary lookup links
+are not dependency bindings. Changing any input revision/role is a binding change,
+even when that source revision is later judged equivalent for a consumer.
+
+Every supported format has an immutable versioned comparison profile established
+and independently reviewed before use. It specifies extraction boundaries and an
+exhaustive list of permitted presentation exclusions/normalizations. By default,
+all item fields participate; an unknown field is significant. Structured JSON
+allows object-key order and serialization whitespace differences while preserving
+array order, types, strings/Unicode, and absent/null/empty distinctions. Prose uses
+exact extracted UTF-8 bytes unless its pre-reviewed profile expressly permits a
+presentation normalization. Requirements, assertions, numeric values, dependency
+bindings, and inherited/global obligations cannot be excluded as presentation.
+Reordering separately identified independent items does not reorder one item's
+semantic array. A profile cannot be changed after a source edit merely to call
+that edit equivalent; profile changes require reviewed migration/reassessment.
+
+For the same profile and logical identity, equal payload plus equal bindings means
+no new item revision. A changed payload or binding requires a new revision and
+reassessment through actual dependencies. If extraction, a profile, a binding,
+or an applicable constraint is unavailable or unsupported, comparison is
+incomplete: it cannot establish equivalence, retain eligibility, or clear impact.
+Byte-bound intent approval and execution logs continue to use exact-byte checks,
+even where a separate item's semantic comparison would ignore presentation.
+
+These rules define “meaningful change”. Extraction code, storage fields, and
+profile encoding remain Plan choices within these boundaries.
 
 ### Project-wide graph and workstream ownership
 
@@ -139,11 +176,33 @@ Shared project artifacts have a declared canonical owner and identity; consumers
 reference that identity rather than creating unrelated local copies of it.
 
 Impact analysis discovers committed dependency declarations across workstreams,
-including consumers whose source is on another workstream branch rather than in
-the current checkout. It resolves exact pinned sources and traverses actual edges
-across ownership boundaries until the affected closure is accounted for. The
-Plan specifies authoritative discovery and snapshot selection; a derived project
-index must remain rebuildable and cannot confer acceptance authority.
+including consumers outside the checkout. Every complete result is scoped to a
+recorded authoritative owner/ref inventory and immutable source/candidate snapshot
+vector. For this local cooperating-repository scope, the inventory enumerates all
+local live `agent/<work-id>` coordinator refs, archived workstreams on the selected
+integration/archive sources, and explicitly registered shared owners. Task refs
+are not separate workstream owners. The inventory records the selected integration
+and archive refs and their full source IDs. Local discovery cannot claim knowledge
+of unfetched remote workstreams; such scope must be fetched/registered first or
+reported outside the captured scope. Missing declarations in a known owner are
+incomplete discovery, never proof that the owner has no dependencies.
+
+Capture and record the entire ref-name/source-ID set and chosen source/candidate
+vector as one consistent observation. Cooperating publishers serialize against
+capture, or capture detects any intervening inventory/ref generation change and
+retries or reports incomplete. Detect new/removed owner refs as well as advanced
+ones; a mixed scan cannot report completeness. Every edge resolves its exact
+pinned source even when that differs from an owner's selected current snapshot.
+A derived index must match this captured inventory/vector and remain rebuildable.
+Report that exact scope with affected owners/items/paths and unresolved targets.
+
+A complete result speaks only for its recorded vector. Later publications do not
+rewrite that historical result. New-context clearance/completion must match its
+selected applicable vector and recheck the inventory generation before using the
+result; changed relevant scope requires fresh analysis. Unavailable sources,
+unsupported profiles, inconsistent capture, and stale indexes prevent complete
+clearance. The Plan chooses inventory serialization and capture mechanics; it
+cannot narrow the owner universe or accept a mixed snapshot as complete.
 
 For example, changing a shared policy marks every direct consumer of that policy
 for reassessment across the project, and traces their potentially affected
@@ -184,20 +243,58 @@ review, and coordinator authority required for that artifact type:
 - Retire: the item no longer serves an active obligation; retain historical access
   and remove it from the default active workflow.
 
-Propagation can stop when a reviewed decision establishes that the dependent's
-consumer-relevant content, obligations, and dependency contract are unchanged and
-existing evidence reuse rules permit it. Record that decision before clearing
-potentially affected descendants. If those conditions fail, continue reassessment.
-A pointer/checksum update, unchanged payload alone, or a changed upstream commit
-alone cannot establish validity or transfer approval. No historical record is
-silently rebound.
+### Normative propagation-stop decision
 
-For example, `S1 -> P1 -> T1 -> X1` and `S2 -> P4 -> T4 -> X4` are independent
-chains. Editing only S1 marks P1 for reassessment and T1/X1 as potentially affected;
-P4/T4/X4 remain eligible even if S1 and S2 share one file. If reviewed P1 still
-satisfies the new S1 without consumer-relevant changes, eligible T1/X1 evidence
-can be retained with the recorded decision. If P1 changes, reassess T1 and then
-X1 as their actual inputs change. A global constraint affects every linked item.
+A stop applies to named consumer edges within one captured analysis context.
+The decision records the exact old/new upstream and dependent revisions, the
+consumer revisions remaining eligible, every examined affected input path,
+comparison-profile identities, review evidence, and the applicable owner-scoped
+review/coordinator attribution. Missing authority or an unresolved relevant input
+prevents clearance.
+
+The consumer-facing contract comprises the item's externally relied-on outputs,
+assertions, invariants, authority/reuse restrictions, and all applicable inherited
+or shared obligations on that edge. Every obligation-bearing field participates
+by default. Narrower interfaces require explicit, pre-existing reviewed dependency
+declarations; a reviewer cannot invent an exclusion after an input changes.
+A changed internal input-version binding creates a new item revision even when
+this consumer-facing contract remains equal. Equality of local prose or code alone
+never establishes equality of inherited obligations.
+
+A reviewed retain decision may stop propagation only when that complete
+consumer-facing contract is unchanged, the dependent still satisfies the new
+upstream obligations, every relevant input path is resolved, and existing evidence
+reuse and accepted-contract rules permit the specific retained consumers. If any
+condition is false or unproven, continue reassessment. A revised outward obligation
+always reaches actual consumers.
+
+Stopping does not mutate an edge or historical run. A retained consumer may remain
+pinned to its original dependent revision only with explicit reviewed validity in
+the new captured context. A consumer that updates its pin receives a new revision
+for that binding change. Neither representation relabels old executions or waives
+exact candidate/contract/runner/source/log requirements. A new final-candidate run
+is still required wherever the existing completion contract requires it.
+
+### Required decision examples
+
+These examples are normative outcomes, independently of storage or algorithms:
+
+| Change / evidence | Required decision |
+| --- | --- |
+| JSON key order/serialization whitespace changes; item values and input bindings are equal. | Same item revision under its JSON profile; byte-bound approval/log edits still invalidate their exact-byte evidence. |
+| Unrelated item S2 changes in the same file as S1; S1 payload/bindings/constraints remain equal. | S1 keeps its revision and independent consumers stay eligible. |
+| Item file blob is identical but an external dependency changes from input revision 1 to 2. | Publish a new item revision and reassess; blob equality cannot establish an unchanged item. |
+| An inherited timeout changes from 10 to 20; local P prose still says “follow the requirement”. | The inherited obligation differs; P requires reassessment and an unchanged-prose stop is invalid. |
+| P2 changes an internal binding, while review proves its entire consumer-facing contract equal to P1 and satisfaction of new inputs. | P2 is a fresh revision; a named T1 may retain its original P1 pin only with recorded new-context validity and all other inputs resolved. No edge or run is relabeled. |
+| T changes its pin from P1 to P2, even with identical task text. | Publish T2; preserve T1 and its evidence. Reassess actual T consumers under the same rules. |
+| A retain decision covers P, but T also has an unresolved changed input Q. | T remains unresolved; P's decision cannot clear Q's path. |
+| Owner B exists only on another branch, or a new owner appears while inventory is scanned. | Include B in the coherent captured scope; serialize/retry capture or report incomplete, never complete from mixed refs. |
+| An extractor/profile, owner declaration, integrity entry, or pinned object is unavailable. | Report incomplete/unavailable with exact scope; do not infer deletion, equivalence, independence, or successful clearance. |
+
+For independent chains `S1 -> P1 -> T1 -> X1` and `S2 -> P4 -> T4 -> X4`, changing
+S1 reaches only its actual dependents. A reviewed P successor can preserve named
+T1/X1 eligibility under the stop rules above. A change to P's outward obligations
+continues through T1/X1. A linked shared constraint reaches both chains.
 
 Test definitions and execution records remain distinct. Historical runs keep
 their exact test/source/runner/contract bindings; revalidation cannot relabel them
@@ -325,7 +422,8 @@ be treated as successful verification, approval, or completion.
 ## Acceptance criteria
 
 Canonical Given/When/Then criteria are in `specs/current/shorter-hashes.json`.
-They are proposed contract metadata, not an accepted pin. All require executable
+They define specification obligations; coordinator test-plan acceptance is a
+separate pin. All require executable
 evidence; no review-only exemptions are declared.
 
 | Criterion | Observable requirement | Planned evidence types |
@@ -369,26 +467,34 @@ Acceptance requires strictly fewer aggregate tokens and metadata JSON bytes than
 baseline; disclose any individual regressions and retained full-value exceptions.
 Removing required evidence or skipping necessary lookups cannot count as savings.
 
-## Open questions
+## Open questions and closure boundary
 
-Complete-intent confirmation and independent Spec Challenge of revision 6 are
-pending. Exact schemas, parent/type rules, separate integrity-file path, revision
-allocation/publication, tokenizer, corpus revisions, and command flags are Plan
-deliverables constrained by this spec; they are not claims of completed work.
-Revision 6 applies the user's approved numeric identities/revisions across spec,
-plan, task, and test hierarchies and separate checksum storage. It preserves the
-item comparison, partial invalidation, retirement, and project-wide impact
-requirements from revisions 4 and 5. The revision-5 independent challenge remains
-historical evidence for that exact version; it does not approve this revision.
-If the fixed benchmark cannot demonstrate savings, revise the design before
-implementation is accepted.
+No behavioral question is intentionally delegated to Plan. Item equality,
+propagation stopping, and complete discovery have normative rules and required
+decision examples above. An implementation unable to satisfy those outcomes must
+return to Spec Change rather than choose a different meaning.
+
+Plan chooses encoding, module layout, commands, locking/capture mechanisms,
+supported profile implementations, and frozen benchmark tooling/corpus. Each
+choice must preserve the specified outcomes; the independent challenge must cite
+why each remaining deferral is bounded. The benchmark's feasibility remains an
+implementation acceptance risk: failing strict aggregate savings requires a design
+revision, never a claim that a sealed specification proves savings.
+
+The exact independent challenge and closure receipt live under
+`work/shorter-hashes/`. A spec seal records the committed source/digests and zero
+open behavioral blockers; it is not complete-intent approval, an accepted test-plan
+pin, implementation evidence, or workstream acceptance. The authorized stop is a
+consolidated plan and clear tasks.
 
 ## Source intent
 
 `work/shorter-hashes/intent.md`, reconciled with this amendment. Prior intent:
 `6bbcde91ed31276d56d3b74df94d2e31e6d9fc96:work/shorter-hashes/intent.md`.
-Approval of this correction is recorded in `work/shorter-hashes/spec-change.md`;
-it does not substitute for complete-intent confirmation.
+The numeric correction is recorded in `work/shorter-hashes/spec-change.md`.
+The revision-7 closure in `work/shorter-hashes/spec-change-r7.md` records the user's
+“continue till spec sealed” and extended planning scope. Neither substitutes for
+complete-intent confirmation before implementation.
 The prior independent design challenge supplied the authority, lifetime,
 digest-semantics, availability, and measurement counterexamples addressed here.
 

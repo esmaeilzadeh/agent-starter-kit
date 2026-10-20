@@ -59,6 +59,10 @@ Savings must include necessary lookups, shared metadata, and complete agent inpu
 - Meaningful item-content or dependency-binding changes publish fresh revisions;
   unrelated edits and permitted formatting changes leave independent revisions
   unchanged. Ownership or a lookup link alone does not establish a dependency.
+  Comparison includes every obligation-bearing field and exact input binding;
+  unknown/unavailable comparison context cannot prove equivalence. Propagation
+  stops require reviewed validity for named retained versions in a coherent
+  recorded owner/snapshot context, preserving immutable pins and executions.
 - Project discovery includes committed workstream sources outside the checkout.
   Missing sources or declarations produce incomplete analysis, never an empty
   graph or a claim that all affected paths are clear.
@@ -72,11 +76,13 @@ Savings must include necessary lookups, shared metadata, and complete agent inpu
 
 ## Open questions
 
-The numeric identity/revision correction was approved with “yes apply it”; see
-`spec-change.md`. This approves that correction, not every assumption in this
-complete intent. Complete-intent confirmation remains pending. Exact schemas,
-parent rules, integrity-file path, discovery, extraction, corpus, and command flags
-are Plan deliverables constrained by the spec.
+The numeric correction was approved with “yes apply it”; see `spec-change.md`.
+The user subsequently authorized specification closure and consolidated planning;
+`spec-change-r7.md` records the scope-preserving behavioral clarifications.
+Complete-intent confirmation before implementation remains pending. Exact
+encoding, integrity-file path, extraction/capture mechanisms, corpus, and command
+flags are Plan choices within the spec's normative comparison, stop, and discovery
+rules. This run stops after a sealed specification and clear plan/tasks.
 
 ## Human decisions
 
