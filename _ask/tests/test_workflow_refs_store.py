@@ -36,13 +36,18 @@ class ReferenceTests(unittest.TestCase):
             first = register_revision(catalog, "alpha", "alpha/spec/1", {
                 "commit": commit, "path": "items.json",
             }, "SH-01", "structured-item/1", payload, expected_generation=0)
+            next_payload = b'{"id":"SH-01","then":["next"]}\n'
+            (root / "items.json").write_bytes(next_payload)
+            subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "next item"], cwd=root, check=True)
+            next_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
             second = register_revision(catalog, "alpha", "alpha/spec/1", {
-                "commit": commit, "path": "items.json",
-            }, "SH-01", "structured-item/1", payload, expected_generation=1)
+                "commit": next_commit, "path": "items.json",
+            }, "SH-01", "structured-item/1", next_payload, expected_generation=1)
             self.assertIsNotNone(first, "a committed catalog entry must be returned")
             self.assertEqual(first["reference"], "alpha/spec/1@1")
-            self.assertEqual(second["reference"], "alpha/spec/1@2")
-            self.assertEqual(resolve_version(catalog, first["reference"], root)["payload"], payload)
+        self.assertEqual(second["reference"], "alpha/spec/1@2")
+        self.assertEqual(resolve_version(catalog, first["reference"], root)["payload"], payload)
             self.assertEqual(resolve_version(catalog, first["reference"], root)["entry"], first)
             with self.assertRaises(CatalogError):
                 register_revision(catalog, "alpha", "alpha/spec/1", {

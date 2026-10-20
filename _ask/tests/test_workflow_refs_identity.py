@@ -30,7 +30,7 @@ class ReferenceTests(unittest.TestCase):
         with self.assertRaises(ReferenceError):
             parse_reference("alpha/spec/0@1")
         with self.assertRaises(ReferenceError):
-            parse_reference("alpha/spec/2/plan/10/task/3@1", {"owner": "alpha", "type": "task"})
+            parse_reference({"id": 3, "revision": 1}, {"owner": "alpha", "type": "task"})
         inherited = parse_reference({"id": 3, "revision": 4}, {
             "owner": "alpha", "type": "task", "spec": 2, "plan": 10,
         })

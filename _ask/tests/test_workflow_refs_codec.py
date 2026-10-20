@@ -13,7 +13,6 @@ from workflow_refs.codec import EnvelopeError, decode_envelope, encode_envelope,
 class ReferenceTests(unittest.TestCase):
     def test_compact_lossless_versioned_envelopes(self):
         payload = {
-            "missing-is-absent": None,
             "explicit-null": None,
             "empty": [],
             "unicode": "café 🧭",
@@ -28,6 +27,7 @@ class ReferenceTests(unittest.TestCase):
         decoded = decode_envelope(encoded)
         normalized = normalize_envelope(decoded)
         self.assertEqual(normalized["payload"], payload)
+        self.assertNotIn("missing-is-absent", normalized["payload"])
         self.assertIn("explicit-null", normalized["payload"])
         self.assertEqual(normalized["payload"]["empty"], [])
         self.assertEqual(normalized["references"]["task"], "alpha/spec/2/plan/1/task/3@2")
@@ -37,7 +37,7 @@ class ReferenceTests(unittest.TestCase):
         with self.assertRaises(EnvelopeError):
             decode_envelope('{"schema":"ask-workflow-envelope/v1","schema":"ask-workflow-envelope/v1"}')
         cross_owner = encode_envelope(payload, "ask-test-plan/v1", {
-            "owner": "alpha", "type": "task",
+            "owner": "alpha", "type": "task", "spec": 2, "plan": 1,
         }, {"task": "beta/spec/1/plan/1/task/3@2"})
         self.assertEqual(cross_owner["references"]["task"], "beta/spec/1/plan/1/task/3@2")
         self.assertEqual(normalize_envelope(cross_owner)["references"]["task"],
