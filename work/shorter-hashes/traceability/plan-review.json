@@ -1,18 +1,18 @@
 {
   "schema": "ask-independent-plan-review/v1",
-  "decision": "CHANGES_REQUIRED",
+  "decision": "APPROVED",
   "reviewer": "/root/shorter_hashes_challenge_r6",
   "runtime": "Codex",
   "model": "gpt-6.1-sol",
   "reasoning_effort": "medium",
   "parent_model": "not exposed",
-  "reviewed_commit": "8f40b6c83834d1224726962baa3b70fefc896705",
+  "reviewed_commit": "02ad31b6e5ef5130986a920f943788cbbe970631",
   "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-  "plan_digest": "99e3aa9e654e1f26156ffe4697ae759e8045b980dd55a6bbfe24a0291e874c9d",
-  "graph_digest": "96ba0772a4d4e28630d64c34b604dec93b5d1769eda000d7874e20719d74524a",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "graph_digest": "e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb",
   "file_digests": {
-    "work/shorter-hashes/plan.md": "4289e7bb82564225443a36930cf4f10c1f675abd9884b53ed8ade87c6c36e2d7",
-    "work/shorter-hashes/surface-inventory.md": "add29adc7bd178a5aeeed72f86ad2bba5e8949308fbcd0f3f6d3ca7b641bb595",
+    "work/shorter-hashes/plan.md": "7c10bc697531ef379ea11ad29414c2673622e4b8e042b46e6122b6be005fa5bf",
+    "work/shorter-hashes/surface-inventory.md": "b3dbe90066eec74775dec9e7fcf815893627b62930ed4e2bd4e3265bf7a57426",
     "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
     "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f",
     "work/shorter-hashes/spec-seal.md": "997d87201a25a258f08dab72e8c5854a15738ac4145d5b9bfdcddc992b9de1c6"
@@ -20,23 +20,22 @@
   "findings": [
     {
       "id": "P1",
-      "status": "open",
-      "classification": "incomplete producer inventory and task ownership",
-      "paths": [
-        "_ask/scripts/record-run.sh"
-      ],
-      "correction": "Explicitly classify new eval-run-meta/v1 manifests, summaries and registry/report refs; assign supported conversion/legacy-read work and executable assertions to task 8, or justify a narrow required full-value verification exception."
+      "status": "closed",
+      "classification": "producer inventory and publication ownership",
+      "resolution": "Task 8 owns and inventories record-run/start-work; auxiliary shared-owner identities and separate integrity data are explicit; cases 8/4 and 8/5 preserve provenance/refusal semantics and coherent owner publication."
     },
     {
       "id": "P2",
-      "status": "open",
-      "classification": "incomplete declared case input/source bindings",
-      "correction": "Bind the task-9 shared fixture, frozen measurement contract inputs, and actual already-existing workflow_refs dependencies to their consuming cases; preserve executable task ordering and avoid nonexistent future inputs."
+      "status": "closed",
+      "classification": "declared case input/source bindings",
+      "resolution": "Cases bind available prerequisite runtime modules; measurement cases bind baseline.json/requirements.txt; all task-9 cases bind workflow_refs_fixture.py. Task-time source availability checked."
     }
   ],
+  "open_blockers": [],
   "notes": [
-    "All 37 cases are planned, not implemented or executed.",
-    "Structural contract validation, exact one-task case assignment and all 14 frozen corpus file hashes/byte lengths passed.",
-    "No coordinator acceptance, complete-intent approval, implementation authorization, execution review or final completion is supplied."
+    "All 39 cases in 14 runners are planned, not implemented or executed.",
+    "Structural contract validation, exact one-task case assignment, task-time source availability and all 14 frozen corpus file hashes/byte lengths passed.",
+    "Independent approval covers sealed revision-7 semantics, ten-task graph, case/type/assertion mapping, surface inventory and frozen benchmark at these exact bindings.",
+    "This is an independent plan-registration input, not coordinator acceptance, complete-intent approval, implementation authorization, execution review or final completion."
   ]
 }
