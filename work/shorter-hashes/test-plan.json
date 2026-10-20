@@ -1,0 +1,1964 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "shorter-hashes",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "obligations": [
+    {
+      "criterion_id": "SH-01",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-02",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-03",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-04",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-05",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-06",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-07",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-08",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-09",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-10",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-11",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-12",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-13",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "SH-14",
+      "required_types": [
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-15",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-16",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-17",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "SH-18",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "id": "refs-baseline",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_baseline"
+      ]
+    },
+    {
+      "id": "refs-identity",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_identity"
+      ]
+    },
+    {
+      "id": "refs-store",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_store"
+      ]
+    },
+    {
+      "id": "refs-codec",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_codec"
+      ]
+    },
+    {
+      "id": "refs-compare",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_compare"
+      ]
+    },
+    {
+      "id": "refs-project",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_project"
+      ]
+    },
+    {
+      "id": "refs-impact",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_impact"
+      ]
+    },
+    {
+      "id": "refs-traceability",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_traceability"
+      ]
+    },
+    {
+      "id": "refs-inner_loop",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_inner_loop"
+      ]
+    },
+    {
+      "id": "refs-engineering",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_engineering"
+      ]
+    },
+    {
+      "id": "refs-cli",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_cli"
+      ]
+    },
+    {
+      "id": "refs-migration",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_migration"
+      ]
+    },
+    {
+      "id": "refs-e2e",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_e2e"
+      ]
+    },
+    {
+      "id": "refs-savings",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_savings"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "1/1",
+      "criterion_ids": [
+        "SH-12"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The committed baseline manifest and pinned tokenizer are available",
+        "when": "Both baseline journeys and byte accounting are repeated",
+        "then": [
+          "All three journey transcripts/tokens and unique metadata totals reproduce exactly",
+          "Wrong file hash, tokenizer version, missing data, or a changed workload refuses a comparable report"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-12",
+          "checks": [
+            "All three journey transcripts/tokens and unique metadata totals reproduce exactly",
+            "Wrong file hash, tokenizer version, missing data, or a changed workload refuses a comparable report"
+          ]
+        }
+      ],
+      "runner_id": "refs-baseline",
+      "case_id": "_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_frozen_corpus_and_tokenizer",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_baseline.py",
+        ".agents/ask/workflow_refs/benchmark.py"
+      ]
+    },
+    {
+      "id": "1/2",
+      "criterion_ids": [
+        "SH-11",
+        "SH-12"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The frozen three questions, selected logs and shared metadata",
+        "when": "A baseline input recorder includes required projections and follow-up reads",
+        "then": [
+          "All mapped tests/obligations and recorded authority/outcomes survive projection",
+          "Every necessary lookup, question/context input and selected log bytes is counted; omitted evidence cannot count as savings"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-11",
+          "checks": [
+            "All mapped tests/obligations and recorded authority/outcomes survive projection",
+            "Every necessary lookup, question/context input and selected log bytes is counted; omitted evidence cannot count as savings"
+          ]
+        },
+        {
+          "criterion_id": "SH-12",
+          "checks": [
+            "All mapped tests/obligations and recorded authority/outcomes survive projection",
+            "Every necessary lookup, question/context input and selected log bytes is counted; omitted evidence cannot count as savings"
+          ]
+        }
+      ],
+      "runner_id": "refs-baseline",
+      "case_id": "_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_equivalent_questions_and_lookup_accounting",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_baseline.py",
+        ".agents/ask/workflow_refs/benchmark.py"
+      ]
+    },
+    {
+      "id": "2/1",
+      "criterion_ids": [
+        "SH-01",
+        "SH-02",
+        "SH-08"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The same local numbers occur under distinct works/types/parents/revisions",
+        "when": "Numeric references are encoded, sorted and resolved",
+        "then": [
+          "Qualified references distinguish every target and sort 2 before 10",
+          "Zero, padding, booleans, missing inherited context and malformed versions fail with a scoped reason"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-01",
+          "checks": [
+            "Qualified references distinguish every target and sort 2 before 10",
+            "Zero, padding, booleans, missing inherited context and malformed versions fail with a scoped reason"
+          ]
+        },
+        {
+          "criterion_id": "SH-02",
+          "checks": [
+            "Qualified references distinguish every target and sort 2 before 10",
+            "Zero, padding, booleans, missing inherited context and malformed versions fail with a scoped reason"
+          ]
+        },
+        {
+          "criterion_id": "SH-08",
+          "checks": [
+            "Qualified references distinguish every target and sort 2 before 10",
+            "Zero, padding, booleans, missing inherited context and malformed versions fail with a scoped reason"
+          ]
+        }
+      ],
+      "runner_id": "refs-identity",
+      "case_id": "_ask.tests.test_workflow_refs_identity.ReferenceTests.test_qualified_numeric_context",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_identity.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/2",
+      "criterion_ids": [
+        "SH-02"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "One task consumes two specs and its owner/source path moves",
+        "when": "Parent mapping and exact references are resolved across versions",
+        "then": [
+          "One owned item has multiple dependency edges without copies",
+          "Ancestor revision changes leave the logical child ID unchanged; explicit moves preserve historical targets"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-02",
+          "checks": [
+            "One owned item has multiple dependency edges without copies",
+            "Ancestor revision changes leave the logical child ID unchanged; explicit moves preserve historical targets"
+          ]
+        }
+      ],
+      "runner_id": "refs-identity",
+      "case_id": "_ask.tests.test_workflow_refs_identity.ReferenceTests.test_parents_moves_and_multiple_inputs",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_identity.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/3",
+      "criterion_ids": [
+        "SH-01",
+        "SH-08"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two explicit raw Git IDs share a prefix that was previously unique",
+        "when": "Raw inspection displays and resolves the old prefix",
+        "then": [
+          "Only collisions expand and old ambiguous input fails without rebinding",
+          "Exact operations receive full object IDs; ordinary domain references remain numeric"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-01",
+          "checks": [
+            "Only collisions expand and old ambiguous input fails without rebinding",
+            "Exact operations receive full object IDs; ordinary domain references remain numeric"
+          ]
+        },
+        {
+          "criterion_id": "SH-08",
+          "checks": [
+            "Only collisions expand and old ambiguous input fails without rebinding",
+            "Exact operations receive full object IDs; ordinary domain references remain numeric"
+          ]
+        }
+      ],
+      "runner_id": "refs-identity",
+      "case_id": "_ask.tests.test_workflow_refs_identity.ReferenceTests.test_raw_git_collision_resolution",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_identity.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/4",
+      "criterion_ids": [
+        "SH-03",
+        "SH-05",
+        "SH-08"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An item revision and accepted contract have published integrity entries",
+        "when": "A later revision and separate run are registered",
+        "then": [
+          "Old numeric revision still resolves exact original snapshot/digests",
+          "Mutating, recycling or aliasing an old entry fails; run publication cannot change contract entries"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Old numeric revision still resolves exact original snapshot/digests",
+            "Mutating, recycling or aliasing an old entry fails; run publication cannot change contract entries"
+          ]
+        },
+        {
+          "criterion_id": "SH-05",
+          "checks": [
+            "Old numeric revision still resolves exact original snapshot/digests",
+            "Mutating, recycling or aliasing an old entry fails; run publication cannot change contract entries"
+          ]
+        },
+        {
+          "criterion_id": "SH-08",
+          "checks": [
+            "Old numeric revision still resolves exact original snapshot/digests",
+            "Mutating, recycling or aliasing an old entry fails; run publication cannot change contract entries"
+          ]
+        }
+      ],
+      "runner_id": "refs-store",
+      "case_id": "_ask.tests.test_workflow_refs_store.ReferenceTests.test_immutable_revision_catalog",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_store.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/5",
+      "criterion_ids": [
+        "SH-03",
+        "SH-06"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Identical JSON values have different serialization while byte-bound logs differ",
+        "when": "Full integrity data is registered once under algorithm and semantics",
+        "then": [
+          "Canonical equivalence is preserved only for its declared semantics",
+          "Exact-byte edits invalidate their digests; semantics/algorithm substitutions and display-only verification fail"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Canonical equivalence is preserved only for its declared semantics",
+            "Exact-byte edits invalidate their digests; semantics/algorithm substitutions and display-only verification fail"
+          ]
+        },
+        {
+          "criterion_id": "SH-06",
+          "checks": [
+            "Canonical equivalence is preserved only for its declared semantics",
+            "Exact-byte edits invalidate their digests; semantics/algorithm substitutions and display-only verification fail"
+          ]
+        }
+      ],
+      "runner_id": "refs-store",
+      "case_id": "_ask.tests.test_workflow_refs_store.ReferenceTests.test_canonical_and_byte_digest_semantics",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_store.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/6",
+      "criterion_ids": [
+        "SH-09"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Missing, null, empty, Unicode, arrays and shared typed references",
+        "when": "Compact envelopes are written, decoded and normalized",
+        "then": [
+          "Values/types and required absent/null/empty distinctions round-trip",
+          "Only explicit versioned defaults omit fields; unsupported versions, duplicate keys and unsafe references refuse"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-09",
+          "checks": [
+            "Values/types and required absent/null/empty distinctions round-trip",
+            "Only explicit versioned defaults omit fields; unsupported versions, duplicate keys and unsafe references refuse"
+          ]
+        }
+      ],
+      "runner_id": "refs-codec",
+      "case_id": "_ask.tests.test_workflow_refs_codec.ReferenceTests.test_compact_lossless_versioned_envelopes",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_codec.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/7",
+      "criterion_ids": [
+        "SH-03",
+        "SH-08",
+        "SH-13"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two cooperating writers race on one ID/revision and readers load during injected interruptions",
+        "when": "CAS publication is interrupted before and after authority advancement then retried",
+        "then": [
+          "Readers see a complete old/new state and never a successful dangling reference",
+          "Conflicting stale publication fails or allocates a fresh unpublished version; retries cannot rewrite old entries and fixture resources are cleaned"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Readers see a complete old/new state and never a successful dangling reference",
+            "Conflicting stale publication fails or allocates a fresh unpublished version; retries cannot rewrite old entries and fixture resources are cleaned"
+          ]
+        },
+        {
+          "criterion_id": "SH-08",
+          "checks": [
+            "Readers see a complete old/new state and never a successful dangling reference",
+            "Conflicting stale publication fails or allocates a fresh unpublished version; retries cannot rewrite old entries and fixture resources are cleaned"
+          ]
+        },
+        {
+          "criterion_id": "SH-13",
+          "checks": [
+            "Readers see a complete old/new state and never a successful dangling reference",
+            "Conflicting stale publication fails or allocates a fresh unpublished version; retries cannot rewrite old entries and fixture resources are cleaned"
+          ]
+        }
+      ],
+      "runner_id": "refs-store",
+      "case_id": "_ask.tests.test_workflow_refs_store.ReferenceTests.test_concurrent_and_interrupted_publication",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_store.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/8",
+      "criterion_ids": [
+        "SH-03",
+        "SH-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Retained old contracts/runs and full authoritative external-log digests",
+        "when": "New records are appended and old entries/artifacts are altered or made unavailable",
+        "then": [
+          "Old entries retain exact target meaning and independent lifetimes",
+          "Missing/mutated entries, altered output and unavailable required objects fail verification without HEAD/latest fallback"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Old entries retain exact target meaning and independent lifetimes",
+            "Missing/mutated entries, altered output and unavailable required objects fail verification without HEAD/latest fallback"
+          ]
+        },
+        {
+          "criterion_id": "SH-05",
+          "checks": [
+            "Old entries retain exact target meaning and independent lifetimes",
+            "Missing/mutated entries, altered output and unavailable required objects fail verification without HEAD/latest fallback"
+          ]
+        }
+      ],
+      "runner_id": "refs-store",
+      "case_id": "_ask.tests.test_workflow_refs_store.ReferenceTests.test_history_and_missing_integrity",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_store.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "2/9",
+      "criterion_ids": [
+        "SH-01",
+        "SH-02",
+        "SH-09"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A temporary work contains spec/part, plan/item, task and test identities",
+        "when": "A producer persists envelopes and a separate reader reloads them",
+        "then": [
+          "All named families use parent-qualified numeric IDs/revisions with explicit inherited context",
+          "Ordinary records contain references rather than repeated full hashes; normalization preserves existing validator inputs"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-01",
+          "checks": [
+            "All named families use parent-qualified numeric IDs/revisions with explicit inherited context",
+            "Ordinary records contain references rather than repeated full hashes; normalization preserves existing validator inputs"
+          ]
+        },
+        {
+          "criterion_id": "SH-02",
+          "checks": [
+            "All named families use parent-qualified numeric IDs/revisions with explicit inherited context",
+            "Ordinary records contain references rather than repeated full hashes; normalization preserves existing validator inputs"
+          ]
+        },
+        {
+          "criterion_id": "SH-09",
+          "checks": [
+            "All named families use parent-qualified numeric IDs/revisions with explicit inherited context",
+            "Ordinary records contain references rather than repeated full hashes; normalization preserves existing validator inputs"
+          ]
+        }
+      ],
+      "runner_id": "refs-codec",
+      "case_id": "_ask.tests.test_workflow_refs_codec.ReferenceTests.test_persisted_producer_roundtrip",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_codec.py",
+        ".agents/ask/workflow_refs/__init__.py",
+        ".agents/ask/workflow_refs/identity.py",
+        ".agents/ask/workflow_refs/store.py",
+        ".agents/ask/workflow_refs/codec.py"
+      ]
+    },
+    {
+      "id": "3/1",
+      "criterion_ids": [
+        "SH-07",
+        "SH-15"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Versioned profiles and equal local item blobs with external input declarations",
+        "when": "Payload and complete input identity/revision/role sets are compared",
+        "then": [
+          "Equal payload and bindings keep revision; changed external binding creates a new revision despite equal blobs",
+          "Unknown fields are significant; no applicable constraint or obligation-bearing field is dropped"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-07",
+          "checks": [
+            "Equal payload and bindings keep revision; changed external binding creates a new revision despite equal blobs",
+            "Unknown fields are significant; no applicable constraint or obligation-bearing field is dropped"
+          ]
+        },
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Equal payload and bindings keep revision; changed external binding creates a new revision despite equal blobs",
+            "Unknown fields are significant; no applicable constraint or obligation-bearing field is dropped"
+          ]
+        }
+      ],
+      "runner_id": "refs-compare",
+      "case_id": "_ask.tests.test_workflow_refs_compare.ReferenceTests.test_complete_item_and_binding_equivalence",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_compare.py",
+        ".agents/ask/workflow_refs/compare.py",
+        ".agents/ask/workflow_refs/profiles.py"
+      ]
+    },
+    {
+      "id": "3/2",
+      "criterion_ids": [
+        "SH-06",
+        "SH-07",
+        "SH-15"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "JSON/prose profiles, typed values, inherited timeout and unavailable extraction context",
+        "when": "Profiles compare presentation changes and a timeout change from 10 to 20",
+        "then": [
+          "Only pre-reviewed exhaustive presentation rules normalize; prose defaults to exact extracted bytes",
+          "Changed obligations require reassessment; missing/changed unsupported profiles return incomplete and cannot prove equivalence"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-06",
+          "checks": [
+            "Only pre-reviewed exhaustive presentation rules normalize; prose defaults to exact extracted bytes",
+            "Changed obligations require reassessment; missing/changed unsupported profiles return incomplete and cannot prove equivalence"
+          ]
+        },
+        {
+          "criterion_id": "SH-07",
+          "checks": [
+            "Only pre-reviewed exhaustive presentation rules normalize; prose defaults to exact extracted bytes",
+            "Changed obligations require reassessment; missing/changed unsupported profiles return incomplete and cannot prove equivalence"
+          ]
+        },
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Only pre-reviewed exhaustive presentation rules normalize; prose defaults to exact extracted bytes",
+            "Changed obligations require reassessment; missing/changed unsupported profiles return incomplete and cannot prove equivalence"
+          ]
+        }
+      ],
+      "runner_id": "refs-compare",
+      "case_id": "_ask.tests.test_workflow_refs_compare.ReferenceTests.test_profile_exclusions_and_unavailability",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_compare.py",
+        ".agents/ask/workflow_refs/compare.py",
+        ".agents/ask/workflow_refs/profiles.py"
+      ]
+    },
+    {
+      "id": "3/3",
+      "criterion_ids": [
+        "SH-07",
+        "SH-15"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Real source/candidate commits have independent same-file items, explicit moves and external bindings",
+        "when": "The pinned item is extracted from each exact Git snapshot",
+        "then": [
+          "Unrelated section/allowed JSON formatting preserves independent revisions; relevant changes publish fresh revisions",
+          "Missing objects, ambiguous IDs, unsafe paths and unavailable source fail without worktree fallback; available absent items enter deletion assessment"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-07",
+          "checks": [
+            "Unrelated section/allowed JSON formatting preserves independent revisions; relevant changes publish fresh revisions",
+            "Missing objects, ambiguous IDs, unsafe paths and unavailable source fail without worktree fallback; available absent items enter deletion assessment"
+          ]
+        },
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Unrelated section/allowed JSON formatting preserves independent revisions; relevant changes publish fresh revisions",
+            "Missing objects, ambiguous IDs, unsafe paths and unavailable source fail without worktree fallback; available absent items enter deletion assessment"
+          ]
+        }
+      ],
+      "runner_id": "refs-compare",
+      "case_id": "_ask.tests.test_workflow_refs_compare.ReferenceTests.test_git_items_moves_and_unrelated_sections",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_compare.py",
+        ".agents/ask/workflow_refs/compare.py",
+        ".agents/ask/workflow_refs/profiles.py"
+      ]
+    },
+    {
+      "id": "4/1",
+      "criterion_ids": [
+        "SH-18"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Coordinator refs, task refs, archived work and registered shared owners",
+        "when": "The authoritative owner set and graph are constructed",
+        "then": [
+          "Task refs do not become owners; all specified local live/archive/shared owners are represented",
+          "Conflicting identities, real dependency cycles and missing declarations produce scoped incomplete/failure results; lookup/ownership links create no dependency cycles"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-18",
+          "checks": [
+            "Task refs do not become owners; all specified local live/archive/shared owners are represented",
+            "Conflicting identities, real dependency cycles and missing declarations produce scoped incomplete/failure results; lookup/ownership links create no dependency cycles"
+          ]
+        }
+      ],
+      "runner_id": "refs-project",
+      "case_id": "_ask.tests.test_workflow_refs_project.ReferenceTests.test_authoritative_inventory_and_cycles",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_project.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "4/2",
+      "criterion_ids": [
+        "SH-15",
+        "SH-16"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two independent chains with shared files and one multiple-input consumer",
+        "when": "A single root or linked shared constraint changes",
+        "then": [
+          "Direct consumers need reassessment and actual descendants are potentially affected; independent chains remain eligible",
+          "Every affected input path must be resolved; locality and unchanged text do not clear a shared/global dependency"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Direct consumers need reassessment and actual descendants are potentially affected; independent chains remain eligible",
+            "Every affected input path must be resolved; locality and unchanged text do not clear a shared/global dependency"
+          ]
+        },
+        {
+          "criterion_id": "SH-16",
+          "checks": [
+            "Direct consumers need reassessment and actual descendants are potentially affected; independent chains remain eligible",
+            "Every affected input path must be resolved; locality and unchanged text do not clear a shared/global dependency"
+          ]
+        }
+      ],
+      "runner_id": "refs-impact",
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_direct_and_potential_impact",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_impact.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "4/3",
+      "criterion_ids": [
+        "SH-15",
+        "SH-16"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "P2 has a changed internal input binding and reviewed outward equivalence with P1",
+        "when": "A retain decision names exact versions, profiles, consumers, paths and authority",
+        "then": [
+          "T1 can retain its original P1 pin only with explicit new-context validity and all inputs resolved",
+          "Changing T pin produces T2; missing authority, changed inherited/outward obligation or unproven equivalence continues propagation without relabeling edges/runs"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "T1 can retain its original P1 pin only with explicit new-context validity and all inputs resolved",
+            "Changing T pin produces T2; missing authority, changed inherited/outward obligation or unproven equivalence continues propagation without relabeling edges/runs"
+          ]
+        },
+        {
+          "criterion_id": "SH-16",
+          "checks": [
+            "T1 can retain its original P1 pin only with explicit new-context validity and all inputs resolved",
+            "Changing T pin produces T2; missing authority, changed inherited/outward obligation or unproven equivalence continues propagation without relabeling edges/runs"
+          ]
+        }
+      ],
+      "runner_id": "refs-impact",
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_reviewed_stop_old_pin_or_new_revision",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_impact.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "4/4",
+      "criterion_ids": [
+        "SH-17"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Deleted requirement R has exclusive and shared dependents",
+        "when": "Reviewed retain/revise/retire decisions are applied",
+        "then": [
+          "Deleted input cannot count as satisfied; retire only items no longer serving active obligations",
+          "Shared dependents stay active under reviewed updated bindings; historical versions remain retrievable and active views distinguish stale/retired"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-17",
+          "checks": [
+            "Deleted input cannot count as satisfied; retire only items no longer serving active obligations",
+            "Shared dependents stay active under reviewed updated bindings; historical versions remain retrievable and active views distinguish stale/retired"
+          ]
+        }
+      ],
+      "runner_id": "refs-impact",
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_retirement_preserves_shared_obligations",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_impact.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "4/5",
+      "criterion_ids": [
+        "SH-18"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A consumer is branch-only and a cooperating owner ref is added/removed/advanced during capture",
+        "when": "Inventory generation and immutable vector are captured then rechecked at use",
+        "then": [
+          "Capture serializes or retries/reports incomplete for any intervening generation change, including an advance-and-return",
+          "Historical results keep recorded scope; new-context clearance refuses stale vectors and discovers actual consumers outside checkout"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-18",
+          "checks": [
+            "Capture serializes or retries/reports incomplete for any intervening generation change, including an advance-and-return",
+            "Historical results keep recorded scope; new-context clearance refuses stale vectors and discovers actual consumers outside checkout"
+          ]
+        }
+      ],
+      "runner_id": "refs-project",
+      "case_id": "_ask.tests.test_workflow_refs_project.ReferenceTests.test_coherent_capture_new_owner_and_aba",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_project.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "4/6",
+      "criterion_ids": [
+        "SH-15",
+        "SH-16"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two affected inputs and an independent registered reviewer/coordinator per owner",
+        "when": "Retain/revise decisions are applied in dependency order",
+        "then": [
+          "Decisions bind exact old/new contexts and cannot transfer another owner authority",
+          "One resolved path cannot clear another; payload-only or checksum-only retain refuses; changed pins create new revisions"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Decisions bind exact old/new contexts and cannot transfer another owner authority",
+            "One resolved path cannot clear another; payload-only or checksum-only retain refuses; changed pins create new revisions"
+          ]
+        },
+        {
+          "criterion_id": "SH-16",
+          "checks": [
+            "Decisions bind exact old/new contexts and cannot transfer another owner authority",
+            "One resolved path cannot clear another; payload-only or checksum-only retain refuses; changed pins create new revisions"
+          ]
+        }
+      ],
+      "runner_id": "refs-impact",
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_attributed_multiple_input_revalidation",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_impact.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "4/7",
+      "criterion_ids": [
+        "SH-07",
+        "SH-17"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An available source deletes one item while another source/object is unavailable",
+        "when": "Deletion and retirement impact are queried through retained Git history",
+        "then": [
+          "Only actual absence in an available source enters deletion assessment",
+          "Shared active tests are preserved until reviewed; missing objects remain availability errors and retired historical bindings/runs remain unchanged"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-07",
+          "checks": [
+            "Only actual absence in an available source enters deletion assessment",
+            "Shared active tests are preserved until reviewed; missing objects remain availability errors and retired historical bindings/runs remain unchanged"
+          ]
+        },
+        {
+          "criterion_id": "SH-17",
+          "checks": [
+            "Only actual absence in an available source enters deletion assessment",
+            "Shared active tests are preserved until reviewed; missing objects remain availability errors and retired historical bindings/runs remain unchanged"
+          ]
+        }
+      ],
+      "runner_id": "refs-impact",
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_deletion_vs_unavailability_and_history",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_impact.py",
+        ".agents/ask/workflow_refs/project.py",
+        ".agents/ask/workflow_refs/impact.py"
+      ]
+    },
+    {
+      "id": "5/1",
+      "criterion_ids": [
+        "SH-03",
+        "SH-04"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Coordinator accepted-tests ref and candidate-controlled catalogs/manifests/aliases",
+        "when": "Candidate substitutes obligations, integrity mappings or a claimed independent review",
+        "then": [
+          "Only coordinator-owned accepted obligations and registered reviews can authorize completion",
+          "Changing a numeric reference, catalog or copied accepted pin cannot transfer authority or satisfy new obligations"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Only coordinator-owned accepted obligations and registered reviews can authorize completion",
+            "Changing a numeric reference, catalog or copied accepted pin cannot transfer authority or satisfy new obligations"
+          ]
+        },
+        {
+          "criterion_id": "SH-04",
+          "checks": [
+            "Only coordinator-owned accepted obligations and registered reviews can authorize completion",
+            "Changing a numeric reference, catalog or copied accepted pin cannot transfer authority or satisfy new obligations"
+          ]
+        }
+      ],
+      "runner_id": "refs-traceability",
+      "case_id": "_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_authority_rejects_candidate_substitution",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_traceability.py",
+        ".agents/ask/verification/run.py",
+        "_ask/scripts/intent-confirmation.py",
+        ".agents/ask/verification/traceability/__init__.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/unittest_runner.py"
+      ]
+    },
+    {
+      "id": "5/2",
+      "criterion_ids": [
+        "SH-06",
+        "SH-09"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Exact-byte confirmed intent and semantically equivalent structured JSON",
+        "when": "Intent bytes change or envelopes normalize reordered JSON values",
+        "then": [
+          "Intent edit invalidates the exact recorded approval even if text looks equivalent",
+          "Allowed canonical JSON equivalence preserves values/obligations; missing semantics or a byte-bound log edit fails"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-06",
+          "checks": [
+            "Intent edit invalidates the exact recorded approval even if text looks equivalent",
+            "Allowed canonical JSON equivalence preserves values/obligations; missing semantics or a byte-bound log edit fails"
+          ]
+        },
+        {
+          "criterion_id": "SH-09",
+          "checks": [
+            "Intent edit invalidates the exact recorded approval even if text looks equivalent",
+            "Allowed canonical JSON equivalence preserves values/obligations; missing semantics or a byte-bound log edit fails"
+          ]
+        }
+      ],
+      "runner_id": "refs-traceability",
+      "case_id": "_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_exact_intent_and_canonical_contracts",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_traceability.py",
+        ".agents/ask/verification/run.py",
+        "_ask/scripts/intent-confirmation.py",
+        ".agents/ask/verification/traceability/__init__.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/unittest_runner.py"
+      ]
+    },
+    {
+      "id": "5/3",
+      "criterion_ids": [
+        "SH-03",
+        "SH-05",
+        "SH-15"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An accepted contract, reviewed run and a newer item binding",
+        "when": "New run evidence and a contract amendment are registered",
+        "then": [
+          "Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive",
+          "Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive",
+            "Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks"
+          ]
+        },
+        {
+          "criterion_id": "SH-05",
+          "checks": [
+            "Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive",
+            "Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks"
+          ]
+        },
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive",
+            "Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks"
+          ]
+        }
+      ],
+      "runner_id": "refs-traceability",
+      "case_id": "_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_contract_run_lifetimes_and_source_identity",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_traceability.py",
+        ".agents/ask/verification/run.py",
+        "_ask/scripts/intent-confirmation.py",
+        ".agents/ask/verification/traceability/__init__.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/unittest_runner.py"
+      ]
+    },
+    {
+      "id": "6/1",
+      "criterion_ids": [
+        "SH-02",
+        "SH-08",
+        "SH-13"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Legacy/new task states and overlapping local IDs with one committing writer",
+        "when": "The loop loads state, records evidence, interrupts, retries and integrates",
+        "then": [
+          "Qualified numeric task/test references preserve CAS generations and one-writer invariant",
+          "Stale/wrong-owner candidate or non-fast-forward integration refuses; retries cannot mutate published identity and release fixture resources"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-02",
+          "checks": [
+            "Qualified numeric task/test references preserve CAS generations and one-writer invariant",
+            "Stale/wrong-owner candidate or non-fast-forward integration refuses; retries cannot mutate published identity and release fixture resources"
+          ]
+        },
+        {
+          "criterion_id": "SH-08",
+          "checks": [
+            "Qualified numeric task/test references preserve CAS generations and one-writer invariant",
+            "Stale/wrong-owner candidate or non-fast-forward integration refuses; retries cannot mutate published identity and release fixture resources"
+          ]
+        },
+        {
+          "criterion_id": "SH-13",
+          "checks": [
+            "Qualified numeric task/test references preserve CAS generations and one-writer invariant",
+            "Stale/wrong-owner candidate or non-fast-forward integration refuses; retries cannot mutate published identity and release fixture resources"
+          ]
+        }
+      ],
+      "runner_id": "refs-inner_loop",
+      "case_id": "_ask.tests.test_workflow_refs_inner_loop.ReferenceTests.test_qualified_tasks_and_cas_recovery",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_inner_loop.py",
+        "_ask/scripts/inner_loop/__init__.py",
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/scripts/inner_loop/allowlist.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/graph.py",
+        "_ask/scripts/inner_loop/integrate.py",
+        "_ask/scripts/inner_loop/retry.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/yaml_lite.py"
+      ]
+    },
+    {
+      "id": "6/2",
+      "criterion_ids": [
+        "SH-03",
+        "SH-09",
+        "SH-11"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Task-scoped runs and evidence with shared source/context data",
+        "when": "The actual loop selects one task scope and reloads compact state/evidence",
+        "then": [
+          "Only accepted mapped cases execute for that task; numeric projections resolve requested detailed evidence",
+          "Full exact runner/candidate/log identities are internally checked without default whole-catalog context loads"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-03",
+          "checks": [
+            "Only accepted mapped cases execute for that task; numeric projections resolve requested detailed evidence",
+            "Full exact runner/candidate/log identities are internally checked without default whole-catalog context loads"
+          ]
+        },
+        {
+          "criterion_id": "SH-09",
+          "checks": [
+            "Only accepted mapped cases execute for that task; numeric projections resolve requested detailed evidence",
+            "Full exact runner/candidate/log identities are internally checked without default whole-catalog context loads"
+          ]
+        },
+        {
+          "criterion_id": "SH-11",
+          "checks": [
+            "Only accepted mapped cases execute for that task; numeric projections resolve requested detailed evidence",
+            "Full exact runner/candidate/log identities are internally checked without default whole-catalog context loads"
+          ]
+        }
+      ],
+      "runner_id": "refs-inner_loop",
+      "case_id": "_ask.tests.test_workflow_refs_inner_loop.ReferenceTests.test_evidence_projection_and_exact_runner",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_inner_loop.py",
+        "_ask/scripts/inner_loop/__init__.py",
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/scripts/inner_loop/allowlist.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/graph.py",
+        "_ask/scripts/inner_loop/integrate.py",
+        "_ask/scripts/inner_loop/retry.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/yaml_lite.py"
+      ]
+    },
+    {
+      "id": "7/1",
+      "criterion_ids": [
+        "SH-02",
+        "SH-10",
+        "SH-11"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Legacy engineering snapshots plus compact versioned task/test/review references",
+        "when": "Snapshot/admission and context queries select a historical and current task",
+        "then": [
+          "Exact selected source/plan bindings and admission outcomes match legacy behavior",
+          "The requested projection is sufficient and resolves on demand without reading the full evidence catalog; missing/ambiguous contexts are scoped failures"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-02",
+          "checks": [
+            "Exact selected source/plan bindings and admission outcomes match legacy behavior",
+            "The requested projection is sufficient and resolves on demand without reading the full evidence catalog; missing/ambiguous contexts are scoped failures"
+          ]
+        },
+        {
+          "criterion_id": "SH-10",
+          "checks": [
+            "Exact selected source/plan bindings and admission outcomes match legacy behavior",
+            "The requested projection is sufficient and resolves on demand without reading the full evidence catalog; missing/ambiguous contexts are scoped failures"
+          ]
+        },
+        {
+          "criterion_id": "SH-11",
+          "checks": [
+            "Exact selected source/plan bindings and admission outcomes match legacy behavior",
+            "The requested projection is sufficient and resolves on demand without reading the full evidence catalog; missing/ambiguous contexts are scoped failures"
+          ]
+        }
+      ],
+      "runner_id": "refs-engineering",
+      "case_id": "_ask.tests.test_workflow_refs_engineering.ReferenceTests.test_snapshots_context_and_legacy_reads",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_engineering.py",
+        "_ask/scripts/engineering_model/__init__.py",
+        "_ask/scripts/engineering_model/__main__.py",
+        "_ask/scripts/engineering_model/actions.py",
+        "_ask/scripts/engineering_model/admission.py",
+        "_ask/scripts/engineering_model/benchmark.py",
+        "_ask/scripts/engineering_model/canonical.py",
+        "_ask/scripts/engineering_model/context.py",
+        "_ask/scripts/engineering_model/domain.py",
+        "_ask/scripts/engineering_model/evidence.py",
+        "_ask/scripts/engineering_model/flows.py",
+        "_ask/scripts/engineering_model/identities.py",
+        "_ask/scripts/engineering_model/migration.py",
+        "_ask/scripts/engineering_model/observer.py",
+        "_ask/scripts/engineering_model/passages.py",
+        "_ask/scripts/engineering_model/projection.py",
+        "_ask/scripts/engineering_model/readability.py",
+        "_ask/scripts/engineering_model/readable_tests.py",
+        "_ask/scripts/engineering_model/snapshot.py",
+        "_ask/scripts/engineering_model/validation.py",
+        "_ask/scripts/engineering_model/workbench.py",
+        "_ask/scripts/engineering_model/workbench_evidence.py",
+        "_ask/scripts/engineering_model/workbench_sources.py",
+        "_ask/scripts/engineering_model/workflow.py"
+      ]
+    },
+    {
+      "id": "7/2",
+      "criterion_ids": [
+        "SH-07",
+        "SH-15",
+        "SH-16"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Two engineering items share a document and one has an external constraint",
+        "when": "A candidate updates an unrelated section then the linked constraint",
+        "then": [
+          "First edit leaves independent item eligibility and revision intact",
+          "External input change is detected despite identical local blob/payload and unresolved impact blocks new-context completion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-07",
+          "checks": [
+            "First edit leaves independent item eligibility and revision intact",
+            "External input change is detected despite identical local blob/payload and unresolved impact blocks new-context completion"
+          ]
+        },
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "First edit leaves independent item eligibility and revision intact",
+            "External input change is detected despite identical local blob/payload and unresolved impact blocks new-context completion"
+          ]
+        },
+        {
+          "criterion_id": "SH-16",
+          "checks": [
+            "First edit leaves independent item eligibility and revision intact",
+            "External input change is detected despite identical local blob/payload and unresolved impact blocks new-context completion"
+          ]
+        }
+      ],
+      "runner_id": "refs-engineering",
+      "case_id": "_ask.tests.test_workflow_refs_engineering.ReferenceTests.test_unrelated_item_and_external_constraint",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_engineering.py",
+        "_ask/scripts/engineering_model/__init__.py",
+        "_ask/scripts/engineering_model/__main__.py",
+        "_ask/scripts/engineering_model/actions.py",
+        "_ask/scripts/engineering_model/admission.py",
+        "_ask/scripts/engineering_model/benchmark.py",
+        "_ask/scripts/engineering_model/canonical.py",
+        "_ask/scripts/engineering_model/context.py",
+        "_ask/scripts/engineering_model/domain.py",
+        "_ask/scripts/engineering_model/evidence.py",
+        "_ask/scripts/engineering_model/flows.py",
+        "_ask/scripts/engineering_model/identities.py",
+        "_ask/scripts/engineering_model/migration.py",
+        "_ask/scripts/engineering_model/observer.py",
+        "_ask/scripts/engineering_model/passages.py",
+        "_ask/scripts/engineering_model/projection.py",
+        "_ask/scripts/engineering_model/readability.py",
+        "_ask/scripts/engineering_model/readable_tests.py",
+        "_ask/scripts/engineering_model/snapshot.py",
+        "_ask/scripts/engineering_model/validation.py",
+        "_ask/scripts/engineering_model/workbench.py",
+        "_ask/scripts/engineering_model/workbench_evidence.py",
+        "_ask/scripts/engineering_model/workbench_sources.py",
+        "_ask/scripts/engineering_model/workflow.py"
+      ]
+    },
+    {
+      "id": "8/1",
+      "criterion_ids": [
+        "SH-01",
+        "SH-02",
+        "SH-11"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A catalog contains qualified item versions and legacy mappings",
+        "when": "Separate refs show/status processes request one version, then an insufficient or colliding raw reference",
+        "then": [
+          "Ordinary public output carries numeric identity/revision and enough inherited context; full integrity detail is on demand",
+          "Malformed/missing/ambiguous references give stable scope/reason and never fall back to HEAD/latest"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-01",
+          "checks": [
+            "Ordinary public output carries numeric identity/revision and enough inherited context; full integrity detail is on demand",
+            "Malformed/missing/ambiguous references give stable scope/reason and never fall back to HEAD/latest"
+          ]
+        },
+        {
+          "criterion_id": "SH-02",
+          "checks": [
+            "Ordinary public output carries numeric identity/revision and enough inherited context; full integrity detail is on demand",
+            "Malformed/missing/ambiguous references give stable scope/reason and never fall back to HEAD/latest"
+          ]
+        },
+        {
+          "criterion_id": "SH-11",
+          "checks": [
+            "Ordinary public output carries numeric identity/revision and enough inherited context; full integrity detail is on demand",
+            "Malformed/missing/ambiguous references give stable scope/reason and never fall back to HEAD/latest"
+          ]
+        }
+      ],
+      "runner_id": "refs-cli",
+      "case_id": "_ask.tests.test_workflow_refs_cli.ReferenceTests.test_public_numeric_show_and_scoped_errors",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_cli.py",
+        ".agents/ask/workflow_refs/__main__.py",
+        ".agents/ask/workflow_refs/cli.py",
+        ".agents/ask/workflow_refs/projection.py",
+        ".agents/ask/workflow_refs/migration.py",
+        "_ask/scripts/ask-complete.sh",
+        "_ask/scripts/record-result.sh",
+        "_ask/scripts/references.sh",
+        "_ask/scripts/status.sh",
+        "ask"
+      ]
+    },
+    {
+      "id": "8/2",
+      "criterion_ids": [
+        "SH-10"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Real frozen legacy records and available old Git sources/registered authority",
+        "when": "Explicit migrate/export/import operations register known numeric mappings",
+        "then": [
+          "Original bytes and exact provenance survive with no invented versions/approval/Red-Green",
+          "Unsupported versions or absent objects/authority/declarations refuse verified completeness; a copied candidate manifest supplies no authority"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-10",
+          "checks": [
+            "Original bytes and exact provenance survive with no invented versions/approval/Red-Green",
+            "Unsupported versions or absent objects/authority/declarations refuse verified completeness; a copied candidate manifest supplies no authority"
+          ]
+        }
+      ],
+      "runner_id": "refs-migration",
+      "case_id": "_ask.tests.test_workflow_refs_migration.ReferenceTests.test_legacy_migration_and_bundle_retention",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_migration.py",
+        ".agents/ask/workflow_refs/__main__.py",
+        ".agents/ask/workflow_refs/cli.py",
+        ".agents/ask/workflow_refs/projection.py",
+        ".agents/ask/workflow_refs/migration.py",
+        "_ask/scripts/ask-complete.sh",
+        "_ask/scripts/record-result.sh",
+        "_ask/scripts/references.sh",
+        "_ask/scripts/status.sh",
+        "ask"
+      ]
+    },
+    {
+      "id": "8/3",
+      "criterion_ids": [
+        "SH-10",
+        "SH-13"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "An export contains immutable entries/objects and an import is interrupted or incomplete",
+        "when": "Import retries against an already published record then changes one target",
+        "then": [
+          "Identical retry preserves immutable entries and readers see complete state",
+          "Conflicting or incomplete import cannot replace history or claim verified completeness; fixture worktrees/locks/processes are cleaned"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-10",
+          "checks": [
+            "Identical retry preserves immutable entries and readers see complete state",
+            "Conflicting or incomplete import cannot replace history or claim verified completeness; fixture worktrees/locks/processes are cleaned"
+          ]
+        },
+        {
+          "criterion_id": "SH-13",
+          "checks": [
+            "Identical retry preserves immutable entries and readers see complete state",
+            "Conflicting or incomplete import cannot replace history or claim verified completeness; fixture worktrees/locks/processes are cleaned"
+          ]
+        }
+      ],
+      "runner_id": "refs-migration",
+      "case_id": "_ask.tests.test_workflow_refs_migration.ReferenceTests.test_missing_import_and_atomic_retry",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_migration.py",
+        ".agents/ask/workflow_refs/__main__.py",
+        ".agents/ask/workflow_refs/cli.py",
+        ".agents/ask/workflow_refs/projection.py",
+        ".agents/ask/workflow_refs/migration.py",
+        "_ask/scripts/ask-complete.sh",
+        "_ask/scripts/record-result.sh",
+        "_ask/scripts/references.sh",
+        "_ask/scripts/status.sh",
+        "ask"
+      ]
+    },
+    {
+      "id": "9/1",
+      "criterion_ids": [
+        "SH-04",
+        "SH-14"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Isolated repositories execute cases and register independently reviewed accepted contracts",
+        "when": "Actual ask workflow entry points evaluate valid completion then altered manifests/logs/reviews/runner/source",
+        "then": [
+          "Valid fresh execution/review has the baseline completion outcome",
+          "Every substituted obligation, changed/missing log/object, stale accepted contract or invalid independent review refuses final completion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-04",
+          "checks": [
+            "Valid fresh execution/review has the baseline completion outcome",
+            "Every substituted obligation, changed/missing log/object, stale accepted contract or invalid independent review refuses final completion"
+          ]
+        },
+        {
+          "criterion_id": "SH-14",
+          "checks": [
+            "Valid fresh execution/review has the baseline completion outcome",
+            "Every substituted obligation, changed/missing log/object, stale accepted contract or invalid independent review refuses final completion"
+          ]
+        }
+      ],
+      "runner_id": "refs-e2e",
+      "case_id": "_ask.tests.test_workflow_refs_e2e.ReferenceTests.test_valid_and_tampered_completion",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_e2e.py"
+      ]
+    },
+    {
+      "id": "9/2",
+      "criterion_ids": [
+        "SH-10",
+        "SH-11"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Frozen real legacy and new-format records, selected status and retained historical executions",
+        "when": "An agent resumes via public projections, follows needed reads and exports/reloads the bundle",
+        "then": [
+          "Equivalent selected answers and evidence are retrievable with complete numeric context",
+          "Missing dependency/authority causes incomplete import and never a fabricated success or historical execution"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-10",
+          "checks": [
+            "Equivalent selected answers and evidence are retrievable with complete numeric context",
+            "Missing dependency/authority causes incomplete import and never a fabricated success or historical execution"
+          ]
+        },
+        {
+          "criterion_id": "SH-11",
+          "checks": [
+            "Equivalent selected answers and evidence are retrievable with complete numeric context",
+            "Missing dependency/authority causes incomplete import and never a fabricated success or historical execution"
+          ]
+        }
+      ],
+      "runner_id": "refs-e2e",
+      "case_id": "_ask.tests.test_workflow_refs_e2e.ReferenceTests.test_resume_and_export_historical_records",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_e2e.py"
+      ]
+    },
+    {
+      "id": "9/3",
+      "criterion_ids": [
+        "SH-15",
+        "SH-16"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "S1/P1/T1 and independent S2/P4/T4 plus a second affected input",
+        "when": "A requirement and intermediate binding change through public impact/decision/completion commands",
+        "then": [
+          "Only actual chains need reassessment; reviewed stop names retained old pins and cannot clear unresolved second input",
+          "Changed pins receive revisions and exact historical runs retain original bindings; current completion still requires applicable fresh exact execution"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-15",
+          "checks": [
+            "Only actual chains need reassessment; reviewed stop names retained old pins and cannot clear unresolved second input",
+            "Changed pins receive revisions and exact historical runs retain original bindings; current completion still requires applicable fresh exact execution"
+          ]
+        },
+        {
+          "criterion_id": "SH-16",
+          "checks": [
+            "Only actual chains need reassessment; reviewed stop names retained old pins and cannot clear unresolved second input",
+            "Changed pins receive revisions and exact historical runs retain original bindings; current completion still requires applicable fresh exact execution"
+          ]
+        }
+      ],
+      "runner_id": "refs-e2e",
+      "case_id": "_ask.tests.test_workflow_refs_e2e.ReferenceTests.test_partial_impact_and_retained_execution",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_e2e.py"
+      ]
+    },
+    {
+      "id": "9/4",
+      "criterion_ids": [
+        "SH-17"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A shared executable test serves deleted R1 and active R2",
+        "when": "Requirement removal is assessed and reviewed retirement decisions are queried",
+        "then": [
+          "Shared test remains active after explicit dependency revision; exclusive orphan can retire",
+          "Default views exclude retired items, historical bindings remain accessible, and deletion cannot silently remove executable tests"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-17",
+          "checks": [
+            "Shared test remains active after explicit dependency revision; exclusive orphan can retire",
+            "Default views exclude retired items, historical bindings remain accessible, and deletion cannot silently remove executable tests"
+          ]
+        }
+      ],
+      "runner_id": "refs-e2e",
+      "case_id": "_ask.tests.test_workflow_refs_e2e.ReferenceTests.test_shared_deletion_and_retirement",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_e2e.py"
+      ]
+    },
+    {
+      "id": "9/5",
+      "criterion_ids": [
+        "SH-18"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A shared policy has consumers on multiple branches, duplicate local numbers, and one unavailable owner",
+        "when": "Public project impact captures the graph and a new owner is published before use",
+        "then": [
+          "All actual branch-only consumers and paths carry correct owners without write/acceptance transfer",
+          "Missing owner or generation/vector change blocks complete clearance until coherent recapture; unfetched scope is explicitly unclaimed"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-18",
+          "checks": [
+            "All actual branch-only consumers and paths carry correct owners without write/acceptance transfer",
+            "Missing owner or generation/vector change blocks complete clearance until coherent recapture; unfetched scope is explicitly unclaimed"
+          ]
+        }
+      ],
+      "runner_id": "refs-e2e",
+      "case_id": "_ask.tests.test_workflow_refs_e2e.ReferenceTests.test_multi_owner_incomplete_and_scope_freshness",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_e2e.py"
+      ]
+    },
+    {
+      "id": "10/1",
+      "criterion_ids": [
+        "SH-12"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The frozen corpus/three questions/tokenizer and implemented candidate interfaces",
+        "when": "Identical journeys are replayed including every required lookup and metadata file",
+        "then": [
+          "Both aggregate input tokens and generated metadata bytes are strictly lower with exact question/evidence equivalence",
+          "Retain raw transcripts, baseline/candidate source identities, tokenizer/workload versions, per-journey totals, regressions and full-value exceptions; either aggregate miss fails acceptance"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "SH-12",
+          "checks": [
+            "Both aggregate input tokens and generated metadata bytes are strictly lower with exact question/evidence equivalence",
+            "Retain raw transcripts, baseline/candidate source identities, tokenizer/workload versions, per-journey totals, regressions and full-value exceptions; either aggregate miss fails acceptance"
+          ]
+        }
+      ],
+      "runner_id": "refs-savings",
+      "case_id": "_ask.tests.test_workflow_refs_savings.ReferenceTests.test_strict_frozen_aggregate_savings",
+      "source_paths": [
+        "_ask/tests/test_workflow_refs_savings.py",
+        ".agents/ask/workflow_refs/benchmark.py"
+      ]
+    }
+  ],
+  "task_scopes": [
+    {
+      "task_id": "1",
+      "test_ids": [
+        "1/1",
+        "1/2"
+      ]
+    },
+    {
+      "task_id": "2",
+      "test_ids": [
+        "2/1",
+        "2/2",
+        "2/3",
+        "2/4",
+        "2/5",
+        "2/6",
+        "2/7",
+        "2/8",
+        "2/9"
+      ]
+    },
+    {
+      "task_id": "3",
+      "test_ids": [
+        "3/1",
+        "3/2",
+        "3/3"
+      ]
+    },
+    {
+      "task_id": "4",
+      "test_ids": [
+        "4/1",
+        "4/2",
+        "4/3",
+        "4/4",
+        "4/5",
+        "4/6",
+        "4/7"
+      ]
+    },
+    {
+      "task_id": "5",
+      "test_ids": [
+        "5/1",
+        "5/2",
+        "5/3"
+      ]
+    },
+    {
+      "task_id": "6",
+      "test_ids": [
+        "6/1",
+        "6/2"
+      ]
+    },
+    {
+      "task_id": "7",
+      "test_ids": [
+        "7/1",
+        "7/2"
+      ]
+    },
+    {
+      "task_id": "8",
+      "test_ids": [
+        "8/1",
+        "8/2",
+        "8/3"
+      ]
+    },
+    {
+      "task_id": "9",
+      "test_ids": [
+        "9/1",
+        "9/2",
+        "9/3",
+        "9/4",
+        "9/5"
+      ]
+    },
+    {
+      "task_id": "10",
+      "test_ids": [
+        "10/1"
+      ]
+    }
+  ]
+}

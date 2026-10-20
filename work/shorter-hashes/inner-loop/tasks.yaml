@@ -1,0 +1,77 @@
+schema: ask-inner-loop-tasks/v1
+work_id: shorter-hashes
+tasks:
+  - id: "1"
+    depends_on: []
+    owned_paths:
+      - ".agents/ask/workflow_refs/benchmark.py"
+      - "_ask/tests/test_workflow_refs_baseline.py"
+  - id: "2"
+    depends_on: ["1"]
+    owned_paths:
+      - ".agents/ask/workflow_refs/__init__.py"
+      - ".agents/ask/workflow_refs/identity.py"
+      - ".agents/ask/workflow_refs/store.py"
+      - ".agents/ask/workflow_refs/codec.py"
+      - "_ask/tests/test_workflow_refs_identity.py"
+      - "_ask/tests/test_workflow_refs_store.py"
+      - "_ask/tests/test_workflow_refs_codec.py"
+  - id: "3"
+    depends_on: ["2"]
+    owned_paths:
+      - ".agents/ask/workflow_refs/compare.py"
+      - ".agents/ask/workflow_refs/profiles.py"
+      - "_ask/tests/test_workflow_refs_compare.py"
+  - id: "4"
+    depends_on: ["3"]
+    owned_paths:
+      - ".agents/ask/workflow_refs/project.py"
+      - ".agents/ask/workflow_refs/impact.py"
+      - "_ask/tests/test_workflow_refs_project.py"
+      - "_ask/tests/test_workflow_refs_impact.py"
+  - id: "5"
+    depends_on: ["4"]
+    owned_paths:
+      - ".agents/ask/verification/traceability/**"
+      - ".agents/ask/verification/run.py"
+      - "_ask/scripts/intent-confirmation.py"
+      - "_ask/tests/test_workflow_refs_traceability.py"
+  - id: "6"
+    depends_on: ["5"]
+    owned_paths:
+      - "_ask/scripts/inner_loop/**"
+      - "_ask/tests/test_workflow_refs_inner_loop.py"
+  - id: "7"
+    depends_on: ["6"]
+    owned_paths:
+      - "_ask/scripts/engineering_model/**"
+      - "_ask/tests/test_workflow_refs_engineering.py"
+  - id: "8"
+    depends_on: ["7"]
+    owned_paths:
+      - ".agents/ask/workflow_refs/__main__.py"
+      - ".agents/ask/workflow_refs/cli.py"
+      - ".agents/ask/workflow_refs/projection.py"
+      - ".agents/ask/workflow_refs/migration.py"
+      - "_ask/scripts/references.sh"
+      - "_ask/scripts/status.sh"
+      - "_ask/scripts/record-result.sh"
+      - "_ask/scripts/ask-complete.sh"
+      - "ask"
+      - "_ask/docs/workflow-references.md"
+      - "README.md"
+      - "_ask/tests/test_workflow_refs_cli.py"
+      - "_ask/tests/test_workflow_refs_migration.py"
+  - id: "9"
+    depends_on: ["8"]
+    owned_paths:
+      - "_ask/tests/workflow_refs_fixture.py"
+      - "_ask/tests/test_workflow_refs_e2e.py"
+      - "_ask/tests/test-workflow-references.sh"
+  - id: "10"
+    depends_on: ["9"]
+    owned_paths:
+      - ".agents/ask/workflow_refs/benchmark.py"
+      - "_ask/tests/test_workflow_refs_savings.py"
+      - "work/shorter-hashes/benchmark/results/**"
+      - "_ask/docs/workflow-references.md"
