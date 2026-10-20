@@ -2,7 +2,7 @@
 
 ## Status
 
-PROPOSED — revision 4. The user requested this specification; intent confirmation,
+PROPOSED — revision 5. The user requested this specification; intent confirmation,
 formal Spec Challenge, and an accepted implementation plan remain outstanding.
 This document does not record approval or execution evidence.
 
@@ -85,6 +85,41 @@ referenced item's meaningful content and declared dependency bindings using the
 format's deterministic equivalence rules. Unrelated section edits and permitted
 formatting/reordering leave that item valid. Intent approval and other explicitly
 byte-bound checks retain their existing exact-byte semantics.
+
+### Project-wide graph and workstream ownership
+
+Dependencies form one logical project-wide graph. Each workstream owns and records
+its artifacts and outgoing dependency declarations. An edge to another workstream
+uses an explicit qualified identity: owner workstream, source snapshot, path, and
+stable artifact item ID. Local shorthand is permitted only inside an explicitly
+declared owner context. Identical local IDs in different owners remain distinct.
+Shared project artifacts have a declared canonical owner and identity; consumers
+reference that identity rather than creating unrelated local copies of it.
+
+Impact analysis discovers committed dependency declarations across workstreams,
+including consumers whose source is on another workstream branch rather than in
+the current checkout. It resolves exact pinned sources and traverses actual edges
+across ownership boundaries until the affected closure is accounted for. The
+Plan specifies authoritative discovery and snapshot selection; a derived project
+index must remain rebuildable and cannot confer acceptance authority.
+
+For example, changing a shared policy marks every direct consumer of that policy
+for reassessment across the project, and traces their potentially affected
+descendants. Changing one workstream's requirement reaches only its actual
+dependents, including those owned by other workstreams. It leaves independent
+requirements and plans eligible, even when they share files or local IDs.
+
+Ownership limits writes, not impact visibility. Reports identify each affected
+item's owner and exact dependency path. Reassessment and acceptance remain with
+that owner's existing authority. Traversal cannot silently edit another
+workstream, authorize its implementation, or clear its unresolved impact.
+
+Missing owner declarations, unavailable dependency sources, stale project indexes,
+or unsupported schemas cannot be treated as an empty dependency set. Report an
+explicit incomplete analysis with unresolved owners/targets; do not claim a
+complete project impact result or clear potentially affected paths. Apply cycle,
+identity-conflict, deletion, and availability checks across workstream boundaries
+as well as within one workstream.
 
 ### Partial invalidation and reassessment
 
@@ -209,6 +244,8 @@ unavailable dependencies and refuses any claim of verified completeness.
   selective output, and migration/export interfaces before implementation.
 - New readers normalize legacy and new records to the same validation semantics.
 - Any operation requiring integrity resolves full authoritative data internally.
+- Impact queries discover dependencies project-wide and return owner-qualified
+  affected items, dependency paths, and any unresolved scope or targets.
 
 ## Constraints and invariants
 
@@ -220,6 +257,8 @@ unavailable dependencies and refuses any claim of verified completeness.
   potential until resolved. Unrelated items and historical bindings remain valid.
 - Clearing affected paths requires an attributable decision under existing reuse
   and acceptance rules; snapshot/checksum edits cannot transfer evidence.
+- Impact traversal crosses workstream boundaries through declared dependencies;
+  ownership remains scoped to the workstream and never limits impact discovery.
 - Retired items are excluded from active views and remain historically accessible;
   shared dependents require assessment before retirement.
 - Immutable records remain reachable for historical validation and export.
@@ -262,6 +301,7 @@ evidence; no review-only exemptions are declared.
 | SH-15 | Every actual dependency binds stable items at exact Git snapshots and retains attributable revalidation history. | unit, integration, e2e |
 | SH-16 | Partial invalidation distinguishes direct reassessment from potential downstream impact and supports reviewed propagation stopping. | unit, integration, e2e |
 | SH-17 | Deletion triggers impact assessment; retirement preserves history and protects shared active dependents. | unit, integration, e2e |
+| SH-18 | Project-wide impact traversal follows qualified dependencies across owners, preserves workstream authority, and reports incomplete discovery. | unit, integration, e2e |
 
 ### Savings measurement
 
@@ -288,8 +328,9 @@ Removing required evidence or skipping necessary lookups cannot count as savings
 Intent confirmation and formal independent Spec Challenge are pending. Exact
 schemas, catalog paths, tokenizer, corpus revisions, and command flags are Plan
 deliverables constrained by this spec; they are not claims of completed work.
-Revision 4 incorporates the user's Git-based item comparison, partial invalidation,
-and retirement request. Reconcile this proposed design with the source intent
+Revisions 4 and 5 incorporate the user's Git-based item comparison, partial
+invalidation, retirement, and project-wide traversal with workstream ownership.
+Reconcile this proposed design with the source intent
 before implementation approval; this edit records no such approval.
 If the fixed benchmark cannot demonstrate savings, revise the design before
 implementation is accepted.
@@ -317,6 +358,11 @@ both reviewed propagation stopping and actual downstream revision. Delete a
 requirement with exclusive and shared dependents; verify explicit retirement,
 active-view filtering, and historical retrieval. Unresolved affected paths refuse
 completion; unrelated branches remain eligible. Historical runs keep their bindings.
+Include a shared policy consumed in multiple workstreams, a dependency chain
+crossing workstream branches, duplicate local IDs with distinct owners, and an
+unavailable owner declaration. Confirm project-wide discovery reaches actual
+dependents outside the checkout, preserves each owner's authority, and reports
+incomplete traversal when dependency sources cannot be loaded.
 
 Observable outcomes: short references resolve to the exact intended records,
 legitimate workflow outcomes match the baseline, altered or unavailable evidence
