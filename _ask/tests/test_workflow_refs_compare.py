@@ -51,6 +51,13 @@ class ReferenceTests(unittest.TestCase):
         changed_profile = compare_items({"id": "x"}, {"id": "x"}, "structured-item/1",
                                         before_profile="structured-item/1", after_profile="unknown-profile/9")
         self.assertEqual(changed_profile["status"], "incomplete")
+        empty_profile = compare_items({"id": "x"}, {"id": "x"}, "structured-item/1",
+                                      before_profile="", before_inputs=[], after_inputs=[])
+        self.assertEqual(empty_profile["status"], "incomplete")
+        precise_change = compare_items('{"value":1.00000000000000001}',
+                                       '{"value":1.00000000000000002}', "structured-item/1",
+                                       before_inputs=[], after_inputs=[])
+        self.assertEqual(precise_change["status"], "changed", "high precision numbers cannot collapse through float parsing")
         incomplete_inputs = compare_items({"id": "x"}, {"id": "x"}, "structured-item/1",
                                           before_inputs=None, after_inputs=[])
         self.assertEqual(incomplete_inputs["status"], "incomplete")
@@ -66,8 +73,11 @@ class ReferenceTests(unittest.TestCase):
                          "unrelated": {"format": "old"}}
             source.write_text(json.dumps(first_doc), encoding="utf-8")
             (root / "notes.txt").write_bytes(b"plain text\n")
+            (root / "folder").mkdir()
+            (root / "folder" / "child.txt").write_text("child", encoding="utf-8")
             subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
             subprocess.run(["git", "add", "notes.txt"], cwd=root, check=True)
+            subprocess.run(["git", "add", "folder/child.txt"], cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "first snapshot"], cwd=root, check=True)
             first = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
             second_doc = {"unrelated": {"format": "new"},
@@ -90,6 +100,20 @@ class ReferenceTests(unittest.TestCase):
                                   before_inputs=[{"reference": "alpha/spec/2/plan/1/item/1@1", "role": "owner"}],
                                   after_inputs=[{"reference": "alpha/spec/2/plan/1/item/2@1", "role": "owner"}])
             self.assertEqual(moved["status"], "changed")
+            (root / "moved").mkdir()
+            subprocess.run(["git", "mv", "items.json", "moved/items.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "explicit item path move"], cwd=root, check=True)
+            move_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            historical_alpha = extract_git_item(root, first, "items.json", "alpha", "structured-item/1")
+            moved_alpha = extract_git_item(root, move_commit, "moved/items.json", "alpha", "structured-item/1")
+            self.assertEqual(historical_alpha["source"]["path"], "items.json")
+            self.assertEqual(moved_alpha["source"]["path"], "moved/items.json")
+            self.assertEqual(compare_items(historical_alpha["payload"], moved_alpha["payload"],
+                                           "structured-item/1", before_inputs=[], after_inputs=[])["status"], "unchanged")
+            self.assertEqual(extract_git_item(root, move_commit, "items.json", "alpha",
+                                              "structured-item/1")["status"], "incomplete")
+            self.assertEqual(extract_git_item(root, first, "folder", "whole-file",
+                                              "prose-item/1")["status"], "incomplete")
             old_prose = extract_git_item(root, first, "notes.txt", "whole-file", "prose-item/1")
             self.assertEqual(old_prose["payload"], b"plain text\n")
             (root / "notes.txt").write_bytes(b"plain text \n")
