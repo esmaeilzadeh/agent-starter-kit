@@ -103,6 +103,107 @@ def _verify_contract_files(root: Path, manifest_bytes: bytes) -> None:
         raise BenchmarkError("pinned tokenizer requirements changed after independent review")
 
 
+def _json_text(value: object) -> str:
+    return json.dumps(value, indent=2, ensure_ascii=False) + "\n"
+
+
+def _first_task_row(text: str, task_id: str) -> str:
+    lines = text.splitlines()
+    start = next((index for index, line in enumerate(lines)
+                  if line.startswith("| " + task_id + " |")), None)
+    if start is None:
+        raise BenchmarkError(f"frozen plan is missing first task row {task_id}")
+    end = next((index for index in range(start + 1, len(lines))
+                if lines[index].startswith("| ") and not lines[index].startswith("|   ")), len(lines))
+    return "\n".join(lines[start:end]) + "\n"
+
+
+def _first_yaml_task(text: str, task_id: str) -> str:
+    lines = text.splitlines()
+    start = next((index for index, line in enumerate(lines)
+                  if line == f"  - id: {task_id}"), None)
+    if start is None:
+        raise BenchmarkError(f"frozen task graph is missing first task {task_id}")
+    end = next((index for index in range(start + 1, len(lines))
+                if lines[index].startswith("  - id: ")), len(lines))
+    return "\n".join(lines[:3] + lines[start:end]) + "\n"
+
+
+def _test_plan_projection(value: dict) -> dict:
+    scopes = value.get("task_scopes")
+    tests = value.get("tests")
+    if not isinstance(scopes, list) or not scopes or not isinstance(scopes[0], dict) or not isinstance(tests, list):
+        raise BenchmarkError("frozen test plan has no first task scope")
+    scope = scopes[0]
+    ids = scope.get("test_ids")
+    if not isinstance(ids, list) or not all(isinstance(item, str) for item in ids):
+        raise BenchmarkError("frozen first task scope has invalid test IDs")
+    selected = [case for case in tests if case.get("id") in ids]
+    if len(selected) != len(ids):
+        raise BenchmarkError("frozen first task scope references missing tests")
+    criterion_ids = {criterion for case in selected for criterion in case.get("criterion_ids", [])}
+    obligations = value.get("obligations", [])
+    runners = value.get("runners", [])
+    runner_ids = {case.get("runner_id") for case in selected}
+    projected = {
+        key: value[key] for key in ("schema", "work_id", "spec_digest") if key in value
+    }
+    projected.update({
+        "task_scopes": [scope],
+        "tests": selected,
+        "obligations": [row for row in obligations if row.get("criterion_id") in criterion_ids],
+        "runners": [row for row in runners if row.get("id") in runner_ids],
+    })
+    if "task_scoped_baseline_regression_exemptions" in value:
+        exemptions = value["task_scoped_baseline_regression_exemptions"]
+        if isinstance(exemptions, dict) and scope.get("task_id") in exemptions:
+            projected["task_scoped_baseline_regression_exemptions"] = {
+                scope["task_id"]: exemptions[scope["task_id"]]
+            }
+    return projected
+
+
+def _projection_for_path(journey_id: str, source_path: str, text: str, source_contents: dict[str, str]) -> str:
+    """Return the frozen agent-visible projection while corpus verification stays whole-file."""
+    if source_path.endswith("test-plan.json") and journey_id in {"resume", "review"}:
+        value = json.loads(text)
+        projection = _test_plan_projection(value)
+        return _json_text(projection)
+    if journey_id == "review" and source_path.endswith("structured-agentic-environment.json"):
+        value = json.loads(text)
+        test_plan_path = "work/structured-agentic-environment/test-plan.json"
+        scope = _test_plan_projection(json.loads(source_contents[test_plan_path]))
+        criteria = {criterion for case in scope["tests"] for criterion in case.get("criterion_ids", [])}
+        value["criteria"] = [row for row in value.get("criteria", []) if row.get("id") in criteria]
+        return _json_text(value)
+    if journey_id == "review" and source_path.endswith("tasks.yaml"):
+        return _first_yaml_task(text, "WB-001")
+    if source_path.endswith("plan.md") and journey_id == "resume":
+        task_row = _first_task_row(text, "stage-inference")
+        parts = []
+        for heading in ("## Specification", "## Approach"):
+            start = text.find(heading)
+            if start >= 0:
+                end = text.find("\n## ", start + len(heading))
+                parts.append(text[start:] if end < 0 else text[start:end])
+        parts.append("## First task row\n" + task_row)
+        return "\n\n".join(parts) + "\n"
+    if source_path.endswith("plan.md") and journey_id == "review":
+        authority_start = text.find("## Status and authority")
+        authority_end = text.find("\n## ", authority_start + 1)
+        authority = text[authority_start:authority_end] if authority_start >= 0 and authority_end >= 0 else ""
+        specification_start = text.find("## Specification")
+        specification_end = text.find("\n## ", specification_start + 1)
+        specification = text[specification_start:specification_end] if specification_start >= 0 and specification_end >= 0 else ""
+        return authority + "\n\n" + specification + "\n\n## First task row\n" + _first_task_row(text, "WB-001")
+    if source_path.endswith(".json"):
+        try:
+            return _json_text(json.loads(text))
+        except json.JSONDecodeError as exc:
+            raise BenchmarkError(f"invalid frozen JSON input: {source_path}") from exc
+    return text
+
+
 def capture_baseline(root, manifest_path=None):
     """Capture exact legacy inputs, tokenizer counts, and unique metadata bytes.
 
@@ -180,8 +281,11 @@ def capture_baseline(root, manifest_path=None):
             if source_path not in file_table:
                 raise BenchmarkError(f"journey references missing frozen source: {source_path}")
             used_files.add(source_path)
-            source_inputs.append({"path": source_path, "text": verified_contents[source_path]})
-            transcript_parts.append(f"Source ({source_path}):\n{verified_contents[source_path]}")
+            projected_text = _projection_for_path(
+                journey_id, source_path, verified_contents[source_path], verified_contents
+            )
+            source_inputs.append({"path": source_path, "text": projected_text})
+            transcript_parts.append(f"Source ({source_path}):\n{projected_text}")
             if file_table[source_path]["metadata"]:
                 journey_metadata.add(source_path)
                 metadata_files.add(source_path)
