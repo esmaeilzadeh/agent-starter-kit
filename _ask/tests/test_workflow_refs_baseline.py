@@ -20,7 +20,7 @@ from workflow_refs.benchmark import BenchmarkError, capture_baseline
 MANIFEST = ROOT / "work/shorter-hashes/benchmark/baseline.json"
 BASELINE_SOURCE = "9a3d25d035baafc23508f242020d46fae7ff5b14"
 PLAN_REVIEW_SOURCE = "02ad31b6e5ef5130986a920f943788cbbe970631"
-PLAN_REVIEW_PATH = "work/shorter-hashes/traceability/plan-review.json"
+PLAN_REVIEW_PATH = "work/structured-agentic-environment/traceability/plan-review.json"
 
 
 def git_blob(revision: str, path: str) -> bytes:
@@ -120,7 +120,7 @@ class ReferenceTests(unittest.TestCase):
             "work/structured-agentic-environment/traceability-accepted.json",
             PLAN_REVIEW_PATH,
         ):
-            self.assertIn(path, review_sources)
+            self.assertIn(path, review_sources, path)
             self.assertIn(review_sources[path], by_id["review"]["transcript"])
 
         completion_sources = {item["path"]: item["text"]
