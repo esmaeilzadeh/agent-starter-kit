@@ -121,23 +121,34 @@ class ReferenceTests(unittest.TestCase):
         review_sources = {item["path"]: item["text"]
                           for item in by_id["review"]["source_inputs"]}
         task_plan = json.loads(review_sources["work/structured-agentic-environment/test-plan.json"])
+        frozen_task_plan = json.loads(git_blob(
+            BASELINE_SOURCE, "work/structured-agentic-environment/test-plan.json"
+        ))
         first_scope = task_plan["task_scopes"][0]
+        frozen_scope = frozen_task_plan["task_scopes"][0]
         self.assertEqual(first_scope["task_id"], "WB-001")
-        selected_ids = set(first_scope["test_ids"])
-        self.assertEqual({test["id"] for test in task_plan["tests"]}, selected_ids)
-        selected_criteria = {criterion for test in task_plan["tests"]
-                             for criterion in test["criterion_ids"]}
-        self.assertEqual({row["criterion_id"] for row in task_plan["obligations"]}, selected_criteria)
-        self.assertEqual({row["id"] for row in task_plan["runners"]},
-                         {test["runner_id"] for test in task_plan["tests"]})
+        self.assertEqual(task_plan["task_scopes"], [frozen_scope])
+        selected_ids = set(frozen_scope["test_ids"])
+        selected_tests = [test for test in frozen_task_plan["tests"] if test["id"] in selected_ids]
+        self.assertEqual(task_plan["tests"], selected_tests)
+        selected_criteria = {criterion for test in selected_tests for criterion in test["criterion_ids"]}
+        expected_obligations = [row for row in frozen_task_plan["obligations"]
+                                if row["criterion_id"] in selected_criteria]
+        self.assertEqual(task_plan["obligations"], expected_obligations)
+        selected_runners = {test["runner_id"] for test in selected_tests}
+        expected_runners = [row for row in frozen_task_plan["runners"] if row["id"] in selected_runners]
+        self.assertEqual(task_plan["runners"], expected_runners)
         self.assertTrue(selected_ids.isdisjoint({"WB-inventory", "WB-snapshot", "WB-source-errors"}))
         self.assertNotIn("WB-002", by_id["review"]["transcript"])
         self.assertIn("WB-001", review_sources["work/structured-agentic-environment/inner-loop/tasks.yaml"])
         self.assertNotIn("WB-002", review_sources["work/structured-agentic-environment/inner-loop/tasks.yaml"])
         self.assertIn("WB-001", review_sources["work/structured-agentic-environment/plan.md"])
         self.assertNotIn("WB-002", review_sources["work/structured-agentic-environment/plan.md"])
-        spec = json.loads(review_sources["specs/current/structured-agentic-environment.json"])
-        self.assertEqual({row["id"] for row in spec["criteria"]}, selected_criteria)
+        spec_path = "specs/current/structured-agentic-environment.json"
+        spec = json.loads(review_sources[spec_path])
+        frozen_spec = json.loads(git_blob(BASELINE_SOURCE, spec_path))
+        self.assertEqual(spec["criteria"], [row for row in frozen_spec["criteria"]
+                                             if row["id"] in selected_criteria])
         self.assertIn("traceability-accepted.json", by_id["review"]["transcript"])
         self.assertIn(PLAN_REVIEW_PATH, review_sources)
 
@@ -145,8 +156,11 @@ class ReferenceTests(unittest.TestCase):
                               for item in by_id["completion"]["source_inputs"]}
         result_path = "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json"
         log_path = "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log"
-        self.assertIn(json.loads(completion_sources[result_path])["candidate_sha"],
-                      by_id["completion"]["transcript"])
+        frozen_result = json.loads(git_blob(BASELINE_SOURCE, result_path))
+        captured_result = json.loads(completion_sources[result_path])
+        self.assertEqual(captured_result, frozen_result)
+        self.assertIn(captured_result["candidate_sha"], by_id["completion"]["transcript"])
+        self.assertTrue(captured_result["cases"])
         self.assertIn(completion_sources[log_path], by_id["completion"]["transcript"])
         self.assertEqual(report["total_input_tokens"],
                          sum(row["input_tokens"] for row in report["journeys"]))
