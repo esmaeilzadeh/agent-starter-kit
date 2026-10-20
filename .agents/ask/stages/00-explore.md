@@ -16,12 +16,24 @@ until What/Why can be owned — then hand off into Intent / 01 Grill.
 ## Continuation recovery (before new-task intake)
 
 When the human says “continue,” “resume,” or equivalent, first inspect the
-current branch, workstream artifacts, inner-loop state, and recent commits. If
-those sources identify one active authorized workstream, resume its exact stage
-and task; retain prior approvals and do not restart new-task intake. If multiple
-active workstreams remain plausible, ask only which one to resume after checking
-the available evidence. Apply the Explore/Grill entry gate only after establishing
-that the request starts a genuinely new task.
+current branch, workstream artifacts, inner-loop state, and recent commits.
+
+- If the human names a workstream, resolve that target before considering the
+  checkout. If it is ambiguous or unavailable, ask about that target; never
+  substitute the checked-out workstream.
+- Otherwise, when the checkout is `agent/<work-id>` and matching workstream
+  artifacts exist, treat it as the continuation target even if unrelated live
+  workstreams exist. Resume its exact authorized stage and task, retaining prior
+  approvals.
+- If that workstream is terminal or its plan explicitly stops, report the
+  authorized endpoint. Do not offer a chooser among unrelated workstreams or
+  infer permission for a later stage.
+- For other checkouts, resolve the target from remaining evidence. Ask for
+  clarification before action if no target is identifiable, multiple targets
+  remain plausible, or relevant stage or authorization evidence conflicts.
+
+Apply the Explore/Grill entry gate only after establishing that the request
+starts a genuinely new task.
 
 ## Adopted subject intake
 
