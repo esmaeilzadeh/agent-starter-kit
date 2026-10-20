@@ -29,6 +29,13 @@ class ReferenceTests(unittest.TestCase):
             parse_reference("alpha/spec/02@1")
         with self.assertRaises(ReferenceError):
             parse_reference("alpha/spec/0@1")
+        for malformed in ("alpha/task/1@1", "alpha/test/1@1", "alpha/plan/1@1", "alpha/part/1@1"):
+            try:
+                parse_reference(malformed)
+            except ReferenceError:
+                pass
+            else:
+                self.fail(f"hierarchical reference bypassed required parents: {malformed}")
         with self.assertRaises(ReferenceError):
             parse_reference({"id": 3, "revision": 1}, {"owner": "alpha", "type": "task"})
         inherited = parse_reference({"id": 3, "revision": 4}, {

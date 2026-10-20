@@ -39,6 +39,11 @@ class ReferenceTests(unittest.TestCase):
             accepted_before = subprocess.check_output(
                 ["git", "rev-parse", "refs/ask/accepted-tests/alpha"], cwd=root, text=True
             ).strip()
+            for invalid in (commit[:39], "a" * 41, "a" * 63):
+                with self.assertRaises(CatalogError):
+                    register_revision(catalog, "alpha", "alpha/spec/1", {
+                        "commit": invalid, "path": "items.json",
+                    }, "SH-01", "structured-item/1", payload)
             first = register_revision(catalog, "alpha", "alpha/spec/1", {
                 "commit": commit, "path": "items.json",
             }, "SH-01", "structured-item/1", payload, expected_generation=0)
