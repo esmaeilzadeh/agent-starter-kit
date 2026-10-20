@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import sys
 
@@ -31,8 +32,13 @@ class ReferenceTests(unittest.TestCase):
             root = Path(directory)
             payload = b'{"id":"SH-01","then":["original"]}\n'
             commit = make_git_repo(root, payload)
+            subprocess.run(["git", "update-ref", "refs/ask/accepted-tests/alpha", commit],
+                           cwd=root, check=True)
             catalog = root / "work/alpha/references/integrity.json"
             initialize_catalog(catalog, "alpha")
+            accepted_before = subprocess.check_output(
+                ["git", "rev-parse", "refs/ask/accepted-tests/alpha"], cwd=root, text=True
+            ).strip()
             first = register_revision(catalog, "alpha", "alpha/spec/1", {
                 "commit": commit, "path": "items.json",
             }, "SH-01", "structured-item/1", payload, expected_generation=0)
@@ -58,6 +64,10 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(doc["schema"], "ask-reference-catalog/v1")
             self.assertEqual(len(doc["entries"]), 2)
             self.assertEqual(doc["entries"][0]["reference"], "alpha/spec/1@1")
+            accepted_after = subprocess.check_output(
+                ["git", "rev-parse", "refs/ask/accepted-tests/alpha"], cwd=root, text=True
+            ).strip()
+            self.assertEqual(accepted_after, accepted_before, "catalog publication must not change accepted-tests authority")
 
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"id":"SH-01","value":[1,2]}\n'
@@ -103,14 +113,40 @@ class ReferenceTests(unittest.TestCase):
             for worker in workers: worker.join()
             self.assertEqual(sum(isinstance(value, dict) for value in results), 1)
             self.assertEqual(sum(isinstance(value, CatalogError) for value in results), 1)
-            with self.assertRaises(RuntimeError):
-                register_revision(catalog, "alpha", "alpha/spec/2", {
-                    "commit": commit, "path": "items.json",
-                }, "SH-02", "structured-item/1", payload, after_publish=lambda: (_ for _ in ()).throw(RuntimeError("crash")))
-            recovered = register_revision(catalog, "alpha", "alpha/spec/2", {
+            from workflow_refs import store
+            original_git = store._git
+
+            def stop_before_ref(root_arg, *args, **kwargs):
+                if args and args[0] == "update-ref":
+                    raise CatalogError("interrupted", "before authority advancement")
+                return original_git(root_arg, *args, **kwargs)
+
+            with patch("workflow_refs.store._git", side_effect=stop_before_ref):
+                with self.assertRaises(CatalogError):
+                    register_revision(catalog, "alpha", "alpha/spec/2", {
+                        "commit": commit, "path": "items.json",
+                    }, "SH-02", "structured-item/1", payload)
+            recovered_before = register_revision(catalog, "alpha", "alpha/spec/2", {
                 "commit": commit, "path": "items.json",
             }, "SH-02", "structured-item/1", payload)
-            self.assertEqual(recovered["reference"], "alpha/spec/2@1")
+            self.assertEqual(recovered_before["reference"], "alpha/spec/2@1")
+
+            original_atomic_bytes = store._atomic_bytes
+
+            def stop_after_ref(path, raw):
+                if Path(path) == catalog:
+                    raise RuntimeError("after authority advancement")
+                return original_atomic_bytes(path, raw)
+
+            with patch("workflow_refs.store._atomic_bytes", side_effect=stop_after_ref):
+                with self.assertRaises(RuntimeError):
+                    register_revision(catalog, "alpha", "alpha/spec/3", {
+                        "commit": commit, "path": "items.json",
+                    }, "SH-03", "structured-item/1", payload)
+            recovered = register_revision(catalog, "alpha", "alpha/spec/3", {
+                "commit": commit, "path": "items.json",
+            }, "SH-03", "structured-item/1", payload)
+            self.assertEqual(recovered["reference"], "alpha/spec/3@1")
             self.assertEqual(resolve_version(catalog, recovered["reference"], root)["payload"], payload)
 
     def test_history_and_missing_integrity(self):
