@@ -48,14 +48,13 @@ class ReferenceTests(unittest.TestCase):
             ({"owner": "alpha", "type": "test", "spec": 2, "plan": 1, "task": 4}, "alpha/spec/2/plan/1/task/4/test/3@1"),
         ]
         for context, reference in contexts:
-            with self.subTest(reference=reference):
-                envelope = encode_envelope({"value": None, "notes": "verbatim workflow context"},
-                                           "workflow-record/v1", context, {"record": reference})
-                self.assertTrue(envelope, "each producer must emit a versioned record")
-                restored = normalize_envelope(decode_envelope(envelope))
-                self.assertEqual(restored["references"]["record"], reference)
-                self.assertNotIn("sha256", json.dumps(envelope))
-                self.assertEqual(restored["payload"], {"value": None, "notes": "verbatim workflow context"})
+            envelope = encode_envelope({"value": None, "notes": "verbatim workflow context"},
+                                       "workflow-record/v1", context, {"record": reference})
+            self.assertTrue(envelope, "each producer must emit a versioned record")
+            restored = normalize_envelope(decode_envelope(envelope))
+            self.assertEqual(restored["references"]["record"], reference)
+            self.assertNotIn("sha256", json.dumps(envelope))
+            self.assertEqual(restored["payload"], {"value": None, "notes": "verbatim workflow context"})
 
 
 if __name__ == "__main__":
