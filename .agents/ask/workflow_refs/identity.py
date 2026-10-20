@@ -9,6 +9,10 @@ def parse_reference(value, context=None):
     return None
 
 
+def normalize_references(values, context=None):
+    return ()
+
+
 def reference_sort_key(value):
     return None
 

@@ -10,9 +10,9 @@ def initialize_catalog(path, owner):
 
 
 def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profile, payload,
-                     expected_generation=None, after_publish=None):
+                     expected_generation=None, after_publish=None, revision=None, **kwargs):
     return None
 
 
-def resolve_version(catalog_path, reference, repository_root=None):
+def resolve_version(catalog_path, reference, repository_root=None, payload=None, semantics=None):
     return {}
