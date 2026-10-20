@@ -46,8 +46,8 @@ class ReferenceTests(unittest.TestCase):
             }, "SH-01", "structured-item/1", next_payload, expected_generation=1)
             self.assertIsNotNone(first, "a committed catalog entry must be returned")
             self.assertEqual(first["reference"], "alpha/spec/1@1")
-        self.assertEqual(second["reference"], "alpha/spec/1@2")
-        self.assertEqual(resolve_version(catalog, first["reference"], root)["payload"], payload)
+            self.assertEqual(second["reference"], "alpha/spec/1@2")
+            self.assertEqual(resolve_version(catalog, first["reference"], root)["payload"], payload)
             self.assertEqual(resolve_version(catalog, first["reference"], root)["entry"], first)
             with self.assertRaises(CatalogError):
                 register_revision(catalog, "alpha", "alpha/spec/1", {
