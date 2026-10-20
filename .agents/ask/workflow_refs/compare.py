@@ -7,7 +7,7 @@ import math
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 
 from .identity import ReferenceError, parse_reference
 from .profiles import get_profile
@@ -36,7 +36,7 @@ def compare_items(before, after, profile_id, before_inputs=None, after_inputs=No
         after_value = _normalize_payload(after, profile["format"])
         normalized_before_inputs = _normalize_inputs(before_inputs)
         normalized_after_inputs = _normalize_inputs(after_inputs)
-    except (TypeError, ValueError, UnicodeError, ReferenceError) as exc:
+    except (TypeError, ValueError, UnicodeError, ReferenceError, DecimalException) as exc:
         return {"status": "incomplete", "reason": "comparison_input_invalid", "detail": str(exc)}
     if before_value != after_value:
         return {"status": "changed", "reason": "payload_changed"}
@@ -171,7 +171,7 @@ def extract_git_item(repository_root, commit, source_path, item_id, profile_id):
         document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs,
                               parse_constant=_reject_constant, parse_float=Decimal,
                               parse_int=Decimal)
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DecimalException) as exc:
         return {"status": "incomplete", "reason": "document_invalid", "detail": str(exc)}
     if not isinstance(document, dict) or not isinstance(document.get("items"), list):
         return {"status": "incomplete", "reason": "item_collection_unavailable"}
