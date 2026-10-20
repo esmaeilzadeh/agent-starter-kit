@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 from copy import deepcopy
 
 from .identity import ReferenceError, parse_reference
@@ -22,6 +23,13 @@ def _pairs(pairs):
 
 def _reject_constant(value):
     raise ValueError(f"non-finite JSON number: {value}")
+
+
+def _finite_float(value):
+    number = float(value)
+    if not math.isfinite(number):
+        raise ValueError(f"non-finite JSON number: {value}")
+    return number
 
 
 def _validate_context(context):
@@ -77,10 +85,12 @@ def encode_envelope(payload, payload_schema, context, references=None):
 def decode_envelope(encoded):
     try:
         if isinstance(encoded, str):
-            envelope = json.loads(encoded, object_pairs_hook=_pairs, parse_constant=_reject_constant)
+            envelope = json.loads(encoded, object_pairs_hook=_pairs, parse_constant=_reject_constant,
+                                  parse_float=_finite_float)
         elif isinstance(encoded, dict):
             envelope = json.loads(json.dumps(encoded, ensure_ascii=False, allow_nan=False),
-                                  object_pairs_hook=_pairs, parse_constant=_reject_constant)
+                                  object_pairs_hook=_pairs, parse_constant=_reject_constant,
+                                  parse_float=_finite_float)
         else:
             raise EnvelopeError("envelope must be an object or JSON text")
     except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
