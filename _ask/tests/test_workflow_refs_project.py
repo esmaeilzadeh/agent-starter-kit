@@ -27,8 +27,12 @@ class ReferenceTests(unittest.TestCase):
         self.sha = git(self.root, "rev-parse", "HEAD")
         git(self.root, "branch", "develop")
         git(self.root, "branch", "main")
+        (self.root / "work" / "archived" / "spec.json").write_text("{\"updated\":true}\n")
+        git(self.root, "add", ".")
+        git(self.root, "commit", "-qm", "second")
+        self.other = git(self.root, "rev-parse", "HEAD")
         git(self.root, "update-ref", "refs/heads/agent/live", self.sha)
-        git(self.root, "update-ref", "refs/heads/agent/live/task/4", self.sha)
+        git(self.root, "update-ref", "refs/heads/agent/orphan/task/4", self.sha)
         git(self.root, "update-ref", "refs/ask/references/shared", self.sha)
 
     def tearDown(self):
@@ -40,7 +44,7 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(capture["owners"]["live"]["kind"], "live")
         self.assertEqual(capture["owners"]["shared"]["kind"], "shared")
         self.assertEqual(capture["owners"]["archived"]["kind"], "archive")
-        self.assertNotIn("refs/heads/agent/live/task/4", capture["refs"])
+        self.assertNotIn("refs/heads/agent/orphan/task/4", capture["refs"])
         node_a = "live/spec/1@1"
         node_b = "other/spec/1@1"
         with self.assertRaises(ImpactError):
@@ -56,8 +60,8 @@ class ReferenceTests(unittest.TestCase):
             if calls:
                 return
             calls.append(True)
-            git(self.root, "update-ref", "refs/heads/agent/transient", self.sha)
-            git(self.root, "update-ref", "-d", "refs/heads/agent/transient")
+            git(self.root, "update-ref", "--create-reflog", "refs/heads/agent/live", self.other)
+            git(self.root, "update-ref", "refs/heads/agent/live", self.sha)
         capture = capture_project(self.root, retries=1, during_scan=move_and_return)
         self.assertEqual(capture["status"], "incomplete")
         capture = capture_project(self.root)

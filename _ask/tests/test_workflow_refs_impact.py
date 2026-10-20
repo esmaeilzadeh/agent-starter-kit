@@ -25,6 +25,7 @@ def decision(action="retain", generation="g1", **changes):
     value = {"action": action, "old_upstream": P, "new_upstream": P[:-1] + "2",
              "dependent": T, "profile": "structured-item/1", "context_generation": generation,
              "examined_paths": {"plan": "resolved", "shared-policy": "resolved"},
+             "required_paths": ["plan", "shared-policy"],
              "review_evidence": "review-1", "reviewer": "owner-b-reviewer",
              "coordinator": "owner-b-coordinator", "outward_equal": True,
              "satisfies_new_inputs": True, "reuse_allowed": True}
@@ -49,7 +50,8 @@ class ReferenceTests(unittest.TestCase):
         changed = decision(examined_paths={"plan": "resolved", "shared-policy": "changed"})
         self.assertFalse(record_decision(changed, capture)["propagation_stopped"])
         stale = decision(context_generation="g0")
-        self.assertEqual(record_decision(stale, capture)["status"], "reassess")
+        with self.assertRaises(Exception):
+            record_decision(stale, capture)
 
     def test_retirement_preserves_shared_obligations(self):
         retired = record_decision(decision("retire"))
@@ -63,7 +65,8 @@ class ReferenceTests(unittest.TestCase):
         incomplete = decision(examined_paths={"plan": "resolved", "shared-policy": "unknown"})
         self.assertEqual(assess_impact(graph(), [P], {T: incomplete}, capture)["status"], "incomplete")
         missing_authority = decision(coordinator="")
-        self.assertEqual(record_decision(missing_authority)["status"], "reassess")
+        with self.assertRaises(Exception):
+            record_decision(missing_authority)
 
     def test_deletion_vs_unavailability_and_history(self):
         unavailable = graph()
@@ -72,4 +75,3 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(result["status"], "incomplete")
         self.assertEqual(result["items"][T]["status"], "incomplete")
         self.assertIn(T, unavailable["nodes"])
-
