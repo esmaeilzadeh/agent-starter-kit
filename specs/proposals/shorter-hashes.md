@@ -2,7 +2,7 @@
 
 ## Status
 
-PROPOSED — revision 3. The user requested this specification; intent confirmation,
+PROPOSED — revision 4. The user requested this specification; intent confirmation,
 formal Spec Challenge, and an accepted implementation plan remain outstanding.
 This document does not record approval or execution evidence.
 
@@ -44,11 +44,13 @@ have independent immutable lifetimes. Creating a log cannot edit an accepted
 contract. Related records store short references instead of copying the full
 contract digests and common metadata into every report or test case.
 
-Each full checksum is registered once per workstream integrity catalog and digest
-semantics. Revisions can reuse that entry. Unique output checksums still need a
-full authoritative value. A transfer copy of an authoritative record is permitted;
-downstream reports must not expand references into repeated full checksums by
-default. Cross-workstream reuse names the owner explicitly.
+For committed artifacts, Git supplies immutable history and content identity.
+Store each full source commit once in shared snapshot context; dependencies use
+short snapshot references, repository-relative paths, and stable artifact item IDs.
+Separate generated file or item checksums are unnecessary for these bindings.
+Evidence outside Git retains full authoritative checksums, stored once per
+workstream and digest semantics where safely reusable. Cross-workstream references
+name the owner explicitly. Retain required Git objects for historical validation.
 
 For example, within a declared workstream, a report could contain:
 
@@ -61,49 +63,82 @@ storage paths, and resolver interfaces. Every reference must identify its work,
 record type, and immutable target through explicit or inherited context. A bare
 number without sufficient context is invalid.
 
-### Dependency revisions
+### Item dependencies and Git history
 
-Every derived artifact revision binds the exact immutable revisions of all its
-actual inputs. This rule applies to every existing dependency type: spec to plan,
-plan to task, task to test, and other declared relationships involving test plans,
-graphs, source, policies, runner definitions, reviews, or execution evidence.
-The Plan inventories the actual dependency graph; examples do not impose a linear
-pipeline or invent dependencies from ownership labels or ordinary lookup links.
+The dependency graph's nodes are artifact items, such as a requirement, plan item,
+task, or test definition. Each edge binds the source snapshot, file path, and stable
+item ID reviewed by the dependent item. This applies to every actual dependency
+including shared/global constraints, source, policy, and runner inputs. Ownership
+labels and lookup links alone do not establish a dependency. The Plan inventories
+these edges and defines deterministic item extraction and comparison per format.
 
-A derived revision's canonical checksum covers its content and complete input
-bindings, including their work/type/revision context. Shared checksum storage
-preserves these directed edges. Placing artifacts together in a manifest does not
-establish derivation. Adding, removing, or changing an input binding requires a
-new derived revision and checksum, even when its substantive payload is unchanged.
+Git owns item history; separate per-item revision counters and checksum histories
+are not required. Stable IDs survive section movement and are never recycled.
+File moves need an explicit path mapping; missing or duplicate IDs cannot be
+resolved by guessing. Compare against an explicitly selected candidate snapshot,
+not whichever commit HEAD happens to name during validation.
 
-When an input changes semantically, determine the affected downstream closure for
-the new selected workflow context. Reject directly and transitively stale artifacts
-until each affected dependency is resolved. Do not wait for an intermediate artifact
-to be rewritten or its checksum to change before detecting downstream staleness.
-Artifacts with multiple inputs require all their bindings to be valid; unaffected
-branches remain eligible. Existing artifacts retain their original input bindings
-and remain available for validation in their historical context.
+A different repository commit or file's last modifying commit is not an
+invalidation decision. Compare the file's Git blob IDs at the recorded and
+candidate snapshots as a fast unchanged-content check. If different, compare the
+referenced item's meaningful content and declared dependency bindings using the
+format's deterministic equivalence rules. Unrelated section edits and permitted
+formatting/reordering leave that item valid. Intent approval and other explicitly
+byte-bound checks retain their existing exact-byte semantics.
 
-To use changed inputs, regenerate or explicitly revalidate each affected derived
-artifact in dependency order, publish a new immutable revision with the correct
-bindings, and calculate its new checksum. Apply the review and coordinator acceptance
-requirements already associated with that artifact type. Recomputing a checksum,
-editing a catalog entry, or moving a current pointer cannot transfer derivation,
-approval, or execution evidence to the new context.
+### Partial invalidation and reassessment
 
-For example, a recorded `spec/1 -> plan/1 -> task/1 -> test/1` chain remains valid
-for its original context. Selecting `spec/2` makes the affected plan, task, and
-test revisions stale for that new context. Rebuilding or revalidating the chain
-produces newly bound revisions and checksums; changing only the spec's catalog
-checksum cannot make the old chain current. A task-only change similarly affects
-its dependent tests without changing unrelated tasks or upstream artifacts.
+A changed input item makes its direct dependents need reassessment. Traverse the
+actual dependency edges to identify downstream items as potentially affected;
+this impact set does not automatically require rewriting every descendant.
+Unresolved affected paths cannot authorize completion in the new context.
+Unrelated branches remain eligible. Multiple-input items require all relevant
+inputs and affected paths to be resolved. Cycle and missing-target checks apply.
 
-Test definitions and execution records are distinct artifacts. Historical runs
-retain their exact test/source/runner/contract bindings. They cannot be relabeled
-as new executions. Any reuse requires the existing evidence eligibility rules and
-an explicit attributable decision where those rules require one; otherwise new
-execution is necessary. Canonical-equivalent formatting changes retain existing
-equivalence rules and do not require artificial semantic revisions.
+Reassessment proceeds in dependency order and records the outcome against exact
+old/new snapshots with the attribution, review, and coordinator authority required
+for that artifact type:
+
+- Retain: the dependent item still satisfies the changed input. Record a new
+  revalidation binding; preserve its original review and content in Git history.
+- Revise: change the dependent content or obligations, commit it, and reassess
+  its consumers against the changed item.
+- Retire: the item no longer serves an active obligation; retain historical access
+  and remove it from the default active workflow.
+
+Propagation can stop when a reviewed decision establishes that the dependent's
+consumer-relevant content, obligations, and dependency contract are unchanged and
+existing evidence reuse rules permit it. Record that decision before clearing
+potentially affected descendants. If those conditions fail, continue reassessment.
+A pointer/checksum update, unchanged payload alone, or a changed upstream commit
+alone cannot establish validity or transfer approval. No historical record is
+silently rebound.
+
+For example, `S1 -> P1 -> T1 -> X1` and `S2 -> P4 -> T4 -> X4` are independent
+chains. Editing only S1 marks P1 for reassessment and T1/X1 as potentially affected;
+P4/T4/X4 remain eligible even if S1 and S2 share one file. If reviewed P1 still
+satisfies the new S1 without consumer-relevant changes, eligible T1/X1 evidence
+can be retained with the recorded decision. If P1 changes, reassess T1 and then
+X1 as their actual inputs change. A global constraint affects every linked item.
+
+Test definitions and execution records remain distinct. Historical runs keep
+their exact test/source/runner/contract bindings; revalidation cannot relabel them
+as new executions. Reuse must satisfy existing evidence rules and applicable
+review/acceptance requirements; otherwise run new executions. This proposal does
+not itself waive existing coordinator acceptance or completion checks.
+
+### Deletion and retirement
+
+Deleting an item triggers the same graph impact analysis. Stale means an active
+item needs reassessment; retired means it is excluded from the active workflow
+and retained only for historical reference. A missing source cannot count as a
+satisfied dependency. Assess whether each dependent still serves another active
+requirement before retiring it; shared tasks/tests may remain active after an
+explicit reviewed dependency update. Propagate the resulting changes through
+actual edges. Preserve deletion/retirement decisions, original bindings, and
+historical evidence in Git; default active views exclude retired items and allow
+explicit historical retrieval. Do not delete executable tests merely because one
+supporting requirement was removed.
 
 ### Authority and identity
 
@@ -119,17 +154,17 @@ resolve to the wrong object. A conflict requires fresh allocation or an explicit
 error; published references remain bound to their original target. Published
 entries are immutable, although an authority index can advance atomically.
 
-Checksums preserve their existing semantics: spec/plan contracts hash canonical
-sorted compact JSON; byte-bound artifacts such as intent and logs hash their exact
-bytes. Each catalog entry identifies the algorithm and digest semantics. Identical
-digest strings with different semantics cannot imply interchangeable records.
+Comparisons preserve their existing semantics: canonical JSON equivalence for
+structured contracts and exact bytes for intent approval and byte-bound evidence.
+When checksums remain necessary for external evidence, their algorithm and digest
+semantics are explicit; short references cannot replace integrity verification.
 
-A full pinned Git commit plus repository-relative path may replace redundant
-tracked-file checksum fields only when the validator loads the exact object and
-preserves the required byte or canonical-JSON comparison. Uncommitted execution
-outputs retain full checksums in evidence records. Missing commits, paths, or
-catalog entries produce an explicit failure; no consumer falls back to HEAD,
-current files, or an unchecked value.
+Pinned Git snapshots resolve exact paths and item IDs. Missing objects, unsafe
+paths, ambiguous item IDs, or absent snapshot records fail explicitly without
+falling back to HEAD, current files, or unchecked values. A missing item in a valid
+candidate document enters deletion handling; an unavailable document/object is an
+availability error and cannot be inferred to mean deletion. External execution
+outputs retain full checksums and retrievable artifacts.
 
 ### JSON and agent context
 
@@ -180,10 +215,13 @@ unavailable dependencies and refuses any claim of verified completeness.
 - Human approval binds the exact intent; independent decisions retain attribution.
 - Accepted obligations, candidate/source lineage, test assertions, logs, and runner
   identities remain verifiable. Short references alone grant no authority.
-- Every derived revision binds all actual inputs. Semantic changes invalidate the
-  affected downstream closure for the new context; unchanged historical bindings
-  and unrelated branches retain their meaning. Checksum updates cannot restore
-  eligibility or transfer approval/execution evidence.
+- Dependency binding and impact analysis operate on stable artifact items in Git
+  snapshots. Changed direct inputs require reassessment; downstream impact is
+  potential until resolved. Unrelated items and historical bindings remain valid.
+- Clearing affected paths requires an attributable decision under existing reuse
+  and acceptance rules; snapshot/checksum edits cannot transfer evidence.
+- Retired items are excluded from active views and remain historically accessible;
+  shared dependents require assessment before retirement.
 - Immutable records remain reachable for historical validation and export.
 - Records never include their own digest in the bytes being hashed. Reference
   cycles, missing targets, duplicate conflicting IDs, and unsafe paths are rejected.
@@ -209,11 +247,11 @@ evidence; no review-only exemptions are declared.
 | --- | --- | --- |
 | SH-01 | Scoped prefixes, configurable minimum, collision expansion, exact Git resolution. | unit, integration |
 | SH-02 | Stable readable task/test IDs and work qualification. | unit, integration |
-| SH-03 | Shared full checksums and metadata replace repeated downstream copies. | unit, integration |
+| SH-03 | Shared Git snapshots replace redundant committed-artifact checksums; external evidence retains full digests. | unit, integration |
 | SH-04 | Candidate-only substitutions cannot alter coordinator acceptance authority. | integration, e2e |
 | SH-05 | Immutable contracts and later evidence have separate lifetimes and retained history. | integration |
 | SH-06 | Byte and canonical-JSON digest semantics retain their invalidation rules. | unit, integration |
-| SH-07 | Pinned Git derivation resolves exact content and fails on unavailable dependencies. | integration |
+| SH-07 | Snapshot/path/item resolution and blob fast checks preserve exact content and item-level comparison. | integration |
 | SH-08 | Scoped allocation, concurrent conflicts, malformed refs, and cycles fail safely. | unit, integration |
 | SH-09 | Compact JSON preserves values, defaults, and deterministic validation. | unit, integration |
 | SH-10 | Legacy reads, explicit migration, and export preserve provenance and authority. | integration, e2e |
@@ -221,8 +259,9 @@ evidence; no review-only exemptions are declared.
 | SH-12 | Fixed representative workloads demonstrate lower total tokens and JSON bytes. | integration |
 | SH-13 | Interrupted publication and retries preserve immutable references and clean source. | integration |
 | SH-14 | Complete workflow still rejects stale or modified evidence and accepts valid evidence. | e2e |
-| SH-15 | Every existing dependency type preserves exact immutable input bindings and requires a new derived revision/checksum when bindings change. | unit, integration, e2e |
-| SH-16 | Changes invalidate the affected downstream closure, including multiple-input nodes; unrelated branches and historical contexts remain valid. | unit, integration, e2e |
+| SH-15 | Every actual dependency binds stable items at exact Git snapshots and retains attributable revalidation history. | unit, integration, e2e |
+| SH-16 | Partial invalidation distinguishes direct reassessment from potential downstream impact and supports reviewed propagation stopping. | unit, integration, e2e |
+| SH-17 | Deletion triggers impact assessment; retirement preserves history and protects shared active dependents. | unit, integration, e2e |
 
 ### Savings measurement
 
@@ -249,6 +288,9 @@ Removing required evidence or skipping necessary lookups cannot count as savings
 Intent confirmation and formal independent Spec Challenge are pending. Exact
 schemas, catalog paths, tokenizer, corpus revisions, and command flags are Plan
 deliverables constrained by this spec; they are not claims of completed work.
+Revision 4 incorporates the user's Git-based item comparison, partial invalidation,
+and retirement request. Reconcile this proposed design with the source intent
+before implementation approval; this edit records no such approval.
 If the fixed benchmark cannot demonstrate savings, revise the design before
 implementation is accepted.
 
@@ -269,9 +311,12 @@ Repeat with a candidate-only substituted manifest, modified log, stale contract,
 same local IDs in different works, conflicting registration, and missing Git object.
 Exercise spec-to-plan, plan-to-task, task-to-test, and other actual dependency
 edges; change a root, an intermediate task, and one input of a multiple-input
-artifact. Reject stale descendants before intermediate checksums are refreshed,
-then rebuild/revalidate the affected chain and confirm unrelated branches remain
-eligible. Historical execution records retain their original bindings.
+artifact. Change one item in a file containing unrelated items; mark only direct
+dependents for reassessment and identify potential downstream impact. Exercise
+both reviewed propagation stopping and actual downstream revision. Delete a
+requirement with exclusive and shared dependents; verify explicit retirement,
+active-view filtering, and historical retrieval. Unresolved affected paths refuse
+completion; unrelated branches remain eligible. Historical runs keep their bindings.
 
 Observable outcomes: short references resolve to the exact intended records,
 legitimate workflow outcomes match the baseline, altered or unavailable evidence
