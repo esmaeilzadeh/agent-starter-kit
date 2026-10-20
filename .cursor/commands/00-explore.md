@@ -25,14 +25,17 @@ current branch, workstream artifacts, inner-loop state, and recent commits.
   substitute the checked-out workstream.
 - Otherwise, when the checkout is `agent/<work-id>` and matching workstream
   artifacts exist, treat it as the continuation target even if unrelated live
-  workstreams exist. Resume its exact authorized stage and task, retaining prior
-  approvals.
+  workstreams exist. Check that its stage and authorization evidence agree
+  before acting. Resume its exact authorized stage and task, retaining prior
+  approvals, only when that evidence is consistent; otherwise ask for
+  clarification before action.
 - If that workstream is terminal or its plan explicitly stops, report the
   authorized endpoint. Do not offer a chooser among unrelated workstreams or
   infer permission for a later stage.
 - For other checkouts, resolve the target from remaining evidence. Ask for
-  clarification before action if no target is identifiable, multiple targets
-  remain plausible, or relevant stage or authorization evidence conflicts.
+  clarification before action if no target is identifiable or multiple targets
+  remain plausible. At any checkout, ask before acting when relevant stage or
+  authorization evidence conflicts.
 
 Apply the Explore/Grill entry gate only after establishing that the request
 starts a genuinely new task.
