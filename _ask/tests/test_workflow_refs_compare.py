@@ -37,13 +37,16 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(get_profile("prose-item/1")["presentation"], "exact-bytes")
         json_same = compare_items('{"id":"x","values":[1,2]}',
                                   '{\n "values": [1, 2], "id": "x"\n}',
-                                  "structured-item/1")
+                                  "structured-item/1", before_inputs=[], after_inputs=[])
         self.assertEqual(json_same["status"], "unchanged")
-        prose_changed = compare_items(b"heading\n", b"heading \n", "prose-item/1")
+        prose_changed = compare_items(b"heading\n", b"heading \n", "prose-item/1",
+                                      before_inputs=[], after_inputs=[])
         self.assertEqual(prose_changed["status"], "changed")
-        obligation_changed = compare_items({"timeout": 10}, {"timeout": 20}, "structured-item/1")
+        obligation_changed = compare_items({"timeout": 10}, {"timeout": 20}, "structured-item/1",
+                                           before_inputs=[], after_inputs=[])
         self.assertEqual(obligation_changed["status"], "changed")
-        missing = compare_items({"id": "x"}, {"id": "x"}, "unknown-profile/9")
+        missing = compare_items({"id": "x"}, {"id": "x"}, "unknown-profile/9",
+                                before_inputs=[], after_inputs=[])
         self.assertEqual(missing["status"], "incomplete")
         changed_profile = compare_items({"id": "x"}, {"id": "x"}, "structured-item/1",
                                         before_profile="structured-item/1", after_profile="unknown-profile/9")
@@ -62,7 +65,9 @@ class ReferenceTests(unittest.TestCase):
             first_doc = {"items": [{"id": "alpha", "value": 1}, {"id": "beta", "value": 2}],
                          "unrelated": {"format": "old"}}
             source.write_text(json.dumps(first_doc), encoding="utf-8")
+            (root / "notes.txt").write_bytes(b"plain text\n")
             subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
+            subprocess.run(["git", "add", "notes.txt"], cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "first snapshot"], cwd=root, check=True)
             first = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
             second_doc = {"unrelated": {"format": "new"},
@@ -75,19 +80,38 @@ class ReferenceTests(unittest.TestCase):
             old_alpha = extract_git_item(root, first, "items.json", "alpha", "structured-item/1")
             new_alpha = extract_git_item(root, second, "items.json", "alpha", "structured-item/1")
             self.assertEqual(old_alpha["status"], "found")
-            self.assertEqual(compare_items(old_alpha["payload"], new_alpha["payload"], "structured-item/1")["status"], "unchanged")
+            self.assertEqual(compare_items(old_alpha["payload"], new_alpha["payload"], "structured-item/1",
+                                           before_inputs=[], after_inputs=[])["status"], "unchanged")
             old_beta = extract_git_item(root, first, "items.json", "beta", "structured-item/1")
             new_beta = extract_git_item(root, second, "items.json", "beta", "structured-item/1")
-            self.assertEqual(compare_items(old_beta["payload"], new_beta["payload"], "structured-item/1")["status"], "changed")
+            self.assertEqual(compare_items(old_beta["payload"], new_beta["payload"], "structured-item/1",
+                                           before_inputs=[], after_inputs=[])["status"], "changed")
             moved = compare_items(old_alpha["payload"], new_alpha["payload"], "structured-item/1",
                                   before_inputs=[{"reference": "alpha/spec/2/plan/1/item/1@1", "role": "owner"}],
                                   after_inputs=[{"reference": "alpha/spec/2/plan/1/item/2@1", "role": "owner"}])
             self.assertEqual(moved["status"], "changed")
+            old_prose = extract_git_item(root, first, "notes.txt", "whole-file", "prose-item/1")
+            self.assertEqual(old_prose["payload"], b"plain text\n")
+            (root / "notes.txt").write_bytes(b"plain text \n")
+            subprocess.run(["git", "add", "notes.txt"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "prose byte change"], cwd=root, check=True)
+            prose_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            new_prose = extract_git_item(root, prose_commit, "notes.txt", "whole-file", "prose-item/1")
+            self.assertEqual(compare_items(old_prose["payload"], new_prose["payload"], "prose-item/1",
+                                           before_inputs=[], after_inputs=[])["status"], "changed")
             absent = extract_git_item(root, second, "items.json", "missing", "structured-item/1")
             self.assertEqual(absent["status"], "absent")
             for commit, path in (("f" * 40, "items.json"), (second, "../items.json"), (second, "missing.json")):
                 result = extract_git_item(root, commit, path, "alpha", "structured-item/1")
                 self.assertEqual(result["status"], "incomplete")
+            (root / "ambiguous.json").write_text(json.dumps({"items": [
+                {"id": "dup", "value": 1}, {"id": "dup", "value": 2},
+            ]}), encoding="utf-8")
+            subprocess.run(["git", "add", "ambiguous.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "ambiguous item identity"], cwd=root, check=True)
+            ambiguous_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            ambiguous = extract_git_item(root, ambiguous_commit, "ambiguous.json", "dup", "structured-item/1")
+            self.assertEqual(ambiguous["status"], "incomplete")
 
 
 if __name__ == "__main__":
