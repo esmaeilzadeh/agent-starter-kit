@@ -1,7 +1,27 @@
 {
-  "work_id": "",
-  "commit_sha": "",
-  "checks": [],
-  "result": "pending",
-  "notes": ""
+  "work_id": "shorter-hashes",
+  "commit_sha": "3ef74290229f6e3ab503f9920ab53b829bd9dbdc",
+  "checks": [
+    {
+      "name": "revision-6 contract and Markdown consistency",
+      "result": "pass",
+      "notes": "18 stable Given/When/Then criteria; nine intended amendments; matching Markdown coverage; prior challenge unchanged."
+    },
+    {
+      "name": "./ask model validate --work-id shorter-hashes",
+      "result": "pass",
+      "notes": "valid=true; no diagnostics."
+    },
+    {
+      "name": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "name": "./ask verify",
+      "result": "fail",
+      "notes": "migration_required: missing coordinator accepted-tests ref; no executable checks ran."
+    }
+  ],
+  "result": "fail",
+  "notes": "Specification amendment is committed. This is pre-implementation verification provenance, not execution evidence or final workstream acceptance. Revision-6 challenge, complete-intent confirmation, and an accepted implementation/test plan remain pending. Skill installer stalled before output; existing prepared skills were used after SKIP_INSTALL=1 ./ask prepare validated pins, and ./ask sync completed."
 }

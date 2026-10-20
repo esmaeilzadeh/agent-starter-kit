@@ -1,0 +1,6 @@
+{
+  "work_id": "shorter-hashes",
+  "commit_sha": "3ef74290229f6e3ab503f9920ab53b829bd9dbdc",
+  "result": "spec-amended",
+  "notes": "User-approved revision 6 applies parent-qualified numeric spec/part, plan/item, task, and test IDs, immutable numeric revisions, and a separate integrity file. Contract structure/scenarios, 18 stable criterion IDs, nine intended criterion changes, Markdown coverage, preserved revision-5 challenge, model validation, and git diff --check passed. ./ask verify refused before running checks: migration_required: missing coordinator accepted-tests ref. No implementation, complete-intent confirmation, revision-6 independent challenge, accepted plan, or workstream completion is claimed."
+}
