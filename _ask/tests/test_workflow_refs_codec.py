@@ -40,6 +40,7 @@ class ReferenceTests(unittest.TestCase):
         for raw in (
             '{"schema":"ask-workflow-envelope/v1","payload_schema":"x","context":{"owner":"alpha","type":"spec"},"payload":{"value":NaN},"references":{}}',
             '{"schema":"ask-workflow-envelope/v1","payload_schema":"x","context":{"owner":"alpha","type":"spec"},"payload":{"value":Infinity},"references":{}}',
+            '{"schema":"ask-workflow-envelope/v1","payload_schema":"x","context":{"owner":"alpha","type":"spec"},"payload":{"value":1e999},"references":{}}',
             '{"schema":"ask-workflow-envelope/v1","payload_schema":" ","context":{"owner":"alpha","type":"spec"},"payload":null,"references":{}}',
         ):
             with self.assertRaises(EnvelopeError):
