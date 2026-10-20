@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import subprocess
+import json
 import tempfile
 import unittest
 from pathlib import Path
 
-from workflow_refs.project import capture_project, validate_capture
+from workflow_refs.project import capture_project, load_project_graph, validate_capture
 from workflow_refs.impact import ImpactError, _graph
+from workflow_refs.store import payload_digests
 
 
 def git(root, *args):
@@ -21,29 +23,57 @@ class ReferenceTests(unittest.TestCase):
         git(self.root, "config", "user.email", "test@example.com")
         git(self.root, "config", "user.name", "Test")
         (self.root / "work" / "archived").mkdir(parents=True)
-        (self.root / "work" / "archived" / "spec.json").write_text("{}\n")
+        (self.root / "work" / "archived" / "spec.json").write_text('{"items":[{"id":"archive-item","inputs":[]}]}\n')
+        (self.root / "work" / "live").mkdir(parents=True)
+        (self.root / "specs").mkdir()
+        (self.root / "work" / "live" / "spec.json").write_text(
+            '{"items":[{"id":"live-item","inputs":[{"reference":"shared/spec/1@1","role":"constraint"}]}]}\n')
+        (self.root / "specs" / "shared.json").write_text(
+            '{"items":[{"id":"shared-item","inputs":[]}]}\n')
         git(self.root, "add", ".")
         git(self.root, "commit", "-qm", "initial")
         self.sha = git(self.root, "rev-parse", "HEAD")
         git(self.root, "branch", "develop")
         git(self.root, "branch", "main")
-        (self.root / "work" / "archived" / "spec.json").write_text("{\"updated\":true}\n")
+        def catalog(owner, ref, path, item_id):
+            raw = (self.root / path).read_bytes()
+            entry = {"reference": ref, "logical_id": ref.rsplit("@", 1)[0], "revision": 1,
+                     "snapshot_id": owner + "-snapshot", "item_id": item_id,
+                     "profile": "structured-item/1", "digest_algorithm": "sha256",
+                     "digests": payload_digests(raw), "digest_semantics": sorted(payload_digests(raw)),
+                     "generation": 1}
+            value = {"schema": "ask-reference-catalog/v1", "owner": owner, "generation": 1,
+                     "entries": [entry], "snapshots": {owner + "-snapshot": {"commit": self.sha, "path": path}}}
+            target = self.root / "work" / owner / "references" / "integrity.json"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(json.dumps(value, separators=(",", ":")) + "\n")
+        catalog("live", "live/spec/1@1", "work/live/spec.json", "live-item")
+        catalog("shared", "shared/spec/1@1", "specs/shared.json", "shared-item")
+        catalog("archived", "archived/spec/1@1", "work/archived/spec.json", "archive-item")
+        git(self.root, "add", ".")
+        git(self.root, "commit", "-qm", "catalog authority")
+        self.catalog_commit = git(self.root, "rev-parse", "HEAD")
+        git(self.root, "update-ref", "refs/heads/agent/live", self.sha)
+        git(self.root, "update-ref", "refs/heads/agent/orphan/task/4", self.sha)
+        git(self.root, "update-ref", "refs/ask/references/shared", self.catalog_commit)
+        git(self.root, "update-ref", "refs/ask/references/live", self.catalog_commit)
+        git(self.root, "update-ref", "refs/ask/references/archived", self.catalog_commit)
+        (self.root / "work" / "archived" / "unrelated.txt").write_text("new commit\n")
         git(self.root, "add", ".")
         git(self.root, "commit", "-qm", "second")
         self.other = git(self.root, "rev-parse", "HEAD")
-        git(self.root, "update-ref", "refs/heads/agent/live", self.sha)
-        git(self.root, "update-ref", "refs/heads/agent/orphan/task/4", self.sha)
-        git(self.root, "update-ref", "refs/ask/references/shared", self.sha)
 
     def tearDown(self):
         self.temp.cleanup()
 
     def test_authoritative_inventory_and_cycles(self):
-        capture = capture_project(self.root)
+        capture = capture_project(self.root, shared_owners={"shared"})
         self.assertEqual(capture["status"], "complete")
         self.assertEqual(capture["owners"]["live"]["kind"], "live")
+        self.assertIn("refs/ask/references/live", capture["owners"]["live"]["refs"])
         self.assertEqual(capture["owners"]["shared"]["kind"], "shared")
         self.assertEqual(capture["owners"]["archived"]["kind"], "archive")
+        self.assertIn("refs/ask/references/archived", capture["owners"]["archived"]["refs"])
         self.assertNotIn("refs/heads/agent/orphan/task/4", capture["refs"])
         node_a = "live/spec/1@1"
         node_b = "other/spec/1@1"
@@ -53,22 +83,46 @@ class ReferenceTests(unittest.TestCase):
             _graph({"nodes": {node_a: {"inputs": [{"reference": node_b, "role": "uses"}]},
                               node_b: {"inputs": [{"reference": node_a, "role": "uses"}]}}})
         self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
+        graph = load_project_graph(self.root, capture)
+        self.assertEqual(graph["status"], "complete", graph)
+        self.assertEqual(graph["nodes"]["live/spec/1@1"]["inputs"],
+                         [{"reference": "shared/spec/1@1", "role": "constraint"}])
+        live_path = self.root / "work/live/spec.json"
+        live_doc = json.loads(live_path.read_text())
+        live_doc["items"][0].pop("inputs")
+        live_path.write_text(json.dumps(live_doc, separators=(",", ":")) + "\n")
+        git(self.root, "add", "work/live/spec.json")
+        git(self.root, "commit", "-qm", "remove dependency declaration")
+        git(self.root, "update-ref", "refs/heads/agent/live", git(self.root, "rev-parse", "HEAD"))
+        changed_capture = capture_project(self.root, shared_owners={"shared"})
+        self.assertEqual(load_project_graph(self.root, changed_capture)["status"], "incomplete")
 
     def test_coherent_capture_new_owner_and_aba(self):
         calls = []
+        def shared_owner_aba(attempt, before):
+            git(self.root, "update-ref", "refs/ask/references/transient", self.sha)
+            git(self.root, "update-ref", "-d", "refs/ask/references/transient")
+        transient = capture_project(self.root, retries=1, during_scan=shared_owner_aba,
+                                    shared_owners={"shared"})
+        self.assertEqual(transient["status"], "incomplete")
         def move_and_return(attempt, before):
             if calls:
                 return
             calls.append(True)
             git(self.root, "update-ref", "--create-reflog", "refs/heads/agent/live", self.other)
             git(self.root, "update-ref", "refs/heads/agent/live", self.sha)
-        capture = capture_project(self.root, retries=1, during_scan=move_and_return)
+        capture = capture_project(self.root, retries=1, during_scan=move_and_return,
+                                  shared_owners={"shared"})
         self.assertEqual(capture["status"], "incomplete")
-        capture = capture_project(self.root)
+        capture = capture_project(self.root, shared_owners={"shared"})
         self.assertEqual(capture["status"], "complete")
         git(self.root, "update-ref", "refs/heads/agent/live", self.other)
         git(self.root, "update-ref", "refs/heads/agent/live", self.sha)
         self.assertEqual(validate_capture(self.root, capture)["reason"], "stale_inventory")
-        capture = capture_project(self.root)
+        capture = capture_project(self.root, shared_owners={"shared"})
+        git(self.root, "update-ref", "refs/ask/references/transient", self.sha)
+        git(self.root, "update-ref", "-d", "refs/ask/references/transient")
+        self.assertEqual(validate_capture(self.root, capture)["reason"], "stale_inventory")
+        capture = capture_project(self.root, shared_owners={"shared"})
         git(self.root, "update-ref", "refs/heads/agent/new-owner", self.sha)
         self.assertEqual(validate_capture(self.root, capture)["reason"], "stale_inventory")

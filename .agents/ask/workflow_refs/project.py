@@ -8,6 +8,11 @@ from pathlib import Path
 import re
 import subprocess
 
+from .compare import compare_items, extract_git_item
+from .identity import ReferenceError, parse_reference
+from .profiles import get_profile
+from .store import payload_digests
+
 
 class ProjectError(ValueError):
     """Project discovery is invalid or cannot establish a complete scope."""
@@ -43,15 +48,39 @@ def _reflog_generation(common, integration_ref, archive_ref):
         elif root.is_file():
             paths.add(root)
     for path in sorted(paths):
-            digest.update(path.relative_to(common / "logs").as_posix().encode())
-            try:
-                digest.update(path.read_bytes())
-            except OSError as exc:
-                raise ProjectError("discovery_incomplete", "reference movement log is unavailable") from exc
+        digest.update(path.relative_to(common / "logs").as_posix().encode())
+        try:
+            digest.update(path.read_bytes())
+        except OSError as exc:
+            raise ProjectError("discovery_incomplete", "reference movement log is unavailable") from exc
     return digest.hexdigest()
 
 
-def _inventory(root, integration_ref, archive_ref):
+def _ref_storage_generation(common):
+    """Observe loose/packed owner-ref storage changes even without reflogs."""
+    roots = [common / "refs" / "heads" / "agent",
+             common / "refs" / "ask" / "references"]
+    digest = hashlib.sha256()
+    paths = set()
+    for root in roots:
+        if root.exists():
+            paths.add(root)
+            if root.is_dir():
+                paths.update(root.rglob("*"))
+    packed = common / "packed-refs"
+    if packed.exists():
+        paths.add(packed)
+    try:
+        for path in sorted(paths):
+            stat = path.lstat()
+            digest.update(path.relative_to(common).as_posix().encode())
+            digest.update(f"{stat.st_ino}:{stat.st_mtime_ns}:{stat.st_size}:{stat.st_mode}".encode())
+    except OSError as exc:
+        raise ProjectError("discovery_incomplete", "owner reference storage cannot be inspected") from exc
+    return digest.hexdigest()
+
+
+def _inventory(root, integration_ref, archive_ref, shared_owners):
     refs = {}
     owners = {}
     def add_owner(owner, kind, ref, sha):
@@ -81,17 +110,6 @@ def _inventory(root, integration_ref, archive_ref):
         if ref:
             sha = _git(root, "rev-parse", "--verify", ref + "^{commit}")
             refs[ref] = sha
-    for name, sha in refs.items():
-        if name.startswith("refs/heads/agent/"):
-            owner = name.removeprefix("refs/heads/agent/")
-            add_owner(owner, "live", name, sha)
-        elif name.startswith("refs/ask/references/"):
-            owner = name.removeprefix("refs/ask/references/")
-            if not owner or "/" in owner:
-                raise ProjectError("invalid_owner", f"invalid shared owner ref: {name}")
-            if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", owner):
-                raise ProjectError("invalid_owner", f"invalid shared owner ref: {name}")
-            add_owner(owner, "shared", name, sha)
     # Archived workstreams are those present in selected integration/archive trees
     # without a live owner ref. Keep both source refs in each archived vector.
     archived = set()
@@ -103,6 +121,25 @@ def _inventory(root, integration_ref, archive_ref):
         archived.update(name for name in listing if name and name != "INDEX.md")
     live = {name.removeprefix("refs/heads/agent/") for name in refs
             if name.startswith("refs/heads/agent/")}
+    for name, sha in refs.items():
+        if name.startswith("refs/heads/agent/"):
+            owner = name.removeprefix("refs/heads/agent/")
+            add_owner(owner, "live", name, sha)
+        elif name.startswith("refs/ask/references/"):
+            owner = name.removeprefix("refs/ask/references/")
+            if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", owner):
+                raise ProjectError("invalid_owner", f"invalid shared owner ref: {name}")
+            if owner in live:
+                add_owner(owner, "live", name, sha)
+            elif owner in archived:
+                if owner not in owners:
+                    owners[owner] = {"kind": "archive", "refs":
+                        {ref: refs[ref] for ref in (integration_ref, archive_ref) if ref}}
+                owners[owner]["refs"][name] = sha
+            elif owner in shared_owners:
+                add_owner(owner, "shared", name, sha)
+            else:
+                raise ProjectError("unknown_owner_registration", f"shared owner {owner!r} is not explicitly registered")
     for owner in archived - live:
         archive_refs = {ref: refs[ref] for ref in (integration_ref, archive_ref) if ref}
         if owner in owners and owners[owner]["kind"] != "archive":
@@ -113,7 +150,8 @@ def _inventory(root, integration_ref, archive_ref):
 
 
 def capture_project(repository_root, integration_ref="refs/heads/develop",
-                    archive_ref="refs/heads/main", retries=2, during_scan=None):
+                    archive_ref="refs/heads/main", retries=2, during_scan=None,
+                    shared_owners=None):
     """Capture a stable owner/ref inventory and selected source vector.
 
     Cooperating catalog publishers use the same persistent Git-common-dir lock.
@@ -121,7 +159,17 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
     unsupported remote refs are intentionally outside this local capture.
     """
     root = Path(repository_root).resolve()
+    shared_owners = set(shared_owners or ()) | {"repository-runs"}
+    if any(not isinstance(owner, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", owner)
+           for owner in shared_owners):
+        return {"status": "incomplete", "reason": "invalid_owner_registration"}
     common = _common_dir(root)
+    ref_storage = subprocess.run(["git", "config", "--get", "extensions.refStorage"],
+                                 cwd=root, capture_output=True, text=True)
+    if ref_storage.returncode not in (0, 1) or (ref_storage.returncode == 0
+                                                and ref_storage.stdout.strip() != "files"):
+        return {"status": "incomplete", "reason": "unsupported_ref_storage",
+                "scope": "local-cooperating-repository"}
     lock_path = common / "ask-locks" / "references.lock"
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     last_error = None
@@ -130,18 +178,22 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
         with lock_path.open("a+b") as lock:
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
             try:
-                before, owners = _inventory(root, integration_ref, archive_ref)
+                before, owners = _inventory(root, integration_ref, archive_ref, shared_owners)
                 before_movement = _reflog_generation(common, integration_ref, archive_ref)
+                before_storage = _ref_storage_generation(common)
                 if during_scan is not None:
                     during_scan(attempt, dict(before))
-                after, _ = _inventory(root, integration_ref, archive_ref)
+                after, _ = _inventory(root, integration_ref, archive_ref, shared_owners)
                 after_movement = _reflog_generation(common, integration_ref, archive_ref)
-                if before != after or before_movement != after_movement:
+                after_storage = _ref_storage_generation(common)
+                if before != after or before_movement != after_movement or before_storage != after_storage:
                     last_error = "reference inventory changed during capture"
                     continue
                 vector = {"refs": dict(sorted(before.items())), "owners": owners,
                           "integration_ref": integration_ref, "archive_ref": archive_ref,
+                          "shared_owners": sorted(shared_owners),
                           "movement_generation": after_movement,
+                          "storage_generation": after_storage,
                           "scope": "local-cooperating-repository"}
                 encoded = json.dumps(vector, sort_keys=True, separators=(",", ":")).encode()
                 vector["generation"] = hashlib.sha256(encoded).hexdigest()
@@ -161,7 +213,7 @@ def validate_capture(repository_root, capture):
     if not isinstance(capture, dict) or capture.get("status") != "complete":
         return {"status": "incomplete", "reason": "capture_unavailable"}
     current = capture_project(repository_root, capture.get("integration_ref"),
-                              capture.get("archive_ref"))
+                              capture.get("archive_ref"), shared_owners=capture.get("shared_owners", []))
     if current.get("status") != "complete":
         return current
     if current.get("generation") != capture.get("generation"):
@@ -169,3 +221,163 @@ def validate_capture(repository_root, capture):
                 "expected_generation": capture.get("generation"),
                 "current_generation": current.get("generation")}
     return {"status": "complete", "generation": current["generation"]}
+
+
+def _regular_file_at(root, commit, path):
+    entry = subprocess.run(["git", "ls-tree", "-z", commit, "--", path], cwd=root,
+                           capture_output=True, check=True).stdout
+    if not entry:
+        raise ProjectError("discovery_incomplete", f"committed declaration is missing: {path}")
+    mode = entry.split(b"\t", 1)[0].split(b" ", 1)[0]
+    if mode not in (b"100644", b"100755"):
+        raise ProjectError("discovery_incomplete", f"committed declaration is not a regular file: {path}")
+    try:
+        return subprocess.run(["git", "show", f"{commit}:{path}"], cwd=root,
+                              capture_output=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ProjectError("discovery_incomplete", f"committed declaration is unavailable: {path}") from exc
+
+
+def load_project_graph(repository_root, capture):
+    """Load every dependency edge from captured, authority-registered catalogs."""
+    root = Path(repository_root).resolve()
+    validity = validate_capture(root, capture)
+    if validity.get("status") != "complete":
+        return {"status": "incomplete", "reason": validity.get("reason", "stale_inventory"),
+                "unresolved": []}
+    nodes = {}
+    unresolved = []
+    latest_entries = {}
+    for owner in sorted(capture.get("owners", {})):
+        authority_ref = f"refs/ask/references/{owner}"
+        authority_sha = capture.get("refs", {}).get(authority_ref)
+        if not authority_sha:
+            unresolved.append({"owner": owner, "reason": "catalog_authority_missing"})
+            continue
+        catalog_path = ("results/references/integrity.json" if owner == "repository-runs"
+                        else f"work/{owner}/references/integrity.json")
+        try:
+            raw = _regular_file_at(root, authority_sha, catalog_path)
+            catalog = json.loads(raw.decode("utf-8"))
+        except (ProjectError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            unresolved.append({"owner": owner, "reason": getattr(exc, "code", "catalog_invalid"),
+                               "detail": str(exc)})
+            continue
+        if (not isinstance(catalog, dict) or catalog.get("schema") != "ask-reference-catalog/v1"
+                or catalog.get("owner") != owner or type(catalog.get("generation")) is not int
+                or not isinstance(catalog.get("entries"), list)
+                or not isinstance(catalog.get("snapshots"), dict)):
+            unresolved.append({"owner": owner, "reason": "catalog_invalid"})
+            continue
+        for entry in catalog["entries"]:
+            try:
+                parsed = parse_reference(entry.get("reference"))
+                if parsed["owner"] != owner or entry.get("profile") is None:
+                    raise ProjectError("identity_conflict", "catalog entry owner/profile differs")
+                profile = get_profile(entry["profile"])
+                snapshot = catalog["snapshots"].get(entry.get("snapshot_id"))
+                if profile is None or not isinstance(snapshot, dict):
+                    raise ProjectError("comparison_incomplete", "catalog source/profile is unavailable")
+                commit, source_path = snapshot.get("commit"), snapshot.get("path")
+                if not isinstance(commit, str) or not isinstance(source_path, str):
+                    raise ProjectError("discovery_incomplete", "catalog snapshot is malformed")
+                source = _regular_file_at(root, commit, source_path)
+                semantics = entry.get("digest_semantics")
+                if not isinstance(semantics, list) or not semantics:
+                    raise ProjectError("comparison_incomplete", "catalog digest semantics are missing")
+                verified = {}
+                for semantics_name in semantics:
+                    values = payload_digests(source, semantics=semantics_name)
+                    verified[semantics_name] = values[semantics_name]
+                if verified != entry.get("digests"):
+                    raise ProjectError("integrity_mismatch", "catalog source digest does not match authority")
+                extracted = extract_git_item(root, commit, source_path, entry.get("item_id"), entry["profile"])
+                if extracted.get("status") != "found":
+                    raise ProjectError("comparison_incomplete", f"catalog item extraction is {extracted.get('status')}")
+                payload = extracted["payload"]
+                if not isinstance(payload, dict) or not isinstance(payload.get("inputs"), list):
+                    raise ProjectError("discovery_incomplete", "item has no complete input declaration")
+                reference = parsed["canonical"]
+                if reference in nodes:
+                    raise ProjectError("identity_conflict", f"duplicate catalog item: {reference}")
+                nodes[reference] = {"reference": reference, "owner": owner,
+                    "source": extracted["source"], "profile": entry["profile"],
+                    "payload": payload, "inputs": payload["inputs"],
+                    "active": payload.get("active") if type(payload.get("active")) is bool else False}
+                current = latest_entries.get(parsed["logical_id"])
+                if current is None or parsed["revision"] > current[0]:
+                    latest_entries[parsed["logical_id"]] = (parsed["revision"], entry, payload, owner, snapshot)
+            except (ProjectError, ReferenceError, TypeError, KeyError, ValueError) as exc:
+                unresolved.append({"owner": owner, "reference": entry.get("reference"),
+                                   "reason": getattr(exc, "code", "catalog_entry_invalid"),
+                                   "detail": str(exc)})
+    if unresolved:
+        return {"status": "incomplete", "capture_generation": capture["generation"],
+                "nodes": nodes, "unresolved": unresolved}
+    latest = {}
+    for logical_id, (revision, _entry, _payload, _owner, _snapshot) in latest_entries.items():
+        latest[logical_id] = (revision, f"{logical_id}@{revision}")
+    for ref, node in nodes.items():
+        if not node["active"]:
+            node["active"] = latest[parse_reference(ref)["logical_id"]][1] == ref
+    changed_active = True
+    while changed_active:
+        changed_active = False
+        for node in nodes.values():
+            if not node["active"]:
+                continue
+            for edge in node["inputs"]:
+                target = parse_reference(edge["reference"])["canonical"]
+                if target in nodes and not nodes[target]["active"]:
+                    nodes[target]["active"] = True
+                    changed_active = True
+    graph = {"nodes": nodes, "capture_generation": capture["generation"],
+             "deletions": {}, "changes": []}
+    for logical_id, (_revision, entry, old_payload, owner, snapshot) in latest_entries.items():
+        owner_info = capture["owners"].get(owner, {})
+        if owner_info.get("kind") == "live":
+            candidate_ref = f"refs/heads/agent/{owner}"
+        elif owner_info.get("kind") == "archive":
+            candidate_ref = capture.get("integration_ref") or capture.get("archive_ref")
+        else:
+            candidate_ref = f"refs/ask/references/{owner}"
+        candidate_commit = capture.get("refs", {}).get(candidate_ref)
+        if not candidate_commit or not isinstance(snapshot, dict):
+            unresolved.append({"owner": owner, "reference": entry.get("reference"),
+                               "reason": "candidate_source_unavailable"})
+            continue
+        candidate = extract_git_item(root, candidate_commit, snapshot["path"], entry["item_id"], entry["profile"])
+        ref = entry["reference"]
+        if candidate.get("status") == "absent":
+            graph["deletions"][ref] = {"status": "absent", "source_available": True,
+                                       "source": candidate["source"]}
+        elif candidate.get("status") != "found":
+            unresolved.append({"owner": owner, "reference": ref,
+                               "reason": "candidate_source_incomplete", "detail": candidate.get("reason")})
+        else:
+            if not isinstance(candidate.get("payload"), dict) or not isinstance(candidate["payload"].get("inputs"), list):
+                unresolved.append({"owner": owner, "reference": ref,
+                                   "reason": "candidate_declarations_missing"})
+                continue
+            comparison = compare_items(old_payload, candidate["payload"], entry["profile"],
+                old_payload["inputs"], candidate["payload"].get("inputs"))
+            if comparison["status"] == "incomplete":
+                unresolved.append({"owner": owner, "reference": ref,
+                                   "reason": "comparison_incomplete", "detail": comparison.get("reason")})
+            elif comparison["status"] == "changed":
+                graph["changes"].append({"reference": ref, "comparison": comparison,
+                                         "candidate": candidate["source"]})
+    if unresolved:
+        graph.update({"status": "incomplete", "unresolved": unresolved})
+        return graph
+    # The impact validator checks reference resolution and cycles. Reuse it here
+    # so an owner inventory is never mistaken for a complete dependency graph.
+    from .impact import _graph
+    try:
+        _graph(graph)
+    except ValueError as exc:
+        return {"status": "incomplete", "capture_generation": capture["generation"],
+                "nodes": nodes, "unresolved": [{"reason": getattr(exc, "code", "discovery_incomplete"),
+                                                  "detail": str(exc)}]}
+    graph["status"] = "complete"
+    return graph
