@@ -6,4 +6,4 @@ class BenchmarkError(ValueError):
 
 def capture_baseline(root, manifest_path=None):
     """Capture the baseline agent inputs and unique metadata accounting."""
-    return {"schema": "ask-reference-benchmark/v1"}
+    return {"schema": "ask-reference-benchmark/v1", "journeys": []}
