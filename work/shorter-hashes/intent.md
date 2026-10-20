@@ -1,111 +1,106 @@
-# Intent: Reduce hash token cost and improve readability
+# Intent: Reduce workflow token cost with compact references and exact dependencies
 
 ## What
 
-Review hash references and workflow JSON across agent prompts, workstream
-artifacts, command-line output, and reports. Reduce token use by shortening
-ordinary references, compacting generated JSON, and eliminating repeated
-metadata and checksums wherever they can be resolved safely. Improve readability
-second by using readable, work-qualified identifiers for tasks and tests, such
-as `shorter-hashes/task/3` and `shorter-hashes/test/3/2`.
+Reduce tokens in workflow JSON, agent prompts, CLI output, and reports; improve
+readability second. Shorten ordinary hash references, compact generated JSON,
+and eliminate repeated metadata. Use readable task/test IDs and shared Git
+snapshot references instead of copying committed-artifact checksums across JSON.
+Keep full checksums for evidence outside Git wherever verification needs them.
 
-Use a repository default of six characters for remaining hash references, with
-per-work overrides. Detect ambiguity within the work and lengthen only
-colliding references until they are unique. For integrity records, store each
-full digest in one authoritative, immutable record and refer to that record
-from related JSON. Keep accepted contract authority coordinator-owned; separate
-accepted contract pins from later run/evidence records. Derive tracked-file
-content from a pinned Git revision and path only where that preserves the
-existing digest semantics and availability guarantees. Preserve full
-cryptographic digests wherever verification requires them and full Git object
-IDs for operations that require exact identity.
+Bind each actual dependency to its exact source snapshot, path, and stable
+artifact item ID. Git supplies history without separate per-item revision counters
+or checksum histories. Compare meaningful item content and bindings so an unrelated
+edit in the same file does not invalidate an independent requirement or plan.
+Preserve existing exact-byte checks, including intent approval and bound logs.
 
-The primary outcome is lower token consumption. Readability is the secondary
-outcome.
+Track dependencies project-wide with ownership scoped to each workstream.
+Qualified cross-workstream edges carry impact across branches; shared policies
+reach all actual consumers. Direct dependents need reassessment; downstream items
+are potentially affected and cannot authorize completion until affected paths are
+resolved. Attributable retain/revise/retire decisions follow existing authority
+and evidence-reuse rules. Unrelated items remain valid. Deleted requirements
+trigger assessment; retirement preserves history and shared active dependents.
 
 ## Why
 
-Full hashes and verbose JSON consume context, especially when the same values
-and metadata are copied across records. Shorter references, shared immutable
-integrity records, and compact generated JSON reduce repeated token cost;
-readable task and test IDs also make agent context easier to scan. Savings must
-be measured over representative complete agent inputs, including any references
-that need resolving.
+Repeated hashes and verbose JSON consume context. Shared snapshot identities and
+selective projections reduce repeated data while exact dependency bindings prevent
+stale plans, tasks, tests, reviews, or execution records from appearing current.
+Savings must include necessary lookups, shared metadata, and complete agent inputs.
 
 ## Non-goals
 
-- Changing hash algorithms or weakening cryptographic verification.
-- Shortening values where an exact Git object ID is required by an operation.
-- Replacing authoritative integrity digests with truncated values.
-- Redesigning unrelated IDs or optimizing unrelated non-JSON prompt and
-  artifact text.
-- Removing evidence or audit information to reduce tokens.
-- Replacing coordinator-owned acceptance authority with candidate-controlled
-  manifests or mutable short aliases.
+- Change hash algorithms, truncate required authoritative checksums, or weaken
+  coordinator acceptance, independent review, or execution evidence requirements.
+- Rewrite unrelated JSON/prose or invent missing historical approval/execution.
+- Rebind old evidence through checksum, alias, or pointer edits.
+- Give project-wide traversal authority to edit another workstream's records.
 
 ## Known assumptions
 
-- “All hashes” means every eligible hash reference surfaced in prompts,
-  artifacts, command output, and reports; integrity and exact-operation values
-  remain full.
-- JSON optimization applies to JSON used by this workflow, including generated
-  contracts, accepted pins, run records, and reports; it does not mean
-  reformatting every unrelated JSON file in the repository.
-- Accepted contract pins and run/evidence records have separate immutable
-  lifetimes. Each reference resolves through authoritative records, and missing,
-  ambiguous, or unavailable targets fail explicitly.
-- Token savings are assessed on representative end-to-end agent context and
-  persisted JSON size, not inferred from shorter individual fields.
-- Task and test references use readable hierarchical IDs qualified by work;
-  their identifiers do not need hash prefixes.
-- Six characters is the default minimum for remaining display/reference
-  prefixes. A work may override it, and only colliding references grow.
-- A short reference is resolvable in its declared work scope, and the full
-  authoritative value remains available to verification and Git tooling.
-- Token reduction takes priority when token savings and readability conflict.
+- Scope is workflow JSON and every eligible hash surface, with justified full-value
+  exceptions. Legacy records remain readable; historical records are not bulk
+  rewritten. Explicit migration/export preserves provenance and dependencies.
+- Ordinary hash references use a six-character repository minimum with validated
+  per-work overrides; only colliding displays grow, and ambiguity is rejected.
+  Exact Git operations resolve full IDs. Prefixes never verify integrity.
+- New task/test IDs are unpadded local numbers with readable qualified forms
+  `<work>/task/<task>` and `<work>/test/<task>/<test>`; legacy mappings stay stable.
+- Dependency identity includes owner, pinned snapshot, path, and stable item ID;
+  local context may be inherited, while cross-workstream ownership is explicit.
+  Ownership or a lookup link alone does not establish a dependency.
+- Project discovery includes committed workstream sources outside the checkout.
+  Missing sources or declarations produce incomplete analysis, never an empty
+  graph or a claim that all affected paths are clear.
+- Accepted contracts and later run records have separate immutable lifetimes.
+  Reassessment cannot relabel historical executions; reuse must satisfy existing
+  rules. Propagation stops only with a valid recorded decision.
+- Before implementation, Plan freezes baseline workloads, source identities, and
+  a tokenizer/version. Acceptance requires lower aggregate agent-input tokens and
+  metadata JSON bytes; report individual regressions and count lookup overhead.
+- Token savings take priority over readability while preserving required evidence.
 
 ## Open questions
 
-None. The complete assumptions above are submitted for approval.
+No unresolved What/Why question. This reconciled complete intent and its assumptions
+await the required submitted approval. Exact schemas, discovery rules, extraction
+algorithms, corpus, and command flags are Plan deliverables constrained by the spec.
 
 ## Human decisions
 
-- Primary goal: reduce token consumption.
-- Secondary goal: improve readability.
-- Scope: eligible hash references and workflow JSON, including deduplication of
-  repeated integrity metadata while retaining authoritative full digests.
+- Primary goal: reduce token consumption; secondary goal: readability.
+- Preserve exact dependency provenance for every existing relationship, not only
+  spec-to-plan; independent items must remain unaffected.
+- Use project-wide dependency impact with workstream-scoped ownership.
+- Preserve revision 4 refinements and require cross-workstream traversal explicitly.
 
 ## Engineering subject
 
-- Subject: `shorter-hashes/readable-work-identifiers`
-- Source: explicit user request, resolved at Explore snapshot
-  `5e9522e9842b540dcc1493569a062c66d382e4e0803c2d12889b65d9a70a5a2f`
-- Contribution: reduce token consumption first by shortening ordinary hash
-  references and redundant workflow JSON; improve readability second.
-- Exclusions: preserve full cryptographic integrity digests and exact Git
-  object IDs; do not change hash algorithms or weaken verification.
-- Execution owner: none assigned.
+- Subject: `shorter-hashes/readable-work-identifiers`.
+- Source: explicit user request and subsequent dependency refinements; original
+  Explore snapshot `5e9522e9842b540dcc1493569a062c66d382e4e0803c2d12889b65d9a70a5a2f`.
+- Contribution: lower workflow token cost with compact references and shared Git
+  identities while preserving exact item dependencies and acceptance authority.
+- Execution owner: none assigned; implementation has not started.
 
 ## E2E
 
 Applicability: `applies`
 
-Journeys: an agent reads task, test, commit, and integrity references in
-prompts, artifacts, CLI output, and reports; resolves short references through
-authoritative records for their declared work; and verifies that collisions,
-stale content, missing records, or unavailable Git objects fail without
-altering authority.
+Journeys: query compact task/test/status/evidence projections; resolve exact inputs;
+change one requirement beside an independent item; traverse a shared-policy change
+across workstreams; reassess through retain/revise/retire decisions; verify valid
+and invalid completion; reload historical records and exported evidence.
 
-Observable outcomes: representative complete agent inputs and generated JSON
-use fewer tokens/bytes; task and test references are readable and
-work-qualified; repeated integrity metadata is stored once where resolution is
-safe; references are unique within their authority; integrity checks and exact
-Git operations continue to use full authoritative values.
+Observable outcomes: lower measured aggregate tokens and metadata bytes; exact
+source/approval/execution binding; impact follows actual item edges across owners;
+unrelated items stay eligible; unresolved, missing, ambiguous, or altered evidence
+cannot authorize completion. Original evidence remains historically retrievable.
 
-Environment and test data: repository fixtures with representative prompts,
-workflow JSON, CLI results, historical and current evidence, a deliberate
-same-prefix collision, repeated digests, missing records, and unavailable Git
-objects.
+Environment/data: temporary Git repositories and worktrees with coordinator refs,
+legacy/new JSON, multiple workstream branches, shared constraints, repeated hashes,
+prefix collisions, deleted items, missing objects, and execution logs.
 
-Reset: run checks in isolated temporary Git repositories or worktrees and
-remove those fixtures after each run.
+Reset: remove fixture-owned worktrees/runtime files, release locks/processes, and
+leave real source artifacts committed on the original clean workstream branch.
