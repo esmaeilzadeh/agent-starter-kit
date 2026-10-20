@@ -118,6 +118,31 @@ class ReferenceTests(unittest.TestCase):
 
         self.assertEqual(used_files, set(file_table))
         by_id = {row["id"]: row for row in report["journeys"]}
+        resume_sources = {item["path"]: item["text"]
+                          for item in by_id["resume"]["source_inputs"]}
+        resume_plan_path = "work/status-template-stage-detection/test-plan.json"
+        resume_plan = json.loads(resume_sources[resume_plan_path])
+        frozen_resume_plan = json.loads(git_blob(BASELINE_SOURCE, resume_plan_path))
+        resume_scope = frozen_resume_plan["task_scopes"][0]
+        resume_ids = set(resume_scope["test_ids"])
+        resume_tests = [test for test in frozen_resume_plan["tests"] if test["id"] in resume_ids]
+        resume_criteria = {criterion for test in resume_tests for criterion in test["criterion_ids"]}
+        self.assertEqual(resume_plan["task_scopes"], [resume_scope])
+        self.assertEqual(resume_plan["tests"], resume_tests)
+        self.assertEqual(resume_plan["obligations"], [row for row in frozen_resume_plan["obligations"]
+                                                       if row["criterion_id"] in resume_criteria])
+        resume_runner_ids = {test["runner_id"] for test in resume_tests}
+        self.assertEqual(resume_plan["runners"], [row for row in frozen_resume_plan["runners"]
+                                                   if row["id"] in resume_runner_ids])
+        self.assertNotIn("approval-checkpoint", by_id["resume"]["transcript"])
+        resume_plan_text = resume_sources["work/status-template-stage-detection/plan.md"]
+        self.assertIn("stage-inference", resume_plan_text)
+        self.assertNotIn("approval-checkpoint", resume_plan_text)
+        for path in ("work/status-template-stage-detection/intent-confirmation.json",
+                     "work/status-template-stage-detection/traceability-accepted.json"):
+            self.assertEqual(json.loads(resume_sources[path]),
+                             json.loads(git_blob(BASELINE_SOURCE, path)))
+
         review_sources = {item["path"]: item["text"]
                           for item in by_id["review"]["source_inputs"]}
         task_plan = json.loads(review_sources["work/structured-agentic-environment/test-plan.json"])
