@@ -2,119 +2,140 @@
 
 ## Model
 
-- Model: `gpt-6.1-sol`; reasoning effort: `medium`, the previously submitted selection recorded in `models.yaml`. The runtime exposes no independent model-identity attestation.
+- Model: `gpt-6.1-sol`; reasoning effort: `medium`, the previously submitted selection in `models.yaml`. Runtime model identity is not independently attested.
 - Runtime: Codex, independent Spec Challenge subagent.
 - Parent model: not exposed; not inferred.
-- Reviewer: `/root/shorter_hashes_challenge_r6`.
-- Method: generated `kit-03-spec-challenge`, with `writing-for-agents` in embedded mode. This is a specification assessment, not implementation verification or plan approval.
+- Reviewer: `/root/shorter_hashes_challenge_r6`, continuing the independent review through revision 7.
+- Method: generated `kit-03-spec-challenge`, with `writing-for-agents` in embedded mode.
 
 ## Specification
 
 - Workstream: `shorter-hashes`.
-- Exact reviewed commit: `9be2865e9c1b703a33d767ea3d86e9682c3602f3`.
-- Canonical contract: `specs/current/shorter-hashes.json`, `ask-spec/v1`, revision **6**, all **18** criteria (`SH-01`–`SH-18`).
-- Canonical JSON SHA256: `9945ef64c045d3fa06f882c7f1c915b4b94bca4a2408f4b139d413f62d2d89f3`.
+- Exact reviewed commit: `90d1c4300fb18cb54d05bca32491f84a76645d17`.
+- Canonical contract: `specs/current/shorter-hashes.json`, `ask-spec/v1`, revision **7**, all **18** executable criteria (`SH-01`–`SH-18`).
+- Canonical JSON SHA256: `9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e`.
 - Proposal: `specs/proposals/shorter-hashes.md`.
-- Proposal exact-byte SHA256: `4cd8f23b8a9edc21f0c0128885b6ba816c0fbe8eea389473b2777dc314c88dcd`.
+- Proposal exact-byte SHA256: `a9f8f6616ce215be0a6e2d6d84ddba8c907abb2caf0b46ada4f04bf4c9e02583`.
 
-Independently computed both digests from `git show <reviewed-commit>:<path>`. JSON uses Python `json.dumps(value, sort_keys=True, separators=(',', ':')).encode()`, matching `.agents/ask/verification/traceability/contracts.py`; Markdown uses the exact committed bytes.
+Independently computed both digests from the exact committed objects. JSON uses `json.dumps(value, sort_keys=True, separators=(',', ':')).encode()`, matching `traceability/contracts.py`; Markdown uses exact committed bytes. Reviewed every JSON criterion and its required evidence types, the complete proposal, updated intent, revision-7 amendment, earlier challenge and reopened findings, and the existing traceability authority/completion contract and relevant code. The intent and specification agree on the destination and the planning-only endpoint.
 
-Reviewed both contract documents, `intent.md`, `spec-change.md`, `engineering-model.json`, the saved model selection, `_ask/docs/spec-test-traceability.md`, the delegation/workflow policies, and existing acceptance/completion behavior in `traceability/evidence.py` and `traceability/completion.py`. The revision-5 challenge is retained at `9be2865e9c1b703a33d767ea3d86e9682c3602f3:work/shorter-hashes/spec-challenge.md`; its decision applies only to its own recorded revision-5 digests. This file records a new independent decision for revision 6.
-
-The intent and engineering subject agree with the amended contract: numeric identities across spec/part, plan/item, task, and test families; immutable numeric revisions; separate integrity data; exact dependencies; selective reassessment; and project-wide impact with owner-scoped authority. Stable `SH-*` criterion labels are retained historical identifiers under the explicit transition rule, not evidence that new numeric runtime identities already exist. Proposal files and model/schema scaffolds supply no implementation or execution evidence.
+**The unconditional revision-6 PASS is superseded.** It incorrectly treated three behavioral gaps as implementation choices. Its original record remains at `9a3d25d:work/shorter-hashes/spec-challenge.md`. This decision reassesses the corrected revision-7 contract; it does not retroactively approve revision 6.
 
 ## Ambiguities
 
-No unresolved What/Why ambiguity blocks revision 6. The following design choices are explicitly assigned to Plan and must be made concrete before implementation:
+### Reopened behavioral findings
 
-1. **Parent context and revision allocation.** Specify each type's logical parent, inherited-context boundaries, revision encoding/allocation, and move mapping. A task consuming parts from two specs still has one ownership identity and two exact dependency edges. Updating an ancestor's revision alone must not rename it. The illustrative reference grammar and bare-number JSON example do not override the requirement for sufficient explicit or inherited version context.
-2. **Item comparison and snapshot binding.** Define deterministic extraction and meaningful-content/binding comparison for every supported format, including global constraints. The same unchanged item revision may remain bound to its original exact snapshot after an unrelated edit; it need not be rebound to the newest commit. Candidate comparison uses an explicit snapshot. Changed meaningful content or dependencies require a fresh item revision.
-3. **Discovery completeness.** Define authoritative owner/source enumeration, immutable snapshot selection, archived-source handling, and index freshness. A consumer present only on another workstream branch must be discovered. Unknown or unavailable declarations cannot establish an empty dependency set or complete impact clearance.
-4. **Propagation stopping and evidence reuse.** Define the consumer-relevant contract used by reviewed retain decisions and their authority. A plan item's new upstream binding requires a new revision even when its payload is retained. Clearing descendants requires a reviewed equivalence/reuse decision; it cannot simply leave them silently bound to a substituted target. Multiple affected input paths must each resolve.
-5. **Separate integrity publication.** Specify the separate file's versioned format, lifecycle, trust anchors, retention, and atomic publication protocol. Mutable indexes may advance; published item/revision entries may not change. A containing file can gain new immutable entries without making old entries mutable. Contract entries and later run records retain separate lifetimes.
+| Finding | Revision-7 normative closure | Independent counterexample assessment |
+| --- | --- | --- |
+| G1: meaningful equality | **Closed.** “Normative item comparison,” “Item dependencies and Git history,” SH-07 and SH-15 include all payload fields and actual exact input identities/revisions/roles by default. Only exhaustive, pre-reviewed versioned presentation exclusions are allowed. Unknown fields are significant; unavailable extraction/profile/binding/constraint context cannot establish equivalence. | An unchanged file blob with an externally changed binding must produce a fresh revision and reassessment. A timeout changing from 10 to 20 cannot be excluded as presentation or ignored because local prose is unchanged. JSON key order/serialization whitespace may compare equal, but types, arrays, values, Unicode and absent/null/empty distinctions remain significant. Blob equality is explicitly only a payload fast path. |
+| G2: propagation-stop boundary | **Closed.** “Normative propagation-stop decision,” required decision examples, SH-15 and SH-16 define complete consumer-facing obligations, exact named revisions/paths/profiles/evidence/authority, new-context validity, and immutable old pins. | P2's internal input pin changes, so P2 is a fresh revision. That does not itself prove changed outward obligations or equivalence. T1 may keep P1 only under explicit reviewed validity in the captured new context with every input resolved and existing authority/reuse rules satisfied. Updating T's pin requires T2. Neither path relabels a historical execution. Changed inherited/outward obligations or unproven equivalence continue reassessment. A narrower interface must already have an explicit reviewed declaration; the reviewer cannot invent it after the change. |
+| G3: complete project discovery | **Closed.** “Project-wide graph and workstream ownership” and SH-18 define the authoritative local live coordinator-ref, selected integration/archive, and registered shared-owner universe, exact immutable vector and capture generation. | A new/removed/advanced owner ref during capture must serialize, trigger retry, or make the result incomplete. A mixed vector cannot claim completeness. Missing declarations in a known owner cannot mean dependency-free. Results disclose the captured scope; new-context clearance rechecks the applicable vector/generation. Unfetched remote scope is expressly unclaimed unless fetched/registered. Historical results remain scoped to their recorded vector. |
 
-These choices have observable constraints in SH-02/03/05/07/08/13/15/16/18. Choosing schemas, file paths, parent grammar, command flags, or extraction algorithms within those constraints does not require a new user decision. Inability to satisfy the behavior requires Spec Change rather than weakening acceptance.
+Internal binding versus outgoing contract is now explicit: changing a binding always creates a new version of its owner, while propagation depends on the fully reviewed consumer-facing contract, including inherited obligations. Retaining an old consumer pin is a recorded validity decision, not a substitution of its target. Existing completion requirements remain separately decisive.
+
+### Exhaustive audit of earlier deferrals
+
+Classification: **Covered** means behavior is already fixed by the cited rule. **Bounded** means an implementation choice remains, with the invariant stated below. **Open** would prevent sealing; none remains.
+
+| Earlier deferral | Classification, authority and invariant |
+| --- | --- |
+| Parent context, reference grammar and explicit inheritance | Covered by “Numeric identities and revisions,” SH-01/02/08: one qualified owner/type/parent/item/revision; multiple inputs are separate edges; ancestor revisions alone cause no churn. Exact spelling and type-parent layout are bounded: they must preserve that unique ownership and reject insufficient context, not duplicate the item under its inputs. |
+| Numeric allocation and revision encoding | Covered by SH-02/08: positive unpadded IDs, numeric ordering, immutable published targets, increasing revisions within one identity and serialized conflicting publication. Allocator code/encoding is bounded by those outcomes; revision reuse is forbidden. |
+| Stable moves and historical path mappings | Covered by SH-02/07: explicit mappings and exact original source identities; no guessing or retargeting. Mapping representation is bounded because all old references must retain their targets. |
+| Item extraction and meaningful equality | Covered by the G1 closure and SH-07/15. Extractor/profile encodings are bounded: exhaustive reviewed presentation exceptions cannot change values, obligations, actual bindings, unknown-field significance or incomplete-comparison refusal. Profile changes require reviewed migration/reassessment, not retrospective equivalence. |
+| Shared/global constraints and dependency-family inventory | Covered by SH-07/15/16 and “Coverage and compatibility”: every actual input participates, including external declarations, source, policy and runner inputs. Ownership/lookup alone is not an edge. Inventory layout is bounded; omitting an actual family violates the contract. |
+| Explicit candidate snapshot and unchanged-item source binding | Covered by SH-03/07/15: comparison uses selected immutable snapshots, no HEAD fallback; an unchanged item retains its original revision/source. Snapshot-selection interface is bounded; it cannot silently relocate historical entries. |
+| Authoritative owner inventory, archive handling and source capture | Covered by G3, SH-18 and “Project-wide graph and workstream ownership.” Inventory format, generation tracking and capture technology are bounded: the full stated local universe, exact vector, new/ref removal detection and coherent observation cannot change. |
+| Index rebuilding and freshness | Covered by SH-18: index matches captured inventory/vector, remains rebuildable, grants no authority, and stale/unavailable context prevents complete clearance. Index layout/lookup algorithm is bounded by those outcomes. |
+| Retain/revise/retire, equivalence and propagation stopping | Covered by G2, SH-15/16/17 and both normative comparison/stop sections. Decision field names are bounded: exact versions, all paths, profiles, evidence, owner authority and reviewed new-context validity must remain representable and enforced. |
+| Selective eligibility versus accepted-contract/final-candidate completion | Covered by SH-04/14/15/16, “Normative propagation-stop decision,” and `_ask/docs/spec-test-traceability.md`. An unaffected item does not complete a changed workstream. Old runs cannot become fresh final green. Adapters are bounded by exact candidate/contract/source/runner/log checks and existing evidence eligibility. |
+| Integrity file path, format and partitioning | Covered behavior in SH-03/05: separate full integrity data, exact immutable item/revision targets, shared identities, distinct contract/run lifetimes and retained history. File path/serialization/partitioning is bounded; moving data cannot weaken resolution, integrity or authority. |
+| Publication, locking, retries and concurrent allocation | Covered by SH-08/13 and “Constraints and invariants”: readers see complete old/new state, no successful dangling references, conflicting stale writes rejected, published targets immutable. Lock/transaction mechanics are bounded by these observable guarantees. |
+| Producer/consumer and eligible-hash-surface inventory | Covered by “Coverage and compatibility,” SH-03/10/11/15: all named families and eligible surfaces must be accounted for, with justified full-value exceptions. Module/inventory organization is bounded; it cannot reduce coverage. |
+| Authority and attribution per artifact/owner | Covered by SH-04/15/16/18, “Authority and identity,” delegation and traceability contracts. Missing authority prevents clearance. Record syntax is bounded; it cannot replace coordinator registration, independent decisions or another owner's authority with candidate fields. |
+| Legacy formats, migration, export and source-only transfers | Covered by SH-10/18 and traceability migration/authority rules: readable originals, exact provenance, supported validation semantics, explicit unsupported/incomplete failure, required immutable objects and reviewed authority registration, no manufactured versions/approval/execution. Adapter/CLI/schema numbers are bounded by those outcomes. |
+| Compact serialization, omitted defaults and projections | Covered by SH-09/11: versioned defaults, preserved values/distinctions, sufficient declared context, selective lookup and retrievable detail. Projection shape/field names are bounded; necessary context/evidence cannot be omitted to save tokens. |
+| Baseline corpus, tokenizer, scripts and accounting | Covered by SH-12 and “Savings measurement”: preimplementation freeze, representative real artifacts, all three journeys, equivalent questions/evidence, same pinned tokenizer, all necessary inputs/lookups and generated metadata JSON, strict aggregate decrease in both units, disclosed regressions/exceptions. Exact corpus/tooling is bounded by those minimum contents and fixed accounting; bytes cannot substitute for tokens. |
+| Test cases, source paths, TaskGraph scopes and runner selectors | Covered obligations: all 18 criteria are executable, required types below, traceability contract requires actual instrumented cases, independent semantic review, accepted pins and applicable Red/Green. Case/fixture layout is bounded; it cannot remove criterion assertions/types, replace executions with exit codes, or create review-only waivers. |
+| Configuration keys, command flags and module seams | Bounded by “Interfaces” and the cited behavioral criteria: existing entry points retain purpose/safety; alternate names/layouts cannot change required resolution, authority, failure or completion outcomes. |
 
 ## Missing failure cases
 
-No uncovered failure class requires a specification correction. The independent test-plan review must turn these concrete counterexamples into explicit cases and assertions:
+The following audits **every earlier failure-case row** and the associated cycles paragraph. Each now has a normative outcome rather than an unqualified promise of later Plan work.
 
-| Counterexample | Required observable result |
+| Earlier concrete counterexample | Classification and required outcome |
 | --- | --- |
-| Spec 1/part 2, plan 1/item 2, and another workstream's item 2 share local numbers; a projection drops type, owner, parent, or revision context. | Resolve only sufficient declared context; otherwise return a scoped error. Numeric ordering places 2 before 10; zero, padded, and malformed new IDs are rejected (SH-01/02/08/11). |
-| Task T consumes requirements under two specs; a generator copies it under each upstream parent or renames it when one ancestor revision advances. | One stable owned identity, explicit multiple-input edges, and no ancestor-only identity/revision churn (SH-02/15/16). |
-| A published revision's integrity entry is deleted, its snapshot is changed, or an old revision is aliased to the latest entry. | Fail exact resolution; never substitute another version or current checkout. Required old entries and Git objects remain retrievable (SH-03/05/07/10). |
-| Two coordinators read the same allocation state and publish the same scoped ID/revision with different content. A crash occurs after entry preparation but before reference publication. | Serialize or reject conflicting stale writes; readers see complete old/new state. Retry cannot mutate a published target or report a successful dangling reference (SH-08/13). |
-| A candidate changes the integrity file, accepted-pin copy, or review attribution to make an altered contract appear accepted. | Coordinator-owned accepted-tests authority and registered decisions remain decisive; candidate files cannot grant authority (SH-04/14). |
-| A new run adds logs and rewrites the old contract entry; an old object becomes unreachable after authority advances. | Separate immutable contract/run lifetimes; retain required historical entries/objects, or explicitly refuse unavailable historical validation/export (SH-03/05/10). |
-| JSON keys/whitespace change, while a byte-bound intent or log receives an equally harmless-looking whitespace edit. | Preserve canonical-JSON equivalence only where declared; byte-bound approval/log evidence invalidates. Algorithms and semantics cannot be swapped (SH-06/09). |
-| S1 and S2 share a file; only S1 changes. A global policy consumed by both also changes in a second fixture. | First fixture leaves S2's item revision and independent chain eligible. Second reaches all actual policy consumers; identical local payload alone does not establish independence (SH-07/15/16/18). |
-| P's payload is unchanged after rebinding S1 revision 1 to revision 2; a pointer-only retain decision clears T, which also depends on changed Q. | P gets a fresh revision for the binding change; attributable review and reuse rules govern propagation stopping. Q's unresolved path still blocks T's new-context completion (SH-15/16). |
-| A test remains eligible but its historical final-green run belongs to another candidate/contract; an implementer labels that run current after a retain decision. | Keep historical run bindings intact. Existing exact-candidate/contract/runner/source/log requirements still apply; execute again when reuse rules require it (SH-04/14/15/16). |
-| A source document is unavailable versus a requirement absent from an available candidate document; the requirement's test also serves another active obligation. | Availability failure is not deletion. Actual deletion triggers reviewed assessment; preserve shared active dependents and history, distinguish stale from retired, and propagate resulting changes (SH-07/17). |
-| B consumes A's shared policy only on B's branch; C is unavailable; an index contains an old B snapshot. | Discover committed sources outside the checkout, report B and paths with their owners, mark unresolved C/index scope incomplete, and transfer no write or acceptance authority (SH-18). |
-| A legacy record lacks explicit item versions or a transferred export lacks coordinator authority/Git objects. | Preserve readable originals; require exact provenance for explicit mapping. Missing declarations are not proof of independence. Do not manufacture approval, numeric history, Red/Green, or verified-complete imports (SH-10/18). |
-| Compact JSON conflates absent/null/empty, loses Unicode, or a projection omits the context needed for its next lookup. | Preserve values and schema-declared distinctions; deterministic normalization and sufficient context or a scoped failure (SH-09/11). |
-| Numeric references reduce the displayed report, but new revision entries, cross-owner indexes, and repeated lookup responses exceed baseline cost. | Count all generated metadata JSON and all necessary agent inputs/lookup responses. Fail savings acceptance unless both aggregate token and byte totals decrease (SH-11/12). |
-| Raw Git inspection encounters a newly colliding abbreviation after numeric publication. | Expand colliding displays, reject ambiguous input without rebinding, and supply full IDs for exact operations (SH-01/08). |
+| 1. Spec/part, plan/item and another owner's item share local numbers; projection omits context; 10 sorts before 2. | Covered, SH-01/02/08/11: sufficient declared qualification or scoped refusal; numeric ordering. Legacy IDs remain under explicit stable mappings; malformed new IDs do not become valid legacy records. |
+| 2. Multi-input task copied under two specs or renamed when an ancestor revision changes. | Covered, SH-02/15/16: one ownership identity, explicit independent input edges, no ancestor-only churn. |
+| 3. Integrity entry deleted, mutated, or old revision redirected to newest target. | Covered, SH-03/05/07/10: fail exact resolution; no substitution or rebinding; retain required historical entries/objects. |
+| 4. Stale concurrent writers publish conflicting scoped revision; crash precedes reference publication. | Covered, SH-08/13: serialization/conflict refusal, complete old/new state, immutable retries, no dangling successful references. |
+| 5. Candidate rewrites integrity file, accepted-pin copy or independent attribution. | Covered, SH-04/14 and “Authority and identity”: existing coordinator authority/registered decisions remain decisive. |
+| 6. Later log rewrites accepted contract, or old Git object disappears after authority advances. | Covered, SH-03/05/10: independent immutable lifetimes and retained source/history; unavailable history refuses validation/verified-complete export. |
+| 7. Equivalent JSON formatting versus whitespace edit to intent/log. | Covered, SH-06/07/09: declared canonical equivalence only for structured comparison, exact-byte invalidation for bound authority/evidence; no algorithm/semantics substitution. |
+| 8. S1 and S2 share a file; one changes, or an external global policy changes while blobs do not. | Covered, G1, SH-07/15/16/18 and required examples: unrelated item retains revision; actual external constraint/binding change participates despite blob equality. |
+| 9. P payload retained after changing S binding; pointer-only retain clears T while Q also changed. | Covered, G1/G2, SH-15/16 and required examples: fresh P revision, reviewed complete contract equivalence, immutable pins and every affected T path resolved. P's decision cannot clear Q. |
+| 10. Old final-green run relabeled current after retain. | Covered, SH-04/14/15/16 and stop section: preserve exact original bindings, execute new final candidate wherever existing completion requires it. |
+| 11. Unavailable document treated as deleted item; deleted requirement's test still serves another obligation. | Covered, SH-07/17: availability is not deletion; reviewed assessment protects shared dependents, distinct stale/retired states and retrievable history. |
+| 12. B consumes policy only on another branch; C unavailable; stale index or new owner during scan. | Covered, G3, SH-18 and required examples: coherent full local inventory/vector, B discovered, C unresolved, no complete mixed result, generation recheck at use, no owner authority transfer. |
+| 13. Legacy record lacks declarations/versions; export lacks objects or coordinator authority. | Covered, SH-10/18 and traceability migration contract: readable originals do not establish independence/new completion; exact provenance, explicit missing scope/migration/registration, no invented history. |
+| 14. Compact JSON conflates absent/null/empty, loses Unicode, or leaves lookup context ambiguous. | Covered, SH-07/09/11: preserve semantic distinctions and sufficient context or scoped failure. |
+| 15. New numeric revision records, integrity catalog/index and lookup responses outweigh displayed-report savings. | Covered, SH-11/12 and savings section: count all necessary inputs/responses and generated metadata JSON; both aggregate thresholds must pass with individual regressions disclosed. |
+| 16. Raw abbreviation becomes ambiguous after another publication. | Covered, SH-01/08: scoped collision expansion and ambiguous-input refusal without rebinding; full IDs for exact operations. |
+| Dependency cycles versus ownership/lookup links, unsafe paths and missing targets. | Covered, SH-07/08/15/16/18: only actual dependencies form impact edges; scoped failure for cycles/invalid targets, including cross-owner cases. Ownership/lookup alone does not invent a cycle. |
 
-Cycle tests must distinguish actual dependency cycles from ordinary resolution/ownership links and retained historical records. Lookup or ownership alone is explicitly not a dependency. Missing targets, conflicting identities, unsafe paths, and cross-owner cycles require stable scoped failures rather than fallback.
+Additional reopened combinations are covered: unknown field changes are significant; unavailable profiles cannot prove equality; profile identity changes require reviewed migration/reassessment; identical blobs do not bypass external bindings; narrower interfaces cannot be invented retrospectively; changed outward/inherited obligations continue reassessment; old-pin retention never updates the edge; a new consumer pin always creates a new revision; and new/removed refs are detected during capture. No open failure class remains from the reopened review.
 
 ## Over-constraint risks
 
-The amendment adds allocation, revision history, integrity storage, migration, and cross-workstream discovery to an already broad dependency/evidence change. This scope follows the explicit user refinement and preserved revisions 4/5; treating the work as a formatter-only change would miss its approved destination.
-
-Numeric revisions and a separate integrity file may increase storage and lookup cost. SH-12 deliberately requires lower aggregate metadata bytes as well as agent-input tokens, including all new metadata. This is a feasibility risk to test against the frozen corpus, not grounds to remove integrity or evidence requirements. Individual journey regressions are permitted only with disclosure; aggregate savings in both measures remain mandatory.
-
-The contract fixes numeric identities/revisions and separate integrity storage but leaves concrete syntax, file layout, and comparison algorithms to Plan. It does not require a new global authority service, cryptographic identity authentication, or bulk historical rewriting. Existing coordinator attribution is cooperative repository authority, as the traceability contract states.
+| Earlier risk | Classification and disposition |
+| --- | --- |
+| Scope grew beyond display formatting to allocation, history, dependencies, migration and project discovery. | Covered by intent and SH-02/03/10/15–18. These are explicit destination requirements; narrowing to a formatter would violate scope. Implementation modularity remains bounded by them. |
+| Numeric revisions, integrity storage and graph metadata may erase savings. | Covered by SH-12 and savings accounting. This remains a feasibility risk, not an unanswered behavioral rule: failing either strict aggregate threshold prevents implementation acceptance and requires design revision. A seal does not prove savings. |
+| Every individual journey might be required to improve. | Covered by SH-12: strict aggregate improvement in both tokens and JSON bytes; disclose individual regressions. There is no per-journey improvement rule. |
+| Specification might require global authority service, identity authentication, arbitrary new checksums or bulk historical rewrite. | Covered by Non-goals, SH-03/04/10 and existing cooperative authority contract. Separate integrity data and exact verification are required; those extra mechanisms are not. Storage/transport implementation is bounded by retained authority and provenance. |
+| Concrete reference grammar or per-item redundant checksum scheme could be imposed prematurely. | Bounded by numeric/qualification/revision and integrity invariants, SH-01/02/03/07. Different syntax and Git-backed content integrity are permitted only with identical immutable-resolution and verification outcomes. |
 
 ## Under-constraint risks
 
-All 18 criteria declare `verification_mode: tests`. None claims a review-only exemption. Their Given/When/Then outcomes are observable, and the Markdown specifies these minimum evidence types:
+Every criterion declares `verification_mode: tests`; none claims review-only authority. Required types and observable evidence were independently checked:
 
-| Criterion | Required types | Independent assessment of observability |
+| Criterion | Required types | Necessary observable proof |
 | --- | --- | --- |
-| SH-01 | unit, integration | Assert default persisted/rendered numeric references, explicit context, collision rejection, and full-ID exact operations. |
-| SH-02 | unit, integration | Exercise every named artifact/item family, numeric sorting, immutable revisions, moves, ancestor stability, and multi-input ownership. |
-| SH-03 | unit, integration | Resolve separate integrity entries, shared sources, byte/JSON semantics, external artifacts, and missing/mutated mappings. |
-| SH-04 | integration, e2e | Attempt candidate substitution through real coordinator and completion entry points, including independent-decision forgery. |
-| SH-05 | integration | Add later runs and contracts, then reload old entries and evidence; assert lifetime and retention boundaries. |
-| SH-06 | unit, integration | Assert canonical equivalence separately from exact-byte invalidation and reject semantic/algorithm substitution. |
-| SH-07 | integration | Use real Git blobs/snapshots for unchanged and unrelated edits, meaningful changes, moves, unavailable sources, and actual deletion. |
-| SH-08 | unit, integration | Exercise malformed/scoped references and real stale concurrent registrations, not only sequential allocator calls. |
-| SH-09 | unit, integration | Compare normalized values and distinguish declared absent/null/empty/default behavior through round trips. |
-| SH-10 | integration, e2e | Read real legacy fixtures and migrate/export/reload through workflow entry points without invented authority/history. |
-| SH-11 | integration, e2e | Request selective projections, follow needed lookups, and demonstrate that default inputs omit the whole catalog without losing evidence access. |
-| SH-12 | integration | Execute frozen equivalent journeys with the pinned tokenizer; include all metadata, context, lookups, and per-journey/aggregate totals. |
-| SH-13 | integration | Inject interruption at publication boundaries; observe readers, retries, conflicting state, and fixture cleanup. |
-| SH-14 | e2e | Execute valid and deliberately invalid workflows with real case results, review registration, and exact completion lineage. |
-| SH-15 | unit, integration, e2e | Pin every actual dependency family, compare content/bindings, publish changed revisions, and preserve historical execution bindings. |
-| SH-16 | unit, integration, e2e | Observe direct versus potential impact, independence, multiple unresolved inputs, reviewed stop decisions, and completion refusal/eligibility. |
-| SH-17 | unit, integration, e2e | Exercise exclusive/shared deletion, reviewed retirement, historical retrieval, active views, and downstream binding changes. |
-| SH-18 | unit, integration, e2e | Discover cross-branch owner sources, traverse actual edges, report unresolved scope, and preserve owner authority through workflow outcomes. |
+| SH-01 | unit, integration | Default numeric references; sufficient context; scoped raw collisions and full-ID exact operations. |
+| SH-02 | unit, integration | Every named item family; numeric sorting; increasing immutable revisions; moves; multi-input ownership and ancestor stability. |
+| SH-03 | unit, integration | Separate exact integrity data; shared sources/external evidence; missing/mutated revision mappings fail. |
+| SH-04 | integration, e2e | Candidate substitutions and self-declared approval fail through coordinator/completion interfaces. |
+| SH-05 | integration | Later runs/accepted revisions do not mutate old entries; historical targets remain exact/retrievable. |
+| SH-06 | unit, integration | Canonical equivalence versus exact-byte invalidation and explicit digest semantics. |
+| SH-07 | integration | Real Git snapshots/blobs; external bindings despite identical blobs; reviewed profiles; unknown fields; unrelated edits; moves; deletion versus unavailability. |
+| SH-08 | unit, integration | Scoped/malformed IDs, real conflicting stale registrations, cycles and immutable targets. |
+| SH-09 | unit, integration | Compact versioned round trips preserve Unicode/types/defaults/absent-null-empty distinctions. |
+| SH-10 | integration, e2e | Legacy reads, provenance-preserving migration, export/reload and explicit incomplete/unsupported refusal through real entry points. |
+| SH-11 | integration, e2e | Selective projection and necessary lookup responses avoid default whole-catalog loading while preserving context/detail. |
+| SH-12 | integration | Frozen equivalent real-artifact journeys with pinned tokenizer, complete accounting and both strict aggregate thresholds. |
+| SH-13 | integration | Interrupted publication with readers, conflicting retries and fixture cleanup. |
+| SH-14 | e2e | Real valid/invalid workflows with executed cases, registered review and exact candidate/contract/source/runner/log lineage. |
+| SH-15 | unit, integration, e2e | Every actual dependency family, payload/binding comparison, exact old/new revisions and attributable history without execution rebinding. |
+| SH-16 | unit, integration, e2e | Direct/potential impact, independent and multi-input chains, full stop decisions, old pin versus new pin, and eligibility/completion refusal. |
+| SH-17 | unit, integration, e2e | Exclusive/shared deletion, reviewed dependency updates/retirement, active filtering and historical retrieval. |
+| SH-18 | unit, integration, e2e | Cross-branch/archived/shared-owner discovery, coherent generation capture including new refs, stale/unavailable scope, freshness on use and owner authority. |
 
-The types are adequate minimum obligations. Plan still needs explicit case IDs, assertions, accepted TaskGraph scopes, source paths, supported instrumented runner selectors, and independent review bound to exact contract digests. A happy-path resolver test, JSON `pass` field, opaque command exit, or review prose cannot substitute for these obligations or actual case execution.
+The evidence types are adequate minimum obligations, not execution evidence or an accepted test plan. Actual case assertions/selectors/source mappings, TaskGraph scope and independent test-plan review remain necessary under `_ask/docs/spec-test-traceability.md`. A `pass` field, scaffold, opaque command exit, or this document cannot supply those proofs. Existing instrumentation, Red/Green and review rules remain authoritative.
 
-Existing `evidence.py` anchors accepted obligations to `refs/ask/accepted-tests/<work-id>` and validates current contract digests. `completion.py` checks coordinator-recorded review, exact candidate final green, spec/plan digests, source bindings, runner identity, logs, static checks, and Red/Green eligibility. Revision 6 expressly preserves those authorities. Selective item eligibility must coexist with them: an unaffected item does not establish that an entire changed workstream has completed, and a retain decision cannot relabel historical execution. The Plan must show this distinction in executable cases.
+The earlier authority/reuse risk is covered: `evidence.py` anchors accepted obligations to coordinator-owned accepted-tests authority, and `completion.py` verifies registered review, current contract digests, exact final-candidate/source/runner/log identities and applicable execution history. SH-04/14/15/16 explicitly preserve them. Retained item eligibility is neither an accepted-contract amendment nor a fresh final-green run.
 
-Legacy compatibility includes unsupported-schema refusal and explicit migration requirements. A reader can preserve historical access without qualifying that history for new completion. Source-only exports must retain or re-register coordinator authority under the existing reviewed process; copied candidate metadata alone cannot authorize it.
+The earlier migration risk is covered: SH-10/18 and the migration/authority contract preserve readable history while refusing unsupported or insufficient provenance for new completion. Missing declarations are not proof of a dependency-free owner; missing authority cannot be replaced by an exported candidate file. No historical review-only exemption, approval, numeric revision or Red/Green evidence may be invented.
 
 ## Recommended clarifications
 
-No scope-preserving correction to the revision-6 specification is required. Carry these existing obligations into concrete Plan deliverables:
+No additional normative correction is required for revision 7. G1/G2/G3 are closed by explicit rules and required decision examples, rather than deferred as unresolved behavior. The tables above identify the remaining bounded implementation choices and the outcomes each must preserve. They do not authorize alternate equality, stop, discovery, authority, migration or savings semantics.
 
-1. Inventory every eligible hash surface and actual dependency family; identify versioned writer/reader formats, full-value exceptions, authoritative owner, and legacy behavior.
-2. Specify numeric ownership grammar, explicit inheritance, immutable revision allocation, stable move mappings, separate integrity-file lifetimes, retention, concurrency, and crash recovery. Demonstrate sufficient context for every ordinary reference.
-3. Define format-specific item extraction and equality including global constraints and bindings. Preserve unrelated revisions while publishing meaningful changes; never retarget an old revision to a new source.
-4. Specify consistent cross-workstream source discovery and incomplete-analysis behavior, including archived/branch-only consumers, stale indexes, unavailable owners, and cycles.
-5. Define attributable retain/revise/retire transitions and reviewed propagation stops without weakening exact accepted-contract or final-execution checks. Distinguish retained item eligibility, reusable history, and newly executed evidence.
-6. Freeze the baseline source/corpus, tokenizer/package version, equivalent journey scripts, and accounting boundaries before production changes. Include numeric revision metadata, integrity files, graph/index metadata, and necessary lookup responses in the totals.
-7. Prepare and independently review the test plan and exact TaskGraph obligations under coordinator authority before implementation. No schema scaffold or this challenge supplies that decision.
+Any later finding that cannot satisfy these rules returns through Spec Change. Benchmark feasibility and implementation correctness remain to be demonstrated; specification closure cannot establish either.
 
 ## Challenge verdict
 
-**PASS** for the exact revision-6 canonical JSON and Markdown digests recorded above.
+**PASS — zero open behavioral blockers for the exact revision-7 JSON and Markdown digests above.**
 
-No specification blocker or intent/spec conflict was found. The approved numeric hierarchy/revision correction is represented across all named families while preserving exact dependencies, immutable history, full integrity, coordinator authority, selective reassessment, cross-workstream visibility, migration, and the primary savings goal. Concrete counterexamples have specified outcomes; proving them remains future work.
+This independent review supports sealing that specification for consolidated planning. It supersedes the earlier unconditional revision-6 PASS and closes the three reopened gaps against revised normative text. Every earlier deferral, failure-case row and risk has been classified with its binding outcome or bounded mechanism choice.
 
-Complete-intent confirmation is still absent and the implementation plan/test obligations are not accepted. Those are separate workflow gates, not evidence that this specification has failed or that implementation is authorized. This decision grants no human approval, plan acceptance, execution evidence, workstream completion, or final acceptance. The authorized task ends with this independent challenge; no later stage is advanced here.
+This decision supplies no complete-intent approval, accepted implementation/test-plan pin, implementation readiness, execution evidence, workstream completion or final acceptance. It neither drafts Plan nor authorizes production implementation. Those claims require their own existing workflow gates and evidence.
