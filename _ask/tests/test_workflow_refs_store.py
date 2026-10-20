@@ -44,6 +44,25 @@ class ReferenceTests(unittest.TestCase):
                     register_revision(catalog, "alpha", "alpha/spec/1", {
                         "commit": invalid, "path": "items.json",
                     }, "SH-01", "structured-item/1", payload)
+            # Length alone is not enough for SHA-256 repositories: a 40 digit
+            # prefix is abbreviated there, though it is a full SHA-1 ID.
+            sha256_root = root / "sha256"
+            sha256_root.mkdir()
+            init = subprocess.run(["git", "init", "-q", "--object-format=sha256"], cwd=sha256_root,
+                                  capture_output=True)
+            if init.returncode == 0:
+                subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=sha256_root, check=True)
+                subprocess.run(["git", "config", "user.name", "Test"], cwd=sha256_root, check=True)
+                (sha256_root / "items.json").write_bytes(payload)
+                subprocess.run(["git", "add", "items.json"], cwd=sha256_root, check=True)
+                subprocess.run(["git", "commit", "-qm", "sha256 source"], cwd=sha256_root, check=True)
+                sha256_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=sha256_root, text=True).strip()
+                sha256_catalog = sha256_root / "integrity.json"
+                initialize_catalog(sha256_catalog, "alpha")
+                with self.assertRaises(CatalogError):
+                    register_revision(sha256_catalog, "alpha", "alpha/spec/1", {
+                        "commit": sha256_commit[:40], "path": "items.json",
+                    }, "SH-01", "structured-item/1", payload)
             first = register_revision(catalog, "alpha", "alpha/spec/1", {
                 "commit": commit, "path": "items.json",
             }, "SH-01", "structured-item/1", payload, expected_generation=0)
@@ -74,7 +93,10 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(len(doc["entries"]), 3)
             self.assertEqual(len(doc.get("snapshots", {})), 2)
             snapshot_ids = [entry.get("snapshot_id") for entry in doc["entries"]]
-            self.assertEqual(snapshot_ids[0], snapshot_ids[2], "repeated immutable source snapshots must be shared")
+            self.assertEqual(snapshot_ids[1], snapshot_ids[2], "repeated immutable source snapshots must be shared")
+            self.assertEqual([entry["reference"] for entry in doc["entries"][:2]],
+                             ["alpha/spec/1@1", "alpha/spec/1@2"],
+                             "adding run evidence must preserve contract history")
             self.assertNotIn("snapshot", doc["entries"][0], "entries must refer to the shared snapshot table")
             self.assertEqual(doc["entries"][0]["reference"], "alpha/spec/1@1")
             accepted_after = subprocess.check_output(
@@ -184,10 +206,33 @@ class ReferenceTests(unittest.TestCase):
             resolved = resolve_version(catalog, entry["reference"], root)
             self.assertIn("payload", resolved, "historical source bytes must resolve")
             self.assertEqual(resolved["payload"], payload)
+            # Current checkout bytes diverge; exact pinned history still wins.
+            (root / "items.json").write_bytes(b'{"id":"SH-01","then":["checkout"]}\n')
+            self.assertEqual(resolve_version(catalog, entry["reference"], root)["payload"], payload)
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, "alpha/spec/1@9", root)
+            # Publish a source snapshot that is not in the checkout's history,
+            # then make that exact object unavailable. Resolution must refuse;
+            # it cannot substitute the current HEAD file.
+            external_payload = b'{"id":"SH-02","then":["external"]}\n'
+            blob = subprocess.check_output(["git", "hash-object", "-w", "--stdin"],
+                                           cwd=root, input=external_payload, text=False).decode().strip()
+            tree = subprocess.check_output(["git", "mktree"], cwd=root,
+                                          input=f"100644 blob {blob}\titems.json\n", text=True).strip()
+            external_commit = subprocess.check_output(["git", "commit-tree", tree, "-m", "external pinned source"],
+                                                      cwd=root, text=True).strip()
+            subprocess.run(["git", "update-ref", "refs/heads/pinned-source", external_commit], cwd=root, check=True)
+            external_entry = register_revision(catalog, "alpha", "alpha/spec/2", {
+                "commit": external_commit, "path": "items.json",
+            }, "SH-02", "structured-item/1", external_payload)
+            subprocess.run(["git", "update-ref", "-d", "refs/heads/pinned-source"], cwd=root, check=True)
+            subprocess.run(["git", "reflog", "expire", "--expire=now", "--all"], cwd=root, check=True)
+            subprocess.run(["git", "gc", "--prune=now"], cwd=root, check=True)
+            with self.assertRaises(CatalogError):
+                resolve_version(catalog, external_entry["reference"], root)
             doc = json.loads(catalog.read_text())
-            doc["entries"][0]["snapshot"]["path"] = "missing.json"
+            snapshot_id = doc["entries"][0]["snapshot_id"]
+            doc["snapshots"][snapshot_id]["path"] = "missing.json"
             catalog.write_text(json.dumps(doc))
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, entry["reference"], root)

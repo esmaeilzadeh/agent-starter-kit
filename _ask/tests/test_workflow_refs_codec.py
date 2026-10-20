@@ -68,6 +68,12 @@ class ReferenceTests(unittest.TestCase):
                 envelope = encode_envelope({"value": None, "notes": "verbatim workflow context"},
                                            "workflow-record/v1", context, {"record": reference})
                 encoded = json.dumps(envelope, ensure_ascii=False, separators=(",", ":"))
+                expanded = dict(envelope)
+                expanded["references"] = {"record": reference}
+                expanded_bytes = json.dumps(expanded, ensure_ascii=False, separators=(",", ":"))
+                if len(reference) > 30:
+                    self.assertLess(len(encoded), len(expanded_bytes),
+                                    "long typed references must reduce persisted bytes")
                 path.write_text(encoded, encoding="utf-8")
                 # Simulate a separate process loading persisted bytes.
                 persisted = path.read_bytes()

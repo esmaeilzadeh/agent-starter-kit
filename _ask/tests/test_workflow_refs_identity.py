@@ -6,7 +6,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
-from workflow_refs.identity import ReferenceError, display_git_id, normalize_references, parse_reference, reference_sort_key, resolve_git_id
+from workflow_refs.identity import (ReferenceError, display_git_id, map_reference_move,
+                                    normalize_references, parse_reference, reference_sort_key, resolve_git_id)
 
 
 class ReferenceTests(unittest.TestCase):
@@ -55,9 +56,6 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(refs, (
             "alpha/spec/2/plan/4/task/7@1", "beta/spec/3/plan/1@2",
         ))
-        old = parse_reference("alpha/spec/2/plan/4/task/7@1")
-        moved = parse_reference("alpha/spec/2/plan/4/task/7@1")
-        self.assertEqual(old["logical_id"], moved["logical_id"])
         self.assertEqual(len(refs), 2, "independent dependency edges must not be collapsed")
         with self.assertRaises(ReferenceError):
             normalize_references([{"id": 7, "revision": 1}], {"owner": "alpha", "type": "task"})
@@ -73,10 +71,14 @@ class ReferenceTests(unittest.TestCase):
         # remains resolvable from its historical qualified reference.
         old = parse_reference("alpha/spec/2/plan/4/task/7@1")
         same_child_new_ancestor_revision = parse_reference("alpha/spec/2/plan/4/task/7@2")
-        moved = parse_reference("alpha/spec/2/plan/5/task/7@1")
+        move = map_reference_move(old["canonical"], {
+            "owner": "alpha", "type": "task", "spec": 2, "plan": 5,
+        })
+        moved = parse_reference(move["to"])
         self.assertEqual(old["logical_id"], same_child_new_ancestor_revision["logical_id"])
         self.assertNotEqual(old["logical_id"], moved["logical_id"])
         self.assertEqual(old["canonical"], "alpha/spec/2/plan/4/task/7@1")
+        self.assertEqual(move, {"from": old["canonical"], "to": "alpha/spec/2/plan/5/task/7@1"})
 
     def test_raw_git_collision_resolution(self):
         first = "a1b2c3d4" + "0" * 32

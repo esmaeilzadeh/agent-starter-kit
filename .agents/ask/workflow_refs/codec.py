@@ -20,6 +20,10 @@ def _pairs(pairs):
     return value
 
 
+def _reject_constant(value):
+    raise ValueError(f"non-finite JSON number: {value}")
+
+
 def _validate_context(context):
     if not isinstance(context, dict) or not isinstance(context.get("type"), str):
         raise EnvelopeError("missing_context: envelope requires owner and record type")
@@ -73,9 +77,10 @@ def encode_envelope(payload, payload_schema, context, references=None):
 def decode_envelope(encoded):
     try:
         if isinstance(encoded, str):
-            envelope = json.loads(encoded, object_pairs_hook=_pairs)
+            envelope = json.loads(encoded, object_pairs_hook=_pairs, parse_constant=_reject_constant)
         elif isinstance(encoded, dict):
-            envelope = json.loads(json.dumps(encoded, ensure_ascii=False, allow_nan=False), object_pairs_hook=_pairs)
+            envelope = json.loads(json.dumps(encoded, ensure_ascii=False, allow_nan=False),
+                                  object_pairs_hook=_pairs, parse_constant=_reject_constant)
         else:
             raise EnvelopeError("envelope must be an object or JSON text")
     except (json.JSONDecodeError, UnicodeDecodeError, ValueError) as exc:
@@ -84,7 +89,8 @@ def decode_envelope(encoded):
         raise EnvelopeError(f"invalid envelope JSON: {exc}") from exc
     if not isinstance(envelope, dict) or envelope.get("schema") != "ask-workflow-envelope/v1":
         raise EnvelopeError("unsupported envelope schema")
-    if (not isinstance(envelope.get("payload_schema"), str) or "payload" not in envelope
+    if (not isinstance(envelope.get("payload_schema"), str) or not envelope["payload_schema"].strip()
+            or "payload" not in envelope
             or not isinstance(envelope.get("references"), dict)):
         raise EnvelopeError("envelope requires payload schema, payload, and references")
     context = _validate_context(envelope.get("context"))

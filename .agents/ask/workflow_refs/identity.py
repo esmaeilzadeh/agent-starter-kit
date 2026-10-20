@@ -11,6 +11,7 @@ import re
 _SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 _NUMBER = re.compile(r"[1-9][0-9]*\Z")
 _GIT_ID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+_AUXILIARY_KINDS = {"contract", "policy", "snapshot", "review", "run"}
 
 
 class ReferenceError(ValueError):
@@ -118,7 +119,7 @@ def parse_reference(value, context=None):
     elif len(tail) == 4 and tail[0] == "run" and tail[2] == "log":
         kind = "log"
         ids = [_segment(tail[1], "run identity"), _segment(tail[3], "log identity")]
-    elif len(tail) == 2 and _SLUG.fullmatch(tail[0]):
+    elif len(tail) == 2 and tail[0] in _AUXILIARY_KINDS:
         kind = tail[0]
         ids = [_segment(tail[1], f"{kind} identity")]
     else:
@@ -141,6 +142,17 @@ def normalize_references(values, context=None):
     if not isinstance(values, (list, tuple)):
         raise ReferenceError("malformed", "dependency references must be a list")
     return tuple(parse_reference(value, context)["canonical"] for value in values)
+
+
+def map_reference_move(reference, destination_context):
+    """Describe an explicit reparenting while retaining its historical target."""
+    source = parse_reference(reference)
+    if not isinstance(destination_context, dict) or destination_context.get("type") != source["kind"]:
+        raise ReferenceError("missing_context", "move destination must declare the same reference type")
+    destination = parse_reference(
+        {"id": source["ids"][-1], "revision": source["revision"]}, destination_context
+    )
+    return {"from": source["canonical"], "to": destination["canonical"]}
 
 
 def reference_sort_key(value):
