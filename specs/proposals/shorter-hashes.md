@@ -2,7 +2,7 @@
 
 ## Status
 
-PROPOSED — revision 1. The user requested this specification; intent confirmation,
+PROPOSED — revision 2. The user requested this specification; intent confirmation,
 formal Spec Challenge, and an accepted implementation plan remain outstanding.
 This document does not record approval or execution evidence.
 
@@ -60,6 +60,37 @@ This is an illustrative projection. The Plan defines exact versioned schemas,
 storage paths, and resolver interfaces. Every reference must identify its work,
 record type, and immutable target through explicit or inherited context. A bare
 number without sufficient context is invalid.
+
+### Dependency revisions
+
+A plan revision records the exact immutable spec revision it was derived from.
+Its canonical digest covers that input binding as well as the plan content.
+Shared storage preserves this directed dependency; a manifest containing a spec
+and a plan together does not establish that the plan was based on that spec.
+
+When the spec changes semantically, its new revision cannot use the old plan as
+current. The old plan retains its original spec binding and remains available for
+historical validation. Updating a catalog checksum, alias, or current pointer
+cannot retarget that plan or refresh its approval.
+
+To use the new spec, regenerate or explicitly revalidate the plan against the
+changes, publish a new plan revision with the new spec binding, and calculate its
+new checksum. Even if the planned steps remain the same, the new input binding
+changes the canonical plan revision and therefore its checksum. Review and accept
+the new spec/plan pair through the existing amendment process before execution.
+Recomputing checksums alone supplies no derivation or review evidence.
+
+For example, `spec/1 -> plan/1` remains a historical pair. Publishing `spec/2`
+makes `plan/1` ineligible for that spec. Only a regenerated or explicitly
+revalidated `plan/2`, bound to `spec/2` and independently reviewed and accepted,
+can become its current plan. Changing `spec/2` again requires another revision.
+
+Apply the same input-binding rule to dependent test plans, task graphs, reviews,
+and execution records where those dependencies already exist. Preserve original
+evidence bindings and reassess eligibility through existing rules; editing a
+digest or reference cannot transfer old approval or execution evidence to new
+obligations. Canonical-equivalent formatting changes retain existing equivalence
+rules and do not require artificial semantic revisions.
 
 ### Authority and identity
 
@@ -136,6 +167,9 @@ unavailable dependencies and refuses any claim of verified completeness.
 - Human approval binds the exact intent; independent decisions retain attribution.
 - Accepted obligations, candidate/source lineage, test assertions, logs, and runner
   identities remain verifiable. Short references alone grant no authority.
+- Each derived artifact revision binds its exact inputs. A spec update invalidates
+  the old plan for the new spec until a new bound plan revision is reviewed and
+  accepted; checksum updates alone cannot restore eligibility.
 - Immutable records remain reachable for historical validation and export.
 - Records never include their own digest in the bytes being hashed. Reference
   cycles, missing targets, duplicate conflicting IDs, and unsafe paths are rejected.
@@ -173,6 +207,7 @@ evidence; no review-only exemptions are declared.
 | SH-12 | Fixed representative workloads demonstrate lower total tokens and JSON bytes. | integration |
 | SH-13 | Interrupted publication and retries preserve immutable references and clean source. | integration |
 | SH-14 | Complete workflow still rejects stale or modified evidence and accepts valid evidence. | e2e |
+| SH-15 | Spec changes require a newly bound plan revision and checksum, revalidation, review, and acceptance. | unit, integration, e2e |
 
 ### Savings measurement
 
