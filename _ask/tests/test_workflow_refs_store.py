@@ -182,8 +182,7 @@ class ReferenceTests(unittest.TestCase):
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, "alpha/spec/1@9", root)
             doc = json.loads(catalog.read_text())
-            snapshot_id = doc["entries"][0]["snapshot_id"]
-            doc["snapshots"][snapshot_id]["path"] = "missing.json"
+            doc["entries"][0]["snapshot"]["path"] = "missing.json"
             catalog.write_text(json.dumps(doc))
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, entry["reference"], root)
