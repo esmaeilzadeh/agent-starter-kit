@@ -62,6 +62,10 @@ tasks:
       - "README.md"
       - "_ask/tests/test_workflow_refs_cli.py"
       - "_ask/tests/test_workflow_refs_migration.py"
+      - "_ask/scripts/record-run.sh"
+      - "_ask/scripts/start-work.sh"
+      - "_ask/tests/test-record-run-writes-manifest.sh"
+      - "_ask/tests/test-start-work-*.sh"
   - id: "9"
     depends_on: ["8"]
     owned_paths:
