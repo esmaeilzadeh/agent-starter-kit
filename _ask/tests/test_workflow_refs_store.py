@@ -57,12 +57,20 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(resolve_version(catalog, first["reference"], root)["entry"], first)
             with self.assertRaises(CatalogError):
                 register_revision(catalog, "alpha", "alpha/spec/1", {
-                    "commit": commit, "path": "items.json",
-                }, "SH-01", "structured-item/1", b'{"id":"SH-01","then":["mutated"]}\n',
+                    "commit": next_commit, "path": "items.json",
+                }, "SH-01", "structured-item/1", next_payload,
                    expected_generation=2, revision=1)
+            run = register_revision(catalog, "alpha", "alpha/run/1", {
+                "commit": next_commit, "path": "items.json",
+            }, "run-1", "run-evidence/1", next_payload, expected_generation=2)
+            self.assertEqual(run["reference"], "alpha/run/1@1")
             doc = json.loads(catalog.read_text())
             self.assertEqual(doc["schema"], "ask-reference-catalog/v1")
-            self.assertEqual(len(doc["entries"]), 2)
+            self.assertEqual(len(doc["entries"]), 3)
+            self.assertEqual(len(doc.get("snapshots", {})), 2)
+            snapshot_ids = [entry.get("snapshot_id") for entry in doc["entries"]]
+            self.assertEqual(snapshot_ids[0], snapshot_ids[2], "repeated immutable source snapshots must be shared")
+            self.assertNotIn("snapshot", doc["entries"][0], "entries must refer to the shared snapshot table")
             self.assertEqual(doc["entries"][0]["reference"], "alpha/spec/1@1")
             accepted_after = subprocess.check_output(
                 ["git", "rev-parse", "refs/ask/accepted-tests/alpha"], cwd=root, text=True
@@ -128,6 +136,8 @@ class ReferenceTests(unittest.TestCase):
                     register_revision(catalog, "alpha", "alpha/spec/2", {
                         "commit": commit, "path": "items.json",
                     }, "SH-02", "structured-item/1", payload)
+            with self.assertRaises(CatalogError):
+                resolve_version(catalog, "alpha/spec/2@1", root)
             recovered_before = register_revision(catalog, "alpha", "alpha/spec/2", {
                 "commit": commit, "path": "items.json",
             }, "SH-02", "structured-item/1", payload)
@@ -145,6 +155,10 @@ class ReferenceTests(unittest.TestCase):
                     register_revision(catalog, "alpha", "alpha/spec/3", {
                         "commit": commit, "path": "items.json",
                     }, "SH-03", "structured-item/1", payload)
+            # A reader at the authority-advanced cut must recover the exact
+            # committed catalog bytes and observe one complete new entry.
+            observed = resolve_version(catalog, "alpha/spec/3@1", root)
+            self.assertEqual(observed["payload"], payload)
             recovered = register_revision(catalog, "alpha", "alpha/spec/3", {
                 "commit": commit, "path": "items.json",
             }, "SH-03", "structured-item/1", payload)
@@ -168,10 +182,24 @@ class ReferenceTests(unittest.TestCase):
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, "alpha/spec/1@9", root)
             doc = json.loads(catalog.read_text())
-            doc["entries"][0]["snapshot"]["path"] = "missing.json"
+            snapshot_id = doc["entries"][0]["snapshot_id"]
+            doc["snapshots"][snapshot_id]["path"] = "missing.json"
             catalog.write_text(json.dumps(doc))
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, entry["reference"], root)
+
+    def test_snapshot_identity_requires_full_object_id(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            payload = b'{"id":"SH-01"}\n'
+            commit = make_git_repo(root, payload)
+            catalog = root / "integrity.json"
+            initialize_catalog(catalog, "alpha")
+            for invalid in (commit[:39], "a" * 41, "a" * 63):
+                with self.assertRaises(CatalogError):
+                    register_revision(catalog, "alpha", "alpha/spec/1", {
+                        "commit": invalid, "path": "items.json",
+                    }, "SH-01", "structured-item/1", payload)
 
 
 if __name__ == "__main__":

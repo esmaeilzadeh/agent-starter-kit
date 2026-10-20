@@ -54,6 +54,22 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(len(refs), 2, "independent dependency edges must not be collapsed")
         with self.assertRaises(ReferenceError):
             normalize_references([{"id": 7, "revision": 1}], {"owner": "alpha", "type": "task"})
+        for malformed in ("alpha/task/1@1", "alpha/test/1@1", "alpha/plan/1@1", "alpha/part/1@1"):
+            try:
+                parse_reference(malformed)
+            except ReferenceError:
+                pass
+            else:
+                self.fail(f"hierarchical reference bypassed required parents: {malformed}")
+        # Ancestor versions do not alter the numeric logical identity. A move
+        # to a different parent creates a distinct ID while the original target
+        # remains resolvable from its historical qualified reference.
+        old = parse_reference("alpha/spec/2/plan/4/task/7@1")
+        same_child_new_ancestor_revision = parse_reference("alpha/spec/2/plan/4/task/7@2")
+        moved = parse_reference("alpha/spec/2/plan/5/task/7@1")
+        self.assertEqual(old["logical_id"], same_child_new_ancestor_revision["logical_id"])
+        self.assertNotEqual(old["logical_id"], moved["logical_id"])
+        self.assertEqual(old["canonical"], "alpha/spec/2/plan/4/task/7@1")
 
     def test_raw_git_collision_resolution(self):
         first = "a1b2c3d4" + "0" * 32
