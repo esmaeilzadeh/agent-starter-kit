@@ -2,7 +2,7 @@
 
 ## Status
 
-PROPOSED — revision 2. The user requested this specification; intent confirmation,
+PROPOSED — revision 3. The user requested this specification; intent confirmation,
 formal Spec Challenge, and an accepted implementation plan remain outstanding.
 This document does not record approval or execution evidence.
 
@@ -63,34 +63,47 @@ number without sufficient context is invalid.
 
 ### Dependency revisions
 
-A plan revision records the exact immutable spec revision it was derived from.
-Its canonical digest covers that input binding as well as the plan content.
-Shared storage preserves this directed dependency; a manifest containing a spec
-and a plan together does not establish that the plan was based on that spec.
+Every derived artifact revision binds the exact immutable revisions of all its
+actual inputs. This rule applies to every existing dependency type: spec to plan,
+plan to task, task to test, and other declared relationships involving test plans,
+graphs, source, policies, runner definitions, reviews, or execution evidence.
+The Plan inventories the actual dependency graph; examples do not impose a linear
+pipeline or invent dependencies from ownership labels or ordinary lookup links.
 
-When the spec changes semantically, its new revision cannot use the old plan as
-current. The old plan retains its original spec binding and remains available for
-historical validation. Updating a catalog checksum, alias, or current pointer
-cannot retarget that plan or refresh its approval.
+A derived revision's canonical checksum covers its content and complete input
+bindings, including their work/type/revision context. Shared checksum storage
+preserves these directed edges. Placing artifacts together in a manifest does not
+establish derivation. Adding, removing, or changing an input binding requires a
+new derived revision and checksum, even when its substantive payload is unchanged.
 
-To use the new spec, regenerate or explicitly revalidate the plan against the
-changes, publish a new plan revision with the new spec binding, and calculate its
-new checksum. Even if the planned steps remain the same, the new input binding
-changes the canonical plan revision and therefore its checksum. Review and accept
-the new spec/plan pair through the existing amendment process before execution.
-Recomputing checksums alone supplies no derivation or review evidence.
+When an input changes semantically, determine the affected downstream closure for
+the new selected workflow context. Reject directly and transitively stale artifacts
+until each affected dependency is resolved. Do not wait for an intermediate artifact
+to be rewritten or its checksum to change before detecting downstream staleness.
+Artifacts with multiple inputs require all their bindings to be valid; unaffected
+branches remain eligible. Existing artifacts retain their original input bindings
+and remain available for validation in their historical context.
 
-For example, `spec/1 -> plan/1` remains a historical pair. Publishing `spec/2`
-makes `plan/1` ineligible for that spec. Only a regenerated or explicitly
-revalidated `plan/2`, bound to `spec/2` and independently reviewed and accepted,
-can become its current plan. Changing `spec/2` again requires another revision.
+To use changed inputs, regenerate or explicitly revalidate each affected derived
+artifact in dependency order, publish a new immutable revision with the correct
+bindings, and calculate its new checksum. Apply the review and coordinator acceptance
+requirements already associated with that artifact type. Recomputing a checksum,
+editing a catalog entry, or moving a current pointer cannot transfer derivation,
+approval, or execution evidence to the new context.
 
-Apply the same input-binding rule to dependent test plans, task graphs, reviews,
-and execution records where those dependencies already exist. Preserve original
-evidence bindings and reassess eligibility through existing rules; editing a
-digest or reference cannot transfer old approval or execution evidence to new
-obligations. Canonical-equivalent formatting changes retain existing equivalence
-rules and do not require artificial semantic revisions.
+For example, a recorded `spec/1 -> plan/1 -> task/1 -> test/1` chain remains valid
+for its original context. Selecting `spec/2` makes the affected plan, task, and
+test revisions stale for that new context. Rebuilding or revalidating the chain
+produces newly bound revisions and checksums; changing only the spec's catalog
+checksum cannot make the old chain current. A task-only change similarly affects
+its dependent tests without changing unrelated tasks or upstream artifacts.
+
+Test definitions and execution records are distinct artifacts. Historical runs
+retain their exact test/source/runner/contract bindings. They cannot be relabeled
+as new executions. Any reuse requires the existing evidence eligibility rules and
+an explicit attributable decision where those rules require one; otherwise new
+execution is necessary. Canonical-equivalent formatting changes retain existing
+equivalence rules and do not require artificial semantic revisions.
 
 ### Authority and identity
 
@@ -167,9 +180,10 @@ unavailable dependencies and refuses any claim of verified completeness.
 - Human approval binds the exact intent; independent decisions retain attribution.
 - Accepted obligations, candidate/source lineage, test assertions, logs, and runner
   identities remain verifiable. Short references alone grant no authority.
-- Each derived artifact revision binds its exact inputs. A spec update invalidates
-  the old plan for the new spec until a new bound plan revision is reviewed and
-  accepted; checksum updates alone cannot restore eligibility.
+- Every derived revision binds all actual inputs. Semantic changes invalidate the
+  affected downstream closure for the new context; unchanged historical bindings
+  and unrelated branches retain their meaning. Checksum updates cannot restore
+  eligibility or transfer approval/execution evidence.
 - Immutable records remain reachable for historical validation and export.
 - Records never include their own digest in the bytes being hashed. Reference
   cycles, missing targets, duplicate conflicting IDs, and unsafe paths are rejected.
@@ -207,7 +221,8 @@ evidence; no review-only exemptions are declared.
 | SH-12 | Fixed representative workloads demonstrate lower total tokens and JSON bytes. | integration |
 | SH-13 | Interrupted publication and retries preserve immutable references and clean source. | integration |
 | SH-14 | Complete workflow still rejects stale or modified evidence and accepts valid evidence. | e2e |
-| SH-15 | Spec changes require a newly bound plan revision and checksum, revalidation, review, and acceptance. | unit, integration, e2e |
+| SH-15 | Every existing dependency type preserves exact immutable input bindings and requires a new derived revision/checksum when bindings change. | unit, integration, e2e |
+| SH-16 | Changes invalidate the affected downstream closure, including multiple-input nodes; unrelated branches and historical contexts remain valid. | unit, integration, e2e |
 
 ### Savings measurement
 
@@ -252,6 +267,11 @@ references; execute and review runs; query compact status and evidence; verify
 completion; reload old contract revisions; and export/reload an evidence bundle.
 Repeat with a candidate-only substituted manifest, modified log, stale contract,
 same local IDs in different works, conflicting registration, and missing Git object.
+Exercise spec-to-plan, plan-to-task, task-to-test, and other actual dependency
+edges; change a root, an intermediate task, and one input of a multiple-input
+artifact. Reject stale descendants before intermediate checksums are refreshed,
+then rebuild/revalidate the affected chain and confirm unrelated branches remain
+eligible. Historical execution records retain their original bindings.
 
 Observable outcomes: short references resolve to the exact intended records,
 legitimate workflow outcomes match the baseline, altered or unavailable evidence
