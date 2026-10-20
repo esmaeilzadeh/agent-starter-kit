@@ -25,9 +25,12 @@ gates.
    remains.
 3. When the target is terminal or its accepted plan explicitly stops, report
    that endpoint. Do not ask the human to choose among unrelated workstreams.
-4. An explicitly named workstream takes precedence over the checkout. Ask for
-   clarification only when no target can be resolved or the relevant evidence
-   conflicts.
+4. Resolve an explicitly named workstream before considering the checkout. If
+   the named target cannot be resolved unambiguously, ask for clarification;
+   do not substitute the checked-out workstream. Without an explicit target,
+   resolve the checkout from remaining evidence and ask for clarification when
+   no target is identifiable, multiple targets remain plausible, or relevant
+   stage or authorization evidence remains conflicting.
 
 ## Interfaces
 
@@ -42,11 +45,14 @@ authorize later-stage work.
 
 ## Invariants
 
-- Explicit user target outranks the checked-out workstream.
+- Resolve an explicit user target before considering the checked-out
+  workstream; never silently substitute another target.
 - Matching checked-out workstream outranks unrelated live workstreams for an
   unqualified continuation request.
 - Terminal work is reported at its authorized endpoint without a chooser among
   unrelated workstreams.
+- Unresolved stage or authorization conflicts require clarification before
+  action.
 - Existing safety and intent-confirmation gates remain in force.
 
 ## Failure cases
@@ -55,10 +61,13 @@ authorize later-stage work.
 - The branch has no matching workstream artifacts.
 - Artifacts or recent commits conflict about the workstream's current stage or
   authorization.
-- The user explicitly identifies another target.
+- The user explicitly identifies another target, but it does not resolve
+  unambiguously.
 
-In the first three cases, resolve from remaining evidence and ask only if more
-than one target remains plausible. In the last case, use the named target.
+Resolve from remaining evidence when possible. Ask for clarification if no
+target is identifiable, multiple targets remain plausible, or relevant stage
+or authorization evidence conflicts. For an explicit but unresolved target,
+ask about that target and do not substitute the checkout.
 
 ## Acceptance criteria
 
@@ -66,7 +75,13 @@ than one target remains plausible. In the last case, use the named target.
   despite unrelated live workstreams.
 - A terminal checked-out workstream is reported at its authorized endpoint
   without asking which unrelated workstream to resume.
-- An explicitly named workstream overrides the checkout.
+- An explicitly named workstream is resolved before the checkout; an
+  unresolved named target prompts clarification without fallback.
+- When the checkout is not a matching work branch or matching artifacts are
+  missing, use one unambiguous target recovered from remaining evidence.
+  Request clarification before action when no target is identifiable, multiple
+  targets remain plausible, or relevant stage or authorization evidence remains
+  conflicting.
 - The change appears in canonical instructions and generated runtime bindings.
 
 ## Open questions
