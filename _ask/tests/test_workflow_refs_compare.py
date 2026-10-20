@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from decimal import DecimalException
 from pathlib import Path
 import subprocess
 import sys
@@ -58,6 +59,13 @@ class ReferenceTests(unittest.TestCase):
                                        '{"value":1.00000000000000002}', "structured-item/1",
                                        before_inputs=[], after_inputs=[])
         self.assertEqual(precise_change["status"], "changed", "high precision numbers cannot collapse through float parsing")
+        try:
+            huge_exponent = compare_items('{"value":1e99999999999999999999999999999999999999}',
+                                          '{"value":1}', "structured-item/1",
+                                          before_inputs=[], after_inputs=[])
+        except DecimalException as exc:
+            self.fail(f"invalid numeric range must return incomplete, not raise: {exc}")
+        self.assertEqual(huge_exponent["status"], "incomplete")
         incomplete_inputs = compare_items({"id": "x"}, {"id": "x"}, "structured-item/1",
                                           before_inputs=None, after_inputs=[])
         self.assertEqual(incomplete_inputs["status"], "incomplete")
@@ -125,6 +133,16 @@ class ReferenceTests(unittest.TestCase):
                                            before_inputs=[], after_inputs=[])["status"], "changed")
             absent = extract_git_item(root, second, "items.json", "missing", "structured-item/1")
             self.assertEqual(absent["status"], "absent")
+            (root / "huge.json").write_text('{"items":[{"id":"huge","value":1e99999999999999999999999999999999999999}]}',
+                                           encoding="utf-8")
+            subprocess.run(["git", "add", "huge.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "unrepresentable numeric range"], cwd=root, check=True)
+            huge_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            try:
+                huge_extraction = extract_git_item(root, huge_commit, "huge.json", "huge", "structured-item/1")
+            except DecimalException as exc:
+                self.fail(f"unsupported document number must return incomplete, not raise: {exc}")
+            self.assertEqual(huge_extraction["status"], "incomplete")
             for commit, path in (("f" * 40, "items.json"), (second, "../items.json"), (second, "missing.json")):
                 result = extract_git_item(root, commit, path, "alpha", "structured-item/1")
                 self.assertEqual(result["status"], "incomplete")
