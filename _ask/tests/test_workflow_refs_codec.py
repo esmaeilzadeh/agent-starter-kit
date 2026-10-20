@@ -36,9 +36,12 @@ class ReferenceTests(unittest.TestCase):
             decode_envelope('{"schema":"ask-workflow-envelope/v9"}')
         with self.assertRaises(EnvelopeError):
             decode_envelope('{"schema":"ask-workflow-envelope/v1","schema":"ask-workflow-envelope/v1"}')
-        with self.assertRaises(EnvelopeError):
-            encode_envelope(payload, "ask-test-plan/v1", {"owner": "alpha", "type": "task"},
-                            {"task": "beta/spec/1/plan/1/task/3@2"})
+        cross_owner = encode_envelope(payload, "ask-test-plan/v1", {
+            "owner": "alpha", "type": "task",
+        }, {"task": "beta/spec/1/plan/1/task/3@2"})
+        self.assertEqual(cross_owner["references"]["task"], "beta/spec/1/plan/1/task/3@2")
+        self.assertEqual(normalize_envelope(cross_owner)["references"]["task"],
+                         "beta/spec/1/plan/1/task/3@2")
 
     def test_persisted_producer_roundtrip(self):
         contexts = [

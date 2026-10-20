@@ -10,7 +10,8 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
-from workflow_refs.store import CatalogError, initialize_catalog, register_revision, resolve_version
+from workflow_refs.store import (CatalogError, initialize_catalog, payload_digests,
+                                 register_revision, resolve_version)
 
 
 def make_git_repo(root: Path, content: bytes) -> str:
@@ -67,12 +68,11 @@ class ReferenceTests(unittest.TestCase):
             self.assertIsNotNone(entry, "integrity publication must return its immutable revision")
             resolved = resolve_version(catalog, entry["reference"], root)
             self.assertIn("digests", resolved, "resolution must verify declared digest semantics")
-            self.assertEqual(resolved["digests"]["canonical-json/1"],
-                             resolve_version(catalog, entry["reference"], root, payload=right)["digests"]["canonical-json/1"])
-            self.assertNotEqual(resolved["digests"]["exact-bytes/1"],
-                                resolve_version(catalog, entry["reference"], root, payload=right)["digests"]["exact-bytes/1"])
+            alternative = payload_digests(right)
+            self.assertEqual(resolved["digests"]["canonical-json/1"], alternative["canonical-json/1"])
+            self.assertNotEqual(resolved["digests"]["exact-bytes/1"], alternative["exact-bytes/1"])
             with self.assertRaises(CatalogError):
-                resolve_version(catalog, entry["reference"], root, semantics="display-only")
+                payload_digests(right, semantics="display-only")
 
     def test_concurrent_and_interrupted_publication(self):
         with tempfile.TemporaryDirectory() as directory:

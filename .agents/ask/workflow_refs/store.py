@@ -5,6 +5,10 @@ class CatalogError(ValueError):
     """A catalog is invalid, stale, unavailable, or conflicts with history."""
 
 
+def payload_digests(payload, semantics=None):
+    return {}
+
+
 def initialize_catalog(path, owner):
     return {}
 
