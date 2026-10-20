@@ -18,8 +18,11 @@ P2 = "a/spec/1/plan/1/item/1@2"
 T = "b/spec/1/plan/1/task/1@1"
 T2 = "b/spec/1/plan/1/task/1@2"
 X = "b/spec/1/plan/1/task/2/test/1@1"
+Y = "b/spec/1/plan/1/task/3/test/1@1"
 Q = "c/spec/1@1"
 U = "c/spec/1/plan/1/item/1@1"
+V = "c/spec/1/plan/1/item/2@1"
+W = "c/spec/1/plan/1/item/3@1"
 
 
 def graph():
@@ -61,9 +64,12 @@ class ReferenceTests(unittest.TestCase):
                   (P, "p", {"id": "p", "inputs": [{"reference": S, "role": "requirement"}]})],
             "b": [(T, "t", {"id": "t", "inputs": [{"reference": P, "role": "plan"},
                                                            {"reference": Q, "role": "shared-policy"}]}),
-                  (X, "x", {"id": "x", "inputs": [{"reference": T, "role": "task"}]})],
+                  (X, "x", {"id": "x", "inputs": [{"reference": T, "role": "task"}]}),
+                  (Y, "y", {"id": "y", "inputs": [{"reference": T, "role": "task"}]})],
             "c": [(Q, "q", {"id": "q", "inputs": []}),
-                  (U, "u", {"id": "u", "inputs": [{"reference": Q, "role": "requirement"}]})],
+                  (U, "u", {"id": "u", "inputs": [{"reference": Q, "role": "requirement"}]}),
+                  (V, "v", {"id": "v", "active": False, "inputs": []}),
+                  (W, "w", {"id": "w", "inputs": [{"reference": V, "role": "test-target"}]})],
         }
         for owner, values in owner_items.items():
             path = self.root / "work" / owner / "items.json"
@@ -150,7 +156,7 @@ class ReferenceTests(unittest.TestCase):
     def test_direct_and_potential_impact(self):
         result = assess_impact(self.project_graph(), [S], capture=self.capture, repository_root=self.root)
         self.assertEqual(result["status"], "complete")
-        self.assertEqual(set(result["items"]), {P, P2, T, T2, X})
+        self.assertEqual(set(result["items"]), {P, P2, T, T2, X, Y})
         self.assertNotIn(U, result["items"])
         self.assertEqual(result["items"][P]["status"], "reassess")
         self.assertTrue(any(edge["role"] == "shared-policy" for edge in result["items"][T]["inputs"]))
@@ -158,6 +164,7 @@ class ReferenceTests(unittest.TestCase):
                                   repository_root=self.root)
         self.assertEqual(len(converged["items"][T]["paths"]), 2)
         self.assertEqual(len(converged["items"][X]["paths"]), 2)
+        self.assertEqual(len(converged["items"][Y]["paths"]), 2)
 
     def test_reviewed_stop_old_pin_or_new_revision(self):
         capture = self.capture
@@ -176,6 +183,7 @@ class ReferenceTests(unittest.TestCase):
         impact = assess_impact(self.project_graph(), [P], {T: current}, capture=capture,
             repository_root=self.root, authority_check=lambda _decision, _capture: True)
         self.assertNotIn(X, impact["items"])
+        self.assertIn(Y, impact["items"])
         unauthorised = assess_impact(self.project_graph(), [P], {T: current}, capture=capture,
                                      repository_root=self.root)
         self.assertIn(X, unauthorised["items"])
@@ -193,8 +201,32 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(result["items"][T]["status"], "revised")
         self.assertIn(X, result["items"])
 
+        # A candidate-only binding is traversed while its historical pin stays intact.
+        source = self.root / "work/a/items.json"
+        document = json.loads(source.read_text())
+        next(item for item in document["items"] if item["id"] == "p")["inputs"] = [
+            {"reference": Q, "role": "requirement"}]
+        source.write_text(json.dumps(document, separators=(",", ":")) + "\n")
+        git(self.root, "add", "work/a/items.json")
+        git(self.root, "commit", "-qm", "candidate changes P2 input")
+        candidate = git(self.root, "rev-parse", "HEAD")
+        git(self.root, "update-ref", "refs/heads/agent/a", candidate)
+        self.capture = capture_project(self.root)
+        self.loaded_graph = load_project_graph(self.root, self.capture)
+        self.assertEqual(self.loaded_graph["nodes"][P2]["inputs"][0]["reference"], S)
+        candidate_impact = assess_impact(self.project_graph(), [Q], capture=self.capture,
+                                         repository_root=self.root)
+        self.assertEqual(candidate_impact["status"], "incomplete")
+        self.assertIn(P2, candidate_impact["items"])
+        self.assertTrue(candidate_impact["unregistered_candidates"])
+
     def test_retirement_preserves_shared_obligations(self):
         graph_value = self.project_graph()
+        self.assertFalse(graph_value["nodes"][V]["active"])
+        self.assertTrue(graph_value["nodes"][W]["active"])
+        retired_pin = assess_impact(graph_value, [V], capture=self.capture, repository_root=self.root)
+        self.assertEqual(retired_pin["status"], "incomplete")
+        self.assertIn(W, retired_pin["items"])
         retirement = {"action": "retire", "old_upstream": Q, "new_upstream": Q,
             "dependent": U, "new_dependent": None, "profile": "structured-item/1",
             "context_generation": self.capture["generation"], "examined_paths": {f"{Q}|requirement": "resolved"},

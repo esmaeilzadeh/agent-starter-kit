@@ -87,8 +87,27 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(graph["status"], "complete", graph)
         self.assertEqual(graph["nodes"]["live/spec/1@1"]["inputs"],
                          [{"reference": "shared/spec/1@1", "role": "constraint"}])
+        # Candidate-only bindings are visible without rewriting the committed pin.
         live_path = self.root / "work/live/spec.json"
         live_doc = json.loads(live_path.read_text())
+        live_doc["items"][0]["inputs"] = [{"reference": "archived/spec/1@1", "role": "constraint"}]
+        live_path.write_text(json.dumps(live_doc, separators=(",", ":")) + "\n")
+        git(self.root, "add", "work/live/spec.json")
+        git(self.root, "commit", "-qm", "candidate changes dependency")
+        git(self.root, "update-ref", "refs/heads/agent/live", git(self.root, "rev-parse", "HEAD"))
+        capture = capture_project(self.root, shared_owners={"shared"})
+        graph = load_project_graph(self.root, capture)
+        self.assertEqual(graph["nodes"]["live/spec/1@1"]["inputs"][0]["reference"], "shared/spec/1@1")
+        self.assertEqual(graph["candidate_inputs"]["live/spec/1@1"][0]["reference"], "archived/spec/1@1")
+        self.assertTrue(graph["unregistered_candidates"])
+        from workflow_refs.impact import assess_impact
+        impact = assess_impact(graph, ["archived/spec/1@1"], capture=capture, repository_root=self.root)
+        self.assertEqual(impact["status"], "incomplete")
+        self.assertIn("live/spec/1@1", impact["items"])
+
+        # Restore the old input then verify a missing declaration remains incomplete.
+        live_doc["items"][0]["inputs"] = []
+        live_path.write_text(json.dumps(live_doc, separators=(",", ":")) + "\n")
         live_doc["items"][0].pop("inputs")
         live_path.write_text(json.dumps(live_doc, separators=(",", ":")) + "\n")
         git(self.root, "add", "work/live/spec.json")
@@ -105,6 +124,18 @@ class ReferenceTests(unittest.TestCase):
         transient = capture_project(self.root, retries=1, during_scan=shared_owner_aba,
                                     shared_owners={"shared"})
         self.assertEqual(transient["status"], "incomplete")
+        git(self.root, "config", "core.logAllRefUpdates", "false")
+        git(self.root, "update-ref", "refs/heads/develop", self.sha)
+        common = Path(git(self.root, "rev-parse", "--git-common-dir"))
+        if not common.is_absolute():
+            common = (self.root / common).resolve()
+        develop_log = common / "logs/refs/heads/develop"
+        develop_log.unlink(missing_ok=True)
+        def develop_move_and_return(attempt, before):
+            git(self.root, "update-ref", "refs/heads/develop", self.other)
+            git(self.root, "update-ref", "refs/heads/develop", self.sha)
+        self.assertEqual(capture_project(self.root, retries=1, during_scan=develop_move_and_return,
+                                         shared_owners={"shared"})["status"], "incomplete")
         def move_and_return(attempt, before):
             if calls:
                 return
