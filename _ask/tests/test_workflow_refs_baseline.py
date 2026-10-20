@@ -69,6 +69,14 @@ class ReferenceTests(unittest.TestCase):
             with self.assertRaises(BenchmarkError):
                 capture_baseline(ROOT)
 
+        with patch("workflow_refs.benchmark._git_blob", return_value=b"corrupt source"):
+            with self.assertRaisesRegex(BenchmarkError, "frozen source integrity mismatch"):
+                capture_baseline(ROOT)
+        with patch("workflow_refs.benchmark._git_blob",
+                   side_effect=BenchmarkError("missing frozen Git input")):
+            with self.assertRaisesRegex(BenchmarkError, "missing frozen Git input"):
+                capture_baseline(ROOT)
+
         for mutate in (
             lambda value: value["files"][0].update(sha256="0" * 64),
             lambda value: value["tokenizer"].update(version="0.0.1"),
