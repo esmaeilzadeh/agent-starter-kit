@@ -313,6 +313,7 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
         identity["logical_id"] = str(logical_id).rsplit("@", 1)[0]
     commit, source_path = _safe_snapshot(snapshot)
     root, _common, relative = _repo_info(path)
+    _validate_commit(root, commit)
     if not isinstance(item_id, str) or not item_id.strip() or not isinstance(profile, str) or not profile.strip():
         raise CatalogError("invalid_entry", "stable item ID and comparison profile are required")
     raw = _payload_bytes(payload)
