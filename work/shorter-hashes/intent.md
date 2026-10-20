@@ -3,15 +3,17 @@
 ## What
 
 Reduce tokens in workflow JSON, agent prompts, CLI output, and reports; improve
-readability second. Shorten ordinary hash references, compact generated JSON,
-and eliminate repeated metadata. Use readable task/test IDs and shared Git
-snapshot references instead of copying committed-artifact checksums across JSON.
-Keep full checksums for evidence outside Git wherever verification needs them.
+readability second. Use parent-qualified numeric IDs for specs and their parts,
+plans and their items, tasks, and tests, with numeric revisions identifying exact
+versions. Compact generated JSON and eliminate repeated metadata. Store full
+checksums and exact Git identities in a separate integrity file; ordinary workflow
+records reference numeric item revisions. Keep all integrity data verification needs.
 
-Bind each actual dependency to its exact source snapshot, path, and stable
-artifact item ID. Git supplies history without separate per-item revision counters
-or checksum histories. Compare meaningful item content and bindings so an unrelated
-edit in the same file does not invalidate an independent requirement or plan.
+Bind each actual dependency to its exact numeric source item revision, resolved
+through the separate integrity file to a source snapshot, path, and stable item ID.
+Git preserves source history; numeric revisions identify immutable item versions.
+Compare meaningful item content and bindings so an unrelated edit in the same
+file does not invalidate an independent requirement or plan.
 Preserve existing exact-byte checks, including intent approval and bound logs.
 
 Track dependencies project-wide with ownership scoped to each workstream.
@@ -42,14 +44,21 @@ Savings must include necessary lookups, shared metadata, and complete agent inpu
 - Scope is workflow JSON and every eligible hash surface, with justified full-value
   exceptions. Legacy records remain readable; historical records are not bulk
   rewritten. Explicit migration/export preserves provenance and dependencies.
-- Ordinary hash references use a six-character repository minimum with validated
-  per-work overrides; only colliding displays grow, and ambiguity is rejected.
-  Exact Git operations resolve full IDs. Prefixes never verify integrity.
-- New task/test IDs are unpadded local numbers with readable qualified forms
-  `<work>/task/<task>` and `<work>/test/<task>/<test>`; legacy mappings stay stable.
-- Dependency identity includes owner, pinned snapshot, path, and stable item ID;
-  local context may be inherited, while cross-workstream ownership is explicit.
-  Ownership or a lookup link alone does not establish a dependency.
+- Ordinary workflow references use unpadded positive numeric IDs and numeric
+  revisions, qualified by work, type, and declared related parent identities.
+  Explicit context may be inherited; cross-workstream ownership is explicit.
+  Legacy mappings stay stable; published item/revision targets remain immutable.
+- Parent prefixes identify ownership. Multiple upstream dependencies remain
+  explicit edges; they do not duplicate an item under every source. Ancestor
+  version changes alone do not rename descendants. Exact spelling is Plan work;
+  the user's reference examples illustrate intention rather than a fixed grammar.
+- Full required checksums and exact Git IDs live in a separate integrity file.
+  Numeric item/revision references resolve exact snapshot/path/item bindings.
+  Explicit raw Git/hash inspection preserves ambiguity rejection and full-ID
+  resolution for exact operations. Short references never verify integrity.
+- Meaningful item-content or dependency-binding changes publish fresh revisions;
+  unrelated edits and permitted formatting changes leave independent revisions
+  unchanged. Ownership or a lookup link alone does not establish a dependency.
 - Project discovery includes committed workstream sources outside the checkout.
   Missing sources or declarations produce incomplete analysis, never an empty
   graph or a claim that all affected paths are clear.
@@ -63,9 +72,11 @@ Savings must include necessary lookups, shared metadata, and complete agent inpu
 
 ## Open questions
 
-No unresolved What/Why question. This reconciled complete intent and its assumptions
-await the required submitted approval. Exact schemas, discovery rules, extraction
-algorithms, corpus, and command flags are Plan deliverables constrained by the spec.
+The numeric identity/revision correction was approved with “yes apply it”; see
+`spec-change.md`. This approves that correction, not every assumption in this
+complete intent. Complete-intent confirmation remains pending. Exact schemas,
+parent rules, integrity-file path, discovery, extraction, corpus, and command flags
+are Plan deliverables constrained by the spec.
 
 ## Human decisions
 
@@ -74,14 +85,18 @@ algorithms, corpus, and command flags are Plan deliverables constrained by the s
   spec-to-plan; independent items must remain unaffected.
 - Use project-wide dependency impact with workstream-scoped ownership.
 - Preserve revision 4 refinements and require cross-workstream traversal explicitly.
+- Apply parent-qualified numeric IDs across specs/parts, plans/items, tasks, and
+  tests, plus numeric revisions and separately stored checksums. Approval response:
+  “yes apply it”. Preserve the existing exact-source and dependency-impact rules.
 
 ## Engineering subject
 
 - Subject: `shorter-hashes/readable-work-identifiers`.
 - Source: explicit user request and subsequent dependency refinements; original
   Explore snapshot `5e9522e9842b540dcc1493569a062c66d382e4e0803c2d12889b65d9a70a5a2f`.
-- Contribution: lower workflow token cost with compact references and shared Git
-  identities while preserving exact item dependencies and acceptance authority.
+- Contribution: lower workflow token cost with parent-qualified numeric item and
+  revision references and separate integrity data, preserving exact dependencies
+  and acceptance authority.
 - Execution owner: none assigned; implementation has not started.
 
 ## E2E
@@ -93,7 +108,8 @@ change one requirement beside an independent item; traverse a shared-policy chan
 across workstreams; reassess through retain/revise/retire decisions; verify valid
 and invalid completion; reload historical records and exported evidence.
 
-Observable outcomes: lower measured aggregate tokens and metadata bytes; exact
+Observable outcomes: numeric parent/item/revision references resolve separately
+stored integrity data; lower measured aggregate tokens and metadata bytes; exact
 source/approval/execution binding; impact follows actual item edges across owners;
 unrelated items stay eligible; unresolved, missing, ambiguous, or altered evidence
 cannot authorize completion. Original evidence remains historically retrievable.

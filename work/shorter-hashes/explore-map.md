@@ -38,3 +38,13 @@ Replace opaque hash identifiers with readable, work-scoped references wherever t
 ## Handoff to Intent
 
 Use unpadded hierarchical numeric IDs for work-owned tasks and tests, carrying the work ID in references that cross the work boundary; sort numerically in tools. Determine whether specs and other artifacts follow the same pattern. For remaining hash references, define the configurable work-local prefix length and collision behavior, while retaining full cryptographic digests where integrity or exact Git identity requires them. The recovered card provides the original rationale and surfaces; this map records the human's scope and ID examples.
+
+## Subsequent decision
+
+The user approved extending numeric IDs to specs/parts and plans/items as well as
+tasks/tests, with related parent prefixes, numeric item revisions, and full
+integrity data in a separate file. This supersedes the open artifact-family
+question and six-character default for ordinary workflow references above. The
+decision, scope, and transition are recorded in `spec-change.md`; revision 6 of the
+proposal and canonical contract define the current destination. The exploration
+above is retained as historical context.

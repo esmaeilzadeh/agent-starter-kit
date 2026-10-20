@@ -1,13 +1,13 @@
 {
   "schema": "ask-engineering-model/v1",
   "work_id": "shorter-hashes",
-  "revision": 1,
+  "revision": 2,
   "nodes": [
     {
       "id": "readable-work-identifiers",
       "type": "intent",
       "title": "Use readable identifiers scoped to each work",
-      "description": "Replace opaque hashes used as domain identifiers with readable hierarchical task and test IDs scoped by work. Retain hashes for content integrity.",
+      "description": "Use parent-qualified numeric IDs for specs/parts, plans/items, tasks, and tests, with immutable numeric revisions. Resolve full checksums and exact Git identities from a separate integrity file while preserving exact dependency bindings.",
       "lifecycle": "active"
     }
   ],

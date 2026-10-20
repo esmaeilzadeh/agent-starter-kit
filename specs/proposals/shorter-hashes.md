@@ -2,9 +2,12 @@
 
 ## Status
 
-PROPOSED — revision 5. The user requested this specification; intent confirmation,
-formal Spec Challenge, and an accepted implementation plan remain outstanding.
-This document does not record approval or execution evidence.
+PROPOSED — revision 6. The user approved the numeric identity/revision correction
+with “yes apply it”; the decision and prior source are recorded in
+`work/shorter-hashes/spec-change.md`. Complete-intent confirmation, an independent
+challenge of revision 6, and an accepted implementation plan remain outstanding.
+The revision-5 challenge applies only to its recorded revision-5 digests.
+This document records requirements, not implementation or execution evidence.
 
 ## Goal
 
@@ -21,20 +24,43 @@ references while preserving exact approval, review, source, and execution bindin
 
 ## Behavior
 
-### Ordinary references
+### Numeric identities and revisions
 
-Ordinary Git/hash references use a repository default minimum of six hexadecimal
-characters, with a validated per-work override. Hash displays and lookups declare
-their scope. Only colliding references grow until they resolve uniquely; ambiguity
-is an error. An existing abbreviated reference that becomes ambiguous is rejected
-rather than silently rebound. Exact Git operations receive resolved full IDs.
-Display prefixes never supply integrity evidence.
+New specs, spec parts/requirements, plans, plan items, tasks, and tests use
+unpadded positive numeric local IDs qualified by their work, type, and related
+parent identities. Each artifact/item has a separate positive numeric revision.
+The stable logical ID identifies the item; the revision identifies its immutable
+version. Published identities and revisions are never recycled or rebound.
+Numeric components use numeric-aware sorting.
 
-New task/test references use unpadded numeric local IDs and readable qualified
-forms: `<work>/task/<task>` and `<work>/test/<task>/<test>`. Work may be inherited
-from an explicit containing context; references across workstreams include it.
-Legacy identifiers remain resolvable through a stable mapping. Published IDs are
-never recycled or silently assigned a different meaning.
+Parent prefixes express the declared ownership hierarchy. Dependencies remain
+explicit edges: a plan or task may consume several upstream items without being
+copied under every input. The Plan defines each type's parent context and exact
+versioned syntax. A qualified reference must resolve one owner, type, parent
+chain, item, and revision; local shorthand may inherit only explicitly declared
+context. Cross-workstream references name the owner. Moving an item requires an
+explicit historical identity mapping; it cannot silently retarget old references.
+
+For illustration, a task could be qualified by work/spec/plan/task numeric IDs,
+with a separate numeric revision. The user's `spec/<revision>` and
+`spec/parts/<part>/<revision>` examples convey numeric version references, not a
+required literal grammar. Ancestor logical IDs qualify identity; ancestor revision
+changes do not by themselves rename or revise every descendant. Exact upstream
+versions are pinned in dependency bindings.
+
+A meaningful item-content or dependency-binding change publishes a fresh revision
+for that item. Unrelated edits, formatting changes allowed by the item's comparison
+rules, and repository commit changes alone do not increment its revision. A retain
+assessment preserves the item's revision when both content and bindings are
+unchanged; a new binding is recorded as a new revision even if payload is retained.
+Existing exact-byte approval/evidence semantics still apply.
+
+Ordinary workflow references use these numeric identities and revisions. Hashes
+remain integrity/source data resolved from a separate file. Explicit Git/hash
+inspection may show scoped abbreviations: collisions expand, ambiguous inputs
+fail, and exact Git operations receive full IDs. A six-character hash default is
+not the domain-reference scheme. Legacy identifiers remain resolvable through a
+stable mapping without rewriting historical records.
 
 ### Shared integrity records
 
@@ -44,13 +70,23 @@ have independent immutable lifetimes. Creating a log cannot edit an accepted
 contract. Related records store short references instead of copying the full
 contract digests and common metadata into every report or test case.
 
-For committed artifacts, Git supplies immutable history and content identity.
-Store each full source commit once in shared snapshot context; dependencies use
-short snapshot references, repository-relative paths, and stable artifact item IDs.
-Separate generated file or item checksums are unnecessary for these bindings.
-Evidence outside Git retains full authoritative checksums, stored once per
-workstream and digest semantics where safely reusable. Cross-workstream references
-name the owner explicitly. Retain required Git objects for historical validation.
+Store full checksums and exact Git source identities in a separate integrity file,
+keyed by qualified numeric item/revision references. Ordinary spec, plan, task,
+test, and report records reference numeric revisions rather than embedding hashes.
+Resolve those references to immutable full integrity data for verification; a
+number alone grants no authority. Shared context may store repeated full source
+IDs once, and projections load only requested entries.
+
+For committed artifacts, the integrity file binds each referenced item revision
+to its exact Git snapshot, repository-relative path, stable item ID, and declared
+content/binding comparison rules. Git retains immutable content and history; the
+numeric revision is the public version reference. Git object identities can
+supply committed-content integrity without requiring a second generated checksum
+for every item. Existing byte-bound or canonical-JSON checks retain the full
+digests their semantics require, in the separate file. Evidence outside Git retains
+retrievable artifacts and full authoritative checksums, stored once per workstream,
+algorithm, and semantics where safely reusable. Cross-workstream references name
+the owner explicitly. Retain required Git objects and integrity entries for history.
 
 For example, within a declared workstream, a report could contain:
 
@@ -58,25 +94,30 @@ For example, within a declared workstream, a report could contain:
 {"contract":3,"task":7,"run":4,"log":12,"status":"pass"}
 ```
 
-This is an illustrative projection. The Plan defines exact versioned schemas,
-storage paths, and resolver interfaces. Every reference must identify its work,
-record type, and immutable target through explicit or inherited context. A bare
+This is an illustrative projection within declared item/revision context; the
+numbers are not sufficient to distinguish multiple versions without that context.
+The Plan defines exact versioned schemas, the separate integrity-file path,
+parent rules, revision publication, and resolver interfaces. Every reference must
+identify its work, record type, and immutable target through explicit or inherited context. A bare
 number without sufficient context is invalid.
 
 ### Item dependencies and Git history
 
 The dependency graph's nodes are artifact items, such as a requirement, plan item,
-task, or test definition. Each edge binds the source snapshot, file path, and stable
-item ID reviewed by the dependent item. This applies to every actual dependency
-including shared/global constraints, source, policy, and runner inputs. Ownership
+task, or test definition. Each edge references the qualified numeric source item
+and exact numeric revision reviewed by the dependent item. The separate integrity
+file resolves that version to its pinned source snapshot, file path, and stable
+item ID. This applies to every actual dependency, including shared/global
+constraints, source, policy, and runner inputs. Ownership
 labels and lookup links alone do not establish a dependency. The Plan inventories
 these edges and defines deterministic item extraction and comparison per format.
 
-Git owns item history; separate per-item revision counters and checksum histories
-are not required. Stable IDs survive section movement and are never recycled.
-File moves need an explicit path mapping; missing or duplicate IDs cannot be
-resolved by guessing. Compare against an explicitly selected candidate snapshot,
-not whichever commit HEAD happens to name during validation.
+Git preserves source history; numeric per-artifact/item revisions provide stable
+version references and resolve through the separate integrity file. Existing
+revision entries are immutable. Stable IDs survive section movement and are never
+recycled. File or ownership moves need an explicit historical mapping; missing or
+duplicate IDs cannot be resolved by guessing. Compare against an explicitly
+selected candidate snapshot, not whichever commit HEAD happens to name during validation.
 
 A different repository commit or file's last modifying commit is not an
 invalidation decision. Compare the file's Git blob IDs at the recorded and
@@ -90,7 +131,8 @@ byte-bound checks retain their existing exact-byte semantics.
 
 Dependencies form one logical project-wide graph. Each workstream owns and records
 its artifacts and outgoing dependency declarations. An edge to another workstream
-uses an explicit qualified identity: owner workstream, source snapshot, path, and
+uses an explicit qualified numeric identity and revision, including owner and
+parent context. Its integrity entry supplies the exact source snapshot, path, and
 stable artifact item ID. Local shorthand is permitted only inside an explicitly
 declared owner context. Identical local IDs in different owners remain distinct.
 Shared project artifacts have a declared canonical owner and identity; consumers
@@ -131,11 +173,12 @@ Unrelated branches remain eligible. Multiple-input items require all relevant
 inputs and affected paths to be resolved. Cycle and missing-target checks apply.
 
 Reassessment proceeds in dependency order and records the outcome against exact
-old/new snapshots with the attribution, review, and coordinator authority required
-for that artifact type:
+old/new numeric item revisions and resolved snapshots with the attribution,
+review, and coordinator authority required for that artifact type:
 
-- Retain: the dependent item still satisfies the changed input. Record a new
-  revalidation binding; preserve its original review and content in Git history.
+- Retain: the dependent item still satisfies the changed input. Record the
+  assessment and any new revalidation binding; a changed binding publishes a new
+  item revision. Preserve the original version, review, and content in Git history.
 - Revise: change the dependent content or obligations, commit it, and reassess
   its consumers against the changed item.
 - Retire: the item no longer serves an active obligation; retain historical access
@@ -194,8 +237,10 @@ structured contracts and exact bytes for intent approval and byte-bound evidence
 When checksums remain necessary for external evidence, their algorithm and digest
 semantics are explicit; short references cannot replace integrity verification.
 
-Pinned Git snapshots resolve exact paths and item IDs. Missing objects, unsafe
-paths, ambiguous item IDs, or absent snapshot records fail explicitly without
+Qualified numeric item/revision references resolve through the separate integrity
+file to pinned Git snapshots, exact paths, and item IDs. Missing revision entries
+or altered integrity mappings fail without treating another version as equivalent.
+Missing objects, unsafe paths, ambiguous item IDs, or absent snapshot records fail explicitly without
 falling back to HEAD, current files, or unchecked values. A missing item in a valid
 candidate document enters deletion handling; an unavailable document/object is an
 availability error and cannot be inferred to mean deletion. External execution
@@ -226,9 +271,9 @@ The Plan inventories each producer and consumer in these affected families:
 | Engineering snapshots and workbench | Resolve qualified references without losing historical snapshot or plan bindings. |
 | Status, results, prompts, CLI reports | Show compact references and retain exact values for operations that require them. |
 
-Every eligible hash surface must be mapped to ordinary abbreviation, shared
-integrity reference, derivation from pinned Git content, or a justified full-value
-exception. New readers support existing schema versions. New writers use explicitly
+Every eligible hash surface must be mapped to a numeric item/revision reference
+with separate integrity data, derivation from pinned Git content, explicit raw
+Git/hash inspection, or a justified full-value verification exception. New readers support existing schema versions. New writers use explicitly
 versioned formats. Unsupported versions refuse validation with a migration error.
 
 Existing committed records remain readable without bulk rewriting historical
@@ -252,8 +297,8 @@ unavailable dependencies and refuses any claim of verified completeness.
 - Human approval binds the exact intent; independent decisions retain attribution.
 - Accepted obligations, candidate/source lineage, test assertions, logs, and runner
   identities remain verifiable. Short references alone grant no authority.
-- Dependency binding and impact analysis operate on stable artifact items in Git
-  snapshots. Changed direct inputs require reassessment; downstream impact is
+- Dependency binding and impact analysis operate on parent-qualified numeric
+  artifact/item identities and exact numeric revisions resolved to Git snapshots. Changed direct inputs require reassessment; downstream impact is
   potential until resolved. Unrelated items and historical bindings remain valid.
 - Clearing affected paths requires an attributable decision under existing reuse
   and acceptance rules; snapshot/checksum edits cannot transfer evidence.
@@ -270,7 +315,8 @@ unavailable dependencies and refuses any claim of verified completeness.
 
 ## Failure cases
 
-Reject ambiguous prefixes, conflicting registrations, candidate-substituted
+Reject ambiguous numeric/parent/version context, missing or rebound revision
+entries, ambiguous raw-hash prefixes, conflicting registrations, candidate-substituted
 manifests, changed logs, stale accepted obligations, unavailable Git objects,
 malformed versions, incomplete imports, cycles, unsafe paths, and interrupted
 publication. Return a stable reason and scoped reference. Failed resolution cannot
@@ -284,13 +330,13 @@ evidence; no review-only exemptions are declared.
 
 | Criterion | Observable requirement | Planned evidence types |
 | --- | --- | --- |
-| SH-01 | Scoped prefixes, configurable minimum, collision expansion, exact Git resolution. | unit, integration |
-| SH-02 | Stable readable task/test IDs and work qualification. | unit, integration |
-| SH-03 | Shared Git snapshots replace redundant committed-artifact checksums; external evidence retains full digests. | unit, integration |
+| SH-01 | Numeric item/revision references are the workflow default; explicit raw Git/hash inspection preserves collision and exact-ID rules. | unit, integration |
+| SH-02 | Stable parent-qualified numeric spec/part, plan/item, task, and test IDs with immutable numeric revisions. | unit, integration |
+| SH-03 | A separate integrity file maps numeric item revisions to shared exact Git sources and full required digests. | unit, integration |
 | SH-04 | Candidate-only substitutions cannot alter coordinator acceptance authority. | integration, e2e |
 | SH-05 | Immutable contracts and later evidence have separate lifetimes and retained history. | integration |
 | SH-06 | Byte and canonical-JSON digest semantics retain their invalidation rules. | unit, integration |
-| SH-07 | Snapshot/path/item resolution and blob fast checks preserve exact content and item-level comparison. | integration |
+| SH-07 | Numeric revisions resolve exact snapshot/path/items; blob checks and item comparison avoid revisions for unrelated edits. | integration |
 | SH-08 | Scoped allocation, concurrent conflicts, malformed refs, and cycles fail safely. | unit, integration |
 | SH-09 | Compact JSON preserves values, defaults, and deterministic validation. | unit, integration |
 | SH-10 | Legacy reads, explicit migration, and export preserve provenance and authority. | integration, e2e |
@@ -298,7 +344,7 @@ evidence; no review-only exemptions are declared.
 | SH-12 | Fixed representative workloads demonstrate lower total tokens and JSON bytes. | integration |
 | SH-13 | Interrupted publication and retries preserve immutable references and clean source. | integration |
 | SH-14 | Complete workflow still rejects stale or modified evidence and accepts valid evidence. | e2e |
-| SH-15 | Every actual dependency binds stable items at exact Git snapshots and retains attributable revalidation history. | unit, integration, e2e |
+| SH-15 | Every dependency pins a numeric item revision and exact Git source; binding changes publish revisions and preserve attributable history. | unit, integration, e2e |
 | SH-16 | Partial invalidation distinguishes direct reassessment from potential downstream impact and supports reviewed propagation stopping. | unit, integration, e2e |
 | SH-17 | Deletion triggers impact assessment; retirement preserves history and protects shared active dependents. | unit, integration, e2e |
 | SH-18 | Project-wide impact traversal follows qualified dependencies across owners, preserves workstream authority, and reports incomplete discovery. | unit, integration, e2e |
@@ -325,19 +371,24 @@ Removing required evidence or skipping necessary lookups cannot count as savings
 
 ## Open questions
 
-Intent confirmation and formal independent Spec Challenge are pending. Exact
-schemas, catalog paths, tokenizer, corpus revisions, and command flags are Plan
+Complete-intent confirmation and independent Spec Challenge of revision 6 are
+pending. Exact schemas, parent/type rules, separate integrity-file path, revision
+allocation/publication, tokenizer, corpus revisions, and command flags are Plan
 deliverables constrained by this spec; they are not claims of completed work.
-Revisions 4 and 5 incorporate the user's Git-based item comparison, partial
-invalidation, retirement, and project-wide traversal with workstream ownership.
-Reconcile this proposed design with the source intent
-before implementation approval; this edit records no such approval.
+Revision 6 applies the user's approved numeric identities/revisions across spec,
+plan, task, and test hierarchies and separate checksum storage. It preserves the
+item comparison, partial invalidation, retirement, and project-wide impact
+requirements from revisions 4 and 5. The revision-5 independent challenge remains
+historical evidence for that exact version; it does not approve this revision.
 If the fixed benchmark cannot demonstrate savings, revise the design before
 implementation is accepted.
 
 ## Source intent
 
-`work/shorter-hashes/intent.md`, committed at `06daf1e`.
+`work/shorter-hashes/intent.md`, reconciled with this amendment. Prior intent:
+`6bbcde91ed31276d56d3b74df94d2e31e6d9fc96:work/shorter-hashes/intent.md`.
+Approval of this correction is recorded in `work/shorter-hashes/spec-change.md`;
+it does not substitute for complete-intent confirmation.
 The prior independent design challenge supplied the authority, lifetime,
 digest-semantics, availability, and measurement counterexamples addressed here.
 
@@ -345,11 +396,15 @@ digest-semantics, availability, and measurement counterexamples addressed here.
 
 Applicability: `applies`
 
-Journeys: create and accept a contract through the coordinator; register task/test
-references; execute and review runs; query compact status and evidence; verify
+Journeys: create and accept a contract through the coordinator; register numeric
+spec/part, plan/item, task, and test references with parent context and revisions;
+execute and review runs; query compact status and evidence; verify
 completion; reload old contract revisions; and export/reload an evidence bundle.
 Repeat with a candidate-only substituted manifest, modified log, stale contract,
-same local IDs in different works, conflicting registration, and missing Git object.
+same local IDs under different parents or works, conflicting revision publication,
+a changed/missing integrity entry, and missing Git object. Resolve an older numeric
+revision after publishing a newer one; verify that unrelated edits do not advance
+independent item revisions and changed dependency bindings do advance their owner.
 Exercise spec-to-plan, plan-to-task, task-to-test, and other actual dependency
 edges; change a root, an intermediate task, and one input of a multiple-input
 artifact. Change one item in a file containing unrelated items; mark only direct
