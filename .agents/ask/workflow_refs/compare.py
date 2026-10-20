@@ -7,9 +7,12 @@ import math
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
+from decimal import Decimal
 
 from .identity import ReferenceError, parse_reference
 from .profiles import get_profile
+
+_UNSET = object()
 
 class ComparisonError(ValueError):
     """A source cannot be completely or safely compared."""
@@ -20,12 +23,13 @@ class ComparisonError(ValueError):
 
 
 def compare_items(before, after, profile_id, before_inputs=None, after_inputs=None,
-                  before_profile=None, after_profile=None):
+                  before_profile=_UNSET, after_profile=_UNSET):
     """Compare payloads and their complete exact dependency bindings."""
     profile = get_profile(profile_id)
     if profile is None:
         return {"status": "incomplete", "reason": "profile_unavailable"}
-    if (before_profile or profile_id) != profile_id or (after_profile or profile_id) != profile_id:
+    if ((before_profile is not _UNSET and before_profile != profile_id)
+            or (after_profile is not _UNSET and after_profile != profile_id)):
         return {"status": "incomplete", "reason": "profile_mismatch"}
     try:
         before_value = _normalize_payload(before, profile["format"])
@@ -54,13 +58,6 @@ def _reject_constant(value):
     raise ValueError(f"non-finite JSON value: {value}")
 
 
-def _finite_float(value):
-    number = float(value)
-    if not math.isfinite(number):
-        raise ValueError(f"non-finite JSON value: {value}")
-    return number
-
-
 def _normalize_payload(value, format_name):
     if format_name == "bytes":
         if isinstance(value, str):
@@ -74,11 +71,40 @@ def _normalize_payload(value, format_name):
         value = value.decode("utf-8")
     if isinstance(value, str):
         value = json.loads(value, object_pairs_hook=_unique_pairs,
-                           parse_constant=_reject_constant, parse_float=_finite_float)
-    # Canonical serialization validates supported JSON types and keeps JSON
-    # number/value types distinct while ignoring only object-key order/spacing.
-    return json.dumps(value, sort_keys=True, ensure_ascii=False,
-                      separators=(",", ":"), allow_nan=False)
+                           parse_constant=_reject_constant, parse_float=Decimal,
+                           parse_int=Decimal)
+    return _canonical_value(value)
+
+
+def _canonical_value(value):
+    """Build a typed, order-independent tree without lossy float conversion."""
+    if value is None:
+        return ("null",)
+    if isinstance(value, bool):
+        return ("boolean", value)
+    if isinstance(value, str):
+        return ("string", value)
+    if isinstance(value, (int, Decimal)):
+        number = Decimal(value)
+        if not number.is_finite():
+            raise ValueError("non-finite JSON number")
+        sign, digits, exponent = number.as_tuple()
+        digits = list(digits)
+        while len(digits) > 1 and digits[-1] == 0:
+            digits.pop()
+            exponent += 1
+        return ("number", sign, "".join(str(digit) for digit in digits), exponent)
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("non-finite JSON number")
+        return _canonical_value(Decimal(repr(value)))
+    if isinstance(value, list):
+        return ("array", tuple(_canonical_value(item) for item in value))
+    if isinstance(value, dict):
+        if any(not isinstance(key, str) for key in value):
+            raise ValueError("JSON object keys must be strings")
+        return ("object", tuple((key, _canonical_value(value[key])) for key in sorted(value)))
+    raise ValueError(f"unsupported JSON value type: {type(value).__name__}")
 
 
 def _normalize_inputs(inputs):
@@ -121,6 +147,16 @@ def extract_git_item(repository_root, commit, source_path, item_id, profile_id):
         expected_length = {"sha1": 40, "sha256": 64}.get(object_format)
         if expected_length is None or len(commit) != expected_length or resolved != commit:
             return {"status": "incomplete", "reason": "commit_not_full"}
+        entry = subprocess.run(["git", "ls-tree", "-z", commit, "--", relative.as_posix()], cwd=root,
+                               capture_output=True, check=True).stdout
+        prefix = f"{commit}:{relative.as_posix()}"
+        object_type = subprocess.run(["git", "cat-file", "-t", prefix], cwd=root,
+                                     capture_output=True, text=True, check=True).stdout.strip()
+        if object_type != "blob" or not entry:
+            return {"status": "incomplete", "reason": "source_is_not_a_file"}
+        mode = entry.split(b"\t", 1)[0].split(b" ", 1)[0]
+        if mode not in (b"100644", b"100755"):
+            return {"status": "incomplete", "reason": "source_is_not_a_regular_file"}
         raw = subprocess.run(["git", "show", f"{commit}:{relative.as_posix()}"], cwd=root,
                              capture_output=True, check=True).stdout
     except (OSError, subprocess.CalledProcessError):
@@ -133,7 +169,8 @@ def extract_git_item(repository_root, commit, source_path, item_id, profile_id):
                 "source": {"commit": commit, "path": source_path}, "profile": profile_id}
     try:
         document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs,
-                              parse_constant=_reject_constant, parse_float=_finite_float)
+                              parse_constant=_reject_constant, parse_float=Decimal,
+                              parse_int=Decimal)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         return {"status": "incomplete", "reason": "document_invalid", "detail": str(exc)}
     if not isinstance(document, dict) or not isinstance(document.get("items"), list):
@@ -147,6 +184,7 @@ def extract_git_item(repository_root, commit, source_path, item_id, profile_id):
                 "source": {"commit": commit, "path": relative.as_posix()}, "profile": profile_id}
     payload = matches[0]
     canonical = _normalize_payload(payload, profile["format"])
+    canonical_bytes = json.dumps(canonical, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     return {"status": "found", "item_id": item_id, "payload": payload,
-            "canonical_digest": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+            "canonical_digest": hashlib.sha256(canonical_bytes).hexdigest(),
             "source": {"commit": commit, "path": relative.as_posix()}, "profile": profile_id}
