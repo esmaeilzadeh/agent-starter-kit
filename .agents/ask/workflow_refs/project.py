@@ -30,13 +30,20 @@ def _common_dir(root):
     return value.resolve() if value.is_absolute() else (root / value).resolve()
 
 
-def _reflog_generation(common):
+def _reflog_generation(common, integration_ref, archive_ref):
     """Fingerprint ref movement, including advance-and-return ABA changes."""
-    logs = common / "logs" / "refs"
     digest = hashlib.sha256()
-    if logs.exists():
-        for path in sorted(item for item in logs.rglob("*") if item.is_file()):
-            digest.update(path.relative_to(logs).as_posix().encode())
+    roots = [common / "logs" / "refs" / "heads" / "agent",
+             common / "logs" / "refs" / "ask" / "references"]
+    roots.extend(common / "logs" / Path(ref) for ref in (integration_ref, archive_ref) if ref)
+    paths = set()
+    for root in roots:
+        if root.is_dir():
+            paths.update(item for item in root.rglob("*") if item.is_file())
+        elif root.is_file():
+            paths.add(root)
+    for path in sorted(paths):
+            digest.update(path.relative_to(common / "logs").as_posix().encode())
             try:
                 digest.update(path.read_bytes())
             except OSError as exc:
@@ -124,16 +131,17 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
             try:
                 before, owners = _inventory(root, integration_ref, archive_ref)
-                before_movement = _reflog_generation(common)
+                before_movement = _reflog_generation(common, integration_ref, archive_ref)
                 if during_scan is not None:
                     during_scan(attempt, dict(before))
                 after, _ = _inventory(root, integration_ref, archive_ref)
-                after_movement = _reflog_generation(common)
+                after_movement = _reflog_generation(common, integration_ref, archive_ref)
                 if before != after or before_movement != after_movement:
                     last_error = "reference inventory changed during capture"
                     continue
                 vector = {"refs": dict(sorted(before.items())), "owners": owners,
                           "integration_ref": integration_ref, "archive_ref": archive_ref,
+                          "movement_generation": after_movement,
                           "scope": "local-cooperating-repository"}
                 encoded = json.dumps(vector, sort_keys=True, separators=(",", ":")).encode()
                 vector["generation"] = hashlib.sha256(encoded).hexdigest()
