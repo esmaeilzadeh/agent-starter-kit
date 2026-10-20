@@ -86,6 +86,8 @@ class ReferenceTests(unittest.TestCase):
             alternative = payload_digests(right)
             self.assertEqual(resolved["digests"]["canonical-json/1"], alternative["canonical-json/1"])
             self.assertNotEqual(resolved["digests"]["exact-bytes/1"], alternative["exact-bytes/1"])
+            external_bytes = payload_digests(b"\xff exact log bytes", semantics="exact-bytes/1")
+            self.assertEqual(set(external_bytes), {"exact-bytes/1"})
             with self.assertRaises(CatalogError):
                 payload_digests(right, semantics="display-only")
 
