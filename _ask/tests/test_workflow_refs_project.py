@@ -50,7 +50,7 @@ class ReferenceTests(unittest.TestCase):
                               node_b: {"inputs": [{"reference": node_a, "role": "uses"}]}}})
         self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
 
-    def test_capture_detects_new_owner_and_aba(self):
+    def test_coherent_capture_new_owner_and_aba(self):
         calls = []
         def move_and_return(attempt, before):
             if calls:
@@ -64,4 +64,3 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(capture["status"], "complete")
         git(self.root, "update-ref", "refs/heads/agent/new-owner", self.sha)
         self.assertEqual(validate_capture(self.root, capture)["reason"], "stale_inventory")
-
