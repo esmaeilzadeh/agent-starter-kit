@@ -19,7 +19,6 @@ from workflow_refs.benchmark import BenchmarkError, capture_baseline
 
 MANIFEST = ROOT / "work/shorter-hashes/benchmark/baseline.json"
 BASELINE_SOURCE = "9a3d25d035baafc23508f242020d46fae7ff5b14"
-PLAN_REVIEW_SOURCE = "02ad31b6e5ef5130986a920f943788cbbe970631"
 PLAN_REVIEW_PATH = "work/structured-agentic-environment/traceability/plan-review.json"
 
 
@@ -106,22 +105,33 @@ class ReferenceTests(unittest.TestCase):
                 actual = git_blob(BASELINE_SOURCE, item["path"])
                 self.assertEqual(len(actual), expected["bytes"])
                 self.assertEqual(hashlib.sha256(actual).hexdigest(), expected["sha256"])
-                self.assertEqual(item["text"], actual.decode("utf-8"))
-                self.assertIn(item["text"], measured["transcript"])
+                self.assertIn(f"Source ({item['path']}):\n{item['text']}", measured["transcript"])
                 used_files.add(item["path"])
 
         self.assertEqual(used_files, set(file_table))
         by_id = {row["id"]: row for row in report["journeys"]}
         review_sources = {item["path"]: item["text"]
                           for item in by_id["review"]["source_inputs"]}
-        for path in (
-            "work/structured-agentic-environment/test-plan.json",
-            "work/structured-agentic-environment/inner-loop/tasks.yaml",
-            "work/structured-agentic-environment/traceability-accepted.json",
-            PLAN_REVIEW_PATH,
-        ):
-            self.assertIn(path, review_sources, path)
-            self.assertIn(review_sources[path], by_id["review"]["transcript"])
+        task_plan = json.loads(review_sources["work/structured-agentic-environment/test-plan.json"])
+        first_scope = task_plan["task_scopes"][0]
+        self.assertEqual(first_scope["task_id"], "WB-001")
+        selected_ids = set(first_scope["test_ids"])
+        self.assertEqual({test["id"] for test in task_plan["tests"]}, selected_ids)
+        selected_criteria = {criterion for test in task_plan["tests"]
+                             for criterion in test["criterion_ids"]}
+        self.assertEqual({row["criterion_id"] for row in task_plan["obligations"]}, selected_criteria)
+        self.assertEqual({row["id"] for row in task_plan["runners"]},
+                         {test["runner_id"] for test in task_plan["tests"]})
+        self.assertTrue(selected_ids.isdisjoint({"WB-inventory", "WB-snapshot", "WB-source-errors"}))
+        self.assertNotIn("WB-002", by_id["review"]["transcript"])
+        self.assertIn("WB-001", review_sources["work/structured-agentic-environment/inner-loop/tasks.yaml"])
+        self.assertNotIn("WB-002", review_sources["work/structured-agentic-environment/inner-loop/tasks.yaml"])
+        self.assertIn("WB-001", review_sources["work/structured-agentic-environment/plan.md"])
+        self.assertNotIn("WB-002", review_sources["work/structured-agentic-environment/plan.md"])
+        spec = json.loads(review_sources["specs/current/structured-agentic-environment.json"])
+        self.assertEqual({row["id"] for row in spec["criteria"]}, selected_criteria)
+        self.assertIn("traceability-accepted.json", by_id["review"]["transcript"])
+        self.assertIn(PLAN_REVIEW_PATH, review_sources)
 
         completion_sources = {item["path"]: item["text"]
                               for item in by_id["completion"]["source_inputs"]}
@@ -130,6 +140,8 @@ class ReferenceTests(unittest.TestCase):
         self.assertIn(json.loads(completion_sources[result_path])["candidate_sha"],
                       by_id["completion"]["transcript"])
         self.assertIn(completion_sources[log_path], by_id["completion"]["transcript"])
+        self.assertEqual(report["total_input_tokens"],
+                         sum(row["input_tokens"] for row in report["journeys"]))
 
         metadata_files = {path for path, row in file_table.items() if row["metadata"]}
         self.assertEqual(report["metadata_files"], sorted(metadata_files))
