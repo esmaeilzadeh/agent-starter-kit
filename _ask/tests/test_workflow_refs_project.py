@@ -98,8 +98,9 @@ class ReferenceTests(unittest.TestCase):
         capture = capture_project(self.root, shared_owners={"shared"})
         graph = load_project_graph(self.root, capture)
         self.assertEqual(graph["nodes"]["live/spec/1@1"]["inputs"][0]["reference"], "shared/spec/1@1")
-        self.assertEqual(graph["candidate_inputs"]["live/spec/1@1"][0]["reference"], "archived/spec/1@1")
-        self.assertTrue(graph["unregistered_candidates"])
+        self.assertEqual(graph.get("candidate_inputs", {}).get("live/spec/1@1", [{}])[0].get("reference"),
+                         "archived/spec/1@1")
+        self.assertTrue(graph.get("unregistered_candidates", []))
         from workflow_refs.impact import assess_impact
         impact = assess_impact(graph, ["archived/spec/1@1"], capture=capture, repository_root=self.root)
         self.assertEqual(impact["status"], "incomplete")
@@ -124,7 +125,10 @@ class ReferenceTests(unittest.TestCase):
         git(self.root, "add", "work/live/references/integrity.json")
         git(self.root, "commit", "-qm", "authority names unavailable source")
         git(self.root, "update-ref", "refs/ask/references/live", git(self.root, "rev-parse", "HEAD"))
-        unavailable = load_project_graph(self.root, capture_project(self.root, shared_owners={"shared"}))
+        try:
+            unavailable = load_project_graph(self.root, capture_project(self.root, shared_owners={"shared"}))
+        except Exception as exc:
+            unavailable = {"status": "error", "detail": str(exc)}
         self.assertEqual(unavailable["status"], "incomplete")
         self.assertTrue(any(entry["reason"] == "discovery_incomplete"
                             for entry in unavailable["unresolved"]))

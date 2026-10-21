@@ -7,7 +7,6 @@ import json
 from pathlib import Path
 import re
 import subprocess
-from decimal import Decimal
 
 from .compare import compare_items, extract_git_item
 from .identity import ReferenceError, parse_reference
@@ -57,7 +56,7 @@ def _reflog_generation(common, integration_ref, archive_ref):
     return digest.hexdigest()
 
 
-def _ref_storage_generation(common, integration_ref=None, archive_ref=None):
+def _ref_storage_generation(common):
     """Observe loose/packed owner-ref storage changes even without reflogs."""
     roots = [common / "refs" / "heads" / "agent",
              common / "refs" / "ask" / "references"]
@@ -71,16 +70,6 @@ def _ref_storage_generation(common, integration_ref=None, archive_ref=None):
     packed = common / "packed-refs"
     if packed.exists():
         paths.add(packed)
-    for ref in (integration_ref, archive_ref):
-        if not ref:
-            continue
-        path = common / Path(ref)
-        if path.exists():
-            paths.add(path)
-        parent = path.parent
-        while parent != common and common in parent.parents:
-            paths.add(parent)
-            parent = parent.parent
     try:
         for path in sorted(paths):
             stat = path.lstat()
@@ -191,12 +180,12 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
             try:
                 before, owners = _inventory(root, integration_ref, archive_ref, shared_owners)
                 before_movement = _reflog_generation(common, integration_ref, archive_ref)
-                before_storage = _ref_storage_generation(common, integration_ref, archive_ref)
+                before_storage = _ref_storage_generation(common)
                 if during_scan is not None:
                     during_scan(attempt, dict(before))
                 after, _ = _inventory(root, integration_ref, archive_ref, shared_owners)
                 after_movement = _reflog_generation(common, integration_ref, archive_ref)
-                after_storage = _ref_storage_generation(common, integration_ref, archive_ref)
+                after_storage = _ref_storage_generation(common)
                 if before != after or before_movement != after_movement or before_storage != after_storage:
                     last_error = "reference inventory changed during capture"
                     continue
@@ -235,11 +224,8 @@ def validate_capture(repository_root, capture):
 
 
 def _regular_file_at(root, commit, path):
-    try:
-        entry = subprocess.run(["git", "ls-tree", "-z", commit, "--", path], cwd=root,
-                               capture_output=True, check=True).stdout
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise ProjectError("discovery_incomplete", f"committed source object is unavailable: {path}") from exc
+    entry = subprocess.run(["git", "ls-tree", "-z", commit, "--", path], cwd=root,
+                           capture_output=True, check=True).stdout
     if not entry:
         raise ProjectError("discovery_incomplete", f"committed declaration is missing: {path}")
     mode = entry.split(b"\t", 1)[0].split(b" ", 1)[0]
@@ -317,8 +303,7 @@ def load_project_graph(repository_root, capture):
                 nodes[reference] = {"reference": reference, "owner": owner,
                     "source": extracted["source"], "profile": entry["profile"],
                     "payload": payload, "inputs": payload["inputs"],
-                    "active": payload.get("active") if type(payload.get("active")) is bool else None,
-                    "lifecycle_explicit": type(payload.get("active")) is bool}
+                    "active": payload.get("active") if type(payload.get("active")) is bool else False}
                 current = latest_entries.get(parsed["logical_id"])
                 if current is None or parsed["revision"] > current[0]:
                     latest_entries[parsed["logical_id"]] = (parsed["revision"], entry, payload, owner, snapshot)
@@ -333,7 +318,7 @@ def load_project_graph(repository_root, capture):
     for logical_id, (revision, _entry, _payload, _owner, _snapshot) in latest_entries.items():
         latest[logical_id] = (revision, f"{logical_id}@{revision}")
     for ref, node in nodes.items():
-        if node["active"] is None:
+        if not node["active"]:
             node["active"] = latest[parse_reference(ref)["logical_id"]][1] == ref
     changed_active = True
     while changed_active:
@@ -343,13 +328,11 @@ def load_project_graph(repository_root, capture):
                 continue
             for edge in node["inputs"]:
                 target = parse_reference(edge["reference"])["canonical"]
-                if (target in nodes and not nodes[target]["active"]
-                        and not nodes[target]["lifecycle_explicit"]):
+                if target in nodes and not nodes[target]["active"]:
                     nodes[target]["active"] = True
                     changed_active = True
     graph = {"nodes": nodes, "capture_generation": capture["generation"],
-             "deletions": {}, "changes": [], "candidate_inputs": {},
-             "unregistered_candidates": []}
+             "deletions": {}, "changes": []}
     for logical_id, (_revision, entry, old_payload, owner, snapshot) in latest_entries.items():
         owner_info = capture["owners"].get(owner, {})
         if owner_info.get("kind") == "live":
@@ -376,24 +359,8 @@ def load_project_graph(repository_root, capture):
                 unresolved.append({"owner": owner, "reference": ref,
                                    "reason": "candidate_declarations_missing"})
                 continue
-            candidate_inputs = candidate["payload"]["inputs"]
-            graph["candidate_inputs"][ref] = candidate_inputs
-            current_identity = parse_reference(ref)
-            candidate_version = candidate["payload"].get("version", current_identity["revision"])
-            if (isinstance(candidate_version, (int, Decimal)) and not isinstance(candidate_version, bool)
-                    and candidate_version > 0 and int(candidate_version) == candidate_version):
-                candidate_ref = f"{current_identity['logical_id']}@{int(candidate_version)}"
-                if (candidate_ref not in nodes or
-                        (candidate_ref == ref and candidate_inputs != old_payload["inputs"])):
-                    graph["unregistered_candidates"].append({
-                        "reference": ref, "candidate_reference": candidate_ref,
-                        "source": candidate["source"]})
-            else:
-                graph["unregistered_candidates"].append({
-                    "reference": ref, "reason": "candidate_revision_missing",
-                    "source": candidate["source"]})
             comparison = compare_items(old_payload, candidate["payload"], entry["profile"],
-                old_payload["inputs"], candidate_inputs)
+                old_payload["inputs"], candidate["payload"].get("inputs"))
             if comparison["status"] == "incomplete":
                 unresolved.append({"owner": owner, "reference": ref,
                                    "reason": "comparison_incomplete", "detail": comparison.get("reason")})
