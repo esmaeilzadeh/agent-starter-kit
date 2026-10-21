@@ -86,7 +86,7 @@ def _tokenizer(manifest: dict):
         encoding = tiktoken.get_encoding(EXPECTED_TOKENIZER["encoding"])
         if not callable(getattr(encoding, "encode_ordinary", None)):
             raise BenchmarkError("pinned tokenizer has no encode_ordinary operation")
-    except (KeyError, ValueError) as exc:
+    except (KeyError, ValueError, OSError) as exc:
         raise BenchmarkError("pinned tiktoken encoding is unavailable") from exc
     return encoding
 
