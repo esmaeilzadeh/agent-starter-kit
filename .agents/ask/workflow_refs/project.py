@@ -75,7 +75,8 @@ def _ref_storage_generation(common, integration_ref=None, archive_ref=None):
         if not ref:
             continue
         path = common / Path(ref)
-        paths.add(path)
+        if path.exists():
+            paths.add(path)
         parent = path.parent
         while parent != common and common in parent.parents:
             paths.add(parent)
