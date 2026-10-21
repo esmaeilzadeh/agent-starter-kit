@@ -66,4 +66,7 @@ Task 5 evidence after the revised plan is accepted.
 
 ## Decision
 
-Pending human choice: **Approve spec change** / **Keep current spec**.
+**Approved by the user on 2026-10-21** with the submitted response “approved”.
+The user also directed completion through final acceptance with “go till and all
+accepted”. The proposal's impact steps are now authorized, subject to independent
+review of the revised test plan and a new coordinator accepted-tests pin.

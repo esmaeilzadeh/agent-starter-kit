@@ -1185,7 +1185,7 @@
         "SH-04"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Coordinator accepted-tests ref and candidate-controlled catalogs/manifests/aliases",
         "when": "Candidate substitutes obligations, integrity mappings or a claimed independent review",
@@ -1242,7 +1242,7 @@
         "SH-09"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Exact-byte confirmed intent and semantically equivalent structured JSON",
         "when": "Intent bytes change or envelopes normalize reordered JSON values",

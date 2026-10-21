@@ -1,6 +1,6 @@
 # Consolidated implementation plan
 
-## Specification and stop point
+## Specification and authorization
 
 Requirements baseline: **sealed specification revision 7**, canonical
 `specs/current/shorter-hashes.json`, with normative Markdown at
@@ -10,10 +10,12 @@ that one spec; it does not reopen its equality, stop, discovery, authority, or
 savings outcomes. Plan seal requires independent approval of this document,
 `test-plan.json`, `inner-loop/tasks.yaml`, and the frozen benchmark/inventory.
 
-**Authorized endpoint: sealed Plan and clear tasks; stop before implementation.**
-No test implementation, production changes, task-loop initialization/execution,
-or final completion is authorized by this run. Complete-intent confirmation
-remains required before implementation; planning approval cannot replace it.
+**Authorized endpoint: verified and accepted workstream.** On 2026-10-21, the
+user approved the Task 5 classification proposal and directed completion through
+acceptance (“go till and all accepted”), superseding the earlier plan-only stop.
+The implementation must use this sealed specification, the independently
+reviewed updated test plan, and the TaskGraph evidence rules below. The existing
+complete-intent approval must be refreshed against the updated intent digest.
 
 ## Concrete interfaces and storage
 
@@ -82,7 +84,7 @@ outcome; its tests belong to exactly that task. No task is a deferred decision.
 
 **Task 4.** Capture authoritative ref inventory/vector under cooperating publication lock and generation checks; traverse edges across owners, implement normative retain/revise/retire and incomplete states, and preserve old pins/history.
 
-**Task 5.** Normalize envelopes at traceability I/O boundaries, deduplicate persisted digests through trusted catalogs, register dependencies/reviews/runs and keep exact-byte intent approval, accepted-tests pins, exact candidate/runner/log checks and TDD history. No old execution is relabeled.
+**Task 5.** Normalize envelopes at traceability I/O boundaries, deduplicate persisted digests through trusted catalogs, register dependencies/reviews/runs and keep exact-byte intent approval, accepted-tests pins, exact candidate/runner/log checks and TDD history. Cases 5/1 and 5/2 are regressions and need current Green evidence; 5/3 is new and needs behavior-assertion Red plus Green. No old execution is relabeled.
 
 **Task 6.** Use compact state/evidence encoding and qualified task/test identities while preserving state generations, CAS, one writer, exact candidates, interruption recovery, existing runner filtering and fast-forward-only integration.
 
