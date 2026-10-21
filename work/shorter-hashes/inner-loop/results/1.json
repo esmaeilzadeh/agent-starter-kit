@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "shorter-hashes",
+  "task_id": "1",
+  "base_sha": "be13cca506ade4629dbf719ae6e0f78999fee088",
+  "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+  "tdd": {
+    "seam": ".agents/ask/workflow_refs/benchmark.py:_tokenizer",
+    "red": {
+      "command": "./ask traceability run shorter-hashes --candidate-sha f6d6791cbdfe985c89df38226808ebb86968bc3b --phase red --scope task --task-id 1; run_id=186cc05d0e7c433e8fc63e2bb619994d",
+      "output": "test_equivalent_questions_and_lookup_accounting ... ok; test_frozen_corpus_and_tokenizer ... FAIL: OSError('encoding cache unavailable') is not an instance of BenchmarkError. Assertion failure; mapped case 1/1 behavior_assertion, 1/2 passed. Full output: work/shorter-hashes/traceability/runs/186cc05d0e7c433e8fc63e2bb619994d/7a14a92aa9a342f39291e6708ed1e66e.log",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run shorter-hashes --candidate-sha 9b51116a620c89f4979d0b838ec35e26e66091b0 --phase final_green --scope task --task-id 1; run_id=eb3d7ba983d1445c9c34d8f038194633",
+      "output": "Both mapped cases passed: test_equivalent_questions_and_lookup_accounting and test_frozen_corpus_and_tokenizer. Full output: work/shorter-hashes/traceability/runs/eb3d7ba983d1445c9c34d8f038194633/51180e28269840c9b5b320d38a240c0d.log",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "Task 1 changes only the scoped handling of OSError while loading pinned tokenizer data. Refactor outcome: no applicable structural cleanup; the fix is a one-line exception tuple expansion. `python3 -m py_compile` and `git diff --check` passed; the complete mapped unittest runner passed at the immutable candidate. Independent review and integration are pending."
+}

@@ -1,0 +1,125 @@
+{
+  "schema": "ask-inner-loop-state/v1",
+  "work_id": "shorter-hashes",
+  "revision": 3,
+  "coordinator_sha": "be13cca506ade4629dbf719ae6e0f78999fee088",
+  "coordinator_branch": "agent/shorter-hashes",
+  "tasks": {
+    "1": {
+      "status": "cancelled",
+      "base_sha": "be13cca506ade4629dbf719ae6e0f78999fee088",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "work_id": "shorter-hashes",
+          "task_id": "1",
+          "base_sha": "be13cca506ade4629dbf719ae6e0f78999fee088",
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "result_digest": "aece8c3929d9ffe32066329fff0fdacc1fbd2c9247bde57b01741ec22de5f123",
+          "reviewer": "/root/review_task1",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-1.json",
+          "evidence_digest": "7f3d88d0c8d4ff819d39d29d6341c2166ab721a168e883fd71eac4640c81f54e",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      }
+    },
+    "2": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "3": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "4": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "5": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "6": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "7": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "8": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "9": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "10": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    }
+  }
+}

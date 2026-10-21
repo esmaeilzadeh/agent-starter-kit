@@ -312,7 +312,7 @@
         "SH-12"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "The frozen three questions, selected logs and shared metadata",
         "when": "A baseline input recorder includes required projections and follow-up reads",

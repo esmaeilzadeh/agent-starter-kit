@@ -112,12 +112,13 @@ cases bind their shared fixture. No future task module is required by an early
 task's source identity. No review-only task or
 criterion exemption is declared. All task scopes are nonempty.
 
-Every future test is a declared obligation, not an existing or executed case.
-Before its behavior slice, add the mapped test plus only the minimal callable
-capability scaffold needed to obtain an observable unsupported/result value;
-execute assertion Red on the missing behavior, not import/setup failure. Then
-implement Green, complete local Refactor, and obtain independent review bound to
-the exact candidate/source/assertion continuity. Use the existing coordinator
+Every test is a declared obligation. For cases classified `new`, add the mapped
+test plus only the minimal callable capability scaffold needed to obtain an
+observable unsupported/result value; execute assertion Red on the missing
+behavior, not import/setup failure. Cases classified `regression` need current
+Green evidence and must not be relabeled as new. Then complete local Refactor
+and obtain independent review bound to the exact candidate/source/assertion
+continuity. Use the existing coordinator
 traceability runner and its task filtering; an opaque shell exit supplies no case
 evidence. A production defect found in a later task requires an explicit reviewed
 scope correction/amendment for the responsible task before writing outside owned

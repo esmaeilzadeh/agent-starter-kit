@@ -20,7 +20,7 @@ Status: **SEALED**. Open specification blockers: **0**. Open planning blockers: 
 - Registered authority commit: `e1ca2a523c5417687479c09ffc1bf6c1cc337763`.
 - Candidate-side exact accepted contract: `traceability-accepted.json`.
 - Canonical spec digest: `9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e`.
-- Canonical test-plan digest: `40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b`.
+- Canonical test-plan digest: `cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a`.
 - Canonical TaskGraph digest: `e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb`.
 
 The independent decision also binds exact plan/inventory/benchmark/requirements
@@ -30,23 +30,31 @@ seal stale and requires renewed independent review/registration as applicable.
 The earlier rejected plan/review is retained in Git at `8f40b6c` and
 `8315ae4`/`850c168`; it was corrected rather than accepted conditionally.
 
+## Reviewed amendments
+
+The Task 5 classification amendment reclassifies `5/1` and `5/2` as
+regressions; `5/3` remains new. A Task 1 amendment reclassifies `1/2` as a
+regression based on its pass at the recorded pre-implementation Red revision;
+`1/1` remains new. Both amendments preserve the spec, scenarios, assertions,
+source bindings, runners, and TaskGraph and require exact-revision review and a
+renewed coordinator accepted-tests pin before execution.
+
 Structural contract/graph checks, all criterion/type and case-owner mappings,
 task-time declared input availability, all frozen source hashes, and independent
 semantic review passed. The coordinator authority pin matches the independently
 reviewed obligations. No future test's assertion result is claimed by these checks.
 
-## Stop boundary
+## Current execution boundary
 
-The user requested continuation through a sealed plan. That endpoint is reached.
-No production implementation, test implementation, task-loop state initialization,
-or execution is performed. Cases remain planned, and savings remain unmeasured.
-Complete-intent confirmation remains required before implementation; the next
-session must recover this sealed plan and that exact remaining gate without
-restarting new-task intake or assuming approval from this seal.
+The user explicitly extended the endpoint through final acceptance. The
+approved intent remains byte-identical and its existing confirmation remains
+valid. Implementation and TaskGraph execution may proceed after the current
+reviewed plan amendment is registered. Completion still requires per-task Red,
+Green, Refactor, independent review, integration evidence, aggregate
+verification, and final acceptance. No savings claim is made until Task 10
+produces the required benchmark evidence.
 
-Full workstream verification was invoked before coordinator registration and
-refused because the accepted-tests ref did not yet exist; it executed no behavior
-cases. Registration now establishes planning authority, not passing implementation
-or final-completion evidence. Later implementation must produce actual Red/Green,
+Plan registration establishes planning authority, not passing implementation or
+final-completion evidence. Implementation must produce current Red/Green,
 independent candidate reviews, applicable regressions, integration receipts and
 full final verification before workstream Accept.
