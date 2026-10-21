@@ -1,6 +1,8 @@
 # Consolidated plan seal
 
-Status: **SEALED**. Open specification blockers: **0**. Open planning blockers: **0**.
+Status: **HISTORICAL SEAL; AMENDMENT PENDING REVIEW**. The original sealed plan
+had 0 specification and planning blockers. The Task 1 amendment below is not
+yet accepted and task execution must remain paused until review and registration.
 
 - Workstream: `shorter-hashes`.
 - Requirements baseline: sealed specification revision **7**, all **18** criteria;
@@ -20,36 +22,43 @@ Status: **SEALED**. Open specification blockers: **0**. Open planning blockers: 
 - Registered authority commit: `e1ca2a523c5417687479c09ffc1bf6c1cc337763`.
 - Candidate-side exact accepted contract: `traceability-accepted.json`.
 - Canonical spec digest: `9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e`.
-- Canonical test-plan digest: `cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a`.
+- Original sealed test-plan digest: `40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b`.
 - Canonical TaskGraph digest: `e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb`.
 
-The independent decision also binds exact plan/inventory/benchmark/requirements
+The original independent decision also bound exact plan/inventory/benchmark/requirements
 and spec-seal file digests. All were checked against the reviewed commit and
 checkout before registration. Any change to these bound inputs makes the plan
 seal stale and requires renewed independent review/registration as applicable.
 The earlier rejected plan/review is retained in Git at `8f40b6c` and
 `8315ae4`/`850c168`; it was corrected rather than accepted conditionally.
 
-## Reviewed amendments
+## Amendments and current authority
 
 The Task 5 classification amendment reclassifies `5/1` and `5/2` as
-regressions; `5/3` remains new. A Task 1 amendment reclassifies `1/2` as a
-regression based on its pass at the recorded pre-implementation Red revision;
-`1/1` remains new. Both amendments preserve the spec, scenarios, assertions,
-source bindings, runners, and TaskGraph and require exact-revision review and a
-renewed coordinator accepted-tests pin before execution.
+regressions; `5/3` remains new. It was independently reviewed and registered
+before the continuation-process correction. The latest accepted-tests
+authority currently binds contract commit `c98f089c0a0f3d11608f37289be7baa149ad166a8`
+and the original plan digest `39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f`.
+
+The Task 1 amendment proposes changing only case `1/2` from `new` to
+`regression`, based on its pass at the recorded pre-implementation Red
+revision. Case `1/1` remains new. The amended canonical test-plan digest is
+`cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a`. It
+preserves the spec, scenarios, assertions, source bindings, runners, and
+TaskGraph. Independent review and renewed coordinator registration are pending.
 
 Structural contract/graph checks, all criterion/type and case-owner mappings,
 task-time declared input availability, all frozen source hashes, and independent
-semantic review passed. The coordinator authority pin matches the independently
-reviewed obligations. No future test's assertion result is claimed by these checks.
+semantic review passed for the historical seal. At that time, the coordinator
+authority pin matched the reviewed obligations. No future test's assertion result
+was claimed by those checks.
 
 ## Current execution boundary
 
 The user explicitly extended the endpoint through final acceptance. The
 approved intent remains byte-identical and its existing confirmation remains
 valid. Implementation and TaskGraph execution may proceed after the current
-reviewed plan amendment is registered. Completion still requires per-task Red,
+plan amendment is reviewed and registered. Completion requires per-task Red,
 Green, Refactor, independent review, integration evidence, aggregate
 verification, and final acceptance. No savings claim is made until Task 10
 produces the required benchmark evidence.
