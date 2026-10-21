@@ -79,11 +79,10 @@ Savings must include necessary lookups, shared metadata, and complete agent inpu
 The numeric correction was approved with “yes apply it”; see `spec-change.md`.
 The user subsequently authorized specification closure and consolidated planning;
 `spec-change-r7.md` records the scope-preserving behavioral clarifications.
-On 2026-10-21, the user approved the Task 5 classification proposal and directed
-completion through final acceptance (“go till and all accepted”), superseding the
-former plan-only endpoint. Exact encoding, integrity-file path, extraction/capture
-mechanisms, corpus, and command flags remain Plan choices within the spec's
-normative comparison, stop, and discovery rules.
+Complete-intent confirmation before implementation remains pending. Exact
+encoding, integrity-file path, extraction/capture mechanisms, corpus, and command
+flags are Plan choices within the spec's normative comparison, stop, and discovery
+rules. This run stops after a sealed specification and clear plan/tasks.
 
 ## Human decisions
 
@@ -95,9 +94,6 @@ normative comparison, stop, and discovery rules.
 - Apply parent-qualified numeric IDs across specs/parts, plans/items, tasks, and
   tests, plus numeric revisions and separately stored checksums. Approval response:
   “yes apply it”. Preserve the existing exact-source and dependency-impact rules.
-- Reclassify Task 5 cases 5/1 and 5/2 as regressions while keeping 5/3 new; the
-  submitted approval was “approved”. Continue implementation, verification, and
-  workstream acceptance under the approved contract.
 
 ## Engineering subject
 
@@ -107,9 +103,7 @@ normative comparison, stop, and discovery rules.
 - Contribution: lower workflow token cost with parent-qualified numeric item and
   revision references and separate integrity data, preserving exact dependencies
   and acceptance authority.
-- Execution owner: workstream coordinator. At the planning result, implementation
-  had not started; later commits contain implementation changes but no TaskGraph
-  state exists, so task evidence must be recovered or rerun before acceptance.
+- Execution owner: none assigned; implementation has not started.
 
 ## E2E
 

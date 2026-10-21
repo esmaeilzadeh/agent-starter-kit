@@ -24,6 +24,14 @@ choices with an optional same-response comment. If the accepted plan explicitly
 stops before the next action, report that authorized scope as complete; do not
 present a later-stage gate as currently missing.
 
+An explicit later human direction can extend a previously recorded execution
+endpoint. When What, Why, and assumptions stay the same, record the direction in
+the plan or a scoped authorization artifact and preserve the approved
+`intent.md` bytes and confirmation. Do not edit `intent.md` only to update the
+authorized endpoint or progress. Request a new complete-intent choice only when
+the human changes What, Why, or an assumption. A generic continuation request
+does not override an explicit stop; an explicit endpoint direction does.
+
 ## Off the path (this session only)
 
 Every new Cursor session starts **on-path**. There is no durable off-path flag in git.

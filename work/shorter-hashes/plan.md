@@ -14,8 +14,11 @@ savings outcomes. Plan seal requires independent approval of this document,
 user approved the Task 5 classification proposal and directed completion through
 acceptance (“go till and all accepted”), superseding the earlier plan-only stop.
 The implementation must use this sealed specification, the independently
-reviewed updated test plan, and the TaskGraph evidence rules below. The existing
-complete-intent approval must be refreshed against the updated intent digest.
+reviewed updated test plan, and the TaskGraph evidence rules below. The exact
+endpoint direction is recorded in `continuation-authorization.md`; it changes
+execution scope while preserving the previously approved intent bytes and their
+confirmation. The continuation reconfirmation bug and process correction are
+recorded in `continuation-reconfirmation.md`.
 
 ## Concrete interfaces and storage
 
