@@ -1,17 +1,20 @@
 {
   "schema": "ask-independent-plan-review/v1",
   "decision": "APPROVED",
-  "reviewer": "/root/shorter_hashes_challenge_r6",
+  "reviewer": "/root/task5_plan_review",
   "runtime": "Codex",
   "model": "gpt-6.1-sol",
-  "reasoning_effort": "medium",
+  "reasoning_effort": "high",
   "parent_model": "not exposed",
-  "reviewed_commit": "02ad31b6e5ef5130986a920f943788cbbe970631",
+  "reviewed_commit": "17c4e24f5a774a30fee7f9a98a1cb3c31afeeeec",
   "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
   "graph_digest": "e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb",
   "file_digests": {
-    "work/shorter-hashes/plan.md": "7c10bc697531ef379ea11ad29414c2673622e4b8e042b46e6122b6be005fa5bf",
+    "work/shorter-hashes/intent.md": "8f732807715c188c58222a4611ac778db6ef8e4d4a3c571e1b7062153b15e591",
+    "work/shorter-hashes/plan.md": "c0975b52fc80cac4fac256edaf973a7e330766de30661537392925a10c8d57be",
+    "work/shorter-hashes/test-plan.json": "ed42cf855aebc0c992e05f610b2a64f00d8918dbc027cf41124fb9e4543c9c42",
+    "work/shorter-hashes/inner-loop/tasks.yaml": "a4384e1ea72d59cdf7dc5791e3fb0ec0f3231b2b9271f4e17be23d4baec7df22",
     "work/shorter-hashes/surface-inventory.md": "b3dbe90066eec74775dec9e7fcf815893627b62930ed4e2bd4e3265bf7a57426",
     "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
     "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f",
@@ -19,23 +22,42 @@
   },
   "findings": [
     {
-      "id": "P1",
+      "id": "TASK5-CLASSIFICATION",
       "status": "closed",
-      "classification": "producer inventory and publication ownership",
-      "resolution": "Task 8 owns and inventories record-run/start-work; auxiliary shared-owner identities and separate integrity data are explicit; cases 8/4 and 8/5 preserve provenance/refusal semantics and coherent owner publication."
+      "classification": "mapped case change-kind accuracy",
+      "resolution": "The exact Task 5 base passes 5/1 and 5/2; 5/3 fails at its behavior assertion. The revised plan correctly marks 5/1 and 5/2 regression and 5/3 new.",
+      "baseline_commit": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "test_source_commit": "2969973555adf490f6ea690a91d674c0f52460f4",
+      "cases": {
+        "5/1": {
+          "result": "passed",
+          "log": "work/shorter-hashes/traceability/plan-review-task5-baseline/5-1.log",
+          "log_sha256": "a19901d131515f2b2983e4e89fdbdeeb20edf4dda4f317c97f395955aa42eeba"
+        },
+        "5/2": {
+          "result": "passed",
+          "log": "work/shorter-hashes/traceability/plan-review-task5-baseline/5-2.log",
+          "log_sha256": "0d7c363a37048b0ece73193b0cea60d95046f05b76d9486c723c69a81a9eaca5"
+        },
+        "5/3": {
+          "result": "behavior_assertion_failure",
+          "log": "work/shorter-hashes/traceability/plan-review-task5-baseline/5-3.log",
+          "log_sha256": "d1a2a577a2271a6d231f8e4838b9f1fc1740d80ecf3635db3b4c215b5f9693fc"
+        }
+      }
     },
     {
-      "id": "P2",
-      "status": "closed",
-      "classification": "declared case input/source bindings",
-      "resolution": "Cases bind available prerequisite runtime modules; measurement cases bind baseline.json/requirements.txt; all task-9 cases bind workflow_refs_fixture.py. Task-time source availability checked."
+      "id": "P1-P2",
+      "status": "carried_forward",
+      "classification": "previous plan review findings",
+      "resolution": "The amendment does not change the producer inventory or test-input/source-binding findings closed by the independent review at 02ad31b6e5ef5130986a920f943788cbbe970631."
     }
   ],
   "open_blockers": [],
   "notes": [
-    "All 39 cases in 14 runners are planned, not implemented or executed.",
-    "Structural contract validation, exact one-task case assignment, task-time source availability and all 14 frozen corpus file hashes/byte lengths passed.",
-    "Independent approval covers sealed revision-7 semantics, ten-task graph, case/type/assertion mapping, surface inventory and frozen benchmark at these exact bindings.",
-    "This is an independent plan-registration input, not coordinator acceptance, complete-intent approval, implementation authorization, execution review or final completion."
+    "The changed contract preserves the revision-7 spec, TaskGraph, scenarios, assertions, source bindings, runner assignments and task scopes; only 5/1 and 5/2 change from new to regression.",
+    "The cited runtime record was unavailable. The reviewer independently reproduced the classification at the exact base in a detached temporary worktree and preserved output logs with SHA-256 digests.",
+    "This plan approval and accepted-tests pin do not substitute for pending complete-intent confirmation, task execution evidence, or final acceptance.",
+    "The review does not establish historical TaskGraph integration evidence for tasks 1-4."
   ]
 }

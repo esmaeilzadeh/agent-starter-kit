@@ -60,3 +60,25 @@ Recovery and discovery are concrete obligations, not vague aspirations: common-d
 Loaded the exact committed spec/test-plan/graph through the existing `contracts_at` validator successfully. Independently checked 10 tasks, 39 cases, 14 runners, and exactly one responsible task per case. Independently checked task-time source-path availability and verified all 14 frozen corpus files. These are planning checks, not behavior executions. The coordinator's reported graph/path validation remains separate from this semantic assessment.
 
 P1/P2 are closed; no further correction is required for plan sealing at these exact bindings. The coordinator must register this independent decision through the existing accepted-plan authority and retain the seal against all bound artifacts. This review grants no complete-intent approval, task-loop initialization, implementation authorization, execution review, final completion or acceptance. The authorized endpoint remains the sealed plan; implementation stops at its existing gates.
+
+## Task 5 classification amendment review
+
+Reviewer /root/task5_plan_review, Codex, gpt-6.1-sol at high effort,
+independently reviewed exact commit 17c4e24f5a774a30fee7f9a98a1cb3c31afeeeec.
+The review approved the amendment with no planning blockers. It confirmed that
+the spec and TaskGraph are unchanged and only cases 5/1 and 5/2 change from new
+to regression.
+
+The reviewer reproduced the mapped cases at base
+d5b8b002796830e33115dac394ad071d08165e9e, using the test module from
+2969973555adf490f6ea690a91d674c0f52460f4: 5/1 and 5/2 passed; 5/3 failed on
+its behavior assertion. Output logs and SHA-256 values are preserved under
+traceability/plan-review-task5-baseline/. The originally cited runtime record
+was absent, so this reproduction supports the classification decision but is
+not registered Task 5 completion evidence and does not establish prior
+TaskGraph integration for tasks 1-4.
+
+Exact contract digests: spec
+9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e, plan
+39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f, graph
+e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb.
