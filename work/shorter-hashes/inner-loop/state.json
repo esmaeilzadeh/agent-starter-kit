@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 8,
-  "coordinator_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
+  "revision": 11,
+  "coordinator_sha": "0c4dfcbbfa4d68e1ce2c0b6cd6c8b879c4a9b610",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
     "1": {
@@ -399,14 +399,20 @@
       }
     },
     "2": {
-      "status": "running",
+      "status": "blocked",
       "base_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
       "task_branch": "",
       "result_path": "",
-      "boundary_reject": null,
+      "boundary_reject": "red did not fail",
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {
+        "blocker": {
+          "path": "work/shorter-hashes/inner-loop/evidence/task-2-blocker.json",
+          "sha256": "fdd0bdb53786de16758a6b65347552798055580c2ee0f2fd07f0273fbd46feb2",
+          "reason": "The accepted task contains only regression cases; all nine pass at the immutable baseline and final Green, but the validator unconditionally requires a nonzero Red exit code. The user directed this out-of-scope defect be recorded as a later inbox card, not brought into Task 2."
+        }
+      }
     },
     "3": {
       "status": "pending",
