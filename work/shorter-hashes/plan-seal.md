@@ -1,8 +1,10 @@
 # Consolidated plan seal
 
-Status: **HISTORICAL SEAL; AMENDMENT PENDING REVIEW**. The original sealed plan
-had 0 specification and planning blockers. The Task 1 amendment below is not
-yet accepted and task execution must remain paused until review and registration.
+Status: **HISTORICAL SEAL; TASK 2 AMENDMENT PENDING REVIEW**. The original
+sealed plan had 0 specification and planning blockers. Task 1's later
+classification amendment is accepted and registered. Task execution is paused
+while the Task 2 classification amendment receives exact-revision review and
+registration.
 
 - Workstream: `shorter-hashes`.
 - Requirements baseline: sealed specification revision **7**, all **18** criteria;
@@ -36,9 +38,10 @@ The earlier rejected plan/review is retained in Git at `8f40b6c` and
 
 The Task 5 classification amendment reclassifies `5/1` and `5/2` as
 regressions; `5/3` remains new. It was independently reviewed and registered
-before the continuation-process correction. The latest accepted-tests
-authority currently binds contract commit `c98f089c0a0f3d11608f37289a0d43165a35556e`
-and the original plan digest `39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f`.
+before the continuation-process correction. The current accepted-tests contract
+revision is `447bac6bb948fa53420df882883bc4962716e619`, with test-plan digest
+`cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a` and
+TaskGraph digest `e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb`.
 
 The Task 1 amendment changed only case `1/2` from `new` to `regression`, based
 on its pass at the recorded pre-implementation Red revision. Case `1/1` remains
