@@ -16,6 +16,10 @@ tasks:
       - "_ask/tests/test_workflow_refs_identity.py"
       - "_ask/tests/test_workflow_refs_store.py"
       - "_ask/tests/test_workflow_refs_codec.py"
+      - "_ask/scripts/inner_loop/evidence.py"
+      - "_ask/scripts/inner_loop/driver.py"
+      - "_ask/tests/test_workflow_refs_taskresult.py"
+      - "_ask/docs/inner-loop-evidence.md"
   - id: "3"
     depends_on: ["2"]
     owned_paths:

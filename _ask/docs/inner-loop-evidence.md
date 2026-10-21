@@ -32,9 +32,12 @@ The worker commits its source changes, then writes
 ```
 
 Behavior changes use `tdd: {seam, red: {command, output, exit_code}, green:
-{command, output, exit_code}}` and `exemption: null`. Red is an integer nonzero
-exit; green is integer zero; both carry captured output. This records TDD
-history. It does not substitute for candidate verification. Exemption kinds:
+{command, output, exit_code}}` and `exemption: null`. Red normally exits nonzero
+for a new behavior assertion. A task whose accepted mapped cases are all
+`regression` may record a passing Red run when it names the exact task-scoped
+test IDs; the integration gate checks that each ID is classified as regression.
+Green exits zero. Both steps carry captured output. This records TDD history and
+does not substitute for candidate verification. Exemption kinds:
 `documentation-only`, `generated-projections`, `non-behavioral-config`.
 
 The candidate must descend from the task's recorded base. Use the coordinator

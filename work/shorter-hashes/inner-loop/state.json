@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 8,
+  "revision": 9,
   "coordinator_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -399,7 +399,7 @@
       }
     },
     "2": {
-      "status": "running",
+      "status": "cancelled",
       "base_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
       "task_branch": "",
       "result_path": "",
