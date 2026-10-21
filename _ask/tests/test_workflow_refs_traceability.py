@@ -23,6 +23,7 @@ from workflow_refs.codec import EnvelopeError, encode_envelope, normalize_envelo
 from verification.traceability.completion import evaluate_completion
 from verification.traceability.contracts import digest
 from verification.traceability.evidence import accept_plan, load_accepted, record_test_review
+from workflow_refs.store import initialize_catalog, register_revision, resolve_version
 
 
 class ReferenceTests(unittest.TestCase):
@@ -141,23 +142,41 @@ class ReferenceTests(unittest.TestCase):
         self.addCleanup(consumer.close)
         accepted_before = consumer.contracts["pin"]
         old_candidate = consumer.sha
-        consumer.write("work/w/binding.json", {
-            "reference": {"id": 1, "revision": 1},
-            "context": {"owner": "w", "type": "spec"},
-        })
-        newer_binding = consumer.commit("candidate adds numeric item binding")
+        payload = {"id": "tracked-item", "inputs": []}
+        consumer.write("work/w/items.json", {"items": [payload]})
+        source_sha = consumer.commit("publish numeric reference source snapshot")
+        catalog_path = consumer.root / "work/w/references/integrity.json"
+        initialize_catalog(catalog_path, "w")
+        source_payload = (consumer.root / "work/w/items.json").read_bytes()
+        entry = register_revision(catalog_path, "w", "w/spec/1/plan/1/item/1",
+                                  {"commit": source_sha, "path": "work/w/items.json"},
+                                  "tracked-item", "structured-item/1", source_payload)
+        reference = entry["reference"]
+        resolved = resolve_version(catalog_path, reference, consumer.root)
+        self.assertEqual(resolved["entry"]["reference"], "w/spec/1/plan/1/item/1@1")
+        self.assertIn(b"tracked-item", resolved["payload"])
+        consumer.write("work/w/binding.json", {"reference": reference})
+        newer_binding = consumer.commit("candidate adds registered numeric item binding")
         accepted = load_accepted(consumer.root, "w", old_candidate, newer_binding)
         self.assertEqual(accepted["pin"], accepted_before)
-        stale = evaluate_completion(accepted, consumer.record,
+        consumer.sha = newer_binding
+        consumer.contracts = accepted
+        review = consumer.make_review()
+        consumer.write("work/w/traceability/review-input.json", review)
+        current_record = record_test_review(consumer.root, "w", newer_binding, newer_binding,
+                                            "work/w/traceability/review-input.json", "fixture-coordinator")
+        current_green = run_tests(consumer.root, accepted, newer_binding)
+        stale = evaluate_completion(accepted, current_record,
                                     [consumer.red, consumer.green],
                                     {**consumer.context(), "candidate_sha": newer_binding})
         self.assertEqual(stale["status"], "fail")
+        self.assertTrue(any("stale final candidate" in error for error in stale["errors"]), stale)
 
         # Register a separately reviewed contract amendment and require new
         # source-bound Red/Green and semantic-review evidence under that pin.
         amended_plan = copy.deepcopy(accepted["plan"])
         amended_plan["reference_bindings"] = {
-            "work/w/binding.json": "w/spec/1@1",
+            "work/w/binding.json": reference,
         }
         consumer.plan = amended_plan
         consumer.write("work/w/test-plan.json", amended_plan)
