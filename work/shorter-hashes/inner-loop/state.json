@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 6,
-  "coordinator_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+  "revision": 8,
+  "coordinator_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
     "1": {
@@ -399,8 +399,8 @@
       }
     },
     "2": {
-      "status": "cancelled",
-      "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+      "status": "running",
+      "base_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
