@@ -19,7 +19,10 @@ from traceability_fixture import Consumer
 from verification.traceability.contracts import Invalid
 from verification.traceability.evidence import load_accepted, record_test_review
 from verification.traceability.adapters import run_tests
-from workflow_refs.codec import encode_envelope, normalize_envelope
+from workflow_refs.codec import EnvelopeError, encode_envelope, normalize_envelope
+from verification.traceability.completion import evaluate_completion
+from verification.traceability.contracts import digest
+from verification.traceability.evidence import accept_plan, load_accepted, record_test_review
 
 
 class ReferenceTests(unittest.TestCase):
@@ -76,12 +79,28 @@ class ReferenceTests(unittest.TestCase):
                                 "context": {"type": "spec", "owner": "team"},
                                 "payload_schema": "example/v1", "schema": "ask-workflow-envelope/v1"})
         self.assertEqual(normalize_envelope(encoded), normalize_envelope(reordered))
+        with self.assertRaises(EnvelopeError):
+            normalize_envelope({"schema": "ask-workflow-envelope/v1",
+                                "payload_schema": "example/v1", "context": context,
+                                "references": {}})
+
+        consumer = Consumer()
+        self.addCleanup(consumer.close)
+        log = consumer.root / consumer.green["cases"][0]["output_artifact"]
+        log.write_text("forged execution output\n")
+        rejected = evaluate_completion(consumer.contracts, consumer.record,
+                                       [consumer.red, consumer.green], consumer.context())
+        self.assertEqual(rejected["status"], "fail")
 
     def test_contract_run_lifetimes_and_source_identity(self):
-        # Run an immutable candidate whose test imports a module under its own
-        # .agents/ask tree, independent of the caller's PYTHONPATH.
+        # Run an immutable candidate while an unrelated installed package is
+        # on PYTHONPATH. The candidate package and source identity must win.
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
+            host = root / "host"
+            (host / "workflow_refs").mkdir(parents=True)
+            (host / "workflow_refs/__init__.py").write_text("")
+            (host / "workflow_refs/marker.py").write_text("VALUE = 99\n")
             def git(*args):
                 return subprocess.check_output(["git", *args], cwd=root, text=True,
                                                stderr=subprocess.PIPE).strip()
@@ -89,6 +108,7 @@ class ReferenceTests(unittest.TestCase):
             git("config", "user.email", "test@example.com")
             git("config", "user.name", "Test")
             (root / ".agents/ask/workflow_refs").mkdir(parents=True)
+            (root / ".agents/ask/workflow_refs/__init__.py").write_text("")
             (root / ".agents/ask/workflow_refs/marker.py").write_text("VALUE = 42\n")
             (root / "test_app.py").write_text(
                 "import unittest\nfrom workflow_refs.marker import VALUE\n"
@@ -104,15 +124,65 @@ class ReferenceTests(unittest.TestCase):
                                  "argv": ["python3", "-m", "unittest", "test_app"]}],
                     "task_scopes": []}
             contracts = {"spec": {"work_id": "fixture"}, "plan": plan}
-            old_path = os.environ.pop("PYTHONPATH", None)
+            old_path = os.environ.get("PYTHONPATH")
+            os.environ["PYTHONPATH"] = str(host)
             try:
                 report = run_tests(root, contracts, sha)
             finally:
-                if old_path is not None:
+                if old_path is None:
+                    os.environ.pop("PYTHONPATH", None)
+                else:
                     os.environ["PYTHONPATH"] = old_path
             self.assertEqual(report["executions"][0]["collection_status"], "ok")
             self.assertEqual(report["cases"][0]["outcome"], "passed")
             self.assertEqual(report["cases"][0]["source_sha"], sha)
+
+        consumer = Consumer()
+        self.addCleanup(consumer.close)
+        accepted_before = consumer.contracts["pin"]
+        old_candidate = consumer.sha
+        consumer.write("work/w/binding.json", {
+            "reference": {"id": 1, "revision": 1},
+            "context": {"owner": "w", "type": "spec"},
+        })
+        newer_binding = consumer.commit("candidate adds numeric item binding")
+        accepted = load_accepted(consumer.root, "w", old_candidate, newer_binding)
+        self.assertEqual(accepted["pin"], accepted_before)
+        stale = evaluate_completion(accepted, consumer.record,
+                                    [consumer.red, consumer.green],
+                                    {**consumer.context(), "candidate_sha": newer_binding})
+        self.assertEqual(stale["status"], "fail")
+
+        # Register a separately reviewed contract amendment and require new
+        # source-bound Red/Green and semantic-review evidence under that pin.
+        amended_plan = copy.deepcopy(accepted["plan"])
+        amended_plan["reference_bindings"] = {
+            "work/w/binding.json": "w/spec/1@1",
+        }
+        consumer.plan = amended_plan
+        consumer.write("work/w/test-plan.json", amended_plan)
+        consumer.write("work/w/traceability/plan-review-amendment.json", {
+            "decision": "APPROVED", "reviewer": "fixture-independent",
+            "spec_digest": digest(consumer.spec),
+            "plan_digest": digest(amended_plan),
+        })
+        amendment_sha = consumer.commit("reviewed reference-binding contract amendment")
+        accept_plan(consumer.root, "w", amendment_sha, "fixture-independent",
+                    "fixture-coordinator", "work/w/traceability/plan-review-amendment.json")
+        final_sha = consumer.commit("publish coordinator accepted amendment")
+        consumer.sha = final_sha
+        consumer.contracts = load_accepted(consumer.root, "w", final_sha, final_sha)
+        red = run_tests(consumer.root, consumer.contracts, consumer.red_sha, phase="red")
+        consumer.review = consumer.make_review()
+        consumer.write("work/w/traceability/review-input.json", consumer.review)
+        record = record_test_review(consumer.root, "w", final_sha, final_sha,
+                                    "work/w/traceability/review-input.json", "fixture-coordinator")
+        green = run_tests(consumer.root, consumer.contracts, final_sha)
+        completed = evaluate_completion(consumer.contracts, record, [red, green],
+                                        {"root": consumer.root, "candidate_sha": final_sha,
+                                         "scope": "workstream", "task_id": None,
+                                         "static_checks": {"result": "pass", "candidate_sha": final_sha}})
+        self.assertEqual(completed["status"], "pass", completed)
 
 
 if __name__ == "__main__":
