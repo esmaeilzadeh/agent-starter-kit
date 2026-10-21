@@ -28,5 +28,5 @@ complete-intent decision.
 
 The red command was `./ask check-workstream shorter-hashes`; before the fix it
 reported `intent changed after confirmation`. After restoring the exact
-approved intent, `./ask confirm-intent validate --work-id shorter-hashes` and
+approved intent, `python3 _ask/scripts/intent-confirmation.py validate --root . --work-id shorter-hashes` and
 `./ask check-workstream shorter-hashes` must both pass.

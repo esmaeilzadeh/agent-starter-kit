@@ -6,7 +6,7 @@
   "model": "gpt-6.1-sol",
   "reasoning_effort": "high",
   "parent_model": "not exposed",
-  "reviewed_commit": "17c4e24f5a774a30fee7f9a98a1cb3c31afeeeec",
+  "reviewed_commit": "17c4e24f5a774a30fee9f7a98a1cb3c31afeeeec",
   "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
   "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
   "graph_digest": "e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb",

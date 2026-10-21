@@ -64,7 +64,7 @@ P1/P2 are closed; no further correction is required for plan sealing at these ex
 ## Task 5 classification amendment review
 
 Reviewer /root/task5_plan_review, Codex, gpt-6.1-sol at high effort,
-independently reviewed exact commit 17c4e24f5a774a30fee7f9a98a1cb3c31afeeeec.
+independently reviewed exact commit 17c4e24f5a774a30fee9f7a98a1cb3c31afeeeec.
 The review approved the amendment with no planning blockers. It confirmed that
 the spec and TaskGraph are unchanged and only cases 5/1 and 5/2 change from new
 to regression.
