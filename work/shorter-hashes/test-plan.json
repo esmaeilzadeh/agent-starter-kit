@@ -269,16 +269,6 @@
         "unittest",
         "_ask.tests.test_workflow_refs_savings"
       ]
-    },
-    {
-      "id": "refs-taskresult-gate",
-      "adapter": "unittest",
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "_ask.tests.test_workflow_refs_taskresult"
-      ]
     }
   ],
   "tests": [
@@ -2815,38 +2805,6 @@
         "work/shorter-hashes/benchmark/baseline.json",
         "work/shorter-hashes/benchmark/requirements.txt"
       ]
-    },
-    {
-      "id": "2/10",
-      "criterion_ids": [
-        "SH-13"
-      ],
-      "type": "integration",
-      "change_kind": "new",
-      "scenario": {
-        "given": "A task maps only cases classified as regressions and all pass at the immutable baseline",
-        "when": "Its TaskResult records the Red phase as a passing baseline run and final Green as passing",
-        "then": [
-          "The integration gate accepts the truthful passing Red evidence only when its exact test IDs match the task's accepted regression cases",
-          "A passing Red result for any task containing a new case, or with missing/extra test IDs, is refused"
-        ]
-      },
-      "expected_assertions": [
-        {
-          "criterion_id": "SH-13",
-          "checks": [
-            "The integration gate accepts the truthful passing Red evidence only when its exact test IDs match the task's accepted regression cases",
-            "A passing Red result for any task containing a new case, or with missing/extra test IDs, is refused"
-          ]
-        }
-      ],
-      "runner_id": "refs-taskresult-gate",
-      "case_id": "_ask.tests.test_workflow_refs_taskresult.TaskResultEvidenceTests.test_passing_red_allowed_only_for_exact_regression_scope",
-      "source_paths": [
-        "_ask/tests/test_workflow_refs_taskresult.py",
-        "_ask/scripts/inner_loop/evidence.py",
-        "_ask/scripts/inner_loop/driver.py"
-      ]
     }
   ],
   "task_scopes": [
@@ -2868,8 +2826,7 @@
         "2/6",
         "2/7",
         "2/8",
-        "2/9",
-        "2/10"
+        "2/9"
       ]
     },
     {

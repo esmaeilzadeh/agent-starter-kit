@@ -1,6 +1,6 @@
 # Consolidated plan seal
 
-Status: **HISTORICAL SEAL; TASK 2 GATE AMENDMENT PENDING REVIEW**. The original
+Status: **HISTORICAL SEAL; TASK 2 AMENDMENT PENDING REVIEW**. The original
 sealed plan had 0 specification and planning blockers. Task 1's later
 classification amendment is accepted and registered. Task execution is paused
 while the Task 2 classification amendment receives exact-revision review and
@@ -39,8 +39,8 @@ The earlier rejected plan/review is retained in Git at `8f40b6c` and
 The Task 5 classification amendment reclassifies `5/1` and `5/2` as
 regressions; `5/3` remains new. It was independently reviewed and registered
 before the continuation-process correction. The current accepted-tests contract
-revision is `8d2ac720bf970b0571a774556a82f80d729e0929`, with test-plan digest
-`ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9` and
+revision is `447bac6bb948fa53420df882883bc4962716e619`, with test-plan digest
+`cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a` and
 TaskGraph digest `e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb`.
 
 The Task 1 amendment changed only case `1/2` from `new` to `regression`, based
@@ -48,15 +48,10 @@ on its pass at the recorded pre-implementation Red revision. Case `1/1` remains
 new. The amendment was independently reviewed and registered; the current
 accepted contract is pinned in `traceability-accepted.json`.
 
-The Task 2 classification amendment changed cases `2/1` through `2/9` from
+The Task 2 amendment proposes changing only cases `2/1` through `2/9` from
 `new` to `regression`, based on all nine passing at the recorded pre-implementation
-baseline. It was independently reviewed and registered under contract revision
-`8d2ac720bf970b0571a774556a82f80d729e0929`.
-
-A further Task 2 amendment proposes adding the regression-aware TaskResult gate
-and case `2/10`. It preserves the product specification and existing cases while
-extending Task 2's owned paths and mapped test scope. Independent review and
-renewed coordinator registration are pending.
+baseline. It preserves the spec, scenarios, assertions, source bindings, runners,
+and TaskGraph. Independent review and renewed coordinator registration are pending.
 
 Structural contract/graph checks, all criterion/type and case-owner mappings,
 task-time declared input availability, all frozen source hashes, and independent
