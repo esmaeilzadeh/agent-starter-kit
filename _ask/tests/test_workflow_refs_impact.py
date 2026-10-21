@@ -277,7 +277,10 @@ class ReferenceTests(unittest.TestCase):
         git(self.root, "add", "work/b/references/integrity.json")
         git(self.root, "commit", "-qm", "authority names unavailable source object")
         git(self.root, "update-ref", "refs/ask/references/b", git(self.root, "rev-parse", "HEAD"))
-        unavailable_object = load_project_graph(self.root, capture_project(self.root))
+        try:
+            unavailable_object = load_project_graph(self.root, capture_project(self.root))
+        except Exception as exc:
+            unavailable_object = {"status": "error", "detail": str(exc)}
         self.assertEqual(unavailable_object["status"], "incomplete", unavailable_object)
         self.assertTrue(any(entry["reason"] == "discovery_incomplete"
-                            for entry in unavailable_object["unresolved"]))
+                            for entry in unavailable_object.get("unresolved", [])))
