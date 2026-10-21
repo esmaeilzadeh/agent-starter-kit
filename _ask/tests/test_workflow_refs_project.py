@@ -116,6 +116,19 @@ class ReferenceTests(unittest.TestCase):
         changed_capture = capture_project(self.root, shared_owners={"shared"})
         self.assertEqual(load_project_graph(self.root, changed_capture)["status"], "incomplete")
 
+        # A registered snapshot whose Git commit was lost is unavailable, not an exception.
+        authority_path = self.root / "work/live/references/integrity.json"
+        authority = json.loads(authority_path.read_text())
+        authority["snapshots"]["live-snapshot"]["commit"] = "f" * 40
+        authority_path.write_text(json.dumps(authority, separators=(",", ":")) + "\n")
+        git(self.root, "add", "work/live/references/integrity.json")
+        git(self.root, "commit", "-qm", "authority names unavailable source")
+        git(self.root, "update-ref", "refs/ask/references/live", git(self.root, "rev-parse", "HEAD"))
+        unavailable = load_project_graph(self.root, capture_project(self.root, shared_owners={"shared"}))
+        self.assertEqual(unavailable["status"], "incomplete")
+        self.assertTrue(any(entry["reason"] == "discovery_incomplete"
+                            for entry in unavailable["unresolved"]))
+
     def test_coherent_capture_new_owner_and_aba(self):
         calls = []
         def shared_owner_aba(attempt, before):
