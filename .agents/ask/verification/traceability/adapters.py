@@ -40,12 +40,7 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 if runner['adapter']!='unittest' or len(argv)<4 or argv[1:3]!=['-m','unittest']:
                     raise Invalid('unsupported runner adapter/invocation')
                 eid=uuid.uuid4().hex;raw=directory/(eid+'.json');log=directory/(eid+'.log')
-                package_root = checkout / '.agents' / 'ask'
-                inherited_path = os.environ.get('PYTHONPATH', '')
-                python_path = os.pathsep.join(
-                    value for value in (str(package_root), inherited_path) if value)
-                env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
-                         PYTHONPATH=python_path,
+                env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',
                          ASK_TRACEABILITY_RUNTIME_ROOT=str(root))
                 with log.open('w') as stream:
                     try:
