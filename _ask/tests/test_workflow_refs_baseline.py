@@ -69,6 +69,16 @@ class ReferenceTests(unittest.TestCase):
             with self.assertRaises(BenchmarkError):
                 capture_baseline(ROOT)
 
+        with patch("tiktoken.get_encoding", side_effect=OSError("encoding cache unavailable")):
+            try:
+                capture_baseline(ROOT)
+            except Exception as exc:
+                tokenizer_error = exc
+            else:
+                self.fail("unavailable tokenizer data must refuse the measurement")
+            self.assertIsInstance(tokenizer_error, BenchmarkError)
+            self.assertIn("pinned tiktoken encoding is unavailable", str(tokenizer_error))
+
         with patch("workflow_refs.benchmark._git_blob", return_value=b"corrupt source"):
             with self.assertRaisesRegex(BenchmarkError, "frozen source integrity mismatch"):
                 capture_baseline(ROOT)
