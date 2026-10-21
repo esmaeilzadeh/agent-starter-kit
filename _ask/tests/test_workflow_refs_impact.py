@@ -267,3 +267,17 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(self.loaded_graph["status"], "incomplete")
         result = assess_impact(self.project_graph(), [P], capture=self.capture, repository_root=self.root)
         self.assertEqual(result["status"], "incomplete")
+
+        # A catalog pin to a lost Git object is unavailable, not an ordinary deletion.
+        catalog_path = self.root / "work/b/references/integrity.json"
+        catalog = json.loads(catalog_path.read_text())
+        snapshot_id = catalog["entries"][0]["snapshot_id"]
+        catalog["snapshots"][snapshot_id]["commit"] = "f" * 40
+        catalog_path.write_text(json.dumps(catalog, separators=(",", ":")) + "\n")
+        git(self.root, "add", "work/b/references/integrity.json")
+        git(self.root, "commit", "-qm", "authority names unavailable source object")
+        git(self.root, "update-ref", "refs/ask/references/b", git(self.root, "rev-parse", "HEAD"))
+        unavailable_object = load_project_graph(self.root, capture_project(self.root))
+        self.assertEqual(unavailable_object["status"], "incomplete", unavailable_object)
+        self.assertTrue(any(entry["reason"] == "discovery_incomplete"
+                            for entry in unavailable_object["unresolved"]))

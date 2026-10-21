@@ -40,23 +40,6 @@ def _graph(graph):
         if ref in nodes:
             raise ImpactError("identity_conflict", f"duplicate graph identity: {ref}")
         nodes[ref] = {**node, "reference": ref, "inputs": edges}
-    candidate_inputs = graph.get("candidate_inputs", {})
-    if not isinstance(candidate_inputs, dict):
-        raise ImpactError("discovery_incomplete", "candidate dependency declarations must be an object")
-    normalized_candidate_inputs = {}
-    for raw_ref, raw_edges in candidate_inputs.items():
-        ref = _reference(raw_ref)
-        if ref not in nodes or not isinstance(raw_edges, list):
-            raise ImpactError("discovery_incomplete", f"candidate declaration is unavailable for {ref}")
-        edges = []
-        for edge in raw_edges:
-            if not isinstance(edge, dict) or set(edge) != {"reference", "role"}:
-                raise ImpactError("discovery_incomplete", f"invalid candidate dependency declaration for {ref}")
-            target = _reference(edge["reference"])
-            if not isinstance(edge["role"], str) or not edge["role"].strip():
-                raise ImpactError("discovery_incomplete", f"candidate dependency role unavailable for {ref}")
-            edges.append({"reference": target, "role": edge["role"]})
-        normalized_candidate_inputs[ref] = edges
     deletions = graph.get("deletions", {})
     unavailable = graph.get("unavailable", {})
     if not isinstance(deletions, dict) or not isinstance(unavailable, dict):
@@ -75,7 +58,7 @@ def _graph(graph):
             raise ImpactError("discovery_incomplete", f"availability state is invalid: {ref}")
         unavailable_refs.add(ref)
     for ref, node in nodes.items():
-        for edge in node["inputs"] + normalized_candidate_inputs.get(ref, []):
+        for edge in node["inputs"]:
             if edge["reference"] not in nodes and edge["reference"] not in deletion_refs and edge["reference"] not in unavailable_refs:
                 raise ImpactError("discovery_incomplete", f"unresolved dependency {edge['reference']} from {ref}")
     visiting, visited = set(), set()
@@ -85,7 +68,7 @@ def _graph(graph):
         if ref in visited:
             return
         visiting.add(ref)
-        for edge in nodes[ref]["inputs"] + normalized_candidate_inputs.get(ref, []):
+        for edge in nodes[ref]["inputs"]:
             if edge["reference"] in nodes:
                 visit(edge["reference"])
         visiting.remove(ref)
@@ -206,17 +189,14 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
     for consumer, node in nodes.items():
         if node.get("active") is False:
             continue
-        combined_edges = node["inputs"] + graph.get("candidate_inputs", {}).get(consumer, [])
-        for edge in combined_edges:
+        for edge in node["inputs"]:
             reverse.setdefault(edge["reference"], []).append((consumer, edge))
     impacted = {}
-    queue = [(root, [root], frozenset()) for root in sorted(roots)]
+    queue = [(root, [root]) for root in sorted(roots)]
     traversed = set()
     while queue:
-        upstream, path, suppressed_consumers = queue.pop(0)
+        upstream, path = queue.pop(0)
         for consumer, edge in reverse.get(upstream, []):
-            if consumer in suppressed_consumers:
-                continue
             marker = (upstream, consumer, tuple(path))
             if marker in traversed:
                 continue
@@ -226,8 +206,7 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
             if decision is not None:
                 try:
                     parsed_upstream = _reference(decision.get("old_upstream")) if isinstance(decision, dict) else None
-                    input_edges = nodes[consumer]["inputs"] + graph.get("candidate_inputs", {}).get(consumer, [])
-                    input_paths = sorted({f"{item['reference']}|{item['role']}" for item in input_edges})
+                    input_paths = sorted(f"{item['reference']}|{item['role']}" for item in nodes[consumer]["inputs"])
                     eligible = decision.get("eligible_consumers", []) if isinstance(decision, dict) else []
                     new_upstream = _reference(decision.get("new_upstream")) if isinstance(decision, dict) else None
                     old_upstream_identity = parse_reference(upstream)
@@ -265,30 +244,23 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
                 "paths": [], "inputs": [{"reference": input_edge["reference"],
                     "role": input_edge["role"],
                     "resolved": input_edge["reference"] not in unavailable
-                        and bool(nodes.get(input_edge["reference"], {}).get("resolved", True))
-                        and not (nodes.get(input_edge["reference"], {}).get("lifecycle_explicit")
-                                 and not nodes.get(input_edge["reference"], {}).get("active")),
+                        and bool(nodes.get(input_edge["reference"], {}).get("resolved", True)),
                     "deleted": input_edge["reference"] in deletions}
-                    for input_edge in nodes[consumer]["inputs"] +
-                    graph.get("candidate_inputs", {}).get(consumer, [])], "decision": decision_result})
+                    for input_edge in nodes[consumer]["inputs"]], "decision": decision_result})
             if decision_result and decision_result.get("status") == "retired":
                 item["status"] = "retired"
             elif decision_result and decision_result.get("status") == "revised":
                 item["status"] = "revised"
             item["paths"].append(path + [consumer])
-            if consumer not in path:
-                stopped_consumers = (frozenset(decision_result["decision"]["eligible_consumers"])
-                                     if stopped else frozenset())
-                queue.append((consumer, path + [consumer], stopped_consumers))
+            if not stopped and consumer not in path:
+                queue.append((consumer, path + [consumer]))
     incomplete = [ref for ref, item in impacted.items()
                   if item["status"] == "incomplete"
                   or any(not edge["resolved"] for edge in item["inputs"])
                   or (item["decision"] and item["decision"].get("status") == "incomplete")]
     for ref in incomplete:
         impacted[ref]["status"] = "incomplete"
-    unregistered_candidates = graph.get("unregistered_candidates", [])
-    return {"status": "incomplete" if incomplete or unregistered_candidates else "complete", "capture_generation":
+    return {"status": "incomplete" if incomplete else "complete", "capture_generation":
             capture.get("generation") if capture else None, "roots": sorted(roots),
             "deletions": {ref: deletions[ref] for ref in sorted(roots) if ref in deletions},
-            "items": impacted, "unresolved": incomplete,
-            "unregistered_candidates": unregistered_candidates}
+            "items": impacted, "unresolved": incomplete}
