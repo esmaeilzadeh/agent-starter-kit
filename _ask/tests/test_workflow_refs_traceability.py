@@ -22,7 +22,7 @@ from verification.traceability.adapters import run_tests
 from workflow_refs.codec import encode_envelope, normalize_envelope
 
 
-class ReferenceTraceabilityTests(unittest.TestCase):
+class ReferenceTests(unittest.TestCase):
     def test_authority_rejects_candidate_substitution(self):
         consumer = Consumer()
         self.addCleanup(consumer.close)
