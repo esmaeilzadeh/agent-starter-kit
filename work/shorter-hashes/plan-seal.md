@@ -3,8 +3,7 @@
 Status: **HISTORICAL SEAL; TASK 2 GATE AMENDMENT PENDING REVIEW**. The original
 sealed plan had 0 specification and planning blockers. Task 1's later
 classification amendment is accepted and registered. Task execution is paused
-while the Task 2 classification amendment receives exact-revision review and
-registration.
+while the Task 2 gate amendment receives exact-revision review and registration.
 
 - Workstream: `shorter-hashes`.
 - Requirements baseline: sealed specification revision **7**, all **18** criteria;
@@ -12,8 +11,9 @@ registration.
 - Exact reviewed planning source: `02ad31b6e5ef5130986a920f943788cbbe970631`.
 - Consolidated plan: `plan.md`; producer/consumer boundary: `surface-inventory.md`.
 - Work breakdown: **10 ordered tasks**, `inner-loop/tasks.yaml`.
-- Test contract: **39 planned cases**, **14 supported unittest runners**,
+- Original sealed test contract: **39 planned cases**, **14 supported unittest runners**;
   all required criterion/type obligations and exact one-task case ownership.
+- Current amended test contract proposal: **40 planned cases**, **15 supported unittest runners**.
 - Measurement: **3 frozen journeys**, **14 real source files**, exact tokenizer
   version/encoding and accounting in `benchmark/baseline.json` and requirements.
 - Independent review: `plan-review.md` and `traceability/plan-review.json`;

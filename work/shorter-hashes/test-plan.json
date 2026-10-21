@@ -2819,7 +2819,7 @@
     {
       "id": "2/10",
       "criterion_ids": [
-        "SH-13"
+        "SH-14"
       ],
       "type": "integration",
       "change_kind": "new",
@@ -2833,7 +2833,7 @@
       },
       "expected_assertions": [
         {
-          "criterion_id": "SH-13",
+          "criterion_id": "SH-14",
           "checks": [
             "The integration gate accepts the truthful passing Red evidence only when its exact test IDs match the task's accepted regression cases",
             "A passing Red result for any task containing a new case, or with missing/extra test IDs, is refused"
