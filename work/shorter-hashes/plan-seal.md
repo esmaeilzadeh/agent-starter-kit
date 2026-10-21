@@ -40,12 +40,15 @@ before the continuation-process correction. The latest accepted-tests
 authority currently binds contract commit `c98f089c0a0f3d11608f37289a0d43165a35556e`
 and the original plan digest `39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f`.
 
-The Task 1 amendment proposes changing only case `1/2` from `new` to
-`regression`, based on its pass at the recorded pre-implementation Red
-revision. Case `1/1` remains new. The amended canonical test-plan digest is
-`cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a`. It
-preserves the spec, scenarios, assertions, source bindings, runners, and
-TaskGraph. Independent review and renewed coordinator registration are pending.
+The Task 1 amendment changed only case `1/2` from `new` to `regression`, based
+on its pass at the recorded pre-implementation Red revision. Case `1/1` remains
+new. The amendment was independently reviewed and registered; the current
+accepted contract is pinned in `traceability-accepted.json`.
+
+The Task 2 amendment proposes changing only cases `2/1` through `2/9` from
+`new` to `regression`, based on all nine passing at the recorded pre-implementation
+baseline. It preserves the spec, scenarios, assertions, source bindings, runners,
+and TaskGraph. Independent review and renewed coordinator registration are pending.
 
 Structural contract/graph checks, all criterion/type and case-owner mappings,
 task-time declared input availability, all frozen source hashes, and independent

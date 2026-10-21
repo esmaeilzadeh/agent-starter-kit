@@ -354,7 +354,7 @@
         "SH-08"
       ],
       "type": "unit",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "The same local numbers occur under distinct works/types/parents/revisions",
         "when": "Numeric references are encoded, sorted and resolved",
@@ -402,7 +402,7 @@
         "SH-02"
       ],
       "type": "unit",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "One task consumes two specs and its owner/source path moves",
         "when": "Parent mapping and exact references are resolved across versions",
@@ -437,7 +437,7 @@
         "SH-08"
       ],
       "type": "unit",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Two explicit raw Git IDs share a prefix that was previously unique",
         "when": "Raw inspection displays and resolves the old prefix",
@@ -480,7 +480,7 @@
         "SH-08"
       ],
       "type": "unit",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "An item revision and accepted contract have published integrity entries",
         "when": "A later revision and separate run are registered",
@@ -529,7 +529,7 @@
         "SH-06"
       ],
       "type": "unit",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Identical JSON values have different serialization while byte-bound logs differ",
         "when": "Full integrity data is registered once under algorithm and semantics",
@@ -570,7 +570,7 @@
         "SH-09"
       ],
       "type": "unit",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Missing, null, empty, Unicode, arrays and shared typed references",
         "when": "Compact envelopes are written, decoded and normalized",
@@ -606,7 +606,7 @@
         "SH-13"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Two cooperating writers race on one ID/revision and readers load during injected interruptions",
         "when": "CAS publication is interrupted before and after authority advancement then retried",
@@ -655,7 +655,7 @@
         "SH-05"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Retained old contracts/runs and full authoritative external-log digests",
         "when": "New records are appended and old entries/artifacts are altered or made unavailable",
@@ -698,7 +698,7 @@
         "SH-09"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "A temporary work contains spec/part, plan/item, task and test identities",
         "when": "A producer persists envelopes and a separate reader reloads them",
