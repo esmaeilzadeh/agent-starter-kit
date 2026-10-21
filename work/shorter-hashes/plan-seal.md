@@ -37,7 +37,7 @@ The earlier rejected plan/review is retained in Git at `8f40b6c` and
 The Task 5 classification amendment reclassifies `5/1` and `5/2` as
 regressions; `5/3` remains new. It was independently reviewed and registered
 before the continuation-process correction. The latest accepted-tests
-authority currently binds contract commit `c98f089c0a0f3d11608f37289be7baa149ad166a8`
+authority currently binds contract commit `c98f089c0a0f3d11608f37289a0d43165a35556e`
 and the original plan digest `39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f`.
 
 The Task 1 amendment proposes changing only case `1/2` from `new` to
