@@ -1,0 +1,32 @@
+{
+  "schema": "ask-plan-review/v1",
+  "decision": "APPROVED",
+  "reviewer": "/root/review_cr1",
+  "work_id": "continuation-recovery",
+  "contract_sha": "68ca29caf9cc06a5460157685bacba0bef7b3f97",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "d7b993d90f5583971232c2a4369b464b8f4594dc7525fc69b09d938d7a678582",
+  "graph_digest": "603436409d18cff608882a62aac63c19314d8448b1bd5828fe627934dcd30104",
+  "design_file_sha256": {
+    "work/continuation-recovery/authorization.md": "cc147a34c0d04ce9bc8e869a930dc7fec538c905c612b038791cf03f5df33b91",
+    "work/continuation-recovery/plan.md": "eeb541ae1dcc2a2d6194f3c4ea66f0459c4fff6ec7f945a6d4cd204e6e80af8a",
+    "work/continuation-recovery/checkpoint-design.md": "ee57baec5a000dba4ed8673409cc8b3e2b71ce51a4588a4877cb7c62b66f2591",
+    "work/continuation-recovery/bootstrap.md": "e71a543be5d0ff9a38e3c48b321a715bfd4d09bee8052e7cfdf6d82091690aca",
+    "work/continuation-recovery/bootstrap-baseline.json": "c65ce6ebcaafb74220bcb2309446cc36d7f6604a32dc1f0de7fa5a4fee097d03",
+    "work/continuation-recovery/plan-review-reevaluation.md": "dda8a3173a25c99c802f9ed7b06de9c92d8784e71e4fc7ce4e6ef1f8c7614a41"
+  },
+  "findings": [],
+  "resolution": {
+    "independent_exact_review": "Approved CR-1 amendment candidate 96d3dc07b6356a24ba4acd4069cab2648733ecec. Confirmed CR-T51/52 assertions, exact mappings for all changed recovery methods, 29 exact reliability selectors CR-T22..50, coherent plan/graph/test mapping, and unchanged approved intent/spec."
+  },
+  "static_validation": [
+    "./ask inner-loop validate continuation-recovery passed.",
+    "./ask traceability validate-plan continuation-recovery passed.",
+    "All 34 CR-1 unittest selectors collected/imported.",
+    "Independent exact plan review approved candidate 96d3dc07b6356a24ba4acd4069cab2648733ecec."
+  ],
+  "limitations": [
+    "Planning review only; no new implementation behavior is established by this review.",
+    "This amendment review authorizes CR-1 plan registration; it does not claim CR-1 integration or workstream completion."
+  ]
+}
