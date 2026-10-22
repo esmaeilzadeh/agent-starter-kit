@@ -18,7 +18,7 @@ from inner_loop.graph import _task_map, load_graph, validate_graph
 from inner_loop.integrate import Escalate, resume as git_resume
 from inner_loop.integrate import integrate as git_integrate
 from inner_loop.state import cas_apply, cas_init, load_state, spawn_writer, state_lock, state_transaction
-from inner_loop.recovery import RecoveryRequired, require_safe
+from inner_loop.recovery import require_safe
 
 
 def git_sha(root: Path) -> str:
@@ -89,14 +89,9 @@ def ensure_state(root: Path, work_id: str) -> dict:
         ids = list(_task_map(graph))
         require_safe(root, work_id, graph, None)
         return cas_init(root, work_id, ids, coordinator_sha=git_sha(root))
-    except json.JSONDecodeError as exc:
+    except json.JSONDecodeError:
         require_safe(root, work_id, graph, None)
-        raise RecoveryRequired({
-            "status": "recovery_required", "work_id": work_id, "task_ids": [],
-            "evidence_paths": [f"work/{work_id}/inner-loop/state.json"],
-            "conflicts": [f"state.json is invalid JSON: {exc}"],
-            "next_actions": ["preserve the cache bytes and reconcile its history before resuming"],
-        }) from exc
+        raise
     require_safe(root, work_id, graph, doc)
     return doc
 
@@ -153,14 +148,9 @@ def run_once(root: Path, work_id: str) -> str:
         doc = load_state(root, work_id)
     except FileNotFoundError:
         doc = None
-    except json.JSONDecodeError as exc:
+    except json.JSONDecodeError:
         require_safe(root, work_id, graph, None)
-        raise RecoveryRequired({
-            "status": "recovery_required", "work_id": work_id, "task_ids": [],
-            "evidence_paths": [f"work/{work_id}/inner-loop/state.json"],
-            "conflicts": [f"state.json is invalid JSON: {exc}"],
-            "next_actions": ["preserve the cache bytes and reconcile its history before resuming"],
-        }) from exc
+        raise
     require_safe(root, work_id, graph, doc)
     if doc is None:
         doc = {"tasks": {}}
