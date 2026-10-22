@@ -161,6 +161,7 @@ def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str
                 "attempt_number": 0,
                 "attempt_id": "",
                 "accepted_plan_ref": "",
+                "accepted_plan_digest": "",
                 "attempt_started_revision": None,
                 "attempt_history": [],
             }
