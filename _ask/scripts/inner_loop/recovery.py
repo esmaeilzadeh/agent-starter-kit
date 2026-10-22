@@ -167,6 +167,20 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
         if coordinator and not _commit_exists(root, coordinator):
             conflicts.append("state coordinator_sha is missing from this Git object database")
             paths.add(str(state_path.relative_to(root)))
+        try:
+            from inner_loop.checkpoint import CheckpointError, read_checkpoint
+        except ImportError:
+            checkpoint = None
+        else:
+            try:
+                checkpoint = read_checkpoint(root, work_id)
+            except CheckpointError as exc:
+                checkpoint = None
+                conflicts.append(f"checkpoint is invalid: {exc}")
+                paths.add(str(state_path.relative_to(root)))
+        if checkpoint is not None and checkpoint[1] != state:
+            conflicts.append("state.json is newer or divergent from the retained checkpoint")
+            paths.add(str(state_path.relative_to(root)))
 
     result_docs: list[tuple[str, dict, bytes]] = []
     for path in _result_files(root, work_id):

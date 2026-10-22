@@ -32,6 +32,7 @@ from inner_loop.state import (  # noqa: E402
     spawn_writer,
 )
 from inner_loop.recovery import RecoveryRequired, inspect as inspect_recovery  # noqa: E402
+from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle  # noqa: E402
 from engineering_model.actions import Refused
 from engineering_model.workflow import adopted, branch_work_id, guarded_workflow, workflow_admission
 
@@ -175,6 +176,14 @@ def main(argv: list[str] | None = None) -> int:
     rn = sub.add_parser("run", help="start next ready writer or integrate_ready")
     rn.add_argument("work_id")
 
+    ce = sub.add_parser("checkpoint-export", help="export retained checkpoint and its object closure")
+    ce.add_argument("work_id")
+    ce.add_argument("--out", required=True)
+
+    ci_bundle = sub.add_parser("checkpoint-import", help="import a retained checkpoint bundle")
+    ci_bundle.add_argument("work_id")
+    ci_bundle.add_argument("bundle")
+
     rm = sub.add_parser("resume", help="abort to state.json coordinator_sha, then run")
     rm.add_argument("work_id")
 
@@ -240,6 +249,12 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "run":
             print(run_until(root, args.work_id))
             return 0
+        if args.cmd == "checkpoint-export":
+            export_bundle(root, args.work_id, Path(args.out))
+            return 0
+        if args.cmd == "checkpoint-import":
+            print(import_bundle(root, args.work_id, Path(args.bundle)))
+            return 0
         if args.cmd == "resume":
             print(resume_from_state(root, args.work_id))
             return 0
@@ -253,6 +268,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     except RecoveryRequired as e:
         print(json.dumps(e.report, indent=2), file=sys.stderr)
+        return 2
+    except CheckpointError as e:
+        print(json.dumps({"status": "recovery_required", "error": str(e)}, indent=2), file=sys.stderr)
         return 2
     except CasConflict as e:
         print(e, file=sys.stderr)

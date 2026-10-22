@@ -53,9 +53,35 @@ def _require_reconciled(root: Path, work_id: str, state: dict | None,
 
 def load_state(root: Path, work_id: str) -> dict:
     path = state_path(root, work_id)
+    from inner_loop.checkpoint import CheckpointError, restore_cache
+    from inner_loop.recovery import RecoveryRequired
+
     if not path.is_file():
-        raise FileNotFoundError(str(path))
-    return json.loads(path.read_text(encoding="utf-8"))
+        try:
+            restored = restore_cache(root, work_id)
+        except CheckpointError as exc:
+            raise RecoveryRequired({
+                "status": "recovery_required", "work_id": work_id,
+                "evidence_paths": [str(path.relative_to(root))], "conflicts": [str(exc)],
+            }) from exc
+        if restored is None:
+            raise FileNotFoundError(str(path))
+        return restored
+    raw = path.read_bytes()
+    try:
+        cached = json.loads(raw)
+    except json.JSONDecodeError:
+        # Preserve corrupt bytes for explicit reconciliation; they cannot be
+        # proven to be an exact older generation.
+        raise
+    try:
+        restored = restore_cache(root, work_id, cached)
+    except CheckpointError as exc:
+        raise RecoveryRequired({
+            "status": "recovery_required", "work_id": work_id,
+            "evidence_paths": [str(path.relative_to(root))], "conflicts": [str(exc)],
+        }) from exc
+    return restored if restored is not None else cached
 
 
 @contextmanager
@@ -92,6 +118,14 @@ def _write_state(path: Path, doc: dict) -> None:
             Path(name).unlink(missing_ok=True)
 
 
+def _publish_state(root: Path, work_id: str, doc: dict) -> None:
+    from inner_loop.checkpoint import is_repository, publish
+
+    if is_repository(root):
+        publish(root, work_id, doc)
+    _write_state(state_path(root, work_id), doc)
+
+
 @contextmanager
 def state_transaction(root: Path, work_id: str, observed_revision: int | None = None):
     """Hold the lock through validation, side effects and one atomic state fold."""
@@ -103,7 +137,7 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         _require_reconciled(root, work_id, doc)
         yield doc
         doc["revision"] = stored + 1
-        _write_state(state_path(root, work_id), doc)
+        _publish_state(root, work_id, doc)
 
 
 def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str = "") -> dict:
@@ -141,8 +175,20 @@ def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str
             # look like a conflicting graph when no accepted graph file exists.
             _require_reconciled(root, work_id, doc)
             return doc
+        from inner_loop.checkpoint import CheckpointError, restore_cache
+        try:
+            restored = restore_cache(root, work_id)
+        except CheckpointError as exc:
+            from inner_loop.recovery import RecoveryRequired
+            raise RecoveryRequired({
+                "status": "recovery_required", "work_id": work_id,
+                "evidence_paths": [str(path.relative_to(root))], "conflicts": [str(exc)],
+            }) from exc
+        if restored is not None:
+            _require_reconciled(root, work_id, restored)
+            return restored
         _require_reconciled(root, work_id, None, task_ids)
-        _write_state(path, doc)
+        _publish_state(root, work_id, doc)
         return doc
 
 
