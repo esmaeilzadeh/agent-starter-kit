@@ -21,7 +21,7 @@ from _ask.tests.inner_loop_recovery_fixture import (
     write_legacy_fixture,
 )
 from inner_loop.graph import load_graph
-from inner_loop.checkpoint import publish, read_checkpoint
+from inner_loop.checkpoint import publish, read_checkpoint, _read_tree
 from inner_loop.recovery import inspect as inspect_recovery
 
 TASKS = """schema: ask-inner-loop-tasks/v1
@@ -808,9 +808,28 @@ class RecoveryTests(unittest.TestCase):
 
     def test_reject_incomplete_or_unsafe_checkpoint(self):
         self.start_candidate()
+        missing_fixture_sha = "7a7d800d3d47459780858e1b12c41493f99537b4"
+        failed_static = self.root / "work/w/traceability" / f"static-{missing_fixture_sha}.json"
+        failed_static.parent.mkdir(parents=True, exist_ok=True)
+        failed_static_raw = json.dumps(
+            {"candidate_sha": missing_fixture_sha, "result": "fail"}, indent=2
+        ).encode() + b"\n"
+        failed_static.write_bytes(failed_static_raw)
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        publish(self.root, "w", state)
+        checkpoint_doc = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint_doc)
+        checkpoint_sha, _checkpoint_state, checkpoint_files = checkpoint_doc
+        manifest, _ = _read_tree(self.root, checkpoint_sha)
+        self.assertEqual(
+            checkpoint_files["artifacts/work/w/traceability/" + failed_static.name],
+            failed_static_raw,
+        )
+        self.assertNotIn(missing_fixture_sha, manifest["retained_commits"])
+
         checkpoint = self._checkpoint_ref()
         self.assertIsNotNone(checkpoint, "checkpoint validation requires a published baseline")
-        state_path = self.root / "work/w/inner-loop/state.json"
         state_before = state_path.read_bytes()
         result_before = self.result_path.read_bytes()
         review_before = self.review_path.read_bytes()
