@@ -63,6 +63,7 @@ def ready_ids(graph: dict, doc: dict) -> list[str]:
         "integrated",
         "cancelled",
         "blocked",
+        "interrupted",
         "failed",
         "escalated",
     }

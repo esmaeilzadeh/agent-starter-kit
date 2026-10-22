@@ -158,6 +158,11 @@ def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str
                 "review_round": 0,
                 "debug_round": 0,
                 "evidence": {},
+                "attempt_number": 0,
+                "attempt_id": "",
+                "accepted_plan_ref": "",
+                "attempt_started_revision": None,
+                "attempt_history": [],
             }
             for tid in task_ids
         },
@@ -206,6 +211,8 @@ def spawn_writer(root: Path, work_id: str, task_id: str) -> dict:
         task = doc["tasks"][task_id]
         if task["status"] not in ("pending", "ready"):
             raise ProtocolViolation(f"cannot start {task_id}: {task['status']}")
+        from inner_loop.attempts import new_attempt
+        task.update(new_attempt(task_id, task, root, work_id, int(doc["revision"]) + 1))
         task["status"] = "running"
         task["base_sha"] = doc["coordinator_sha"]
     return doc

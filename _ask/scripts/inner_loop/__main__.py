@@ -114,6 +114,16 @@ def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
     return 0
 
 
+@guarded_workflow
+def cmd_interrupt(root: Path, work_id: str, task_id: str, reason: str) -> dict:
+    return interrupt_task(root, work_id, task_id, reason)
+
+
+@guarded_workflow
+def cmd_reopen(root: Path, work_id: str, task_id: str, reason: str) -> dict:
+    return reopen_task(root, work_id, task_id, reason)
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ask inner-loop", allow_abbrev=False)
     p.add_argument("--root", default=None)
@@ -273,11 +283,11 @@ def main(argv: list[str] | None = None) -> int:
             print(cancel(root, args.work_id, args.target))
             return 0
         if args.cmd == "interrupt":
-            doc = interrupt_task(root, args.work_id, args.task_id, args.reason)
+            doc = cmd_interrupt(root, args.work_id, args.task_id, args.reason)
             print(f"interrupted={args.task_id} revision={doc['revision']}")
             return 0
         if args.cmd == "reopen":
-            doc = reopen_task(root, args.work_id, args.task_id, args.reason)
+            doc = cmd_reopen(root, args.work_id, args.task_id, args.reason)
             print(f"running={args.task_id} revision={doc['revision']}")
             return 0
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
