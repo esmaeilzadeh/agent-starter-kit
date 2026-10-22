@@ -2291,8 +2291,7 @@
       "id": "CR-T53",
       "task_id": "CR-1",
       "criterion_ids": [
-        "CR-01",
-        "CR-06"
+        "CR-01"
       ],
       "type": "integration",
       "change_kind": "regression",
@@ -2307,12 +2306,6 @@
       "expected_assertions": [
         {
           "criterion_id": "CR-01",
-          "checks": [
-            "Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor."
-          ]
-        },
-        {
-          "criterion_id": "CR-06",
           "checks": [
             "Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor."
           ]
@@ -2331,8 +2324,7 @@
       "id": "CR-T54",
       "task_id": "CR-1",
       "criterion_ids": [
-        "CR-01",
-        "CR-06"
+        "CR-01"
       ],
       "type": "integration",
       "change_kind": "regression",
@@ -2347,12 +2339,6 @@
       "expected_assertions": [
         {
           "criterion_id": "CR-01",
-          "checks": [
-            "A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
-          ]
-        },
-        {
-          "criterion_id": "CR-06",
           "checks": [
             "A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
           ]
