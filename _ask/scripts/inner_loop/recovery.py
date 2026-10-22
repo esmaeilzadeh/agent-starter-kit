@@ -178,16 +178,69 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
     if not isinstance(executions, list):
         return False
     old_plan_digest = old_pin.get("plan_digest")
-    return any(
-        isinstance(row, dict)
-        and row.get("scope") == "task"
-        and row.get("task_id") == task_id
-        and row.get("phase") == "final_green"
-        and row.get("candidate_sha") == result.get("candidate_sha")
-        and row.get("plan_digest") == old_plan_digest
-        and row.get("spec_digest") == old_pin.get("spec_digest")
-        for row in executions
-    )
+    old_scope = _scope_test_ids(previous["plan"], task_id)
+    if old_scope is None or not old_scope:
+        return False
+    reports = root / "work" / work_id / "traceability" / "runs"
+    for row in executions:
+        if not (isinstance(row, dict)
+                and row.get("scope") == "task"
+                and row.get("task_id") == task_id
+                and row.get("phase") == "final_green"
+                and row.get("candidate_sha") == result.get("candidate_sha")
+                and row.get("plan_digest") == old_plan_digest
+                and row.get("spec_digest") == old_pin.get("spec_digest")):
+            continue
+        run_id = row.get("run_id")
+        if not isinstance(run_id, str) or not run_id or "/" in run_id or "\\" in run_id:
+            continue
+        report_path = reports / run_id / "results.json"
+        try:
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            raw = json.dumps(report, sort_keys=True, separators=(",", ":")).encode()
+        except (OSError, ValueError, TypeError):
+            continue
+        if (not isinstance(report, dict)
+                or row.get("digest") != hashlib.sha256(raw).hexdigest()
+                or report.get("schema") != "ask-test-results/v1"
+                or report.get("run_id") != run_id
+                or report.get("candidate_sha") != result.get("candidate_sha")
+                or report.get("scope") != "task"
+                or report.get("task_id") != task_id
+                or report.get("plan_digest") != old_plan_digest
+                or report.get("spec_digest") != old_pin.get("spec_digest")
+                or {run.get("phase") for run in report.get("executions", [])
+                    if isinstance(run, dict)} != {"final_green"}):
+            continue
+        passed = set()
+        for case in report.get("cases", []):
+            if (isinstance(case, dict) and case.get("phase") == "final_green"
+                    and case.get("outcome") == "passed" and isinstance(case.get("test_id"), str)):
+                executions = [run for run in report.get("executions", [])
+                              if isinstance(run, dict) and run.get("id") == case.get("execution_id")]
+                if len(executions) == 1:
+                    passed.add(case["test_id"])
+        if old_scope.issubset(passed):
+            return True
+    return False
+
+
+def _traceability_matches_checkpoint(root: Path, work_id: str,
+                                     checkpoint: tuple[str, dict, dict[str, bytes]]) -> bool:
+    """Refuse runtime traceability edits that are newer than retained evidence."""
+    prefix = f"work/{work_id}/traceability/"
+    retained = {name[len("artifacts/"):]: content
+                for name, content in checkpoint[2].items()
+                if name.startswith("artifacts/" + prefix)}
+    directory = root / "work" / work_id / "traceability"
+    live = {}
+    if directory.is_dir():
+        for path in directory.rglob("*"):
+            if path.is_symlink():
+                return False
+            if path.is_file():
+                live[path.relative_to(root).as_posix()] = path.read_bytes()
+    return live == retained
 
 
 def _changed_paths(root: Path, base: str, head: str) -> list[str]:
@@ -343,6 +396,9 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
         if checkpoint is not None and checkpoint[1] != state:
             conflicts.append("state.json is newer or divergent from the retained checkpoint")
             paths.add(str(state_path.relative_to(root)))
+        if checkpoint is not None and not _traceability_matches_checkpoint(root, work_id, checkpoint):
+            conflicts.append("runtime traceability evidence differs from the retained checkpoint")
+            paths.add(str((root / "work" / work_id / "traceability").relative_to(root)))
 
     result_docs: list[tuple[str, dict, bytes]] = []
     for path in _result_files(root, work_id):
