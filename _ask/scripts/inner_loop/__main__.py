@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -30,6 +31,7 @@ from inner_loop.state import (  # noqa: E402
     load_state,
     spawn_writer,
 )
+from inner_loop.recovery import RecoveryRequired, inspect as inspect_recovery  # noqa: E402
 from engineering_model.actions import Refused
 from engineering_model.workflow import adopted, branch_work_id, guarded_workflow, workflow_admission
 
@@ -51,12 +53,37 @@ def cmd_status(root: Path, work_id: str) -> int:
     try:
         doc = load_state(root, work_id)
     except FileNotFoundError:
+        doc = None
+    except json.JSONDecodeError:
+        doc = None
+    graph = load_graph(root, work_id)
+    report = inspect_recovery(root, work_id, graph, doc)
+    if report is not None:
+        print(json.dumps(report, indent=2))
+        return 2
+    if doc is None:
         print("no state")
         return 1
     print(f"revision={doc.get('revision')} sha={doc.get('coordinator_sha')}")
     for tid, t in sorted((doc.get("tasks") or {}).items()):
         print(f"{tid}\t{t.get('status')}")
     return 0
+
+
+def cmd_reconcile(root: Path, work_id: str) -> int:
+    graph = load_graph(root, work_id)
+    try:
+        doc = load_state(root, work_id)
+    except FileNotFoundError:
+        doc = None
+    except json.JSONDecodeError:
+        doc = None
+    report = inspect_recovery(root, work_id, graph, doc)
+    if report is None:
+        print(json.dumps({"status": "ready", "work_id": work_id}, indent=2))
+        return 0
+    print(json.dumps(report, indent=2))
+    return 2
 
 
 @guarded_workflow
@@ -95,6 +122,9 @@ def main(argv: list[str] | None = None) -> int:
 
     s = sub.add_parser("status", help="print coordinator state")
     s.add_argument("work_id")
+
+    rc = sub.add_parser("reconcile", help="read-only recovery preflight")
+    rc.add_argument("work_id")
 
     ci = sub.add_parser("cas-init", help="initialize state.json without overwriting existing state")
     ci.add_argument("work_id")
@@ -159,6 +189,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_validate(root, args.work_id)
         if args.cmd == "status":
             return cmd_status(root, args.work_id)
+        if args.cmd == "reconcile":
+            return cmd_reconcile(root, args.work_id)
         if args.cmd == "cas-init":
             return cmd_cas_init(root, args.work_id)
         if args.cmd == "cas-apply":
@@ -218,6 +250,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     except ProtocolViolation as e:
         print(e, file=sys.stderr)
+        return 2
+    except RecoveryRequired as e:
+        print(json.dumps(e.report, indent=2), file=sys.stderr)
         return 2
     except CasConflict as e:
         print(e, file=sys.stderr)

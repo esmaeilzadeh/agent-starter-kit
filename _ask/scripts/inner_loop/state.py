@@ -33,6 +33,24 @@ def _require_coordinator() -> None:
         raise ProtocolViolation("worker must not write state.json (protocol violation)")
 
 
+def _require_reconciled(root: Path, work_id: str, state: dict | None,
+                        task_ids: list[str] | None = None) -> None:
+    """Apply the recovery guard at every state mutation boundary."""
+    from inner_loop.graph import load_graph
+    from inner_loop.recovery import require_safe
+
+    graph_path = root / "work" / work_id / "inner-loop" / "tasks.yaml"
+    if graph_path.is_file():
+        graph = load_graph(root, work_id)
+    else:
+        graph = {
+            "work_id": work_id,
+            "tasks": [{"id": task_id, "depends_on": [], "owned_paths": []}
+                      for task_id in (task_ids or (state or {}).get("tasks", {}))],
+        }
+    require_safe(root, work_id, graph, state)
+
+
 def load_state(root: Path, work_id: str) -> dict:
     path = state_path(root, work_id)
     if not path.is_file():
@@ -82,6 +100,7 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         stored = int(doc["revision"])
         if observed_revision is not None and stored != observed_revision:
             raise CasConflict(f"revision mismatch: observed={observed_revision} stored={stored}")
+        _require_reconciled(root, work_id, doc)
         yield doc
         doc["revision"] = stored + 1
         _write_state(state_path(root, work_id), doc)
@@ -112,7 +131,14 @@ def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str
     path = state_path(root, work_id)
     with state_lock(root, work_id):
         if path.exists():
-            return load_state(root, work_id)
+            try:
+                doc = load_state(root, work_id)
+            except json.JSONDecodeError:
+                _require_reconciled(root, work_id, None, task_ids)
+                raise
+            _require_reconciled(root, work_id, doc, task_ids)
+            return doc
+        _require_reconciled(root, work_id, None, task_ids)
         _write_state(path, doc)
         return doc
 

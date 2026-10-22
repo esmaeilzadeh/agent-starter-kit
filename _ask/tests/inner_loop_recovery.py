@@ -29,7 +29,7 @@ tasks:
   - id: b
     depends_on: [a]
     owned_paths:
-      - src/b.py
+      - src/a.py
 """
 
 REPAIR_TASKS = """schema: ask-inner-loop-tasks/v1
@@ -137,6 +137,7 @@ class RecoveryTests(unittest.TestCase):
                     "task_id": "a",
                     "base_sha": self.anchor_commit,
                     "candidate_sha": self.candidate,
+                    "contract_sha": self.base,
                     "tdd": {
                         "seam": "src/a.py",
                         "red": {"command": "case", "output": "assertion failed", "exit_code": 1},
@@ -199,11 +200,23 @@ class RecoveryTests(unittest.TestCase):
         original["coordinator_sha"] = self.anchor_commit
         raw = json.dumps(original, indent=2) + "\n"
 
-        for command in (("run", "w"), ("cas-init", "w"), ("spawn-writer", "w", "a")):
+        for command in (
+            ("run", "w"),
+            ("cas-init", "w"),
+            ("spawn-writer", "w", "a"),
+            ("status", "w"),
+            ("reconcile", "w"),
+        ):
             state_path.write_text(raw, encoding="utf-8")
             result = self.run_cli(*command)
             self.assert_recovery_required(result, "w", "work/w/inner-loop/results/a.json")
             self.assertEqual(state_path.read_text(encoding="utf-8"), raw)
+
+        corrupt = "{broken cache bytes\n"
+        state_path.write_text(corrupt, encoding="utf-8")
+        result = self.run_cli("cas-init", "w")
+        self.assert_recovery_required(result, "state.json", "work/w/inner-loop/state.json")
+        self.assertEqual(state_path.read_text(encoding="utf-8"), corrupt)
 
     def test_fresh_initialization_and_missing_legacy_evidence(self):
         started = self.run_cli("run", "w")
@@ -236,6 +249,13 @@ class RecoveryTests(unittest.TestCase):
         self.assertIn("recovery_required", run.stdout + run.stderr)
         self.assertFalse((legacy / "work/w/inner-loop/state.json").exists())
 
+    def test_running_task_changes_may_overlap_later_task_ownership(self):
+        self.start_candidate()
+        status = self.run_cli("status", "w")
+        self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
+        self.assertIn("a\trunning", status.stdout)
+        self.assertIn("b\tpending", status.stdout)
+
     def test_contract_and_checkout_conflict(self):
         self.start_candidate()
         state_path = self.root / "work/w/inner-loop/state.json"
@@ -253,6 +273,12 @@ class RecoveryTests(unittest.TestCase):
         result_path.write_bytes(result_bytes)
         self.assertEqual(state_path.read_bytes(), state_before)
         self.assertEqual(review_path.read_bytes(), review_bytes)
+
+        wrong_contract = dict(original_result, contract_sha="0" * 40)
+        result_path.write_text(json.dumps(wrong_contract) + "\n", encoding="utf-8")
+        refused = self.run_cli("run", "w")
+        self.assert_recovery_required(refused, "contract", "work/w/inner-loop/results/a.json")
+        result_path.write_bytes(result_bytes)
 
         self.git("switch", "-qc", "side-candidate", self.anchor_commit)
         self.write("src/a.py", "candidate outside coordinator ancestry\n")
