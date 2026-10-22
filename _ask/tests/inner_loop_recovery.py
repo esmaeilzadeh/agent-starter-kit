@@ -308,12 +308,10 @@ class RecoveryTests(unittest.TestCase):
         missing_contract = dict(original_result)
         del missing_contract["contract_sha"]
         result_path.write_text(json.dumps(missing_contract) + "\n", encoding="utf-8")
-        refused = self.run_cli("status", "w")
-        missing_contract_reported = (
-            refused.returncode == 2
-            and "contract_sha" in refused.stdout + refused.stderr
-            and "work/w/inner-loop/results/a.json" in refused.stdout + refused.stderr
-        )
+        accepted_at_same_base = self.run_cli("status", "w")
+        self.assertEqual(accepted_at_same_base.returncode, 0,
+                         accepted_at_same_base.stdout + accepted_at_same_base.stderr)
+        self.assertIn("a\trunning", accepted_at_same_base.stdout)
         result_path.write_bytes(result_bytes)
 
         state = json.loads(state_before)
@@ -326,7 +324,6 @@ class RecoveryTests(unittest.TestCase):
             and "work/w/inner-loop/results/a.json" in refused.stdout + refused.stderr
         )
         state_path.write_bytes(state_before)
-        self.assertTrue(missing_contract_reported, "missing contract_sha must require recovery")
         self.assertTrue(empty_base_reported, "empty state base_sha must require recovery")
 
         self.git("switch", "-qc", "side-candidate", self.anchor_commit)
@@ -340,6 +337,18 @@ class RecoveryTests(unittest.TestCase):
         self.assert_recovery_required(refused, "candidate", "work/w/inner-loop/results/a.json")
         self.assertEqual(state_path.read_bytes(), state_before)
         self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)
+
+        pin_path = self.root / "work/w/traceability-accepted.json"
+        pin = json.loads(pin_path.read_text())
+        pin["contract_sha"] = self.candidate
+        pin_path.write_text(json.dumps(pin) + "\n", encoding="utf-8")
+        self.commit("change accepted contract after task base")
+        missing_contract = dict(original_result)
+        del missing_contract["contract_sha"]
+        missing_contract["candidate_sha"] = self.git("rev-parse", "HEAD")
+        result_path.write_text(json.dumps(missing_contract) + "\n", encoding="utf-8")
+        refused = self.run_cli("status", "w")
+        self.assert_recovery_required(refused, "contract", "work/w/inner-loop/results/a.json")
 
     def test_isolated_repair_initialization_and_legacy_handoff(self):
         fixture = Path(self.temp.name) / "legacy-product"
