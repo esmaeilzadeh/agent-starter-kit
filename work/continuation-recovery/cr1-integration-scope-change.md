@@ -17,8 +17,9 @@ would leave required integration evidence red.
 
 Expand CR-1 ownership to include `_ask/tests/inner_loop_reliability.py`; add an
 exact regression selector for each of its 29 existing test methods as CR-T22–50,
-under a dedicated unittest runner and CR-1 task scope. Bind the assertion module,
-fixture helper, and relevant production sources for each selector. CR-1 may
+and add selectors CR-T51/52 for the two already changed recovery regressions.
+Bind assertion modules, fixture helpers, and relevant production sources for
+each selector under the CR-1 task scope. CR-1 may
 update its disposable fixtures and exception expectations where the new recovery
 contract deliberately changes the reported failure classification. Preserve the suite's behavior
 assertions: it must continue to prove that invalid integration is refused,

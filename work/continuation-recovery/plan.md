@@ -37,7 +37,7 @@ its first candidate failed aggregate integration and is not integrated.
 
 | Task | Outcome and owned components | Dependency | Cases | Completion evidence |
 | --- | --- | --- | --- | --- |
-| CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture and assertion modules, shell entry, plus compatibility with existing coordinator reliability assertions | none | CR-T01–04,17,22–50 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration including the mapped reliability suite; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
+| CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture and assertion modules, shell entry, plus compatibility with existing coordinator reliability assertions | none | CR-T01–04,17,22–52 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration including the mapped reliability suite; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
 | CR-2 | Git-retained checkpoint closure, cache recovery, transfer CLI; checkpoint/state/recovery | CR-1 | CR-T05–09,18 | CAS/crash/cache assertions, GC and separate-object-database bundle E2E; real Red/Green, Refactor, review, integration |
 | CR-3 | Coordinator finalization for standalone/nested and old pinned verifier; checkpoint/state/recovery/driver/evidence/CLI, adapter/traceability CLI and protocol/docs projections | CR-2 | CR-T10–14,19–21 | Bounded real pinned verification, interrupted report/ledger finalization, old-base runner compatibility; real Red/Green, Refactor, review, integration |
 | CR-4 | Legacy reconciliation/adoption implementation and disposable tests; recovery/CLI and immutable fixtures; read-only real audit/proposal under adoption/ | CR-3 | CR-T15–16 | Exact Tasks1–5 provenance audit and independently reviewed adoption proposal; missing evidence honest; product state/authority untouched; real Red/Green, Refactor, review, normal repair integration |
@@ -50,7 +50,7 @@ CR-3 automatic finalization exists. No task is a deferred design decision.
 ## Verification and E2E
 
 All eight criteria map to integration and E2E obligations, 21 new behavior cases
-and 29 exact CR-1 reliability regression selectors across two unittest runners.
+and 31 exact CR-1 regression selectors across two unittest runners.
 Every case has exactly one responsible task,
 observable scenarios and per-criterion assertions. All require actual assertion
 Red in future implementation; inherited product runs are never relabeled.
