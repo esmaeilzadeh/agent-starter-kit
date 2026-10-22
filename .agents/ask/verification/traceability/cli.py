@@ -102,8 +102,14 @@ def execute(args,root):
         if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
         doc=run_tests(root,contracts,sha,args.scope,args.task_id,args.phase)
         runtime=Path(os.environ.get('ASK_TRACEABILITY_RUNTIME_ROOT') or root).resolve()
+        state=root/'work'/args.work_id/'inner-loop/state.json'
+        retained=subprocess.run(
+            ['git','rev-parse','--verify',f'refs/ask/inner-loop/{args.work_id}'],
+            cwd=root,capture_output=True,text=True,
+        )
         if (args.scope=='task' and args.task_id and runtime==root
-                and os.environ.get('ASK_INNER_LOOP_ROLE','coordinator')!='worker'):
+                and os.environ.get('ASK_INNER_LOOP_ROLE','coordinator')!='worker'
+                and (state.exists() or state.is_symlink() or retained.returncode==0)):
             scripts=root/'_ask'/'scripts'
             env=dict(os.environ)
             env['PYTHONPATH']=os.pathsep.join(

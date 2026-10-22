@@ -137,6 +137,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
     import re
     if not isinstance(run_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', run_id):
         raise NotIntegrable('invalid traceability run ID')
+    sys.path.insert(0, str(root / '.agents' / 'ask'))
     from verification.traceability.evidence import load_accepted
     from verification.traceability.coverage import scoped_tests
     from verification.traceability.contracts import digest as contract_digest
@@ -166,7 +167,6 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
             or not _commit_is_ancestor(root, candidate, git(root, 'rev-parse', 'HEAD'))):
         raise NotIntegrable('traceability candidate is outside the active task ancestry')
 
-    sys.path.insert(0, str(root / '.agents' / 'ask'))
     contracts = load_accepted(root, work_id, candidate, candidate)
     plan, spec = contracts['plan'], contracts['spec']
     if (report.get('plan_digest') != contract_digest(plan)
@@ -518,6 +518,19 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                     parts = Path(artifact_name).parts
                     if len(parts) < 5 or parts[3] != 'runs' or not parts[4]:
                         raise NotIntegrable('completion receipt contains an unsafe run artifact path')
+                    run_path = root / prefix / parts[4] / 'results.json'
+                    try:
+                        run = json.loads(run_path.read_bytes())
+                    except (OSError, ValueError) as exc:
+                        raise NotIntegrable('completion receipt names an unavailable run report') from exc
+                    if (not isinstance(run, dict) or run.get('schema') != 'ask-test-results/v1'
+                            or run.get('run_id') != parts[4]):
+                        raise NotIntegrable('completion receipt names an invalid run report')
+                    # Completion retains historical proof from other tasks as
+                    # well. Only this task's reports are coordinator milestones;
+                    # the full checkpoint continues to retain all raw proof.
+                    if run.get('scope') != 'task' or run.get('task_id') != identity['task_id']:
+                        continue
                     selected_runs.add(parts[4])
                 report['traceability_run_ids'] = sorted(selected_runs)
                 report['completion_digest'] = hashlib.sha256(completion_raw).hexdigest()
