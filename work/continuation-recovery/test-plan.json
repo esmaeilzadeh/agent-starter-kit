@@ -2298,7 +2298,7 @@
         "CR-01"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "case_id": "test_traceability_entrypoints.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e",
       "scenario": {
         "given": "The existing disposable public-entrypoint consumer fixture with an accepted task graph",
@@ -2331,7 +2331,7 @@
         "CR-01"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "case_id": "test_traceability_entrypoints.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints",
       "scenario": {
         "given": "The existing disposable public-entrypoint consumer fixture with an accepted task graph",
