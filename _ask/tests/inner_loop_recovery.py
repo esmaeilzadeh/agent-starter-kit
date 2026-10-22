@@ -357,23 +357,31 @@ class test_b(unittest.TestCase):
             plan = {
                 "schema": "ask-test-plan/v1", "work_id": work_id, "spec_digest": digest(spec),
                 "obligations": [{"criterion_id": "C1", "required_types": ["integration"]}],
-                "runners": [{"id": "fixture", "argv": ["python3", "-m", "unittest", "test_case.TestA.test_a"],
+                "runners": [{"id": "fixture", "argv": ["python3", "-m", "unittest", "test_case"],
                              "adapter": "unittest"}],
                 "tests": [{"id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
                            "case_id": "test_case.TestA.test_a",
                            "scenario": {"given": "base source", "when": "the test runs", "then": ["red then green"]},
                            "expected_assertions": [{"criterion_id": "C1", "checks": ["candidate source passes"]}],
                            "runner_id": "fixture", "source_paths": ["src/value"],
+                           "type": "integration", "change_kind": "new"},
+                          {"id": "T-B", "task_id": "b", "criterion_ids": ["C1"],
+                           "case_id": "test_case.TestB.test_b",
+                           "scenario": {"given": "another task", "when": "its test runs", "then": ["fails at base"]},
+                           "expected_assertions": [{"criterion_id": "C1", "checks": ["candidate source passes"]}],
+                           "runner_id": "fixture", "source_paths": ["src/value"],
                            "type": "integration", "change_kind": "new"}],
                 "task_scopes": [{"task_id": "a", "test_ids": ["T-A"]},
-                                {"task_id": "b", "test_ids": []}],
+                                {"task_id": "b", "test_ids": ["T-B"]}],
             }
             write_json(root / "specs/current" / f"{work_id}.json", spec)
             write_json(root / "work" / work_id / "test-plan.json", plan)
             (root / "test_case.py").write_text(
                 "import pathlib, unittest\n"
                 "class TestA(unittest.TestCase):\n"
-                "    def test_a(self): self.assertEqual(pathlib.Path('src/value').read_text(), 'candidate\\n')\n",
+                "    def test_a(self): self.assertEqual(pathlib.Path('src/value').read_text(), 'candidate\\n')\n"
+                "class TestB(unittest.TestCase):\n"
+                "    def test_b(self): self.assertEqual(pathlib.Path('src/value').read_text(), 'candidate\\n')\n",
                 encoding="utf-8",
             )
 
@@ -382,6 +390,7 @@ class test_b(unittest.TestCase):
             base = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
             contracts = load_accepted(root, work_id, base, base)
             from verification.traceability.adapters import run_tests
+            run_tests(root, contracts, base, "task", "b", "red")
             run_tests(root, contracts, base, "task", "a", "red")
 
         def review_real_tests(root, work_id, candidate):
@@ -422,6 +431,7 @@ class test_b(unittest.TestCase):
                 runs = task["evidence"].get("traceability_runs", [])
                 self.assertEqual(len(runs), 2, runs)
                 self.assertEqual({item["phase"] for item in runs}, {"red", "final_green"})
+                self.assertEqual({item["task_id"] for item in runs}, {"a"})
                 self.assertEqual({item["candidate_sha"] for item in runs}, {self.base, self.candidate})
 
         try:
