@@ -1,6 +1,7 @@
 """Work-ID-scoped reconciliation before state initialization or writer admission."""
 from __future__ import annotations
 
+import ast
 import fnmatch
 import hashlib
 import json
@@ -18,6 +19,45 @@ class RecoveryRequired(RuntimeError):
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+
+
+def _git_bytes(root: Path, *args: str) -> bytes | None:
+    proc = subprocess.run(["git", *args], cwd=root, capture_output=True)
+    return proc.stdout if proc.returncode == 0 else None
+
+
+def _historical_runner_identity(root: Path, candidate_sha: str) -> dict | None:
+    init_path = ".agents/ask/verification/traceability/__init__.py"
+    runner_path = ".agents/ask/verification/traceability/unittest_runner.py"
+    init_bytes = _git_bytes(root, "show", f"{candidate_sha}:{init_path}")
+    runner_bytes = _git_bytes(root, "show", f"{candidate_sha}:{runner_path}")
+    if init_bytes is None or runner_bytes is None:
+        return None
+    try:
+        module = ast.parse(init_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, SyntaxError):
+        return None
+    capability = None
+    for statement in module.body:
+        targets = ([statement.target] if isinstance(statement, ast.AnnAssign)
+                   else statement.targets if isinstance(statement, ast.Assign) else [])
+        if any(isinstance(target, ast.Name) and target.id == "CAPABILITY" for target in targets):
+            value = statement.value
+            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                capability = value.value
+                break
+    if not capability:
+        return None
+    return {"capability": capability,
+            "adapter_digest": hashlib.sha256(runner_bytes).hexdigest()}
+
+
+def _historical_file_digest(root: Path, candidate_sha: str, name: str) -> str | None:
+    if (not isinstance(name, str) or not name or "\\" in name
+            or Path(name).is_absolute() or ".." in Path(name).parts):
+        return None
+    content = _git_bytes(root, "show", f"{candidate_sha}:{name}")
+    return hashlib.sha256(content).hexdigest() if content is not None else None
 
 
 def _commit_exists(root: Path, sha: str) -> bool:
@@ -201,9 +241,7 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
             return False
         except CheckpointError:
             return False
-        if checkpoint is None or not _traceability_matches_checkpoint(
-            root, work_id, checkpoint, expected_row=row, expected_run_id=run_id
-        ):
+        if checkpoint is None:
             continue
         report_path = reports / run_id / "results.json"
         try:
@@ -221,15 +259,26 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
                 or report.get("plan_digest") != old_plan_digest
                 or report.get("spec_digest") != old_pin.get("spec_digest")):
             continue
-        if _valid_final_green_scope(report, previous["plan"], task_id,
+        runs = report.get("executions")
+        output_artifacts = ([run.get("output_artifact") for run in runs]
+                            if isinstance(runs, list) and all(isinstance(run, dict) for run in runs)
+                            else None)
+        if output_artifacts is None or not _traceability_matches_checkpoint(
+            root, work_id, checkpoint, expected_row=row, expected_run_id=run_id,
+            expected_artifacts=output_artifacts
+        ):
+            continue
+        if _valid_final_green_scope(root, work_id, report, previous["plan"], task_id,
                                     old_scope, result.get("candidate_sha")):
             return True
     return False
 
 
-def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
+def _valid_final_green_scope(root: Path, work_id: str, report: dict, plan: dict, task_id: str,
                              required_ids: set[str], candidate_sha: str) -> bool:
-    """Check successful collection and exact one-to-one final case bindings."""
+    """Check historical runner, output, source and exact final case bindings."""
+    if report.get("runner_identity") != _historical_runner_identity(root, candidate_sha):
+        return False
     tests = {item.get("id"): item for item in plan.get("tests", [])
              if isinstance(item, dict) and isinstance(item.get("id"), str)}
     if not required_ids or not required_ids.issubset(tests):
@@ -268,7 +317,8 @@ def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
                 or not isinstance(run.get("runner_id"), str)
                 or run.get("source_sha") != candidate_sha or runner is None
                 or run.get("argv") != runner.get("argv")
-                or run.get("adapter") != runner.get("adapter")):
+                or run.get("adapter") != runner.get("adapter")
+                or not _valid_historical_output(root, work_id, report.get("run_id"), run)):
             return False
         by_id[run_id] = run
 
@@ -289,7 +339,17 @@ def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
         execution = by_id.get(case.get("execution_id"))
         if (execution is None or execution.get("runner_id") != test.get("runner_id")
                 or case.get("phase") != "final_green" or case.get("outcome") != "passed"
-                or case.get("source_sha") != candidate_sha):
+                or case.get("source_sha") != candidate_sha
+                or case.get("output_artifact") != execution.get("output_artifact")
+                or case.get("output_digest") != execution.get("output_digest")):
+            return False
+        source_paths = test.get("source_paths")
+        if not isinstance(source_paths, list) or any(not isinstance(path, str) for path in source_paths):
+            return False
+        expected_sources = {path: _historical_file_digest(root, candidate_sha, path)
+                            for path in source_paths}
+        if (any(digest is None for digest in expected_sources.values())
+                or case.get("source_digests") != expected_sources):
             return False
         seen_tests.add(test_id)
         seen_cases.add(identity)
@@ -305,10 +365,28 @@ def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
     return True
 
 
+def _valid_historical_output(root: Path, work_id: str, run_id: str, execution: dict) -> bool:
+    relative = execution.get("output_artifact")
+    prefix = f"work/{work_id}/traceability/runs/{run_id}/"
+    if (not isinstance(relative, str) or not relative.startswith(prefix)
+            or "\\" in relative or ".." in Path(relative).parts):
+        return False
+    path = root / relative
+    run_directory = root / "work" / work_id / "traceability" / "runs" / run_id
+    try:
+        if path.is_symlink() or not path.resolve().is_relative_to(run_directory.resolve()):
+            return False
+        content = path.read_bytes()
+    except OSError:
+        return False
+    return execution.get("output_digest") == hashlib.sha256(content).hexdigest()
+
+
 def _traceability_matches_checkpoint(root: Path, work_id: str,
                                      checkpoint: tuple[str, dict, dict[str, bytes]], *,
                                      expected_row: dict | None = None,
-                                     expected_run_id: str | None = None) -> bool:
+                                     expected_run_id: str | None = None,
+                                     expected_artifacts: list[str] | None = None) -> bool:
     """Preserve checkpointed evidence exactly while allowing append-only runs."""
     prefix = f"work/{work_id}/traceability/"
     retained = {name[len("artifacts/"):]: content
@@ -356,6 +434,10 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
     if expected_run_id is not None:
         report_name = prefix + f"runs/{expected_run_id}/results.json"
         if report_name not in retained or live.get(report_name) != retained[report_name]:
+            return False
+    if expected_artifacts is not None:
+        if any(not isinstance(name, str) or name not in retained or live.get(name) != retained[name]
+               for name in expected_artifacts):
             return False
     return set(live) - set(retained) <= allowed_new
 
