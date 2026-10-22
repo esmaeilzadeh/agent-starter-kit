@@ -48,3 +48,15 @@ The `verify-candidate-source-stability` follow-up supplied a concrete case for t
 - Prefer the concrete next action and report only real blockers after the user has authorized it.
 
 These examples do not approve removing intent confirmation, clean-worktree protection, evidence requirements, or other safety rules. The broader inventory and workflow nesting review remains open.
+
+## Re-evaluate before asking the human (2026-10-22)
+
+The user requested:
+
+> re-eval the situation and check if it still need human decision if not stop and show your decision with the level of certainty (if it is up to 80%) else ask it as a choice question with consequences.
+
+Add this decision check to the proposed work: reconsider the available evidence and existing authorization before escalating. When a human decision is unnecessary and confidence meets the agreed threshold, stop and present the agent's decision with its confidence level. Otherwise, ask one choice question and explain the consequences of each option. Do not repeat a decision already submitted.
+
+For this re-evaluation, use a smarter available model when one exists, or increase the current model's reasoning effort when supported. Perform that reassessment before deciding whether human input is still necessary.
+
+The requested threshold wording is preserved above. Before implementing this rule, resolve whether “up to 80%” means at least 80% confidence or a different boundary; this inbox update does not silently choose its meaning or authorize bypassing an explicit human-only gate.
