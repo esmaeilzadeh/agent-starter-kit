@@ -13,3 +13,13 @@ only. The original product intent, state, authority and branch ref are preserved
 
 STOP after sealing. No implementation, runtime bootstrap, behavior tests or
 product scheduling is authorized. A generic continuation preserves this endpoint.
+
+## Later direction
+
+After the seal, the user explicitly directed “continue” and clarified that this
+direction was given after the model changed. This supersedes the stop-after-seal
+endpoint for the continuation-recovery workstream. The approved What, Why and
+assumptions are unchanged; the existing `intent.md` remains byte-identical.
+Continue through the recorded implementation plan under its normal admission,
+TDD, review and verification gates. This does not authorize product adoption,
+integration or scheduling beyond the plan's explicit handoff.
