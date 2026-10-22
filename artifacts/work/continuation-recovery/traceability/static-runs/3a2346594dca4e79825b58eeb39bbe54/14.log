@@ -1,0 +1,20 @@
+revision=0
+running=t revision=2
+FAIL: missing TDD message: {
+  "status": "recovery_required",
+  "work_id": "drv",
+  "task_ids": [
+    "t-a"
+  ],
+  "evidence_paths": [
+    "work/drv/inner-loop/results/t-a.json"
+  ],
+  "conflicts": [
+    "work/drv/inner-loop/results/t-a.json: TaskResult contract_sha is missing or invalid"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}

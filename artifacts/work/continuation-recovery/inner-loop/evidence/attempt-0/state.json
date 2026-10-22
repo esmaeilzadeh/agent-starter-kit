@@ -1,0 +1,65 @@
+{
+  "schema": "ask-inner-loop-state/v1",
+  "work_id": "continuation-recovery",
+  "revision": 3,
+  "coordinator_sha": "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
+  "coordinator_branch": "agent/continuation-recovery",
+  "tasks": {
+    "CR-1": {
+      "status": "running",
+      "base_sha": "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "work_id": "continuation-recovery",
+          "task_id": "CR-1",
+          "base_sha": "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
+          "candidate_sha": "400147bbdb7a2b76cfce55510d2b646b1cc3c1fa",
+          "result_digest": "c675c933cc4bdcd21c0d02aa5ddd0ccb314d49f78b0304d313d50de8d697c545",
+          "reviewer": "/root/review_cr1",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-1-400147b.json",
+          "evidence_digest": "ae7ee34af18cfa513f4e3551e20a1889810edc4df6a1b52564e2371d3f332147",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      }
+    },
+    "CR-2": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "CR-3": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    },
+    "CR-4": {
+      "status": "pending",
+      "base_sha": "",
+      "task_branch": "",
+      "result_path": "",
+      "boundary_reject": null,
+      "review_round": 0,
+      "debug_round": 0,
+      "evidence": {}
+    }
+  }
+}

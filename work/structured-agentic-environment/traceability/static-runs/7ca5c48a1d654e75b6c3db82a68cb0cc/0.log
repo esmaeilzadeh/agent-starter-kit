@@ -1,2 +1,0 @@
-check-clean-worktree: clean
-PASS: ask help, unknown-command, check-clean on clean temp repo

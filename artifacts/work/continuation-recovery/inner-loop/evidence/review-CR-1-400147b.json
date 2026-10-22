@@ -1,0 +1,18 @@
+{
+  "schema": "ask-independent-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
+  "candidate_sha": "400147bbdb7a2b76cfce55510d2b646b1cc3c1fa",
+  "reviewer": "/root/review_cr1",
+  "verdict": "APPROVED",
+  "boundary": "ok",
+  "findings": [],
+  "checks": {
+    "direct_unittest": "7 passed",
+    "shell_wrapper": "7 passed",
+    "traceability_run_id": "4801c23b47464019a120e35c14c88019",
+    "traceability": "collection ok, exit 0, CR-T01..04 and CR-T17 passed"
+  },
+  "review_summary": "Required nonempty contract_sha and exact state/result base identity are enforced. Active writer owns shared path changes. Stale review is tolerated only for an ancestor candidate while running and cannot authorize integration; exact review validation still rejects it."
+}

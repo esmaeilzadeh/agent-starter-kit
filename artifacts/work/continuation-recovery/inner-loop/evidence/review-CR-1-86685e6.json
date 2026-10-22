@@ -1,0 +1,13 @@
+{
+  "schema": "ask-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "task_base_sha": "f7d87ea6e1f6da751a48b4714a3aad8713ed9dd7",
+  "candidate_sha": "86685e6ddaacf234def7578e4aa131e97a70049e",
+  "contract_sha": "96d3dc07b6356a24ba4acd4069cab2648733ecec",
+  "reviewer": "/root/review_cr1",
+  "verdict": "APPROVED",
+  "boundary": "ok",
+  "findings": [],
+  "review": "All changed paths are within CR-1 ownership. CR-T47 captures idempotent existing-state cas_init with divergent caller IDs. Contract fallback is tested both when the accepted pin at the immutable base still matches and when the current accepted contract has changed. Recovery-required classification checks align with the new guard. The 29 reliability assertions remain mapped; fixture changes reclassify guard failures, remove unsupported subTest adapter events without dropping per-field cases, and make the module and child processes importable with PYTHONPATH unset. Independent run completed 36 tests with exit 0. No material blocking gaps. Minor untested edge: malformed accepted-pin schema beyond missing/wrong work ID and invalid contract-anchor cases."
+}

@@ -1,0 +1,443 @@
+{
+  "schema": "ask-test-review/v2",
+  "reviewer": "Codex /root/review_cr1",
+  "candidate_sha": "e3ae380c2d6fe68b08e430619d29776ec59c5205",
+  "base_sha": "ecb56e06f643a686fb3486d38e92d21da377e14d",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
+  "scope": "task",
+  "task_id": "CR-1",
+  "test_ids": [
+    "CR-T01",
+    "CR-T02",
+    "CR-T03",
+    "CR-T04",
+    "CR-T17",
+    "CR-T22",
+    "CR-T23",
+    "CR-T24",
+    "CR-T25",
+    "CR-T26",
+    "CR-T27",
+    "CR-T28",
+    "CR-T29",
+    "CR-T30",
+    "CR-T31",
+    "CR-T32",
+    "CR-T33",
+    "CR-T34",
+    "CR-T35",
+    "CR-T36",
+    "CR-T37",
+    "CR-T38",
+    "CR-T39",
+    "CR-T40",
+    "CR-T41",
+    "CR-T42",
+    "CR-T43",
+    "CR-T44",
+    "CR-T45",
+    "CR-T46",
+    "CR-T47",
+    "CR-T48",
+    "CR-T49",
+    "CR-T50",
+    "CR-T51",
+    "CR-T52",
+    "CR-T53",
+    "CR-T54"
+  ],
+  "criterion_ids": [
+    "CR-01",
+    "CR-04",
+    "CR-05",
+    "CR-06",
+    "CR-07",
+    "CR-08"
+  ],
+  "source_digests": {
+    "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+    "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+    "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+    "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+    "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+    "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+    "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+    "_ask/tests/inner_loop_reliability.py": "383fdc3674ad2d302104b3f8f87c28c51561b57a37f9d748f3f0ce7e00559ca6",
+    "_ask/tests/test_traceability_entrypoints.py": "4929b0494f51c6f01b8957be392cdefdac5b4139e49388e7fd461aa54144eb16",
+    "_ask/tests/traceability_fixture.py": "ee15c16d56477a0ee43f5875b7130387c46ac944054297e180caa78e67db4bfd",
+    "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78"
+  },
+  "inspected_sources": [
+    "_ask/tests/test_traceability_entrypoints.py",
+    "_ask/tests/traceability_fixture.py"
+  ],
+  "changed_cases": [
+    "CR-T53",
+    "CR-T54"
+  ],
+  "inventory_exclusions": {
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_E01_public_red_review_verify_record_accept_journey": "Unchanged entrypoint test method; candidate changes only the opt-in fixture setup at I05/I07. This case is outside CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_E02_omitted_e2e_names_missing_case_and_never_records_pass": "Unchanged entrypoint test method; candidate changes only the opt-in fixture setup at I05/I07. This case is outside CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I06_preflight_failure_replaces_old_pass": "Unchanged entrypoint test method; candidate changes only the opt-in fixture setup at I05/I07. This case is outside CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I08_integration_accepts_reviewed_contract_amended_after_task_base": "Unchanged entrypoint test method; candidate changes only the opt-in fixture setup at I05/I07. This case is outside CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree": "Unchanged entrypoint test method; candidate changes only the opt-in fixture setup at I05/I07. This case is outside CR-1 changed-case inventory."
+  },
+  "criteria": [
+    {
+      "id": "CR-01",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task CR-1 maps 8 cases to this criterion; assertions match the accepted observable obligation.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "1 mapped e2e case(s) cover this criterion: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        },
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "7 mapped integration case(s) cover this criterion: Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion; Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts; Status succeeds and reports task a running and task b pending.; Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor.; A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
+        }
+      }
+    },
+    {
+      "id": "CR-04",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task CR-1 maps 1 cases to this criterion; assertions match the accepted observable obligation.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "1 mapped integration case(s) cover this criterion: Status succeeds and still reports task a as running."
+        }
+      }
+    },
+    {
+      "id": "CR-05",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task CR-1 maps 1 cases to this criterion; assertions match the accepted observable obligation.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "1 mapped integration case(s) cover this criterion: Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts"
+        }
+      }
+    },
+    {
+      "id": "CR-06",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task CR-1 maps 3 cases to this criterion; assertions match the accepted observable obligation.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "1 mapped e2e case(s) cover this criterion: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        },
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "2 mapped integration case(s) cover this criterion: Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion"
+        }
+      }
+    },
+    {
+      "id": "CR-07",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task CR-1 maps 33 cases to this criterion; assertions match the accepted observable obligation.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "1 mapped e2e case(s) cover this criterion: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        },
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "32 mapped integration case(s) cover this criterion: All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; A TaskResult naming a different candidate is refused and the running task remains unchanged.; Reports with another work ID, task ID or base are refused.; Worker-supplied approval fields do not authorize integration.; A reviewed candidate integrates and records exact verification lineage.; A failed candidate check prevents fast-forward and state folding.; Candidate changes cannot replace the pinned verifier used to check them.; An empty mandatory CheckPlan refuses integration.; Fast-forward integrates the exact candidate that was verified.; Changed TaskResult or review evidence invalidates a previously recorded approval.; Rejected review and boundary rejection prevent integration.; Exemptions require a supported reason and coordinator-recorded review.; TDD milestones require typed exit codes and captured output.; Uncommitted coordinator source prevents integration.; Verification that changes candidate source is refused.; TaskResult drift during verification is refused.; Review drift during verification is refused.; Resume preserves and finalizes the exact candidate after interruption following fast-forward.; Concurrent state updates cannot interleave with candidate verification and integration.; Task-branch drift during verification is refused.; A non-fast-forward candidate/coordinator combination is refused.; A worker role cannot record coordinator-owned review state.; Source repair preserves tracked runtime revision and review evidence.; Merge repair preserves tracked runtime state.; Competing CAS operations on one observed revision cannot both succeed.; Concurrent starts preserve the single-writer invariant.; Concurrent initialization returns the existing state without replacing it.; Every state transaction preserves the single-writer invariant.; Concurrent readers observe complete atomic state documents.; Interrupted state replacement preserves the previous complete document and releases the lock.; Status succeeds and still reports task a as running.; Status succeeds and reports task a running and task b pending."
+        }
+      }
+    },
+    {
+      "id": "CR-08",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task CR-1 maps 1 cases to this criterion; assertions match the accepted observable obligation.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "1 mapped e2e case(s) cover this criterion: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "CR-T01",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base",
+      "counterexample": "If the implementation violates the accepted checks (Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T02",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances",
+      "counterexample": "If the implementation violates the accepted checks (All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T03",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion",
+      "counterexample": "If the implementation violates the accepted checks (The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T04",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts; Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts",
+      "counterexample": "If the implementation violates the accepted checks (Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts; Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T17",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission",
+      "counterexample": "If the implementation violates the accepted checks (Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T22",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: A TaskResult naming a different candidate is refused and the running task remains unchanged.",
+      "counterexample": "If the implementation violates the accepted checks (A TaskResult naming a different candidate is refused and the running task remains unchanged.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T23",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Reports with another work ID, task ID or base are refused.",
+      "counterexample": "If the implementation violates the accepted checks (Reports with another work ID, task ID or base are refused.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T24",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Worker-supplied approval fields do not authorize integration.",
+      "counterexample": "If the implementation violates the accepted checks (Worker-supplied approval fields do not authorize integration.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T25",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: A reviewed candidate integrates and records exact verification lineage.",
+      "counterexample": "If the implementation violates the accepted checks (A reviewed candidate integrates and records exact verification lineage.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T26",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: A failed candidate check prevents fast-forward and state folding.",
+      "counterexample": "If the implementation violates the accepted checks (A failed candidate check prevents fast-forward and state folding.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T27",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Candidate changes cannot replace the pinned verifier used to check them.",
+      "counterexample": "If the implementation violates the accepted checks (Candidate changes cannot replace the pinned verifier used to check them.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T28",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: An empty mandatory CheckPlan refuses integration.",
+      "counterexample": "If the implementation violates the accepted checks (An empty mandatory CheckPlan refuses integration.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T29",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Fast-forward integrates the exact candidate that was verified.",
+      "counterexample": "If the implementation violates the accepted checks (Fast-forward integrates the exact candidate that was verified.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T30",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Changed TaskResult or review evidence invalidates a previously recorded approval.",
+      "counterexample": "If the implementation violates the accepted checks (Changed TaskResult or review evidence invalidates a previously recorded approval.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T31",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Rejected review and boundary rejection prevent integration.",
+      "counterexample": "If the implementation violates the accepted checks (Rejected review and boundary rejection prevent integration.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T32",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Exemptions require a supported reason and coordinator-recorded review.",
+      "counterexample": "If the implementation violates the accepted checks (Exemptions require a supported reason and coordinator-recorded review.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T33",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: TDD milestones require typed exit codes and captured output.",
+      "counterexample": "If the implementation violates the accepted checks (TDD milestones require typed exit codes and captured output.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T34",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Uncommitted coordinator source prevents integration.",
+      "counterexample": "If the implementation violates the accepted checks (Uncommitted coordinator source prevents integration.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T35",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Verification that changes candidate source is refused.",
+      "counterexample": "If the implementation violates the accepted checks (Verification that changes candidate source is refused.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T36",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: TaskResult drift during verification is refused.",
+      "counterexample": "If the implementation violates the accepted checks (TaskResult drift during verification is refused.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T37",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Review drift during verification is refused.",
+      "counterexample": "If the implementation violates the accepted checks (Review drift during verification is refused.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T38",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Resume preserves and finalizes the exact candidate after interruption following fast-forward.",
+      "counterexample": "If the implementation violates the accepted checks (Resume preserves and finalizes the exact candidate after interruption following fast-forward.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T39",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Concurrent state updates cannot interleave with candidate verification and integration.",
+      "counterexample": "If the implementation violates the accepted checks (Concurrent state updates cannot interleave with candidate verification and integration.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T40",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Task-branch drift during verification is refused.",
+      "counterexample": "If the implementation violates the accepted checks (Task-branch drift during verification is refused.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T41",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: A non-fast-forward candidate/coordinator combination is refused.",
+      "counterexample": "If the implementation violates the accepted checks (A non-fast-forward candidate/coordinator combination is refused.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T42",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: A worker role cannot record coordinator-owned review state.",
+      "counterexample": "If the implementation violates the accepted checks (A worker role cannot record coordinator-owned review state.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T43",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Source repair preserves tracked runtime revision and review evidence.",
+      "counterexample": "If the implementation violates the accepted checks (Source repair preserves tracked runtime revision and review evidence.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T44",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Merge repair preserves tracked runtime state.",
+      "counterexample": "If the implementation violates the accepted checks (Merge repair preserves tracked runtime state.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T45",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Competing CAS operations on one observed revision cannot both succeed.",
+      "counterexample": "If the implementation violates the accepted checks (Competing CAS operations on one observed revision cannot both succeed.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T46",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Concurrent starts preserve the single-writer invariant.",
+      "counterexample": "If the implementation violates the accepted checks (Concurrent starts preserve the single-writer invariant.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T47",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Concurrent initialization returns the existing state without replacing it.",
+      "counterexample": "If the implementation violates the accepted checks (Concurrent initialization returns the existing state without replacing it.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T48",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Every state transaction preserves the single-writer invariant.",
+      "counterexample": "If the implementation violates the accepted checks (Every state transaction preserves the single-writer invariant.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T49",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Concurrent readers observe complete atomic state documents.",
+      "counterexample": "If the implementation violates the accepted checks (Concurrent readers observe complete atomic state documents.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T50",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Interrupted state replacement preserves the previous complete document and releases the lock.",
+      "counterexample": "If the implementation violates the accepted checks (Interrupted state replacement preserves the previous complete document and releases the lock.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T51",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Status succeeds and still reports task a as running.; Status succeeds and still reports task a as running.",
+      "counterexample": "If the implementation violates the accepted checks (Status succeeds and still reports task a as running.; Status succeeds and still reports task a as running.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T52",
+      "decision": "APPROVED",
+      "assertion_assessment": "Asserts: Status succeeds and reports task a running and task b pending.; Status succeeds and reports task a running and task b pending.",
+      "counterexample": "If the implementation violates the accepted checks (Status succeeds and reports task a running and task b pending.; Status succeeds and reports task a running and task b pending.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult records the mapped CR-1 red and final-green executions; this case passed in both captured runs. No candidate source changes this test assertion."
+    },
+    {
+      "id": "CR-T53",
+      "decision": "REJECTED",
+      "assertion_assessment": "The fixture now starts task CR-1 before candidate source changes; assertions still check the described public entrypoint behavior. However, the accepted plan classifies this behavior-changing test as regression; review validator rejects that classification.",
+      "counterexample": "If the implementation violates the accepted checks (Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult red run b9a8a49d0f044cf4b7fe5daf2fb26749 recorded this case failing as a behavior assertion; final_green f290a6e47fff46a9a98686e2a3beb5a0 recorded it passing. The fixture change preserves the public behavior assertion and corrects lifecycle ordering."
+    },
+    {
+      "id": "CR-T54",
+      "decision": "REJECTED",
+      "assertion_assessment": "The fixture now starts task CR-1 before candidate source changes; assertions still check the described public entrypoint behavior. However, the accepted plan classifies this behavior-changing test as regression; review validator rejects that classification.",
+      "counterexample": "If the implementation violates the accepted checks (A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints.), the case should fail.",
+      "tdd_continuity_assessment": "TaskResult red run b9a8a49d0f044cf4b7fe5daf2fb26749 recorded this case failing as a behavior assertion; final_green f290a6e47fff46a9a98686e2a3beb5a0 recorded it passing. The fixture change preserves the public behavior assertion and corrects lifecycle ordering."
+    }
+  ],
+  "verdict": "REJECTED",
+  "findings": [
+    {
+      "id": "CR1-TRACE-001",
+      "severity": "blocking",
+      "message": "CR-T53 and CR-T54 are behavior_changes, but accepted test-plan change_kind is regression for both. review_errors rejects each as changed behavior cannot be classified regression; neither TDD exemption nor reviewer decision can override accepted plan classification."
+    }
+  ],
+  "review_scope_note": "Independent task-scoped semantic review of CR-1 only. This document cannot be recorded successfully against the currently accepted test-plan contract until the behavior-changing test classification is amended and re-accepted, or the candidate is revised so those test cases are not behavior-changing."
+}

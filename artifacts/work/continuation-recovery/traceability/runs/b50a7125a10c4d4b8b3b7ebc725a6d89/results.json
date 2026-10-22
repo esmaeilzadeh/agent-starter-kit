@@ -1,0 +1,143 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "b50a7125a10c4d4b8b3b7ebc725a6d89",
+  "scope": "task",
+  "task_id": "CR-1",
+  "candidate_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "edbba36648e8853b6a985acbfbca51ee82fb695c79620533aafc8a988e5e07ed",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "85d68c833b7d48bead6a8e1366193f69",
+      "runner_id": "continuation-recovery",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.inner_loop_recovery"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.json",
+        "[\"_ask.tests.inner_loop_recovery.RecoveryTests.test_missing_state_retained_result\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_pending_state_conflicts_with_execution\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_fresh_initialization_and_missing_legacy_evidence\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_contract_and_checkout_conflict\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff\"]",
+        "_ask.tests.inner_loop_recovery"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+      "exit_code": 1,
+      "collection_status": "ok",
+      "output_artifact": "work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.log",
+      "output_digest": "f6154d156e192d33b80129b4e09d3c812d5c75e97aa4a2214084fc72774f1115"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_contract_and_checkout_conflict",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "CR-T04",
+      "runner_id": "continuation-recovery",
+      "execution_id": "85d68c833b7d48bead6a8e1366193f69",
+      "phase": "red",
+      "source_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "6b555779212494efcda2598ac7a465126d1d483589abfd2dadd991eba2da7ac5",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "6091ec30dd249c68d893c2f235c26e0680eeb69811ced898baa384f07c368395",
+        "_ask/scripts/inner_loop/driver.py": "daa2ee746c5040efc25824983672487048792a32517e1ab6a2f921537be9095a",
+        "_ask/scripts/inner_loop/recovery.py": "8070f296dd26df84b80537ef1ac6795263652683a405f703f1112abd11ab5cd8",
+        "_ask/scripts/inner_loop/__main__.py": "92c176c17abed08c4e572938826d6ccfdd81e82ae3163a46030fcf93c5c76f50"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.log",
+      "output_digest": "f6154d156e192d33b80129b4e09d3c812d5c75e97aa4a2214084fc72774f1115"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_fresh_initialization_and_missing_legacy_evidence",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "CR-T03",
+      "runner_id": "continuation-recovery",
+      "execution_id": "85d68c833b7d48bead6a8e1366193f69",
+      "phase": "red",
+      "source_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "6b555779212494efcda2598ac7a465126d1d483589abfd2dadd991eba2da7ac5",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "6091ec30dd249c68d893c2f235c26e0680eeb69811ced898baa384f07c368395",
+        "_ask/scripts/inner_loop/driver.py": "daa2ee746c5040efc25824983672487048792a32517e1ab6a2f921537be9095a",
+        "_ask/scripts/inner_loop/recovery.py": "8070f296dd26df84b80537ef1ac6795263652683a405f703f1112abd11ab5cd8",
+        "_ask/scripts/inner_loop/__main__.py": "92c176c17abed08c4e572938826d6ccfdd81e82ae3163a46030fcf93c5c76f50"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.log",
+      "output_digest": "f6154d156e192d33b80129b4e09d3c812d5c75e97aa4a2214084fc72774f1115"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T17",
+      "runner_id": "continuation-recovery",
+      "execution_id": "85d68c833b7d48bead6a8e1366193f69",
+      "phase": "red",
+      "source_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "6b555779212494efcda2598ac7a465126d1d483589abfd2dadd991eba2da7ac5",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "6091ec30dd249c68d893c2f235c26e0680eeb69811ced898baa384f07c368395",
+        "_ask/scripts/inner_loop/driver.py": "daa2ee746c5040efc25824983672487048792a32517e1ab6a2f921537be9095a",
+        "_ask/scripts/inner_loop/recovery.py": "8070f296dd26df84b80537ef1ac6795263652683a405f703f1112abd11ab5cd8",
+        "_ask/scripts/inner_loop/__main__.py": "92c176c17abed08c4e572938826d6ccfdd81e82ae3163a46030fcf93c5c76f50"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.log",
+      "output_digest": "f6154d156e192d33b80129b4e09d3c812d5c75e97aa4a2214084fc72774f1115"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_missing_state_retained_result",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "CR-T01",
+      "runner_id": "continuation-recovery",
+      "execution_id": "85d68c833b7d48bead6a8e1366193f69",
+      "phase": "red",
+      "source_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "6b555779212494efcda2598ac7a465126d1d483589abfd2dadd991eba2da7ac5",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "6091ec30dd249c68d893c2f235c26e0680eeb69811ced898baa384f07c368395",
+        "_ask/scripts/inner_loop/driver.py": "daa2ee746c5040efc25824983672487048792a32517e1ab6a2f921537be9095a",
+        "_ask/scripts/inner_loop/recovery.py": "8070f296dd26df84b80537ef1ac6795263652683a405f703f1112abd11ab5cd8",
+        "_ask/scripts/inner_loop/__main__.py": "92c176c17abed08c4e572938826d6ccfdd81e82ae3163a46030fcf93c5c76f50"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.log",
+      "output_digest": "f6154d156e192d33b80129b4e09d3c812d5c75e97aa4a2214084fc72774f1115"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_pending_state_conflicts_with_execution",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "CR-T02",
+      "runner_id": "continuation-recovery",
+      "execution_id": "85d68c833b7d48bead6a8e1366193f69",
+      "phase": "red",
+      "source_sha": "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "6b555779212494efcda2598ac7a465126d1d483589abfd2dadd991eba2da7ac5",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "6091ec30dd249c68d893c2f235c26e0680eeb69811ced898baa384f07c368395",
+        "_ask/scripts/inner_loop/driver.py": "daa2ee746c5040efc25824983672487048792a32517e1ab6a2f921537be9095a",
+        "_ask/scripts/inner_loop/recovery.py": "8070f296dd26df84b80537ef1ac6795263652683a405f703f1112abd11ab5cd8",
+        "_ask/scripts/inner_loop/__main__.py": "92c176c17abed08c4e572938826d6ccfdd81e82ae3163a46030fcf93c5c76f50"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/b50a7125a10c4d4b8b3b7ebc725a6d89/85d68c833b7d48bead6a8e1366193f69.log",
+      "output_digest": "f6154d156e192d33b80129b4e09d3c812d5c75e97aa4a2214084fc72774f1115"
+    }
+  ]
+}

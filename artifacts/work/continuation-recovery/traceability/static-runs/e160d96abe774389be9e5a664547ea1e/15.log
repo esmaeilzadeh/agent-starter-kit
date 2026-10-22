@@ -1,0 +1,8 @@
+install-kit: note — will not modify target docs/ (consumer-owned)
+sync-runtime-agents: wrote /tmp/tmp.vf65QXVrt6/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.vf65QXVrt6/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.vf65QXVrt6/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.vf65QXVrt6/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.vf65QXVrt6
+PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/

@@ -1,0 +1,23 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
+  "candidate_sha": "400147bbdb7a2b76cfce55510d2b646b1cc3c1fa",
+  "contract_sha": "68ca29caf9cc06a5460157685bacba0bef7b3f97",
+  "tdd": {
+    "seam": "_ask/scripts/inner_loop/recovery.py and _ask/tests/inner_loop_recovery.py",
+    "red": {
+      "command": "python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_new_candidate_preserves_stale_rejected_review_history (detached worktree at b85c49a56efb755c3a7b36c2e251d47c9d1962bc)",
+      "output": "The regression failed because status returned recovery_required for an otherwise valid newer candidate, citing stale recorded-review identity and result digest conflicts.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_new_candidate_preserves_stale_rejected_review_history",
+      "output": "Ran 1 test; OK.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "CR-1 original immutable Red at cc2245f: four mapped behavior cases failed; CR-T17 was baseline-green. Follow-up shared-ownership regression failed at 38b7e33 and passed at a655ce8. Independent review rejected candidate 4861364 for missing contract_sha and blank state base_sha; both regressions were reproduced at f2f0513 and fixed at 65dea12. Fresh Red for retry history failed at b85c49a and passed at 400147b. Direct seven-test suite and shell wrapper passed at 400147b. Immutable final-green traceability run 4801c23b47464019a120e35c14c88019 collected successfully and passed CR-T01..04 plus CR-T17. The old rejected review remains retained in state/evidence; the new candidate is a descendant, so the old review is stale history and cannot authorize integration because review validation still requires exact candidate/result identity."
+}

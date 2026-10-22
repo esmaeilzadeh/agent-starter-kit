@@ -1,0 +1,15 @@
+{
+  "schema": "ask-plan-review/v1",
+  "decision": "APPROVED",
+  "reviewer": "/root/review_cr1",
+  "work_id": "continuation-recovery",
+  "contract_sha": "22a94836a63faf3393c990e9a3eed9e1cbce31f4",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "08576afee0178d0d8e44a8acf5388297a07f616b40612bd5d4ff4901f32aba6b",
+  "graph_digest": "fc55c30265d78fa981eb65b2d0b84bedc6d97ff29b19e330ae2d0b0198ad28cf",
+  "findings": [],
+  "resolution": {
+    "independent_exact_review": "Approved the entrypoint fixture amendment at the exact candidate. CR-T53/54 map only to CR-01 and carry only CR-01 assertions; both selectors resolve under the traceability-entrypoints runner, their exact source bindings exist, both IDs are in CR-1 scope, and CR-1 owns the fixture path. Approved intent and CR-01–CR-08 are unchanged."
+  },
+  "review_source": "Independent review response from /root/review_cr1 at candidate 22a94836a63faf3393c990e9a3eed9e1cbce31f4."
+}

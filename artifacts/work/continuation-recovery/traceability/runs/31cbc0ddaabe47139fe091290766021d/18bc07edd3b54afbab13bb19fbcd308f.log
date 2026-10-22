@@ -1,0 +1,65 @@
+test_I05_all_normal_entrypoints_reject_omitted_e2e (test_traceability_entrypoints.EntrypointTests) ... FAIL
+test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests) ... FAIL
+
+======================================================================
+FAIL: test_I05_all_normal_entrypoints_reject_omitted_e2e (test_traceability_entrypoints.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-owrhii_i/candidate/_ask/tests/test_traceability_entrypoints.py", line 151, in test_I05_all_normal_entrypoints_reject_omitted_e2e
+    self.require_pass(c.command('inner-loop','run','w'))
+  File "/tmp/ask-cases-owrhii_i/candidate/_ask/tests/test_traceability_entrypoints.py", line 14, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 2 != 0 : {
+  "status": "recovery_required",
+  "work_id": "w",
+  "task_ids": [
+    "a"
+  ],
+  "evidence_paths": [
+    "app.py",
+    "work/w/traceability-accepted.json"
+  ],
+  "conflicts": [
+    "task a has task-owned source changes after the accepted anchor but no runtime attempt record: app.py"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}
+
+
+======================================================================
+FAIL: test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-owrhii_i/candidate/_ask/tests/test_traceability_entrypoints.py", line 176, in test_I07_complete_evidence_agrees_across_entrypoints
+    self.require_pass(c.command('inner-loop','run','w'))
+  File "/tmp/ask-cases-owrhii_i/candidate/_ask/tests/test_traceability_entrypoints.py", line 14, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 2 != 0 : {
+  "status": "recovery_required",
+  "work_id": "w",
+  "task_ids": [
+    "a"
+  ],
+  "evidence_paths": [
+    "app.py",
+    "work/w/traceability-accepted.json"
+  ],
+  "conflicts": [
+    "task a has task-owned source changes after the accepted anchor but no runtime attempt record: app.py"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 4.939s
+
+FAILED (failures=2)

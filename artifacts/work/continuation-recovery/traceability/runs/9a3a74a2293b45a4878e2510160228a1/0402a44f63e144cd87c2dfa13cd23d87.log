@@ -1,0 +1,59 @@
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+
+======================================================================
+FAIL: test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-3g6rupj9/candidate/_ask/tests/inner_loop_recovery.py", line 422, in test_concurrent_checkpoint_writers
+    self.assertIsNotNone(self._checkpoint_ref(), "the winning CAS must publish its checkpoint")
+AssertionError: unexpectedly None : the winning CAS must publish its checkpoint
+
+======================================================================
+FAIL: test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-3g6rupj9/candidate/_ask/tests/inner_loop_recovery.py", line 383, in test_crash_around_checkpoint_publication
+    self.assertIsNotNone(initial, "initial state must have a checkpoint before transition")
+AssertionError: unexpectedly None : initial state must have a checkpoint before transition
+
+======================================================================
+FAIL: test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-3g6rupj9/candidate/_ask/tests/inner_loop_recovery.py", line 427, in test_reject_incomplete_or_unsafe_checkpoint
+    self.assertIsNotNone(checkpoint, "checkpoint validation requires a published baseline")
+AssertionError: unexpectedly None : checkpoint validation requires a published baseline
+
+======================================================================
+FAIL: test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-3g6rupj9/candidate/_ask/tests/inner_loop_recovery.py", line 368, in test_restore_deleted_runtime_cache
+    self.assertIsNotNone(checkpoint, "writer transitions must publish a retained checkpoint")
+AssertionError: unexpectedly None : writer transitions must publish a retained checkpoint
+
+======================================================================
+FAIL: test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-3g6rupj9/candidate/_ask/tests/inner_loop_recovery.py", line 473, in test_retain_objects_after_gc_and_bundle_transfer
+    self.assertIsNotNone(checkpoint, "writer transitions must publish retained checkpoints")
+AssertionError: unexpectedly None : writer transitions must publish retained checkpoints
+
+======================================================================
+FAIL: test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-3g6rupj9/candidate/_ask/tests/inner_loop_recovery.py", line 452, in test_stale_and_newer_cache
+    self.assertIsNotNone(checkpoint, "state mutation must publish a checkpoint")
+AssertionError: unexpectedly None : state mutation must publish a checkpoint
+
+----------------------------------------------------------------------
+Ran 6 tests in 3.067s
+
+FAILED (failures=6)

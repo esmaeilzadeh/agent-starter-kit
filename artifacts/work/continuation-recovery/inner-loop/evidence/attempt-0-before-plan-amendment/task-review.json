@@ -1,0 +1,13 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "d740c62320345dc7d4b70574df179569511c3af6",
+  "candidate_sha": "e3ae380c2d6fe68b08e430619d29776ec59c5205",
+  "contract_sha": "ecb56e06f643a686fb3486d38e92d21da377e14d",
+  "reviewer": "/root/review_cr1",
+  "verdict": "APPROVED",
+  "boundary": "ok",
+  "findings": [],
+  "summary": "Reviewed the exact committed CR-1 candidate against its accepted base and TaskResult. The diff is limited to the CR-1-owned fixture and I05/I07 call sites; opt-in defaults off and is used only for T53/T54. Candidate-bound Red collected 38 cases with only T53/T54 failing as expected behavior assertions; Green passed all 38 across three runners. Contract validation passes; accepted spec and intent are unchanged."
+}

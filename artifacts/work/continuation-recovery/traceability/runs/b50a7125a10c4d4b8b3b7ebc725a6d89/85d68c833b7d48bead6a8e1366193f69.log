@@ -1,0 +1,48 @@
+test_contract_and_checkout_conflict (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_fresh_initialization_and_missing_legacy_evidence (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_isolated_repair_initialization_and_legacy_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_missing_state_retained_result (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_pending_state_conflicts_with_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+
+======================================================================
+FAIL: test_contract_and_checkout_conflict (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 252, in test_contract_and_checkout_conflict
+    self.assert_recovery_required(refused, "work_id", "work/w/inner-loop/results/a.json")
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 169, in assert_recovery_required
+    self.assertIn("recovery_required", output)
+AssertionError: 'recovery_required' not found in 'TaskResult work_id mismatch\n'
+
+======================================================================
+FAIL: test_fresh_initialization_and_missing_legacy_evidence (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 236, in test_fresh_initialization_and_missing_legacy_evidence
+    self.assertIn("recovery_required", run.stdout + run.stderr)
+AssertionError: 'recovery_required' not found in 'running=a\n'
+
+======================================================================
+FAIL: test_missing_state_retained_result (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 183, in test_missing_state_retained_result
+    self.assert_recovery_required(
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 169, in assert_recovery_required
+    self.assertIn("recovery_required", output)
+AssertionError: 'recovery_required' not found in 'running=a\n'
+
+======================================================================
+FAIL: test_pending_state_conflicts_with_execution (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 205, in test_pending_state_conflicts_with_execution
+    self.assert_recovery_required(result, "w", "work/w/inner-loop/results/a.json")
+  File "/tmp/ask-cases-xoc9zk8r/candidate/_ask/tests/inner_loop_recovery.py", line 169, in assert_recovery_required
+    self.assertIn("recovery_required", output)
+AssertionError: 'recovery_required' not found in 'running=a\n'
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.501s
+
+FAILED (failures=4)

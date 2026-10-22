@@ -1,0 +1,15 @@
+{
+  "schema": "ask-completion/v1",
+  "status": "fail",
+  "scope": "task",
+  "task_id": "CR-1",
+  "candidate_sha": "e3ae380c2d6fe68b08e430619d29776ec59c5205",
+  "input_digests": {},
+  "criterion_evidence": [],
+  "missing_evidence": [],
+  "errors": [
+    "migration_required: missing/invalid JSON /tmp/ask-continuation-recovery-reconcile/work/continuation-recovery/traceability/reviews/e3ae380c2d6fe68b08e430619d29776ec59c5205.json: [Errno 2] No such file or directory: '/tmp/ask-continuation-recovery-reconcile/work/continuation-recovery/traceability/reviews/e3ae380c2d6fe68b08e430619d29776ec59c5205.json'"
+  ],
+  "execution_artifacts": [],
+  "evidence_state": "unavailable"
+}

@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "test_traceability_entrypoints.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e", "outcome": "passed", "failure_kind": null}, {"case_id": "test_traceability_entrypoints.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints", "outcome": "passed", "failure_kind": null}], "collection_status": "ok"}

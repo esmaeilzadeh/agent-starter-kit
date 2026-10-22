@@ -1,0 +1,27 @@
+{
+  "schema": "ask-independent-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
+  "candidate_sha": "4861364c23db83c748ac780e9bf6307fc1e27422",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "findings": [
+    {
+      "path": "_ask/scripts/inner_loop/recovery.py",
+      "line": 205,
+      "finding": "Missing/non-string TaskResult contract_sha bypasses accepted contract validation."
+    },
+    {
+      "path": "_ask/scripts/inner_loop/recovery.py",
+      "line": 191,
+      "finding": "Empty task state base_sha bypasses comparison with retained TaskResult base."
+    },
+    {
+      "path": "_ask/tests/test-inner-loop-recovery.sh",
+      "line": 6,
+      "finding": "Extra blank line at EOF; minor cleanup."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+test_contract_and_checkout_conflict (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_fresh_initialization_and_missing_legacy_evidence (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_isolated_repair_initialization_and_legacy_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_missing_state_retained_result (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_new_candidate_preserves_stale_rejected_review_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_pending_state_conflicts_with_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_running_task_changes_may_overlap_later_task_ownership (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 6.838s
+
+OK

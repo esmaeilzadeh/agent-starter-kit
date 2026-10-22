@@ -1,0 +1,17 @@
+{
+  "schema": "ask-plan-review/v1",
+  "decision": "APPROVED",
+  "reviewer": "/root/review_cr1",
+  "work_id": "continuation-recovery",
+  "contract_sha": "86b3f2498794c74b2494175f625b6fb2a20db747",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "53f2e2636211823e217dfe875cfcdad63a414070ca974385835913925659daca",
+  "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7",
+  "findings": [],
+  "resolution": {
+    "classification": "CR-T01, CR-T02, CR-T03, CR-T04 and CR-T17 are correctly classified regression: their exact selectors and assertion/test sources are present and unchanged at the previously accepted task baseline f6149ed96fad14d9349070a23ae6c86232111047. The fresh Red run 6f6b9275f9154c4393a31e479fc870da collected and passed these cases, so requiring an invented failure would be incorrect.",
+    "tdd_boundary": "Regression classification retains execution as a required check and does not waive Red evidence for tests classified new/changed. CR-T53/T54 remain changed under the plan; those exact changed cases require behavior-assertion Red plus final Green, as shown in the accepted task result for attempt candidate 31a050235da3f3f503f070bc753a1ff906c64cba.",
+    "scope_and_contract": "Only change_kind changes for CR-T01/02/03/04/17. CR-T53/T54 remain changed; all other test fields, selectors, runner and source bindings remain unchanged. Spec digest and task graph digest match the previously accepted contract; contract validation returns no violations."
+  },
+  "review_source": "Independent plan review at exact candidate 86b3f2498794c74b2494175f625b6fb2a20db747 against accepted candidate f6149ed96fad14d9349070a23ae6c86232111047."
+}

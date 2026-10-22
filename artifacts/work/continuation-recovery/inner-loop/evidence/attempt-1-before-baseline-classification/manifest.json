@@ -1,0 +1,81 @@
+{
+  "schema": "ask-attempt-archive/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "attempt": "pre-baseline-classification-amendment",
+  "base_sha": "ed6dd95b0e74f0d0635e8b0b0d801003cbfa4f94",
+  "candidate_sha": "31a050235da3f3f503f070bc753a1ff906c64cba",
+  "contract_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
+  "red_run": "6f6b9275f9154c4393a31e479fc870da",
+  "green_run": "f7cf4882148d40798b6e870170022cc5",
+  "failed_integration": "verify-opgd8vxx",
+  "files": {
+    "state.json": {
+      "source": "work/continuation-recovery/inner-loop/state.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/state.json",
+      "sha256": "d7709a7a0d4e9da4b82093cec012c8895bc785fa62c3af3a3d383a112268b887",
+      "size": 1980
+    },
+    "CR-1.json": {
+      "source": "work/continuation-recovery/inner-loop/results/CR-1.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/CR-1.json",
+      "sha256": "291d372fc5b69e5791f14935bc0d41f889e7701c956534df541e3b3fc0a4e6bb",
+      "size": 1905
+    },
+    "task-review.json": {
+      "source": "work/continuation-recovery/inner-loop/evidence/review-CR-1-31a0502.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/task-review.json",
+      "sha256": "871bb27192002e826b0dea87d0444fe89c616a02665d60ba002a4ae6e6c742c8",
+      "size": 824
+    },
+    "traceability-review-input.json": {
+      "source": "work/continuation-recovery/traceability/review-input-cr1-31a0502.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/traceability-review-input.json",
+      "sha256": "1af829e5e875791118de3d13cdcde950268effa931c9c9d898437036625b485b",
+      "size": 40628
+    },
+    "traceability-recorded-review.json": {
+      "source": "work/continuation-recovery/traceability/reviews/31a050235da3f3f503f070bc753a1ff906c64cba.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/traceability-recorded-review.json",
+      "sha256": "c62c5d23e0eb70ff534101b7ca91d33b85f14b5c93fe3bf66e94463260043e05",
+      "size": 41992
+    },
+    "failed-completion.json": {
+      "source": "work/continuation-recovery/traceability/completion.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/failed-completion.json",
+      "sha256": "856fbec0ce623cad8b3c701569e7809ef6d7b366108598bf975a6ee3d99e8852",
+      "size": 101962
+    },
+    "failed-verification.json": {
+      "source": "work/continuation-recovery/inner-loop/evidence/verify-opgd8vxx/verification.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/failed-verification.json",
+      "sha256": "1c6ae261f965fb363ac864d6945b1d184196f7a10527f9a0f449ebd1f4661696",
+      "size": 17720
+    },
+    "failed-integration.json": {
+      "source": "work/continuation-recovery/inner-loop/evidence/verify-opgd8vxx/integration.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/failed-integration.json",
+      "sha256": "7996b013ac9c106a3e24204c1b2a35f03486b45f76316c35a80a61529ba926fb",
+      "size": 18591
+    },
+    "failed-integration-output.log": {
+      "source": "work/continuation-recovery/inner-loop/evidence/verify-opgd8vxx/output.log",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/failed-integration-output.log",
+      "sha256": "a502d32403d35bfa015cc94b558511b0c8b6ed4cd0f204542bbc6b9e825882f5",
+      "size": 29259
+    },
+    "cancelled-state.json": {
+      "source": "work/continuation-recovery/inner-loop/state.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-1-before-baseline-classification/cancelled-state.json",
+      "sha256": "1c77b295621aff4cf7c7ff98ea64a8b2e61528839bc9440a4dc35606e2c89ed5",
+      "size": 1982
+    }
+  },
+  "reconciliation": {
+    "reason": "Second accepted-plan amendment corrects CR-T01/02/03/04/17 from new to regression because unchanged tests and implementation predate the CR-1 task baseline; fresh Red confirms they pass.",
+    "old_contract_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
+    "new_contract_sha": "86b3f2498794c74b2494175f625b6fb2a20db747",
+    "new_coordinator_sha": "b8f134d8574e23fff3fdfdd756ee780b4c6cfbcb",
+    "prior_candidate_sha": "31a050235da3f3f503f070bc753a1ff906c64cba"
+  }
+}

@@ -1,0 +1,34 @@
+test_candidate_branch_drift_during_verification_is_refused (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_candidate_cannot_replace_the_verifier_checking_it (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_changed_result_or_review_cannot_reuse_approval (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_concurrent_state_update_cannot_interleave_with_integration (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_empty_checkplan_does_not_integrate (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_exemption_needs_supported_reason_and_coordinator_review (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_failed_candidate_checks_prevent_fast_forward_and_state_fold (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_fast_forward_matches_verified_candidate (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_non_fast_forward_combination_is_refused (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_other_candidate_report_is_rejected (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_other_work_task_and_base_reports_are_rejected (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_result_drift_during_verification_is_refused (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_resume_merge_repair_preserves_tracked_runtime_state (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_resume_preserves_candidate_after_ff_before_state_fold_interruption (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_resume_source_repair_preserves_tracked_runtime_revision_and_review (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_review_drift_during_verification_is_refused (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_review_rejection_and_boundary_rejection_prevent_integration (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_successful_in_place_integration_records_executed_lineage (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_tdd_history_requires_typed_exit_codes_and_captured_output (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_uncommitted_source_is_refused (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_verification_that_modifies_candidate_source_is_refused (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_worker_passing_fields_do_not_authorize_integration (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_worker_role_cannot_record_coordinator_review (_ask.tests.inner_loop_reliability.IntegrationTests) ... ok
+test_competing_same_revision_cannot_both_succeed (_ask.tests.inner_loop_reliability.StateTests) ... ok
+test_competing_starts_leave_one_writer (_ask.tests.inner_loop_reliability.StateTests) ... ok
+test_concurrent_initialization_does_not_reset_state (_ask.tests.inner_loop_reliability.StateTests) ... ok
+test_every_transaction_preserves_single_writer (_ask.tests.inner_loop_reliability.StateTests) ... ok
+test_interrupted_replacement_preserves_old_state_and_releases_lock (_ask.tests.inner_loop_reliability.StateTests) ... ok
+test_readers_observe_complete_documents_during_writes (_ask.tests.inner_loop_reliability.StateTests) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 28.277s
+
+OK

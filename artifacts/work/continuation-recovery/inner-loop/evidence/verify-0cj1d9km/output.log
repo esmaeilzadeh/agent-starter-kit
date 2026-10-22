@@ -1,0 +1,1139 @@
+verify: running: _ask/tests/test-ask.sh
+check-clean-worktree: clean
+PASS: ask help, unknown-command, check-clean on clean temp repo
+verify: running: _ask/tests/test-askit-complete.sh
+PASS: askit wraps ./ask; completion is gated until the repo is ask-based
+verify: running: _ask/tests/test-askit-first-run.sh
+sync-runtime-agents: wrote /tmp/tmp.Qog5e4sFTV/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.Qog5e4sFTV/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.Qog5e4sFTV/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.Qog5e4sFTV/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.Qog5e4sFTV
+status: no live agent/* branches; no archived work/* on master
+PASS: first-run askit gates on git + confirm, then overlays
+verify: running: _ask/tests/test-askit-self-install.sh
+askit: kit /tmp/ask-candidate-h56ucohz/checkout @ HEAD
+askit: cache /tmp/tmp.HNoGvOptNa/.cache/askit/kit
+Cloning into '/tmp/tmp.HNoGvOptNa/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/continuation-recovery'.
+askit: /tmp/tmp.HNoGvOptNa/.local/bin/askit -> /tmp/tmp.HNoGvOptNa/.cache/askit/kit/askit
+askit: /tmp/tmp.HNoGvOptNa/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.HNoGvOptNa/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)
+verify: running: _ask/tests/test-bindings-consumer-overlay.sh
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.dgy8oJwm6S
+install-kit: skip existing .gitignore (use --force)
+install-kit: skip existing AGENTS.md (use --force)
+install-kit: skip existing ask (use --force)
+install-kit: skip existing ai-agent-engineering-guide.md (use --force)
+install-kit: skip existing ai-agent-starter-kit-spec.md (use --force)
+install-kit: skip existing .ask.env.example (use --force)
+install-kit: skip existing .ask/README.md (use --force)
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.dgy8oJwm6S/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.dgy8oJwm6S
+PASS: install-kit does not clobber consumer bindings/models.yaml
+verify: running: _ask/tests/test-check-clean-worktree.sh
+PASS: check-clean-worktree dirty-tree negative + clean positive
+verify: running: _ask/tests/test-check-workstream-confirmation.sh
+intent-confirmation: response must explicitly approve the complete intent and assumptions
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+intent-confirmation: response must explicitly approve the complete intent and assumptions
+intent-confirmation: human requested revisions; intent was not approved
+usage: intent-confirmation.py [-h] [--root ROOT] --work-id WORK_ID
+                              [--choice {approve,revise} | --response RESPONSE]
+                              {confirm,validate}
+intent-confirmation.py: error: argument --response: not allowed with argument --choice
+Recorded confirmation for work/demo/intent.md
+Recorded confirmation for work/demo/intent.md
+PASS: workstream gate requires an explicit, current intent confirmation
+verify: running: _ask/tests/test-check-workstream-guidance.sh
+PASS: check-workstream missing spec is guidance wording, not a padlock
+verify: running: _ask/tests/test-codex-skill-parity.sh
+PASS: eleven Codex skills match Cursor stage bodies and overlays; sync is idempotent
+PASS: stale ASK skills cleaned; unrelated, unmarked and symlink skills protected
+PASS: reserved preparation names rejected before any installer runs
+PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages
+PASS: install and upgrade fail clearly on blocking consumer ignore rules without deleting them
+verify: running: _ask/tests/test-e2e-contract-sections.sh
+PASS: E2E contract and plan-to-task/test breakdown required before implementation
+verify: running: _ask/tests/test-grilling-skip-trivia-contracts.sh
+PASS: grilling-skip-trivia contracts mention ask-before-prepare, assume-list, ADR 0016
+verify: running: _ask/tests/test-humanizer-docs-specs.sh
+PASS: humanizer human-facing scope, writing-for-agents on machine-first files, ADR 0017
+verify: running: _ask/tests/test-inner-loop-recovery.sh
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 9.399s
+
+OK
+verify: running: _ask/tests/test-inner-loop-reliability.sh
+EEEEEEEEEEEEEEEEEEEEE...F/usr/lib/python3.10/subprocess.py:1072: ResourceWarning: subprocess 2107196 is still running
+  _warn("subprocess %s is still running" % self.pid,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/usr/lib/python3.10/unittest/case.py:613: ResourceWarning: unclosed file <_io.TextIOWrapper name=4 encoding='UTF-8'>
+  outcome.errors.clear()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/usr/lib/python3.10/unittest/case.py:613: ResourceWarning: unclosed file <_io.TextIOWrapper name=7 encoding='UTF-8'>
+  outcome.errors.clear()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...
+======================================================================
+ERROR: test_candidate_branch_drift_during_verification_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 336, in test_candidate_branch_drift_during_verification_is_refused
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_candidate_cannot_replace_the_verifier_checking_it (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 184, in test_candidate_cannot_replace_the_verifier_checking_it
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_changed_result_or_review_cannot_reuse_approval (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 209, in test_changed_result_or_review_cannot_reuse_approval
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_concurrent_state_update_cannot_interleave_with_integration (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 305, in test_concurrent_state_update_cannot_interleave_with_integration
+    integrating, proceed = self.paused_integration()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 123, in paused_integration
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_empty_checkplan_does_not_integrate (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 196, in test_empty_checkplan_does_not_integrate
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_exemption_needs_supported_reason_and_coordinator_review (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 230, in test_exemption_needs_supported_reason_and_coordinator_review
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_failed_candidate_checks_prevent_fast_forward_and_state_fold (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 168, in test_failed_candidate_checks_prevent_fast_forward_and_state_fold
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_fast_forward_matches_verified_candidate (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 202, in test_fast_forward_matches_verified_candidate
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_non_fast_forward_combination_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 348, in test_non_fast_forward_combination_is_refused
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_candidate_report_is_rejected (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 132, in test_other_candidate_report_is_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_work_task_and_base_reports_are_rejected (__main__.IntegrationTests) (field='work_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 142, in test_other_work_task_and_base_reports_are_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_work_task_and_base_reports_are_rejected (__main__.IntegrationTests) (field='task_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 142, in test_other_work_task_and_base_reports_are_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_work_task_and_base_reports_are_rejected (__main__.IntegrationTests) (field='base_sha')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 142, in test_other_work_task_and_base_reports_are_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_result_drift_during_verification_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 266, in test_result_drift_during_verification_is_refused
+    proc, proceed = self.paused_integration()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 123, in paused_integration
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_resume_merge_repair_preserves_tracked_runtime_state (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 397, in test_resume_merge_repair_preserves_tracked_runtime_state
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_resume_preserves_candidate_after_ff_before_state_fold_interruption (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 284, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_resume_source_repair_preserves_tracked_runtime_revision_and_review (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 375, in test_resume_source_repair_preserves_tracked_runtime_revision_and_review
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_review_drift_during_verification_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 276, in test_review_drift_during_verification_is_refused
+    proc, proceed = self.paused_integration()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 123, in paused_integration
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_review_rejection_and_boundary_rejection_prevent_integration (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 221, in test_review_rejection_and_boundary_rejection_prevent_integration
+    self.review(**options)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_successful_in_place_integration_records_executed_lineage (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 152, in test_successful_in_place_integration_records_executed_lineage
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_tdd_history_requires_typed_exit_codes_and_captured_output (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 248, in test_tdd_history_requires_typed_exit_codes_and_captured_output
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_uncommitted_source_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 252, in test_uncommitted_source_is_refused
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_verification_that_modifies_candidate_source_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 259, in test_verification_that_modifies_candidate_source_is_refused
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_worker_passing_fields_do_not_authorize_integration (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 149, in test_worker_passing_fields_do_not_authorize_integration
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+FAIL: test_concurrent_initialization_does_not_reset_state (__main__.StateTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 461, in test_concurrent_initialization_does_not_reset_state
+    self.assertEqual(self.contend("cas_init(root,'w',['wrong'])"), ["success", "success"])
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 443, in contend
+    self.assertEqual(p.returncode, 0, err)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 139, in cas_init
+    _require_reconciled(root, work_id, doc, task_ids)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+
+----------------------------------------------------------------------
+Ran 29 tests in 17.188s
+
+FAILED (failures=1, errors=24)
+verify: running: _ask/tests/test-inner-loop.sh
+revision=0
+running=t revision=2
+FAIL: missing TDD message: {
+  "status": "recovery_required",
+  "work_id": "drv",
+  "task_ids": [
+    "t-a"
+  ],
+  "evidence_paths": [
+    "work/drv/inner-loop/results/t-a.json"
+  ],
+  "conflicts": [
+    "work/drv/inner-loop/results/t-a.json: TaskResult contract_sha is missing or invalid"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}
+verify: running: _ask/tests/test-install-kit-apply.sh
+install-kit: note — will not modify target docs/ (consumer-owned)
+sync-runtime-agents: wrote /tmp/tmp.gpGT1F4zvH/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.gpGT1F4zvH/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.gpGT1F4zvH/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.gpGT1F4zvH/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.gpGT1F4zvH
+PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/
+verify: running: _ask/tests/test-install-kit-dry-run.sh
+PASS: install-kit dry-run excludes consumer docs
+verify: running: _ask/tests/test-install-user-completion.sh
+PASS: askit installs user completion files and a one-time rc hook
+verify: running: _ask/tests/test-later-inbox-gitignore.sh
+PASS: later-inbox cards are committable; README stays tracked
+verify: running: _ask/tests/test-prepare-skills-refuses-latest.sh
+PASS: prepare-skills refuses revision=latest
+verify: running: _ask/tests/test-record-result-refuses-missing-sha.sh
+PASS: record-result refuses missing commit SHA
+verify: running: _ask/tests/test-record-run-refuses-dirty.sh
+PASS: record-run refuses dirty tree
+verify: running: _ask/tests/test-record-run-refuses-missing-sha.sh
+PASS: record-run refuses missing commit SHA
+verify: running: _ask/tests/test-record-run-writes-manifest.sh
+check-clean-worktree: clean
+record-run: wrote demo @ 0df3ecef49a580bfc522908a98fce085100a47ad -> results/demo
+PASS: record-run writes manifest and refuses SHA ≠ HEAD
+verify: running: _ask/tests/test-setup-env-gitignore.sh
+PASS: setup env example is placeholders; secrets paths are ignored
+verify: running: _ask/tests/test-setup-human-only.sh
+PASS: setup --help works; non-TTY setup refuses and does not write .ask.env; verify scaffold refuses non-TTY
+verify: running: _ask/tests/test-stages-inner-loop.sh
+PASS: 06/07/08 call inner-loop with steering owned_paths
+verify: running: _ask/tests/test-start-work-from-develop.sh
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=dc118da710fc77899986aae0d2de25301a692a4e
+start-work: workstream=work/demo
+PASS: start-work from develop or fail closed
+verify: running: _ask/tests/test-start-work-no-explore-map.sh
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=9fe5744fafc7978155fd05f789684c7202e1d6a2
+start-work: workstream=work/demo
+PASS: start-work does not seed explore-map.md
+verify: running: _ask/tests/test-start-work-refuses-dirty.sh
+PASS: start-work refuses dirty tree without absorbing changes
+verify: running: _ask/tests/test-status.sh
+PASS: status lists shared develop later cards from a feature branch
+verify: running: _ask/tests/test-sync-canonical-ask.sh
+PASS: sync prefers .agents/ask/stages over _ask/agents
+verify: running: _ask/tests/test-sync-off-path-command.sh
+PASS: sync copies /off-path as a session-only command
+verify: running: _ask/tests/test-sync-runtime-agents.sh
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 1.403s
+
+OK
+PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs
+verify: running: _ask/tests/test-verify-fail-closed.sh
+PASS: verify fail-closed; ask-kit named; no language CLIs in core
+verify: running: _ask/tests/test-verify-scaffold.sh
+verify-scaffold: wrote /tmp/tmp.AXCUQM53C5/.agents/verification.yaml
+rollback ok
+verify-scaffold: /tmp/tmp.AXCUQM53C5/.agents/verification.yaml exists; left in place (use --re-scaffold for a candidate)
+verify-scaffold: wrote /tmp/tmp.AXCUQM53C5/.agents/verification.yaml.candidate
+PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops
+verify: running: _ask/tests/test-workstream-smoke.sh
+check-clean-worktree: clean
+start-work: work-id=smoke-demo
+start-work: branch=agent/smoke-demo
+start-work: HEAD=c9ac1b5cd4f7643d62894cea75f4a969e57e5028
+start-work: workstream=work/smoke-demo
+handoff ok
+Recorded confirmation for work/smoke-demo/intent.md
+check-clean-worktree: clean
+intent-confirmation: valid work-id=smoke-demo
+check-workstream: ok work-id=smoke-demo branch=agent/smoke-demo
+{
+  "work_id": "smoke-demo",
+  "commit_sha": "431dabfddf763ad338bfbaa8e958b2b82dc84bb6",
+  "result": "handoff-checked",
+  "notes": ""
+}
+PASS: workstream smoke Explore handoff to verify SHA
+verify: running: python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'
+......F.F....................
+======================================================================
+FAIL: test_I05_all_normal_entrypoints_reject_omitted_e2e (test_traceability_entrypoints.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/test_traceability_entrypoints.py", line 151, in test_I05_all_normal_entrypoints_reject_omitted_e2e
+    self.require_pass(c.command('inner-loop','run','w'))
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/test_traceability_entrypoints.py", line 14, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 2 != 0 : {
+  "status": "recovery_required",
+  "work_id": "w",
+  "task_ids": [
+    "a"
+  ],
+  "evidence_paths": [
+    "app.py",
+    "work/w/traceability-accepted.json"
+  ],
+  "conflicts": [
+    "task a has task-owned source changes after the accepted anchor but no runtime attempt record: app.py"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}
+
+
+======================================================================
+FAIL: test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/test_traceability_entrypoints.py", line 176, in test_I07_complete_evidence_agrees_across_entrypoints
+    self.require_pass(c.command('inner-loop','run','w'))
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/test_traceability_entrypoints.py", line 14, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 2 != 0 : {
+  "status": "recovery_required",
+  "work_id": "w",
+  "task_ids": [
+    "a"
+  ],
+  "evidence_paths": [
+    "app.py",
+    "work/w/traceability-accepted.json"
+  ],
+  "conflicts": [
+    "task a has task-owned source changes after the accepted anchor but no runtime attempt record: app.py"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}
+
+
+----------------------------------------------------------------------
+Ran 29 tests in 57.018s
+
+FAILED (failures=2)
+verify: required candidate verification failed
+{
+  "schema": "ask-verify-result/v1",
+  "commit_sha": "400147bbdb7a2b76cfce55510d2b646b1cc3c1fa",
+  "result": "fail",
+  "checks": [
+    {
+      "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/0.log",
+      "output_digest": "131bdaaf9e2a299ba94ec56edeb7327c5315cbf3bc8591ec2dd87bb5b6a78cde"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-complete.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/1.log",
+      "output_digest": "64b0da22cad3e3327988afef52df16c163cb6e892f39c727b989583a3461c3c8"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-first-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/2.log",
+      "output_digest": "e1f86ad09884364e72399cecaea655c67a9d4f01ac2869f7885c8e497fe5ad41"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-askit-self-install.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/3.log",
+      "output_digest": "a0f0102d515d5f85e9268d5f7c15191ea4597184bdcdce2abde8c806eed3dc2b"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-bindings-consumer-overlay.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/4.log",
+      "output_digest": "e7ef18e8b7e65415398c5a338fa8be43f36ff00f4d56f86a6fab983655c42c50"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-clean-worktree.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/5.log",
+      "output_digest": "04a27654038bdf1734a8211433e6f7d171b32906b12cdec47fe0c1f994e9cca6"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-confirmation.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/6.log",
+      "output_digest": "113680bd1853e79c7ba829e90964992df8da0c05e8fd721ad0ce61185e05b133"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-check-workstream-guidance.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/7.log",
+      "output_digest": "c0e2010cc3e962e12d3e46882d2adb1020693b71a8086085727d69d0754e1351"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-codex-skill-parity.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/8.log",
+      "output_digest": "d72dee9d671be2b2bf4e02615626f5179a9e8c59ac7849a9107e885dcacdf265"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-e2e-contract-sections.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/9.log",
+      "output_digest": "c762ce58bd9cfc80df3f2ae08cdb0f0cce4547c2d348213d71178c7747769e01"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/10.log",
+      "output_digest": "dfbef3ee678630a67f71b5edc09062f942eb7f3e918b12e9bb150358aaa1b9f4"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-humanizer-docs-specs.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/11.log",
+      "output_digest": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop-recovery.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop-recovery.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/12.log",
+      "output_digest": "e61866fdbaae10d31221ffe258c2641fe018a503ef02f63b1f42dc9f7a7002cb"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop-reliability.sh",
+      "status": "fail",
+      "exit_code": 1,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/13.log",
+      "output_digest": "b09c6ccc4656073dfd8b14f515dd224bcb84931aea9c7c3d996b8a52685c9a2e"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-inner-loop.sh",
+      "status": "fail",
+      "exit_code": 1,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/14.log",
+      "output_digest": "26cf15d4c5f770a8a5240f83b9e760560b7cea8f70031c7f1ce5f91233a41821"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-apply.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/15.log",
+      "output_digest": "33baed690ba7039fef6d0ae534cb21c4a8ef10b8fe2846573b66edcb695c667a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-kit-dry-run.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/16.log",
+      "output_digest": "72f9f8601453e37611df06b926708498d43b86cef983203a297cb69682fed58c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-install-user-completion.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/17.log",
+      "output_digest": "0837ec4201360e6baa6bdf7918d7c9c091c80646562d69f5d726cd9b4563677b"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-later-inbox-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/18.log",
+      "output_digest": "370bafcbc9bd892014402bd6ef3db7d63140a83bc6df50bc504f7bf474335ff9"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/19.log",
+      "output_digest": "f5896fce2dc68b5505621601f94695bf1e5aa14be7b5450cd7c8b0c6e7789f0a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/20.log",
+      "output_digest": "2fd2221c6fc85cf67107c08080aa4f29302b2b274ecdc2e0c61dcc7861f96a5c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/21.log",
+      "output_digest": "91a89ba319fcab86d0199ace9433932478329902bc88f026769571b592f09118"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/22.log",
+      "output_digest": "33726d81b82a68015ddd50055fa3a2c513155d70b4aadf25bc846f06d34e8ed3"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-record-run-writes-manifest.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/23.log",
+      "output_digest": "1b562a50db5e5177b629fd71065eefab4b848d00cec98ac49df0a8bbc1055e27"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-env-gitignore.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/24.log",
+      "output_digest": "23f27a4735664e634d9b5b70e8c3c6ea4075b5b9fb48aaeefa39c5c77a720e32"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-setup-human-only.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/25.log",
+      "output_digest": "8ebc8ff6de2c32b7f6d437ce3f7bd148deff09d0a5719292a16503237577075c"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-stages-inner-loop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/26.log",
+      "output_digest": "979b502b07d3e386ab0124923e5280dc89378e4611a80c93c6c70fde665da322"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/27.log",
+      "output_digest": "7ab90a75f67ad249dc17d71f332ea32460e21cb8dd52d669d0ab806082d3949a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-no-explore-map.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/28.log",
+      "output_digest": "b6b54a3501223f8cc49d27b44058c4ad2597546485772ad9b7cb234dba76cffe"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-start-work-refuses-dirty.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/29.log",
+      "output_digest": "7d6c89282d7d9413cbf24993973abfccc2f4083baad612cecc375d5eb01c5aad"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-status.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-status.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/30.log",
+      "output_digest": "89b3acdfe30ec3a6be3f536ab29fee7054515133f7944e5e4fe3324124c10cc7"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-canonical-ask.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/31.log",
+      "output_digest": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-off-path-command.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/32.log",
+      "output_digest": "7041e3a29ec17ba063d93869241f198aa2faae83ec2cafb251e5ac0485d9dd2e"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-sync-runtime-agents.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/33.log",
+      "output_digest": "3e3eba9b1ece249b6e3632ca79cc970f9e5f315875582b54f2657cf925d802ba"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-fail-closed.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/34.log",
+      "output_digest": "2d428451dc2f552c7a423c819b2b42069f9c22999fbf94227368c00ee21ef081"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-verify-scaffold.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/35.log",
+      "output_digest": "f340574f84924f9af39e1e2b6d67621b10be4f869f5662c606e259025c0850a2"
+    },
+    {
+      "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+      "tier": "mandatory",
+      "command": "_ask/tests/test-workstream-smoke.sh",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/36.log",
+      "output_digest": "300eba3ede8508237e21375c080d0687d70e4fab8e441df14aafd27c1e896531"
+    },
+    {
+      "id": "traceability-cases",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
+      "status": "fail",
+      "exit_code": 1,
+      "evidence": "work/continuation-recovery/traceability/static-runs/3a2346594dca4e79825b58eeb39bbe54/37.log",
+      "output_digest": "a62d64446300e491b207683f396c83dc8f9ff1e28ef2cb5aaac3edde18742f32"
+    }
+  ],
+  "error": "required candidate verification failed"
+}
+verify: commit_sha=400147bbdb7a2b76cfce55510d2b646b1cc3c1fa

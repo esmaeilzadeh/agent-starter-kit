@@ -1,0 +1,27 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "b8f134d8574e23fff3fdfdd756ee780b4c6cfbcb",
+  "candidate_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "contract_sha": "86b3f2498794c74b2494175f625b6fb2a20db747",
+  "tdd": {
+    "seam": "Public traceability entrypoints must allow task-owned source changes only after a task attempt starts from the accepted anchor; existing baseline recovery cases remain regression checks.",
+    "red": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha b8f134d8574e23fff3fdfdd756ee780b4c6cfbcb --anchor-sha b8f134d8574e23fff3fdfdd756ee780b4c6cfbcb --scope task --task-id CR-1 --phase red",
+      "exit_code": 1,
+      "output": "Run 31cbc0ddaabe47139fe091290766021d: all three runners collected 38 mapped CR-1 cases. CR-T53 and CR-T54 failed as behavior assertions at the expected recovery guard; the five unchanged baseline cases CR-T01..04 and CR-T17 passed as regressions; remaining regression cases passed; no case errored."
+    },
+    "green": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha c1b5ca0b57e2293d710e194d8cb40703bf34df64 --anchor-sha c1b5ca0b57e2293d710e194d8cb40703bf34df64 --scope task --task-id CR-1 --phase final_green",
+      "exit_code": 0,
+      "output": "Run b677df2909b54b729c22f822ece21335: all three runners collected and all 38 mapped CR-1 cases passed, including CR-T53/T54 and the unchanged baseline regressions."
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "The fixture opt-in remains limited to I05/I07; no structural cleanup was useful."
+  },
+  "exemption": null,
+  "notes": "Supersedes pre-amendment attempts preserved under inner-loop/evidence/attempt-0-before-plan-amendment and attempt-1-before-baseline-classification. CR-T01/02/03/04/17 are unchanged baseline regressions; CR-T53/T54 remain changed and have fresh behavior Red/Green."
+}

@@ -1,0 +1,17 @@
+check-clean-worktree: clean
+start-work: work-id=smoke-demo
+start-work: branch=agent/smoke-demo
+start-work: HEAD=83ec25b9f2638e91e1dd1d484b8207200054c824
+start-work: workstream=work/smoke-demo
+handoff ok
+Recorded confirmation for work/smoke-demo/intent.md
+check-clean-worktree: clean
+intent-confirmation: valid work-id=smoke-demo
+check-workstream: ok work-id=smoke-demo branch=agent/smoke-demo
+{
+  "work_id": "smoke-demo",
+  "commit_sha": "45d42f8e2d75a707dc51bae16571339676bae1b2",
+  "result": "handoff-checked",
+  "notes": ""
+}
+PASS: workstream smoke Explore handoff to verify SHA

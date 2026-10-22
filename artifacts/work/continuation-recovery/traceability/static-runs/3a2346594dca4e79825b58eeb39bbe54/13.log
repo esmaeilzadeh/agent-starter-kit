@@ -1,0 +1,531 @@
+EEEEEEEEEEEEEEEEEEEEE...F/usr/lib/python3.10/subprocess.py:1072: ResourceWarning: subprocess 2107196 is still running
+  _warn("subprocess %s is still running" % self.pid,
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/usr/lib/python3.10/unittest/case.py:613: ResourceWarning: unclosed file <_io.TextIOWrapper name=4 encoding='UTF-8'>
+  outcome.errors.clear()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/usr/lib/python3.10/unittest/case.py:613: ResourceWarning: unclosed file <_io.TextIOWrapper name=7 encoding='UTF-8'>
+  outcome.errors.clear()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...
+======================================================================
+ERROR: test_candidate_branch_drift_during_verification_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 336, in test_candidate_branch_drift_during_verification_is_refused
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_candidate_cannot_replace_the_verifier_checking_it (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 184, in test_candidate_cannot_replace_the_verifier_checking_it
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_changed_result_or_review_cannot_reuse_approval (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 209, in test_changed_result_or_review_cannot_reuse_approval
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_concurrent_state_update_cannot_interleave_with_integration (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 305, in test_concurrent_state_update_cannot_interleave_with_integration
+    integrating, proceed = self.paused_integration()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 123, in paused_integration
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_empty_checkplan_does_not_integrate (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 196, in test_empty_checkplan_does_not_integrate
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_exemption_needs_supported_reason_and_coordinator_review (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 230, in test_exemption_needs_supported_reason_and_coordinator_review
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_failed_candidate_checks_prevent_fast_forward_and_state_fold (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 168, in test_failed_candidate_checks_prevent_fast_forward_and_state_fold
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_fast_forward_matches_verified_candidate (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 202, in test_fast_forward_matches_verified_candidate
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_non_fast_forward_combination_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 348, in test_non_fast_forward_combination_is_refused
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_candidate_report_is_rejected (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 132, in test_other_candidate_report_is_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_work_task_and_base_reports_are_rejected (__main__.IntegrationTests) (field='work_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 142, in test_other_work_task_and_base_reports_are_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_work_task_and_base_reports_are_rejected (__main__.IntegrationTests) (field='task_id')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 142, in test_other_work_task_and_base_reports_are_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_other_work_task_and_base_reports_are_rejected (__main__.IntegrationTests) (field='base_sha')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 142, in test_other_work_task_and_base_reports_are_rejected
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_result_drift_during_verification_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 266, in test_result_drift_during_verification_is_refused
+    proc, proceed = self.paused_integration()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 123, in paused_integration
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_resume_merge_repair_preserves_tracked_runtime_state (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 397, in test_resume_merge_repair_preserves_tracked_runtime_state
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_resume_preserves_candidate_after_ff_before_state_fold_interruption (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 284, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption
+    self.task_branch()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 91, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 147, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_resume_source_repair_preserves_tracked_runtime_revision_and_review (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 375, in test_resume_source_repair_preserves_tracked_runtime_revision_and_review
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_review_drift_during_verification_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 276, in test_review_drift_during_verification_is_refused
+    proc, proceed = self.paused_integration()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 123, in paused_integration
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_review_rejection_and_boundary_rejection_prevent_integration (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 221, in test_review_rejection_and_boundary_rejection_prevent_integration
+    self.review(**options)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_successful_in_place_integration_records_executed_lineage (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 152, in test_successful_in_place_integration_records_executed_lineage
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_tdd_history_requires_typed_exit_codes_and_captured_output (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 248, in test_tdd_history_requires_typed_exit_codes_and_captured_output
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_uncommitted_source_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 252, in test_uncommitted_source_is_refused
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_verification_that_modifies_candidate_source_is_refused (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 259, in test_verification_that_modifies_candidate_source_is_refused
+    self.review()
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 73, in review
+    return record_review(self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 172, in record_review
+    return _record_review(root, work_id, task_id, reviewer, policy, evidence, verdict, boundary)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/evidence.py", line 144, in _record_review
+    with state_transaction(root, work_id) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+ERROR: test_worker_passing_fields_do_not_authorize_integration (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 149, in test_worker_passing_fields_do_not_authorize_integration
+    integrate_ready(self.root, "w", "a")
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/driver.py", line 104, in integrate_ready
+    with workflow_admission(root, work_id, delivery_task_id=task_id), \
+  File "/usr/lib/python3.10/contextlib.py", line 135, in __enter__
+    return next(self.gen)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 103, in state_transaction
+    _require_reconciled(root, work_id, doc)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+======================================================================
+FAIL: test_concurrent_initialization_does_not_reset_state (__main__.StateTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 461, in test_concurrent_initialization_does_not_reset_state
+    self.assertEqual(self.contend("cas_init(root,'w',['wrong'])"), ["success", "success"])
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/tests/inner_loop_reliability.py", line 443, in contend
+    self.assertEqual(p.returncode, 0, err)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 139, in cas_init
+    _require_reconciled(root, work_id, doc, task_ids)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/state.py", line 51, in _require_reconciled
+    require_safe(root, work_id, graph, state)
+  File "/tmp/ask-candidate-h56ucohz/checkout/_ask/scripts/inner_loop/recovery.py", line 323, in require_safe
+    raise RecoveryRequired(report)
+inner_loop.recovery.RecoveryRequired: recovery_required
+
+
+----------------------------------------------------------------------
+Ran 29 tests in 17.188s
+
+FAILED (failures=1, errors=24)

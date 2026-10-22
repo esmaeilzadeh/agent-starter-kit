@@ -1,0 +1,823 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "59842afbbeda4ac2be72e25d8bcbae73",
+  "scope": "task",
+  "task_id": "CR-1",
+  "candidate_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "d7b993d90f5583971232c2a4369b464b8f4594dc7525fc69b09d938d7a678582",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "3ab70ed15ac143d3a49dce872c269879",
+      "runner_id": "continuation-recovery",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.inner_loop_recovery"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.json",
+        "[\"_ask.tests.inner_loop_recovery.RecoveryTests.test_missing_state_retained_result\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_pending_state_conflicts_with_execution\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_fresh_initialization_and_missing_legacy_evidence\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_contract_and_checkout_conflict\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_new_candidate_preserves_stale_rejected_review_history\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_running_task_changes_may_overlap_later_task_ownership\"]",
+        "_ask.tests.inner_loop_recovery"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "runner_id": "inner-loop-reliability",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.inner_loop_reliability"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.json",
+        "[\"_ask.tests.inner_loop_reliability.IntegrationTests.test_other_candidate_report_is_rejected\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_other_work_task_and_base_reports_are_rejected\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_worker_passing_fields_do_not_authorize_integration\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_successful_in_place_integration_records_executed_lineage\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_failed_candidate_checks_prevent_fast_forward_and_state_fold\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_candidate_cannot_replace_the_verifier_checking_it\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_empty_checkplan_does_not_integrate\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_fast_forward_matches_verified_candidate\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_changed_result_or_review_cannot_reuse_approval\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_review_rejection_and_boundary_rejection_prevent_integration\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_exemption_needs_supported_reason_and_coordinator_review\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_tdd_history_requires_typed_exit_codes_and_captured_output\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_uncommitted_source_is_refused\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_verification_that_modifies_candidate_source_is_refused\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_result_drift_during_verification_is_refused\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_review_drift_during_verification_is_refused\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_concurrent_state_update_cannot_interleave_with_integration\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_candidate_branch_drift_during_verification_is_refused\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_non_fast_forward_combination_is_refused\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_worker_role_cannot_record_coordinator_review\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_source_repair_preserves_tracked_runtime_revision_and_review\", \"_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_merge_repair_preserves_tracked_runtime_state\", \"_ask.tests.inner_loop_reliability.StateTests.test_competing_same_revision_cannot_both_succeed\", \"_ask.tests.inner_loop_reliability.StateTests.test_competing_starts_leave_one_writer\", \"_ask.tests.inner_loop_reliability.StateTests.test_concurrent_initialization_does_not_reset_state\", \"_ask.tests.inner_loop_reliability.StateTests.test_every_transaction_preserves_single_writer\", \"_ask.tests.inner_loop_reliability.StateTests.test_readers_observe_complete_documents_during_writes\", \"_ask.tests.inner_loop_reliability.StateTests.test_interrupted_replacement_preserves_old_state_and_releases_lock\"]",
+        "_ask.tests.inner_loop_reliability"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_contract_and_checkout_conflict",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T04",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_fresh_initialization_and_missing_legacy_evidence",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T03",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T17",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_missing_state_retained_result",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T01",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_new_candidate_preserves_stale_rejected_review_history",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T51",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_pending_state_conflicts_with_execution",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T02",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_running_task_changes_may_overlap_later_task_ownership",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T52",
+      "runner_id": "continuation-recovery",
+      "execution_id": "3ab70ed15ac143d3a49dce872c269879",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+        "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/3ab70ed15ac143d3a49dce872c269879.log",
+      "output_digest": "8db1ce9bdfb4b7061349abf5021a4b3cc346fb334ef71bc38207533619c1031b"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_candidate_branch_drift_during_verification_is_refused",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T40",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_candidate_cannot_replace_the_verifier_checking_it",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T27",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_changed_result_or_review_cannot_reuse_approval",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T30",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_concurrent_state_update_cannot_interleave_with_integration",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T39",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_empty_checkplan_does_not_integrate",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T28",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_exemption_needs_supported_reason_and_coordinator_review",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T32",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_failed_candidate_checks_prevent_fast_forward_and_state_fold",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T26",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_fast_forward_matches_verified_candidate",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T29",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_non_fast_forward_combination_is_refused",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T41",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_other_candidate_report_is_rejected",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T22",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_other_work_task_and_base_reports_are_rejected",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T23",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_result_drift_during_verification_is_refused",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T36",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_merge_repair_preserves_tracked_runtime_state",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T44",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T38",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_source_repair_preserves_tracked_runtime_revision_and_review",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T43",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_review_drift_during_verification_is_refused",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T37",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_review_rejection_and_boundary_rejection_prevent_integration",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T31",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_successful_in_place_integration_records_executed_lineage",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T25",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_tdd_history_requires_typed_exit_codes_and_captured_output",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T33",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_uncommitted_source_is_refused",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T34",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_verification_that_modifies_candidate_source_is_refused",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T35",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_worker_passing_fields_do_not_authorize_integration",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T24",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_worker_role_cannot_record_coordinator_review",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T42",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_competing_same_revision_cannot_both_succeed",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T45",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_competing_starts_leave_one_writer",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T46",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_concurrent_initialization_does_not_reset_state",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T47",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_every_transaction_preserves_single_writer",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T48",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_interrupted_replacement_preserves_old_state_and_releases_lock",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T50",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    },
+    {
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_readers_observe_complete_documents_during_writes",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CR-T49",
+      "runner_id": "inner-loop-reliability",
+      "execution_id": "2b7245b0a1a14e2baecdbd56dc8d482f",
+      "phase": "final_green",
+      "source_sha": "09da65c64c33296ff1011c4136ef632386c40e29",
+      "source_digests": {
+        "_ask/tests/inner_loop_reliability.py": "2729315299305930be663ab795692a7493050f4f60e8dbf37b4103abe4fc8b4b",
+        "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+        "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+        "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+        "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+        "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+        "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec"
+      },
+      "output_artifact": "work/continuation-recovery/traceability/runs/59842afbbeda4ac2be72e25d8bcbae73/2b7245b0a1a14e2baecdbd56dc8d482f.log",
+      "output_digest": "ed7d737cbd791c41371892d5de4f29ec6eca7be82eeb374f76b4203a64cea703"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "ask-attempt-archive/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "attempt": "pre-plan-amendment",
+  "candidate_sha": "e3ae380c2d6fe68b08e430619d29776ec59c5205",
+  "base_sha": "d740c62320345dc7d4b70574df179569511c3af6",
+  "files": {
+    "state.json": {
+      "source": "work/continuation-recovery/inner-loop/state.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/state.json",
+      "sha256": "15dbb9990f63c0d992f53bc6227f97b304e5e36cd7575752596867dc330e3021",
+      "size": 1980
+    },
+    "CR-1.json": {
+      "source": "work/continuation-recovery/inner-loop/results/CR-1.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/CR-1.json",
+      "sha256": "2f33f9941e6ef1acb5abfa4fd0676fb071f72b860050e984739a90c7422bbd0c",
+      "size": 1961
+    },
+    "task-review.json": {
+      "source": "work/continuation-recovery/inner-loop/evidence/review-CR-1-e3ae380.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/task-review.json",
+      "sha256": "611cb05620214cff3f475aa76de724e3ff978e2195aa50463a8cfe6c8e62ffda",
+      "size": 818
+    },
+    "traceability-review-input.json": {
+      "source": "work/continuation-recovery/traceability/review-input-cr1-e3ae.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/traceability-review-input.json",
+      "sha256": "6a18264e6fd5c0fcff41d09fbf09d76af309d48438649f8f95e3782f2023b3a2",
+      "size": 36112
+    },
+    "failed-completion.json": {
+      "source": "work/continuation-recovery/traceability/completion.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/failed-completion.json",
+      "sha256": "7cfa8cbbc2b399346da4692c842b920ecfe638509bdfccc4cb2dbb552fd0372b",
+      "size": 676
+    },
+    "failed-integration-output.log": {
+      "source": "work/continuation-recovery/inner-loop/evidence/verify-sdxme63e/output.log",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/failed-integration-output.log",
+      "sha256": "796f56889be1def86305a4961d6f31d05cd5a57d15e4265a73461e8c263b71de",
+      "size": 27185
+    },
+    "failed-verification.json": {
+      "source": "work/continuation-recovery/inner-loop/evidence/verify-sdxme63e/verification.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/failed-verification.json",
+      "sha256": "785f808cc59f6d6ed673b3464e5d0589d799b5f88a7f1e63a1d314fb77508686",
+      "size": 16612
+    },
+    "failed-integration.json": {
+      "source": "work/continuation-recovery/inner-loop/evidence/verify-sdxme63e/integration.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/failed-integration.json",
+      "sha256": "8eeb6f5511233020b7fc32e121c271b46a8885f7d5c57381cb6e96dadeb64e00",
+      "size": 17483
+    },
+    "cancelled-state.json": {
+      "source": "work/continuation-recovery/inner-loop/state.json",
+      "archive": "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/cancelled-state.json",
+      "sha256": "a01363b19d70cf444e9623faab9cb97c2eb705b704b5da127badec77df36b09e",
+      "size": 1982
+    }
+  },
+  "reconciliation": {
+    "reason": "Accepted CR-T53/T54 classifications amended after independent gate finding. Prior attempt preserved; candidate source was reverted to the accepted baseline tree before reopening CR-1.",
+    "old_contract_sha": "ecb56e06f643a686fb3486d38e92d21da377e14d",
+    "new_contract_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
+    "new_coordinator_sha": "ed6dd95b0e74f0d0635e8b0b0d801003cbfa4f94",
+    "prior_candidate_sha": "e3ae380c2d6fe68b08e430619d29776ec59c5205"
+  }
+}

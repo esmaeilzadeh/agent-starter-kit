@@ -1,0 +1,6 @@
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=870fcad8e062d02c69ed8e10a9ac3a17c77a81dd
+start-work: workstream=work/demo
+PASS: start-work does not seed explore-map.md

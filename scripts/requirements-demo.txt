@@ -1,4 +1,0 @@
-numpy
-scikit-learn
-pyyaml
-streamlit>=1.57

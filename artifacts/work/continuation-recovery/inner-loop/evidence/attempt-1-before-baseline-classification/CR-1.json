@@ -1,0 +1,27 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "ed6dd95b0e74f0d0635e8b0b0d801003cbfa4f94",
+  "candidate_sha": "31a050235da3f3f503f070bc753a1ff906c64cba",
+  "contract_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
+  "tdd": {
+    "seam": "Public traceability entrypoints must allow task-owned source changes only after a task attempt starts from the newly accepted anchor.",
+    "red": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha ed6dd95b0e74f0d0635e8b0b0d801003cbfa4f94 --anchor-sha ed6dd95b0e74f0d0635e8b0b0d801003cbfa4f94 --scope task --task-id CR-1 --phase red",
+      "exit_code": 1,
+      "output": "Run 6f6b9275f9154c4393a31e479fc870da: all three runners collected 38 mapped CR-1 cases. CR-T53 and CR-T54 failed as behavior assertions at the expected recovery guard; the other 36 cases passed; no case errored."
+    },
+    "green": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha 31a050235da3f3f503f070bc753a1ff906c64cba --anchor-sha 31a050235da3f3f503f070bc753a1ff906c64cba --scope task --task-id CR-1 --phase final_green",
+      "exit_code": 0,
+      "output": "Run f7cf4882148d40798b6e870170022cc5: all three runners collected and all 38 mapped CR-1 cases passed, including CR-T53 and CR-T54."
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "The fixture opt-in remains limited to the two affected entrypoint journeys; no structural cleanup was useful."
+  },
+  "exemption": null,
+  "notes": "Supersedes the archived pre-amendment attempt in inner-loop/evidence/attempt-0-before-plan-amendment; that attempt was not integrated because the semantic gate exposed a stale regression classification. The amended accepted plan now classifies CR-T53/T54 as changed and this attempt supplies fresh candidate-bound Red/Green evidence."
+}

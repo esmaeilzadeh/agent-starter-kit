@@ -1,0 +1,27 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-1",
+  "base_sha": "d740c62320345dc7d4b70574df179569511c3af6",
+  "candidate_sha": "e3ae380c2d6fe68b08e430619d29776ec59c5205",
+  "contract_sha": "ecb56e06f643a686fb3486d38e92d21da377e14d",
+  "tdd": {
+    "seam": "Public traceability entrypoints admit task-owned source changes only after a task attempt starts from the accepted anchor.",
+    "red": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha d740c62320345dc7d4b70574df179569511c3af6 --anchor-sha d740c62320345dc7d4b70574df179569511c3af6 --scope task --task-id CR-1 --phase red",
+      "exit_code": 1,
+      "output": "Run b9a8a49d0f044cf4b7fe5daf2fb26749: all three runners collected 38 mapped CR-1 cases. CR-T53 and CR-T54 failed as behavior_assertion due recovery_required after fixture source changes were committed without a recorded task attempt; the other 36 cases passed; no case errored."
+    },
+    "green": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha e3ae380c2d6fe68b08e430619d29776ec59c5205 --anchor-sha e3ae380c2d6fe68b08e430619d29776ec59c5205 --scope task --task-id CR-1 --phase final_green",
+      "exit_code": 0,
+      "output": "Run f290a6e47fff46a9a98686e2a3beb5a0: all three runners collected and all 38 mapped CR-1 cases passed; CR-T53 and CR-T54 passed."
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "The fixture opt-in is limited to the two affected entrypoint journeys; no additional structural cleanup was useful."
+  },
+  "exemption": null,
+  "notes": "Earlier traceability-adapter collection failure is preserved in run 1eb2fd8c16814ceaa1d3ffa969d4c6d9; it was a runner configuration error and was not recorded as behavioral Red. Run bb805ee3a16c410194e82e5813dbe6dd likewise preserves the discovery-mapping validation failure before CR-T53/T54 were accepted as executable selectors."
+}

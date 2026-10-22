@@ -1,0 +1,436 @@
+{
+  "schema": "ask-test-review/v2",
+  "reviewer": "Codex /root/review_cr1",
+  "candidate_sha": "31a050235da3f3f503f070bc753a1ff906c64cba",
+  "base_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "d0028c02169c151bed51a401cb1050d400da890173fb751b03b684a6e1f37441",
+  "scope": "task",
+  "task_id": "CR-1",
+  "test_ids": [
+    "CR-T01",
+    "CR-T02",
+    "CR-T03",
+    "CR-T04",
+    "CR-T17",
+    "CR-T22",
+    "CR-T23",
+    "CR-T24",
+    "CR-T25",
+    "CR-T26",
+    "CR-T27",
+    "CR-T28",
+    "CR-T29",
+    "CR-T30",
+    "CR-T31",
+    "CR-T32",
+    "CR-T33",
+    "CR-T34",
+    "CR-T35",
+    "CR-T36",
+    "CR-T37",
+    "CR-T38",
+    "CR-T39",
+    "CR-T40",
+    "CR-T41",
+    "CR-T42",
+    "CR-T43",
+    "CR-T44",
+    "CR-T45",
+    "CR-T46",
+    "CR-T47",
+    "CR-T48",
+    "CR-T49",
+    "CR-T50",
+    "CR-T51",
+    "CR-T52",
+    "CR-T53",
+    "CR-T54"
+  ],
+  "criterion_ids": [
+    "CR-01",
+    "CR-04",
+    "CR-05",
+    "CR-06",
+    "CR-07",
+    "CR-08"
+  ],
+  "source_digests": {
+    "_ask/scripts/inner_loop/__main__.py": "220ae3605280da297ccbaa5eeb81ba5f9340276101a665014c4f618931938aec",
+    "_ask/scripts/inner_loop/driver.py": "39db2f71b51f15f9915bf4619621a3e2b184d66e4de4599e765a5f35fefdbbf4",
+    "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+    "_ask/scripts/inner_loop/recovery.py": "141a1841babf5b9375fd481452befe8d0e8318766ba533500bbcc5fec6a4360c",
+    "_ask/scripts/inner_loop/state.py": "bf91f2e60fa64898bacef1423bc471b535ca616bee6f3f5c6a32d9b00fa4eaf6",
+    "_ask/tests/inner_loop_recovery.py": "ba267dcc1ff67a9476a8daff5bcae2b0d463f0b73fa7f7d38a45f768878c1984",
+    "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+    "_ask/tests/inner_loop_reliability.py": "383fdc3674ad2d302104b3f8f87c28c51561b57a37f9d748f3f0ce7e00559ca6",
+    "_ask/tests/test_traceability_entrypoints.py": "4929b0494f51c6f01b8957be392cdefdac5b4139e49388e7fd461aa54144eb16",
+    "_ask/tests/traceability_fixture.py": "ee15c16d56477a0ee43f5875b7130387c46ac944054297e180caa78e67db4bfd",
+    "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78"
+  },
+  "inspected_sources": [
+    "_ask/tests/test_traceability_entrypoints.py",
+    "_ask/tests/traceability_fixture.py"
+  ],
+  "changed_cases": [
+    "CR-T53",
+    "CR-T54"
+  ],
+  "inventory_exclusions": {
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_E01_public_red_review_verify_record_accept_journey": "This method in the inspected module is unchanged in this candidate; only I05/I07 gained the task-start-before-candidate opt-in. It is outside the CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_E02_omitted_e2e_names_missing_case_and_never_records_pass": "This method in the inspected module is unchanged in this candidate; only I05/I07 gained the task-start-before-candidate opt-in. It is outside the CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I06_preflight_failure_replaces_old_pass": "This method in the inspected module is unchanged in this candidate; only I05/I07 gained the task-start-before-candidate opt-in. It is outside the CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I08_integration_accepts_reviewed_contract_amended_after_task_base": "This method in the inspected module is unchanged in this candidate; only I05/I07 gained the task-start-before-candidate opt-in. It is outside the CR-1 changed-case inventory.",
+    "_ask/tests/test_traceability_entrypoints.py.EntrypointTests.test_I09_runtime_agent_sync_preserves_candidate_tree": "This method in the inspected module is unchanged in this candidate; only I05/I07 gained the task-start-before-candidate opt-in. It is outside the CR-1 changed-case inventory."
+  },
+  "criteria": [
+    {
+      "id": "CR-01",
+      "coverage_decision": "APPROVED",
+      "assessment": "CR-1 maps 8 cases to CR-01; observed assertions correspond to the accepted criterion.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "The 1 mapped e2e case(s) assert the accepted obligation: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        },
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The 7 mapped integration case(s) assert the accepted obligation: Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion; Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts; Status succeeds and reports task a running and task b pending.; Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor.; A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
+        }
+      }
+    },
+    {
+      "id": "CR-04",
+      "coverage_decision": "APPROVED",
+      "assessment": "CR-1 maps 1 cases to CR-04; observed assertions correspond to the accepted criterion.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The 1 mapped integration case(s) assert the accepted obligation: Status succeeds and still reports task a as running."
+        }
+      }
+    },
+    {
+      "id": "CR-05",
+      "coverage_decision": "APPROVED",
+      "assessment": "CR-1 maps 1 cases to CR-05; observed assertions correspond to the accepted criterion.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The 1 mapped integration case(s) assert the accepted obligation: Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts"
+        }
+      }
+    },
+    {
+      "id": "CR-06",
+      "coverage_decision": "APPROVED",
+      "assessment": "CR-1 maps 3 cases to CR-06; observed assertions correspond to the accepted criterion.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "The 1 mapped e2e case(s) assert the accepted obligation: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        },
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The 2 mapped integration case(s) assert the accepted obligation: Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion"
+        }
+      }
+    },
+    {
+      "id": "CR-07",
+      "coverage_decision": "APPROVED",
+      "assessment": "CR-1 maps 33 cases to CR-07; observed assertions correspond to the accepted criterion.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "The 1 mapped e2e case(s) assert the accepted obligation: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        },
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The 32 mapped integration case(s) assert the accepted obligation: All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; A TaskResult naming a different candidate is refused and the running task remains unchanged.; Reports with another work ID, task ID or base are refused.; Worker-supplied approval fields do not authorize integration.; A reviewed candidate integrates and records exact verification lineage.; A failed candidate check prevents fast-forward and state folding.; Candidate changes cannot replace the pinned verifier used to check them.; An empty mandatory CheckPlan refuses integration.; Fast-forward integrates the exact candidate that was verified.; Changed TaskResult or review evidence invalidates a previously recorded approval.; Rejected review and boundary rejection prevent integration.; Exemptions require a supported reason and coordinator-recorded review.; TDD milestones require typed exit codes and captured output.; Uncommitted coordinator source prevents integration.; Verification that changes candidate source is refused.; TaskResult drift during verification is refused.; Review drift during verification is refused.; Resume preserves and finalizes the exact candidate after interruption following fast-forward.; Concurrent state updates cannot interleave with candidate verification and integration.; Task-branch drift during verification is refused.; A non-fast-forward candidate/coordinator combination is refused.; A worker role cannot record coordinator-owned review state.; Source repair preserves tracked runtime revision and review evidence.; Merge repair preserves tracked runtime state.; Competing CAS operations on one observed revision cannot both succeed.; Concurrent starts preserve the single-writer invariant.; Concurrent initialization returns the existing state without replacing it.; Every state transaction preserves the single-writer invariant.; Concurrent readers observe complete atomic state documents.; Interrupted state replacement preserves the previous complete document and releases the lock.; Status succeeds and still reports task a as running.; Status succeeds and reports task a running and task b pending."
+        }
+      }
+    },
+    {
+      "id": "CR-08",
+      "coverage_decision": "APPROVED",
+      "assessment": "CR-1 maps 1 cases to CR-08; observed assertions correspond to the accepted criterion.",
+      "type_adequacy": {
+        "e2e": {
+          "decision": "APPROVED",
+          "assessment": "The 1 mapped e2e case(s) assert the accepted obligation: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission"
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "CR-T01",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base",
+      "counterexample": "A result contradicting the assertion(s) (Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base; Report recovery_required for original task before writer admission; Original result, candidate and review bytes remain unchanged; no replacement base) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T02",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances",
+      "counterexample": "A result contradicting the assertion(s) (All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances; All public admissions detect the prior attempt and refuse fresh initialization; No task status, base or checkpoint ref advances) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T03",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion",
+      "counterexample": "A result contradicting the assertion(s) (The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion; The new task starts normally; The ambiguous legacy case requires reconciliation without claiming implementation or completion) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T04",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts; Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts",
+      "counterexample": "A result contradicting the assertion(s) (Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts; Report precise conflicting identities and artifact paths; No evidence is applied and no writer starts) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T17",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission",
+      "counterexample": "A result contradicting the assertion(s) (Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission; Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity; Original product records, authority and attempt identities remain unchanged throughout repair admission) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T22",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: A TaskResult naming a different candidate is refused and the running task remains unchanged.",
+      "counterexample": "A result contradicting the assertion(s) (A TaskResult naming a different candidate is refused and the running task remains unchanged.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T23",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Reports with another work ID, task ID or base are refused.",
+      "counterexample": "A result contradicting the assertion(s) (Reports with another work ID, task ID or base are refused.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T24",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Worker-supplied approval fields do not authorize integration.",
+      "counterexample": "A result contradicting the assertion(s) (Worker-supplied approval fields do not authorize integration.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T25",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: A reviewed candidate integrates and records exact verification lineage.",
+      "counterexample": "A result contradicting the assertion(s) (A reviewed candidate integrates and records exact verification lineage.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T26",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: A failed candidate check prevents fast-forward and state folding.",
+      "counterexample": "A result contradicting the assertion(s) (A failed candidate check prevents fast-forward and state folding.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T27",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Candidate changes cannot replace the pinned verifier used to check them.",
+      "counterexample": "A result contradicting the assertion(s) (Candidate changes cannot replace the pinned verifier used to check them.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T28",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: An empty mandatory CheckPlan refuses integration.",
+      "counterexample": "A result contradicting the assertion(s) (An empty mandatory CheckPlan refuses integration.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T29",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Fast-forward integrates the exact candidate that was verified.",
+      "counterexample": "A result contradicting the assertion(s) (Fast-forward integrates the exact candidate that was verified.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T30",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Changed TaskResult or review evidence invalidates a previously recorded approval.",
+      "counterexample": "A result contradicting the assertion(s) (Changed TaskResult or review evidence invalidates a previously recorded approval.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T31",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Rejected review and boundary rejection prevent integration.",
+      "counterexample": "A result contradicting the assertion(s) (Rejected review and boundary rejection prevent integration.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T32",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Exemptions require a supported reason and coordinator-recorded review.",
+      "counterexample": "A result contradicting the assertion(s) (Exemptions require a supported reason and coordinator-recorded review.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T33",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: TDD milestones require typed exit codes and captured output.",
+      "counterexample": "A result contradicting the assertion(s) (TDD milestones require typed exit codes and captured output.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T34",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Uncommitted coordinator source prevents integration.",
+      "counterexample": "A result contradicting the assertion(s) (Uncommitted coordinator source prevents integration.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T35",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Verification that changes candidate source is refused.",
+      "counterexample": "A result contradicting the assertion(s) (Verification that changes candidate source is refused.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T36",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: TaskResult drift during verification is refused.",
+      "counterexample": "A result contradicting the assertion(s) (TaskResult drift during verification is refused.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T37",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Review drift during verification is refused.",
+      "counterexample": "A result contradicting the assertion(s) (Review drift during verification is refused.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T38",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Resume preserves and finalizes the exact candidate after interruption following fast-forward.",
+      "counterexample": "A result contradicting the assertion(s) (Resume preserves and finalizes the exact candidate after interruption following fast-forward.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T39",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Concurrent state updates cannot interleave with candidate verification and integration.",
+      "counterexample": "A result contradicting the assertion(s) (Concurrent state updates cannot interleave with candidate verification and integration.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T40",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Task-branch drift during verification is refused.",
+      "counterexample": "A result contradicting the assertion(s) (Task-branch drift during verification is refused.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T41",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: A non-fast-forward candidate/coordinator combination is refused.",
+      "counterexample": "A result contradicting the assertion(s) (A non-fast-forward candidate/coordinator combination is refused.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T42",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: A worker role cannot record coordinator-owned review state.",
+      "counterexample": "A result contradicting the assertion(s) (A worker role cannot record coordinator-owned review state.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T43",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Source repair preserves tracked runtime revision and review evidence.",
+      "counterexample": "A result contradicting the assertion(s) (Source repair preserves tracked runtime revision and review evidence.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T44",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Merge repair preserves tracked runtime state.",
+      "counterexample": "A result contradicting the assertion(s) (Merge repair preserves tracked runtime state.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T45",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Competing CAS operations on one observed revision cannot both succeed.",
+      "counterexample": "A result contradicting the assertion(s) (Competing CAS operations on one observed revision cannot both succeed.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T46",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Concurrent starts preserve the single-writer invariant.",
+      "counterexample": "A result contradicting the assertion(s) (Concurrent starts preserve the single-writer invariant.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T47",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Concurrent initialization returns the existing state without replacing it.",
+      "counterexample": "A result contradicting the assertion(s) (Concurrent initialization returns the existing state without replacing it.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T48",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Every state transaction preserves the single-writer invariant.",
+      "counterexample": "A result contradicting the assertion(s) (Every state transaction preserves the single-writer invariant.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T49",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Concurrent readers observe complete atomic state documents.",
+      "counterexample": "A result contradicting the assertion(s) (Concurrent readers observe complete atomic state documents.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T50",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Interrupted state replacement preserves the previous complete document and releases the lock.",
+      "counterexample": "A result contradicting the assertion(s) (Interrupted state replacement preserves the previous complete document and releases the lock.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T51",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Status succeeds and still reports task a as running.; Status succeeds and still reports task a as running.",
+      "counterexample": "A result contradicting the assertion(s) (Status succeeds and still reports task a as running.; Status succeeds and still reports task a as running.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T52",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Status succeeds and reports task a running and task b pending.; Status succeeds and reports task a running and task b pending.",
+      "counterexample": "A result contradicting the assertion(s) (Status succeeds and reports task a running and task b pending.; Status succeeds and reports task a running and task b pending.) would cause this case to fail.",
+      "tdd_continuity_assessment": "This case's assertion source is unchanged in the candidate. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da and Green run f7cf4882148d40798b6e870170022cc5 both collected it and report it passing; the candidate does not alter this case's assertion or fixture call path."
+    },
+    {
+      "id": "CR-T53",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor.. The added setup starts CR-1 from the accepted anchor before candidate source changes.",
+      "counterexample": "A result contradicting the assertion(s) (Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor.) would cause this case to fail.",
+      "tdd_continuity_assessment": "The candidate changes only fixture ordering/opt-in around this existing case; the behavior assertion remains. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da collected all 38 cases and this case failed as a behavior assertion at the expected recovery guard; Green run f7cf4882148d40798b6e870170022cc5 passed it with all 38 mapped cases. Plan classification is changed, so this recognized Red and final Green satisfy rather than waive TDD."
+    },
+    {
+      "id": "CR-T54",
+      "decision": "APPROVED",
+      "assertion_assessment": "The case checks: A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints.. The added setup starts CR-1 from the accepted anchor before candidate source changes.",
+      "counterexample": "A result contradicting the assertion(s) (A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints.) would cause this case to fail.",
+      "tdd_continuity_assessment": "The candidate changes only fixture ordering/opt-in around this existing case; the behavior assertion remains. TaskResult Red run 6f6b9275f9154c4393a31e479fc870da collected all 38 cases and this case failed as a behavior assertion at the expected recovery guard; Green run f7cf4882148d40798b6e870170022cc5 passed it with all 38 mapped cases. Plan classification is changed, so this recognized Red and final Green satisfy rather than waive TDD."
+    }
+  ],
+  "review_findings": [],
+  "review_scope_note": "Independent CR-1 semantic review of exact candidate 31a050235da3f3f503f070bc753a1ff906c64cba under amended accepted contract f6149ed96fad14d9349070a23ae6c86232111047. T53/T54 are changed tests with recognized behavior Red and final Green."
+}
