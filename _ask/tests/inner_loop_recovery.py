@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import hashlib
 import os
+import copy
 from pathlib import Path
 import subprocess
 import sys
@@ -15,6 +16,9 @@ from _ask.tests.inner_loop_recovery_fixture import (
     LEGACY_STATE_SHA256,
     write_legacy_fixture,
 )
+from inner_loop.graph import load_graph
+from inner_loop.checkpoint import read_checkpoint
+from inner_loop.recovery import inspect as inspect_recovery
 
 REPO = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO / "_ask" / "scripts"
@@ -80,15 +84,47 @@ class RecoveryTests(unittest.TestCase):
             "work/*/traceability/\n",
         )
         self.write("work/w/inner-loop/tasks.yaml", TASKS)
+        self.spec = {
+            "schema": "ask-spec/v1",
+            "work_id": "w",
+            "criteria": [{"id": "C1", "given": "state", "when": "checked", "then": ["safe"]}],
+        }
+        self.case_a = {
+            "id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
+            "case_id": "tests.test_a", "scenario": {"given": "a", "when": "runs", "then": ["passes"]},
+            "expected_assertions": [{"criterion_id": "C1", "checks": ["passes"]}],
+            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration",
+        }
+        self.case_b = {
+            "id": "T-B", "task_id": "a", "criterion_ids": ["C1"],
+            "case_id": "tests.test_b", "scenario": {"given": "b", "when": "runs", "then": ["passes"]},
+            "expected_assertions": [{"criterion_id": "C1", "checks": ["passes"]}],
+            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration",
+        }
+        self.old_plan = {
+            "schema": "ask-test-plan/v1", "work_id": "w",
+            "tests": [self.case_a, self.case_b],
+            "task_scopes": [{"task_id": "a", "test_ids": ["T-A", "T-B"]},
+                            {"task_id": "b", "test_ids": []}],
+        }
+        self.write("specs/current/w.json", json.dumps(self.spec, sort_keys=True))
+        self.write("work/w/test-plan.json", json.dumps(self.old_plan, sort_keys=True))
         self.commit("accepted task graph")
         self.base = self.git("rev-parse", "HEAD")
+        self.old_spec_digest = self.json_digest(self.spec)
+        self.old_plan_digest = self.json_digest(self.old_plan)
         self.write(
             "work/w/traceability-accepted.json",
-            json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w", "contract_sha": self.base}) + "\n",
+            json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w", "contract_sha": self.base,
+                        "spec_digest": self.old_spec_digest, "plan_digest": self.old_plan_digest}) + "\n",
         )
         self.commit("accepted test anchor")
         self.anchor_commit = self.git("rev-parse", "HEAD")
         self.git("update-ref", "refs/ask/accepted-tests/w", self.anchor_commit)
+
+    @staticmethod
+    def json_digest(value):
+        return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
     def git(self, *args):
         return subprocess.check_output(["git", *args], cwd=self.root, text=True, stderr=subprocess.PIPE).strip()
@@ -246,6 +282,100 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(current.get("accepted_plan_digest"), "plan-after")
         self.assertEqual(current["attempt_history"], task["attempt_history"])
         self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
+
+    def test_scope_compatible_historical_task_result_survives_plan_amendment(self):
+        self.start_candidate()
+        original_result = self.result_path.read_bytes()
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        task = state["tasks"]["a"]
+        task.update(status="integrated", result_path="work/w/inner-loop/results/a.json")
+        state["coordinator_sha"] = self.candidate
+        state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+        self.git("update-ref", "-d", "refs/ask/inner-loop/w")
+
+        amended = copy.deepcopy(self.old_plan)
+        moved = next(test for test in amended["tests"] if test["id"] == "T-B")
+        moved["task_id"] = "b"
+        amended["task_scopes"] = [
+            {"task_id": "a", "test_ids": ["T-A"]},
+            {"task_id": "b", "test_ids": ["T-B"]},
+        ]
+        self.write("work/w/test-plan.json", json.dumps(amended, sort_keys=True))
+        self.commit("move an unrelated obligation to task b")
+        current_contract = self.git("rev-parse", "HEAD")
+        current_plan_digest = self.json_digest(amended)
+        self.write(
+            "work/w/traceability-accepted.json",
+            json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
+                        "contract_sha": current_contract, "spec_digest": self.old_spec_digest,
+                        "plan_digest": current_plan_digest}) + "\n",
+        )
+        self.commit("record amended accepted plan")
+        self.write(
+            "work/w/traceability/executions.json",
+            json.dumps([{"run_id": "green-a", "phase": "final_green", "scope": "task",
+                         "task_id": "a", "candidate_sha": self.candidate,
+                         "plan_digest": self.old_plan_digest}]) + "\n",
+        )
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+
+        result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+        self.assertIsNone(result, result)
+        self.assertEqual(self.result_path.read_bytes(), original_result)
+        self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], self.base)
+
+        changed = copy.deepcopy(amended)
+        next(test for test in changed["tests"] if test["id"] == "T-A")["scenario"]["then"] = ["different behavior"]
+        self.write("work/w/test-plan.json", json.dumps(changed, sort_keys=True))
+        self.commit("change a retained task obligation")
+        changed_contract = self.git("rev-parse", "HEAD")
+        self.write(
+            "work/w/traceability-accepted.json",
+            json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
+                        "contract_sha": changed_contract, "spec_digest": self.old_spec_digest,
+                        "plan_digest": self.json_digest(changed)}) + "\n",
+        )
+        self.commit("record changed accepted plan")
+        rejected = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+        self.assert_recovery_required(
+            subprocess.CompletedProcess([], 1, stdout=json.dumps(rejected), stderr=""),
+            "TaskResult contract identity mismatch",
+        )
+
+    def test_interrupted_candidate_paths_do_not_block_dependent_tasks(self):
+        started = self.run_cli("run", "w")
+        self.assertEqual(started.returncode, 0, started.stdout + started.stderr)
+        state_path = self.root / "work/w/inner-loop/state.json"
+        base = json.loads(state_path.read_text(encoding="utf-8"))["coordinator_sha"]
+        self.write("src/a.py", "candidate = True\n")
+        self.commit("candidate change owned by task a")
+        candidate = self.git("rev-parse", "HEAD")
+
+        interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accepted plan amendment")
+        self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        self.assertEqual(state["tasks"]["a"]["attempt_history"][-1]["interrupted_candidate_sha"], candidate)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+        retained = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", candidate, checkpoint[0]],
+            cwd=self.root, capture_output=True, text=True,
+        )
+        self.assertEqual(retained.returncode, 0, retained.stderr)
+        quiescent = self.run_cli("run", "w")
+        self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
+        self.assertEqual(quiescent.stdout.strip(), "quiescent")
+
+        self.write("src/a.py", "candidate = 'external change'\n")
+        self.commit("unattributed change after interruption")
+        refused = self.run_cli("run", "w")
+        self.assert_recovery_required(refused, "src/a.py")
+        self.assertEqual(
+            subprocess.run(["git", "merge-base", "--is-ancestor", base, candidate],
+                           cwd=self.root, capture_output=True).returncode,
+            0,
+        )
 
     def assert_recovery_required(self, result, *paths):
         output = result.stdout + result.stderr
