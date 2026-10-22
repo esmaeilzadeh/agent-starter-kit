@@ -356,13 +356,7 @@ class RecoveryTests(unittest.TestCase):
                       "plan_digest": self.old_plan_digest}
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row]) + "\n")
         state = json.loads(state_path.read_text(encoding="utf-8"))
-        try:
-            publish(self.root, "w", state)
-        except CheckpointError as exc:
-            self.fail(
-                "a failed static receipt must be preserved without requiring its "
-                f"diagnostic candidate commit: {exc}"
-            )
+        publish(self.root, "w", state)
 
         result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(result, result)
@@ -823,7 +817,13 @@ class RecoveryTests(unittest.TestCase):
         failed_static.write_bytes(failed_static_raw)
         state_path = self.root / "work/w/inner-loop/state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
-        publish(self.root, "w", state)
+        try:
+            publish(self.root, "w", state)
+        except CheckpointError as exc:
+            self.fail(
+                "a failed static receipt must be preserved without requiring its "
+                f"diagnostic candidate commit: {exc}"
+            )
         checkpoint_doc = read_checkpoint(self.root, "w")
         self.assertIsNotNone(checkpoint_doc)
         checkpoint_sha, _checkpoint_state, checkpoint_files = checkpoint_doc
