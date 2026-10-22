@@ -136,6 +136,32 @@ class RecoveryTests(unittest.TestCase):
 
         state_path = self.root / "work/w/inner-loop/state.json"
         before = json.loads(state_path.read_text(encoding="utf-8"))
+        old_plan_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
+        execution_rows = [
+            {
+                "run_id": "old-red-1",
+                "digest": "1" * 64,
+                "phase": "red",
+                "scope": "task",
+                "task_id": "a",
+                "candidate_sha": self.anchor_commit,
+                "spec_digest": "spec-before",
+                "plan_digest": "plan-before",
+            },
+            {
+                "run_id": "old-red-2",
+                "digest": "2" * 64,
+                "phase": "red",
+                "scope": "task",
+                "task_id": "a",
+                "candidate_sha": self.anchor_commit,
+                "spec_digest": "spec-before",
+                "plan_digest": "plan-before",
+            },
+        ]
+        ledger = self.root / "work/w/traceability/executions.json"
+        ledger.parent.mkdir(parents=True, exist_ok=True)
+        ledger.write_text(json.dumps(execution_rows) + "\n", encoding="utf-8")
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accepted plan amendment")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
 
@@ -147,18 +173,25 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(prior["status"], "interrupted")
         self.assertEqual(prior["base_sha"], before["tasks"]["a"]["base_sha"])
         self.assertEqual(prior["reason"], "accepted plan amendment")
+        self.assertEqual(prior["accepted_plan_ref"], old_plan_ref)
+        self.assertEqual(prior["execution_runs"], execution_rows)
         self.assertTrue(prior["attempt_id"])
 
         quiescent = self.run_cli("run", "w")
         self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
         self.assertEqual(quiescent.stdout.strip(), "quiescent")
 
+        self.write("amended-contract.txt", "accepted amendment\n")
+        self.commit("accept amended test obligations")
+        new_plan_ref = self.git("rev-parse", "HEAD")
+        self.git("update-ref", "refs/ask/accepted-tests/w", new_plan_ref)
         reopened = self.run_cli("reopen", "w", "a", "--reason", "amended plan accepted")
         self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
         resumed = json.loads(state_path.read_text(encoding="utf-8"))
         current = resumed["tasks"]["a"]
         self.assertEqual(current["status"], "running")
         self.assertNotEqual(current["attempt_id"], prior["attempt_id"])
+        self.assertEqual(current["accepted_plan_ref"], new_plan_ref)
         self.assertEqual(current["attempt_history"], task["attempt_history"])
         self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
         self.result_path = self.root / "work/w/inner-loop/results/a.json"
