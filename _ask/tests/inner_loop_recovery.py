@@ -128,6 +128,39 @@ class RecoveryTests(unittest.TestCase):
         self.write("src/a.py", "candidate = True\n")
         self.commit("candidate for task a")
         self.candidate = self.git("rev-parse", "HEAD")
+
+    def test_interrupt_and_reopen_preserve_attempt_history(self):
+        started = self.run_cli("run", "w")
+        self.assertEqual(started.returncode, 0, started.stdout + started.stderr)
+        self.assertIn("running=a", started.stdout)
+
+        state_path = self.root / "work/w/inner-loop/state.json"
+        before = json.loads(state_path.read_text(encoding="utf-8"))
+        interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accepted plan amendment")
+        self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
+
+        stopped = json.loads(state_path.read_text(encoding="utf-8"))
+        task = stopped["tasks"]["a"]
+        self.assertEqual(task["status"], "interrupted")
+        self.assertEqual(len(task["attempt_history"]), 1)
+        prior = task["attempt_history"][0]
+        self.assertEqual(prior["status"], "interrupted")
+        self.assertEqual(prior["base_sha"], before["tasks"]["a"]["base_sha"])
+        self.assertEqual(prior["reason"], "accepted plan amendment")
+        self.assertTrue(prior["attempt_id"])
+
+        quiescent = self.run_cli("run", "w")
+        self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
+        self.assertEqual(quiescent.stdout.strip(), "quiescent")
+
+        reopened = self.run_cli("reopen", "w", "a", "--reason", "amended plan accepted")
+        self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
+        resumed = json.loads(state_path.read_text(encoding="utf-8"))
+        current = resumed["tasks"]["a"]
+        self.assertEqual(current["status"], "running")
+        self.assertNotEqual(current["attempt_id"], prior["attempt_id"])
+        self.assertEqual(current["attempt_history"], task["attempt_history"])
+        self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
         self.result_path = self.root / "work/w/inner-loop/results/a.json"
         self.review_path = self.root / "work/w/inner-loop/evidence/review-a.json"
         self.result_path.parent.mkdir(parents=True, exist_ok=True)

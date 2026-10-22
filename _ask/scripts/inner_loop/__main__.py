@@ -33,6 +33,7 @@ from inner_loop.state import (  # noqa: E402
 )
 from inner_loop.recovery import RecoveryRequired, inspect as inspect_recovery  # noqa: E402
 from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle  # noqa: E402
+from inner_loop.attempts import interrupt_task, reopen_task  # noqa: E402
 from engineering_model.actions import Refused
 from engineering_model.workflow import adopted, branch_work_id, guarded_workflow, workflow_admission
 
@@ -191,6 +192,16 @@ def main(argv: list[str] | None = None) -> int:
     cn.add_argument("work_id")
     cn.add_argument("target")
 
+    it = sub.add_parser("interrupt", help="preserve and stop the current task attempt")
+    it.add_argument("work_id")
+    it.add_argument("task_id")
+    it.add_argument("--reason", required=True)
+
+    ro = sub.add_parser("reopen", help="start a new attempt after explicit interruption")
+    ro.add_argument("work_id")
+    ro.add_argument("task_id")
+    ro.add_argument("--reason", required=True)
+
     args = p.parse_args(argv)
     root = repo_root(args.root)
     try:
@@ -260,6 +271,14 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.cmd == "cancel":
             print(cancel(root, args.work_id, args.target))
+            return 0
+        if args.cmd == "interrupt":
+            doc = interrupt_task(root, args.work_id, args.task_id, args.reason)
+            print(f"interrupted={args.task_id} revision={doc['revision']}")
+            return 0
+        if args.cmd == "reopen":
+            doc = reopen_task(root, args.work_id, args.task_id, args.reason)
+            print(f"running={args.task_id} revision={doc['revision']}")
             return 0
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2
