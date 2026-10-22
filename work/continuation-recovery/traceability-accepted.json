@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "a091448b293321f7399f4eb4309fe4d79472c8c7",
+  "contract_sha": "ecb56e06f643a686fb3486d38e92d21da377e14d",
   "work_id": "continuation-recovery",
   "reviewer": "/root/review_cr1",
   "recorded_by": "/root",
@@ -12,18 +12,18 @@
     "decision": "APPROVED",
     "reviewer": "/root/review_cr1",
     "work_id": "continuation-recovery",
-    "contract_sha": "f4a80d50b731fb3fbc3bed43e535625becdc962e",
+    "contract_sha": "befdd3c5d07dc32bee0dfee7ae15fc787ec82878",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
     "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
-    "graph_digest": "fc55c30265d78fa981eb65b2d0b84bedc6d97ff29b19e330ae2d0b0198ad28cf",
+    "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7",
     "findings": [],
     "resolution": {
-      "independent_exact_review": "Approved the runner correction at the exact candidate. unittest discovery rooted at _ask/tests discovers the exact CR-T53/54 case IDs; task-scoped filtering selects exactly those cases. The only mapping changes are the runner invocation and those two case ID prefixes. CR-1 scope, source ownership, spec, and intent remain unchanged."
+      "independent_exact_review": "Approved the lifecycle fixture scope addition. CR-1 owns the mapped test call sites needed to opt into starting the task from the accepted anchor. Only I05/I07 enable this option; I08 and other fixture callers remain unchanged. Both targeted tests pass. CR-T53/54 remain exact CR-01 mappings in CR-1 scope."
     },
-    "review_source": "Independent review response from /root/review_cr1 at candidate f4a80d50b731fb3fbc3bed43e535625becdc962e."
+    "review_source": "Independent review response from /root/review_cr1 at candidate befdd3c5d07dc32bee0dfee7ae15fc787ec82878."
   },
-  "plan_review_digest": "e52c7823651a9ebaca771e1d4416b2936fd717534fe65ca6d5ebd79628a5dd1c",
+  "plan_review_digest": "a527c0bcb282e14f7009f0264ffb5a0327b096adabe0c9e87fab1bc311990d47",
   "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
   "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
-  "graph_digest": "fc55c30265d78fa981eb65b2d0b84bedc6d97ff29b19e330ae2d0b0198ad28cf"
+  "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7"
 }
