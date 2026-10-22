@@ -2443,6 +2443,7 @@
       "id": "CR-T57",
       "task_id": "CR-2",
       "criterion_ids": [
+        "CR-02",
         "CR-07"
       ],
       "type": "integration",
@@ -2451,20 +2452,25 @@
       "scenario": {
         "given": "A recorded task attempt is interrupted after committing changes on paths that overlap a pending dependent task",
         "when": "The coordinator checks recovery and scheduling before the interrupted task is explicitly reopened",
-      "then": [
-        "Attribute only the changed paths owned by the recorded interrupted attempt to that attempt.",
-        "Retain the exact interrupted candidate commit in the durable checkpoint.",
-        "Leave the interrupted task quiescent without opening the dependent task or admitting a different writer.",
+        "then": [
+          "Attribute only the changed paths owned by the recorded interrupted attempt to that attempt.",
+          "Retain the exact interrupted candidate commit in the durable checkpoint.",
+          "Leave the interrupted task quiescent without opening the dependent task or admitting a different writer.",
           "Require recovery when overlapping changes cannot be tied to the interrupted attempt."
         ]
       },
       "expected_assertions": [
         {
+          "criterion_id": "CR-02",
+          "checks": [
+            "Retain the exact interrupted candidate commit in the durable checkpoint."
+          ]
+        },
+        {
           "criterion_id": "CR-07",
-      "checks": [
-        "Attribute only the changed paths owned by the recorded interrupted attempt to that attempt.",
-        "Retain the exact interrupted candidate commit in the durable checkpoint.",
-        "Leave the interrupted task quiescent without opening the dependent task or admitting a different writer.",
+          "checks": [
+            "Attribute only the changed paths owned by the recorded interrupted attempt to that attempt.",
+            "Leave the interrupted task quiescent without opening the dependent task or admitting a different writer.",
             "Require recovery when overlapping changes cannot be tied to the interrupted attempt."
           ]
         }

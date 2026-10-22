@@ -1,7 +1,10 @@
 # Plan: durable continuation and evidence recovery
 
-Revision 9 retains the CR-T38 and CR-T55–57 changes from Revision 8 and makes
-the interrupted candidate commit part of the durable checkpoint closure.
+Revision 10 retains the CR-T38 and CR-T55–57 changes from Revision 8, makes
+the interrupted candidate commit part of the durable checkpoint closure, and
+corrects CR-T57 criterion ownership: checkpoint retention maps to CR-02 while
+interrupted-path attribution and quiescence map to CR-07. CR-T22 remains mapped
+only to CR-07.
 Exactly one
 requirements contract remains `specs/current/continuation-recovery.json`
 (ask-spec/v1, CR-01–CR-08). Human authority and stop: `authorization.md`.
