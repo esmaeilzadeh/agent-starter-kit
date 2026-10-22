@@ -238,5 +238,55 @@
     "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
     "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+  },
+  {
+    "run_id": "4f403f9b83fd42b3940af2abb46ffd18",
+    "digest": "a7f169f4b25eec81433601bd9dfae45a1fca6f056d8342824d768250ce0a87d7",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "CR-2",
+    "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+  },
+  {
+    "run_id": "255451e7f314446a9c8c3ce9bc91c3b6",
+    "digest": "85d29e9f95ae82c7a3242e4343aff1c6353d6cc6df9fc4a5150e6291b651fb73",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "CR-2",
+    "candidate_sha": "96e82ea113d587caf0337c3d92c75cfa312f12b8",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+  },
+  {
+    "run_id": "735427b1b669451aa2114ea3230e9574",
+    "digest": "c3ec241751ac9e4d27c13225bcd808f5b5a510f81fb1d3569b3c240c2f8a3f23",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "CR-2",
+    "candidate_sha": "b606fdde9794c1340843d82d2c8c3f4e7b996ad3",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+  },
+  {
+    "run_id": "0bbc05e222d549f1b45841a010601e48",
+    "digest": "3ee76b44c054220479184e83115f2c1762f02240ec1758b4f71037dc6c9bdb0b",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "CR-2",
+    "candidate_sha": "984d379e5cc26db5201cd348897888b4838e0ed7",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+  },
+  {
+    "run_id": "81a032d74fa6487a8ad9f49069bf6f4a",
+    "digest": "7a79bb4ed1f1315de0f8e7c384b43e723d392c91024626c35ea52ec1e140c374",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "CR-2",
+    "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
   }
 ]

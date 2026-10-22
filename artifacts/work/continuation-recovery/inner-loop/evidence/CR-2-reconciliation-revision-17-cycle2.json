@@ -1,0 +1,24 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "reason": "Preserve the corrected assertion Red, exact-candidate Green, refreshed TaskResult, and independent candidate-bound review before canonical verification.",
+  "previous_checkpoint": "6494aebb78ea027c9795f60cf021045aa979198d",
+  "state_revision": 17,
+  "coordinator_state_unchanged": true,
+  "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "accepted_contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "red_run_id": "0bbc05e222d549f1b45841a010601e48",
+  "red_candidate_sha": "984d379e5cc26db5201cd348897888b4838e0ed7",
+  "green_run_id": "81a032d74fa6487a8ad9f49069bf6f4a",
+  "green_candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "artifact_sha256": {
+    "work/continuation-recovery/inner-loop/results/CR-2.json": "03c4541a17c490caaef8ff86c4adec3d5bf32080fd9aac87b6bd8d04df55991b",
+    "work/continuation-recovery/traceability/runs/0bbc05e222d549f1b45841a010601e48/results.json": "0262d2c6259e38dde94716cd649658d904f77d1fcd98176dfb57df026925cc8f",
+    "work/continuation-recovery/traceability/runs/81a032d74fa6487a8ad9f49069bf6f4a/results.json": "ffed60fa5374e054961f83c6de55b134cb412679f1e9e80c840a371ceb841179",
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-2c508ff.json": "3a5a18b2f3421dbc5c3efa06aa6a07ae65e0554dee838178780227c9ed6664c2",
+    "work/continuation-recovery/traceability/review-input-cr2-2c508ff.json": "1acc1ac9fa91ccdfa649f520684d1d466a2f440618e27f32d4c221fec1f52868"
+  },
+  "prior_CR1_result_preserved": true,
+  "preservation": "Published additively over the previous checkpoint; state and previous checkpoint chain are unchanged."
+}

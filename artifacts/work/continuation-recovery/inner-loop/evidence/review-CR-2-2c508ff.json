@@ -1,0 +1,76 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "APPROVED",
+  "boundary": "ok",
+  "findings": [],
+  "summary": "Exact CR-2 candidate 2c508ff satisfies the accepted Revision 10 behavior and the authorized CR-2 amendments. The failed-static-receipt special case is limited to the exact static-<candidate>.json path with result=fail: its bytes remain in the checkpoint, only that diagnostic candidate SHA is excluded from commit closure, and all other commit-bearing fields remain validated. Static completion still requires result=pass. T08 checks the exact artifact bytes and closure exclusion. Its test-only Red converts the expected pre-fix CheckpointError into a behavior assertion; exact-candidate Green passes all ten CR-2 cases. The carry-forward, checkpoint replay, attempt history, and interrupted-path behavior remain covered by earlier valid Red ancestry and final Green. No remaining finding.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+    "task_result_contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+    "red_runs": [
+      {
+        "run_id": "a84114dad4f14f398c6874537feb9161",
+        "candidate_sha": "0541fac8ad574500f50bbd41054469478feda779",
+        "failed_behavior_cases": [
+          "CR-T05",
+          "CR-T06",
+          "CR-T07",
+          "CR-T08",
+          "CR-T09",
+          "CR-T18",
+          "CR-T38",
+          "CR-T55",
+          "CR-T57"
+        ]
+      },
+      {
+        "run_id": "6e821b6aea3a4fcbafee38794177169c",
+        "candidate_sha": "fd67986a46514bfef451e70d8c67b4f42421a56c",
+        "failed_behavior_cases": [
+          "CR-T56"
+        ]
+      },
+      {
+        "run_id": "0bbc05e222d549f1b45841a010601e48",
+        "candidate_sha": "984d379e5cc26db5201cd348897888b4838e0ed7",
+        "failed_behavior_cases": [
+          "CR-T08"
+        ]
+      }
+    ],
+    "green_run": {
+      "run_id": "81a032d74fa6487a8ad9f49069bf6f4a",
+      "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+      "passed_cases": [
+        "CR-T05",
+        "CR-T06",
+        "CR-T07",
+        "CR-T08",
+        "CR-T09",
+        "CR-T18",
+        "CR-T38",
+        "CR-T55",
+        "CR-T56",
+        "CR-T57"
+      ]
+    },
+    "independent_checks": [
+      "TaskResult candidate SHA and accepted contract SHA exactly match this review candidate and Revision 10 pin.",
+      "T08 Red is collection_status ok and outcome failed/behavior_assertion; explicit self.fail converts the pre-fix CheckpointError into the expected behavior failure.",
+      "T08 Red candidate 984d379e5cc26db5201cd348897888b4838e0ed7 and prior CR-2 Red candidates are ancestors of this candidate.",
+      "Exact final-green run 81a032d74fa6487a8ad9f49069bf6f4a has collection_status ok, exit_code 0, and all ten CR-2 cases passed.",
+      "Failed static receipt bytes are checked byte-for-byte in checkpoint artifact storage; its nonexistent candidate SHA is absent from retained_commits.",
+      "Only exact path-matched result=fail static receipts omit candidate_sha; all other commit-bearing fields remain required. Static traceability service/completion requires result=pass and matching candidate SHA.",
+      "git diff --check b606fdde9794c1340843d82d2c8c3f4e7b996ad3..2c508ff4248f16a3e3121d33a0fae7297c9b378e passed.",
+      "./ask inner-loop validate continuation-recovery returned ok."
+    ],
+    "scope_check": "The additional checkpoint implementation and T08 test changes are within CR-2 owned paths. Other source plan/auth files in the broader task diff are accepted Revision 10 and previously authorized CR-2 amendments."
+  }
+}

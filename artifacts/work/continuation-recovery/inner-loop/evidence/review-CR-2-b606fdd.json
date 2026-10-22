@@ -1,0 +1,90 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "b606fdde9794c1340843d82d2c8c3f4e7b996ad3",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "findings": [
+    {
+      "id": "CR2-REV-b606-F01",
+      "classification": "evidence-gate",
+      "location": "_ask/tests/inner_loop_recovery.py:812; _ask/scripts/inner_loop/checkpoint.py:206",
+      "summary": "The new failed-static-receipt behavior has no valid assertion Red, and the TaskResult is stale for this candidate.",
+      "evidence": "Traceability Red run 255451e7f314446a9c8c3ce9bc91c3b6 is bound to test-only candidate 96e82ea113d587caf0337c3d92c75cfa312f12b8 and records CR-T08 as outcome=error, failure_kind=setup_or_runtime_error. Its output is an uncaught CheckpointError from publish(): required checkpoint commit is missing: 7a7d800d3d47459780858e1b12c41493f99537b4. The traceability policy does not accept runtime errors as behavior Red. The TaskResult still has candidate_sha a269e474bbb9f1034c46806d0079cce446b2cc42, so it is not an exact-candidate result for b606fdde.",
+      "requested_change": "Convert the expected pre-fix publish exception into an explicit behavior assertion failure in a test-only commit, run CR-T08 Red there and final Green for the resulting exact candidate, then refresh TaskResult to that candidate. Preserve current error run as rejected history."
+    }
+  ],
+  "summary": "The implementation exception is narrow: only a correctly named failed static receipt omits its candidate_sha from required commit closure, while the runtime receipt bytes remain in the checkpoint artifact tree. Static completion consumers still require result=pass. T08 asserts exact retained bytes and that the failed SHA is not in retained_commits; the exact Green run passes. Existing checkpoint source/authority closure checks remain on all other SHA-bearing records. However, the new behavior is not backed by valid Red, so task review cannot approve this candidate.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+    "requested_candidate_sha": "b606fdde9794c1340843d82d2c8c3f4e7b996ad3",
+    "task_result_mismatch": true,
+    "new_red": {
+      "run_id": "255451e7f314446a9c8c3ce9bc91c3b6",
+      "candidate_sha": "96e82ea113d587caf0337c3d92c75cfa312f12b8",
+      "test_id": "CR-T08",
+      "outcome": "error",
+      "failure_kind": "setup_or_runtime_error",
+      "exit_code": 1,
+      "collection_status": "ok"
+    },
+    "final_green": {
+      "run_id": "735427b1b669451aa2114ea3230e9574",
+      "candidate_sha": "b606fdde9794c1340843d82d2c8c3f4e7b996ad3",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "passed_test_ids": [
+        "CR-T05",
+        "CR-T06",
+        "CR-T07",
+        "CR-T08",
+        "CR-T09",
+        "CR-T18",
+        "CR-T38",
+        "CR-T55",
+        "CR-T56",
+        "CR-T57"
+      ]
+    },
+    "prior_red_runs": [
+      {
+        "run_id": "a84114dad4f14f398c6874537feb9161",
+        "candidate_sha": "0541fac8ad574500f50bbd41054469478feda779",
+        "failed_behavior_test_ids": [
+          "CR-T05",
+          "CR-T06",
+          "CR-T07",
+          "CR-T08",
+          "CR-T09",
+          "CR-T18",
+          "CR-T38",
+          "CR-T55",
+          "CR-T57"
+        ]
+      },
+      {
+        "run_id": "6e821b6aea3a4fcbafee38794177169c",
+        "candidate_sha": "fd67986a46514bfef451e70d8c67b4f42421a56c",
+        "failed_behavior_test_ids": [
+          "CR-T56"
+        ]
+      }
+    ],
+    "independent_checks": [
+      "Both prior Red commits and T08 test-only commit 96e82ea are ancestors of exact candidate b606fdde.",
+      "The new T08 Red log shows uncaught CheckpointError during publish and is explicitly classified setup_or_runtime_error, not behavior_assertion.",
+      "Exact candidate Green run 735427b1b669451aa2114ea3230e9574 passed all ten cases with collection ok and exit 0.",
+      "The b606fdde diff from a269e474 is limited to checkpoint.py and the T08 test in inner_loop_recovery.py; both are in CR-2 owned paths.",
+      "The failed receipt exception matches only work/<id>/traceability/static-<candidate_sha>.json with result=fail and skips only candidate_sha; all other commit-bearing fields still require existing commits.",
+      "Traceability service and completion require static receipt result=pass and candidate SHA match; the failed receipt cannot establish completion.",
+      "T08 checks exact failed receipt bytes in checkpoint artifacts and excludes the missing SHA from retained_commits; CR-T18 and checkpoint read validation retain artifact digest and passed/source/authority commit closure checks.",
+      "git diff --check a269e474bbb9f1034c46806d0079cce446b2cc42..b606fdde9794c1340843d82d2c8c3f4e7b996ad3 passed."
+    ],
+    "boundary_assessment": "All changed implementation and test paths are within CR-2 owned paths. Plan/auth files in the larger base diff are the accepted Revision 10 and authorized CR-2 plan amendments."
+  }
+}

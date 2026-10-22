@@ -1,0 +1,33 @@
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+FAIL: test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-sq7rr1th/candidate/_ask/tests/inner_loop_recovery.py", line 821, in test_reject_incomplete_or_unsafe_checkpoint
+    publish(self.root, "w", state)
+  File "/tmp/ask-cases-sq7rr1th/candidate/_ask/scripts/inner_loop/checkpoint.py", line 244, in publish
+    required = _required_commits(root, work_id, state)
+  File "/tmp/ask-cases-sq7rr1th/candidate/_ask/scripts/inner_loop/checkpoint.py", line 210, in _required_commits
+    raise CheckpointError(f"required checkpoint commit is missing: {sha}")
+inner_loop.checkpoint.CheckpointError: required checkpoint commit is missing: 7a7d800d3d47459780858e1b12c41493f99537b4
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/ask-cases-sq7rr1th/candidate/_ask/tests/inner_loop_recovery.py", line 823, in test_reject_incomplete_or_unsafe_checkpoint
+    self.fail(
+AssertionError: a failed static receipt must be preserved without requiring its diagnostic candidate commit: required checkpoint commit is missing: 7a7d800d3d47459780858e1b12c41493f99537b4
+
+----------------------------------------------------------------------
+Ran 9 tests in 34.025s
+
+FAILED (failures=1)
