@@ -12,6 +12,11 @@ import tempfile
 import time
 import unittest
 
+TESTS = Path(__file__).resolve().parent
+SCRIPTS = TESTS.parent / "scripts"
+sys.path.insert(0, str(TESTS))
+sys.path.insert(0, str(SCRIPTS))
+
 from inner_loop.state import SecondWriter, cas_apply, cas_init, load_state
 from inner_loop.recovery import RecoveryRequired
 from inner_loop.driver import NotIntegrable, integrate_ready, run_until, resume_from_state
