@@ -216,7 +216,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(prior["base_sha"], before["tasks"]["a"]["base_sha"])
         self.assertEqual(prior["reason"], "accepted plan amendment")
         self.assertEqual(prior["accepted_plan_ref"], old_plan_ref)
-        self.assertEqual(prior["accepted_plan_digest"], "plan-before")
+        self.assertEqual(prior.get("accepted_plan_digest"), "plan-before")
         self.assertEqual(prior["execution_runs"], execution_rows)
         self.assertTrue(prior["attempt_id"])
 
@@ -243,7 +243,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(current["status"], "running")
         self.assertNotEqual(current["attempt_id"], prior["attempt_id"])
         self.assertEqual(current["accepted_plan_ref"], new_plan_ref)
-        self.assertEqual(current["accepted_plan_digest"], "plan-after")
+        self.assertEqual(current.get("accepted_plan_digest"), "plan-after")
         self.assertEqual(current["attempt_history"], task["attempt_history"])
         self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
 
