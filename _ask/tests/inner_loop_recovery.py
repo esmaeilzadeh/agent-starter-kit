@@ -280,6 +280,22 @@ class RecoveryTests(unittest.TestCase):
         self.assert_recovery_required(refused, "contract", "work/w/inner-loop/results/a.json")
         result_path.write_bytes(result_bytes)
 
+        missing_contract = dict(original_result)
+        del missing_contract["contract_sha"]
+        result_path.write_text(json.dumps(missing_contract) + "\n", encoding="utf-8")
+        with self.subTest(identity="missing contract_sha"):
+            refused = self.run_cli("status", "w")
+            self.assert_recovery_required(refused, "contract_sha", "work/w/inner-loop/results/a.json")
+        result_path.write_bytes(result_bytes)
+
+        state = json.loads(state_before)
+        state["tasks"]["a"]["base_sha"] = ""
+        state_path.write_text(json.dumps(state) + "\n", encoding="utf-8")
+        with self.subTest(identity="empty state base_sha"):
+            refused = self.run_cli("status", "w")
+            self.assert_recovery_required(refused, "base_sha", "work/w/inner-loop/results/a.json")
+        state_path.write_bytes(state_before)
+
         self.git("switch", "-qc", "side-candidate", self.anchor_commit)
         self.write("src/a.py", "candidate outside coordinator ancestry\n")
         self.commit("side candidate")
