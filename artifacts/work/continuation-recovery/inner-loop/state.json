@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 14,
+  "revision": 15,
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -408,14 +408,17 @@
       }
     },
     "CR-2": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "red_run_id": "8a2614bee63b4a8a86477159b40ec004",
+        "red_candidate_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02"
+      },
       "attempt_history": [
         {
           "attempt_id": "CR-2:attempt-1",
@@ -457,11 +460,13 @@
           "candidate_identity_reconciliation": "work/continuation-recovery/inner-loop/evidence/CR-2-attempt-1-candidate-reconciliation.json"
         }
       ],
-      "attempt_number": 1,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null
+      "attempt_number": 2,
+      "attempt_id": "CR-2:attempt-2",
+      "accepted_plan_ref": "14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
+      "accepted_plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+      "attempt_started_revision": 15,
+      "reopened_from_attempt": "CR-2:attempt-1",
+      "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
       "status": "pending",

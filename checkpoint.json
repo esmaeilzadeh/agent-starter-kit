@@ -13,6 +13,12 @@
       "sha256": "80da2f8ba5553ac7cbd2e148fcd87ea663729b8ecb072e05a48ad7880224e2d9",
       "size": 1217
     },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-attempt-2-reopen-reconciliation.json": {
+      "blob": "abc947e99a435fafe8dc8fa2ae7095066e035c77",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-attempt-2-reopen-reconciliation.json",
+      "sha256": "7881c66d62ab0835785cc33ee169800b4afa2894c069528c2148b1be45428324",
+      "size": 1168
+    },
     "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/CR-1-current.json": {
       "blob": "77cfe1b7a17a519ca026245029fb5b002a23967b",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/CR-1-current.json",
@@ -290,10 +296,10 @@
       "size": 1978
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "8927f1cbaf29c49937ce864be68f4d98f5c58e3a",
+      "blob": "3b43d4144e081a34bd7f72daeaee8f9c7a8e5587",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "04884d331e77685b0f686c2105820daaa11455a8d158a429cf0f0b9f8b543495",
-      "size": 24974
+      "sha256": "6bfadb181f90f42429415e51533bed3ae48b535934849f4fca21c8edcb6341ca",
+      "size": 25418
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2bbf3dfa5cb6ecba603c233a0f21f1fa01b4c3f1",
@@ -2469,8 +2475,8 @@
     }
   },
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
-  "generation": 14,
-  "previous_checkpoint": "bd7eecb511680c987ddeed73ea02a523c0689dbf",
+  "generation": 15,
+  "previous_checkpoint": "dab00f99d898e232ccae1a020a23f976b12de29c",
   "retained_commits": [
     "029e3f95735aa607ef00605116f29865898787b8",
     "05b747c8a71cb80c08be352f94b4fbca8c9bce02",

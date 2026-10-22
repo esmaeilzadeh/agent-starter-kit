@@ -1,0 +1,19 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "previous_checkpoint_sha": "dab00f99d898e232ccae1a020a23f976b12de29c",
+  "previous_revision": 14,
+  "previous_attempt_id": "CR-2:attempt-1",
+  "new_attempt_id": "CR-2:attempt-2",
+  "accepted_plan_ref": "14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
+  "accepted_plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+  "new_attempt_base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "red_run_id": "8a2614bee63b4a8a86477159b40ec004",
+  "red_candidate_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
+  "red_run_digest": "a5a2afcb09c05ad598a584d5760ac0de7595f2289c3b0aa3fad26ea7b331bf8a",
+  "green_run_id": "118a8c774ea74246af0067315140b5f6",
+  "green_candidate_sha": "5ecffd954ade36abed2e5c40eb66e8846af5c4a6",
+  "green_run_digest": "0054c2e265779aeb8ec2b5863f4a86231cddb72fbd74a2903a8cd150790bcea8",
+  "decision": "Start a distinct CR-2 attempt under the accepted Revision 10 plan while preserving attempt 1. The mapped Red was captured before the implementation candidate; final Green is captured at the current candidate."
+}
