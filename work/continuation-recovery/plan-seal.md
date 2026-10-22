@@ -70,3 +70,23 @@ must report this endpoint. Later explicit human direction is required to proceed
 normal intent/admission/TDD/review/verification gates still apply. Product
 integration/adoption and product scheduling each retain their explicit handoff
 and authorization conditions in `bootstrap.md`.
+
+## Revision 10 continuation authority and acceptance
+
+The user later explicitly directed continuation and authorized the scope-aware
+CR-1 evidence carry-forward and interrupted-candidate attribution rule. The
+original stop-after-seal endpoint is therefore superseded for implementation
+inside this workstream; product adoption and scheduling remain outside scope.
+
+Revision 10 was independently reviewed and accepted on 2026-10-22. Candidate:
+`588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6`. Reviewer: `/root/review_cr1`.
+Review record: `traceability/plan-review-cr2-scope-carry-forward.json`.
+The exact review confirms CR-T57 maps checkpoint retention to CR-02 and
+interrupted-path attribution, quiescence, and recovery to CR-07; CR-T22 remains
+CR-07 only. Accepted digests are spec
+`02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1`, test plan
+`2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0`, and graph
+`0bd73550d1ed2a30b80b554946e55ad8ea839b13fa0da1a84d294242738e42f6`.
+Coordinator authority `refs/ask/accepted-tests/continuation-recovery` points to
+`14d8bbe20c5f3d24082c13ef98a29e80ac019b92`; the generated tracked pin matches
+that authority. Implementation continues at CR-2 under its task-loop gates.
