@@ -119,7 +119,10 @@ def _write_state(path: Path, doc: dict) -> None:
 
 
 def _publish_state(root: Path, work_id: str, doc: dict) -> None:
-    # Red phase: retain pre-checkpoint state publication behavior.
+    from inner_loop.checkpoint import is_repository, publish
+
+    if is_repository(root):
+        publish(root, work_id, doc)
     _write_state(state_path(root, work_id), doc)
 
 
