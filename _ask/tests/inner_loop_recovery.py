@@ -21,7 +21,7 @@ from _ask.tests.inner_loop_recovery_fixture import (
     write_legacy_fixture,
 )
 from inner_loop.graph import load_graph
-from inner_loop.checkpoint import read_checkpoint
+from inner_loop.checkpoint import publish, read_checkpoint
 from inner_loop.recovery import inspect as inspect_recovery
 
 TASKS = """schema: ask-inner-loop-tasks/v1
@@ -242,6 +242,7 @@ class RecoveryTests(unittest.TestCase):
         ledger = self.root / "work/w/traceability/executions.json"
         ledger.parent.mkdir(parents=True, exist_ok=True)
         ledger.write_text(json.dumps(execution_rows) + "\n", encoding="utf-8")
+        publish(self.root, "w", before)
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accepted plan amendment")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
 
@@ -316,17 +317,47 @@ class RecoveryTests(unittest.TestCase):
         self.commit("record amended accepted plan")
         self.write(
             "work/w/traceability/executions.json",
-            json.dumps([{"run_id": "green-a", "phase": "final_green", "scope": "task",
-                         "task_id": "a", "candidate_sha": self.candidate,
-                         "spec_digest": self.old_spec_digest,
-                         "plan_digest": self.old_plan_digest}]) + "\n",
+            "[]\n",
         )
+        report = {
+            "schema": "ask-test-results/v1", "run_id": "green-a",
+            "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
+            "plan_digest": self.old_plan_digest, "scope": "task", "task_id": "a",
+            "executions": [{"id": "exec-a", "phase": "final_green"}],
+            "cases": [{"test_id": test_id, "execution_id": "exec-a",
+                       "phase": "final_green", "outcome": "passed"}
+                      for test_id in ("T-A", "T-B")],
+        }
+        report_raw = json.dumps(report, sort_keys=True, separators=(",", ":"))
+        self.write("work/w/traceability/runs/green-a/results.json", report_raw)
+        ledger_row = {"run_id": "green-a", "digest": hashlib.sha256(report_raw.encode()).hexdigest(),
+                      "phase": "final_green", "scope": "task", "task_id": "a",
+                      "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
+                      "plan_digest": self.old_plan_digest}
+        self.write("work/w/traceability/executions.json", json.dumps([ledger_row]) + "\n")
         state = json.loads(state_path.read_text(encoding="utf-8"))
+        publish(self.root, "w", state)
 
         result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(result, result)
         self.assertEqual(self.result_path.read_bytes(), original_result)
         self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], self.base)
+
+        # A fabricated matching row and a report edited after checkpoint publication
+        # cannot authorize carry-forward.
+        self.write("work/w/traceability/executions.json", json.dumps([{
+            "run_id": "green-a", "phase": "final_green", "scope": "task", "task_id": "a",
+            "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
+            "plan_digest": self.old_plan_digest,
+        }]) + "\n")
+        fabricated = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+        self.assertIsNotNone(fabricated, "fabricated green evidence must require recovery")
+        self.assertIn("runtime traceability evidence differs from the retained checkpoint",
+                      fabricated["conflicts"])
+        self.assertTrue(any("TaskResult contract identity mismatch" in conflict
+                            for conflict in fabricated["conflicts"]))
+        self.write("work/w/traceability/executions.json", json.dumps([ledger_row]) + "\n")
+        publish(self.root, "w", state)
 
         changed = copy.deepcopy(amended)
         next(test for test in changed["tests"] if test["id"] == "T-A")["scenario"]["then"] = ["different behavior"]
@@ -343,6 +374,26 @@ class RecoveryTests(unittest.TestCase):
         rejected = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assert_recovery_required(
             subprocess.CompletedProcess([], 1, stdout=json.dumps(rejected), stderr=""),
+            "TaskResult contract identity mismatch",
+        )
+
+        changed_spec = copy.deepcopy(self.spec)
+        changed_spec["criteria"][0]["then"] = ["changed specification"]
+        self.write("specs/current/w.json", json.dumps(changed_spec, sort_keys=True))
+        self.commit("change the accepted specification")
+        changed_contract = self.git("rev-parse", "HEAD")
+        self.write(
+            "work/w/traceability-accepted.json",
+            json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
+                        "contract_sha": changed_contract,
+                        "spec_digest": self.json_digest(changed_spec),
+                        "plan_digest": self.json_digest(changed),
+                        "graph_digest": self.old_graph_digest}) + "\n",
+        )
+        self.commit("record changed accepted specification")
+        rejected_spec = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+        self.assert_recovery_required(
+            subprocess.CompletedProcess([], 1, stdout=json.dumps(rejected_spec), stderr=""),
             "TaskResult contract identity mismatch",
         )
 
