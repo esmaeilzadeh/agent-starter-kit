@@ -1,0 +1,21 @@
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_contract_and_checkout_conflict (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_fresh_initialization_and_missing_legacy_evidence (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_isolated_repair_initialization_and_legacy_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_missing_state_retained_result (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_new_candidate_preserves_stale_rejected_review_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_pending_state_conflicts_with_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_running_task_changes_may_overlap_later_task_ownership (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 66.500s
+
+OK

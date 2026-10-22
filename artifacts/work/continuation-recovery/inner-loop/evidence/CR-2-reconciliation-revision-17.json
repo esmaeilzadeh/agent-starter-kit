@@ -1,0 +1,21 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "reason": "Checkpoint final CR-2 semantic review, canonical verification receipt, and completion evidence produced after the coordinator review state fold.",
+  "previous_checkpoint": "a8e0703d5df5cf25fb63169932f65e7e75abe14f",
+  "state_revision": 17,
+  "coordinator_state_unchanged": true,
+  "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+  "accepted_contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "traceability_review_path": "work/continuation-recovery/traceability/reviews/a269e474bbb9f1034c46806d0079cce446b2cc42.json",
+  "traceability_review_sha256": "082dc07d8ff4cf048b848d9b29c5fb2f3902cbb2127dc7fc8f3d9dca5b39eb18",
+  "verification_result": "pass",
+  "verification_receipt_path": "verification-result.json",
+  "verification_receipt_sha256": "c324fc20a118ea4c5b14411cfb0884fc9df7c68ad9687eb49e8395fbe84b4670",
+  "static_receipt_sha256": "3dc5e618d8676c9b788358031ce3a8acfa7f809a2dc4d9549686534aa430c0b8",
+  "completion_sha256": "ea26487ad366c8d6c61e806fe00dc229e05652b6b3756f1838a44041ab2baa7c",
+  "ledger_prior_rows_preserved": 22,
+  "ledger_appended_rows": 2,
+  "preservation": "Published additively over the previous checkpoint. Prior checkpoint and runtime artifacts remain retained."
+}

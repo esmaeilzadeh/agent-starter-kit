@@ -1,15 +1,1591 @@
 {
   "schema": "ask-completion/v1",
-  "status": "fail",
+  "status": "pass",
   "scope": "task",
   "task_id": "CR-2",
   "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
-  "input_digests": {},
-  "criterion_evidence": [],
-  "missing_evidence": [],
-  "errors": [
-    "migration_required: missing/invalid JSON /home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/a269e474bbb9f1034c46806d0079cce446b2cc42.json: [Errno 2] No such file or directory: '/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/a269e474bbb9f1034c46806d0079cce446b2cc42.json'"
+  "input_digests": {
+    "spec": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+    "accepted": "5522c0b412c7b1157f5346bd7c472a6b0bdae599b1b97fe33ec48eb163e0dd73",
+    "review": "8a154620a4363a8dc6b4b9915feb08da6075ef9ef942044f4dcef2336855271d",
+    "executions": "36aa50cec88f8abdaee2781ba3cf2ce50a907d4cf725f55d73a7a17721b1ca54"
+  },
+  "criterion_evidence": [
+    {
+      "criterion_id": "CR-02",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-02",
+        "coverage_decision": "APPROVED",
+        "assessment": "Checkpoint snapshots retain state, exact required artifact bytes and commit closure; crash, cache restoration, GC and bundle-transfer cases exercise publication and closure.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "The mapped e2e case directly exercises the accepted observable behavior for this task criterion."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T05",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T05",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T05",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T05",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T06",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T06",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T06",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T06",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T08",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T08",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T08",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T08",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T18",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+          "type": "e2e",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T18",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T18",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T18",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T57",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T57",
+              "runner_id": "continuation-recovery",
+              "execution_id": "d149ab26869a44b9a67a6734a584af56",
+              "phase": "red",
+              "source_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "68c2ece231f23102603d91a1bb0aadfcce8500563325b68e56efdfedea688a19",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "c432cdc2f7d7d6d10a8cd2046c3b0dde366963e8b8eaa471475134897d1e9601",
+                "_ask/scripts/inner_loop/checkpoint.py": "b8ffa2de941487c1289dd371998d981fa604f42fbb6b1733df16f112b2890b41",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/attempts.py": "fa5ee62259041b31234e425583be23bda6ea66de21511fc8b50237166f1c03b8",
+                "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.log",
+              "output_digest": "cd3c32ca27ef7555e34d2f639ab5f94ce14f9edfe17313f0c23c9de0a000e839"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T57",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T57",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T57",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+              "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-03",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-03",
+        "coverage_decision": "APPROVED",
+        "assessment": "Checkpoint publication uses serialized compare-and-swap, keeps the ref as the durable commit point, detects competing writers and replays the published generation after a crash.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "The mapped e2e case directly exercises the accepted observable behavior for this task criterion."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T06",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T06",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T06",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T06",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T07",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T07",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T07",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T07",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T09",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T09",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T09",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T09",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T18",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+          "type": "e2e",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T18",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T18",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T18",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T38",
+          "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T38",
+              "runner_id": "inner-loop-reliability",
+              "execution_id": "382a9d48fa214cf58b85dbfda0081e2b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
+                "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/382a9d48fa214cf58b85dbfda0081e2b.log",
+              "output_digest": "957b16f317d1c2da2b13eb1cc3b50a22851a8d28ef7860f4d309d08fe2bfe0cf"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T38",
+              "runner_id": "inner-loop-reliability",
+              "execution_id": "26a32092f60e4a13bc55b96535298063",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
+                "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/26a32092f60e4a13bc55b96535298063.log",
+              "output_digest": "37dbd475193a7d91e2257a23dbeb7e00ce0290f02acc45217a1dae4337cc8c88"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T38",
+            "runner_id": "inner-loop-reliability",
+            "execution_id": "d02a155022084eb8ba1b8d24584ecaad",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
+              "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/d02a155022084eb8ba1b8d24584ecaad.log",
+            "output_digest": "1535fa33bca2208716142fa63e9a060403f1cf2e6ca22495d5b60a537767f61c"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-04",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-04",
+        "coverage_decision": "APPROVED",
+        "assessment": "Recovery preserves separate evidence milestones and refuses to infer integration from Green; the restore case checks the first unmet step.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T05",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T05",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T05",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T05",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-05",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-05",
+        "coverage_decision": "APPROVED",
+        "assessment": "Recovery accepts only identity-consistent older cache/checkpoint data and rejects divergence, incomplete artifacts, unsupported state, changed contracts and unsafe paths.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+          },
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "The mapped e2e case directly exercises the accepted observable behavior for this task criterion."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T05",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T05",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T05",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T05",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T08",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T08",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T08",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T08",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T09",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T09",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T09",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T09",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T18",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+          "type": "e2e",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T18",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T18",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_retain_objects_after_gc_and_bundle_transfer",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T18",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-07",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-07",
+        "coverage_decision": "APPROVED",
+        "assessment": "Attempt and carry-forward cases bind history to accepted-plan identities and exact prior reports; interrupted source changes are attributed only to the recorded attempt, with ambiguity requiring recovery.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T38",
+          "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T38",
+              "runner_id": "inner-loop-reliability",
+              "execution_id": "382a9d48fa214cf58b85dbfda0081e2b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
+                "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/382a9d48fa214cf58b85dbfda0081e2b.log",
+              "output_digest": "957b16f317d1c2da2b13eb1cc3b50a22851a8d28ef7860f4d309d08fe2bfe0cf"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T38",
+              "runner_id": "inner-loop-reliability",
+              "execution_id": "26a32092f60e4a13bc55b96535298063",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
+                "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/26a32092f60e4a13bc55b96535298063.log",
+              "output_digest": "37dbd475193a7d91e2257a23dbeb7e00ce0290f02acc45217a1dae4337cc8c88"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T38",
+            "runner_id": "inner-loop-reliability",
+            "execution_id": "d02a155022084eb8ba1b8d24584ecaad",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
+              "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/d02a155022084eb8ba1b8d24584ecaad.log",
+            "output_digest": "1535fa33bca2208716142fa63e9a060403f1cf2e6ca22495d5b60a537767f61c"
+          }
+        },
+        {
+          "test_id": "CR-T55",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupt_and_reopen_preserve_attempt_history",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupt_and_reopen_preserve_attempt_history",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T55",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupt_and_reopen_preserve_attempt_history",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T55",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupt_and_reopen_preserve_attempt_history",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T55",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T56",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T56",
+              "runner_id": "continuation-recovery",
+              "execution_id": "d149ab26869a44b9a67a6734a584af56",
+              "phase": "red",
+              "source_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "68c2ece231f23102603d91a1bb0aadfcce8500563325b68e56efdfedea688a19",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "c432cdc2f7d7d6d10a8cd2046c3b0dde366963e8b8eaa471475134897d1e9601"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.log",
+              "output_digest": "cd3c32ca27ef7555e34d2f639ab5f94ce14f9edfe17313f0c23c9de0a000e839"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T56",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6ca5c976a3cd42a384204163923fe79d",
+              "phase": "red",
+              "source_sha": "fd67986a46514bfef451e70d8c67b4f42421a56c",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "4527c58e9dc39597356447b2637ca8cebe0bf098dcc11ad760707364eba6b6d2"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/6e821b6aea3a4fcbafee38794177169c/6ca5c976a3cd42a384204163923fe79d.log",
+              "output_digest": "9c813c7883723708a0594438b38bdeee42c6ff551355f3ffdd258a773251626f"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T56",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        },
+        {
+          "test_id": "CR-T57",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T57",
+              "runner_id": "continuation-recovery",
+              "execution_id": "d149ab26869a44b9a67a6734a584af56",
+              "phase": "red",
+              "source_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "68c2ece231f23102603d91a1bb0aadfcce8500563325b68e56efdfedea688a19",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "c432cdc2f7d7d6d10a8cd2046c3b0dde366963e8b8eaa471475134897d1e9601",
+                "_ask/scripts/inner_loop/checkpoint.py": "b8ffa2de941487c1289dd371998d981fa604f42fbb6b1733df16f112b2890b41",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/attempts.py": "fa5ee62259041b31234e425583be23bda6ea66de21511fc8b50237166f1c03b8",
+                "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.log",
+              "output_digest": "cd3c32ca27ef7555e34d2f639ab5f94ce14f9edfe17313f0c23c9de0a000e839"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T57",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T57",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+                "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T57",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
+              "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-08",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-08",
+        "coverage_decision": "APPROVED",
+        "assessment": "The concurrency case exercises single-writer/CAS behavior; CR-2 adds no implicit task or product behavior and keeps interrupted work quiescent until explicit reopen.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T07",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+          "type": "integration",
+          "tdd": "red_green",
+          "red": [
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T07",
+              "runner_id": "continuation-recovery",
+              "execution_id": "bfa759a9c2ff4c59bd381b465b7716da",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+              "output_digest": "54533705abfc079f5182b6b3a09a14f8678bf51d64af76007d38ebf9fa26d315"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T07",
+              "runner_id": "continuation-recovery",
+              "execution_id": "6d6b9e2e0eb643848bed253352e5d61b",
+              "phase": "red",
+              "source_sha": "0541fac8ad574500f50bbd41054469478feda779",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "0d615ebf67693a8223d74c2172a30b27a9201bca4ffd58b319fb1d1ee3dd2fe0",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+              "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            }
+          ],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T07",
+            "runner_id": "continuation-recovery",
+            "execution_id": "9293ea6617b8472196797d8e1a80c373",
+            "phase": "final_green",
+            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+              "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+              "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+            "output_digest": "8c0056c576d70b8e07d15d86ecff0c96176e39b09fd969f0c06d2459bc91aa5e"
+          }
+        }
+      ]
+    }
   ],
-  "execution_artifacts": [],
-  "evidence_state": "unavailable"
+  "missing_evidence": [],
+  "errors": [],
+  "execution_artifacts": [
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.log",
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/c42937f70d7044e4b3ee0453e017087b.log",
+    "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/bfa759a9c2ff4c59bd381b465b7716da.log",
+    "work/continuation-recovery/traceability/runs/a84114dad4f14f398c6874537feb9161/382a9d48fa214cf58b85dbfda0081e2b.log",
+    "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
+    "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/26a32092f60e4a13bc55b96535298063.log",
+    "work/continuation-recovery/traceability/runs/6e821b6aea3a4fcbafee38794177169c/6ca5c976a3cd42a384204163923fe79d.log",
+    "work/continuation-recovery/traceability/runs/6e821b6aea3a4fcbafee38794177169c/e6069288f6b14de2958b5b151b609a79.log",
+    "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/9293ea6617b8472196797d8e1a80c373.log",
+    "work/continuation-recovery/traceability/runs/53c71f1919814ab7a091619dafec4b9a/d02a155022084eb8ba1b8d24584ecaad.log"
+  ],
+  "rejected_historical_attempts": []
 }
