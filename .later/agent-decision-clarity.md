@@ -61,3 +61,7 @@ Before asking for a decision during an active workflow, reassess the evidence, e
 Treat a model escalation as a temporary consultation. Once the decision is resolved, return to the model and effort that were active when the workflow began and continue from the exact authorized stage and task. Do not leave the workflow on the stronger model or raise its effort after the consultation.
 
 When the agent can decide within existing authorization, stop the decision loop and state the chosen path with its confidence. Preserve the user's requested 80% threshold wording until its boundary is clarified; do not use uncertainty about that wording to ask redundant questions or to bypass a human-only gate.
+
+## Human-selected verification after the inner loop (2026-10-22)
+
+Let the human choose who performs workstream verification after the inner loop: an agent using the human's selected model and reasoning effort, including a stronger model, or the human personally. Record that selection and honor it without repeatedly asking. Define the handoff, required evidence, and completion conditions for each route while preserving verification and acceptance requirements. This is an addition to the parked scope; it does not change the current workflow.
