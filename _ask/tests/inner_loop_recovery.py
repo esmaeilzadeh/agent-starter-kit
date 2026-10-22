@@ -350,6 +350,156 @@ class RecoveryTests(unittest.TestCase):
         refused = self.run_cli("status", "w")
         self.assert_recovery_required(refused, "contract", "work/w/inner-loop/results/a.json")
 
+    def _checkpoint_ref(self):
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "refs/ask/inner-loop/w"],
+            cwd=self.root,
+            capture_output=True,
+            text=True,
+        )
+        return result.stdout.strip() if result.returncode == 0 else None
+
+    def test_restore_deleted_runtime_cache(self):
+        self.start_candidate()
+        before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        result_before = self.result_path.read_bytes()
+        review_before = self.review_path.read_bytes()
+        checkpoint = self._checkpoint_ref()
+        self.assertIsNotNone(checkpoint, "writer transitions must publish a retained checkpoint")
+
+        (self.root / "work/w/inner-loop/state.json").unlink()
+        restored = self.run_cli("resume", "w")
+
+        self.assertEqual(restored.returncode, 0, restored.stdout + restored.stderr)
+        self.assertEqual(self._checkpoint_ref(), checkpoint)
+        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), before)
+        self.assertEqual(self.result_path.read_bytes(), result_before)
+        self.assertEqual(self.review_path.read_bytes(), review_before)
+        self.assertNotIn("integrated", restored.stdout)
+
+    def test_crash_around_checkpoint_publication(self):
+        self.start_candidate()
+        initial = self._checkpoint_ref()
+        self.assertIsNotNone(initial, "initial state must have a checkpoint before transition")
+        state_path = self.root / "work/w/inner-loop/state.json"
+        cached = state_path.read_bytes()
+        revision = json.loads(cached)["revision"]
+
+        advanced = self.run_cli("cas-apply", "w", "--observed", str(revision))
+        self.assertEqual(advanced.returncode, 0, advanced.stdout + advanced.stderr)
+        published = self._checkpoint_ref()
+        self.assertNotEqual(published, initial)
+
+        state_path.write_bytes(cached)
+        replayed = self.run_cli("resume", "w")
+        self.assertEqual(replayed.returncode, 0, replayed.stdout + replayed.stderr)
+        self.assertEqual(self._checkpoint_ref(), published)
+        restored = json.loads(state_path.read_text(encoding="utf-8"))
+        self.assertEqual(restored["revision"], revision + 1)
+
+    def test_concurrent_checkpoint_writers(self):
+        self.start_candidate()
+        observed = json.loads((self.root / "work/w/inner-loop/state.json").read_text())["revision"]
+        command = [sys.executable, "-m", "inner_loop", "--root", str(self.root),
+                   "cas-apply", "w", "--observed", str(observed)]
+        env = dict(os.environ)
+        env["PYTHONPATH"] = os.pathsep.join(
+            part for part in (str(SCRIPTS), env.get("PYTHONPATH", "")) if part
+        )
+        first = subprocess.Popen(command, cwd=self.root, env=env, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, text=True)
+        second = subprocess.Popen(command, cwd=self.root, env=env, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, text=True)
+        first_out, first_err = first.communicate(timeout=10)
+        second_out, second_err = second.communicate(timeout=10)
+        outcomes = [(first.returncode, first_out + first_err),
+                    (second.returncode, second_out + second_err)]
+
+        self.assertEqual(sorted(code for code, _ in outcomes), [0, 2], outcomes)
+        self.assertEqual(sum("revision mismatch" in output for _, output in outcomes), 1, outcomes)
+        state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        self.assertEqual(state["revision"], observed + 1)
+        self.assertIsNotNone(self._checkpoint_ref(), "the winning CAS must publish its checkpoint")
+
+    def test_reject_incomplete_or_unsafe_checkpoint(self):
+        self.start_candidate()
+        checkpoint = self._checkpoint_ref()
+        self.assertIsNotNone(checkpoint, "checkpoint validation requires a published baseline")
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state_before = state_path.read_bytes()
+        result_before = self.result_path.read_bytes()
+        review_before = self.review_path.read_bytes()
+
+        invalid_blob = self.git("hash-object", "-w", self.write("invalid-checkpoint", "not a commit"))
+        self.git("update-ref", "refs/ask/inner-loop/w", invalid_blob)
+        refused = self.run_cli("resume", "w")
+
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertIn("recovery_required", refused.stdout + refused.stderr)
+        self.assertEqual(state_path.read_bytes(), state_before)
+        self.assertEqual(self.result_path.read_bytes(), result_before)
+        self.assertEqual(self.review_path.read_bytes(), review_before)
+        self.git("update-ref", "refs/ask/inner-loop/w", checkpoint)
+
+    def test_stale_and_newer_cache(self):
+        self.start_candidate()
+        state_path = self.root / "work/w/inner-loop/state.json"
+        old_cache = state_path.read_bytes()
+        old_revision = json.loads(old_cache)["revision"]
+        advanced = self.run_cli("cas-apply", "w", "--observed", str(old_revision))
+        self.assertEqual(advanced.returncode, 0, advanced.stdout + advanced.stderr)
+        checkpoint = self._checkpoint_ref()
+        self.assertIsNotNone(checkpoint, "state mutation must publish a checkpoint")
+        state_path.write_bytes(old_cache)
+
+        replayed = self.run_cli("resume", "w")
+        self.assertEqual(replayed.returncode, 0, replayed.stdout + replayed.stderr)
+        self.assertEqual(self._checkpoint_ref(), checkpoint)
+        current = json.loads(state_path.read_text())
+        self.assertEqual(current["revision"], old_revision + 1)
+
+        divergent = dict(current)
+        divergent["revision"] += 1
+        divergent["coordinator_sha"] = self.anchor_commit
+        divergent_raw = json.dumps(divergent, indent=2) + "\n"
+        state_path.write_text(divergent_raw, encoding="utf-8")
+        refused = self.run_cli("status", "w")
+        self.assert_recovery_required(refused, "checkpoint", "state.json")
+        self.assertEqual(state_path.read_text(encoding="utf-8"), divergent_raw)
+
+    def test_retain_objects_after_gc_and_bundle_transfer(self):
+        self.start_candidate()
+        checkpoint = self._checkpoint_ref()
+        self.assertIsNotNone(checkpoint, "writer transitions must publish retained checkpoints")
+        for ref in self.git("for-each-ref", "--format=%(refname)").splitlines():
+            if ref != "refs/ask/inner-loop/w":
+                self.git("update-ref", "-d", ref)
+        self.git("reflog", "expire", "--expire=now", "--all")
+        self.git("gc", "--prune=now")
+        self.assertEqual(self.git("cat-file", "-t", checkpoint), "commit")
+
+        bundle = self.root / "checkpoint.bundle"
+        exported = self.run_cli("checkpoint-export", "w", "--out", str(bundle))
+        self.assertEqual(exported.returncode, 0, exported.stdout + exported.stderr)
+        self.assertTrue(bundle.is_file())
+
+        imported = Path(self.temp.name) / "imported"
+        self.git("clone", "-q", "--bare", str(self.root), str(imported))
+        result = subprocess.run(
+            [sys.executable, "-m", "inner_loop", "--root", str(imported),
+             "checkpoint-import", "w", str(bundle)],
+            cwd=imported,
+            env={**os.environ, "PYTHONPATH": os.pathsep.join(
+                part for part in (str(SCRIPTS), os.environ.get("PYTHONPATH", "")) if part
+            )},
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint)
+        self.assertEqual(self.git("--git-dir", str(imported), "rev-parse",
+                                  "refs/ask/inner-loop/w"), checkpoint)
+
     def test_isolated_repair_initialization_and_legacy_handoff(self):
         fixture = Path(self.temp.name) / "legacy-product"
         fixture.mkdir()
