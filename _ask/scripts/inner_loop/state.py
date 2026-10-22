@@ -136,7 +136,10 @@ def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str
             except json.JSONDecodeError:
                 _require_reconciled(root, work_id, None, task_ids)
                 raise
-            _require_reconciled(root, work_id, doc, task_ids)
+            # Existing state owns its task identities. Caller-supplied IDs are
+            # only initialization input and must not make an idempotent retry
+            # look like a conflicting graph when no accepted graph file exists.
+            _require_reconciled(root, work_id, doc)
             return doc
         _require_reconciled(root, work_id, None, task_ids)
         _write_state(path, doc)
