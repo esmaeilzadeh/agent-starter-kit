@@ -21,7 +21,7 @@ from _ask.tests.inner_loop_recovery_fixture import (
     write_legacy_fixture,
 )
 from inner_loop.graph import load_graph
-from inner_loop.checkpoint import publish, read_checkpoint, _read_tree
+from inner_loop.checkpoint import CheckpointError, publish, read_checkpoint, _read_tree
 from inner_loop.recovery import inspect as inspect_recovery
 
 TASKS = """schema: ask-inner-loop-tasks/v1
@@ -356,7 +356,13 @@ class RecoveryTests(unittest.TestCase):
                       "plan_digest": self.old_plan_digest}
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row]) + "\n")
         state = json.loads(state_path.read_text(encoding="utf-8"))
-        publish(self.root, "w", state)
+        try:
+            publish(self.root, "w", state)
+        except CheckpointError as exc:
+            self.fail(
+                "a failed static receipt must be preserved without requiring its "
+                f"diagnostic candidate commit: {exc}"
+            )
 
         result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(result, result)
