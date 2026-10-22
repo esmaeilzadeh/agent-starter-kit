@@ -1,0 +1,16 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "reason": "Checkpoint the candidate-bound traceability review and append-only ledger row after coordinator review state fold.",
+  "previous_checkpoint": "d153caa21b141e14adcfd8a8f7e30e25aedf51cb",
+  "state_revision": 18,
+  "coordinator_state_unchanged": true,
+  "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "traceability_review_path": "work/continuation-recovery/traceability/reviews/2c508ff4248f16a3e3121d33a0fae7297c9b378e.json",
+  "artifact_sha256": {
+    "work/continuation-recovery/traceability/reviews/2c508ff4248f16a3e3121d33a0fae7297c9b378e.json": "346283fda577dc93410ebe476c15d6e92592332d173403373cce9aef5640e62b",
+    "work/continuation-recovery/traceability/executions.json": "f8d5338f4175cfb4270e96a49624b8879dea91803eaaa614be7b133e83bb3ec6"
+  },
+  "preservation": "Additive checkpoint publication; coordinator state and prior checkpoint chain retained."
+}
