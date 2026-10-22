@@ -138,18 +138,17 @@ except NotIntegrable as exc:
 
     def test_other_work_task_and_base_reports_are_rejected(self):
         for field, value in [("work_id", "other"), ("task_id", "b"), ("base_sha", self.candidate)]:
-            with self.subTest(field=field):
-                original = self.result[field]
-                self.result[field] = value
-                self.submit()
-                with self.assertRaises(RecoveryRequired) as refused:
-                    integrate_ready(self.root, "w", "a")
-                self.assertIn("work/w/inner-loop/results/a.json", refused.exception.report["evidence_paths"])
-                expected = {"work_id": "TaskResult work_id mismatch",
-                            "task_id": "TaskResult task_id does not match its file name",
-                            "base_sha": "TaskResult base_sha conflicts with state.json"}[field]
-                self.assertTrue(any(expected in conflict for conflict in refused.exception.report["conflicts"]))
-                self.result[field] = original
+            original = self.result[field]
+            self.result[field] = value
+            self.submit()
+            with self.assertRaises(RecoveryRequired) as refused:
+                integrate_ready(self.root, "w", "a")
+            self.assertIn("work/w/inner-loop/results/a.json", refused.exception.report["evidence_paths"])
+            expected = {"work_id": "TaskResult work_id mismatch",
+                        "task_id": "TaskResult task_id does not match its file name",
+                        "base_sha": "TaskResult base_sha conflicts with state.json"}[field]
+            self.assertTrue(any(expected in conflict for conflict in refused.exception.report["conflicts"]))
+            self.result[field] = original
 
     def test_worker_passing_fields_do_not_authorize_integration(self):
         self.result["review"] = {"verdict": "APPROVED", "reviewer": "made-up"}
