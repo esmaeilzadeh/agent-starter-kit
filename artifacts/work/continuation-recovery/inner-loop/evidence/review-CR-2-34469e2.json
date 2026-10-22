@@ -1,0 +1,30 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "34469e292dfa4740a2a394d5e189152c8a7d6cd5",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "findings": [
+    {
+      "id": "CR2-REV-34469-F01",
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/recovery.py:238-253",
+      "summary": "Historical-result carry-forward rejects legitimate active traceability additions after the checkpoint.",
+      "evidence": "_traceability_matches_checkpoint requires every live file under work/<work-id>/traceability to equal the checkpoint snapshot exactly. Normal traceability runs append results and execution rows without publishing a new inner-loop checkpoint (see .agents/ask/verification/traceability/adapters.py:74-80). When a prior integrated TaskResult has an older contract_sha, inspect invokes this comparison during its scope-compatible carry-forward path; any valid later task run makes it return false, causing TaskResult contract identity mismatch and blocking state transactions/integration. This contradicts the requested behavior that traceability divergence prevent carry-forward only for untrusted edits without blocking normal active traceability updates.",
+      "requested_change": "Preserve exact checkpointed historical rows and reports, but allow validated append-only run artifacts for the active accepted task/contract; alternatively provide a coordinator-owned checkpoint publication path for those normal updates that does not depend on the stale-result check it is trying to resolve. Add a regression test that appends a valid active-plan run after checkpoint publication and confirms the old result remains carry-forward eligible, while edits to retained historical artifacts still require recovery."
+    }
+  ],
+  "summary": "T56 now validates a digest-bound retained final-Green report for every old scoped test ID, rejects changed accepted specs, and rejects post-checkpoint traceability tampering. However, its whole-directory equality check also rejects normal later traceability appends, blocking the active CR-2 path while the earlier integrated CR-1 result has an older contract identity.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "red": "work/continuation-recovery/inner-loop/evidence/CR-2-review-fix-red.txt",
+    "green": "work/continuation-recovery/inner-loop/evidence/CR-2-review-fix-green.txt",
+    "task_result_red_exit_code": 1,
+    "task_result_green_exit_code": 0,
+    "full_suite_note": "TaskResult notes record 45 inner_loop_recovery and inner_loop_reliability tests passing on candidate 34469e2."
+  }
+}

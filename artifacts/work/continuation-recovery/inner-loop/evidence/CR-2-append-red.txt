@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 364, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNone(after_append, after_append)
+AssertionError: {'status': 'recovery_required', 'work_id': 'w', 'task_ids': ['a'], 'evidence_paths': ['work/w/inner-loop/results/a.json', 'work/w/traceability'], 'conflicts': ['runtime traceability evidence differs from the retained checkpoint', 'work/w/inner-loop/results/a.json: TaskResult contract identity mismatch'], 'next_actions': ['inspect the listed state, result, review, and source history', 'write an explicit reconciliation record that preserves every prior attempt', 'resume only after the reconciled state and evidence are reviewed']} is not None : {'status': 'recovery_required', 'work_id': 'w', 'task_ids': ['a'], 'evidence_paths': ['work/w/inner-loop/results/a.json', 'work/w/traceability'], 'conflicts': ['runtime traceability evidence differs from the retained checkpoint', 'work/w/inner-loop/results/a.json: TaskResult contract identity mismatch'], 'next_actions': ['inspect the listed state, result, review, and source history', 'write an explicit reconciliation record that preserves every prior attempt', 'resume only after the reconciled state and evidence are reviewed']}
+
+----------------------------------------------------------------------
+Ran 1 test in 1.475s
+
+FAILED (failures=1)

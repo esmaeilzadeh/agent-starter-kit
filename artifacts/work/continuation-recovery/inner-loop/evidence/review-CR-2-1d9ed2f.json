@@ -1,0 +1,29 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "1d9ed2f347cfc7734ae429edb9b65f9c4e3b804b",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "findings": [
+    {
+      "id": "CR2-REV-1d9-F01",
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/recovery.py:242-281",
+      "summary": "Historical carry-forward does not ensure each runner execution matches its accepted runner configuration and complete planned case set.",
+      "evidence": "_valid_final_green_scope checks run phase, collection status, exit code, runner_id and candidate source SHA, plus exact case identities. It does not compare each execution's argv/adapter to the old accepted plan's runner entry, nor require the case IDs attached to each execution to equal all scoped cases for that runner. The ordinary traceability completion gate does both checks: completion.py:92 verifies argv/adapter, and 127-129 verifies the complete planned case set per execution. I invoked _valid_final_green_scope read-only with two expected cases assigned to one runner but split between two executions, including a wrong argv/adapter on the first; it returned True. Such a report is not a valid output of the accepted runner protocol and should not prove historical Green. The current T56 malformed cases test wrong case.runner_id but not wrong execution configuration or split runner executions.",
+      "requested_change": "Bind each execution to the old plan runner's exact argv and adapter, and require each final-Green execution's case set to equal the complete old scoped case set for its runner (and reject duplicate executions for a runner if the adapter contract is one process per runner). Add digest-valid checkpointed regressions for wrong argv/adapter and split/missing per-runner collection."
+    }
+  ],
+  "summary": "The candidate fixes the prior historical-report finding by validating unique exact case identities, successful final-Green executions, collection status, exit code, runner ID and candidate SHA. The earlier append-only checkpoint fix remains intact: checkpointed artifacts are preserved byte-for-byte, the live ledger must retain the old prefix, and the particular historical Green row/report must be checkpointed; T56 covers active append and checkpointed evidence mutation. One integrity gap remains: a digest-valid checkpointed report can pass this helper even when execution argv/adapter disagree with the accepted runner or the runner's planned cases are split across executions, although the normal completion gate rejects both. The focused T56 test passes and TaskResult reports 45 recovery/reliability tests plus inner-loop validation; they do not cover this runner-execution integrity gap.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "1d9ed2f347cfc7734ae429edb9b65f9c4e3b804b",
+    "focused_test": "python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment (passed)",
+    "diff_check": "git diff --check c1b5ca0b57e2293d710e194d8cb40703bf34df64..1d9ed2f347cfc7734ae429edb9b65f9c4e3b804b (passed)",
+    "direct_counterexample": "_valid_final_green_scope returned True for exact expected case identities split across two successful executions sharing a runner_id, where one execution had argv=['wrong'] and adapter='wrong'."
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 15,
+  "revision": 16,
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -417,7 +417,22 @@
       "debug_round": 0,
       "evidence": {
         "red_run_id": "8a2614bee63b4a8a86477159b40ec004",
-        "red_candidate_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02"
+        "red_candidate_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
+        "review": {
+          "work_id": "continuation-recovery",
+          "task_id": "CR-2",
+          "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+          "candidate_sha": "1401fcb7d36e85afa15d29ac4e650c5c256c37f1",
+          "result_digest": "3d6e0d3a7036237f2a585e50e85355050024828a1cdfeab9bde7550adff40d05",
+          "reviewer": "/root/review_cr1",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-2-1401fcb.json",
+          "evidence_digest": "97edef20e8c2ddd8ce9973c24a24f8d48471c9c11de771b25ed031fe82c78d47",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
       },
       "attempt_history": [
         {

@@ -7,6 +7,18 @@
       "sha256": "568d83fe2963f891201d04e00c7d3032af5e06a742ebe6b7b27df3ef05aaf7ea",
       "size": 1446
     },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-append-green.txt": {
+      "blob": "02c20d8bfe0d287a79c15366e148558c5e2ca7cf",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-append-green.txt",
+      "sha256": "9662452be79d516fe3cec0603d011bbabbe898f51f814a7300bbcc051fe6051d",
+      "size": 98
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-append-red.txt": {
+      "blob": "73133699f7f816ebebc6c43734a85c2d89ff8c70",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-append-red.txt",
+      "sha256": "676c3b5b318515c81d70c6add6a221771982b3f6df5e92ae2a69168e7c5d83ab",
+      "size": 1735
+    },
     "work/continuation-recovery/inner-loop/evidence/CR-2-attempt-1-candidate-reconciliation.json": {
       "blob": "ae48070ce301af1437782dcbafbc8736460d2001",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-attempt-1-candidate-reconciliation.json",
@@ -18,6 +30,54 @@
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-attempt-2-reopen-reconciliation.json",
       "sha256": "7881c66d62ab0835785cc33ee169800b4afa2894c069528c2148b1be45428324",
       "size": 1168
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-green-report-green.txt": {
+      "blob": "edebff9d1374955c87af1cab2acef742fc86c0d9",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-green-report-green.txt",
+      "sha256": "99c0fbd1aff63c0b44ee666ccd37be67bd2724d238a6112415a0c41b316c44e2",
+      "size": 98
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-green-report-red.txt": {
+      "blob": "07a63c02f5d7ccee1cf261dd2b561e43f8658824",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-green-report-red.txt",
+      "sha256": "ce1b364193bc7e0fd32c1591df8780b9814003a8662bf15184efccc5ada65868",
+      "size": 2856
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-review-fix-green.txt": {
+      "blob": "69939be171620e1d76a8e17ca9f802e4da189edd",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-review-fix-green.txt",
+      "sha256": "d6a2a772325f3cb53b067dfe0fff8cfb9ae98d3fba5ea9f7af6a85b879bd95bb",
+      "size": 98
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-review-fix-red.txt": {
+      "blob": "daef777e7959f7c6f1a71ed4900253de8eac3254",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-review-fix-red.txt",
+      "sha256": "dbd0341c1dd16cd7f49aa59b9fc9780a787db083715df642c2679cb70b654531",
+      "size": 759
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-runner-batch-green.txt": {
+      "blob": "246407f4f4b60afa66f5165691368590bc681da7",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-runner-batch-green.txt",
+      "sha256": "157faa3a6ecec7d0ef5c917d5cc9b593e4e891f1a33fbc5920bd33d0b97c37ca",
+      "size": 98
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-runner-batch-red.txt": {
+      "blob": "5dd84fc94a60973a41ecec9d469b20a2222cdb85",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-runner-batch-red.txt",
+      "sha256": "52194e474d06fb0de25f2a549c431302d2cee04f66a5e94ccfab8f2af2722f27",
+      "size": 1494
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-source-output-green.txt": {
+      "blob": "e04b54abcad368fe8e0b848866c7470d1dc2724c",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-source-output-green.txt",
+      "sha256": "d2a69355632a6e964888bfb1ccd8d9944cee9e4b0bbbd139652778d29fbfc56c",
+      "size": 98
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-source-output-red.txt": {
+      "blob": "99cb91aceacc80feb3ba3bbe3b6c1cd288f6d360",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-source-output-red.txt",
+      "sha256": "c8e5d27b6aeec076064557d2efdfb26d2d5dd420577fa90b1e0b4abea8bac740",
+      "size": 3592
     },
     "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/CR-1-current.json": {
       "blob": "77cfe1b7a17a519ca026245029fb5b002a23967b",
@@ -199,6 +259,42 @@
       "sha256": "611cb05620214cff3f475aa76de724e3ff978e2195aa50463a8cfe6c8e62ffda",
       "size": 818
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-1401fcb.json": {
+      "blob": "c4844e0e71d83a50ad9ff542147fd12bdf55ca2e",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-2-1401fcb.json",
+      "sha256": "97edef20e8c2ddd8ce9973c24a24f8d48471c9c11de771b25ed031fe82c78d47",
+      "size": 2302
+    },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-1d9ed2f.json": {
+      "blob": "488f6b1aa6e18b8cd7d6088e25b06713e19d0ee9",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-2-1d9ed2f.json",
+      "sha256": "ccfcac917e915cf0725864c5ddc34c1d9cf93d4b41d97fa992d7fc49182e6306",
+      "size": 3661
+    },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-34469e2.json": {
+      "blob": "461e03757fc107e91c6d8082c1f5bd005d356ee7",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-2-34469e2.json",
+      "sha256": "eb428714fb504642f0a4d2b3b0d3f2138625560b36431a4411904ac17d0fb5a0",
+      "size": 2877
+    },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-94ad449.json": {
+      "blob": "14090abf6681d46578ffca4af908b081026521d2",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-2-94ad449.json",
+      "sha256": "d50efb90a554d8fbeb1304b1f0eddde91565ca02d56d288bf37fe39711dfacfa",
+      "size": 2698
+    },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-ae37f5f.json": {
+      "blob": "adae79c666e9491a40364eac2640fcbb556b68d7",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-2-ae37f5f.json",
+      "sha256": "24862392bf354bf2a56740a8fb85b699a4e1deacd28e1e7ded82f9e22f2ef8da",
+      "size": 3677
+    },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-2-b67311c.json": {
+      "blob": "ef03784756048cb47e6e488cb4c1e7319e005d66",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-2-b67311c.json",
+      "sha256": "917f6322c6c8bd87cc85122746fb5c5408c006bf6dd5778e80efdeac669d3438",
+      "size": 3355
+    },
     "work/continuation-recovery/inner-loop/evidence/verify-0cj1d9km/integration.json": {
       "blob": "0b4edc604385cb6cb34ebf592a7e4b1ae9200003",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/verify-0cj1d9km/integration.json",
@@ -295,11 +391,17 @@
       "sha256": "ebe25fcdcd4c1d077aedf286c890cb5d453ef24baccbdf235406205c0287f899",
       "size": 1978
     },
+    "work/continuation-recovery/inner-loop/results/CR-2.json": {
+      "blob": "e64d620d4e31acd1d38a0d55522db1177ed2a4a6",
+      "path": "artifacts/work/continuation-recovery/inner-loop/results/CR-2.json",
+      "sha256": "3d6e0d3a7036237f2a585e50e85355050024828a1cdfeab9bde7550adff40d05",
+      "size": 5307
+    },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "3b43d4144e081a34bd7f72daeaee8f9c7a8e5587",
+      "blob": "142889e94c58f664c0077824ecac4a4e4d49b81a",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "6bfadb181f90f42429415e51533bed3ae48b535934849f4fca21c8edcb6341ca",
-      "size": 25418
+      "sha256": "d6b275edb706cf724450d215377104a72b3e39b7a8ba1b2310d7c84acc89687f",
+      "size": 26234
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2bbf3dfa5cb6ecba603c233a0f21f1fa01b4c3f1",
@@ -2475,16 +2577,19 @@
     }
   },
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
-  "generation": 15,
-  "previous_checkpoint": "dab00f99d898e232ccae1a020a23f976b12de29c",
+  "generation": 16,
+  "previous_checkpoint": "bb01ad64675d23e387b14c23623785a4b24cf1f6",
   "retained_commits": [
     "029e3f95735aa607ef00605116f29865898787b8",
     "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
     "09da65c64c33296ff1011c4136ef632386c40e29",
     "0aca1f71449cf3d6d1fbe018b13d8640aee90072",
+    "1401fcb7d36e85afa15d29ac4e650c5c256c37f1",
+    "1d9ed2f347cfc7734ae429edb9b65f9c4e3b804b",
     "22a94836a63faf3393c990e9a3eed9e1cbce31f4",
     "2f33744a911bb3a060613e6b62c089eeacdb2c28",
     "31a050235da3f3f503f070bc753a1ff906c64cba",
+    "34469e292dfa4740a2a394d5e189152c8a7d6cd5",
     "400147bbdb7a2b76cfce55510d2b646b1cc3c1fa",
     "4861364c23db83c748ac780e9bf6307fc1e27422",
     "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
@@ -2496,8 +2601,11 @@
     "86b3f2498794c74b2494175f625b6fb2a20db747",
     "8da7c6fa58e4d19df5c239ed22f2fcf8e8862226",
     "92eaeeac0b0d2ca2acec58b92764b593ce9abdf1",
+    "94ad44954d6997898ab38e58359ddc3c753c734d",
     "96d3dc07b6356a24ba4acd4069cab2648733ecec",
     "a655ce8398a93e7c01388cb1260b32a7d4f628ad",
+    "ae37f5fd79b407ade9e199759ef70b071c70aa83",
+    "b67311c3e4732ee8250d0b99c06286c9cf88d976",
     "b8f134d8574e23fff3fdfdd756ee780b4c6cfbcb",
     "befdd3c5d07dc32bee0dfee7ae15fc787ec82878",
     "c178d4ab373a684898f4bf16b031c1e4062edf54",

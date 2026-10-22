@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 354, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(fabricated, "fabricated green evidence must require recovery")
+AssertionError: unexpectedly None : fabricated green evidence must require recovery
+
+----------------------------------------------------------------------
+Ran 1 test in 1.149s
+
+FAILED (failures=1)

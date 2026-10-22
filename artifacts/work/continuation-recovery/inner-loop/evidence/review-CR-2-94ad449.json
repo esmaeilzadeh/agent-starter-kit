@@ -1,0 +1,29 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "94ad44954d6997898ab38e58359ddc3c753c734d",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "extras",
+  "findings": [
+    {
+      "id": "CR2-REV-94ad-F01",
+      "classification": "extras",
+      "location": ".later/agent-decision-clarity.md",
+      "summary": "The candidate includes an unrelated path outside CR-2 owned_paths.",
+      "evidence": "The exact base-to-candidate diff changes .later/agent-decision-clarity.md. CR-2 owned_paths in work/continuation-recovery/inner-loop/tasks.yaml cover checkpoint/recovery implementation and its tests, and do not include .later/**. This note is unrelated to the accepted CR-2 behavior and is not needed by the CR-2 plan contract. The review protocol requires outside-glob changes that are not required to be treated as extras.",
+      "requested_change": "Keep this note out of the CR-2 candidate, or amend the task scope through the authorized plan process if it is required for CR-2."
+    }
+  ],
+  "summary": "The CR-2 historical carry-forward changes address the previous review findings: append-only active traceability runs preserve the checkpointed prefix and historical report; Green proof now validates successful final executions, unique exact case identities, runner configuration, complete per-runner case batches, historical runner identity, source digests, case/execution output binding, and retained output artifact digests. T56 now contains realistic positive evidence and malformed checkpointed cases for the prior failure modes. The focused T56 test and diff check pass; TaskResult reports the 45-test recovery/reliability suite and inner-loop validation passing. The remaining review blocker is candidate scope: .later/agent-decision-clarity.md is outside CR-2 owned paths and is unrelated to this task.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "94ad44954d6997898ab38e58359ddc3c753c734d",
+    "focused_test": "python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment (passed)",
+    "diff_check": "git diff --check c1b5ca0b57e2293d710e194d8cb40703bf34df64..94ad44954d6997898ab38e58359ddc3c753c734d (passed)",
+    "prior_functional_findings": "ae37f5f Green-success gap, 1d9ed2f runner config/batch gap, and b67311c source/output provenance gap are corrected at recovery.py:277-442 and T56."
+  }
+}

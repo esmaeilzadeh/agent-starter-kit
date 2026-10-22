@@ -1,0 +1,26 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "1401fcb7d36e85afa15d29ac4e650c5c256c37f1",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "APPROVED",
+  "boundary": "ok",
+  "findings": [],
+  "summary": "The exact candidate diff omits .later/agent-decision-clarity.md and keeps CR-2 implementation/test changes within the CR-2 owned paths; the plan/auth artifacts in the diff correspond to the accepted CR-2 amendments. Historical carry-forward now validates the retained checkpoint row/report, exact checkpoint artifact preservation with append-only ledger/run artifacts, unchanged spec and compatible task scope, successful final-Green execution/collection, exact accepted runner identity/configuration, unique exact cases and complete per-runner batches, historical source digests, output path confinement/digests, and case-to-execution output binding. T56 includes positive realistic historical and appended evidence plus digest-valid malformed checkpointed reports for the prior failure modes. No remaining issue found against the accepted CR-2 contract.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "1401fcb7d36e85afa15d29ac4e650c5c256c37f1",
+    "task_result_red_exit_code": 1,
+    "task_result_green_exit_code": 0,
+    "task_result_suite": "python3 -m unittest _ask.tests.inner_loop_recovery _ask.tests.inner_loop_reliability (45 tests, OK), per candidate TaskResult notes",
+    "independent_checks": [
+      "python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment (passed)",
+      "git diff --check c1b5ca0b57e2293d710e194d8cb40703bf34df64..1401fcb7d36e85afa15d29ac4e650c5c256c37f1 (passed)",
+      "./ask inner-loop validate continuation-recovery (ok)"
+    ],
+    "scope_check": "Exact base-to-candidate path inventory contains no .later/agent-decision-clarity.md. Changed implementation/test paths are included in CR-2 owned_paths; the remaining plan/authorization/traceability files implement the accepted plan amendments."
+  }
+}

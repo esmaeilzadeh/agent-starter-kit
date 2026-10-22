@@ -1,0 +1,30 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "ae37f5fd79b407ade9e199759ef70b071c70aa83",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "findings": [
+    {
+      "id": "CR2-REV-ae37-F01",
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/recovery.py:214-234",
+      "summary": "Historical carry-forward accepts a digest-bound report labeled final_green without proving successful collection and execution for each exact scoped case.",
+      "evidence": "The validator checks report digest and identity, requires execution phases to be final_green, then builds a set of test_id values from cases labeled final_green/passed. It never checks that a matching execution has integer exit_code 0 and collection_status ok, nor that each required test ID has exactly one case matching the accepted case_id and runner_id. Thus a checkpoint-retained, digest-valid report with failed collection/nonzero execution or duplicate case rows (one passed and one failed) can satisfy old_scope.issubset(passed) and authorize TaskResult carry-forward. The repository's completion evaluator requires successful collection and exit code (completion.py:90-94), rejects duplicate final cases (117-119), and verifies exact case/runner identity (100-107); workbench_evidence.py:246 also rejects non-ok collection. The new T56 fixture reports omit exit_code and collection_status and still count as Green, demonstrating this gap in the carry-forward proof.",
+      "requested_change": "Validate the historical report with equivalent final-Green integrity checks: exact unique scoped case identities, exact runner/case bindings, valid execution linkage, collection_status=ok, integer exit_code=0, and passed outcome for every required old test. Update T56 fixtures to use valid reports and add malformed digest-valid historical reports (failed collection/nonzero exit and duplicate case identity) that cannot authorize carry-forward."
+    }
+  ],
+  "summary": "The append-only checkpoint correction resolves the prior CR2-REV-34469-F01: it preserves checkpointed artifacts, requires the old ledger as an exact prefix, requires the specific historical Green row/report to be checkpointed, and allows appended run artifacts. T56 verifies both append compatibility and tampering rejection. However, historical carry-forward still trusts Green labels without validating execution success or exact case identity, so a malformed but checkpoint-retained report can authorize reuse of an old TaskResult. The candidate-bound TaskResult records Red/Green for the append regression and reports 45 recovery/reliability tests plus inner-loop validation passing; those checks do not cover this missing historical-report integrity condition.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "ae37f5fd79b407ade9e199759ef70b071c70aa83",
+    "append_red_exit_code": 1,
+    "append_green_exit_code": 0,
+    "candidate_suite": "TaskResult notes: python3 -m unittest _ask.tests.inner_loop_recovery _ask.tests.inner_loop_reliability (45 tests, OK); ./ask inner-loop validate continuation-recovery (ok).",
+    "comparison": "Prior finding CR2-REV-34469-F01 is corrected by _traceability_matches_checkpoint at recovery.py:239-291 and T56 at inner_loop_recovery.py:346-364; remaining finding concerns the distinct report validity proof at recovery.py:214-234."
+  }
+}

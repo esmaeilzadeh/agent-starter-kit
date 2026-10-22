@@ -1,0 +1,30 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "b67311c3e4732ee8250d0b99c06286c9cf88d976",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "findings": [
+    {
+      "id": "CR2-REV-b673-F01",
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/recovery.py:230-305",
+      "summary": "Historical carry-forward still accepts reports without the source and output provenance required for a valid traceability Green.",
+      "evidence": "The updated helper now enforces exact old case IDs/runner IDs, successful execution and collection, candidate SHA, runner argv/adapter, and complete per-runner batches. However, it does not verify the report's runner_identity, execution output_artifact/output_digest or case-to-execution output binding, or each case's source_digests against the test source paths at candidate_sha. The T56 'valid' fixture at inner_loop_recovery.py:324-335 omits all of those fields and is accepted for carry-forward. The normal completion validator requires valid execution logs/output digests (completion.py:92-97), matching case/execution output and source identities (109-113), and source digests for every test path. Thus a checkpoint-retained, digest-valid report with missing or forged test-source/output provenance can authorize historical result carry-forward even though the standard traceability gate rejects it.",
+      "requested_change": "Require historical Green report provenance equivalent to the normal traceability completion gate: runner identity, exact case source digests at the historical candidate, execution and case output path/digest bindings, and retained output artifact digest. Make the positive T56 fixture realistic and add digest-valid checkpointed cases with missing/invalid source or output provenance that require recovery."
+    }
+  ],
+  "summary": "The candidate fixes all prior findings: checkpointed traceability remains byte-exact with append-only ledger growth, the specific historical Green row/report must be retained, and historical reports are now checked for successful collection/execution, unique exact case identities, runner configuration, candidate SHA, and complete runner case batches. However, the proof still omits the source/output provenance that makes a traceability report valid. The positive T56 fixture demonstrates this by passing carry-forward despite having no runner_identity, source_digests, output artifacts, or output digests. The focused T56 Red/Green and reported 45-test suite do not test this gap.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "b67311c3e4732ee8250d0b99c06286c9cf88d976",
+    "task_result_red_exit_code": 1,
+    "task_result_green_exit_code": 0,
+    "focused_test": "T56-focused unittest was independently run and passed; TaskResult notes report 45 recovery/reliability tests and inner-loop validation passing.",
+    "prior_findings": "The ae37f5f report-success finding and 1d9ed2f runner-config/batch finding are fixed by _valid_final_green_scope and T56 cases at lines 376-409."
+  }
+}

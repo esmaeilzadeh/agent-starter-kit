@@ -1,0 +1,45 @@
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='wrong_runner_identity')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 441, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : wrong_runner_identity checkpointed Green must require recovery
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='missing_source_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 441, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : missing_source_digest checkpointed Green must require recovery
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='wrong_source_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 441, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : wrong_source_digest checkpointed Green must require recovery
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='wrong_output_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 441, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : wrong_output_digest checkpointed Green must require recovery
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='case_output_binding')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 441, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : case_output_binding checkpointed Green must require recovery
+
+----------------------------------------------------------------------
+Ran 1 test in 7.854s
+
+FAILED (failures=5)

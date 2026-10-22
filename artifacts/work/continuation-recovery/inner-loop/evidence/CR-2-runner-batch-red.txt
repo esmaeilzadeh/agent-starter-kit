@@ -1,0 +1,21 @@
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='wrong_runner_config')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 407, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : wrong_runner_config checkpointed Green must require recovery
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) (malformed='split_execution')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/_ask/tests/inner_loop_recovery.py", line 407, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+AssertionError: unexpectedly None : split_execution checkpointed Green must require recovery
+
+----------------------------------------------------------------------
+Ran 1 test in 4.848s
+
+FAILED (failures=2)
