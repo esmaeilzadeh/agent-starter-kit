@@ -371,12 +371,14 @@ class RecoveryTests(unittest.TestCase):
 
         # A digest-valid checkpoint cannot turn a failed run or ambiguous case
         # identity into historical Green evidence.
-        for malformed in ("failed_execution", "failed_collection", "duplicate_case"):
+        for malformed in ("failed_execution", "failed_collection", "wrong_runner", "duplicate_case"):
             invalid_report = copy.deepcopy(report)
             if malformed == "failed_execution":
                 invalid_report["executions"][0]["exit_code"] = 1
             elif malformed == "failed_collection":
                 invalid_report["executions"][0]["collection_status"] = "error"
+            elif malformed == "wrong_runner":
+                invalid_report["cases"][0]["runner_id"] = "unplanned-runner"
             else:
                 duplicate = copy.deepcopy(invalid_report["cases"][0])
                 duplicate["outcome"] = "failed"
@@ -387,9 +389,10 @@ class RecoveryTests(unittest.TestCase):
             self.write("work/w/traceability/executions.json", json.dumps([invalid_row, active_row]) + "\n")
             publish(self.root, "w", state)
             invalid = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
-            self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
-            self.assertTrue(any("TaskResult contract identity mismatch" in conflict
-                                for conflict in invalid["conflicts"]))
+            with self.subTest(malformed=malformed):
+                self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+                self.assertTrue(any("TaskResult contract identity mismatch" in conflict
+                                    for conflict in invalid["conflicts"]))
 
         self.write("work/w/traceability/runs/green-a/results.json", report_raw)
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row, active_row]) + "\n")
