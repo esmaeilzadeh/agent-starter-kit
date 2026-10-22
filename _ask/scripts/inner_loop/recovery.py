@@ -189,7 +189,7 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                     conflicts.append(f"{relative}: TaskResult task is absent from state.json")
                 else:
                     recorded_base = task_state.get("base_sha") or ""
-                    if recorded_base and recorded_base != base:
+                    if recorded_base != base:
                         conflicts.append(f"{relative}: TaskResult base_sha conflicts with state.json")
                     selected_branch = task_state.get("task_branch") or ""
                     if selected_branch:
@@ -202,11 +202,14 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                         current = _git(root, "rev-parse", "--verify", "HEAD^{commit}")
                         if current.returncode or current.stdout.strip() != candidate:
                             conflicts.append(f"{relative}: candidate differs from the selected checkout HEAD")
-        if isinstance(result.get("contract_sha"), str):
+        contract_sha = result.get("contract_sha")
+        if not isinstance(contract_sha, str) or not contract_sha:
+            conflicts.append(f"{relative}: TaskResult contract_sha is missing or invalid")
+        else:
             anchor, anchor_error = _accepted_anchor(root, work_id)
             if anchor_error:
                 conflicts.append(anchor_error)
-            elif result["contract_sha"] != anchor:
+            elif contract_sha != anchor:
                 conflicts.append(f"{relative}: TaskResult contract identity mismatch")
 
         if state is None or not state_exists:
