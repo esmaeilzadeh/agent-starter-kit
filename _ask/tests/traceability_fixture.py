@@ -13,7 +13,7 @@ from verification.traceability.evidence import accept_plan,inventory,load_accept
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
-    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False):
+    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False,start_task_before_candidate=False):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         self.git('init','-q','-b','agent/w');self.git('config','user.email','test@example.com');self.git('config','user.name','Test')
         self.write('.gitignore','__pycache__/\nverification-result.json\nwork/w/traceability/\nwork/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n')
@@ -43,6 +43,10 @@ class Consumer:
         self.write('work/w/traceability/plan-review.json',decision)
         accept_plan(self.root,'w',self.red_sha,'fixture-independent','fixture-coordinator','work/w/traceability/plan-review.json')
         self.commit('pin accepted obligations')
+        if start_task_before_candidate:
+            started=self.command('inner-loop','run','w')
+            if started.returncode:
+                raise AssertionError(started.stdout+started.stderr)
         self.contracts=load_accepted(self.root,'w','HEAD')
         self.red=run_tests(self.root,self.contracts,self.red_sha,phase='red')
         self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(render(sys.argv[1]))\n")
