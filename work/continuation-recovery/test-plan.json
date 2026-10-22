@@ -70,6 +70,16 @@
         "unittest",
         "_ask.tests.inner_loop_recovery"
       ]
+    },
+    {
+      "id": "inner-loop-reliability",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.inner_loop_reliability"
+      ]
     }
   ],
   "tests": [
@@ -1169,6 +1179,1021 @@
         ".agents/ask/verification/traceability/evidence.py",
         ".agents/ask/verification/traceability/coverage.py"
       ]
+    },
+    {
+      "id": "CR-T22",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_other_candidate_report_is_rejected",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_other_candidate_report_is_rejected executes through the normal state/coordinator API",
+        "then": [
+          "A TaskResult naming a different candidate is refused and the running task remains unchanged."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "A TaskResult naming a different candidate is refused and the running task remains unchanged."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T23",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_other_work_task_and_base_reports_are_rejected",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_other_work_task_and_base_reports_are_rejected executes through the normal state/coordinator API",
+        "then": [
+          "Reports with another work ID, task ID or base are refused."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Reports with another work ID, task ID or base are refused."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T24",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_worker_passing_fields_do_not_authorize_integration",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_worker_passing_fields_do_not_authorize_integration executes through the normal state/coordinator API",
+        "then": [
+          "Worker-supplied approval fields do not authorize integration."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Worker-supplied approval fields do not authorize integration."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T25",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_successful_in_place_integration_records_executed_lineage",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_successful_in_place_integration_records_executed_lineage executes through the normal state/coordinator API",
+        "then": [
+          "A reviewed candidate integrates and records exact verification lineage."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "A reviewed candidate integrates and records exact verification lineage."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T26",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_failed_candidate_checks_prevent_fast_forward_and_state_fold",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_failed_candidate_checks_prevent_fast_forward_and_state_fold executes through the normal state/coordinator API",
+        "then": [
+          "A failed candidate check prevents fast-forward and state folding."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "A failed candidate check prevents fast-forward and state folding."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T27",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_candidate_cannot_replace_the_verifier_checking_it",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_candidate_cannot_replace_the_verifier_checking_it executes through the normal state/coordinator API",
+        "then": [
+          "Candidate changes cannot replace the pinned verifier used to check them."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Candidate changes cannot replace the pinned verifier used to check them."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T28",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_empty_checkplan_does_not_integrate",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_empty_checkplan_does_not_integrate executes through the normal state/coordinator API",
+        "then": [
+          "An empty mandatory CheckPlan refuses integration."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "An empty mandatory CheckPlan refuses integration."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T29",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_fast_forward_matches_verified_candidate",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_fast_forward_matches_verified_candidate executes through the normal state/coordinator API",
+        "then": [
+          "Fast-forward integrates the exact candidate that was verified."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Fast-forward integrates the exact candidate that was verified."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T30",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_changed_result_or_review_cannot_reuse_approval",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_changed_result_or_review_cannot_reuse_approval executes through the normal state/coordinator API",
+        "then": [
+          "Changed TaskResult or review evidence invalidates a previously recorded approval."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Changed TaskResult or review evidence invalidates a previously recorded approval."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T31",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_review_rejection_and_boundary_rejection_prevent_integration",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_review_rejection_and_boundary_rejection_prevent_integration executes through the normal state/coordinator API",
+        "then": [
+          "Rejected review and boundary rejection prevent integration."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Rejected review and boundary rejection prevent integration."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T32",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_exemption_needs_supported_reason_and_coordinator_review",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_exemption_needs_supported_reason_and_coordinator_review executes through the normal state/coordinator API",
+        "then": [
+          "Exemptions require a supported reason and coordinator-recorded review."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Exemptions require a supported reason and coordinator-recorded review."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T33",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_tdd_history_requires_typed_exit_codes_and_captured_output",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_tdd_history_requires_typed_exit_codes_and_captured_output executes through the normal state/coordinator API",
+        "then": [
+          "TDD milestones require typed exit codes and captured output."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "TDD milestones require typed exit codes and captured output."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T34",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_uncommitted_source_is_refused",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_uncommitted_source_is_refused executes through the normal state/coordinator API",
+        "then": [
+          "Uncommitted coordinator source prevents integration."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Uncommitted coordinator source prevents integration."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T35",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_verification_that_modifies_candidate_source_is_refused",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_verification_that_modifies_candidate_source_is_refused executes through the normal state/coordinator API",
+        "then": [
+          "Verification that changes candidate source is refused."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Verification that changes candidate source is refused."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T36",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_result_drift_during_verification_is_refused",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_result_drift_during_verification_is_refused executes through the normal state/coordinator API",
+        "then": [
+          "TaskResult drift during verification is refused."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "TaskResult drift during verification is refused."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T37",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_review_drift_during_verification_is_refused",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_review_drift_during_verification_is_refused executes through the normal state/coordinator API",
+        "then": [
+          "Review drift during verification is refused."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Review drift during verification is refused."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T38",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_resume_preserves_candidate_after_ff_before_state_fold_interruption executes through the normal state/coordinator API",
+        "then": [
+          "Resume preserves and finalizes the exact candidate after interruption following fast-forward."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Resume preserves and finalizes the exact candidate after interruption following fast-forward."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T39",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_concurrent_state_update_cannot_interleave_with_integration",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_concurrent_state_update_cannot_interleave_with_integration executes through the normal state/coordinator API",
+        "then": [
+          "Concurrent state updates cannot interleave with candidate verification and integration."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Concurrent state updates cannot interleave with candidate verification and integration."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T40",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_candidate_branch_drift_during_verification_is_refused",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_candidate_branch_drift_during_verification_is_refused executes through the normal state/coordinator API",
+        "then": [
+          "Task-branch drift during verification is refused."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Task-branch drift during verification is refused."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T41",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_non_fast_forward_combination_is_refused",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_non_fast_forward_combination_is_refused executes through the normal state/coordinator API",
+        "then": [
+          "A non-fast-forward candidate/coordinator combination is refused."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "A non-fast-forward candidate/coordinator combination is refused."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T42",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_worker_role_cannot_record_coordinator_review",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_worker_role_cannot_record_coordinator_review executes through the normal state/coordinator API",
+        "then": [
+          "A worker role cannot record coordinator-owned review state."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "A worker role cannot record coordinator-owned review state."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T43",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_source_repair_preserves_tracked_runtime_revision_and_review",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_resume_source_repair_preserves_tracked_runtime_revision_and_review executes through the normal state/coordinator API",
+        "then": [
+          "Source repair preserves tracked runtime revision and review evidence."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Source repair preserves tracked runtime revision and review evidence."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T44",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_merge_repair_preserves_tracked_runtime_state",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_resume_merge_repair_preserves_tracked_runtime_state executes through the normal state/coordinator API",
+        "then": [
+          "Merge repair preserves tracked runtime state."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Merge repair preserves tracked runtime state."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T45",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_competing_same_revision_cannot_both_succeed",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_competing_same_revision_cannot_both_succeed executes through the normal state/coordinator API",
+        "then": [
+          "Competing CAS operations on one observed revision cannot both succeed."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Competing CAS operations on one observed revision cannot both succeed."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T46",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_competing_starts_leave_one_writer",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_competing_starts_leave_one_writer executes through the normal state/coordinator API",
+        "then": [
+          "Concurrent starts preserve the single-writer invariant."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Concurrent starts preserve the single-writer invariant."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T47",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_concurrent_initialization_does_not_reset_state",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_concurrent_initialization_does_not_reset_state executes through the normal state/coordinator API",
+        "then": [
+          "Concurrent initialization returns the existing state without replacing it."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Concurrent initialization returns the existing state without replacing it."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T48",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_every_transaction_preserves_single_writer",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_every_transaction_preserves_single_writer executes through the normal state/coordinator API",
+        "then": [
+          "Every state transaction preserves the single-writer invariant."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Every state transaction preserves the single-writer invariant."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T49",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_readers_observe_complete_documents_during_writes",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_readers_observe_complete_documents_during_writes executes through the normal state/coordinator API",
+        "then": [
+          "Concurrent readers observe complete atomic state documents."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Concurrent readers observe complete atomic state documents."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
+    },
+    {
+      "id": "CR-T50",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.inner_loop_reliability.StateTests.test_interrupted_replacement_preserves_old_state_and_releases_lock",
+      "scenario": {
+        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
+        "when": "test_interrupted_replacement_preserves_old_state_and_releases_lock executes through the normal state/coordinator API",
+        "then": [
+          "Interrupted state replacement preserves the previous complete document and releases the lock."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Interrupted state replacement preserves the previous complete document and releases the lock."
+          ]
+        }
+      ],
+      "runner_id": "inner-loop-reliability",
+      "source_paths": [
+        "_ask/tests/inner_loop_reliability.py",
+        "_ask/tests/traceability_support.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
     }
   ],
   "task_scopes": [
@@ -1179,7 +2204,36 @@
         "CR-T02",
         "CR-T03",
         "CR-T04",
-        "CR-T17"
+        "CR-T17",
+        "CR-T22",
+        "CR-T23",
+        "CR-T24",
+        "CR-T25",
+        "CR-T26",
+        "CR-T27",
+        "CR-T28",
+        "CR-T29",
+        "CR-T30",
+        "CR-T31",
+        "CR-T32",
+        "CR-T33",
+        "CR-T34",
+        "CR-T35",
+        "CR-T36",
+        "CR-T37",
+        "CR-T38",
+        "CR-T39",
+        "CR-T40",
+        "CR-T41",
+        "CR-T42",
+        "CR-T43",
+        "CR-T44",
+        "CR-T45",
+        "CR-T46",
+        "CR-T47",
+        "CR-T48",
+        "CR-T49",
+        "CR-T50"
       ]
     },
     {

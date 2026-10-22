@@ -15,18 +15,20 @@ would leave required integration evidence red.
 
 ## Proposed change
 
-Expand CR-1 ownership to include `_ask/tests/inner_loop_reliability.py` and bind
-that source in the CR-1 cases in `test-plan.json`. CR-1 may update its disposable
-fixtures and exception expectations where the new recovery contract deliberately
-changes the reported failure classification. Preserve the suite's behavior
+Expand CR-1 ownership to include `_ask/tests/inner_loop_reliability.py`; add an
+exact regression selector for each of its 29 existing test methods as CR-T22–50,
+under a dedicated unittest runner and CR-1 task scope. Bind the assertion module,
+fixture helper, and relevant production sources for each selector. CR-1 may
+update its disposable fixtures and exception expectations where the new recovery
+contract deliberately changes the reported failure classification. Preserve the suite's behavior
 assertions: it must continue to prove that invalid integration is refused,
 valid integration succeeds, and concurrency/interruption guarantees hold.
 Production behavior remains governed by CR-01–CR-08. Do not alter expected
 outcomes merely to make the tests pass.
 
-Update the CR-1 row and required integration checks in `plan.md`; update only
-CR-1 `owned_paths` in `inner-loop/tasks.yaml`; bind the reliability assertion
-source in all CR-1 test cases in `test-plan.json`. Leave the accepted spec,
+Update the CR-1 row and status in `plan.md`; update only CR-1 `owned_paths` in
+`inner-loop/tasks.yaml`; add exact reliability selectors and source bindings in
+`test-plan.json`. Leave the accepted spec,
 intent, CR-2–CR-4 ownership, task order, and product workstream unchanged.
 
 ## Why the change is needed
