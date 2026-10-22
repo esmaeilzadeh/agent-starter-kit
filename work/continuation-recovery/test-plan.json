@@ -80,6 +80,16 @@
         "unittest",
         "_ask.tests.inner_loop_reliability"
       ]
+    },
+    {
+      "id": "traceability-entrypoints",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_traceability_entrypoints"
+      ]
     }
   ],
   "tests": [
@@ -2276,6 +2286,86 @@
         "_ask/scripts/inner_loop/recovery.py",
         "_ask/scripts/inner_loop/__main__.py"
       ]
+    },
+    {
+      "id": "CR-T53",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-01",
+        "CR-06"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.test_traceability_entrypoints.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e",
+      "scenario": {
+        "given": "The existing disposable public-entrypoint consumer fixture with an accepted task graph",
+        "when": "test_I05_all_normal_entrypoints_reject_omitted_e2e executes through separate CLI processes",
+        "then": [
+          "Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-01",
+          "checks": [
+            "Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor."
+          ]
+        },
+        {
+          "criterion_id": "CR-06",
+          "checks": [
+            "Normal verification, result recording, and acceptance entrypoints reject omitted E2E evidence while a valid task attempt can start from the accepted anchor."
+          ]
+        }
+      ],
+      "runner_id": "traceability-entrypoints",
+      "source_paths": [
+        "_ask/tests/test_traceability_entrypoints.py",
+        "_ask/tests/traceability_fixture.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/state.py"
+      ]
+    },
+    {
+      "id": "CR-T54",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-01",
+        "CR-06"
+      ],
+      "type": "integration",
+      "change_kind": "regression",
+      "case_id": "_ask.tests.test_traceability_entrypoints.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints",
+      "scenario": {
+        "given": "The existing disposable public-entrypoint consumer fixture with an accepted task graph",
+        "when": "test_I07_complete_evidence_agrees_across_entrypoints executes through separate CLI processes",
+        "then": [
+          "A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-01",
+          "checks": [
+            "A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
+          ]
+        },
+        {
+          "criterion_id": "CR-06",
+          "checks": [
+            "A valid task attempt starts before candidate source changes; evidence, integration, and final acceptance agree across entrypoints."
+          ]
+        }
+      ],
+      "runner_id": "traceability-entrypoints",
+      "source_paths": [
+        "_ask/tests/test_traceability_entrypoints.py",
+        "_ask/tests/traceability_fixture.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/state.py"
+      ]
     }
   ],
   "task_scopes": [
@@ -2317,7 +2407,9 @@
         "CR-T49",
         "CR-T50",
         "CR-T51",
-        "CR-T52"
+        "CR-T52",
+        "CR-T53",
+        "CR-T54"
       ]
     },
     {
