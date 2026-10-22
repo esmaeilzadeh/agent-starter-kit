@@ -103,6 +103,8 @@ class RecoveryTests(unittest.TestCase):
         }
         self.old_plan = {
             "schema": "ask-test-plan/v1", "work_id": "w",
+            "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
+                         "adapter": "unittest"}],
             "tests": [self.case_a, self.case_b],
             "task_scopes": [{"task_id": "a", "test_ids": ["T-A", "T-B"]},
                             {"task_id": "b", "test_ids": []}],
@@ -325,7 +327,8 @@ class RecoveryTests(unittest.TestCase):
             "plan_digest": self.old_plan_digest, "scope": "task", "task_id": "a",
             "executions": [{"id": "exec-a", "phase": "final_green", "runner_id": "fixture",
                             "exit_code": 0, "collection_status": "ok",
-                            "source_sha": self.candidate}],
+                            "source_sha": self.candidate, "argv": ["python", "-m", "unittest", "fixture"],
+                            "adapter": "unittest"}],
             "cases": [{"test_id": test_id, "case_id": case_id, "runner_id": "fixture",
                        "execution_id": "exec-a", "phase": "final_green", "outcome": "passed",
                        "source_sha": self.candidate}
@@ -354,7 +357,8 @@ class RecoveryTests(unittest.TestCase):
             "plan_digest": current_plan_digest, "scope": "task", "task_id": "b",
             "executions": [{"id": "exec-b", "phase": "final_green", "runner_id": "fixture",
                             "exit_code": 0, "collection_status": "ok",
-                            "source_sha": self.candidate}],
+                            "source_sha": self.candidate, "argv": ["python", "-m", "unittest", "fixture"],
+                            "adapter": "unittest"}],
             "cases": [{"test_id": "T-B", "case_id": "tests.test_b", "runner_id": "fixture",
                        "execution_id": "exec-b", "phase": "final_green", "outcome": "passed",
                        "source_sha": self.candidate}],
@@ -371,7 +375,8 @@ class RecoveryTests(unittest.TestCase):
 
         # A digest-valid checkpoint cannot turn a failed run or ambiguous case
         # identity into historical Green evidence.
-        for malformed in ("failed_execution", "failed_collection", "wrong_runner", "duplicate_case"):
+        for malformed in ("failed_execution", "failed_collection", "wrong_runner",
+                          "wrong_runner_config", "split_execution", "duplicate_case"):
             invalid_report = copy.deepcopy(report)
             if malformed == "failed_execution":
                 invalid_report["executions"][0]["exit_code"] = 1
@@ -379,6 +384,15 @@ class RecoveryTests(unittest.TestCase):
                 invalid_report["executions"][0]["collection_status"] = "error"
             elif malformed == "wrong_runner":
                 invalid_report["cases"][0]["runner_id"] = "unplanned-runner"
+            elif malformed == "wrong_runner_config":
+                invalid_report["executions"][0]["argv"] = ["python", "untrusted-runner"]
+            elif malformed == "split_execution":
+                first = invalid_report["executions"][0]
+                first["id"] = "exec-a-1"
+                second = dict(first, id="exec-a-2")
+                invalid_report["executions"].append(second)
+                invalid_report["cases"][0]["execution_id"] = "exec-a-1"
+                invalid_report["cases"][1]["execution_id"] = "exec-a-2"
             else:
                 duplicate = copy.deepcopy(invalid_report["cases"][0])
                 duplicate["outcome"] = "failed"
