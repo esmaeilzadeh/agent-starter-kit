@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "6eb3c9eb6512fb88fa4ac166d3ce6ae9ddacb142",
+  "contract_sha": "a091448b293321f7399f4eb4309fe4d79472c8c7",
   "work_id": "continuation-recovery",
   "reviewer": "/root/review_cr1",
   "recorded_by": "/root",
@@ -12,18 +12,18 @@
     "decision": "APPROVED",
     "reviewer": "/root/review_cr1",
     "work_id": "continuation-recovery",
-    "contract_sha": "22a94836a63faf3393c990e9a3eed9e1cbce31f4",
+    "contract_sha": "f4a80d50b731fb3fbc3bed43e535625becdc962e",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-    "plan_digest": "08576afee0178d0d8e44a8acf5388297a07f616b40612bd5d4ff4901f32aba6b",
+    "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
     "graph_digest": "fc55c30265d78fa981eb65b2d0b84bedc6d97ff29b19e330ae2d0b0198ad28cf",
     "findings": [],
     "resolution": {
-      "independent_exact_review": "Approved the entrypoint fixture amendment at the exact candidate. CR-T53/54 map only to CR-01 and carry only CR-01 assertions; both selectors resolve under the traceability-entrypoints runner, their exact source bindings exist, both IDs are in CR-1 scope, and CR-1 owns the fixture path. Approved intent and CR-01\u2013CR-08 are unchanged."
+      "independent_exact_review": "Approved the runner correction at the exact candidate. unittest discovery rooted at _ask/tests discovers the exact CR-T53/54 case IDs; task-scoped filtering selects exactly those cases. The only mapping changes are the runner invocation and those two case ID prefixes. CR-1 scope, source ownership, spec, and intent remain unchanged."
     },
-    "review_source": "Independent review response from /root/review_cr1 at candidate 22a94836a63faf3393c990e9a3eed9e1cbce31f4."
+    "review_source": "Independent review response from /root/review_cr1 at candidate f4a80d50b731fb3fbc3bed43e535625becdc962e."
   },
-  "plan_review_digest": "63a182fb406bdc75e064c1013941dfd472a364577e706a70ddc9fb2c3274897f",
+  "plan_review_digest": "e52c7823651a9ebaca771e1d4416b2936fd717534fe65ca6d5ebd79628a5dd1c",
   "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-  "plan_digest": "08576afee0178d0d8e44a8acf5388297a07f616b40612bd5d4ff4901f32aba6b",
+  "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
   "graph_digest": "fc55c30265d78fa981eb65b2d0b84bedc6d97ff29b19e330ae2d0b0198ad28cf"
 }
