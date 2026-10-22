@@ -220,6 +220,14 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
         self.assertEqual(quiescent.stdout.strip(), "quiescent")
 
+        premature = self.run_cli("reopen", "w", "a", "--reason", "must wait for plan acceptance")
+        self.assertNotEqual(premature.returncode, 0)
+        self.assertIn("accept the reviewed plan amendment", premature.stdout + premature.stderr)
+        self.assertEqual(
+            json.loads(state_path.read_text(encoding="utf-8"))["tasks"]["a"]["attempt_history"],
+            task["attempt_history"],
+        )
+
         self.write("amended-contract.txt", "accepted amendment\n")
         self.commit("accept amended test obligations")
         new_plan_ref = self.git("rev-parse", "HEAD")
