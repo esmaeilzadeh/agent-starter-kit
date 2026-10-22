@@ -48,5 +48,6 @@ preserve CR-1’s original result under its original contract only when the
 current CR-1 obligations are unchanged members of its previously accepted
 scope; CR-T38 remains a fresh CR-2 obligation. Recovery must also attribute
 committed source changes to a recorded interrupted attempt before checking
-overlapping dependent-task paths. No requirement, intent, or product-adoption
-scope changes.
+overlapping dependent-task paths, and the checkpoint must retain that exact
+interrupted candidate commit. No requirement, intent, or product-adoption scope
+changes.
