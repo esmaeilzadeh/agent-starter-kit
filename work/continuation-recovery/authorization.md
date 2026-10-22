@@ -23,3 +23,8 @@ assumptions are unchanged; the existing `intent.md` remains byte-identical.
 Continue through the recorded implementation plan under its normal admission,
 TDD, review and verification gates. This does not authorize product adoption,
 integration or scheduling beyond the plan's explicit handoff.
+
+After CR-1 integration exposed failures in the required existing reliability
+suite, the user selected “expand”. This authorizes the scoped CR-1 ownership and
+test-source binding amendment recorded in `cr1-integration-scope-change.md`;
+CR-01–CR-08, product adoption and scheduling remain unchanged.

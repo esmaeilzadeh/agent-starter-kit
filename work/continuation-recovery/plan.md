@@ -35,7 +35,7 @@ committing writer uses this repair branch. Implementation has not begun.
 
 | Task | Outcome and owned components | Dependency | Cases | Completion evidence |
 | --- | --- | --- | --- | --- |
-| CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture and assertion modules, shell entry | none | CR-T01–04,17 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
+| CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture and assertion modules, shell entry, plus compatibility with existing coordinator reliability assertions | none | CR-T01–04,17 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration including the existing reliability suite; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
 | CR-2 | Git-retained checkpoint closure, cache recovery, transfer CLI; checkpoint/state/recovery | CR-1 | CR-T05–09,18 | CAS/crash/cache assertions, GC and separate-object-database bundle E2E; real Red/Green, Refactor, review, integration |
 | CR-3 | Coordinator finalization for standalone/nested and old pinned verifier; checkpoint/state/recovery/driver/evidence/CLI, adapter/traceability CLI and protocol/docs projections | CR-2 | CR-T10–14,19–21 | Bounded real pinned verification, interrupted report/ledger finalization, old-base runner compatibility; real Red/Green, Refactor, review, integration |
 | CR-4 | Legacy reconciliation/adoption implementation and disposable tests; recovery/CLI and immutable fixtures; read-only real audit/proposal under adoption/ | CR-3 | CR-T15–16 | Exact Tasks1–5 provenance audit and independently reviewed adoption proposal; missing evidence honest; product state/authority untouched; real Red/Green, Refactor, review, normal repair integration |
@@ -61,7 +61,9 @@ starts from the exact immutable blocked ten-task fixture beside a new repair
 queue and checks admission/preservation. CR-T16 checks reviewed handoff refusal.
 
 Future checks include the recovery unittest module and shell wrapper, existing
-inner-loop/reliability/stage shell suites, traceability unittest discovery,
+inner-loop/reliability/stage shell suites (the reliability assertion module is
+owned by CR-1 so compatibility failures can be corrected without weakening its
+assertions), traceability unittest discovery,
 `./ask sync`, task-scoped traceability runs and normal `./ask verify` integration.
 Runtime sources do not yet exist; mapping denotes planned exact identities, not
 present execution. The shell wrapper joins existing aggregate discovery.

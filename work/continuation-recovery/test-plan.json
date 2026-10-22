@@ -114,7 +114,8 @@
         "_ask/scripts/inner_loop/state.py",
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/recovery.py",
-        "_ask/scripts/inner_loop/__main__.py"
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/tests/inner_loop_reliability.py"
       ]
     },
     {
@@ -158,7 +159,8 @@
         "_ask/scripts/inner_loop/state.py",
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/recovery.py",
-        "_ask/scripts/inner_loop/__main__.py"
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/tests/inner_loop_reliability.py"
       ]
     },
     {
@@ -202,7 +204,8 @@
         "_ask/scripts/inner_loop/state.py",
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/recovery.py",
-        "_ask/scripts/inner_loop/__main__.py"
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/tests/inner_loop_reliability.py"
       ]
     },
     {
@@ -246,7 +249,8 @@
         "_ask/scripts/inner_loop/state.py",
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/recovery.py",
-        "_ask/scripts/inner_loop/__main__.py"
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/tests/inner_loop_reliability.py"
       ]
     },
     {
@@ -929,7 +933,8 @@
         "_ask/scripts/inner_loop/state.py",
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/recovery.py",
-        "_ask/scripts/inner_loop/__main__.py"
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/tests/inner_loop_reliability.py"
       ]
     },
     {

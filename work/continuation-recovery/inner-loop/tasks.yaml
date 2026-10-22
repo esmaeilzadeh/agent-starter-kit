@@ -11,6 +11,7 @@ tasks:
       - "_ask/tests/inner_loop_recovery.py"
       - "_ask/tests/inner_loop_recovery_fixture.py"
       - "_ask/tests/test-inner-loop-recovery.sh"
+      - "_ask/tests/inner_loop_reliability.py"
   - id: "CR-2"
     depends_on: ["CR-1"]
     owned_paths:
