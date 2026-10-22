@@ -11,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from inner_loop.allowlist import classify_paths, outside_paths, staged_paths  # noqa: E402
-from inner_loop.evidence import record_review  # noqa: E402
+from inner_loop.evidence import checkpoint_run, record_review  # noqa: E402
 from inner_loop.driver import (  # noqa: E402
     NotIntegrable,
     cancel,
@@ -212,6 +212,11 @@ def main(argv: list[str] | None = None) -> int:
     ro.add_argument("task_id")
     ro.add_argument("--reason", required=True)
 
+    cr = sub.add_parser("checkpoint-run", help="validate and retain one traceability run")
+    cr.add_argument("work_id")
+    cr.add_argument("task_id")
+    cr.add_argument("--run-id", required=True)
+
     args = p.parse_args(argv)
     root = repo_root(args.root)
     try:
@@ -289,6 +294,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "reopen":
             doc = cmd_reopen(root, args.work_id, args.task_id, args.reason)
             print(f"running={args.task_id} revision={doc['revision']}")
+            return 0
+        if args.cmd == "checkpoint-run":
+            with workflow_admission(root, args.work_id, delivery_task_id=args.task_id):
+                result = checkpoint_run(root, args.work_id, args.task_id, args.run_id)
+            print(json.dumps(result, indent=2))
             return 0
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2

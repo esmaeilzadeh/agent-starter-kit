@@ -11,7 +11,7 @@ from engineering_model.workflow import adopted, guarded_workflow, workflow_admis
 from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
-    NotIntegrable, check_integrable, git, read_candidate, result_path,
+    NotIntegrable, _checkpoint_run_locked, check_integrable, git, read_candidate, result_path,
     runtime_exclusions, source_changes, validate_review, verify_candidate,
 )
 from inner_loop.graph import _task_map, load_graph, validate_graph
@@ -120,6 +120,11 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         if current != candidate or source_changes(root, work_id):
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
+        # The trusted child has exited and released every ledger lock. Fold only
+        # the run IDs named by its exact passing completion receipt while the
+        # coordinator transaction already owns state.lock.
+        for run_id in evidence.get('traceability_run_ids', []):
+            _checkpoint_run_locked(root, work_id, task_id, run_id, doc)
         sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
                             delivery_task_id=task_id)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:

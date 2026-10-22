@@ -5,6 +5,7 @@ from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 from .adapters import git,run_tests
 from .contracts import Invalid,load,slug
@@ -100,6 +101,24 @@ def execute(args,root):
         contracts=load_accepted(root,args.work_id,anchor)
         if args.phase=='final_green':load_accepted(root,args.work_id,anchor,sha)
         doc=run_tests(root,contracts,sha,args.scope,args.task_id,args.phase)
+        runtime=Path(os.environ.get('ASK_TRACEABILITY_RUNTIME_ROOT') or root).resolve()
+        if (args.scope=='task' and args.task_id and runtime==root
+                and os.environ.get('ASK_INNER_LOOP_ROLE','coordinator')!='worker'):
+            scripts=root/'_ask'/'scripts'
+            env=dict(os.environ)
+            env['PYTHONPATH']=os.pathsep.join(
+                part for part in (str(scripts),env.get('PYTHONPATH','')) if part
+            )
+            finalized=subprocess.run(
+                [sys.executable,'-m','inner_loop','--root',str(root),'checkpoint-run',
+                 args.work_id,args.task_id,'--run-id',doc['run_id']],
+                cwd=root,env=env,capture_output=True,text=True,
+            )
+            if finalized.returncode:
+                raise Invalid('coordinator could not checkpoint traceability run: '+
+                              (finalized.stderr.strip() or finalized.stdout.strip()))
+            try:doc['coordinator_finalization']=json.loads(finalized.stdout)
+            except ValueError:raise Invalid('coordinator returned malformed run-finalization evidence')
         expected=[t for t in contracts['plan']['tests'] if args.scope=='workstream' or t['id'] in next(s['test_ids'] for s in contracts['plan']['task_scopes'] if s['task_id']==args.task_id)]
         if (any(r['collection_status']!='ok' for r in doc['executions'])
             or (args.phase=='final_green' and len(doc['cases'])!=len(expected))

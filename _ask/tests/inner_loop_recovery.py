@@ -24,6 +24,7 @@ from _ask.tests.inner_loop_recovery_fixture import (
 from inner_loop.graph import load_graph
 from inner_loop.checkpoint import CheckpointError, publish, read_checkpoint, _read_tree
 from inner_loop.recovery import inspect as inspect_recovery
+from inner_loop.state import load_state
 
 TASKS = """schema: ask-inner-loop-tasks/v1
 work_id: w
@@ -215,6 +216,53 @@ class RecoveryTests(unittest.TestCase):
 
     def _real_traceability_pair(self):
         """Run the accepted two-case plan on real failing and passing commits."""
+        import shutil
+        from verification.traceability.contracts import digest
+        from verification.traceability.evidence import accept_plan
+
+        shutil.copytree(
+            REPO / ".agents" / "ask" / "verification",
+            self.root / ".agents/ask/verification",
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns("__pycache__"),
+        )
+        (self.root / "_ask/policies").mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REPO / "_ask/policies/delegation.md",
+                        self.root / "_ask/policies/delegation.md")
+        self.spec = {
+            "schema": "ask-spec/v1", "work_id": "w", "revision": 1,
+            "criteria": [{"id": "C1", "given": "a task candidate", "when": "the assertion runs",
+                          "then": ["the source value is green"], "verification_mode": "tests"}],
+        }
+        self.old_plan = {
+            "schema": "ask-test-plan/v1", "work_id": "w", "spec_digest": digest(self.spec),
+            "obligations": [{"criterion_id": "C1", "required_types": ["integration"]}],
+            "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
+                         "adapter": "unittest"}],
+            "tests": [
+                {"id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
+                 "case_id": "tests.test_a", "scenario": {"given": "red source", "when": "test_a runs", "then": ["fails" ]},
+                 "expected_assertions": [{"criterion_id": "C1", "checks": ["source is green"]}],
+                 "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new"},
+                {"id": "T-B", "task_id": "a", "criterion_ids": ["C1"],
+                 "case_id": "tests.test_b", "scenario": {"given": "red source", "when": "test_b runs", "then": ["fails" ]},
+                 "expected_assertions": [{"criterion_id": "C1", "checks": ["source is green"]}],
+                 "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new"},
+            ],
+            "task_scopes": [{"task_id": "a", "test_ids": ["T-A", "T-B"]},
+                            {"task_id": "b", "test_ids": []}],
+        }
+        self.write("specs/current/w.json", json.dumps(self.spec, sort_keys=True))
+        self.write("work/w/test-plan.json", json.dumps(self.old_plan, sort_keys=True))
+        review_path = "work/w/traceability/plan-review.json"
+        self.write(review_path, json.dumps({"decision": "APPROVED", "reviewer": "fixture-reviewer",
+                                             "spec_digest": digest(self.spec),
+                                             "plan_digest": digest(self.old_plan)}))
+        self.commit("CR-3 accepted real-run fixture contract")
+        accepted = accept_plan(self.root, "w", "HEAD", "fixture-reviewer", "fixture-coordinator", review_path)
+        self.write("work/w/traceability-accepted.json", json.dumps(accepted, sort_keys=True) + "\n")
+        self.commit("CR-3 accepted real-run fixture authority")
+        self.anchor_commit = self.git("rev-parse", "HEAD")
         started = self.run_cli("run", "w")
         self.assertEqual(started.returncode, 0, started.stdout + started.stderr)
         self.write(
@@ -273,6 +321,13 @@ class test_b(unittest.TestCase):
 
     def test_crash_after_verification_or_ff(self):
         self.test_crash_around_checkpoint_publication()
+        from _ask.tests.inner_loop_reliability import IntegrationTests
+        result = unittest.TestResult()
+        IntegrationTests(
+            "test_resume_preserves_candidate_after_ff_before_state_fold_interruption"
+        ).run(result)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
 
     def test_guard_rollback_and_explicit_attempts(self):
         self.test_interrupt_and_reopen_preserve_attempt_history()
@@ -281,14 +336,118 @@ class test_b(unittest.TestCase):
         self.test_retain_objects_after_gc_and_bundle_transfer()
 
     def test_nested_verifier_coordinator_finalization(self):
-        from _ask.tests.inner_loop_reliability import IntegrationTests
+        from _ask.tests import inner_loop_reliability as reliability
+        from verification.traceability.contracts import digest
+        from verification.traceability.evidence import (
+            inventory, load_accepted, record_test_review, source_digests, write_json,
+        )
+
+        original_seed = reliability.seed_traceability
+        original_accept = reliability.accept_traceability
+        original_review = reliability.review_traceability
+
+        def seed_real_plan(root, work_id):
+            original_seed(root, work_id)
+            spec = {
+                "schema": "ask-spec/v1", "work_id": work_id, "revision": 1,
+                "criteria": [{"id": "C1", "given": "a coordinator candidate",
+                              "when": "the real test runs", "then": ["candidate source passes"],
+                              "verification_mode": "tests"}],
+            }
+            plan = {
+                "schema": "ask-test-plan/v1", "work_id": work_id, "spec_digest": digest(spec),
+                "obligations": [{"criterion_id": "C1", "required_types": ["integration"]}],
+                "runners": [{"id": "fixture", "argv": ["python3", "-m", "unittest", "test_case.TestA.test_a"],
+                             "adapter": "unittest"}],
+                "tests": [{"id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
+                           "case_id": "test_case.TestA.test_a",
+                           "scenario": {"given": "base source", "when": "the test runs", "then": ["red then green"]},
+                           "expected_assertions": [{"criterion_id": "C1", "checks": ["candidate source passes"]}],
+                           "runner_id": "fixture", "source_paths": ["src/value"],
+                           "type": "integration", "change_kind": "new"}],
+                "task_scopes": [{"task_id": "a", "test_ids": ["T-A"]},
+                                {"task_id": "b", "test_ids": []}],
+            }
+            write_json(root / "specs/current" / f"{work_id}.json", spec)
+            write_json(root / "work" / work_id / "test-plan.json", plan)
+            (root / "test_case.py").write_text(
+                "import pathlib, unittest\n"
+                "class TestA(unittest.TestCase):\n"
+                "    def test_a(self): self.assertEqual(pathlib.Path('src/value').read_text(), 'candidate\\n')\n",
+                encoding="utf-8",
+            )
+
+        def accept_and_seed_red(root, work_id):
+            original_accept(root, work_id)
+            base = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            contracts = load_accepted(root, work_id, base, base)
+            from verification.traceability.adapters import run_tests
+            run_tests(root, contracts, base, "task", "a", "red")
+
+        def review_real_tests(root, work_id, candidate):
+            contracts = load_accepted(root, work_id, candidate, candidate)
+            plan = contracts["plan"]
+            actual = inventory(root, contracts["pin"]["contract_sha"], candidate, plan)
+            review = {
+                "schema": "ask-test-review/v2", "reviewer": "fixture-independent",
+                "candidate_sha": candidate, "base_sha": contracts["pin"]["contract_sha"],
+                "spec_digest": digest(contracts["spec"]), "plan_digest": digest(plan),
+                "scope": "task", "task_id": "a", "test_ids": ["T-A"],
+                "criterion_ids": ["C1"], "source_digests": source_digests(root, candidate, plan, ["T-A"]),
+                "inspected_sources": actual["inspected_sources"], "changed_cases": actual["changed_cases"],
+                "inventory_exclusions": {name: "Fixture source is inspected by this enclosing test."
+                                         for name in actual["unmapped_cases"]},
+                "criteria": [{"id": "C1", "coverage_decision": "APPROVED",
+                              "assessment": "The mapped assertion compares the committed source value.",
+                              "type_adequacy": {"integration": {"decision": "APPROVED",
+                                  "assessment": "The trusted runner executes the candidate in a disposable worktree."}}}],
+                "tests": [{"id": "T-A", "decision": "APPROVED",
+                           "assertion_assessment": "Compares the value to a literal expected string.",
+                           "counterexample": "Returning the base value fails.",
+                           "tdd_continuity_assessment": "The same assertion is run before and after the candidate change."}],
+            }
+            path = "work/w/traceability/review-input.json"
+            write_json(root / path, review)
+            record_test_review(root, work_id, candidate, candidate, path, "fixture-coordinator",
+                               review_document=review)
+
+        reliability.seed_traceability = seed_real_plan
+        reliability.accept_traceability = accept_and_seed_red
+        reliability.review_traceability = review_real_tests
         result = unittest.TestResult()
-        IntegrationTests("test_successful_in_place_integration_records_executed_lineage").run(result)
+        class NestedFinalizationCase(reliability.IntegrationTests):
+            def test_nested_real_reports_are_finalized_by_parent(self):
+                super().test_successful_in_place_integration_records_executed_lineage()
+                task = load_state(self.root, "w")["tasks"]["a"]
+                runs = task["evidence"].get("traceability_runs", [])
+                self.assertEqual(len(runs), 2, runs)
+                self.assertEqual({item["phase"] for item in runs}, {"red", "final_green"})
+                self.assertEqual({item["candidate_sha"] for item in runs}, {self.base, self.candidate})
+
+        try:
+            NestedFinalizationCase("test_nested_real_reports_are_finalized_by_parent").run(result)
+        finally:
+            reliability.seed_traceability = original_seed
+            reliability.accept_traceability = original_accept
+            reliability.review_traceability = original_review
         self.assertEqual(result.errors, [])
         self.assertEqual(result.failures, [])
 
     def test_standalone_run_finalization_interruptions(self):
         red, _green = self._real_traceability_pair()
+        env = dict(os.environ)
+        env["PYTHONPATH"] = os.pathsep.join(
+            part for part in (str(self.root / ".agents/ask"), str(SCRIPTS), env.get("PYTHONPATH", "")) if part
+        )
+        command = subprocess.run(
+            [sys.executable, "-m", "verification.traceability.cli", "--root", str(self.root),
+             "run", "w", "--candidate-sha", self.git("rev-parse", "HEAD"),
+             "--anchor-sha", self.git("rev-parse", "HEAD"), "--scope", "task", "--task-id", "a",
+             "--phase", "final_green"],
+            cwd=self.root, env=env, capture_output=True, text=True, timeout=30,
+        )
+        self.assertEqual(command.returncode, 0, command.stdout + command.stderr)
+        self.assertIn("coordinator_finalization", command.stdout)
         ledger = self.root / "work/w/traceability/executions.json"
         rows = json.loads(ledger.read_text())
         ledger.write_text(json.dumps([row for row in rows if row["run_id"] != red["run_id"]]) + "\n")
@@ -302,7 +461,8 @@ class test_b(unittest.TestCase):
         evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
         self.assertEqual(ledger.read_bytes(), before, "replaying a finalized run must be idempotent")
         state = load_state(self.root, "w")
-        self.assertEqual(state["tasks"]["a"]["evidence"]["traceability_runs"][0]["run_id"], red["run_id"])
+        recorded = {item["run_id"] for item in state["tasks"]["a"]["evidence"]["traceability_runs"]}
+        self.assertIn(red["run_id"], recorded)
 
     def test_old_pinned_runner_handoff(self):
         from inner_loop.evidence import snapshot_runner

@@ -41,6 +41,13 @@ def git(root: Path, *args: str) -> str:
     return proc.stdout.strip()
 
 
+def _commit_is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    return subprocess.run(
+        ['git', 'merge-base', '--is-ancestor', ancestor, descendant], cwd=root,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0
+
+
 def source_changes(root: Path, work_id: str) -> list[str]:
     names = set()
     for args in [('diff', '--name-only', '-z'), ('diff', '--cached', '--name-only', '-z'),
@@ -123,6 +130,200 @@ def check_integrable(result: dict) -> None:
             raise NotIntegrable(f'{name} requires command, captured output and integer exit_code')
         if (name == 'red' and step['exit_code'] == 0) or (name == 'green' and step['exit_code'] != 0):
             raise NotIntegrable(f'{name} did not {"fail" if name == "red" else "pass"}')
+
+
+def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple[dict, dict]:
+    """Validate one complete task run and return its report and canonical ledger row."""
+    import re
+    if not isinstance(run_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', run_id):
+        raise NotIntegrable('invalid traceability run ID')
+    from verification.traceability.evidence import load_accepted
+    from verification.traceability.coverage import scoped_tests
+    from verification.traceability.contracts import digest as contract_digest
+    from verification.traceability.contracts import file_digest
+
+    state = None
+    from inner_loop.state import load_state
+    state = load_state(root, work_id)
+    task = (state.get('tasks') or {}).get(task_id) or {}
+    base = task.get('base_sha') or ''
+    if not base or not _commit_is_ancestor(root, base, git(root, 'rev-parse', 'HEAD')):
+        raise NotIntegrable('run finalization has no valid active task base')
+
+    run_dir = root / 'work' / work_id / 'traceability' / 'runs' / run_id
+    try:
+        report_raw = (run_dir / 'results.json').read_bytes()
+        report = json.loads(report_raw)
+    except (OSError, ValueError) as exc:
+        raise NotIntegrable(f'complete traceability report is unavailable: {exc}') from exc
+    if (not isinstance(report, dict) or report.get('schema') != 'ask-test-results/v1'
+            or report.get('run_id') != run_id or report.get('scope') != 'task'
+            or report.get('task_id') != task_id):
+        raise NotIntegrable('traceability report identity does not match the selected task/run')
+    candidate = report.get('candidate_sha')
+    if (not isinstance(candidate, str) or not candidate
+            or not _commit_is_ancestor(root, base, candidate)
+            or not _commit_is_ancestor(root, candidate, git(root, 'rev-parse', 'HEAD'))):
+        raise NotIntegrable('traceability candidate is outside the active task ancestry')
+
+    sys.path.insert(0, str(root / '.agents' / 'ask'))
+    contracts = load_accepted(root, work_id, candidate, candidate)
+    plan, spec = contracts['plan'], contracts['spec']
+    if (report.get('plan_digest') != contract_digest(plan)
+            or report.get('spec_digest') != contract_digest(spec)):
+        raise NotIntegrable('traceability report uses a stale accepted contract')
+    expected = scoped_tests(plan, 'task', task_id)
+    expected_by_id = {item['id']: item for item in expected}
+    if not expected_by_id:
+        raise NotIntegrable('accepted task scope has no mapped tests')
+
+    runner_path = '.agents/ask/verification/traceability/unittest_runner.py'
+    base_runner = subprocess.run(['git', 'show', f'{base}:{runner_path}'], cwd=root,
+                                 capture_output=True)
+    if base_runner.returncode:
+        raise NotIntegrable('active task base has no pinned traceability runner')
+    runner_identity = report.get('runner_identity')
+    if (not isinstance(runner_identity, dict)
+            or runner_identity.get('capability') != 'ask-traceability/v1'
+            or runner_identity.get('adapter_digest') != hashlib.sha256(base_runner.stdout).hexdigest()):
+        raise NotIntegrable('traceability runner differs from the task-base pinned runner')
+
+    executions = report.get('executions')
+    cases = report.get('cases')
+    if (not isinstance(executions, list) or len(executions) != 1
+            or not isinstance(cases, list)):
+        raise NotIntegrable('traceability report has unsupported execution/case shape')
+    execution = executions[0]
+    phase = execution.get('phase') if isinstance(execution, dict) else None
+    if phase not in {'red', 'final_green'}:
+        raise NotIntegrable('traceability run phase is unsupported')
+    if (execution.get('source_sha') != candidate or execution.get('collection_status') != 'ok'
+            or type(execution.get('exit_code')) is not int):
+        raise NotIntegrable('traceability execution is incomplete or collected from another source')
+
+    seen = set()
+    behavior_red = False
+    for case in cases:
+        if not isinstance(case, dict):
+            raise NotIntegrable('malformed traceability case')
+        test_id = case.get('test_id')
+        test = expected_by_id.get(test_id)
+        if (test is None or test_id in seen
+                or (case.get('runner_id'), case.get('case_id')) !=
+                   (test.get('runner_id'), test.get('case_id'))
+                or case.get('execution_id') != execution.get('id')
+                or case.get('source_sha') != candidate):
+            raise NotIntegrable('traceability case is outside the accepted task scope')
+        seen.add(test_id)
+        expected_sources = {
+            name: hashlib.sha256(subprocess.run(
+                ['git', 'show', f'{candidate}:{name}'], cwd=root,
+                check=True, capture_output=True,
+            ).stdout).hexdigest()
+            for name in test.get('source_paths', [])
+        }
+        if case.get('source_digests') != expected_sources:
+            raise NotIntegrable('traceability case source digest does not match its candidate')
+        outcome = case.get('outcome')
+        if outcome == 'failed' and case.get('failure_kind') == 'behavior_assertion':
+            behavior_red = True
+        elif outcome != 'passed':
+            raise NotIntegrable('traceability case contains an error or unsupported outcome')
+    if seen != set(expected_by_id):
+        raise NotIntegrable('traceability run does not cover the complete accepted task scope')
+    if phase == 'red' and (not behavior_red or execution['exit_code'] == 0):
+        raise NotIntegrable('Red requires a collected behavior assertion failure')
+    if phase == 'final_green' and (behavior_red or execution['exit_code'] != 0):
+        raise NotIntegrable('final Green requires all mapped cases to pass')
+
+    relative = execution.get('output_artifact')
+    prefix = f'work/{work_id}/traceability/runs/{run_id}/'
+    if (not isinstance(relative, str) or not relative.startswith(prefix)
+            or Path(relative).is_absolute() or '..' in Path(relative).parts):
+        raise NotIntegrable('traceability output path is outside the selected run')
+    output = root / relative
+    try:
+        output_raw = output.read_bytes()
+    except OSError as exc:
+        raise NotIntegrable('traceability output log is missing') from exc
+    if (output.is_symlink() or hashlib.sha256(output_raw).hexdigest() != execution.get('output_digest')
+            or any(case.get('output_artifact') != relative
+                   or case.get('output_digest') != execution.get('output_digest') for case in cases)):
+        raise NotIntegrable('traceability output log digest/binding is invalid')
+
+    ledger_row = {
+        'run_id': run_id,
+        'digest': hashlib.sha256(json.dumps(report, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
+        'phase': phase,
+        'scope': 'task',
+        'task_id': task_id,
+        'candidate_sha': candidate,
+        'spec_digest': report['spec_digest'],
+        'plan_digest': report['plan_digest'],
+    }
+    return report, ledger_row
+
+
+def _checkpoint_run_locked(root: Path, work_id: str, task_id: str, run_id: str,
+                           state: dict) -> dict:
+    """Finalize a validated report under an already-held coordinator state lock."""
+    task = (state.get('tasks') or {}).get(task_id) or {}
+    if task.get('status') != 'running':
+        raise NotIntegrable('traceability run can only finalize for the active task attempt')
+    report, row = _execution_row(root, work_id, task_id, run_id)
+    traceability = root / 'work' / work_id / 'traceability'
+    ledger_path = traceability / 'executions.json'
+    ledger_lock = traceability / 'executions.lock'
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    import fcntl
+    with ledger_lock.open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        try:
+            try:
+                entries = json.loads(ledger_path.read_text(encoding='utf-8'))
+            except FileNotFoundError:
+                entries = []
+            except (OSError, ValueError) as exc:
+                raise NotIntegrable(f'cannot read execution ledger: {exc}') from exc
+            if not isinstance(entries, list) or any(not isinstance(item, dict) for item in entries):
+                raise NotIntegrable('execution ledger has an unsupported shape')
+            matches = [item for item in entries if item.get('run_id') == run_id]
+            if matches and (len(matches) != 1 or matches[0] != row):
+                raise NotIntegrable('execution ledger contains a conflicting run identity')
+            if not matches:
+                entries.append(row)
+                from verification.traceability.evidence import write_json
+                write_json(ledger_path, entries)
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+    recorded = task.setdefault('evidence', {}).setdefault('traceability_runs', [])
+    prior = [item for item in recorded if isinstance(item, dict) and item.get('run_id') == run_id]
+    summary = {key: row[key] for key in ('run_id', 'digest', 'phase', 'task_id',
+                                         'candidate_sha', 'spec_digest', 'plan_digest')}
+    if prior and (len(prior) != 1 or prior[0] != summary):
+        raise NotIntegrable('coordinator state contains a conflicting run identity')
+    if not prior:
+        recorded.append(summary)
+    return summary
+
+
+def checkpoint_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
+    """Validate, idempotently ledger and checkpoint one standalone task run."""
+    from inner_loop.checkpoint import read_checkpoint, publish
+    from inner_loop.state import load_state, state_lock, _write_state, state_path
+    with state_lock(root, work_id):
+        state = load_state(root, work_id)
+        current = read_checkpoint(root, work_id)
+        if current is None or current[1] != state:
+            raise NotIntegrable('coordinator state differs from its retained checkpoint')
+        from inner_loop.graph import load_graph
+        from inner_loop.recovery import require_safe
+        require_safe(root, work_id, load_graph(root, work_id), state)
+        summary = _checkpoint_run_locked(root, work_id, task_id, run_id, state)
+        state['revision'] = int(state['revision']) + 1
+        publish(root, work_id, state)
+        _write_state(state_path(root, work_id), state)
+    return summary
 
 
 def artifact(root: Path, name: str) -> tuple[str, str]:
@@ -245,7 +446,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
     directory.mkdir(parents=True, exist_ok=True)
     out = Path(tempfile.mkdtemp(prefix='verify-', dir=directory))
     report = dict(identity, schema='ask-integration-evidence/v1', result='fail',
-                  result_digest=candidate.result_digest, checks=[],
+                  result_digest=candidate.result_digest, checks=[], traceability_run_ids=[],
                   evidence_path=str((out / 'verification.json').relative_to(root)),
                   log_path=str((out / 'output.log').relative_to(root)))
     try:
@@ -295,6 +496,31 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                         or any(type(c.get('exit_code')) is not int or c['exit_code'] != 0
                                or c.get('status') != 'pass' for c in checks)):
                     raise NotIntegrable('required candidate verification failed or mismatched its CheckPlan: ' + str(executed.get('error', '')))
+                completion_path = (root / 'work' / identity['work_id'] / 'traceability' / 'completion.json')
+                try:
+                    completion_raw = completion_path.read_bytes()
+                    completion = json.loads(completion_raw)
+                except (OSError, ValueError) as exc:
+                    raise NotIntegrable('trusted verification produced no valid completion receipt') from exc
+                if (not isinstance(completion, dict) or completion.get('status') != 'pass'
+                        or completion.get('candidate_sha') != identity['candidate_sha']
+                        or completion.get('scope') != 'task'
+                        or completion.get('task_id') != identity['task_id']):
+                    raise NotIntegrable('completion receipt is not bound to this verified task candidate')
+                prefix = f"work/{identity['work_id']}/traceability/runs/"
+                selected_runs = set()
+                artifacts = completion.get('execution_artifacts')
+                if not isinstance(artifacts, list):
+                    raise NotIntegrable('completion receipt has no execution artifact inventory')
+                for artifact_name in artifacts:
+                    if not isinstance(artifact_name, str) or not artifact_name.startswith(prefix):
+                        continue
+                    parts = Path(artifact_name).parts
+                    if len(parts) < 5 or parts[3] != 'runs' or not parts[4]:
+                        raise NotIntegrable('completion receipt contains an unsafe run artifact path')
+                    selected_runs.add(parts[4])
+                report['traceability_run_ids'] = sorted(selected_runs)
+                report['completion_digest'] = hashlib.sha256(completion_raw).hexdigest()
                 if (git(checkout, 'rev-parse', 'HEAD') != identity['candidate_sha']
                         or git(checkout, 'status', '--porcelain')
                         or plan_identity(checkout, runner)[0] != report['checkplan_digest']):
