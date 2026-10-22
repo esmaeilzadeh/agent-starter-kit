@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 17,
+  "revision": 18,
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -422,13 +422,13 @@
           "work_id": "continuation-recovery",
           "task_id": "CR-2",
           "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
-          "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
-          "result_digest": "c19c048bdd1d23ee13f1f4cc68b8bb4cae359936da7bb82836dc8d8e1895677f",
+          "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+          "result_digest": "03c4541a17c490caaef8ff86c4adec3d5bf32080fd9aac87b6bd8d04df55991b",
           "reviewer": "/root/review_cr1",
           "policy": "_ask/policies/delegation.md",
           "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-          "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-2-a269e47.json",
-          "evidence_digest": "a47d4d6a6a0da4c9b79a1dfb94e080b03687f7b5f12d82dc7e61eb9250b91fc8",
+          "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-2-2c508ff.json",
+          "evidence_digest": "3a5a18b2f3421dbc5c3efa06aa6a07ae65e0554dee838178780227c9ed6664c2",
           "verdict": "APPROVED",
           "boundary": "ok",
           "exemption_reason": null
