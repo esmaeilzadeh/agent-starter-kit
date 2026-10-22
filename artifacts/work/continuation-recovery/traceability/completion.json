@@ -3,13 +3,13 @@
   "status": "pass",
   "scope": "task",
   "task_id": "CR-2",
-  "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+  "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "input_digests": {
     "spec": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
     "plan": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
     "accepted": "5522c0b412c7b1157f5346bd7c472a6b0bdae599b1b97fe33ec48eb163e0dd73",
-    "review": "8a154620a4363a8dc6b4b9915feb08da6075ef9ef942044f4dcef2336855271d",
-    "executions": "a4ab3c0c7073584527334775c846290086b666461bdd3c70230967da2575c0e8"
+    "review": "11fb336a6138eaf45ecb7a3a7e7cc720e9d8f81856b2babf52082f37602cc6c9",
+    "executions": "679be046c9d8799e3eb13105a52b169d56635ec8951becac9b1076f7c00f4cef"
   },
   "criterion_evidence": [
     {
@@ -22,15 +22,15 @@
       "review": {
         "id": "CR-02",
         "coverage_decision": "APPROVED",
-        "assessment": "Checkpoint snapshots retain state, exact required artifact bytes and commit closure; crash, cache restoration, GC and bundle-transfer cases exercise publication and closure.",
+        "assessment": "Checkpoint publication retains state, artifact bytes and source/authority commit closure; crash, cache restore and object-transfer cases exercise this.",
         "type_adequacy": {
           "integration": {
             "decision": "APPROVED",
-            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped integration assertion directly exercises the accepted behavior for this CR-2 criterion."
           },
           "e2e": {
             "decision": "APPROVED",
-            "assessment": "The mapped e2e case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped e2e assertion directly exercises the accepted behavior for this CR-2 criterion."
           }
         }
       },
@@ -88,19 +88,19 @@
             "failure_kind": null,
             "test_id": "CR-T05",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -156,19 +156,19 @@
             "failure_kind": null,
             "test_id": "CR-T06",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -216,6 +216,26 @@
               },
               "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
               "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T08",
+              "runner_id": "continuation-recovery",
+              "execution_id": "62eef6eed7d6409b9f8073604e08d8e1",
+              "phase": "red",
+              "source_sha": "984d379e5cc26db5201cd348897888b4838e0ed7",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/0bbc05e222d549f1b45841a010601e48/62eef6eed7d6409b9f8073604e08d8e1.log",
+              "output_digest": "631be8a21d5f575c343ca7042490b0d3556e7e1ac949145a9e4bd20819cb3abf"
             }
           ],
           "final_execution": {
@@ -224,19 +244,19 @@
             "failure_kind": null,
             "test_id": "CR-T08",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -292,19 +312,19 @@
             "failure_kind": null,
             "test_id": "CR-T18",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -386,21 +406,21 @@
             "failure_kind": null,
             "test_id": "CR-T57",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
               "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         }
       ]
@@ -415,15 +435,15 @@
       "review": {
         "id": "CR-03",
         "coverage_decision": "APPROVED",
-        "assessment": "Checkpoint publication uses serialized compare-and-swap, keeps the ref as the durable commit point, detects competing writers and replays the published generation after a crash.",
+        "assessment": "Checkpoint publication uses serialized compare-and-swap and crash-boundary replay; concurrent writer and T38 checks assert generation safety.",
         "type_adequacy": {
           "integration": {
             "decision": "APPROVED",
-            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped integration assertion directly exercises the accepted behavior for this CR-2 criterion."
           },
           "e2e": {
             "decision": "APPROVED",
-            "assessment": "The mapped e2e case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped e2e assertion directly exercises the accepted behavior for this CR-2 criterion."
           }
         }
       },
@@ -481,19 +501,19 @@
             "failure_kind": null,
             "test_id": "CR-T06",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -549,19 +569,19 @@
             "failure_kind": null,
             "test_id": "CR-T07",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -617,19 +637,19 @@
             "failure_kind": null,
             "test_id": "CR-T09",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -685,19 +705,19 @@
             "failure_kind": null,
             "test_id": "CR-T18",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -757,9 +777,9 @@
             "failure_kind": null,
             "test_id": "CR-T38",
             "runner_id": "inner-loop-reliability",
-            "execution_id": "0c0812d8c2f04923918350d1a24a02c1",
+            "execution_id": "a4bc487ab13a48d189565e8a8439033b",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
               "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
               "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
@@ -768,10 +788,10 @@
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/0c0812d8c2f04923918350d1a24a02c1.log",
-            "output_digest": "66aa3bde9473432e6d50ec57b46a6c4f716d8701f52e918edcb26adfc10b668d"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/a4bc487ab13a48d189565e8a8439033b.log",
+            "output_digest": "d0e8a0d80bbe436d939aeb099af4489011a500795c9685365465ac7d548d2ea3"
           }
         }
       ]
@@ -786,11 +806,11 @@
       "review": {
         "id": "CR-04",
         "coverage_decision": "APPROVED",
-        "assessment": "Recovery preserves separate evidence milestones and refuses to infer integration from Green; the restore case checks the first unmet step.",
+        "assessment": "Recovery retains separate milestones and refuses to infer integration from Green; cache restore checks the first unmet step.",
         "type_adequacy": {
           "integration": {
             "decision": "APPROVED",
-            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped integration assertion directly exercises the accepted behavior for this CR-2 criterion."
           }
         }
       },
@@ -848,19 +868,19 @@
             "failure_kind": null,
             "test_id": "CR-T05",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         }
       ]
@@ -875,15 +895,15 @@
       "review": {
         "id": "CR-05",
         "coverage_decision": "APPROVED",
-        "assessment": "Recovery accepts only identity-consistent older cache/checkpoint data and rejects divergence, incomplete artifacts, unsupported state, changed contracts and unsafe paths.",
+        "assessment": "Recovery restores only compatible validated state, rejects divergence and malformed checkpoint data, and does not infer approval from a failed receipt.",
         "type_adequacy": {
           "integration": {
             "decision": "APPROVED",
-            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped integration assertion directly exercises the accepted behavior for this CR-2 criterion."
           },
           "e2e": {
             "decision": "APPROVED",
-            "assessment": "The mapped e2e case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped e2e assertion directly exercises the accepted behavior for this CR-2 criterion."
           }
         }
       },
@@ -941,19 +961,19 @@
             "failure_kind": null,
             "test_id": "CR-T05",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -1001,6 +1021,26 @@
               },
               "output_artifact": "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/6d6b9e2e0eb643848bed253352e5d61b.log",
               "output_digest": "2447632b71f373c31c30fa8664b9bc985d818faee6fe61ba1e8041e95ad0138e"
+            },
+            {
+              "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+              "outcome": "failed",
+              "failure_kind": "behavior_assertion",
+              "test_id": "CR-T08",
+              "runner_id": "continuation-recovery",
+              "execution_id": "62eef6eed7d6409b9f8073604e08d8e1",
+              "phase": "red",
+              "source_sha": "984d379e5cc26db5201cd348897888b4838e0ed7",
+              "source_digests": {
+                "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
+                "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
+                "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+                "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
+                "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
+                "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
+              },
+              "output_artifact": "work/continuation-recovery/traceability/runs/0bbc05e222d549f1b45841a010601e48/62eef6eed7d6409b9f8073604e08d8e1.log",
+              "output_digest": "631be8a21d5f575c343ca7042490b0d3556e7e1ac949145a9e4bd20819cb3abf"
             }
           ],
           "final_execution": {
@@ -1009,19 +1049,19 @@
             "failure_kind": null,
             "test_id": "CR-T08",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -1077,19 +1117,19 @@
             "failure_kind": null,
             "test_id": "CR-T09",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -1145,19 +1185,19 @@
             "failure_kind": null,
             "test_id": "CR-T18",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         }
       ]
@@ -1172,11 +1212,11 @@
       "review": {
         "id": "CR-07",
         "coverage_decision": "APPROVED",
-        "assessment": "Attempt and carry-forward cases bind history to accepted-plan identities and exact prior reports; interrupted source changes are attributed only to the recorded attempt, with ambiguity requiring recovery.",
+        "assessment": "Attempt history, accepted contract applicability, exact historical Green provenance and interrupted-path attribution remain tested.",
         "type_adequacy": {
           "integration": {
             "decision": "APPROVED",
-            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped integration assertion directly exercises the accepted behavior for this CR-2 criterion."
           }
         }
       },
@@ -1238,9 +1278,9 @@
             "failure_kind": null,
             "test_id": "CR-T38",
             "runner_id": "inner-loop-reliability",
-            "execution_id": "0c0812d8c2f04923918350d1a24a02c1",
+            "execution_id": "a4bc487ab13a48d189565e8a8439033b",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
               "_ask/tests/inner_loop_reliability.py": "963b80a0a7ca03daa7b72647b6560dcf29934dd17875bf8823ce8d7a85226363",
               "_ask/tests/traceability_support.py": "dbdc7eb7f3aeecd2b03f598d2df675487c1642a7c11ad7c725600c264c01be78",
@@ -1249,10 +1289,10 @@
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/evidence.py": "115332e8fa4133bdffbefa21cb9b1f1814cbb9e8fd91c891ab0cb5226d81c633",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933"
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/0c0812d8c2f04923918350d1a24a02c1.log",
-            "output_digest": "66aa3bde9473432e6d50ec57b46a6c4f716d8701f52e918edcb26adfc10b668d"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/a4bc487ab13a48d189565e8a8439033b.log",
+            "output_digest": "d0e8a0d80bbe436d939aeb099af4489011a500795c9685365465ac7d548d2ea3"
           }
         },
         {
@@ -1310,20 +1350,20 @@
             "failure_kind": null,
             "test_id": "CR-T55",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
               "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -1373,16 +1413,16 @@
             "failure_kind": null,
             "test_id": "CR-T56",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         },
         {
@@ -1464,21 +1504,21 @@
             "failure_kind": null,
             "test_id": "CR-T57",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/driver.py": "681093735e3f96bd3bcd1941d7f48c167762dc4de29253b99bdd4b3cd708994d",
               "_ask/scripts/inner_loop/attempts.py": "b7aa8b55ce5816c960e81da345009778f4ba0cd635f528b86b28967f82e8c3fc",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         }
       ]
@@ -1493,11 +1533,11 @@
       "review": {
         "id": "CR-08",
         "coverage_decision": "APPROVED",
-        "assessment": "The concurrency case exercises single-writer/CAS behavior; CR-2 adds no implicit task or product behavior and keeps interrupted work quiescent until explicit reopen.",
+        "assessment": "The concurrency test enforces single-writer CAS and the task adds no implicit scheduling/product behavior.",
         "type_adequacy": {
           "integration": {
             "decision": "APPROVED",
-            "assessment": "The mapped integration case directly exercises the accepted observable behavior for this task criterion."
+            "assessment": "The mapped integration assertion directly exercises the accepted behavior for this CR-2 criterion."
           }
         }
       },
@@ -1555,19 +1595,19 @@
             "failure_kind": null,
             "test_id": "CR-T07",
             "runner_id": "continuation-recovery",
-            "execution_id": "61534c3d7b9541f59fae4f9ce4bf6e55",
+            "execution_id": "b5f4b4b74a244137b78b307ea694042e",
             "phase": "final_green",
-            "source_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+            "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
             "source_digests": {
-              "_ask/tests/inner_loop_recovery.py": "a1fd65ccb2f18cd28a152555a63ba7e944d131af7b6d3c9d37dd6cc8a9bc7e48",
+              "_ask/tests/inner_loop_recovery.py": "0718c955d9d901d08dc1b2665d36b5574a0e03102f932f9cb3da1c2ca241ebd8",
               "_ask/tests/inner_loop_recovery_fixture.py": "782d6dcb5c129da9f4369d6bc3456ecb6e717416141d3148b923bba292fa42eb",
-              "_ask/scripts/inner_loop/checkpoint.py": "aa67ccd5d4a756f9fb6dc6157037d01728e551e1882ad70c1ca89ddcc9fed933",
+              "_ask/scripts/inner_loop/checkpoint.py": "b69fa342b3af4ad6346a712c82e30e3576470c899cd543afd4136e555d3f887b",
               "_ask/scripts/inner_loop/state.py": "c1539d7f14f471b387eba4ae709f91c7a0151fe6426b36a2c64d4d58394b3f91",
               "_ask/scripts/inner_loop/recovery.py": "af05cb540096704cf0b685a7151722a2d56afc608f453beacbee2956bf7a6725",
               "_ask/scripts/inner_loop/__main__.py": "83ae90c07d7ae2e1d896e5fbc143cfb97cdc6a9f121f3f8132cfe8c51b73c85c"
             },
-            "output_artifact": "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-            "output_digest": "49e05c0ff5a4e6f50d0f2bd2b83ed30b5be73c3df1f22f94a65083a46e3a14c2"
+            "output_artifact": "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+            "output_digest": "a7d9be800b5a4b05fa12a4bac5b65a637bb21503e8ab84b67b11d6455e6d2d73"
           }
         }
       ]
@@ -1584,8 +1624,20 @@
     "work/continuation-recovery/traceability/runs/03588a50c0c94faf9777c407876ce545/26a32092f60e4a13bc55b96535298063.log",
     "work/continuation-recovery/traceability/runs/6e821b6aea3a4fcbafee38794177169c/6ca5c976a3cd42a384204163923fe79d.log",
     "work/continuation-recovery/traceability/runs/6e821b6aea3a4fcbafee38794177169c/e6069288f6b14de2958b5b151b609a79.log",
-    "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/61534c3d7b9541f59fae4f9ce4bf6e55.log",
-    "work/continuation-recovery/traceability/runs/4f403f9b83fd42b3940af2abb46ffd18/0c0812d8c2f04923918350d1a24a02c1.log"
+    "work/continuation-recovery/traceability/runs/0bbc05e222d549f1b45841a010601e48/62eef6eed7d6409b9f8073604e08d8e1.log",
+    "work/continuation-recovery/traceability/runs/0bbc05e222d549f1b45841a010601e48/8d7599f195944da28015be3aedf227bb.log",
+    "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/b5f4b4b74a244137b78b307ea694042e.log",
+    "work/continuation-recovery/traceability/runs/e5e6d544bedc4c9aa8138330dc47f5fe/a4bc487ab13a48d189565e8a8439033b.log"
   ],
-  "rejected_historical_attempts": []
+  "rejected_historical_attempts": [
+    {
+      "run_id": "255451e7f314446a9c8c3ce9bc91c3b6",
+      "candidate_sha": "96e82ea113d587caf0337c3d92c75cfa312f12b8",
+      "reasons": [
+        "no recognized behavior assertion red"
+      ],
+      "report_digest": "85d29e9f95ae82c7a3242e4343aff1c6353d6cc6df9fc4a5150e6291b651fb73",
+      "retained_report": "work/continuation-recovery/traceability/runs/255451e7f314446a9c8c3ce9bc91c3b6/results.json"
+    }
+  ]
 }

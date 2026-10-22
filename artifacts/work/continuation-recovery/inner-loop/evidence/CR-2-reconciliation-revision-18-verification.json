@@ -1,0 +1,19 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "reason": "Checkpoint canonical verification pass, candidate static receipt, completion report, and verification ledger append before coordinator integration.",
+  "previous_checkpoint": "2ce7bc39eb9593092ffeaa5cc0299bad272d45dd",
+  "state_revision": 18,
+  "coordinator_state_unchanged": true,
+  "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "verification_result": "pass",
+  "verification_receipt_path": "verification-result.json",
+  "artifact_sha256": {
+    "verification-result.json": "c64a071aa830a4e3f08f4c205b5184b948a58838cb7ef9f884d81f6d99a361e4",
+    "work/continuation-recovery/traceability/static-2c508ff4248f16a3e3121d33a0fae7297c9b378e.json": "8e5416317fd16b3f0beaf469138d8e00d40b3ad27e456de9f69388d105332470",
+    "work/continuation-recovery/traceability/completion.json": "5415c9b45c45ed40c84e74f6ec3cfbe1a75bf86a98ff77ba3fe09536b5236eb8",
+    "work/continuation-recovery/traceability/executions.json": "b37c4a8e0a420937f4c5c7b1f92d51bd8d1f6d7b0bfaa5b0c8b1b7a657d019d9"
+  },
+  "preservation": "Published additively; state revision and previous checkpoint chain retained."
+}
