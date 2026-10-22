@@ -11,7 +11,6 @@ tasks:
       - "_ask/tests/inner_loop_recovery.py"
       - "_ask/tests/inner_loop_recovery_fixture.py"
       - "_ask/tests/test-inner-loop-recovery.sh"
-      - "_ask/tests/inner_loop_reliability.py"
       - "_ask/tests/traceability_fixture.py"
       - "_ask/tests/test_traceability_entrypoints.py"
   - id: "CR-2"
@@ -23,6 +22,7 @@ tasks:
       - "_ask/scripts/inner_loop/__main__.py"
       - "_ask/tests/inner_loop_recovery.py"
       - "_ask/tests/inner_loop_recovery_fixture.py"
+      - "_ask/tests/inner_loop_reliability.py"
   - id: "CR-3"
     depends_on: ["CR-2"]
     owned_paths:

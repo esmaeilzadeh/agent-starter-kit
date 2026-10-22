@@ -1756,25 +1756,32 @@
     },
     {
       "id": "CR-T38",
-      "task_id": "CR-1",
+      "task_id": "CR-2",
       "criterion_ids": [
+        "CR-03",
         "CR-07"
       ],
       "type": "integration",
-      "change_kind": "regression",
+      "change_kind": "changed",
       "case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption",
       "scenario": {
-        "given": "The existing disposable coordinator reliability fixture and accepted task graph",
-        "when": "test_resume_preserves_candidate_after_ff_before_state_fold_interruption executes through the normal state/coordinator API",
+        "given": "The existing disposable coordinator reliability fixture with a valid pre-transition checkpoint",
+        "when": "The coordinator is killed after fast-forward and checkpoint ref publication but before runtime cache replacement",
         "then": [
-          "Resume preserves and finalizes the exact candidate after interruption following fast-forward."
+          "Recovery replays the exact integrated checkpoint state and finalizes the candidate without rollback."
         ]
       },
       "expected_assertions": [
         {
+          "criterion_id": "CR-03",
+          "checks": [
+            "Recovery replays the exact integrated checkpoint state and finalizes the candidate without rollback."
+          ]
+        },
+        {
           "criterion_id": "CR-07",
           "checks": [
-            "Resume preserves and finalizes the exact candidate after interruption following fast-forward."
+            "Recovery replays the exact integrated checkpoint state and finalizes the candidate without rollback."
           ]
         }
       ],
@@ -1786,7 +1793,8 @@
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/recovery.py",
         "_ask/scripts/inner_loop/evidence.py",
-        "_ask/scripts/inner_loop/__main__.py"
+        "_ask/scripts/inner_loop/__main__.py",
+        "_ask/scripts/inner_loop/checkpoint.py"
       ]
     },
     {
@@ -2383,7 +2391,6 @@
         "CR-T35",
         "CR-T36",
         "CR-T37",
-        "CR-T38",
         "CR-T39",
         "CR-T40",
         "CR-T41",
@@ -2410,7 +2417,8 @@
         "CR-T07",
         "CR-T08",
         "CR-T09",
-        "CR-T18"
+        "CR-T18",
+        "CR-T38"
       ]
     },
     {

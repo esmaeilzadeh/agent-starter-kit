@@ -28,3 +28,9 @@ After CR-1 integration exposed failures in the required existing reliability
 suite, the user selected “expand”. This authorizes the scoped CR-1 ownership and
 test-source binding amendment recorded in `cr1-integration-scope-change.md`;
 CR-01–CR-08, product adoption and scheduling remain unchanged.
+
+During CR-2, the user explicitly selected “Amend CR-T38 for checkpoint replay”.
+This authorizes moving CR-T38 from CR-1 to CR-2, changing its classification to
+`changed`, binding it to CR-03 and CR-07, and amending its assertion to require
+replay of the published post-fast-forward checkpoint after interruption before
+runtime cache replacement. No other criterion or product intent changes.
