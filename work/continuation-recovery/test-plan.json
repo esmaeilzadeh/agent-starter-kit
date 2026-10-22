@@ -105,7 +105,7 @@
         "CR-06"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_missing_state_retained_result",
       "scenario": {
         "given": "State removed after executed candidate and retained TaskResult/review",
@@ -150,7 +150,7 @@
         "CR-07"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_pending_state_conflicts_with_execution",
       "scenario": {
         "given": "An older or replaced cache marks an executed task pending",
@@ -195,7 +195,7 @@
         "CR-06"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_fresh_initialization_and_missing_legacy_evidence",
       "scenario": {
         "given": "A genuinely new task at its accepted anchor and a separate task with post-anchor source changes but missing runtime evidence",
@@ -240,7 +240,7 @@
         "CR-05"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_contract_and_checkout_conflict",
       "scenario": {
         "given": "Evidence names another task/work/contract or a candidate outside selected checkout ancestry",
@@ -910,7 +910,7 @@
         "CR-08"
       ],
       "type": "e2e",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff",
       "scenario": {
         "given": "Separate repair workstream with its four-task contract and an immutable fixture of the original blocked ten-task state (revision 11, Task1 integrated, Task2 blocked, Tasks3\u201310 pending)",
