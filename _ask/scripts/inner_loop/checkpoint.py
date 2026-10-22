@@ -202,10 +202,19 @@ def _required_commits(root: Path, work_id: str, state: dict) -> list[str]:
             continue
         if not isinstance(doc, dict):
             continue
+        failed_static_receipt = (
+            name == f"work/{work_id}/traceability/static-{doc.get('candidate_sha')}.json"
+            and doc.get("result") == "fail"
+        )
         for key in ("base_sha", "candidate_sha", "interrupted_candidate_sha", "source_sha", "authority_sha", "runner_sha",
                     "contract_sha", "accepted_tests_sha", "red_sha", "green_sha"):
             sha = doc.get(key)
             if isinstance(sha, str) and sha:
+                # Failed static receipts are diagnostic evidence only. Keep
+                # their exact bytes in the checkpoint, but do not require an
+                # ephemeral failed candidate to remain in the source closure.
+                if key == "candidate_sha" and failed_static_receipt:
+                    continue
                 if not _commit_exists(root, sha):
                     raise CheckpointError(f"required checkpoint commit is missing: {sha}")
                 commits.add(sha)
