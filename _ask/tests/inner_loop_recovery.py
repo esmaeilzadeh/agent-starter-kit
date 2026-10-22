@@ -323,10 +323,13 @@ class RecoveryTests(unittest.TestCase):
             "schema": "ask-test-results/v1", "run_id": "green-a",
             "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
             "plan_digest": self.old_plan_digest, "scope": "task", "task_id": "a",
-            "executions": [{"id": "exec-a", "phase": "final_green"}],
-            "cases": [{"test_id": test_id, "execution_id": "exec-a",
-                       "phase": "final_green", "outcome": "passed"}
-                      for test_id in ("T-A", "T-B")],
+            "executions": [{"id": "exec-a", "phase": "final_green", "runner_id": "fixture",
+                            "exit_code": 0, "collection_status": "ok",
+                            "source_sha": self.candidate}],
+            "cases": [{"test_id": test_id, "case_id": case_id, "runner_id": "fixture",
+                       "execution_id": "exec-a", "phase": "final_green", "outcome": "passed",
+                       "source_sha": self.candidate}
+                      for test_id, case_id in (("T-A", "tests.test_a"), ("T-B", "tests.test_b"))],
         }
         report_raw = json.dumps(report, sort_keys=True, separators=(",", ":"))
         self.write("work/w/traceability/runs/green-a/results.json", report_raw)
@@ -349,9 +352,12 @@ class RecoveryTests(unittest.TestCase):
             "schema": "ask-test-results/v1", "run_id": "green-b",
             "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
             "plan_digest": current_plan_digest, "scope": "task", "task_id": "b",
-            "executions": [{"id": "exec-b", "phase": "final_green"}],
-            "cases": [{"test_id": "T-B", "execution_id": "exec-b",
-                       "phase": "final_green", "outcome": "passed"}],
+            "executions": [{"id": "exec-b", "phase": "final_green", "runner_id": "fixture",
+                            "exit_code": 0, "collection_status": "ok",
+                            "source_sha": self.candidate}],
+            "cases": [{"test_id": "T-B", "case_id": "tests.test_b", "runner_id": "fixture",
+                       "execution_id": "exec-b", "phase": "final_green", "outcome": "passed",
+                       "source_sha": self.candidate}],
         }
         active_raw = json.dumps(active_report, sort_keys=True, separators=(",", ":"))
         self.write("work/w/traceability/runs/green-b/results.json", active_raw)
@@ -362,6 +368,32 @@ class RecoveryTests(unittest.TestCase):
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row, active_row]) + "\n")
         after_append = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(after_append, after_append)
+
+        # A digest-valid checkpoint cannot turn a failed run or ambiguous case
+        # identity into historical Green evidence.
+        for malformed in ("failed_execution", "failed_collection", "duplicate_case"):
+            invalid_report = copy.deepcopy(report)
+            if malformed == "failed_execution":
+                invalid_report["executions"][0]["exit_code"] = 1
+            elif malformed == "failed_collection":
+                invalid_report["executions"][0]["collection_status"] = "error"
+            else:
+                duplicate = copy.deepcopy(invalid_report["cases"][0])
+                duplicate["outcome"] = "failed"
+                invalid_report["cases"].append(duplicate)
+            invalid_raw = json.dumps(invalid_report, sort_keys=True, separators=(",", ":"))
+            self.write("work/w/traceability/runs/green-a/results.json", invalid_raw)
+            invalid_row = dict(ledger_row, digest=hashlib.sha256(invalid_raw.encode()).hexdigest())
+            self.write("work/w/traceability/executions.json", json.dumps([invalid_row, active_row]) + "\n")
+            publish(self.root, "w", state)
+            invalid = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+            self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
+            self.assertTrue(any("TaskResult contract identity mismatch" in conflict
+                                for conflict in invalid["conflicts"]))
+
+        self.write("work/w/traceability/runs/green-a/results.json", report_raw)
+        self.write("work/w/traceability/executions.json", json.dumps([ledger_row, active_row]) + "\n")
+        publish(self.root, "w", state)
 
         # A fabricated matching row and a report edited after checkpoint publication
         # cannot authorize carry-forward.
