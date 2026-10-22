@@ -106,15 +106,17 @@ class RecoveryTests(unittest.TestCase):
         self.git("add", "-A")
         self.git("commit", "-qm", message)
 
-    def run_cli(self, *args):
-        env = dict(os.environ)
-        env["PYTHONPATH"] = os.pathsep.join(
-            part for part in (str(SCRIPTS), env.get("PYTHONPATH", "")) if part
+    def run_cli(self, *args, env=None):
+        child_env = dict(os.environ)
+        if env is not None:
+            child_env.update(env)
+        child_env["PYTHONPATH"] = os.pathsep.join(
+            part for part in (str(SCRIPTS), child_env.get("PYTHONPATH", "")) if part
         )
         return subprocess.run(
             [sys.executable, "-m", "inner_loop", "--root", str(self.root), *args],
             cwd=self.root,
-            env=env,
+            env=child_env,
             capture_output=True,
             text=True,
         )
@@ -178,6 +180,7 @@ class RecoveryTests(unittest.TestCase):
         review_bytes = self.review_path.read_bytes()
         candidate = self.git("rev-parse", "HEAD")
         state_path = self.root / "work/w/inner-loop/state.json"
+        self.git("update-ref", "-d", "refs/ask/inner-loop/w")
         state_path.unlink()
 
         for command in (("run", "w"), ("resume", "w")):
@@ -259,18 +262,19 @@ class RecoveryTests(unittest.TestCase):
 
     def test_new_candidate_preserves_stale_rejected_review_history(self):
         self.start_candidate()
-        state_path = self.root / "work/w/inner-loop/state.json"
-        state = json.loads(state_path.read_text())
         result = json.loads(self.result_path.read_text())
-        state["tasks"]["a"]["evidence"]["review"] = {
-            "work_id": "w",
-            "task_id": "a",
-            "base_sha": self.anchor_commit,
-            "candidate_sha": self.candidate,
-            "result_digest": hashlib.sha256(self.result_path.read_bytes()).hexdigest(),
-            "verdict": "REJECTED",
-        }
-        state_path.write_text(json.dumps(state) + "\n", encoding="utf-8")
+        from inner_loop.state import cas_apply
+        state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        cas_apply(self.root, "w", state["revision"], lambda doc: doc["tasks"]["a"]["evidence"].update(
+            review={
+                "work_id": "w",
+                "task_id": "a",
+                "base_sha": self.anchor_commit,
+                "candidate_sha": self.candidate,
+                "result_digest": hashlib.sha256(self.result_path.read_bytes()).hexdigest(),
+                "verdict": "REJECTED",
+            }
+        ))
 
         self.write("src/a.py", "candidate = True\n# review correction\n")
         self.commit("correct rejected candidate")
@@ -361,18 +365,22 @@ class RecoveryTests(unittest.TestCase):
 
     def test_restore_deleted_runtime_cache(self):
         self.start_candidate()
-        before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        state_path = self.root / "work/w/inner-loop/state.json"
+        revision = json.loads(state_path.read_text(encoding="utf-8"))["revision"]
+        checkpointed = self.run_cli("cas-apply", "w", "--observed", str(revision))
+        self.assertEqual(checkpointed.returncode, 0, checkpointed.stdout + checkpointed.stderr)
+        before = state_path.read_bytes()
         result_before = self.result_path.read_bytes()
         review_before = self.review_path.read_bytes()
         checkpoint = self._checkpoint_ref()
         self.assertIsNotNone(checkpoint, "writer transitions must publish a retained checkpoint")
 
-        (self.root / "work/w/inner-loop/state.json").unlink()
-        restored = self.run_cli("resume", "w")
+        state_path.unlink()
+        restored = self.run_cli("status", "w")
 
         self.assertEqual(restored.returncode, 0, restored.stdout + restored.stderr)
         self.assertEqual(self._checkpoint_ref(), checkpoint)
-        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), before)
+        self.assertEqual(state_path.read_bytes(), before)
         self.assertEqual(self.result_path.read_bytes(), result_before)
         self.assertEqual(self.review_path.read_bytes(), review_before)
         self.assertNotIn("integrated", restored.stdout)
@@ -385,13 +393,22 @@ class RecoveryTests(unittest.TestCase):
         cached = state_path.read_bytes()
         revision = json.loads(cached)["revision"]
 
-        advanced = self.run_cli("cas-apply", "w", "--observed", str(revision))
-        self.assertEqual(advanced.returncode, 0, advanced.stdout + advanced.stderr)
+        before = self.run_cli("cas-apply", "w", "--observed", str(revision),
+                              env={"ASK_INNER_LOOP_CRASH_AT": "before_ref_publication"})
+        self.assertEqual(before.returncode, 75, before.stdout + before.stderr)
+        self.assertEqual(self._checkpoint_ref(), initial)
+        self.assertEqual(state_path.read_bytes(), cached)
+        prior = self.run_cli("status", "w")
+        self.assertEqual(prior.returncode, 0, prior.stdout + prior.stderr)
+        self.assertEqual(json.loads(state_path.read_text())["revision"], revision)
+
+        after = self.run_cli("cas-apply", "w", "--observed", str(revision),
+                             env={"ASK_INNER_LOOP_CRASH_AT": "after_ref_publication"})
+        self.assertEqual(after.returncode, 76, after.stdout + after.stderr)
         published = self._checkpoint_ref()
         self.assertNotEqual(published, initial)
-
-        state_path.write_bytes(cached)
-        replayed = self.run_cli("resume", "w")
+        self.assertEqual(state_path.read_bytes(), cached)
+        replayed = self.run_cli("status", "w")
         self.assertEqual(replayed.returncode, 0, replayed.stdout + replayed.stderr)
         self.assertEqual(self._checkpoint_ref(), published)
         restored = json.loads(state_path.read_text(encoding="utf-8"))
@@ -452,7 +469,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertIsNotNone(checkpoint, "state mutation must publish a checkpoint")
         state_path.write_bytes(old_cache)
 
-        replayed = self.run_cli("resume", "w")
+        replayed = self.run_cli("status", "w")
         self.assertEqual(replayed.returncode, 0, replayed.stdout + replayed.stderr)
         self.assertEqual(self._checkpoint_ref(), checkpoint)
         current = json.loads(state_path.read_text())
@@ -545,8 +562,9 @@ class RecoveryTests(unittest.TestCase):
         state_path = self.root / "work/continuation-recovery/inner-loop/state.json"
         repair_state = json.loads(state_path.read_text())
         self.assertEqual(set(repair_state["tasks"]), {"CR-1", "CR-2", "CR-3", "CR-4"})
-        repair_state["tasks"]["CR-1"]["status"] = "integrated"
-        state_path.write_text(json.dumps(repair_state, indent=2) + "\n", encoding="utf-8")
+        from inner_loop.state import cas_apply
+        cas_apply(self.root, "continuation-recovery", repair_state["revision"],
+                  lambda doc: doc["tasks"]["CR-1"].update(status="integrated"))
         second = self.run_cli("run", "continuation-recovery")
         self.assertEqual(second.returncode, 0, second.stderr + second.stdout)
         self.assertIn("running=CR-2", second.stdout)
