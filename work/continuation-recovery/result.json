@@ -1,6 +1,6 @@
 {
   "work_id": "continuation-recovery",
-  "commit_sha": "da2e64eb705d70751c99a2497bff67ee6d51cf89",
-  "result": "plan-sealed",
-  "notes": "Planning only: exact independent APPROVED review and repair-only accepted-tests registration. Static contract/graph/mapping checks passed; no behavior execution, implementation pass, runtime bootstrap or product scheduling. Stop per plan-seal.md."
+  "commit_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+  "result": "fail",
+  "notes": "CR-3 verification only: 38/38 canonical checks and 8/8 mapped cases passed. Formal completion is incomplete because exact-candidate independent semantic review is absent; CR-T13/14/20/21 coverage gaps remain documented. Verification corrections are committed through c2262d1. CR-3 remains running; no integration or next-task admission. Stop after committing verification evidence per user instruction."
 }

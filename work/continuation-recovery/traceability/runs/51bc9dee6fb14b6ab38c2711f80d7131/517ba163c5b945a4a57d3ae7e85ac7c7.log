@@ -1,0 +1,21 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+
+======================================================================
+FAIL: test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-bfaet_2k/candidate/_ask/tests/inner_loop_recovery.py", line 450, in test_standalone_run_finalization_interruptions
+    self.assertIn("coordinator_finalization", command.stdout)
+AssertionError: 'coordinator_finalization' not found in '{\n  "schema": "ask-test-results/v1",\n  "run_id": "fc43aa4b70894a3f8efcd898dbfab251",\n  "scope": "task",\n  "task_id": "a",\n  "candidate_sha": "700b1492d0d24072dfb79fa3785720fe934cf0c3",\n  "spec_digest": "a590f0cab197038948d2406954d15f29501806ded042ef885c3582317760a51b",\n  "plan_digest": "c9ad6b754265511611955658f7ed7c814f880bc2def003b0e46e7b52cca464ae",\n  "runner_identity": {\n    "capability": "ask-traceability/v1",\n    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"\n  },\n  "executions": [\n    {\n      "id": "73bd0cb3b3f845619aec50e87ae23c71",\n      "runner_id": "fixture",\n      "argv": [\n        "python",\n        "-m",\n        "unittest",\n        "fixture"\n      ],\n      "adapter": "unittest",\n      "actual_argv": [\n        "/usr/bin/python3",\n        "/tmp/tmp8yrdrqg4/.agents/ask/verification/traceability/unittest_runner.py",\n        "/tmp/tmp8yrdrqg4/work/w/traceability/runs/fc43aa4b70894a3f8efcd898dbfab251/73bd0cb3b3f845619aec50e87ae23c71.json",\n        "[\\"tests.test_a\\", \\"tests.test_b\\"]",\n        "fixture"\n      ],\n      "interpreter": "/usr/bin/python3",\n      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",\n      "phase": "final_green",\n      "source_sha": "700b1492d0d24072dfb79fa3785720fe934cf0c3",\n      "exit_code": 0,\n      "collection_status": "ok",\n      "output_artifact": "work/w/traceability/runs/fc43aa4b70894a3f8efcd898dbfab251/73bd0cb3b3f845619aec50e87ae23c71.log",\n      "output_digest": "8c51d79e7e0e5cdc8b63c67f961f8ec730f5b5527f2ee855a93ab97223583804"\n    }\n  ],\n  "cases": [\n    {\n      "case_id": "tests.test_a",\n      "outcome": "passed",\n      "failure_kind": null,\n      "test_id": "T-A",\n      "runner_id": "fixture",\n      "execution_id": "73bd0cb3b3f845619aec50e87ae23c71",\n      "phase": "final_green",\n      "source_sha": "700b1492d0d24072dfb79fa3785720fe934cf0c3",\n      "source_digests": {\n        "src/a.py": "068d48ea288a4f2178367c403a39abbb8d7ade9766b5cf33bedfabf4fd6443f2"\n      },\n      "output_artifact": "work/w/traceability/runs/fc43aa4b70894a3f8efcd898dbfab251/73bd0cb3b3f845619aec50e87ae23c71.log",\n      "output_digest": "8c51d79e7e0e5cdc8b63c67f961f8ec730f5b5527f2ee855a93ab97223583804"\n    },\n    {\n      "case_id": "tests.test_b",\n      "outcome": "passed",\n      "failure_kind": null,\n      "test_id": "T-B",\n      "runner_id": "fixture",\n      "execution_id": "73bd0cb3b3f845619aec50e87ae23c71",\n      "phase": "final_green",\n      "source_sha": "700b1492d0d24072dfb79fa3785720fe934cf0c3",\n      "source_digests": {\n        "src/a.py": "068d48ea288a4f2178367c403a39abbb8d7ade9766b5cf33bedfabf4fd6443f2"\n      },\n      "output_artifact": "work/w/traceability/runs/fc43aa4b70894a3f8efcd898dbfab251/73bd0cb3b3f845619aec50e87ae23c71.log",\n      "output_digest": "8c51d79e7e0e5cdc8b63c67f961f8ec730f5b5527f2ee855a93ab97223583804"\n    }\n  ]\n}\n'
+
+----------------------------------------------------------------------
+Ran 8 tests in 23.325s
+
+FAILED (failures=1)
