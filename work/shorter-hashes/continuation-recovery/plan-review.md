@@ -1,11 +1,16 @@
 # Independent recovery-plan review
 
+Current status: **SUPERSEDED — REQUEST CHANGES** after the user's requested
+re-evaluation on 2026-10-22. The current findings and required corrections are in
+`plan-review-reevaluation.md` (R1–R4). The original approval below is retained as
+review history, not a current no-blockers decision or implementation gate.
+
 Date: 2026-10-22.
 Reviewer: `/root/review_continuation_recovery_plan`, independently delegated
 read-only review under the kit Plan requirement. Coordinator recorded the
 returned decision; the reviewer changed no files.
 
-## Verdict
+## Original verdict (superseded)
 
 APPROVED as a proposed planning-only artifact set; no blocking findings.
 This is not acceptance of an executable interrupt contract or authorization to
