@@ -343,6 +343,26 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(self.result_path.read_bytes(), original_result)
         self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], self.base)
 
+        # Normal CR-2 execution may append new traceability evidence between
+        # coordinator checkpoints; unchanged historical evidence still carries.
+        active_report = {
+            "schema": "ask-test-results/v1", "run_id": "green-b",
+            "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
+            "plan_digest": current_plan_digest, "scope": "task", "task_id": "b",
+            "executions": [{"id": "exec-b", "phase": "final_green"}],
+            "cases": [{"test_id": "T-B", "execution_id": "exec-b",
+                       "phase": "final_green", "outcome": "passed"}],
+        }
+        active_raw = json.dumps(active_report, sort_keys=True, separators=(",", ":"))
+        self.write("work/w/traceability/runs/green-b/results.json", active_raw)
+        active_row = {"run_id": "green-b", "digest": hashlib.sha256(active_raw.encode()).hexdigest(),
+                      "phase": "final_green", "scope": "task", "task_id": "b",
+                      "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
+                      "plan_digest": current_plan_digest}
+        self.write("work/w/traceability/executions.json", json.dumps([ledger_row, active_row]) + "\n")
+        after_append = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+        self.assertIsNone(after_append, after_append)
+
         # A fabricated matching row and a report edited after checkpoint publication
         # cannot authorize carry-forward.
         self.write("work/w/traceability/executions.json", json.dumps([{
