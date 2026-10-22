@@ -110,6 +110,10 @@ class RecoveryTests(unittest.TestCase):
                             {"task_id": "b", "test_ids": []}],
         }
         self.write("specs/current/w.json", json.dumps(self.spec, sort_keys=True))
+        self.write(".agents/ask/verification/traceability/__init__.py",
+                   "CAPABILITY = 'ask-traceability/v1'\n")
+        self.write(".agents/ask/verification/traceability/unittest_runner.py",
+                   "# fixture runner identity\n")
         self.write("work/w/test-plan.json", json.dumps(self.old_plan, sort_keys=True))
         self.commit("accepted task graph")
         self.base = self.git("rev-parse", "HEAD")
@@ -321,17 +325,27 @@ class RecoveryTests(unittest.TestCase):
             "work/w/traceability/executions.json",
             "[]\n",
         )
+        runner_source = self.root / ".agents/ask/verification/traceability/unittest_runner.py"
+        log_path = "work/w/traceability/runs/green-a/exec-a.log"
+        log_bytes = b"fixture green execution output\n"
+        self.write(log_path, log_bytes)
+        source_digest = hashlib.sha256((self.root / "src/a.py").read_bytes()).hexdigest()
         report = {
             "schema": "ask-test-results/v1", "run_id": "green-a",
             "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
             "plan_digest": self.old_plan_digest, "scope": "task", "task_id": "a",
+            "runner_identity": {"capability": "ask-traceability/v1",
+                                "adapter_digest": hashlib.sha256(runner_source.read_bytes()).hexdigest()},
             "executions": [{"id": "exec-a", "phase": "final_green", "runner_id": "fixture",
                             "exit_code": 0, "collection_status": "ok",
                             "source_sha": self.candidate, "argv": ["python", "-m", "unittest", "fixture"],
-                            "adapter": "unittest"}],
+                            "adapter": "unittest", "output_artifact": log_path,
+                            "output_digest": hashlib.sha256(log_bytes).hexdigest()}],
             "cases": [{"test_id": test_id, "case_id": case_id, "runner_id": "fixture",
                        "execution_id": "exec-a", "phase": "final_green", "outcome": "passed",
-                       "source_sha": self.candidate}
+                       "source_sha": self.candidate, "source_digests": {"src/a.py": source_digest},
+                       "output_artifact": log_path,
+                       "output_digest": hashlib.sha256(log_bytes).hexdigest()}
                       for test_id, case_id in (("T-A", "tests.test_a"), ("T-B", "tests.test_b"))],
         }
         report_raw = json.dumps(report, sort_keys=True, separators=(",", ":"))
@@ -355,15 +369,21 @@ class RecoveryTests(unittest.TestCase):
             "schema": "ask-test-results/v1", "run_id": "green-b",
             "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
             "plan_digest": current_plan_digest, "scope": "task", "task_id": "b",
+            "runner_identity": report["runner_identity"],
             "executions": [{"id": "exec-b", "phase": "final_green", "runner_id": "fixture",
                             "exit_code": 0, "collection_status": "ok",
                             "source_sha": self.candidate, "argv": ["python", "-m", "unittest", "fixture"],
-                            "adapter": "unittest"}],
+                            "adapter": "unittest",
+                            "output_artifact": "work/w/traceability/runs/green-b/exec-b.log",
+                            "output_digest": hashlib.sha256(b"active output\n").hexdigest()}],
             "cases": [{"test_id": "T-B", "case_id": "tests.test_b", "runner_id": "fixture",
                        "execution_id": "exec-b", "phase": "final_green", "outcome": "passed",
-                       "source_sha": self.candidate}],
+                       "source_sha": self.candidate, "source_digests": {"src/a.py": source_digest},
+                       "output_artifact": "work/w/traceability/runs/green-b/exec-b.log",
+                       "output_digest": hashlib.sha256(b"active output\n").hexdigest()}],
         }
         active_raw = json.dumps(active_report, sort_keys=True, separators=(",", ":"))
+        self.write("work/w/traceability/runs/green-b/exec-b.log", b"active output\n")
         self.write("work/w/traceability/runs/green-b/results.json", active_raw)
         active_row = {"run_id": "green-b", "digest": hashlib.sha256(active_raw.encode()).hexdigest(),
                       "phase": "final_green", "scope": "task", "task_id": "b",
@@ -376,7 +396,9 @@ class RecoveryTests(unittest.TestCase):
         # A digest-valid checkpoint cannot turn a failed run or ambiguous case
         # identity into historical Green evidence.
         for malformed in ("failed_execution", "failed_collection", "wrong_runner",
-                          "wrong_runner_config", "split_execution", "duplicate_case"):
+                          "wrong_runner_config", "split_execution", "duplicate_case",
+                          "wrong_runner_identity", "missing_source_digest", "wrong_source_digest",
+                          "wrong_output_digest", "case_output_binding"):
             invalid_report = copy.deepcopy(report)
             if malformed == "failed_execution":
                 invalid_report["executions"][0]["exit_code"] = 1
@@ -393,6 +415,18 @@ class RecoveryTests(unittest.TestCase):
                 invalid_report["executions"].append(second)
                 invalid_report["cases"][0]["execution_id"] = "exec-a-1"
                 invalid_report["cases"][1]["execution_id"] = "exec-a-2"
+            elif malformed == "wrong_runner_identity":
+                invalid_report["runner_identity"]["capability"] = "untrusted"
+            elif malformed == "missing_source_digest":
+                invalid_report["cases"][0].pop("source_digests")
+            elif malformed == "wrong_source_digest":
+                invalid_report["cases"][0]["source_digests"]["src/a.py"] = "0" * 64
+            elif malformed == "wrong_output_digest":
+                invalid_report["executions"][0]["output_digest"] = "0" * 64
+                for case in invalid_report["cases"]:
+                    case["output_digest"] = "0" * 64
+            elif malformed == "case_output_binding":
+                invalid_report["cases"][0]["output_artifact"] = "work/w/traceability/runs/other/exec.log"
             else:
                 duplicate = copy.deepcopy(invalid_report["cases"][0])
                 duplicate["outcome"] = "failed"
