@@ -58,6 +58,24 @@ def _accepted_anchor(root: Path, work_id: str) -> tuple[str | None, str | None]:
     return anchor, None
 
 
+def _accepted_anchor_at(root: Path, work_id: str, commit: str) -> tuple[str | None, str | None]:
+    """Read the accepted contract identity recorded at a task's immutable base."""
+    name = f"work/{work_id}/traceability-accepted.json"
+    proc = _git(root, "show", f"{commit}:{name}")
+    if proc.returncode:
+        return None, f"{name} is unavailable at TaskResult base_sha"
+    try:
+        pin = json.loads(proc.stdout)
+    except ValueError as exc:
+        return None, f"{name} is invalid at TaskResult base_sha: {exc}"
+    if not isinstance(pin, dict) or pin.get("work_id") != work_id:
+        return None, f"{name} work_id is invalid at TaskResult base_sha"
+    anchor = pin.get("contract_sha")
+    if not isinstance(anchor, str) or not _commit_exists(root, anchor):
+        return None, f"{name} has no valid contract_sha at TaskResult base_sha"
+    return anchor, None
+
+
 def _changed_paths(root: Path, base: str, head: str) -> list[str]:
     names: set[str] = set()
     if base and head and _commit_exists(root, base) and _commit_exists(root, head):
@@ -202,15 +220,23 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                         current = _git(root, "rev-parse", "--verify", "HEAD^{commit}")
                         if current.returncode or current.stdout.strip() != candidate:
                             conflicts.append(f"{relative}: candidate differs from the selected checkout HEAD")
-        contract_sha = result.get("contract_sha")
-        if not isinstance(contract_sha, str) or not contract_sha:
-            conflicts.append(f"{relative}: TaskResult contract_sha is missing or invalid")
-        else:
-            anchor, anchor_error = _accepted_anchor(root, work_id)
-            if anchor_error:
-                conflicts.append(anchor_error)
+        anchor, anchor_error = _accepted_anchor(root, work_id)
+        if anchor_error:
+            conflicts.append(anchor_error)
+        elif "contract_sha" in result:
+            contract_sha = result.get("contract_sha")
+            if not isinstance(contract_sha, str) or not contract_sha:
+                conflicts.append(f"{relative}: TaskResult contract_sha is invalid")
             elif contract_sha != anchor:
                 conflicts.append(f"{relative}: TaskResult contract identity mismatch")
+        elif isinstance(result.get("base_sha"), str):
+            base_anchor, base_error = _accepted_anchor_at(root, work_id, result["base_sha"])
+            if base_error:
+                conflicts.append(f"{relative}: contract identity cannot be proven: {base_error}")
+            elif base_anchor != anchor:
+                conflicts.append(f"{relative}: accepted contract changed since TaskResult base_sha")
+        else:
+            conflicts.append(f"{relative}: contract identity cannot be proven without contract_sha")
 
         if state is None or not state_exists:
             task_ids.add(task_id)
