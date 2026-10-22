@@ -55,8 +55,8 @@ The user requested:
 
 > re-eval the situation and check if it still need human decision if not stop and show your decision with the level of certainty (if it is up to 80%) else ask it as a choice question with consequences.
 
-Add this decision check to the proposed work: reconsider the available evidence and existing authorization before escalating. When a human decision is unnecessary and confidence meets the agreed threshold, stop and present the agent's decision with its confidence level. Otherwise, ask one choice question and explain the consequences of each option. Do not repeat a decision already submitted.
+Before asking for a decision during an active workflow, reassess the evidence, existing authorization, and consequences. If another model is available with stronger reasoning, consult it before increasing the current model's reasoning effort. Ask the human only when the decision is genuinely theirs to make; present one choice question with the consequences of each option, then wait for the submitted choice. Never repeat a decision that has already been submitted.
 
-For this re-evaluation, use a smarter available model when one exists, or increase the current model's reasoning effort when supported. Perform that reassessment before deciding whether human input is still necessary.
+Treat a model escalation as a temporary consultation. Once the decision is resolved, return to the model and effort that were active when the workflow began and continue from the exact authorized stage and task. Do not leave the workflow on the stronger model or raise its effort after the consultation.
 
-The requested threshold wording is preserved above. Before implementing this rule, resolve whether “up to 80%” means at least 80% confidence or a different boundary; this inbox update does not silently choose its meaning or authorize bypassing an explicit human-only gate.
+When the agent can decide within existing authorization, stop the decision loop and state the chosen path with its confidence. Preserve the user's requested 80% threshold wording until its boundary is clarified; do not use uncertainty about that wording to ask redundant questions or to bypass a human-only gate.
