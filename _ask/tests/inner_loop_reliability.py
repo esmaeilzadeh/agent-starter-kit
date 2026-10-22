@@ -14,8 +14,14 @@ import unittest
 
 TESTS = Path(__file__).resolve().parent
 SCRIPTS = TESTS.parent / "scripts"
-sys.path.insert(0, str(TESTS))
-sys.path.insert(0, str(SCRIPTS))
+for import_path in (SCRIPTS, TESTS):
+    resolved = str(import_path.resolve())
+    if resolved not in sys.path:
+        sys.path.insert(0, resolved)
+inherited_pythonpath = os.environ.get("PYTHONPATH", "").split(os.pathsep)
+os.environ["PYTHONPATH"] = os.pathsep.join(dict.fromkeys(
+    [str(SCRIPTS.resolve()), str(TESTS.resolve()), *(path for path in inherited_pythonpath if path)]
+))
 
 from inner_loop.state import SecondWriter, cas_apply, cas_init, load_state
 from inner_loop.recovery import RecoveryRequired
