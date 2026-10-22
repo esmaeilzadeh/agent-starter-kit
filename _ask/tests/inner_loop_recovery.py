@@ -395,6 +395,7 @@ class RecoveryTests(unittest.TestCase):
 
         # A digest-valid checkpoint cannot turn a failed run or ambiguous case
         # identity into historical Green evidence.
+        malformed_failures = []
         for malformed in ("failed_execution", "failed_collection", "wrong_runner",
                           "wrong_runner_config", "split_execution", "duplicate_case",
                           "wrong_runner_identity", "missing_source_digest", "wrong_source_digest",
@@ -437,10 +438,11 @@ class RecoveryTests(unittest.TestCase):
             self.write("work/w/traceability/executions.json", json.dumps([invalid_row, active_row]) + "\n")
             publish(self.root, "w", state)
             invalid = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
-            with self.subTest(malformed=malformed):
-                self.assertIsNotNone(invalid, f"{malformed} checkpointed Green must require recovery")
-                self.assertTrue(any("TaskResult contract identity mismatch" in conflict
-                                    for conflict in invalid["conflicts"]))
+            if (invalid is None or not any("TaskResult contract identity mismatch" in conflict
+                                           for conflict in invalid["conflicts"])):
+                malformed_failures.append(malformed)
+        self.assertEqual(malformed_failures, [],
+                         "checkpointed Green must require recovery for every malformed case")
 
         self.write("work/w/traceability/runs/green-a/results.json", report_raw)
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row, active_row]) + "\n")
