@@ -317,7 +317,10 @@ os.replace=interrupt
         proc.kill()
         proc.communicate(timeout=5)
         self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)
-        self.assertEqual(load_state(self.root, "w")["coordinator_sha"], self.base)
+        # The new checkpoint commit point may already be durable before the
+        # runtime state cache is replaced, so recovery must replay that exact
+        # post-integration snapshot.
+        self.assertEqual(load_state(self.root, "w")["coordinator_sha"], self.candidate)
         self.assertEqual(resume_from_state(self.root, "w"), "running=b")
         state = load_state(self.root, "w")
         self.assertEqual(state["tasks"]["a"]["status"], "integrated")
