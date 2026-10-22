@@ -2206,23 +2206,23 @@
       "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_new_candidate_preserves_stale_rejected_review_history",
       "scenario": {
-        "given": "The disposable recovery fixture with a retained active TaskResult and exact graph ownership",
-        "when": "test_new_candidate_preserves_stale_rejected_review_history exercises recovery reconciliation",
+        "given": "A TaskResult and rejected review are retained for the running task",
+        "when": "A newer candidate and matching TaskResult are written",
         "then": [
-          "A newer candidate preserves the stale rejected review as history, while that review cannot authorize integration of the new candidate."
+          "Status succeeds and still reports task a as running."
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "CR-04",
           "checks": [
-            "A newer candidate preserves the stale rejected review as history, while that review cannot authorize integration of the new candidate."
+            "Status succeeds and still reports task a as running."
           ]
         },
         {
           "criterion_id": "CR-07",
           "checks": [
-            "A newer candidate preserves the stale rejected review as history, while that review cannot authorize integration of the new candidate."
+            "Status succeeds and still reports task a as running."
           ]
         }
       ],
@@ -2247,23 +2247,23 @@
       "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_running_task_changes_may_overlap_later_task_ownership",
       "scenario": {
-        "given": "The disposable recovery fixture with a retained active TaskResult and exact graph ownership",
-        "when": "test_running_task_changes_may_overlap_later_task_ownership exercises recovery reconciliation",
+        "given": "The active task changes a file shared with its pending dependent task",
+        "when": "Status reconciliation is evaluated",
         "then": [
-          "Changes to paths shared with a later task remain attributed to the active writer, while unrelated unowned changes still require recovery."
+          "Status succeeds and reports task a running and task b pending."
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "CR-01",
           "checks": [
-            "Changes to paths shared with a later task remain attributed to the active writer, while unrelated unowned changes still require recovery."
+            "Status succeeds and reports task a running and task b pending."
           ]
         },
         {
           "criterion_id": "CR-07",
           "checks": [
-            "Changes to paths shared with a later task remain attributed to the active writer, while unrelated unowned changes still require recovery."
+            "Status succeeds and reports task a running and task b pending."
           ]
         }
       ],
