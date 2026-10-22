@@ -14,6 +14,7 @@ import unittest
 REPO = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO / "_ask" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
+sys.path.insert(0, str(REPO / ".agents" / "ask"))
 
 from _ask.tests.inner_loop_recovery_fixture import (
     LEGACY_AUTHORITY_SHA,
@@ -211,6 +212,113 @@ class RecoveryTests(unittest.TestCase):
             + "\n",
             encoding="utf-8",
         )
+
+    def _real_traceability_pair(self):
+        """Run the accepted two-case plan on real failing and passing commits."""
+        started = self.run_cli("run", "w")
+        self.assertEqual(started.returncode, 0, started.stdout + started.stderr)
+        self.write(
+            "fixture.py",
+            """import pathlib, unittest
+class test_a(unittest.TestCase):
+    def runTest(self): self.assertEqual(pathlib.Path('src/a.py').read_text(), 'green\\n')
+    def id(self): return 'tests.test_a'
+class test_b(unittest.TestCase):
+    def runTest(self): self.assertEqual(pathlib.Path('src/a.py').read_text(), 'green\\n')
+    def id(self): return 'tests.test_b'
+""",
+        )
+        self.write("src/a.py", "red\n")
+        self.commit("CR-3 real assertion red fixture")
+        red_sha = self.git("rev-parse", "HEAD")
+        from verification.traceability.adapters import run_tests
+        contracts = {"spec": self.spec, "plan": self.old_plan}
+        red = run_tests(self.root, contracts, red_sha, "task", "a", "red")
+        self.write("src/a.py", "green\n")
+        self.commit("CR-3 real assertion green fixture")
+        green_sha = self.git("rev-parse", "HEAD")
+        green = run_tests(self.root, contracts, green_sha, "task", "a", "final_green")
+        return red, green
+
+    def test_checkpoint_real_red_and_green(self):
+        red, green = self._real_traceability_pair()
+        from inner_loop import evidence
+        self.assertTrue(
+            callable(getattr(evidence, "checkpoint_run", None)),
+            "coordinator must checkpoint validated standalone run milestones",
+        )
+        for report in (red, green):
+            evidence.checkpoint_run(self.root, "w", "a", report["run_id"])
+        state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        recorded = state["tasks"]["a"]["evidence"]["traceability_runs"]
+        self.assertEqual([item["run_id"] for item in recorded], [red["run_id"], green["run_id"]])
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+        for report in (red, green):
+            run_dir = self.root / "work/w/traceability/runs" / report["run_id"]
+            for path in run_dir.iterdir():
+                if path.is_file():
+                    relative = path.relative_to(self.root).as_posix()
+                    self.assertEqual(checkpoint[2]["artifacts/" + relative], path.read_bytes())
+        cache = self.root / "work/w/inner-loop/state.json"
+        cache.unlink()
+        restored = load_state(self.root, "w")
+        self.assertEqual(
+            [item["run_id"] for item in restored["tasks"]["a"]["evidence"]["traceability_runs"]],
+            [red["run_id"], green["run_id"]],
+        )
+
+    def test_stale_review_preserves_execution(self):
+        self.test_new_candidate_preserves_stale_rejected_review_history()
+
+    def test_crash_after_verification_or_ff(self):
+        self.test_crash_around_checkpoint_publication()
+
+    def test_guard_rollback_and_explicit_attempts(self):
+        self.test_interrupt_and_reopen_preserve_attempt_history()
+
+    def test_clone_and_cli_recovery_diagnostics(self):
+        self.test_retain_objects_after_gc_and_bundle_transfer()
+
+    def test_nested_verifier_coordinator_finalization(self):
+        from _ask.tests.inner_loop_reliability import IntegrationTests
+        result = unittest.TestResult()
+        IntegrationTests("test_successful_in_place_integration_records_executed_lineage").run(result)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
+
+    def test_standalone_run_finalization_interruptions(self):
+        red, _green = self._real_traceability_pair()
+        ledger = self.root / "work/w/traceability/executions.json"
+        rows = json.loads(ledger.read_text())
+        ledger.write_text(json.dumps([row for row in rows if row["run_id"] != red["run_id"]]) + "\n")
+        from inner_loop import evidence
+        self.assertTrue(
+            callable(getattr(evidence, "checkpoint_run", None)),
+            "coordinator must recover a complete report interrupted before ledger insertion",
+        )
+        evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
+        before = ledger.read_bytes()
+        evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
+        self.assertEqual(ledger.read_bytes(), before, "replaying a finalized run must be idempotent")
+        state = load_state(self.root, "w")
+        self.assertEqual(state["tasks"]["a"]["evidence"]["traceability_runs"][0]["run_id"], red["run_id"])
+
+    def test_old_pinned_runner_handoff(self):
+        from inner_loop.evidence import snapshot_runner
+        verification = REPO / ".agents" / "ask" / "verification"
+        import shutil
+        shutil.copytree(verification, self.root / ".agents/ask/verification", dirs_exist_ok=True,
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        old_runner = self.root / ".agents/ask/verification/run.py"
+        old_runner.write_text("PINNED_RUNNER = 'pre-hook'\\n", encoding="utf-8")
+        self.commit("pre-hook trusted verifier")
+        old_sha = self.git("rev-parse", "HEAD")
+        old_runner.write_text("raise RuntimeError('candidate verifier must not run')\\n", encoding="utf-8")
+        self.commit("candidate verifier replacement")
+        with tempfile.TemporaryDirectory() as tmp:
+            runner, _digest = snapshot_runner(self.root, old_sha, Path(tmp) / "trusted")
+            self.assertEqual(runner.read_text(encoding="utf-8"), "PINNED_RUNNER = 'pre-hook'\\n")
 
     def test_interrupt_and_reopen_preserve_attempt_history(self):
         self.write("accepted.json", json.dumps({"plan_review": {"plan_digest": "plan-before"}}) + "\n")
