@@ -144,7 +144,7 @@ class EntrypointTests(unittest.TestCase):
             verify_candidate(untrusted.root,untrusted_result)
 
     def test_I05_all_normal_entrypoints_reject_omitted_e2e(self):
-        c=self.consumer(omit_e2e=True,tasks=True,start_task_before_candidate=True)
+        c=self.consumer(omit_e2e=True,tasks=True)
         self.require_fail(c.command('verify'))
         self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
         self.require_fail(c.command('check-workstream','w','--acceptance'))
@@ -167,7 +167,7 @@ class EntrypointTests(unittest.TestCase):
         report=json.loads((c.root/'verification-result.json').read_text());self.assertEqual(report['result'],'fail')
         self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
     def test_I07_complete_evidence_agrees_across_entrypoints(self):
-        c=self.consumer(tasks=True,start_task_before_candidate=True);self.require_pass(c.command('verify'))
+        c=self.consumer(tasks=True);self.require_pass(c.command('verify'))
         self.require_pass(c.command('traceability','check-completion','w'))
         self.require_pass(c.command('check-workstream','w','--acceptance'))
         self.require_pass(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass','--notes','Literal "$text" and quotes preserved'))
