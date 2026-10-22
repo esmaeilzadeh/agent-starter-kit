@@ -436,6 +436,9 @@ class test_b(unittest.TestCase):
     def test_standalone_run_finalization_interruptions(self):
         red, _green = self._real_traceability_pair()
         env = dict(os.environ)
+        # This child is the fixture's standalone coordinator, even when the
+        # enclosing test is running under a verifier's detached candidate.
+        env["ASK_TRACEABILITY_RUNTIME_ROOT"] = str(self.root)
         env["PYTHONPATH"] = os.pathsep.join(
             part for part in (str(self.root / ".agents/ask"), str(SCRIPTS), env.get("PYTHONPATH", "")) if part
         )
