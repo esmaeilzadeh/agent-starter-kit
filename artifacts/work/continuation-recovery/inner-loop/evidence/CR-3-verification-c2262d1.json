@@ -1,0 +1,53 @@
+{
+  "schema": "ask-verification-notes/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "candidate_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+  "verification_author": "/root",
+  "independent_review": false,
+  "canonical_command": "ASK_WORK_ID=continuation-recovery ASK_TRACEABILITY_SCOPE=task ASK_TRACEABILITY_TASK_ID=CR-3 VERIFY_JSON=work/continuation-recovery/traceability/verification-cr3-final.json ./ask verify",
+  "canonical_exit_code": 1,
+  "canonical_result": "incomplete",
+  "checks_passed": 38,
+  "checks_total": 38,
+  "mapped_green_run_id": "4e002835e740484c88160aeb14c4cc4e",
+  "mapped_cases_passed": 8,
+  "mapped_cases_total": 8,
+  "red_run_id": "f21a95f6b4c4499aacf37a3ffd27a77d",
+  "red_candidate_sha": "94458d8376a75f052adbf2c4737f4f3c18cef4b6",
+  "red_failure": "CR-T19 failed as behavior_assertion with collection_status=ok",
+  "completion_error": "spec-to-test completion failed: {\"errors\": [\"migration_required: missing/invalid JSON /home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/c2262d11216f3142a75a994cd88a14801c9a86a6.json: [Errno 2] No such file or directory: '/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/c2262d11216f3142a75a994cd88a14801c9a86a6.json'\"], \"missing_evidence\": [], \"report\": \"work/continuation-recovery/traceability/completion.json\"}",
+  "resolved_findings": [
+    {
+      "id": "CR3-V01",
+      "commit_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+      "resolution": "Filter receipt-selected run reports by task scope and task ID before milestone finalization. The real nested regression retains a second task Red and proves only the selected task Red/Green are finalized."
+    },
+    {
+      "id": "CR3-V06",
+      "commit_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+      "resolution": "Add the verification package path before importing it in the finalizer. Previously failing public entrypoint I07 passes."
+    },
+    {
+      "id": "CR3-V07",
+      "commit_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+      "resolution": "Run the automatic standalone checkpoint hook only when coordinator state or a retained checkpoint exists. Pre-initialization task runs preserve the established data-only behavior; previously failing amended-contract entrypoint I08 passes."
+    }
+  ],
+  "open_findings": [
+    "CR3-V02: CR-T13 generic CAS rollback and CR-T14 source-only clone/CLI diagnostics are not demonstrated by their wrapper tests.",
+    "CR3-V03: CR-T20 does not yet demonstrate process death at all three publication boundaries or malformed-report/worker rejection.",
+    "CR3-V04: CR-T21 snapshots old-runner bytes but does not execute the old verifier and consume its receipt or demonstrate unsupported/incomplete-schema diagnostics."
+  ],
+  "historical_findings": "work/continuation-recovery/inner-loop/evidence/CR-3-verification-notes-222477f.json",
+  "milestone_checkpoint_requested": [
+    "f21a95f6b4c4499aacf37a3ffd27a77d",
+    "4e002835e740484c88160aeb14c4cc4e"
+  ],
+  "task_result": "Not emitted: accepted coverage and exact-candidate independent review are incomplete.",
+  "task_status": "running",
+  "integration_performed": false,
+  "next_task_started": false,
+  "stop_requested": "User requested verification, commit, and stop. No human decision is currently required.",
+  "resume_guidance": "Preserve and reuse the recorded Red/Green history. Resolve open coverage findings in CR-3 scope, inspect inherited implementations before classifying their evidence, obtain a genuine exact-candidate independent review, and rerun completion on the intended integration candidate. Do not manufacture a new Red for already working behavior. The subsequent evidence-only commit changes HEAD but no production or assertion source; strict candidate-bound final Green/review must still target the eventual integration SHA."
+}

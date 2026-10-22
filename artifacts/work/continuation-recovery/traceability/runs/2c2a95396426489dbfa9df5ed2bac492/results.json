@@ -1,0 +1,42 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "2c2a95396426489dbfa9df5ed2bac492",
+  "scope": "task",
+  "task_id": "CR-3",
+  "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "bd91f7940ee943c0ba903621d07ac51a",
+      "runner_id": "continuation-recovery",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.inner_loop_recovery"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/runs/2c2a95396426489dbfa9df5ed2bac492/bd91f7940ee943c0ba903621d07ac51a.json",
+        "[\"_ask.tests.inner_loop_recovery.RecoveryTests.test_checkpoint_real_red_and_green\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_review_preserves_execution\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_after_verification_or_ff\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_guard_rollback_and_explicit_attempts\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_clone_and_cli_recovery_diagnostics\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_nested_verifier_coordinator_finalization\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_standalone_run_finalization_interruptions\", \"_ask.tests.inner_loop_recovery.RecoveryTests.test_old_pinned_runner_handoff\"]",
+        "_ask.tests.inner_loop_recovery"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+      "exit_code": 1,
+      "collection_status": "error",
+      "output_artifact": "work/continuation-recovery/traceability/runs/2c2a95396426489dbfa9df5ed2bac492/bd91f7940ee943c0ba903621d07ac51a.log",
+      "output_digest": "0022ee81eaae586301bd919619db568337b011018f4f635ccdae17bcdd457edb"
+    }
+  ],
+  "cases": []
+}

@@ -1,0 +1,42 @@
+........FF...................
+======================================================================
+FAIL: test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-static-k_zkx65t/candidate/_ask/tests/test_traceability_entrypoints.py", line 185, in test_I07_complete_evidence_agrees_across_entrypoints
+    self.require_pass(c.command('inner-loop','run','w'))
+  File "/tmp/ask-static-k_zkx65t/candidate/_ask/tests/test_traceability_entrypoints.py", line 14, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/__main__.py", line 338, in <module>
+    raise SystemExit(main())
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/__main__.py", line 276, in main
+    print(run_until(root, args.work_id))
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/driver.py", line 185, in run_until
+    out = run_once(root, work_id)
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/driver.py", line 167, in run_once
+    integrate_ready(root, work_id, tid)
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/driver.py", line 127, in integrate_ready
+    _checkpoint_run_locked(root, work_id, task_id, run_id, doc)
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/evidence.py", line 273, in _checkpoint_run_locked
+    report, row = _execution_row(root, work_id, task_id, run_id)
+  File "/tmp/tmpy08ea98d/_ask/scripts/inner_loop/evidence.py", line 140, in _execution_row
+    from verification.traceability.evidence import load_accepted
+ModuleNotFoundError: No module named 'verification'
+
+
+======================================================================
+FAIL: test_I08_integration_accepts_reviewed_contract_amended_after_task_base (test_traceability_entrypoints.EntrypointTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-static-k_zkx65t/candidate/_ask/tests/test_traceability_entrypoints.py", line 96, in test_I08_integration_accepts_reviewed_contract_amended_after_task_base
+    self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,
+  File "/tmp/ask-static-k_zkx65t/candidate/_ask/tests/test_traceability_entrypoints.py", line 14, in require_pass
+    def require_pass(self,proc):self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
+AssertionError: 1 != 0 : {"status": "fail", "error": "coordinator could not checkpoint traceability run: Traceback (most recent call last):\n  File \"/usr/lib/python3.10/runpy.py\", line 196, in _run_module_as_main\n    return _run_code(code, main_globals, None,\n  File \"/usr/lib/python3.10/runpy.py\", line 86, in _run_code\n    exec(code, run_globals)\n  File \"/tmp/tmpvh9r49_n/_ask/scripts/inner_loop/__main__.py\", line 338, in <module>\n    raise SystemExit(main())\n  File \"/tmp/tmpvh9r49_n/_ask/scripts/inner_loop/__main__.py\", line 300, in main\n    result = checkpoint_run(root, args.work_id, args.task_id, args.run_id)\n  File \"/tmp/tmpvh9r49_n/_ask/scripts/inner_loop/evidence.py\", line 315, in checkpoint_run\n    state = load_state(root, work_id)\n  File \"/tmp/tmpvh9r49_n/_ask/scripts/inner_loop/state.py\", line 68, in load_state\n    raise FileNotFoundError(str(path))\nFileNotFoundError: /tmp/tmpvh9r49_n/work/w/inner-loop/state.json"}
+
+
+----------------------------------------------------------------------
+Ran 29 tests in 56.272s
+
+FAILED (failures=2)
