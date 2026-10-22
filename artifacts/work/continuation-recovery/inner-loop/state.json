@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 13,
+  "revision": 14,
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -452,7 +452,9 @@
             }
           ],
           "started_revision": null,
-          "interrupted_revision": 13
+          "interrupted_revision": 13,
+          "interrupted_candidate_sha": "029e3f95735aa607ef00605116f29865898787b8",
+          "candidate_identity_reconciliation": "work/continuation-recovery/inner-loop/evidence/CR-2-attempt-1-candidate-reconciliation.json"
         }
       ],
       "attempt_number": 1,

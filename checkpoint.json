@@ -1,11 +1,17 @@
 {
-  "accepted_contract_sha": "86b3f2498794c74b2494175f625b6fb2a20db747",
+  "accepted_contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
   "artifacts": {
     "work/continuation-recovery/inner-loop/evidence/CR-1-review-c1b5ca0.md": {
       "blob": "73458b386d5c892c580d6b1edd5c7afff40f9036",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-1-review-c1b5ca0.md",
       "sha256": "568d83fe2963f891201d04e00c7d3032af5e06a742ebe6b7b27df3ef05aaf7ea",
       "size": 1446
+    },
+    "work/continuation-recovery/inner-loop/evidence/CR-2-attempt-1-candidate-reconciliation.json": {
+      "blob": "ae48070ce301af1437782dcbafbc8736460d2001",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/CR-2-attempt-1-candidate-reconciliation.json",
+      "sha256": "80da2f8ba5553ac7cbd2e148fcd87ea663729b8ecb072e05a48ad7880224e2d9",
+      "size": 1217
     },
     "work/continuation-recovery/inner-loop/evidence/attempt-0-before-plan-amendment/CR-1-current.json": {
       "blob": "77cfe1b7a17a519ca026245029fb5b002a23967b",
@@ -284,10 +290,10 @@
       "size": 1978
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "1626f5e24877ba53aa3f4e5839cb787dbec5008b",
+      "blob": "8927f1cbaf29c49937ce864be68f4d98f5c58e3a",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "31efbeaf7a03b6a12d4ce78e459791a6cc866464dd5e3d94be5110b2e00d8f2a",
-      "size": 24749
+      "sha256": "04884d331e77685b0f686c2105820daaa11455a8d158a429cf0f0b9f8b543495",
+      "size": 24974
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2bbf3dfa5cb6ecba603c233a0f21f1fa01b4c3f1",
@@ -338,10 +344,10 @@
       "size": 100133
     },
     "work/continuation-recovery/traceability/executions.json": {
-      "blob": "6c6a1bc745d67a2bf651e9ba6ff48058ab74acd6",
+      "blob": "e74af0d79ae0836a1f86e297ba91497744228772",
       "path": "artifacts/work/continuation-recovery/traceability/executions.json",
-      "sha256": "7ead0320e91f8135103055421f2e7d14c37ab5e6bd48a9fad1d7e647261ff79f",
-      "size": 5810
+      "sha256": "4f37b5440dfcf9565e5310dca443d93cf24eec7855385ae042bc0a350e7c45d4",
+      "size": 6704
     },
     "work/continuation-recovery/traceability/executions.lock": {
       "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -372,6 +378,12 @@
       "path": "artifacts/work/continuation-recovery/traceability/plan-review-cr2-attempt-amendment.json",
       "sha256": "9565f99f76067dae4f6c893e0c0aab4dcb7e06b64849354263d51d4ca1aec883",
       "size": 2180
+    },
+    "work/continuation-recovery/traceability/plan-review-cr2-scope-carry-forward.json": {
+      "blob": "ef35c65e1438b15ccd815cdbff70e47f2aaa5c44",
+      "path": "artifacts/work/continuation-recovery/traceability/plan-review-cr2-scope-carry-forward.json",
+      "sha256": "3f83307cd1272bec10b7c914c5e331d1d7b1332c66ceeac522d0f53ad4472f1d",
+      "size": 1311
     },
     "work/continuation-recovery/traceability/plan-review-entrypoint-amendment.json": {
       "blob": "4c01f4537554305189666a8807aa27602b30282c",
@@ -456,6 +468,36 @@
       "path": "artifacts/work/continuation-recovery/traceability/runs/00035a40c6104f53bab0649af8bd6110/results.json",
       "sha256": "5065b5a87de7fcb9249e56e951c8972e870efec55ffc97a89d31a02dd2dcd131",
       "size": 60011
+    },
+    "work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/05a50ab28fc04cc69a32648a94940d90.json": {
+      "blob": "28109e383e99e0641323770d3613d25d509bfc72",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/05a50ab28fc04cc69a32648a94940d90.json",
+      "sha256": "857b339f9066736261d2381c1609187dcc01a8a1da019ed7c448fd2152bc3c18",
+      "size": 220
+    },
+    "work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/05a50ab28fc04cc69a32648a94940d90.log": {
+      "blob": "c498551ec88d6e50c2df3f1f0b62331a54fbad97",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/05a50ab28fc04cc69a32648a94940d90.log",
+      "sha256": "85bc89b405520d79957d6984d39980a9e231ecf06f94ac423a5499c5d9e554b7",
+      "size": 229
+    },
+    "work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/1aa675f5a97742ca8215e0c9311ebf92.json": {
+      "blob": "4d32f778b5c7394f730536e74713bc251ff86f72",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/1aa675f5a97742ca8215e0c9311ebf92.json",
+      "sha256": "a880837d3e8a4e7709107a200abc42b0cb813788ae1938e89deabbb5e9202542",
+      "size": 1387
+    },
+    "work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/1aa675f5a97742ca8215e0c9311ebf92.log": {
+      "blob": "adacd6b8ec505c805100ee7a534bc7597547ba8a",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/1aa675f5a97742ca8215e0c9311ebf92.log",
+      "sha256": "27575c2dfe95e0cb66ae766a40da58761c0b5f0aac3b143f3dacf0981c2175ee",
+      "size": 998
+    },
+    "work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/results.json": {
+      "blob": "09b8fc2b0ea55a7add328eb3cff110ce39862c0b",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/118a8c774ea74246af0067315140b5f6/results.json",
+      "sha256": "0054c2e265779aeb8ec2b5863f4a86231cddb72fbd74a2903a8cd150790bcea8",
+      "size": 17745
     },
     "work/continuation-recovery/traceability/runs/1659280af6794864bc76217c8f99db9b/a077b78d32e045e0af549d719938c18a.json": {
       "blob": "c4bcf5ce3ee1059ca518fff20e7eceb4fb47b24c",
@@ -816,6 +858,36 @@
       "path": "artifacts/work/continuation-recovery/traceability/runs/870016b06995484180004f5f721079a2/results.json",
       "sha256": "4460f12c784ba997bcd1846ac62163382c3902bd46c50d8e7f481811854b09dc",
       "size": 8973
+    },
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/c42937f70d7044e4b3ee0453e017087b.json": {
+      "blob": "28109e383e99e0641323770d3613d25d509bfc72",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/c42937f70d7044e4b3ee0453e017087b.json",
+      "sha256": "857b339f9066736261d2381c1609187dcc01a8a1da019ed7c448fd2152bc3c18",
+      "size": 220
+    },
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/c42937f70d7044e4b3ee0453e017087b.log": {
+      "blob": "c2185d319450937639d03937b0aa52078464dc79",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/c42937f70d7044e4b3ee0453e017087b.log",
+      "sha256": "f2d3ec7e7d82057aa3d49949485b5b148e4309f65c0234e28ca0739250ee0bdb",
+      "size": 229
+    },
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.json": {
+      "blob": "5d48457ba9e8769e89ca5ccd68facba2a9fa153d",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.json",
+      "sha256": "ed0e90754b782b5d115e6f74cee6e9a50fef3e6d657fa4075672a6c43d1b8b7b",
+      "size": 1419
+    },
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.log": {
+      "blob": "bac05cf4785c3e3f4d03a2c8f83608b7acfe8d54",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/d149ab26869a44b9a67a6734a584af56.log",
+      "sha256": "cd3c32ca27ef7555e34d2f639ab5f94ce14f9edfe17313f0c23c9de0a000e839",
+      "size": 3051
+    },
+    "work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/results.json": {
+      "blob": "ccdd1bb85bb5ed1dacc2346f4995c318b816eba7",
+      "path": "artifacts/work/continuation-recovery/traceability/runs/8a2614bee63b4a8a86477159b40ec004/results.json",
+      "sha256": "a5a2afcb09c05ad598a584d5760ac0de7595f2289c3b0aa3fad26ea7b331bf8a",
+      "size": 17681
     },
     "work/continuation-recovery/traceability/runs/9a3a74a2293b45a4878e2510160228a1/0402a44f63e144cd87c2dfa13cd23d87.json": {
       "blob": "c4bcf5ce3ee1059ca518fff20e7eceb4fb47b24c",
@@ -2397,9 +2469,11 @@
     }
   },
   "coordinator_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
-  "generation": 13,
-  "previous_checkpoint": null,
+  "generation": 14,
+  "previous_checkpoint": "bd7eecb511680c987ddeed73ea02a523c0689dbf",
   "retained_commits": [
+    "029e3f95735aa607ef00605116f29865898787b8",
+    "05b747c8a71cb80c08be352f94b4fbca8c9bce02",
     "09da65c64c33296ff1011c4136ef632386c40e29",
     "0aca1f71449cf3d6d1fbe018b13d8640aee90072",
     "22a94836a63faf3393c990e9a3eed9e1cbce31f4",
@@ -2407,6 +2481,8 @@
     "31a050235da3f3f503f070bc753a1ff906c64cba",
     "400147bbdb7a2b76cfce55510d2b646b1cc3c1fa",
     "4861364c23db83c748ac780e9bf6307fc1e27422",
+    "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+    "5ecffd954ade36abed2e5c40eb66e8846af5c4a6",
     "68ca29caf9cc06a5460157685bacba0bef7b3f97",
     "6cb3ee3df0a91cb8626d6736c60ee1e5de3d1229",
     "8454f346b66fe2a29e27fe790531f3724421321e",

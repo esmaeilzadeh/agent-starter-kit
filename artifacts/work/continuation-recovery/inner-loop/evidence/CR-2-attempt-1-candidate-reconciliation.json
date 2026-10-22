@@ -1,0 +1,22 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "attempt_id": "CR-2:attempt-1",
+  "previous_checkpoint_sha": "bd7eecb511680c987ddeed73ea02a523c0689dbf",
+  "previous_state_revision": 13,
+  "previous_state_sha256": "1d604cccf345a48be6d920ffe3d0d171392a496647205dc15e3ed916162b575f",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "interrupted_candidate_sha": "029e3f95735aa607ef00605116f29865898787b8",
+  "candidate_boundary_evidence": {
+    "branch_tip_before_following_review_commit": "029e3f95735aa607ef00605116f29865898787b8",
+    "following_review_commit": "9ef05cd04309062bb9aefdacdba6dfbcc1baa00b",
+    "following_review_commit_parent": "029e3f95735aa607ef00605116f29865898787b8",
+    "following_commit_changed_paths": [
+      "work/continuation-recovery/traceability/plan-review-cr2-attempt-amendment.json"
+    ],
+    "candidate_is_ancestor_of_current_head": true,
+    "base_to_candidate_changed_path_count": 14
+  },
+  "decision": "Recover the missing candidate identity for the existing interrupted attempt from the exact branch tip preceding its review-only follow-up; preserve all pre-existing history fields and runs unchanged."
+}
