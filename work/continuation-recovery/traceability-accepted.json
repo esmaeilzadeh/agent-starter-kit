@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "ecb56e06f643a686fb3486d38e92d21da377e14d",
+  "contract_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
   "work_id": "continuation-recovery",
   "reviewer": "/root/review_cr1",
   "recorded_by": "/root",
@@ -12,18 +12,20 @@
     "decision": "APPROVED",
     "reviewer": "/root/review_cr1",
     "work_id": "continuation-recovery",
-    "contract_sha": "befdd3c5d07dc32bee0dfee7ae15fc787ec82878",
+    "contract_sha": "f6149ed96fad14d9349070a23ae6c86232111047",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-    "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
+    "plan_digest": "d0028c02169c151bed51a401cb1050d400da890173fb751b03b684a6e1f37441",
     "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7",
     "findings": [],
     "resolution": {
-      "independent_exact_review": "Approved the lifecycle fixture scope addition. CR-1 owns the mapped test call sites needed to opt into starting the task from the accepted anchor. Only I05/I07 enable this option; I08 and other fixture callers remain unchanged. Both targeted tests pass. CR-T53/54 remain exact CR-01 mappings in CR-1 scope."
+      "classification": "CR-T53 and CR-T54 are correctly classified as changed: candidate e3ae380c2d6fe68b08e430619d29776ec59c5205 changes these exact test methods relative to accepted base ecb56e06f643a686fb3486d38e92d21da377e14d. Their accepted scenarios/checks/selectors/source bindings and CR-01 mapping remain unchanged.",
+      "tdd": "The changed classification requires recognized behavior-assertion Red and final Green; it grants no regression waiver or exemption. The CR-1 TaskResult at e3ae records Red run b9a8a49d0f044cf4b7fe5daf2fb26749 with T53/T54 behavior failures and Green run f290a6e47fff46a9a98686e2a3beb5a0 with all 38 cases passing.",
+      "contract_boundary": "Only change_kind changes for CR-T53 and CR-T54. The canonical spec and task graph are unchanged, all other plan cases are unchanged, and current plan validation returns no violations. Existing runner and task-scope bindings continue to select the two named public-entrypoint tests under CR-1."
     },
-    "review_source": "Independent review response from /root/review_cr1 at candidate befdd3c5d07dc32bee0dfee7ae15fc787ec82878."
+    "review_source": "Independent plan review at exact candidate f6149ed96fad14d9349070a23ae6c86232111047 against previously accepted contract ecb56e06f643a686fb3486d38e92d21da377e14d."
   },
-  "plan_review_digest": "a527c0bcb282e14f7009f0264ffb5a0327b096adabe0c9e87fab1bc311990d47",
+  "plan_review_digest": "f5774d1aebfa365ff9617b808100de668199bc38501c82fc97b63cf4ba27e0cb",
   "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-  "plan_digest": "c0b91b215da4b4bf154f8ef6a05ce505cf323af22aa8135bdd298cde3d8cc4e6",
+  "plan_digest": "d0028c02169c151bed51a401cb1050d400da890173fb751b03b684a6e1f37441",
   "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7"
 }
