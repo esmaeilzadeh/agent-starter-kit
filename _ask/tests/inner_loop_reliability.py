@@ -13,6 +13,7 @@ import time
 import unittest
 
 from inner_loop.state import SecondWriter, cas_apply, cas_init, load_state
+from inner_loop.recovery import RecoveryRequired
 from inner_loop.driver import NotIntegrable, integrate_ready, run_until, resume_from_state
 from inner_loop.evidence import record_review
 from traceability_support import seed as seed_traceability, accept as accept_traceability, review as review_traceability
@@ -86,10 +87,10 @@ class IntegrationTests(unittest.TestCase):
     def task_branch(self):
         self.git("switch", "-qc", "task", self.candidate)
         self.git("branch", "-f", "agent/w", self.base)
-        self.git("switch", "-q", "agent/w")
         doc = load_state(self.root, "w")
         cas_apply(self.root, "w", doc["revision"],
                   lambda d: d["tasks"]["a"].update(task_branch="task"))
+        self.git("switch", "-q", "agent/w")
 
     def wait_for(self, path, proc):
         deadline = time.monotonic() + 10
@@ -128,8 +129,11 @@ except NotIntegrable as exc:
     def test_other_candidate_report_is_rejected(self):
         self.result["candidate_sha"] = self.base
         self.submit()
-        with self.assertRaisesRegex(NotIntegrable, "candidate"):
+        with self.assertRaises(RecoveryRequired) as refused:
             integrate_ready(self.root, "w", "a")
+        self.assertIn("work/w/inner-loop/results/a.json", refused.exception.report["evidence_paths"])
+        self.assertTrue(any("candidate differs from the selected checkout HEAD" in conflict
+                            for conflict in refused.exception.report["conflicts"]))
         self.assertEqual(load_state(self.root, "w")["tasks"]["a"]["status"], "running")
 
     def test_other_work_task_and_base_reports_are_rejected(self):
@@ -138,8 +142,13 @@ except NotIntegrable as exc:
                 original = self.result[field]
                 self.result[field] = value
                 self.submit()
-                with self.assertRaisesRegex(NotIntegrable, field):
+                with self.assertRaises(RecoveryRequired) as refused:
                     integrate_ready(self.root, "w", "a")
+                self.assertIn("work/w/inner-loop/results/a.json", refused.exception.report["evidence_paths"])
+                expected = {"work_id": "TaskResult work_id mismatch",
+                            "task_id": "TaskResult task_id does not match its file name",
+                            "base_sha": "TaskResult base_sha conflicts with state.json"}[field]
+                self.assertTrue(any(expected in conflict for conflict in refused.exception.report["conflicts"]))
                 self.result[field] = original
 
     def test_worker_passing_fields_do_not_authorize_integration(self):
@@ -209,9 +218,13 @@ except NotIntegrable as exc:
         self.review()
         self.result["notes"] = "changed after review"
         self.submit()
-        with self.assertRaisesRegex(NotIntegrable, "stale coordinator-recorded review"):
+        with self.assertRaises(RecoveryRequired) as refused:
             integrate_ready(self.root, "w", "a")
-        self.review()
+        self.assertIn("work/w/inner-loop/results/a.json", refused.exception.report["evidence_paths"])
+        self.assertTrue(any("review" in conflict or "result digest" in conflict
+                            for conflict in refused.exception.report["conflicts"]))
+        self.result.pop("notes")
+        self.submit()
         self.write("work/w/inner-loop/evidence/review.md", "changed after recording")
         with self.assertRaisesRegex(NotIntegrable, "stale review evidence"):
             integrate_ready(self.root, "w", "a")
@@ -375,10 +388,8 @@ except CasConflict: print('conflict')
         self.review()
         before = load_state(self.root, "w")
         self.write("src/value", "dirty source")
-        try:
-            resume_from_state(self.root, "w")
-        except NotIntegrable:
-            pass  # Source repair invalidates the old in-place candidate.
+        with self.assertRaises(RecoveryRequired):
+            resume_from_state(self.root, "w")  # Source repair invalidates the retained candidate checkout.
         after = load_state(self.root, "w")
         self.assertEqual(after, before)
         self.assertEqual(after["tasks"]["a"]["evidence"]["review"]["reviewer"], "independent-agent")
@@ -398,10 +409,8 @@ except CasConflict: print('conflict')
         before = load_state(self.root, "w")
         with self.assertRaises(subprocess.CalledProcessError):
             self.git("merge", "other")
-        try:
+        with self.assertRaises(RecoveryRequired):
             resume_from_state(self.root, "w")
-        except NotIntegrable:
-            pass
         self.assertEqual(load_state(self.root, "w"), before)
         self.assertFalse((self.root / ".git/MERGE_HEAD").exists())
         self.assertEqual((self.root / "src/value").read_text(), "base\n")
@@ -457,11 +466,18 @@ except (CasConflict,SecondWriter): print('conflict')
         self.assertEqual(state["revision"], 1)
 
     def test_concurrent_initialization_does_not_reset_state(self):
-        cas_apply(self.root, "w", 0, lambda d: d.update(coordinator_sha="kept"))
+        subprocess.run(["git", "init", "-q", "-b", "coordinator"], cwd=self.root, check=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=self.root, check=True)
+        subprocess.run(["git", "config", "user.name", "Test"], cwd=self.root, check=True)
+        (self.root / "anchor").write_text("valid coordinator commit\n")
+        subprocess.run(["git", "add", "anchor"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "anchor"], cwd=self.root, check=True)
+        anchor = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root, text=True).strip()
+        cas_apply(self.root, "w", 0, lambda d: d.update(coordinator_sha=anchor))
         self.assertEqual(self.contend("cas_init(root,'w',['wrong'])"), ["success", "success"])
         state = load_state(self.root, "w")
         self.assertEqual(state["revision"], 1)
-        self.assertEqual(state["coordinator_sha"], "kept")
+        self.assertEqual(state["coordinator_sha"], anchor)
         self.assertEqual(sorted(state["tasks"]), ["a", "b"])
 
     def test_every_transaction_preserves_single_writer(self):
