@@ -355,7 +355,7 @@ class RecoveryTests(unittest.TestCase):
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accepted plan amendment")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
         state = json.loads(state_path.read_text(encoding="utf-8"))
-        self.assertEqual(state["tasks"]["a"]["attempt_history"][-1]["interrupted_candidate_sha"], candidate)
+        self.assertEqual(state["tasks"]["a"]["attempt_history"][-1].get("interrupted_candidate_sha"), candidate)
         checkpoint = read_checkpoint(self.root, "w")
         self.assertIsNotNone(checkpoint)
         retained = subprocess.run(
