@@ -1,0 +1,51 @@
+{
+  "schema": "ask-accepted-tests/v1",
+  "capability": "ask-traceability/v1",
+  "contract_sha": "68ca29caf9cc06a5460157685bacba0bef7b3f97",
+  "work_id": "continuation-recovery",
+  "reviewer": "/root/isolated_continuation_recovery/exact_plan_review",
+  "recorded_by": "/root/isolated_continuation_recovery",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "plan_review": {
+    "schema": "ask-plan-review/v1",
+    "decision": "APPROVED",
+    "reviewer": "/root/isolated_continuation_recovery/exact_plan_review",
+    "work_id": "continuation-recovery",
+    "contract_sha": "68ca29caf9cc06a5460157685bacba0bef7b3f97",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "edbba36648e8853b6a985acbfbca51ee82fb695c79620533aafc8a988e5e07ed",
+    "graph_digest": "3337fb9c2e04492044485638c79035d9bb540f2663e7ea3b0abd03c8a618c1f6",
+    "design_file_sha256": {
+      "work/continuation-recovery/authorization.md": "0b3816fd4476a238e36fc4b1fa0f973ce39e9e06832f93014b3ab38e2188a7fd",
+      "work/continuation-recovery/plan.md": "4b571c4764de56b964a0213ae0b53717179f5faa250afa048b3b82d73cdf3b38",
+      "work/continuation-recovery/checkpoint-design.md": "ee57baec5a000dba4ed8673409cc8b3e2b71ce51a4588a4877cb7c62b66f2591",
+      "work/continuation-recovery/bootstrap.md": "e71a543be5d0ff9a38e3c48b321a715bfd4d09bee8052e7cfdf6d82091690aca",
+      "work/continuation-recovery/bootstrap-baseline.json": "c65ce6ebcaafb74220bcb2309446cc36d7f6604a32dc1f0de7fa5a4fee097d03",
+      "work/continuation-recovery/plan-review-reevaluation.md": "dda8a3173a25c99c802f9ed7b06de9c92d8784e71e4fc7ce4e6ef1f8c7614a41"
+    },
+    "findings": [],
+    "resolution": {
+      "R1": "Checkpoint parent edges retain required source/base/candidate/runner and historical authority commits; tree retains artifact bytes. Closure validation precedes CAS. CR-T18 requires fixture GC and self-contained bundle transfer into a separate object database, with historical provenance distinct from current acceptance.",
+      "R2": "Separate continuation-recovery work ID and normal existing cas-init/scheduler initialize CR-1 through CR-4 without indexing CR IDs in legacy state. Linear dependencies serialize common owned paths. Work-ID-scoped guards and CR-T17 cover CR-1 then CR-2 admission. CR-4 implements adoption support and produces a read-only real audit/proposal; real legacy integration/adoption and scheduling require later explicit authority.",
+      "R3": "Adapters and old pinned verifier remain data-only; coordinator finalizes standalone after admission exit and nested after child exit using its held transaction. Ledger repair is idempotent and releases ledger lock before checkpoint publication. Trusted verification snapshot acquires no checkpoint import. CR-T19 bounds real nested verification; CR-T20/21 cover interrupted publication and pre-hook runner output compatibility.",
+      "R4": "All 21 unique supported unittest selectors have exact production, assertion and immutable fixture source paths, no glob or operational-state source binding, and exactly one matching task scope. Existing adapter filters task-selected case IDs; shell discovery can execute committed module cases as each task adds them, without requiring future task outcomes."
+    },
+    "static_validation": [
+      "Exact committed contracts loaded through contracts_at and validated without violations; task graph validator returned ok.",
+      "Canonical digests use sorted compact JSON over specification, test-plan and parsed graph.",
+      "Compared proposed boundaries against existing state.py, driver.py, inner_loop/evidence.py, traceability adapters/CLI/contracts/coverage, verification run and unittest instrumentation.",
+      "Diff from d04b3a4 has no original product artifacts/canonical spec or runtime implementation changes. Original branch remains d04b3a4; observed product state, intent, tracked pin and accepted-tests ref match bootstrap baseline."
+    ],
+    "limitations": [
+      "Planning approval only, bound to exact contract and listed design file identities. No implementation correctness or behavior execution is established.",
+      "No behavior tests, aggregate verification, bootstrap, checkpoint/adoption operation, product scheduling or authority registration performed by this reviewer. Only the review record is written.",
+      "Later implementation must obtain actual behavior-assertion Red/Green, Refactor, exact independent review and normal verification/FF evidence per task; unavailable runner/model/schema support requires migration rather than bypass.",
+      "Seal then stop remains the authorization endpoint; this decision authorizes plan registration only, not implementation or workstream acceptance."
+    ]
+  },
+  "plan_review_digest": "80cc4640bfd28102f0b88743e7735a5f594b2a06773c9c909394822e14cbbe84",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "edbba36648e8853b6a985acbfbca51ee82fb695c79620533aafc8a988e5e07ed",
+  "graph_digest": "3337fb9c2e04492044485638c79035d9bb540f2663e7ea3b0abd03c8a618c1f6"
+}
