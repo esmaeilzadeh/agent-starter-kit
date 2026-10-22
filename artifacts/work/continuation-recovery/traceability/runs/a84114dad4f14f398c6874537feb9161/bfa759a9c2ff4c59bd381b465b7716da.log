@@ -1,0 +1,94 @@
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+
+======================================================================
+FAIL: test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 807, in test_concurrent_checkpoint_writers
+    self.assertIsNotNone(self._checkpoint_ref(), "the winning CAS must publish its checkpoint")
+AssertionError: unexpectedly None : the winning CAS must publish its checkpoint
+
+======================================================================
+FAIL: test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 759, in test_crash_around_checkpoint_publication
+    self.assertIsNotNone(initial, "initial state must have a checkpoint before transition")
+AssertionError: unexpectedly None : initial state must have a checkpoint before transition
+
+======================================================================
+FAIL: test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 269, in test_interrupt_and_reopen_preserve_attempt_history
+    self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
+AssertionError: 2 != 0 : {
+  "status": "recovery_required",
+  "work_id": "w",
+  "task_ids": [],
+  "evidence_paths": [
+    "work/w/inner-loop/state.json"
+  ],
+  "conflicts": [
+    "state.json is newer or divergent from the retained checkpoint"
+  ],
+  "next_actions": [
+    "inspect the listed state, result, review, and source history",
+    "write an explicit reconciliation record that preserves every prior attempt",
+    "resume only after the reconciled state and evidence are reviewed"
+  ]
+}
+
+
+======================================================================
+FAIL: test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 519, in test_interrupted_candidate_paths_do_not_block_dependent_tasks
+    self.assertIsNotNone(checkpoint)
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 812, in test_reject_incomplete_or_unsafe_checkpoint
+    self.assertIsNotNone(checkpoint, "checkpoint validation requires a published baseline")
+AssertionError: unexpectedly None : checkpoint validation requires a published baseline
+
+======================================================================
+FAIL: test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 744, in test_restore_deleted_runtime_cache
+    self.assertIsNotNone(checkpoint, "writer transitions must publish a retained checkpoint")
+AssertionError: unexpectedly None : writer transitions must publish a retained checkpoint
+
+======================================================================
+FAIL: test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 858, in test_retain_objects_after_gc_and_bundle_transfer
+    self.assertIsNotNone(checkpoint, "writer transitions must publish retained checkpoints")
+AssertionError: unexpectedly None : writer transitions must publish retained checkpoints
+
+======================================================================
+FAIL: test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qrrcrcyx/candidate/_ask/tests/inner_loop_recovery.py", line 837, in test_stale_and_newer_cache
+    self.assertIsNotNone(checkpoint, "state mutation must publish a checkpoint")
+AssertionError: unexpectedly None : state mutation must publish a checkpoint
+
+----------------------------------------------------------------------
+Ran 9 tests in 13.186s
+
+FAILED (failures=8)

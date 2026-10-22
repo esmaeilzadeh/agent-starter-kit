@@ -1,0 +1,26 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "reason": "Coordinator checkpoint predates accepted-plan CR-2 evidence produced during continuation.",
+  "previous_checkpoint": "122c9e4c83622f48415e69449817b1b6c153cc5b",
+  "state_revision": 16,
+  "coordinator_state_unchanged": true,
+  "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "task_result_sha256": "c19c048bdd1d23ee13f1f4cc68b8bb4cae359936da7bb82836dc8d8e1895677f",
+  "independent_review": "work/continuation-recovery/inner-loop/evidence/review-CR-2-a269e47.json",
+  "independent_review_sha256": "a47d4d6a6a0da4c9b79a1dfb94e080b03687f7b5f12d82dc7e61eb9250b91fc8",
+  "traceability_ledger_prior_rows_preserved": 15,
+  "traceability_ledger_appended_rows": 7,
+  "traceability_run_ids": [
+    "4e95a5a7d59849928852041bcc657587"
+  ],
+  "preservation": "Published additively over the previous checkpoint; runtime state is unchanged and all prior checkpoint artifacts remain in the checkpoint chain.",
+  "archived_unreachable_static_metadata": {
+    "original_path": "work/continuation-recovery/traceability/static-cb1736e7466ac19c47639d1daa4e82d56f2a3214.json",
+    "preserved_path": "work/continuation-recovery/inner-loop/evidence/archived-static-cb1736e7466ac19c47639d1daa4e82d56f2a3214.txt",
+    "missing_candidate_sha": "cb1736e7466ac19c47639d1daa4e82d56f2a3214",
+    "reason": "The static-result metadata referred to a commit absent from the Git object database; preserve its bytes as archived text without treating it as an active commit identity."
+  }
+}

@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "_ask.tests.inner_loop_reliability.IntegrationTests.test_resume_preserves_candidate_after_ff_before_state_fold_interruption", "outcome": "passed", "failure_kind": null}], "collection_status": "ok"}

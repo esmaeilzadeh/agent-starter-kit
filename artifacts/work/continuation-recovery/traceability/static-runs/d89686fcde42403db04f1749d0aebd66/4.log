@@ -1,0 +1,20 @@
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.JdH5cX5gV1
+install-kit: skip existing .gitignore (use --force)
+install-kit: skip existing AGENTS.md (use --force)
+install-kit: skip existing ask (use --force)
+install-kit: skip existing ai-agent-engineering-guide.md (use --force)
+install-kit: skip existing ai-agent-starter-kit-spec.md (use --force)
+install-kit: skip existing .ask.env.example (use --force)
+install-kit: skip existing .ask/README.md (use --force)
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.JdH5cX5gV1/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.JdH5cX5gV1
+PASS: install-kit does not clobber consumer bindings/models.yaml

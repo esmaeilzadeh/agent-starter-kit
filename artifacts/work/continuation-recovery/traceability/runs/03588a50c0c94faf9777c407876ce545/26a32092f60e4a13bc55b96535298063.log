@@ -1,0 +1,17 @@
+test_resume_preserves_candidate_after_ff_before_state_fold_interruption (_ask.tests.inner_loop_reliability.IntegrationTests) ... FAIL
+
+======================================================================
+FAIL: test_resume_preserves_candidate_after_ff_before_state_fold_interruption (_ask.tests.inner_loop_reliability.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-q4dvrr1b/candidate/_ask/tests/inner_loop_reliability.py", line 323, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption
+    self.assertEqual(load_state(self.root, "w")["coordinator_sha"], self.candidate)
+AssertionError: '1166231739e77f875b871b927e0e480c6770fc2a' != '15fc9a4ab72e8e2cfdebd89cf56fd72c60d847a8'
+- 1166231739e77f875b871b927e0e480c6770fc2a
++ 15fc9a4ab72e8e2cfdebd89cf56fd72c60d847a8
+
+
+----------------------------------------------------------------------
+Ran 1 test in 2.049s
+
+FAILED (failures=1)

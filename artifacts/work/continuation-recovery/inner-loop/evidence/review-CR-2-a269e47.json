@@ -1,0 +1,67 @@
+{
+  "schema": "ask-independent-task-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-2",
+  "base_sha": "c1b5ca0b57e2293d710e194d8cb40703bf34df64",
+  "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+  "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+  "reviewer": "/root/review_cr1",
+  "verdict": "APPROVED",
+  "boundary": "ok",
+  "findings": [],
+  "summary": "Exact CR-2 changes satisfy accepted Revision 10 and the authorized CR-2 amendments. The test refactor preserves the malformed historical-report checks as an aggregated assertion, and the final exact candidate passes every scoped case. Historical Green carry-forward requires a retained, digest-valid report and exact runner/case/output/source provenance; checkpointed traceability must remain byte-identical except append-only ledger/run artifacts. Interrupted candidate attribution is bounded by the recorded attempt and retained in checkpoint ancestry. No boundary or behavior issue found.",
+  "evidence": {
+    "task_result": "work/continuation-recovery/inner-loop/results/CR-2.json",
+    "task_result_candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+    "task_result_contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+    "red_runs": [
+      {
+        "run_id": "a84114dad4f14f398c6874537feb9161",
+        "candidate_sha": "0541fac8ad574500f50bbd41054469478feda779",
+        "failed_behavior_cases": [
+          "CR-T05",
+          "CR-T06",
+          "CR-T07",
+          "CR-T08",
+          "CR-T09",
+          "CR-T18",
+          "CR-T38",
+          "CR-T55",
+          "CR-T57"
+        ]
+      },
+      {
+        "run_id": "6e821b6aea3a4fcbafee38794177169c",
+        "candidate_sha": "fd67986a46514bfef451e70d8c67b4f42421a56c",
+        "failed_behavior_cases": [
+          "CR-T56"
+        ]
+      }
+    ],
+    "green_run": {
+      "run_id": "4e95a5a7d59849928852041bcc657587",
+      "candidate_sha": "a269e474bbb9f1034c46806d0079cce446b2cc42",
+      "passed_cases": [
+        "CR-T05",
+        "CR-T06",
+        "CR-T07",
+        "CR-T08",
+        "CR-T09",
+        "CR-T18",
+        "CR-T38",
+        "CR-T55",
+        "CR-T56",
+        "CR-T57"
+      ]
+    },
+    "independent_checks": [
+      "Both Red candidate commits are ancestors of the exact final candidate.",
+      "Traceability Red cases are behavior_assertion failures; CR-T56 has a separate targeted Red after its test addition.",
+      "Exact final-green run 4e95a5a7d59849928852041bcc657587 has collection_status ok, exit_code 0, and all ten CR-2 cases passed.",
+      "git diff --check c1b5ca0b57e2293d710e194d8cb40703bf34df64..a269e474bbb9f1034c46806d0079cce446b2cc42 passed.",
+      "./ask inner-loop validate continuation-recovery returned ok.",
+      "Exact base-to-candidate implementation/test paths are within CR-2 owned paths; out-of-glob plan/auth paths are the accepted Revision 10 and explicitly authorized CR-2 plan amendments."
+    ],
+    "scope_check": "The CR-2 code/test paths are within the task graph ownership. Scope amendments and plan artifacts are authorized and accepted under contract 588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6."
+  }
+}

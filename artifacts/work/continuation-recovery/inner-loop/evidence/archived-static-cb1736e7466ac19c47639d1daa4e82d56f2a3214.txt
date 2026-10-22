@@ -1,0 +1,4 @@
+{
+  "candidate_sha": "cb1736e7466ac19c47639d1daa4e82d56f2a3214",
+  "result": "fail"
+}

@@ -1,0 +1,22 @@
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+FAIL: test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-v_iu8ixq/candidate/_ask/tests/inner_loop_recovery.py", line 362, in test_scope_compatible_historical_task_result_survives_plan_amendment
+    self.assertIsNone(result, result)
+AssertionError: {'status': 'recovery_required', 'work_id': 'w', 'task_ids': ['a'], 'evidence_paths': ['work/w/inner-loop/results/a.json'], 'conflicts': ['work/w/inner-loop/results/a.json: TaskResult contract identity mismatch'], 'next_actions': ['inspect the listed state, result, review, and source history', 'write an explicit reconciliation record that preserves every prior attempt', 'resume only after the reconciled state and evidence are reviewed']} is not None : {'status': 'recovery_required', 'work_id': 'w', 'task_ids': ['a'], 'evidence_paths': ['work/w/inner-loop/results/a.json'], 'conflicts': ['work/w/inner-loop/results/a.json: TaskResult contract identity mismatch'], 'next_actions': ['inspect the listed state, result, review, and source history', 'write an explicit reconciliation record that preserves every prior attempt', 'resume only after the reconciled state and evidence are reviewed']}
+
+----------------------------------------------------------------------
+Ran 9 tests in 17.400s
+
+FAILED (failures=1)
