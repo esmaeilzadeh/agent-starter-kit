@@ -219,21 +219,66 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
                 or report.get("scope") != "task"
                 or report.get("task_id") != task_id
                 or report.get("plan_digest") != old_plan_digest
-                or report.get("spec_digest") != old_pin.get("spec_digest")
-                or {run.get("phase") for run in report.get("executions", [])
-                    if isinstance(run, dict)} != {"final_green"}):
+                or report.get("spec_digest") != old_pin.get("spec_digest")):
             continue
-        passed = set()
-        for case in report.get("cases", []):
-            if (isinstance(case, dict) and case.get("phase") == "final_green"
-                    and case.get("outcome") == "passed" and isinstance(case.get("test_id"), str)):
-                executions = [run for run in report.get("executions", [])
-                              if isinstance(run, dict) and run.get("id") == case.get("execution_id")]
-                if len(executions) == 1:
-                    passed.add(case["test_id"])
-        if old_scope.issubset(passed):
+        if _valid_final_green_scope(report, previous["plan"], task_id,
+                                    old_scope, result.get("candidate_sha")):
             return True
     return False
+
+
+def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
+                             required_ids: set[str], candidate_sha: str) -> bool:
+    """Check successful collection and exact one-to-one final case bindings."""
+    tests = {item.get("id"): item for item in plan.get("tests", [])
+             if isinstance(item, dict) and isinstance(item.get("id"), str)}
+    if not required_ids or not required_ids.issubset(tests):
+        return False
+    expected = {test_id: tests[test_id] for test_id in required_ids}
+    if any(test.get("task_id") != task_id or not isinstance(test.get("case_id"), str)
+           or not isinstance(test.get("runner_id"), str) for test in expected.values()):
+        return False
+
+    runs = report.get("executions")
+    cases = report.get("cases")
+    if not isinstance(runs, list) or not runs or not isinstance(cases, list):
+        return False
+    by_id = {}
+    for run in runs:
+        if not isinstance(run, dict):
+            return False
+        run_id = run.get("id")
+        if not isinstance(run_id, str) or not run_id or run_id in by_id:
+            return False
+        if (run.get("phase") != "final_green" or run.get("collection_status") != "ok"
+                or type(run.get("exit_code")) is not int or run.get("exit_code") != 0
+                or not isinstance(run.get("runner_id"), str)
+                or run.get("source_sha") != candidate_sha):
+            return False
+        by_id[run_id] = run
+
+    seen_tests = set()
+    seen_cases = set()
+    used_executions = set()
+    for case in cases:
+        if not isinstance(case, dict):
+            return False
+        test_id = case.get("test_id")
+        test = expected.get(test_id)
+        if test is None or test_id in seen_tests:
+            return False
+        identity = (case.get("runner_id"), case.get("case_id"))
+        if identity in seen_cases or identity != (test.get("runner_id"), test.get("case_id")):
+            return False
+        execution = by_id.get(case.get("execution_id"))
+        if (execution is None or execution.get("runner_id") != test.get("runner_id")
+                or case.get("phase") != "final_green" or case.get("outcome") != "passed"
+                or case.get("source_sha") != candidate_sha):
+            return False
+        seen_tests.add(test_id)
+        seen_cases.add(identity)
+        used_executions.add(case["execution_id"])
+    return seen_tests == required_ids and used_executions == set(by_id)
 
 
 def _traceability_matches_checkpoint(root: Path, work_id: str,
