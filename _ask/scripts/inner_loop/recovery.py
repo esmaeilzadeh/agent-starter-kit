@@ -229,6 +229,16 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
         conflicts.append("state.json is missing while retained task execution results exist")
         paths.add(str(state_path.relative_to(root)))
     if state is not None:
+        running_tasks = [
+            tasks[task_id]
+            for task_id, task_state in (state.get("tasks") or {}).items()
+            if task_state.get("status") == "running" and task_id in tasks
+        ]
+        running_paths = [
+            str(pattern)
+            for task in running_tasks
+            for pattern in (task.get("owned_paths") or [])
+        ]
         for task_id, task_state in (state.get("tasks") or {}).items():
             status = task_state.get("status")
             if status not in {"pending", "ready"}:
@@ -240,6 +250,13 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
             head_proc = _git(root, "rev-parse", "--verify", "HEAD^{commit}")
             head = head_proc.stdout.strip() if head_proc.returncode == 0 else ""
             changed = _owned_changes(root, task, base, head)
+            # A dependent task may intentionally share files with its active
+            # predecessor. Attribute those candidate changes to the running
+            # task; unrelated changes remain unexplained and require recovery.
+            changed = [
+                name for name in changed
+                if not any(fnmatch.fnmatchcase(name, pattern) for pattern in running_paths)
+            ]
             if changed:
                 task_ids.add(task_id)
                 paths.update(changed)
