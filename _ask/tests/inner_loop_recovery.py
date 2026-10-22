@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 from pathlib import Path
 import subprocess
@@ -255,6 +256,30 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
         self.assertIn("a\trunning", status.stdout)
         self.assertIn("b\tpending", status.stdout)
+
+    def test_new_candidate_preserves_stale_rejected_review_history(self):
+        self.start_candidate()
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state = json.loads(state_path.read_text())
+        result = json.loads(self.result_path.read_text())
+        state["tasks"]["a"]["evidence"]["review"] = {
+            "work_id": "w",
+            "task_id": "a",
+            "base_sha": self.anchor_commit,
+            "candidate_sha": self.candidate,
+            "result_digest": hashlib.sha256(self.result_path.read_bytes()).hexdigest(),
+            "verdict": "REJECTED",
+        }
+        state_path.write_text(json.dumps(state) + "\n", encoding="utf-8")
+
+        self.write("src/a.py", "candidate = True\n# review correction\n")
+        self.commit("correct rejected candidate")
+        result["candidate_sha"] = self.git("rev-parse", "HEAD")
+        self.result_path.write_text(json.dumps(result) + "\n", encoding="utf-8")
+
+        status = self.run_cli("status", "w")
+        self.assertEqual(status.returncode, 0, status.stdout + status.stderr)
+        self.assertIn("a\trunning", status.stdout)
 
     def test_contract_and_checkout_conflict(self):
         self.start_candidate()
