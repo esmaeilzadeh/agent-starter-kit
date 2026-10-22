@@ -11,6 +11,10 @@ import sys
 import tempfile
 import unittest
 
+REPO = Path(__file__).resolve().parents[2]
+SCRIPTS = REPO / "_ask" / "scripts"
+sys.path.insert(0, str(SCRIPTS))
+
 from _ask.tests.inner_loop_recovery_fixture import (
     LEGACY_AUTHORITY_SHA,
     LEGACY_STATE_SHA256,
@@ -19,10 +23,6 @@ from _ask.tests.inner_loop_recovery_fixture import (
 from inner_loop.graph import load_graph
 from inner_loop.checkpoint import read_checkpoint
 from inner_loop.recovery import inspect as inspect_recovery
-
-REPO = Path(__file__).resolve().parents[2]
-SCRIPTS = REPO / "_ask" / "scripts"
-sys.path.insert(0, str(SCRIPTS))
 
 TASKS = """schema: ask-inner-loop-tasks/v1
 work_id: w
