@@ -222,10 +222,22 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                 conflicts.append(f"{relative}: execution evidence exists while task status is {status}")
             review = (state["tasks"][task_id].get("evidence") or {}).get("review") or {}
             if review:
-                for key in ("work_id", "task_id", "base_sha", "candidate_sha"):
+                for key in ("work_id", "task_id", "base_sha"):
                     if review.get(key) != result.get(key):
                         conflicts.append(f"{relative}: recorded review identity conflicts with TaskResult")
-                if review.get("result_digest") != hashlib.sha256(raw).hexdigest():
+                review_candidate = review.get("candidate_sha")
+                result_candidate = result.get("candidate_sha")
+                stale_review = (
+                    status == "running"
+                    and isinstance(review_candidate, str)
+                    and isinstance(result_candidate, str)
+                    and review_candidate != result_candidate
+                    and _is_ancestor(root, review_candidate, result_candidate)
+                )
+                if review.get("candidate_sha") != result_candidate and not stale_review:
+                    conflicts.append(f"{relative}: recorded review candidate conflicts with TaskResult")
+                if (review.get("result_digest") != hashlib.sha256(raw).hexdigest()
+                        and not stale_review):
                     conflicts.append(f"{relative}: recorded review result digest conflicts with TaskResult")
 
     if not state_exists and result_docs:
