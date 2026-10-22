@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "86b3f2498794c74b2494175f625b6fb2a20db747",
+  "contract_sha": "029e3f95735aa607ef00605116f29865898787b8",
   "work_id": "continuation-recovery",
   "reviewer": "/root/review_cr1",
   "recorded_by": "/root",
@@ -14,18 +14,33 @@
     "work_id": "continuation-recovery",
     "contract_sha": "86b3f2498794c74b2494175f625b6fb2a20db747",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-    "plan_digest": "53f2e2636211823e217dfe875cfcdad63a414070ca974385835913925659daca",
-    "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7",
+    "plan_digest": "2e6f91a1087642bd550c9fe737cb0119f04c12ba34f68517822bd782be5e773c",
+    "graph_digest": "0bd73550d1ed2a30b80b554946e55ad8ea839b13fa0da1a84d294242738e42f6",
+    "design_file_sha256": {
+      "work/continuation-recovery/authorization.md": "23200e03d736ebe8e10bc87dd992d535e6dd42743d41742e85289d40c508c51c",
+      "work/continuation-recovery/plan.md": "4de53a69305c552b85c9e05d2d4836bd18c2aea36f986a3bcaefa206a49e420d",
+      "work/continuation-recovery/checkpoint-design.md": "ee57baec5a000dba4ed8673409cc8b3e2b71ce51a4588a4877cb7c62b66f2591",
+      "work/continuation-recovery/bootstrap.md": "e71a543be5d0ff9a38e3c48b321a715bfd4d09bee8052e7cfdf6d82091690aca",
+      "work/continuation-recovery/bootstrap-baseline.json": "c65ce6ebcaafb74220bcb2309446cc36d7f6604a32dc1f0de7fa5a4fee097d03",
+      "work/continuation-recovery/plan-review-reevaluation.md": "dda8a3173a25c99c802f9ed7b06de9c92d8784e71e4fc7ce4e6ef1f8c7614a41"
+    },
     "findings": [],
     "resolution": {
-      "classification": "CR-T01, CR-T02, CR-T03, CR-T04 and CR-T17 are correctly classified regression: their exact selectors and assertion/test sources are present and unchanged at the previously accepted task baseline f6149ed96fad14d9349070a23ae6c86232111047. The fresh Red run 6f6b9275f9154c4393a31e479fc870da collected and passed these cases, so requiring an invented failure would be incorrect.",
-      "tdd_boundary": "Regression classification retains execution as a required check and does not waive Red evidence for tests classified new/changed. CR-T53/T54 remain changed under the plan; those exact changed cases require behavior-assertion Red plus final Green, as shown in the accepted task result for attempt candidate 31a050235da3f3f503f070bc753a1ff906c64cba.",
-      "scope_and_contract": "Only change_kind changes for CR-T01/02/03/04/17. CR-T53/T54 remain changed; all other test fields, selectors, runner and source bindings remain unchanged. Spec digest and task graph digest match the previously accepted contract; contract validation returns no violations."
+      "independent_exact_review": "Approved exact plan candidate 029e3f95735aa607ef00605116f29865898787b8 against accepted contract 86b3f2498794c74b2494175f625b6fb2a20db747. Confirmed CR-T55 is bounded under CR-07, exact assertions and mappings, coherent task graph/test mapping, T38 remains correctly assigned, and approved intent/spec are unchanged."
     },
-    "review_source": "Independent plan review at exact candidate 86b3f2498794c74b2494175f625b6fb2a20db747 against accepted candidate f6149ed96fad14d9349070a23ae6c86232111047."
+    "static_validation": [
+      "./ask inner-loop validate continuation-recovery passed.",
+      "./ask traceability validate-plan continuation-recovery passed.",
+      "git diff --check passed.",
+      "Independent exact plan review approved candidate 029e3f95735aa607ef00605116f29865898787b8."
+    ],
+    "limitations": [
+      "Planning review only; it does not establish implementation behavior or CR-2 completion.",
+      "Prior CR-2 Red executions remain bound to the superseded plan digest and are preserved as historical evidence; fresh CR-2 evidence is required under this amendment."
+    ]
   },
-  "plan_review_digest": "d3307b81efe805c27c5a4fe399aa96bf19ad9ca250fa33547dfb4aa05e8afc36",
+  "plan_review_digest": "9eabf1cfe199f28d018b44212f7552e6065678c72ba3bd81aad4f90e9e2a86e6",
   "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-  "plan_digest": "53f2e2636211823e217dfe875cfcdad63a414070ca974385835913925659daca",
-  "graph_digest": "ac869d293176e1d8273c711d3c771a92afe0dd14dfc21d6ac50e9623ac8f47c7"
+  "plan_digest": "2e6f91a1087642bd550c9fe737cb0119f04c12ba34f68517822bd782be5e773c",
+  "graph_digest": "0bd73550d1ed2a30b80b554946e55ad8ea839b13fa0da1a84d294242738e42f6"
 }

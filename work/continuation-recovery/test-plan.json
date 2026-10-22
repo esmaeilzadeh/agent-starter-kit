@@ -2403,6 +2403,80 @@
         "_ask/scripts/inner_loop/driver.py",
         "_ask/scripts/inner_loop/__main__.py"
       ]
+    },
+    {
+      "id": "CR-T56",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
+      "scenario": {
+        "given": "An integrated task result is bound to a prior accepted contract, and the amended plan keeps that task’s current cases unchanged while moving another case to a different task",
+        "when": "Recovery evaluates the retained TaskResult against the amended accepted contract",
+        "then": [
+          "Preserve the original result and contract identity as historical evidence.",
+          "Accept carry-forward only when every current task case exactly matches a case in the prior accepted task scope and the requirement spec is unchanged.",
+          "Require the moved case to satisfy its new task scope independently; do not relabel the prior result."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Preserve the original result and contract identity as historical evidence.",
+            "Accept carry-forward only when every current task case exactly matches a case in the prior accepted task scope and the requirement spec is unchanged.",
+            "Require the moved case to satisfy its new task scope independently; do not relabel the prior result."
+          ]
+        }
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/tests/inner_loop_recovery_fixture.py",
+        "_ask/scripts/inner_loop/recovery.py"
+      ]
+    },
+    {
+      "id": "CR-T57",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_candidate_paths_do_not_block_dependent_tasks",
+      "scenario": {
+        "given": "A recorded task attempt is interrupted after committing changes on paths that overlap a pending dependent task",
+        "when": "The coordinator checks recovery and scheduling before the interrupted task is explicitly reopened",
+        "then": [
+          "Attribute only the changed paths owned by the recorded interrupted attempt to that attempt.",
+          "Leave the interrupted task quiescent without opening the dependent task or admitting a different writer.",
+          "Require recovery when overlapping changes cannot be tied to the interrupted attempt."
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "Attribute only the changed paths owned by the recorded interrupted attempt to that attempt.",
+            "Leave the interrupted task quiescent without opening the dependent task or admitting a different writer.",
+            "Require recovery when overlapping changes cannot be tied to the interrupted attempt."
+          ]
+        }
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/tests/inner_loop_recovery_fixture.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/attempts.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/__main__.py"
+      ]
     }
   ],
   "task_scopes": [
@@ -2458,7 +2532,9 @@
         "CR-T09",
         "CR-T18",
         "CR-T38",
-        "CR-T55"
+        "CR-T55",
+        "CR-T56",
+        "CR-T57"
       ]
     },
     {

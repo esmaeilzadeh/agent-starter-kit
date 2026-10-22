@@ -40,3 +40,13 @@ amendment gate within existing CR-07: record the active attempt and its exact
 traceability runs, permit the reviewed plan revision between attempts, then
 start a new attempt with a distinct ID and accepted-plan ref. CR-T55 maps this
 behavior to CR-07; it does not change What, Why, or CR-01–CR-08.
+
+After accepting Revision 7 exposed that completed-task evidence is tied to the
+previous whole-plan digest, the user directed “continue” after the recommended
+resolution was presented. This authorizes a scope-aware carry-forward rule:
+preserve CR-1’s original result under its original contract only when the
+current CR-1 obligations are unchanged members of its previously accepted
+scope; CR-T38 remains a fresh CR-2 obligation. Recovery must also attribute
+committed source changes to a recorded interrupted attempt before checking
+overlapping dependent-task paths. No requirement, intent, or product-adoption
+scope changes.
