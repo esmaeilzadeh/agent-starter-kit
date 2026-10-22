@@ -113,10 +113,12 @@ class RecoveryTests(unittest.TestCase):
         self.base = self.git("rev-parse", "HEAD")
         self.old_spec_digest = self.json_digest(self.spec)
         self.old_plan_digest = self.json_digest(self.old_plan)
+        self.old_graph_digest = self.json_digest(load_graph(self.root, "w"))
         self.write(
             "work/w/traceability-accepted.json",
             json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w", "contract_sha": self.base,
-                        "spec_digest": self.old_spec_digest, "plan_digest": self.old_plan_digest}) + "\n",
+                        "spec_digest": self.old_spec_digest, "plan_digest": self.old_plan_digest,
+                        "graph_digest": self.old_graph_digest}) + "\n",
         )
         self.commit("accepted test anchor")
         self.anchor_commit = self.git("rev-parse", "HEAD")
@@ -309,13 +311,14 @@ class RecoveryTests(unittest.TestCase):
             "work/w/traceability-accepted.json",
             json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
                         "contract_sha": current_contract, "spec_digest": self.old_spec_digest,
-                        "plan_digest": current_plan_digest}) + "\n",
+                        "plan_digest": current_plan_digest, "graph_digest": self.old_graph_digest}) + "\n",
         )
         self.commit("record amended accepted plan")
         self.write(
             "work/w/traceability/executions.json",
             json.dumps([{"run_id": "green-a", "phase": "final_green", "scope": "task",
                          "task_id": "a", "candidate_sha": self.candidate,
+                         "spec_digest": self.old_spec_digest,
                          "plan_digest": self.old_plan_digest}]) + "\n",
         )
         state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -334,7 +337,7 @@ class RecoveryTests(unittest.TestCase):
             "work/w/traceability-accepted.json",
             json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
                         "contract_sha": changed_contract, "spec_digest": self.old_spec_digest,
-                        "plan_digest": self.json_digest(changed)}) + "\n",
+                        "plan_digest": self.json_digest(changed), "graph_digest": self.old_graph_digest}) + "\n",
         )
         self.commit("record changed accepted plan")
         rejected = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)

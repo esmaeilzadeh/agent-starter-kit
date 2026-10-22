@@ -76,6 +76,120 @@ def _accepted_anchor_at(root: Path, work_id: str, commit: str) -> tuple[str | No
     return anchor, None
 
 
+def _json_at(root: Path, commit: str, name: str) -> dict | None:
+    proc = _git(root, "show", f"{commit}:{name}")
+    if proc.returncode:
+        return None
+    try:
+        value = json.loads(proc.stdout)
+    except ValueError:
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _accepted_contract_documents(root: Path, work_id: str, pin: dict) -> dict | None:
+    """Load and digest-check the exact spec, plan and graph named by a pin."""
+    from inner_loop.yaml_lite import parse_yaml
+
+    contract_sha = pin.get("contract_sha")
+    if not isinstance(contract_sha, str) or not _commit_exists(root, contract_sha):
+        return None
+    prefix = f"work/{work_id}/"
+    spec = _json_at(root, contract_sha, f"specs/current/{work_id}.json")
+    plan = _json_at(root, contract_sha, prefix + "test-plan.json")
+    graph_proc = _git(root, "show", f"{contract_sha}:{prefix}inner-loop/tasks.yaml")
+    if spec is None or plan is None or graph_proc.returncode:
+        return None
+    try:
+        graph = parse_yaml(graph_proc.stdout)
+    except (ValueError, TypeError):
+        return None
+    canonical = {"spec": spec, "plan": plan, "graph": graph}
+    for name, value in canonical.items():
+        expected = pin.get(name + "_digest")
+        actual = hashlib.sha256(
+            json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        if not isinstance(expected, str) or expected != actual:
+            return None
+    return canonical
+
+
+def _scope_test_ids(plan: dict, task_id: str) -> set[str] | None:
+    scopes = plan.get("task_scopes")
+    if not isinstance(scopes, list):
+        return None
+    matches = [scope for scope in scopes
+               if isinstance(scope, dict) and scope.get("task_id") == task_id]
+    if len(matches) != 1 or not isinstance(matches[0].get("test_ids"), list):
+        return None
+    ids = matches[0]["test_ids"]
+    return set(ids) if all(isinstance(item, str) for item in ids) else None
+
+
+def _scope_compatible_result(root: Path, work_id: str, task_id: str,
+                             result: dict, current_anchor: str,
+                             state: dict | None) -> bool:
+    """Prove an integrated result still covers an unchanged subset of its old scope."""
+    task_state = ((state or {}).get("tasks") or {}).get(task_id) or {}
+    if task_state.get("status") != "integrated":
+        return False
+    base = result.get("base_sha")
+    old_anchor, error = _accepted_anchor_at(root, work_id, base) if isinstance(base, str) else (None, "")
+    if error or old_anchor != result.get("contract_sha"):
+        return False
+    if not _is_ancestor(root, old_anchor or "", current_anchor):
+        return False
+
+    old_pin = _json_at(root, base, f"work/{work_id}/traceability-accepted.json")
+    try:
+        current_pin = json.loads(
+            (root / "work" / work_id / "traceability-accepted.json").read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError):
+        return False
+    if not isinstance(current_pin, dict):
+        return False
+    if not old_pin or not current_pin or current_pin.get("contract_sha") != current_anchor:
+        return False
+    previous = _accepted_contract_documents(root, work_id, old_pin)
+    current = _accepted_contract_documents(root, work_id, current_pin)
+    if previous is None or current is None:
+        return False
+    if previous["spec"] != current["spec"]:
+        return False
+
+    old_ids = _scope_test_ids(previous["plan"], task_id)
+    current_ids = _scope_test_ids(current["plan"], task_id)
+    if old_ids is None or current_ids is None or not current_ids.issubset(old_ids):
+        return False
+    old_tests = {item.get("id"): item for item in previous["plan"].get("tests", [])
+                 if isinstance(item, dict) and isinstance(item.get("id"), str)}
+    current_tests = {item.get("id"): item for item in current["plan"].get("tests", [])
+                     if isinstance(item, dict) and isinstance(item.get("id"), str)}
+    if any(current_tests.get(test_id) != old_tests.get(test_id) for test_id in current_ids):
+        return False
+
+    ledger = root / "work" / work_id / "traceability" / "executions.json"
+    try:
+        executions = json.loads(ledger.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(executions, list):
+        return False
+    old_plan_digest = old_pin.get("plan_digest")
+    return any(
+        isinstance(row, dict)
+        and row.get("scope") == "task"
+        and row.get("task_id") == task_id
+        and row.get("phase") == "final_green"
+        and row.get("candidate_sha") == result.get("candidate_sha")
+        and row.get("plan_digest") == old_plan_digest
+        and row.get("spec_digest") == old_pin.get("spec_digest")
+        for row in executions
+    )
+
+
 def _changed_paths(root: Path, base: str, head: str) -> list[str]:
     names: set[str] = set()
     if base and head and _commit_exists(root, base) and _commit_exists(root, head):
@@ -99,6 +213,54 @@ def _owned_changes(root: Path, task: dict, base: str, head: str) -> list[str]:
         name for name in _changed_paths(root, base, head)
         if any(fnmatch.fnmatchcase(name, pattern) for pattern in patterns)
     ]
+
+
+def _depends_on(tasks: dict[str, dict], task_id: str, prerequisite: str) -> bool:
+    seen: set[str] = set()
+    pending = [task_id]
+    while pending:
+        current = pending.pop()
+        if current in seen:
+            continue
+        seen.add(current)
+        task = tasks.get(current) or {}
+        dependencies = task.get("depends_on") or []
+        if prerequisite in {str(item) for item in dependencies}:
+            return True
+        pending.extend(str(item) for item in dependencies)
+    return False
+
+
+def _interrupted_paths(root: Path, work_id: str, tasks: dict[str, dict], state: dict,
+                       head: str, target_task_id: str) -> set[str]:
+    """Return candidate paths safely attributable to interrupted prerequisites."""
+    coordinator = state.get("coordinator_sha") or ""
+    target = tasks.get(target_task_id) or {}
+    target_patterns = [str(pattern) for pattern in target.get("owned_paths") or []]
+    owned: set[str] = set()
+    for interrupted_id, task_state in (state.get("tasks") or {}).items():
+        if task_state.get("status") != "interrupted" or not _depends_on(tasks, target_task_id, interrupted_id):
+            continue
+        history = task_state.get("attempt_history") or []
+        if not history:
+            continue
+        attempt = history[-1]
+        base = attempt.get("base_sha") or ""
+        candidate = attempt.get("interrupted_candidate_sha") or ""
+        if (attempt.get("status") != "interrupted" or base != coordinator
+                or not _commit_exists(root, candidate)
+                or not _is_ancestor(root, base, candidate)
+                or not _is_ancestor(root, candidate, head)):
+            continue
+        interrupted = tasks.get(interrupted_id) or {}
+        interrupted_patterns = [str(pattern) for pattern in interrupted.get("owned_paths") or []]
+        at_candidate = set(_changed_paths(root, base, candidate))
+        after_candidate = set(_changed_paths(root, candidate, head))
+        for name in at_candidate - after_candidate:
+            if (any(fnmatch.fnmatchcase(name, pattern) for pattern in interrupted_patterns)
+                    and any(fnmatch.fnmatchcase(name, pattern) for pattern in target_patterns)):
+                owned.add(name)
+    return owned
 
 
 def _result_files(root: Path, work_id: str) -> list[Path]:
@@ -241,7 +403,9 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
             contract_sha = result.get("contract_sha")
             if not isinstance(contract_sha, str) or not contract_sha:
                 conflicts.append(f"{relative}: TaskResult contract_sha is invalid")
-            elif contract_sha != anchor:
+            elif contract_sha != anchor and not _scope_compatible_result(
+                root, work_id, task_id, result, anchor or "", state
+            ):
                 conflicts.append(f"{relative}: TaskResult contract identity mismatch")
         elif isinstance(result.get("base_sha"), str):
             base_anchor, base_error = _accepted_anchor_at(root, work_id, result["base_sha"])
@@ -312,6 +476,8 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                 name for name in changed
                 if not any(fnmatch.fnmatchcase(name, pattern) for pattern in running_paths)
             ]
+            attributed = _interrupted_paths(root, work_id, tasks, state, head, task_id)
+            changed = [name for name in changed if name not in attributed]
             if changed:
                 task_ids.add(task_id)
                 paths.update(changed)

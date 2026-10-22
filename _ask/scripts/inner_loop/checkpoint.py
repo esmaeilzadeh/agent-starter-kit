@@ -174,6 +174,13 @@ def _required_commits(root: Path, work_id: str, state: dict) -> list[str]:
             if not _commit_exists(root, sha):
                 raise CheckpointError(f"required checkpoint commit is missing: {sha}")
             commits.add(sha)
+    for task in (state.get("tasks") or {}).values():
+        for attempt in task.get("attempt_history") or []:
+            sha = attempt.get("interrupted_candidate_sha", "")
+            if sha:
+                if not _commit_exists(root, sha):
+                    raise CheckpointError(f"required interrupted candidate commit is missing: {sha}")
+                commits.add(sha)
     pin = root / "work" / work_id / "traceability-accepted.json"
     if pin.is_file():
         try:
@@ -195,7 +202,7 @@ def _required_commits(root: Path, work_id: str, state: dict) -> list[str]:
             continue
         if not isinstance(doc, dict):
             continue
-        for key in ("base_sha", "candidate_sha", "source_sha", "authority_sha", "runner_sha",
+        for key in ("base_sha", "candidate_sha", "interrupted_candidate_sha", "source_sha", "authority_sha", "runner_sha",
                     "contract_sha", "accepted_tests_sha", "red_sha", "green_sha"):
             sha = doc.get(key)
             if isinstance(sha, str) and sha:

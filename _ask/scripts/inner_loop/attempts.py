@@ -86,6 +86,19 @@ def interrupt_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
 
         current_ref = accepted_plan_ref(root, work_id)
         current_digest = accepted_plan_digest(root, work_id)
+        candidate = subprocess.run(
+            ["git", "rev-parse", "--verify", "HEAD^{commit}"], cwd=root,
+            capture_output=True, text=True,
+        )
+        if candidate.returncode:
+            raise ProtocolViolation("cannot identify the interrupted candidate commit")
+        candidate_sha = candidate.stdout.strip()
+        base_sha = task.get("base_sha") or doc.get("coordinator_sha") or ""
+        if base_sha and subprocess.run(
+            ["git", "merge-base", "--is-ancestor", base_sha, candidate_sha], cwd=root,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode:
+            raise ProtocolViolation("interrupted candidate is outside its task base ancestry")
         number = int(task.get("attempt_number") or 1)
         existing_attempt_id = task.get("attempt_id") or ""
         attempt_id = existing_attempt_id or f"{task_id}:attempt-{number}"
@@ -96,7 +109,8 @@ def interrupt_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
             "status": "interrupted",
             "reason": reason.strip(),
             "attempt_id_created_during_interrupt": not bool(existing_attempt_id),
-            "base_sha": task.get("base_sha") or "",
+            "base_sha": base_sha,
+            "interrupted_candidate_sha": candidate_sha,
             "task_branch": task.get("task_branch") or "",
             "result_path": task.get("result_path") or "",
             "evidence": copy.deepcopy(task.get("evidence") or {}),
