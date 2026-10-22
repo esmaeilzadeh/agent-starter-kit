@@ -181,16 +181,6 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
     old_scope = _scope_test_ids(previous["plan"], task_id)
     if old_scope is None or not old_scope:
         return False
-    try:
-        from inner_loop.checkpoint import CheckpointError, read_checkpoint
-    except ImportError:
-        return False
-    try:
-        checkpoint = read_checkpoint(root, work_id)
-    except CheckpointError:
-        return False
-    if checkpoint is not None and not _traceability_matches_checkpoint(root, work_id, checkpoint):
-        return False
     reports = root / "work" / work_id / "traceability" / "runs"
     for row in executions:
         if not (isinstance(row, dict)
@@ -203,6 +193,17 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
             continue
         run_id = row.get("run_id")
         if not isinstance(run_id, str) or not run_id or "/" in run_id or "\\" in run_id:
+            continue
+        try:
+            from inner_loop.checkpoint import CheckpointError, read_checkpoint
+            checkpoint = read_checkpoint(root, work_id)
+        except ImportError:
+            return False
+        except CheckpointError:
+            return False
+        if checkpoint is None or not _traceability_matches_checkpoint(
+            root, work_id, checkpoint, expected_row=row, expected_run_id=run_id
+        ):
             continue
         report_path = reports / run_id / "results.json"
         try:
@@ -236,8 +237,10 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
 
 
 def _traceability_matches_checkpoint(root: Path, work_id: str,
-                                     checkpoint: tuple[str, dict, dict[str, bytes]]) -> bool:
-    """Refuse runtime traceability edits that are newer than retained evidence."""
+                                     checkpoint: tuple[str, dict, dict[str, bytes]], *,
+                                     expected_row: dict | None = None,
+                                     expected_run_id: str | None = None) -> bool:
+    """Preserve checkpointed evidence exactly while allowing append-only runs."""
     prefix = f"work/{work_id}/traceability/"
     retained = {name[len("artifacts/"):]: content
                 for name, content in checkpoint[2].items()
@@ -250,7 +253,42 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
                 return False
             if path.is_file():
                 live[path.relative_to(root).as_posix()] = path.read_bytes()
-    return live == retained
+    ledger_path = prefix + "executions.json"
+    retained_ledger = retained.get(ledger_path)
+    live_ledger = live.get(ledger_path)
+    try:
+        old_rows = json.loads(retained_ledger) if retained_ledger is not None else []
+        current_rows = json.loads(live_ledger) if live_ledger is not None else []
+    except (UnicodeDecodeError, ValueError):
+        return False
+    if (not isinstance(old_rows, list) or not isinstance(current_rows, list)
+            or current_rows[:len(old_rows)] != old_rows):
+        return False
+    if expected_row is not None and expected_row not in old_rows:
+        return False
+    for name, content in retained.items():
+        if name == ledger_path:
+            continue
+        if live.get(name) != content:
+            return False
+    allowed_new = {ledger_path}
+    for name in live.keys() - retained.keys():
+        relative = name[len(prefix):] if name.startswith(prefix) else ""
+        parts = relative.split("/") if relative else []
+        if name == prefix + "executions.lock":
+            allowed_new.add(name)
+            continue
+        if (len(parts) == 3 and parts[0] == "runs"
+                and parts[1] and all(char.isalnum() or char in "-_" for char in parts[1])
+                and (parts[2] == "results.json" or parts[2].endswith((".json", ".log")))):
+            allowed_new.add(name)
+            continue
+        return False
+    if expected_run_id is not None:
+        report_name = prefix + f"runs/{expected_run_id}/results.json"
+        if report_name not in retained or live.get(report_name) != retained[report_name]:
+            return False
+    return set(live) - set(retained) <= allowed_new
 
 
 def _changed_paths(root: Path, base: str, head: str) -> list[str]:
