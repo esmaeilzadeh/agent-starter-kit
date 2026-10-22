@@ -298,5 +298,15 @@
     "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
     "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+  },
+  {
+    "run_id": "7d56e2a86c4f4b33bace71c0b97bc3ca",
+    "digest": "9cca1434cf38928890b03ae23c0e67132b143c97fea840a9e42c03c6b82d5ccd",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "CR-2",
+    "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
   }
 ]
