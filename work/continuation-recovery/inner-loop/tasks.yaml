@@ -17,6 +17,8 @@ tasks:
     depends_on: ["CR-1"]
     owned_paths:
       - "_ask/scripts/inner_loop/checkpoint.py"
+      - "_ask/scripts/inner_loop/driver.py"
+      - "_ask/scripts/inner_loop/attempts.py"
       - "_ask/scripts/inner_loop/state.py"
       - "_ask/scripts/inner_loop/recovery.py"
       - "_ask/scripts/inner_loop/__main__.py"

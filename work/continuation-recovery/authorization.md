@@ -34,3 +34,9 @@ This authorizes moving CR-T38 from CR-1 to CR-2, changing its classification to
 `changed`, binding it to CR-03 and CR-07, and amending its assertion to require
 replay of the published post-fast-forward checkpoint after interruption before
 runtime cache replacement. No other criterion or product intent changes.
+
+The subsequent explicit “continue” authorized resolving the active-task plan
+amendment gate within existing CR-07: record the active attempt and its exact
+traceability runs, permit the reviewed plan revision between attempts, then
+start a new attempt with a distinct ID and accepted-plan ref. CR-T55 maps this
+behavior to CR-07; it does not change What, Why, or CR-01–CR-08.
