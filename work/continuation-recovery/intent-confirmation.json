@@ -1,0 +1,8 @@
+{
+  "schema": "ask-intent-confirmation/v2",
+  "work_id": "continuation-recovery",
+  "scope": "complete-intent-and-assumptions",
+  "prompt": "Do you approve the complete intent and every listed assumption as written?",
+  "intent_sha256": "b1a7555de3be3768df3170b022f2ee82f7c75158724db791692d162ec6ccdfbd",
+  "human_choice": "approve"
+}
