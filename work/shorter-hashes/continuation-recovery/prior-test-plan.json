@@ -1,0 +1,536 @@
+{
+  "schema": "ask-continuation-recovery-test-plan/proposal-v1",
+  "work_id": "shorter-hashes",
+  "status": "proposed-not-registered",
+  "requirements": "spec-change.md",
+  "requirements_sha256": "9b34756aad45ff22d3b3ba457381c73768e86d1477aa922039a265b530a7b4f0",
+  "runner": {
+    "id": "continuation-recovery",
+    "command": "PYTHONPATH=_ask/scripts python3 _ask/tests/inner_loop_recovery.py",
+    "planned": true
+  },
+  "cases": [
+    {
+      "id": "CR-T01",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-01",
+        "CR-06"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_missing_state_retained_result",
+      "scenario": {
+        "given": "State removed after executed candidate and retained TaskResult/review",
+        "when": "run and resume are called in fresh processes",
+        "then": [
+          "Report recovery_required for original task before writer admission",
+          "Original result, candidate and review bytes remain unchanged; no replacement base"
+        ]
+      },
+      "expected_assertions": [
+        "Report recovery_required for original task before writer admission",
+        "Original result, candidate and review bytes remain unchanged; no replacement base"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/state.py"
+      ]
+    },
+    {
+      "id": "CR-T02",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-01",
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_pending_state_conflicts_with_execution",
+      "scenario": {
+        "given": "An older or replaced cache marks an executed task pending",
+        "when": "run, cas-init and spawn-writer attempt admission",
+        "then": [
+          "All public admissions detect the prior attempt and refuse fresh initialization",
+          "No task status, base or checkpoint ref advances"
+        ]
+      },
+      "expected_assertions": [
+        "All public admissions detect the prior attempt and refuse fresh initialization",
+        "No task status, base or checkpoint ref advances"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/state.py"
+      ]
+    },
+    {
+      "id": "CR-T03",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-01",
+        "CR-06"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_fresh_initialization_and_missing_legacy_evidence",
+      "scenario": {
+        "given": "A genuinely new task at its accepted anchor and a separate task with post-anchor source changes but missing runtime evidence",
+        "when": "Scheduler initializes each repository",
+        "then": [
+          "The new task starts normally",
+          "The ambiguous legacy case requires reconciliation without claiming implementation or completion"
+        ]
+      },
+      "expected_assertions": [
+        "The new task starts normally",
+        "The ambiguous legacy case requires reconciliation without claiming implementation or completion"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/state.py"
+      ]
+    },
+    {
+      "id": "CR-T04",
+      "task_id": "CR-1",
+      "criterion_ids": [
+        "CR-01",
+        "CR-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_contract_and_checkout_conflict",
+      "scenario": {
+        "given": "Evidence names another task/work/contract or a candidate outside selected checkout ancestry",
+        "when": "Reconciliation runs",
+        "then": [
+          "Report precise conflicting identities and artifact paths",
+          "No evidence is applied and no writer starts"
+        ]
+      },
+      "expected_assertions": [
+        "Report precise conflicting identities and artifact paths",
+        "No evidence is applied and no writer starts"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/state.py"
+      ]
+    },
+    {
+      "id": "CR-T05",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-02",
+        "CR-04",
+        "CR-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_restore_deleted_runtime_cache",
+      "scenario": {
+        "given": "A checkpoint includes result, real run logs, Refactor and review evidence",
+        "when": "All ignored runtime state/evidence are removed and a fresh process resumes",
+        "then": [
+          "Restore exact original base, milestone identities and artifact bytes from Git objects",
+          "Report the first unmet step; Green alone never becomes integrated"
+        ]
+      },
+      "expected_assertions": [
+        "Restore exact original base, milestone identities and artifact bytes from Git objects",
+        "Report the first unmet step; Green alone never becomes integrated"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py"
+      ]
+    },
+    {
+      "id": "CR-T06",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-02",
+        "CR-03"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_crash_around_checkpoint_publication",
+      "scenario": {
+        "given": "A prior valid checkpoint exists",
+        "when": "Writer dies before ref publication, after publication, and before cache replacement",
+        "then": [
+          "Before publication recover previous checkpoint; after publication recover published checkpoint",
+          "Cache/state generation never silently rolls back"
+        ]
+      },
+      "expected_assertions": [
+        "Before publication recover previous checkpoint; after publication recover published checkpoint",
+        "Cache/state generation never silently rolls back"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py"
+      ]
+    },
+    {
+      "id": "CR-T07",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-03",
+        "CR-08"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_concurrent_checkpoint_writers",
+      "scenario": {
+        "given": "Two processes observe one checkpoint generation",
+        "when": "Both attempt state publication and writer start",
+        "then": [
+          "Only one CAS publication succeeds and one task writer exists",
+          "Loser reports conflict; no deadlock with shared reference lock"
+        ]
+      },
+      "expected_assertions": [
+        "Only one CAS publication succeeds and one task writer exists",
+        "Loser reports conflict; no deadlock with shared reference lock"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py"
+      ]
+    },
+    {
+      "id": "CR-T08",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-02",
+        "CR-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_reject_incomplete_or_unsafe_checkpoint",
+      "scenario": {
+        "given": "Checkpoint has missing blob, altered digest, unsafe path, unsupported schema or candidate-supplied approval",
+        "when": "Recovery validates evidence closure",
+        "then": [
+          "Refuse incomplete/untrusted data without modifying original evidence or state",
+          "No checkpoint can self-create accepted-tests authority or independent approval"
+        ]
+      },
+      "expected_assertions": [
+        "Refuse incomplete/untrusted data without modifying original evidence or state",
+        "No checkpoint can self-create accepted-tests authority or independent approval"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py"
+      ]
+    },
+    {
+      "id": "CR-T09",
+      "task_id": "CR-2",
+      "criterion_ids": [
+        "CR-03",
+        "CR-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_stale_and_newer_cache",
+      "scenario": {
+        "given": "A checkpoint is newer than cache; separately cache is unexplained newer or divergent",
+        "when": "Fresh continuation loads each case",
+        "then": [
+          "Replay only compatible validated older cache",
+          "Newer/divergent cache requires reconciliation and is preserved for diagnosis"
+        ]
+      },
+      "expected_assertions": [
+        "Replay only compatible validated older cache",
+        "Newer/divergent cache requires reconciliation and is preserved for diagnosis"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py"
+      ]
+    },
+    {
+      "id": "CR-T10",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-02",
+        "CR-04"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_checkpoint_real_red_and_green",
+      "scenario": {
+        "given": "A real assertion test fails, implementation is committed, and the same assertion passes",
+        "when": "Traceability publishes each run before TaskResult exists; process exits after each milestone",
+        "then": [
+          "Checkpoint retains real run IDs, source and test continuity, outcomes and log digests",
+          "Resumption retains original Red and Green instead of demanding a newly failing run"
+        ]
+      },
+      "expected_assertions": [
+        "Checkpoint retains real run IDs, source and test continuity, outcomes and log digests",
+        "Resumption retains original Red and Green instead of demanding a newly failing run"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py"
+      ]
+    },
+    {
+      "id": "CR-T11",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-04",
+        "CR-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_stale_review_preserves_execution",
+      "scenario": {
+        "given": "A task has valid Red/Green and exact-candidate review",
+        "when": "Candidate or bound contract changes before resumption",
+        "then": [
+          "Keep historical execution without reusing inapplicable approval",
+          "Report the required evidence renewal; passing tests never count as approval"
+        ]
+      },
+      "expected_assertions": [
+        "Keep historical execution without reusing inapplicable approval",
+        "Report the required evidence renewal; passing tests never count as approval"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py"
+      ]
+    },
+    {
+      "id": "CR-T12",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-03",
+        "CR-04",
+        "CR-08"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_crash_after_verification_or_ff",
+      "scenario": {
+        "given": "Candidate has current review and real coordinator verification",
+        "when": "Process dies after verification and after FF but before state fold",
+        "then": [
+          "Resume the exact candidate and complete only missing validated transition",
+          "Never rewind code or mark unrelated descendant integrated; preserve one writer and FF rules"
+        ]
+      },
+      "expected_assertions": [
+        "Resume the exact candidate and complete only missing validated transition",
+        "Never rewind code or mark unrelated descendant integrated; preserve one writer and FF rules"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py"
+      ]
+    },
+    {
+      "id": "CR-T13",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-04",
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_guard_rollback_and_explicit_attempts",
+      "scenario": {
+        "given": "A task contains recorded Green/review or integration",
+        "when": "Generic CAS attempts rollback; explicit reviewed reopen names a new attempt",
+        "then": [
+          "Refuse silent overwrite of execution history",
+          "Retain old attempt and its evidence; new attempt has an explicit authorized baseline"
+        ]
+      },
+      "expected_assertions": [
+        "Refuse silent overwrite of execution history",
+        "Retain old attempt and its evidence; new attempt has an explicit authorized baseline"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py"
+      ]
+    },
+    {
+      "id": "CR-T14",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-01",
+        "CR-02",
+        "CR-05",
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_clone_and_cli_recovery_diagnostics",
+      "scenario": {
+        "given": "A source-only clone lacks checkpoint refs and an explicit local transfer includes them",
+        "when": "CLI status/reconcile/run/resume inspect both clones",
+        "then": [
+          "Missing recovery data produces actionable diagnostics without fabricated completion",
+          "Transferred refs/objects recover identical supported milestones and stable task IDs"
+        ]
+      },
+      "expected_assertions": [
+        "Missing recovery data produces actionable diagnostics without fabricated completion",
+        "Transferred refs/objects recover identical supported milestones and stable task IDs"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/driver.py"
+      ]
+    },
+    {
+      "id": "CR-T15",
+      "task_id": "CR-4",
+      "criterion_ids": [
+        "CR-04",
+        "CR-06",
+        "CR-08"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+      "scenario": {
+        "given": "A fixture mirrors old Tasks 1\u20135 execution with a restarted queue and reviewed legacy provenance",
+        "when": "Read-only report and explicit adoption are performed",
+        "then": [
+          "Original base/candidate and Red/Green provenance remain intact",
+          "Missing review/integration stays unmet; no automatic reclassification or restart"
+        ]
+      },
+      "expected_assertions": [
+        "Original base/candidate and Red/Green provenance remain intact",
+        "Missing review/integration stays unmet; no automatic reclassification or restart"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "work/shorter-hashes/continuation-recovery/**",
+        "work/shorter-hashes/inner-loop/state.json"
+      ]
+    },
+    {
+      "id": "CR-T16",
+      "task_id": "CR-4",
+      "criterion_ids": [
+        "CR-02",
+        "CR-06",
+        "CR-08"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+      "scenario": {
+        "given": "A reconciled multi-task legacy checkpoint and audit report exist",
+        "when": "Export/reload and select next eligible milestone without scheduling product work",
+        "then": [
+          "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
+          "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization"
+        ]
+      },
+      "expected_assertions": [
+        "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
+        "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization"
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "work/shorter-hashes/continuation-recovery/**",
+        "work/shorter-hashes/inner-loop/state.json"
+      ]
+    }
+  ],
+  "task_scopes": [
+    {
+      "task_id": "CR-1",
+      "test_ids": [
+        "CR-T01",
+        "CR-T02",
+        "CR-T03",
+        "CR-T04"
+      ]
+    },
+    {
+      "task_id": "CR-2",
+      "test_ids": [
+        "CR-T05",
+        "CR-T06",
+        "CR-T07",
+        "CR-T08",
+        "CR-T09"
+      ]
+    },
+    {
+      "task_id": "CR-3",
+      "test_ids": [
+        "CR-T10",
+        "CR-T11",
+        "CR-T12",
+        "CR-T13",
+        "CR-T14"
+      ]
+    },
+    {
+      "task_id": "CR-4",
+      "test_ids": [
+        "CR-T15",
+        "CR-T16"
+      ]
+    }
+  ]
+}

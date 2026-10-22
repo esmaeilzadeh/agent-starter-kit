@@ -1,3 +1,26 @@
+# Current planning interrupt: continuation recovery
+
+The user directed applying all review changes, sealing the recovery plan and
+stopping before implementation. The current combined requirements are canonical
+spec revision 8: original 18 product criteria plus CR-01–CR-08. Current combined
+test plan has 60 cases and 15 supported runners. Current task order is
+1 -> CR-1 -> CR-2 -> CR-3 -> CR-4 -> 2 -> ... -> 10.
+
+The normative interrupt plan is `continuation-recovery/plan.md`, with exact
+ownership in its task graph and the combined `inner-loop/tasks.yaml`.
+`continuation-recovery/plan-seal.md` records final review/registration. Preserve
+old Task 1–10 execution records; bootstrap/adoption are future operations only.
+**Current authorized endpoint: seal this planning contract and stop.** The older
+completion endpoint in the retained product plan below is superseded by this
+explicit planning stop. Implementation requires a later explicit direction.
+
+The retained product plan below derives from product specification revision 7;
+its What/Why, scenarios, measurement contract and acceptance criteria remain
+unchanged. Its old case/task counts describe that product subset. The interrupt
+adds scheduling prerequisites and recovery obligations without rewriting it.
+
+---
+
 # Consolidated implementation plan
 
 ## Specification and authorization
