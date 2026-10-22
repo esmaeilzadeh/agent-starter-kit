@@ -238,6 +238,18 @@ def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
     if any(test.get("task_id") != task_id or not isinstance(test.get("case_id"), str)
            or not isinstance(test.get("runner_id"), str) for test in expected.values()):
         return False
+    runner_configs = {}
+    runners = plan.get("runners")
+    if not isinstance(runners, list):
+        return False
+    for runner in runners:
+        if not isinstance(runner, dict) or not isinstance(runner.get("id"), str):
+            return False
+        if runner["id"] in runner_configs:
+            return False
+        runner_configs[runner["id"]] = runner
+    if any(test.get("runner_id") not in runner_configs for test in expected.values()):
+        return False
 
     runs = report.get("executions")
     cases = report.get("cases")
@@ -250,16 +262,20 @@ def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
         run_id = run.get("id")
         if not isinstance(run_id, str) or not run_id or run_id in by_id:
             return False
+        runner = runner_configs.get(run.get("runner_id"))
         if (run.get("phase") != "final_green" or run.get("collection_status") != "ok"
                 or type(run.get("exit_code")) is not int or run.get("exit_code") != 0
                 or not isinstance(run.get("runner_id"), str)
-                or run.get("source_sha") != candidate_sha):
+                or run.get("source_sha") != candidate_sha or runner is None
+                or run.get("argv") != runner.get("argv")
+                or run.get("adapter") != runner.get("adapter")):
             return False
         by_id[run_id] = run
 
     seen_tests = set()
     seen_cases = set()
     used_executions = set()
+    cases_by_execution = {run_id: set() for run_id in by_id}
     for case in cases:
         if not isinstance(case, dict):
             return False
@@ -278,7 +294,15 @@ def _valid_final_green_scope(report: dict, plan: dict, task_id: str,
         seen_tests.add(test_id)
         seen_cases.add(identity)
         used_executions.add(case["execution_id"])
-    return seen_tests == required_ids and used_executions == set(by_id)
+        cases_by_execution[case["execution_id"]].add(case["case_id"])
+    if seen_tests != required_ids or used_executions != set(by_id):
+        return False
+    for run_id, run in by_id.items():
+        planned = {test["case_id"] for test in expected.values()
+                   if test.get("runner_id") == run.get("runner_id")}
+        if not planned or cases_by_execution[run_id] != planned:
+            return False
+    return True
 
 
 def _traceability_matches_checkpoint(root: Path, work_id: str,
