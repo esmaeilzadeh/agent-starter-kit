@@ -11,8 +11,10 @@ history because there is no attempt record.
 
 ## Change
 
-CR-1 additionally owns `_ask/tests/traceability_fixture.py`, which will start a
-task from the accepted anchor before committing its candidate source. Add exact
+CR-1 owns `_ask/tests/traceability_fixture.py` and the mapped
+`_ask/tests/test_traceability_entrypoints.py` assertion module. An explicit
+fixture option starts the selected task from the accepted anchor before its
+candidate source is committed; only CR-T53/54 enable that lifecycle setup. Add exact
 regression selectors CR-T53 and CR-T54 for the two affected public-entrypoint
 tests, binding the fixture, assertion module, and recovery admission sources.
 Keep their omitted-E2E rejection, evidence agreement, integration, and acceptance
