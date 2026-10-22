@@ -60,4 +60,6 @@ runtime state. Preserve the sealed plan and its accepted authority unchanged.
 
 ## Decision
 
-Pending user choice: **Approve spec change** or **Keep current spec**.
+Approved by the user on 2026-10-22 with “approve spec change”. This decision
+approves the scope extension only; exact confirmation of the revised intent is
+still required before implementation admission.
