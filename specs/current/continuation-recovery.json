@@ -1,6 +1,6 @@
 {
   "schema": "ask-spec/v1",
-  "work_id": "shorter-hashes",
+  "work_id": "continuation-recovery",
   "revision": 1,
   "criteria": [
     {
@@ -53,7 +53,7 @@
       "given": "A cooperative coordinator continues a workstream with retained execution history and potentially missing or conflicting local state",
       "when": "Task state, evidence, recovery or writer admission is evaluated across runs",
       "then": [
-        "Handle pre-checkpoint workstreams through a read-only reconciliation report and a reviewed explicit adoption record. Preserve original base/candidate and run history; attribute missing milestones honestly and renew only the stale evidence. An adoption cannot label an unverified task integrated. Test reclassification remains an independently reviewed contract change, never an automatic response to Green on resume. Before CR-1, apply the reviewed bootstrap described in bootstrap.md using existing CAS/admission APIs; add CR IDs and start only CR-1 at its own approved baseline while preserving every old task record and the product context."
+        "Handle pre-checkpoint workstreams through a read-only reconciliation report and a reviewed explicit adoption record. Preserve original base/candidate and run history; attribute missing milestones honestly and renew only the stale evidence. An adoption cannot label an unverified task integrated. Test reclassification remains an independently reviewed contract change, never an automatic response to Green on resume. Initialize the separate continuation-recovery workstream through normal existing coordinator admission and its own four-task contract. Preserve the blocked product state and authority unchanged; later reviewed adoption uses the explicit handoff in bootstrap.md."
       ],
       "verification_mode": "tests"
     },
@@ -62,7 +62,7 @@
       "given": "A cooperative coordinator continues a workstream with retained execution history and potentially missing or conflicting local state",
       "when": "Task state, evidence, recovery or writer admission is evaluated across runs",
       "then": [
-        "`run`, `resume`, `cas-init`, `spawn-writer` and generic state mutation share recovery guards. Report recoverable stage and evidence through `status`/`reconcile`. Protect recorded execution history against silent lifecycle rollback; deliberate reopen/contract amendment preserves the prior attempt and starts an explicitly identified attempt. The initial scoped suspension is an explicit coordinator instruction until CR-1 enforces it. Every case binds exact immutable production/assertion/fixture files; runtime state and wildcard source bindings are excluded."
+        "`run`, `resume`, `cas-init`, `spawn-writer` and generic state mutation share recovery guards. Report recoverable stage and evidence through `status`/`reconcile`. Protect recorded execution history against silent lifecycle rollback; deliberate reopen/contract amendment preserves the prior attempt and starts an explicitly identified attempt. Every case binds exact immutable production/assertion/fixture files; runtime state and wildcard source bindings are excluded."
       ],
       "verification_mode": "tests"
     },
@@ -71,7 +71,7 @@
       "given": "A cooperative coordinator continues a workstream with retained execution history and potentially missing or conflicting local state",
       "when": "Task state, evidence, recovery or writer admission is evaluated across runs",
       "then": [
-        "The `shorter-hashes` reconciliation covers Tasks 1\u20135, whose code/history predates the restarted queue, before product scheduling resumes. Checkpoint recovery preserves one writer, CAS, exact approvals, task-owned paths, accepted-tests authority and FF-only integration. No extra task or new product behavior is introduced implicitly. Combined graph ordering is 1 -> CR-1 -> CR-2 -> CR-3 -> CR-4 -> 2 -> ... -> 10, validated with original shared paths. No implementation or bootstrap is authorized by the seal."
+        "The `shorter-hashes` reconciliation covers Tasks 1\u20135, whose code/history predates the restarted queue, before product scheduling resumes. Checkpoint recovery preserves one writer, CAS, exact approvals, task-owned paths, accepted-tests authority and FF-only integration. No extra task or new product behavior is introduced implicitly. Repair graph ordering is CR-1 -> CR-2 -> CR-3 -> CR-4 on its own branch. Original product state, contract and authority remain unchanged; a later explicit reviewed integration/adoption handoff precedes product scheduling. No implementation or bootstrap is authorized by the seal."
       ],
       "verification_mode": "tests"
     }
