@@ -88,7 +88,11 @@
         "python3",
         "-m",
         "unittest",
-        "_ask.tests.test_traceability_entrypoints"
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_traceability_entrypoints.py"
       ]
     }
   ],
@@ -2295,7 +2299,7 @@
       ],
       "type": "integration",
       "change_kind": "regression",
-      "case_id": "_ask.tests.test_traceability_entrypoints.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e",
+      "case_id": "test_traceability_entrypoints.EntrypointTests.test_I05_all_normal_entrypoints_reject_omitted_e2e",
       "scenario": {
         "given": "The existing disposable public-entrypoint consumer fixture with an accepted task graph",
         "when": "test_I05_all_normal_entrypoints_reject_omitted_e2e executes through separate CLI processes",
@@ -2328,7 +2332,7 @@
       ],
       "type": "integration",
       "change_kind": "regression",
-      "case_id": "_ask.tests.test_traceability_entrypoints.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints",
+      "case_id": "test_traceability_entrypoints.EntrypointTests.test_I07_complete_evidence_agrees_across_entrypoints",
       "scenario": {
         "given": "The existing disposable public-entrypoint consumer fixture with an accepted task graph",
         "when": "test_I07_complete_evidence_agrees_across_entrypoints executes through separate CLI processes",
