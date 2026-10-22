@@ -128,6 +128,45 @@ class RecoveryTests(unittest.TestCase):
         self.write("src/a.py", "candidate = True\n")
         self.commit("candidate for task a")
         self.candidate = self.git("rev-parse", "HEAD")
+        self.result_path = self.root / "work/w/inner-loop/results/a.json"
+        self.review_path = self.root / "work/w/inner-loop/evidence/review-a.json"
+        self.result_path.parent.mkdir(parents=True, exist_ok=True)
+        self.review_path.parent.mkdir(parents=True, exist_ok=True)
+        self.result_path.write_text(
+            json.dumps(
+                {
+                    "schema": "ask-task-result/v2",
+                    "work_id": "w",
+                    "task_id": "a",
+                    "base_sha": self.anchor_commit,
+                    "candidate_sha": self.candidate,
+                    "contract_sha": self.base,
+                    "tdd": {
+                        "seam": "src/a.py",
+                        "red": {"command": "case", "output": "assertion failed", "exit_code": 1},
+                        "green": {"command": "case", "output": "passed", "exit_code": 0},
+                    },
+                    "exemption": None,
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        self.review_path.write_text(
+            json.dumps(
+                {
+                    "work_id": "w",
+                    "task_id": "a",
+                    "base_sha": self.anchor_commit,
+                    "candidate_sha": self.candidate,
+                    "verdict": "APPROVED",
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
 
     def test_interrupt_and_reopen_preserve_attempt_history(self):
         started = self.run_cli("run", "w")
@@ -194,45 +233,6 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(current["accepted_plan_ref"], new_plan_ref)
         self.assertEqual(current["attempt_history"], task["attempt_history"])
         self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
-        self.result_path = self.root / "work/w/inner-loop/results/a.json"
-        self.review_path = self.root / "work/w/inner-loop/evidence/review-a.json"
-        self.result_path.parent.mkdir(parents=True, exist_ok=True)
-        self.review_path.parent.mkdir(parents=True, exist_ok=True)
-        self.result_path.write_text(
-            json.dumps(
-                {
-                    "schema": "ask-task-result/v2",
-                    "work_id": "w",
-                    "task_id": "a",
-                    "base_sha": self.anchor_commit,
-                    "candidate_sha": self.candidate,
-                    "contract_sha": self.base,
-                    "tdd": {
-                        "seam": "src/a.py",
-                        "red": {"command": "case", "output": "assertion failed", "exit_code": 1},
-                        "green": {"command": "case", "output": "passed", "exit_code": 0},
-                    },
-                    "exemption": None,
-                },
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
-        )
-        self.review_path.write_text(
-            json.dumps(
-                {
-                    "work_id": "w",
-                    "task_id": "a",
-                    "base_sha": self.anchor_commit,
-                    "candidate_sha": self.candidate,
-                    "verdict": "APPROVED",
-                },
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
-        )
 
     def assert_recovery_required(self, result, *paths):
         output = result.stdout + result.stderr
