@@ -181,6 +181,16 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
     old_scope = _scope_test_ids(previous["plan"], task_id)
     if old_scope is None or not old_scope:
         return False
+    try:
+        from inner_loop.checkpoint import CheckpointError, read_checkpoint
+    except ImportError:
+        return False
+    try:
+        checkpoint = read_checkpoint(root, work_id)
+    except CheckpointError:
+        return False
+    if checkpoint is not None and not _traceability_matches_checkpoint(root, work_id, checkpoint):
+        return False
     reports = root / "work" / work_id / "traceability" / "runs"
     for row in executions:
         if not (isinstance(row, dict)
@@ -365,6 +375,7 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
         conflicts.append("state.json exists but could not be loaded")
         paths.add(str(state_path.relative_to(root)))
 
+    checkpoint = None
     if state is not None:
         if state.get("work_id") != work_id:
             conflicts.append("state.json work_id does not match the selected workstream")
@@ -396,9 +407,6 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
         if checkpoint is not None and checkpoint[1] != state:
             conflicts.append("state.json is newer or divergent from the retained checkpoint")
             paths.add(str(state_path.relative_to(root)))
-        if checkpoint is not None and not _traceability_matches_checkpoint(root, work_id, checkpoint):
-            conflicts.append("runtime traceability evidence differs from the retained checkpoint")
-            paths.add(str((root / "work" / work_id / "traceability").relative_to(root)))
 
     result_docs: list[tuple[str, dict, bytes]] = []
     for path in _result_files(root, work_id):
@@ -463,6 +471,9 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                 root, work_id, task_id, result, anchor or "", state
             ):
                 conflicts.append(f"{relative}: TaskResult contract identity mismatch")
+                if checkpoint is not None and not _traceability_matches_checkpoint(root, work_id, checkpoint):
+                    conflicts.append("runtime traceability evidence differs from the retained checkpoint")
+                    paths.add(str((root / "work" / work_id / "traceability").relative_to(root)))
         elif isinstance(result.get("base_sha"), str):
             base_anchor, base_error = _accepted_anchor_at(root, work_id, result["base_sha"])
             if base_error:
