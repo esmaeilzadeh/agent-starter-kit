@@ -2099,6 +2099,8 @@ class test_b(unittest.TestCase):
             "current_green_run_id": green["run_id"],
             "behavioral_continuity": "same source-value assertion remains mapped",
         }]
+        interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accept reviewed P1 fixture")
+        self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
         self.write("work/w/test-plan.json", json.dumps(p1_plan, sort_keys=True))
         self.commit("accept P1 historical Red continuity fixture")
         review_path = "work/w/traceability/plan-review.json"
@@ -2111,6 +2113,8 @@ class test_b(unittest.TestCase):
         )
         self.write("work/w/traceability-accepted.json", json.dumps(accepted, sort_keys=True) + "\n")
         self.commit("commit P1 historical Red authority")
+        reopened = self.run_cli("reopen", "w", "a", "--reason", "exercise P1 historical Red")
+        self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
 
         try:
             receipt = evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
@@ -2189,14 +2193,14 @@ class test_b(unittest.TestCase):
         self.assertNotEqual(read_checkpoint(self.root, "w")[0], checkpoint_before)
 
     def test_interrupted_preflight_is_read_only_and_derived(self):
-        self.start_candidate()
+        red, _green = self._real_traceability_pair()
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "preflight before reopen")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
         state_path = self.root / "work/w/inner-loop/state.json"
         state_before = state_path.read_bytes()
         checkpoint_before = read_checkpoint(self.root, "w")[0]
 
-        result = self.run_cli("preflight-run", "w", "a", "--run-id", "retained-run")
+        result = self.run_cli("preflight-run", "w", "a", "--run-id", red["run_id"])
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(state_path.read_bytes(), state_before)
         self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_before)
