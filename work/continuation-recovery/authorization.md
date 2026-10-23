@@ -63,3 +63,15 @@ normal coordinator acceptance. All T21 behavioral checks and current Green
 remain mandatory. The original task base, historical evidence, attempts, and
 consumed receipt remain unchanged. No CR-1/CR-2 reopening, product runtime
 mutation, product adoption, or product scheduling is authorized.
+
+On 2026-10-23, the user approved the bounded coordinator-upgrade trust-boundary
+correction in `cr3-coordinator-upgrade-scope-change.md` and the complete revised
+intent. The submitted decision is recorded in
+`cr3-coordinator-upgrade-decision.md`. For `continuation-recovery` / `CR-3`
+only, a separately reviewed exact coordinator commit may select the exact
+P1-bound verifier commit/tree after accepted P1 records both identities and
+review evidence. Original task base `2c508ff` and all historical runner and
+execution identities remain immutable. No arbitrary candidate verifier,
+product runtime mutation, product adoption, or product scheduling is
+authorized. Normal coordinator P1 acceptance and the previously approved T21
+conditions remain required.

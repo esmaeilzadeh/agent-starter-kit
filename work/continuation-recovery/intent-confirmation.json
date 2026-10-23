@@ -3,6 +3,6 @@
   "work_id": "continuation-recovery",
   "scope": "complete-intent-and-assumptions",
   "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "b1a7555de3be3768df3170b022f2ee82f7c75158724db791692d162ec6ccdfbd",
+  "intent_sha256": "92f72fbbbc0ba4e22dab7dc6976fdae4336d9dbcfff3631ee0011c8cf2ad4df5",
   "human_choice": "approve"
 }
