@@ -33,6 +33,37 @@ resolve all R1–R4 findings in `plan-review-reevaluation.md`.
 - R4: each case binds exact production, fixture and assertion files. Operational
   state is fixture/output evidence, never a source binding; no glob source paths.
 
+## CR-3 P0 evidence and verifier contract
+
+One shared coordinator evidence decision separates original report truth,
+current per-case permission, and current-candidate success. The original report,
+ledger row, candidate, runner and accepted authority are verified against their
+original immutable identities. A reviewed P1 row separately binds applicability
+to the current case and explains behavioral continuity; original source and
+contract ancestry remains required, while authority-commit ancestry is not.
+Only failed mapped behavior-assertion cases in an eligible report receive Red.
+Current Green must use the current P1 contract and exact reviewed candidate.
+Preflight, completion selection and `checkpoint-run` use this same decision;
+preflight derives identities from retained state, is read-only, and never marks
+a task milestone.
+
+The pinned verifier at the original CR-3 base `2c508ff` cannot enforce P1's
+per-case continuity table or the narrow T21 declaration. Keep that task base
+and every historical runner identity unchanged. P0 adds a coordinator-owned,
+scope-limited verifier-migration receipt. At P1, the accepted contract binds
+the exact verifier source commit/tree and its independent candidate-review
+evidence; coordinator `verify_candidate` selects that exact revision only
+after validating the accepted P1 migration binding. Caller paths, ambient
+environment values, and arbitrary candidate verifier selection are rejected.
+The integration result binds work/task, unchanged `base_sha`, exact candidate
+commit/tree, accepted contract digests, runner identity and migration receipt
+digest. The selected verifier retains the existing static, semantic, candidate,
+completion and integration checks. CR-T19 and CR-T59 exercise this through the
+real disposable coordinator integration path; `check-completion` alone is not
+evidence for the migration boundary. The exact implementation source commit is
+not known until the P0 implementation candidate exists; P1 must record its
+immutable identity before activation.
+
 ## Work breakdown
 
 `inner-loop/tasks.yaml` is the sole executable graph; `test-plan.json` is the
