@@ -214,7 +214,7 @@ class RecoveryTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def _real_traceability_pair(self, runner_count=1, old_runner=False):
+    def _real_traceability_pair(self, runner_count=1, old_runner=False, run_reports=True):
         """Run the accepted plan on real failing and passing commits."""
         import shutil
         from verification.traceability.contracts import digest
@@ -301,6 +301,10 @@ class test_b(unittest.TestCase):
         self.write("src/a.py", "red\n")
         self.commit("CR-3 real assertion red fixture")
         red_sha = self.git("rev-parse", "HEAD")
+        if not run_reports:
+            self.write("src/a.py", "green\n")
+            self.commit("CR-3 real assertion green fixture")
+            return red_sha, self.git("rev-parse", "HEAD")
         from verification.traceability.adapters import run_tests
         contracts = {"spec": self.spec, "plan": self.old_plan}
         red = run_tests(self.root, contracts, red_sha, "task", "a", "red")
@@ -311,37 +315,88 @@ class test_b(unittest.TestCase):
         return red, green
 
     def test_checkpoint_real_red_and_green(self):
-        red, green = self._real_traceability_pair(runner_count=2)
-        from inner_loop import evidence
-        self.assertTrue(
-            callable(getattr(evidence, "checkpoint_run", None)),
-            "coordinator must checkpoint validated standalone run milestones",
+        red_sha, green_sha = self._real_traceability_pair(runner_count=2, run_reports=False)
+        runs_dir = self.root / "work/w/traceability/runs"
+        runs_dir.mkdir(parents=True, exist_ok=True)
+
+        def run_traceability(candidate_sha, phase, crash_at):
+            env = dict(
+                os.environ,
+                ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
+                ASK_TRACEABILITY_CRASH_AT=crash_at,
+                PYTHONPATH=os.pathsep.join(
+                    part for part in (
+                        str(self.root / ".agents/ask"),
+                        str(SCRIPTS),
+                        os.environ.get("PYTHONPATH", ""),
+                    ) if part
+                ),
+            )
+            return subprocess.run(
+                [sys.executable, "-m", "verification.traceability.cli",
+                 "--root", str(self.root), "run", "w",
+                 "--candidate-sha", candidate_sha,
+                 "--anchor-sha", self.anchor_commit,
+                 "--scope", "task", "--task-id", "a", "--phase", phase],
+                cwd=self.root, env=env, capture_output=True, text=True,
+            )
+
+        def latest_report(before):
+            created = sorted(path for path in runs_dir.iterdir()
+                             if path.is_dir() and path.name not in before)
+            self.assertEqual(len(created), 1, f"expected one newly published run, got {created}")
+            report_path = created[0] / "results.json"
+            self.assertTrue(report_path.is_file(), "run report must publish before the child exits")
+            return created[0].name, json.loads(report_path.read_text(encoding="utf-8"))
+
+        ledger_path = self.root / "work/w/traceability/executions.json"
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8")) if ledger_path.exists() else []
+        before = {path.name for path in runs_dir.iterdir() if path.is_dir()}
+        red_exit = run_traceability(red_sha, "red", "after_report_publication")
+        self.assertEqual(red_exit.returncode, 81, red_exit.stdout + red_exit.stderr)
+        red_id, red = latest_report(before)
+        self.assertEqual(red["candidate_sha"], red_sha)
+        self.assertEqual(red["cases"][0]["outcome"], "failed")
+        self.assertFalse(any(row.get("run_id") == red_id for row in ledger),
+                         "the process exit must precede ledger insertion")
+
+        interrupted_checkpoint = self.run_cli(
+            "checkpoint-run", "w", "a", "--run-id", red_id,
+            env={"ASK_INNER_LOOP_CRASH_AT": "before_ref_publication"},
         )
-        for report in (red, green):
-            try:
-                evidence.checkpoint_run(self.root, "w", "a", report["run_id"])
-            except Exception as exc:
-                self.fail(f"valid accepted multi-runner report must finalize: {exc}")
-            self.assertEqual({item["runner_id"] for item in report["executions"]},
-                             {"fixture-a", "fixture-b"})
-        state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
-        recorded = state["tasks"]["a"]["evidence"]["traceability_runs"]
-        self.assertEqual([item["run_id"] for item in recorded], [red["run_id"], green["run_id"]])
+        self.assertEqual(interrupted_checkpoint.returncode, 75,
+                         interrupted_checkpoint.stdout + interrupted_checkpoint.stderr)
         checkpoint = read_checkpoint(self.root, "w")
-        self.assertIsNotNone(checkpoint)
-        for report in (red, green):
-            run_dir = self.root / "work/w/traceability/runs" / report["run_id"]
-            for path in run_dir.iterdir():
-                if path.is_file():
-                    relative = path.relative_to(self.root).as_posix()
-                    self.assertEqual(checkpoint[2]["artifacts/" + relative], path.read_bytes())
-        cache = self.root / "work/w/inner-loop/state.json"
-        cache.unlink()
-        restored = load_state(self.root, "w")
-        self.assertEqual(
-            [item["run_id"] for item in restored["tasks"]["a"]["evidence"]["traceability_runs"]],
-            [red["run_id"], green["run_id"]],
+        self.assertEqual(checkpoint[1]["tasks"]["a"]["evidence"].get("traceability_runs", []), [])
+
+        resumed_red = self.run_cli("checkpoint-run", "w", "a", "--run-id", red_id)
+        self.assertEqual(resumed_red.returncode, 0, resumed_red.stdout + resumed_red.stderr)
+        red_checkpoint = read_checkpoint(self.root, "w")
+        self.assertEqual(red_checkpoint[1]["tasks"]["a"]["evidence"]["traceability_runs"][0]["run_id"], red_id)
+
+        before = {path.name for path in runs_dir.iterdir() if path.is_dir()}
+        green_exit = run_traceability(green_sha, "final_green", "after_ledger_insertion")
+        self.assertEqual(green_exit.returncode, 82, green_exit.stdout + green_exit.stderr)
+        green_id, green = latest_report(before)
+        self.assertEqual(green["candidate_sha"], green_sha)
+        self.assertEqual(green["cases"][0]["outcome"], "passed")
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+        self.assertTrue(any(row.get("run_id") == green_id for row in ledger),
+                        "the child must exit after ledger insertion")
+
+        interrupted_green_checkpoint = self.run_cli(
+            "checkpoint-run", "w", "a", "--run-id", green_id,
+            env={"ASK_INNER_LOOP_CRASH_AT": "after_ref_publication"},
         )
+        self.assertEqual(interrupted_green_checkpoint.returncode, 76,
+                         interrupted_green_checkpoint.stdout + interrupted_green_checkpoint.stderr)
+        resumed = load_state(self.root, "w")
+        recorded = resumed["tasks"]["a"]["evidence"]["traceability_runs"]
+        self.assertEqual([row["run_id"] for row in recorded], [red_id, green_id])
+        self.assertEqual([row["phase"] for row in recorded], ["red", "final_green"])
+        self.assertEqual([row["candidate_sha"] for row in recorded], [red_sha, green_sha])
+        self.assertEqual([row["digest"] for row in recorded],
+                         [self.json_digest(red), self.json_digest(green)])
 
     def test_stale_review_preserves_execution(self):
         from _ask.tests.inner_loop_reliability import IntegrationTests
