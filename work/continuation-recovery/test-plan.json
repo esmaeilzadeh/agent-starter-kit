@@ -564,7 +564,7 @@
         "CR-05"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_stale_review_preserves_execution",
       "scenario": {
         "given": "A task has valid Red/Green and exact-candidate review",
@@ -727,7 +727,7 @@
         "CR-07"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_clone_and_cli_recovery_diagnostics",
       "scenario": {
         "given": "A source-only clone lacks checkpoint refs and an explicit local transfer includes them",
