@@ -1,0 +1,26 @@
+{
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "previous_checkpoint_sha": "76c84c9ccafd8cc2481c0880ebad69ddd1021671",
+  "previous_revision": 22,
+  "previous_attempt_id": "CR-3:attempt-1",
+  "interrupted_candidate_sha": "346249e491b4b47ca1b94b5656b1cf1ae3d88fab",
+  "new_attempt_id": "CR-3:attempt-2",
+  "accepted_plan_ref": "4ad1d2de2591a672aab211df1ce019d97cb13fad",
+  "accepted_plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025",
+  "new_attempt_base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
+  "recorded_by": "/root",
+  "source_postimage": {
+    "_ask/scripts/inner_loop/recovery.py": "3c4ee6aaeb492303020ac698e0810e87c6a55263e6d707084b4fffa3308adb67",
+    "_ask/tests/inner_loop_recovery.py": "05f3c13c12831035edfb72114c5b00667c6a8ab14046f67ac5de42f9b0148dc7"
+  },
+  "decision": "Preserve attempt 1 unchanged. Reopen attempt 2 under the current accepted plan. Attribute only the exact overlapping CR-3/CR-4 source postimage reviewed at this candidate; keep all old plan-digest executions in attempt 1 history.",
+  "review": {
+    "decision": "APPROVED",
+    "reviewer": "/root/cr3_reconciliation_review",
+    "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
+    "payload_sha256": "b38c32f5580c6c452537d97f7b32d0121da732364784ecda362660a8b2ee82ee"
+  }
+}

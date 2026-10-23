@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 22,
+  "revision": 23,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,19 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 1,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 2,
+      "attempt_id": "CR-3:attempt-2",
+      "accepted_plan_ref": "4ad1d2de2591a672aab211df1ce019d97cb13fad",
+      "accepted_plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025",
+      "attempt_started_revision": 23,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1053,7 +1053,18 @@
           "started_revision": 20,
           "interrupted_revision": 22
         }
-      ]
+      ],
+      "reopened_from_attempt": "CR-3:attempt-1",
+      "reopen_reason": "resume CR-3 under accepted reviewed plan; preserve attempt 1 and reconcile exact reviewed overlap",
+      "source_reconciliation": {
+        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3.json",
+        "digest": "cbab1b86bd3797eb32b996879c8a2a6c8f97da10f182ac83d022d01ce0d2cc2a",
+        "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
+        "paths": [
+          "_ask/scripts/inner_loop/recovery.py",
+          "_ask/tests/inner_loop_recovery.py"
+        ]
+      }
     },
     "CR-4": {
       "status": "pending",

@@ -1,0 +1,51 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_contract_and_checkout_conflict (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_fresh_initialization_and_missing_legacy_evidence (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_isolated_repair_initialization_and_legacy_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_missing_state_retained_result (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_new_candidate_preserves_stale_rejected_review_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_pending_state_conflicts_with_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_running_task_changes_may_overlap_later_task_ownership (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+FAIL: test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-99zl_ekf/candidate/_ask/tests/inner_loop_recovery.py", line 833, in test_nested_verifier_coordinator_finalization
+    self.assertEqual(result.errors, [])
+AssertionError: Lists differ: [(<_ask.tests.inner_loop_recovery.Recovery[442 chars]\n')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+(<_ask.tests.inner_loop_recovery.RecoveryTests.test_nested_verifier_coordinator_finalization.<locals>.NestedFinalizationCase testMethod=test_nested_real_reports_are_finalized_by_parent>, 'Traceback (most recent call last):\n  File "/tmp/ask-cases-99zl_ekf/candidate/_ask/tests/inner_loop_recovery.py", line 814, in test_nested_real_reports_are_finalized_by_parent\n    self.assertEqual(run_document["coordinator_finalization"]["task_id"], "b")\nKeyError: \'coordinator_finalization\'\n')
+
++ []
+- [(<_ask.tests.inner_loop_recovery.RecoveryTests.test_nested_verifier_coordinator_finalization.<locals>.NestedFinalizationCase testMethod=test_nested_real_reports_are_finalized_by_parent>,
+-   'Traceback (most recent call last):\n'
+-   '  File '
+-   '"/tmp/ask-cases-99zl_ekf/candidate/_ask/tests/inner_loop_recovery.py", line '
+-   '814, in test_nested_real_reports_are_finalized_by_parent\n'
+-   '    self.assertEqual(run_document["coordinator_finalization"]["task_id"], '
+-   '"b")\n'
+-   "KeyError: 'coordinator_finalization'\n")]
+
+----------------------------------------------------------------------
+Ran 24 tests in 106.926s
+
+FAILED (failures=1)
