@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 26,
+  "revision": 27,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,49 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "running",
-      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+      "status": "interrupted",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "dab908b39596441086d57106b8c816ec",
-            "digest": "dd69658428a1951ebabacabf48677dd3e00cbca45456f7b7379a06e2200cb1f3",
-            "phase": "red",
-            "task_id": "CR-3",
-            "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
-          },
-          {
-            "run_id": "6b6471cfb6704129afaa5bb587f71f0d",
-            "digest": "ac0eba822ce7df5c38f771e31a6f30b4c40aef17766407fa9410f0e506ddb1b4",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "abead280380b85a5eeb35c298de278f0629b8261",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
-          },
-          {
-            "run_id": "861e66d1fbce42859354f5b7a5b80317",
-            "digest": "c25dc7d3be6c412851f03f0590ebdab94c8e7e307a09ebd2ccc74325eea4a063",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "08339eb5bf9802cf815819bf3168f13c5296d9bd",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
-          }
-        ]
-      },
+      "evidence": {},
       "attempt_number": 2,
-      "attempt_id": "CR-3:attempt-2",
-      "accepted_plan_ref": "4ad1d2de2591a672aab211df1ce019d97cb13fad",
-      "accepted_plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025",
-      "attempt_started_revision": 23,
+      "attempt_id": "",
+      "accepted_plan_ref": "",
+      "accepted_plan_digest": "",
+      "attempt_started_revision": null,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1082,6 +1052,84 @@
           ],
           "started_revision": 20,
           "interrupted_revision": 22
+        },
+        {
+          "attempt_id": "CR-3:attempt-2",
+          "attempt_number": 2,
+          "status": "interrupted",
+          "reason": "Preserve attempt 2 after T19/T10 corrections and Green evidence; stop before changing the accepted TDD/classification contract because the current T11 and R4 evidence cannot produce valid Red without a scoped contract decision.",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+          "interrupted_candidate_sha": "08339eb5bf9802cf815819bf3168f13c5296d9bd",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {
+            "traceability_runs": [
+              {
+                "run_id": "dab908b39596441086d57106b8c816ec",
+                "digest": "dd69658428a1951ebabacabf48677dd3e00cbca45456f7b7379a06e2200cb1f3",
+                "phase": "red",
+                "task_id": "CR-3",
+                "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
+              },
+              {
+                "run_id": "6b6471cfb6704129afaa5bb587f71f0d",
+                "digest": "ac0eba822ce7df5c38f771e31a6f30b4c40aef17766407fa9410f0e506ddb1b4",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "abead280380b85a5eeb35c298de278f0629b8261",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
+              },
+              {
+                "run_id": "861e66d1fbce42859354f5b7a5b80317",
+                "digest": "c25dc7d3be6c412851f03f0590ebdab94c8e7e307a09ebd2ccc74325eea4a063",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "08339eb5bf9802cf815819bf3168f13c5296d9bd",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
+              }
+            ]
+          },
+          "accepted_plan_ref": "4ad1d2de2591a672aab211df1ce019d97cb13fad",
+          "accepted_plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025",
+          "execution_runs": [
+            {
+              "run_id": "dab908b39596441086d57106b8c816ec",
+              "digest": "dd69658428a1951ebabacabf48677dd3e00cbca45456f7b7379a06e2200cb1f3",
+              "phase": "red",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
+            },
+            {
+              "run_id": "6b6471cfb6704129afaa5bb587f71f0d",
+              "digest": "ac0eba822ce7df5c38f771e31a6f30b4c40aef17766407fa9410f0e506ddb1b4",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "abead280380b85a5eeb35c298de278f0629b8261",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
+            },
+            {
+              "run_id": "861e66d1fbce42859354f5b7a5b80317",
+              "digest": "c25dc7d3be6c412851f03f0590ebdab94c8e7e307a09ebd2ccc74325eea4a063",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "08339eb5bf9802cf815819bf3168f13c5296d9bd",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025"
+            }
+          ],
+          "started_revision": 23,
+          "interrupted_revision": 27
         }
       ],
       "reopened_from_attempt": "CR-3:attempt-1",
