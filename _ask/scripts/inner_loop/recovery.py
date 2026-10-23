@@ -226,12 +226,27 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
         return False
     base = result.get("base_sha")
     old_anchor, error = _accepted_anchor_at(root, work_id, base) if isinstance(base, str) else (None, "")
-    if error or old_anchor != result.get("contract_sha"):
+    contract_sha = result.get("contract_sha")
+    candidate_sha = result.get("candidate_sha")
+    if error or not isinstance(contract_sha, str) or not isinstance(candidate_sha, str):
         return False
+    if old_anchor != contract_sha:
+        # A coordinator may accept a reviewed contract amendment after task
+        # start. In that case the immutable result candidate carries the pin
+        # actually used for its runs; validate that exact contract and bound
+        # it between the original task base and candidate.
+        if (not old_anchor or not _is_ancestor(root, old_anchor, contract_sha)
+                or not _is_ancestor(root, contract_sha, candidate_sha)):
+            return False
+        old_pin = _json_at(root, candidate_sha, f"work/{work_id}/traceability-accepted.json")
+        if not isinstance(old_pin, dict) or old_pin.get("contract_sha") != contract_sha:
+            return False
+        old_anchor = contract_sha
+    else:
+        old_pin = _json_at(root, base, f"work/{work_id}/traceability-accepted.json")
     if not _is_ancestor(root, old_anchor or "", current_anchor):
         return False
 
-    old_pin = _json_at(root, base, f"work/{work_id}/traceability-accepted.json")
     try:
         current_pin = json.loads(
             (root / "work" / work_id / "traceability-accepted.json").read_text(encoding="utf-8")

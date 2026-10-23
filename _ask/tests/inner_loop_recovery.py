@@ -992,6 +992,29 @@ class test_b(unittest.TestCase):
 
     def test_scope_compatible_historical_task_result_survives_plan_amendment(self):
         self.start_candidate()
+        # Accept a metadata-only plan amendment after the immutable task base,
+        # then make the task candidate from that amended contract. The result
+        # must remain tied to this contract even when the base-time pin differs.
+        self.git("reset", "--hard", self.anchor_commit)
+        historical_plan = copy.deepcopy(self.old_plan)
+        historical_plan["tests"][1]["change_kind"] = "regression"
+        self.write("work/w/test-plan.json", json.dumps(historical_plan, sort_keys=True))
+        self.commit("accept a metadata-only plan amendment during the attempt")
+        historical_contract = self.git("rev-parse", "HEAD")
+        historical_plan_digest = self.json_digest(historical_plan)
+        historical_pin = {
+            "schema": "ask-accepted-tests/v1", "work_id": "w",
+            "contract_sha": historical_contract, "spec_digest": self.old_spec_digest,
+            "plan_digest": historical_plan_digest, "graph_digest": self.old_graph_digest,
+        }
+        self.write("work/w/traceability-accepted.json", json.dumps(historical_pin) + "\n")
+        self.commit("pin the amended plan")
+        self.write("src/a.py", "candidate = True\n# amended contract\n")
+        self.commit("candidate under amended historical contract")
+        self.candidate = self.git("rev-parse", "HEAD")
+        task_result = json.loads(self.result_path.read_text(encoding="utf-8"))
+        task_result.update(candidate_sha=self.candidate, contract_sha=historical_contract)
+        self.result_path.write_text(json.dumps(task_result, indent=2) + "\n", encoding="utf-8")
         original_result = self.result_path.read_bytes()
         state_path = self.root / "work/w/inner-loop/state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
@@ -1001,7 +1024,7 @@ class test_b(unittest.TestCase):
         state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
         self.git("update-ref", "-d", "refs/ask/inner-loop/w")
 
-        amended = copy.deepcopy(self.old_plan)
+        amended = copy.deepcopy(historical_plan)
         moved = next(test for test in amended["tests"] if test["id"] == "T-B")
         moved["task_id"] = "b"
         amended["task_scopes"] = [
@@ -1031,7 +1054,7 @@ class test_b(unittest.TestCase):
         report = {
             "schema": "ask-test-results/v1", "run_id": "green-a",
             "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
-            "plan_digest": self.old_plan_digest, "scope": "task", "task_id": "a",
+            "plan_digest": historical_plan_digest, "scope": "task", "task_id": "a",
             "runner_identity": {"capability": "ask-traceability/v1",
                                 "adapter_digest": hashlib.sha256(runner_source.read_bytes()).hexdigest()},
             "executions": [{"id": "exec-a", "phase": "final_green", "runner_id": "fixture",
@@ -1051,7 +1074,7 @@ class test_b(unittest.TestCase):
         ledger_row = {"run_id": "green-a", "digest": hashlib.sha256(report_raw.encode()).hexdigest(),
                       "phase": "final_green", "scope": "task", "task_id": "a",
                       "candidate_sha": self.candidate, "spec_digest": self.old_spec_digest,
-                      "plan_digest": self.old_plan_digest}
+                      "plan_digest": historical_plan_digest}
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row]) + "\n")
         state = json.loads(state_path.read_text(encoding="utf-8"))
         publish(self.root, "w", state)
@@ -1059,7 +1082,7 @@ class test_b(unittest.TestCase):
         result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(result, result)
         self.assertEqual(self.result_path.read_bytes(), original_result)
-        self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], self.base)
+        self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], historical_contract)
 
         # Normal CR-2 execution may append new traceability evidence between
         # coordinator checkpoints; unchanged historical evidence still carries.
