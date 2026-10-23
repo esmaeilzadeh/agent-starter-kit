@@ -47,7 +47,20 @@ def _is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
 
 def _reviewed_reconciliation(root: Path, work_id: str, task_id: str, doc: dict):
     """Validate an exact reviewed source postimage before reopening an attempt."""
-    path = root / "work" / work_id / "inner-loop" / "evidence" / f"reconciliation-{task_id}.json"
+    task = (doc.get("tasks") or {}).get(task_id)
+    history = (task or {}).get("attempt_history") or []
+    if not task or task.get("status") != "interrupted" or not history:
+        raise ProtocolViolation("attempt reconciliation does not name an interrupted task")
+    prior = history[-1]
+    previous_number = int(prior.get("attempt_number") or 0)
+    next_number = int(task.get("attempt_number") or previous_number) + 1
+    directory = root / "work" / work_id / "inner-loop" / "evidence"
+    path = directory / f"reconciliation-{task_id}-attempt-{previous_number}-to-{next_number}.json"
+    # Keep the original attempt-1 -> attempt-2 receipt readable as immutable
+    # history. Later transitions always select their own transition identity.
+    legacy_path = directory / f"reconciliation-{task_id}.json"
+    if not path.is_file() and previous_number == 1 and next_number == 2 and legacy_path.is_file():
+        path = legacy_path
     if not path.is_file():
         return None
     try:
@@ -57,11 +70,6 @@ def _reviewed_reconciliation(root: Path, work_id: str, task_id: str, doc: dict):
         raise ProtocolViolation(f"attempt reconciliation is unreadable: {exc}") from exc
     if not isinstance(record, dict) or record.get("schema") != "ask-inner-loop-reconciliation/v1":
         raise ProtocolViolation("attempt reconciliation has an unsupported schema")
-    task = (doc.get("tasks") or {}).get(task_id)
-    history = (task or {}).get("attempt_history") or []
-    if not task or task.get("status") != "interrupted" or not history:
-        raise ProtocolViolation("attempt reconciliation does not name an interrupted task")
-    prior = history[-1]
     pin_ref = accepted_plan_ref(root, work_id)
     pin_digest = accepted_plan_digest(root, work_id)
     head = subprocess.run(["git", "rev-parse", "--verify", "HEAD^{commit}"], cwd=root,
