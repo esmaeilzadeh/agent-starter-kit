@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import copy
 import os
 import fcntl
 import tempfile
@@ -126,17 +127,45 @@ def _publish_state(root: Path, work_id: str, doc: dict) -> None:
     _write_state(state_path(root, work_id), doc)
 
 
+def _preserve_attempt_history(before: dict, after: dict) -> None:
+    """State transitions may append attempts but never rewrite archived ones."""
+    old_tasks = before.get("tasks") or {}
+    new_tasks = after.get("tasks") or {}
+    for task_id, old_task in old_tasks.items():
+        old_history = old_task.get("attempt_history") or []
+        new_history = (new_tasks.get(task_id) or {}).get("attempt_history") or []
+        if (not isinstance(old_history, list) or not isinstance(new_history, list)
+                or len(new_history) < len(old_history)
+                or new_history[:len(old_history)] != old_history):
+            raise ProtocolViolation(
+                f"task {task_id} attempt history cannot be removed or rewritten"
+            )
+
+
+def checkpoint_held_state(root: Path, work_id: str, doc: dict) -> dict:
+    """Durably publish a transition while its state_transaction lock is held."""
+    _require_coordinator()
+    doc["revision"] = int(doc["revision"]) + 1
+    _publish_state(root, work_id, doc)
+    return doc
+
+
 @contextmanager
 def state_transaction(root: Path, work_id: str, observed_revision: int | None = None):
     """Hold the lock through validation, side effects and one atomic state fold."""
     with state_lock(root, work_id):
         doc = load_state(root, work_id)
         stored = int(doc["revision"])
+        before = copy.deepcopy(doc)
         if observed_revision is not None and stored != observed_revision:
             raise CasConflict(f"revision mismatch: observed={observed_revision} stored={stored}")
         _require_reconciled(root, work_id, doc)
         yield doc
-        doc["revision"] = stored + 1
+        _preserve_attempt_history(before, doc)
+        revision = int(doc["revision"])
+        if revision < stored:
+            raise CasConflict(f"transaction revision moved backwards: started={stored} current={revision}")
+        doc["revision"] = revision + 1
         _publish_state(root, work_id, doc)
 
 

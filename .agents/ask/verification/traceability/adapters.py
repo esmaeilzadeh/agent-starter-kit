@@ -69,6 +69,8 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 raise Invalid('candidate source changed during test execution')
         finally:git(root,'worktree','remove','--force',str(checkout))
     (directory/'results.json').write_text(json.dumps(report,indent=2)+'\n')
+    if os.environ.get('ASK_TRACEABILITY_CRASH_AT') == 'after_report_publication':
+        os._exit(81)
     from .evidence import write_json
     import fcntl
     ledger=directory.parent.parent/'executions.json'
@@ -77,4 +79,6 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
         entries=json.loads(ledger.read_text()) if ledger.exists() else []
         entries.append({'run_id':run_id,'digest':digest(report),'phase':phase,'scope':scope,'task_id':task_id,'candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan)})
         write_json(ledger,entries)
+    if os.environ.get('ASK_TRACEABILITY_CRASH_AT') == 'after_ledger_insertion':
+        os._exit(82)
     return report

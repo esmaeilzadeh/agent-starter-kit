@@ -167,6 +167,51 @@ def _scope_test_ids(plan: dict, task_id: str) -> set[str] | None:
     return set(ids) if all(isinstance(item, str) for item in ids) else None
 
 
+def _checkpointed_verification(root: Path, work_id: str, state: dict | None) -> dict | None:
+    """Return a passing verifier receipt whose bytes are bound to retained state."""
+    for task_id, task in ((state or {}).get("tasks") or {}).items():
+        evidence = task.get("evidence") or {}
+        verification = evidence.get("verification")
+        record_digest = evidence.get("verification_record_digest")
+        if (not isinstance(verification, dict) or verification.get("result") != "pass"
+                or verification.get("work_id") != work_id
+                or verification.get("task_id") != task_id):
+            continue
+        try:
+            result_path = root / "work" / work_id / "inner-loop" / "results" / f"{task_id}.json"
+            result_raw = result_path.read_bytes()
+            result = json.loads(result_raw)
+        except (OSError, ValueError):
+            continue
+        if (not isinstance(result, dict)
+                or verification.get("base_sha") != result.get("base_sha")
+                or verification.get("candidate_sha") != result.get("candidate_sha")
+                or verification.get("result_digest") != hashlib.sha256(result_raw).hexdigest()):
+            continue
+        record_path = verification.get("record_path")
+        if not isinstance(record_path, str):
+            continue
+        unresolved_path = root / record_path
+        path = unresolved_path.resolve()
+        if unresolved_path.is_symlink() or not path.is_relative_to(root.resolve()):
+            continue
+        try:
+            raw = path.read_bytes()
+            if (not isinstance(record_digest, str)
+                    or hashlib.sha256(raw).hexdigest() != record_digest
+                    or json.loads(raw) != verification):
+                continue
+            completion = (root / "work" / work_id / "traceability" / "completion.json").read_bytes()
+            static = (root / "work" / work_id / "traceability" /
+                      f"static-{verification['candidate_sha']}.json").read_bytes()
+        except (KeyError, OSError, ValueError):
+            continue
+        if (hashlib.sha256(completion).hexdigest() == verification.get("completion_digest")
+                and hashlib.sha256(static).hexdigest() == verification.get("static_receipt_digest")):
+            return verification
+    return None
+
+
 def _scope_compatible_result(root: Path, work_id: str, task_id: str,
                              result: dict, current_anchor: str,
                              state: dict | None) -> bool:
@@ -265,7 +310,8 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
                             else None)
         if output_artifacts is None or not _traceability_matches_checkpoint(
             root, work_id, checkpoint, expected_row=row, expected_run_id=run_id,
-            expected_artifacts=output_artifacts
+            expected_artifacts=output_artifacts,
+            expected_verification=_checkpointed_verification(root, work_id, state),
         ):
             continue
         if _valid_final_green_scope(root, work_id, report, previous["plan"], task_id,
@@ -386,7 +432,8 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
                                      checkpoint: tuple[str, dict, dict[str, bytes]], *,
                                      expected_row: dict | None = None,
                                      expected_run_id: str | None = None,
-                                     expected_artifacts: list[str] | None = None) -> bool:
+                                     expected_artifacts: list[str] | None = None,
+                                     expected_verification: dict | None = None) -> bool:
     """Preserve checkpointed evidence exactly while allowing append-only runs."""
     prefix = f"work/{work_id}/traceability/"
     retained = {name[len("artifacts/"):]: content
@@ -413,16 +460,34 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
         return False
     if expected_row is not None and expected_row not in old_rows:
         return False
+    verified_replacements = {}
+    if expected_verification is not None:
+        candidate = expected_verification.get("candidate_sha")
+        completion_digest = expected_verification.get("completion_digest")
+        static_digest = expected_verification.get("static_receipt_digest")
+        if (not isinstance(candidate, str) or not isinstance(completion_digest, str)
+                or not isinstance(static_digest, str)):
+            return False
+        verified_replacements = {
+            prefix + "completion.json": completion_digest,
+            prefix + f"static-{candidate}.json": static_digest,
+        }
     for name, content in retained.items():
         if name == ledger_path:
             continue
-        if live.get(name) != content:
+        expected_digest = verified_replacements.get(name)
+        if live.get(name) != content and (expected_digest is None
+                                          or hashlib.sha256(live.get(name, b"")).hexdigest() != expected_digest):
             return False
     allowed_new = {ledger_path}
     for name in live.keys() - retained.keys():
         relative = name[len(prefix):] if name.startswith(prefix) else ""
         parts = relative.split("/") if relative else []
         if name == prefix + "executions.lock":
+            allowed_new.add(name)
+            continue
+        if (name in verified_replacements
+                and hashlib.sha256(live[name]).hexdigest() == verified_replacements[name]):
             allowed_new.add(name)
             continue
         if (len(parts) == 3 and parts[0] == "runs"
@@ -438,6 +503,10 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
     if expected_artifacts is not None:
         if any(not isinstance(name, str) or name not in retained or live.get(name) != retained[name]
                for name in expected_artifacts):
+            return False
+    if expected_verification is not None:
+        if any(name not in live or hashlib.sha256(live[name]).hexdigest() != expected
+               for name, expected in verified_replacements.items()):
             return False
     return set(live) - set(retained) <= allowed_new
 

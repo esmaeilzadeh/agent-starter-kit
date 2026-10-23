@@ -5,6 +5,7 @@ Hidden: ready-set scheduling, TaskResult TDD/exemption gate, CAS SHA fold.
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 from pathlib import Path
 from engineering_model.workflow import adopted, guarded_workflow, workflow_admission, _refuse
@@ -12,12 +13,13 @@ from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
     NotIntegrable, _checkpoint_run_locked, check_integrable, git, read_candidate, result_path,
-    runtime_exclusions, source_changes, validate_review, verify_candidate,
+    reuse_checkpointed_verification, runtime_exclusions, source_changes, validate_review, verify_candidate,
 )
 from inner_loop.graph import _task_map, load_graph, validate_graph
 from inner_loop.integrate import Escalate, resume as git_resume
 from inner_loop.integrate import integrate as git_integrate
-from inner_loop.state import cas_apply, cas_init, load_state, spawn_writer, state_lock, state_transaction
+from inner_loop.state import (cas_apply, cas_init, checkpoint_held_state, load_state,
+                              spawn_writer, state_lock, state_transaction)
 from inner_loop.recovery import require_safe
 
 
@@ -113,7 +115,10 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         review = validate_review(root, task, candidate)
         if source_changes(root, work_id):
             raise NotIntegrable('dirty coordinator source; commit or resolve changes before integration')
-        evidence = verify_candidate(root, candidate)
+        evidence = reuse_checkpointed_verification(root, work_id, task, candidate)
+        verification_reused = evidence is not None
+        if evidence is None:
+            evidence = verify_candidate(root, candidate)
         # Checks can take time: ref/result/review or coordinator source drift
         # invalidates their applicability before any FF/state advancement.
         current = read_candidate(root, work_id, task_id, doc)
@@ -125,6 +130,18 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         # coordinator transaction already owns state.lock.
         for run_id in evidence.get('traceability_run_ids', []):
             _checkpoint_run_locked(root, work_id, task_id, run_id, doc)
+        task.setdefault('evidence', {})['verification'] = evidence
+        record_path = evidence.get('record_path')
+        try:
+            record_raw = (root / record_path).read_bytes()
+        except (OSError, TypeError) as exc:
+            raise NotIntegrable(f'verification evidence record is unavailable: {exc}') from exc
+        task['evidence']['verification_record_digest'] = hashlib.sha256(record_raw).hexdigest()
+        if not verification_reused:
+            # This is the durable verification-complete point. A crash from
+            # here through FF replays the exact receipt and performs only the
+            # missing integration/state fold.
+            checkpoint_held_state(root, work_id, doc)
         sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
                             delivery_task_id=task_id)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
@@ -132,6 +149,8 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         evidence['resulting_sha'] = sha
         evidence['review'] = review
         (root / evidence['record_path']).write_text(json.dumps(evidence, indent=2) + '\n')
+        task['evidence']['verification_record_digest'] = hashlib.sha256(
+            (root / evidence['record_path']).read_bytes()).hexdigest()
         task['status'] = 'integrated'
         task['result_path'] = str(result_path(root, work_id, task_id).relative_to(root))
         task['evidence']['verification'] = evidence
