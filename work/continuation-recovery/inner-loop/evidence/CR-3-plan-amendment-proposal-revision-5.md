@@ -33,6 +33,18 @@ For every task-scoped Red being carried into P1, its P1 continuity row names:
   A changed or newly added assertion is excluded even when the case ID and
   source filename are unchanged.
 
+The planned fingerprint is SHA-256 over UTF-8 output from
+`ast.dump(node, annotate_fields=True, include_attributes=False)` for the exact
+failing assertion expression (the `ast.Assert` node or unittest assertion-call
+node) inside the fully qualified mapped test method. Resolve the original node using
+the failure location in that run's retained output log; resolve the matching
+node under the same selector in the P1 source. P1 must contain the identical
+fingerprint. The review record binds both source-file digests, selector, node
+kind and fingerprint. This mechanically establishes statement continuity;
+independent semantic review still decides whether the statement covers the
+same behavior. Added assertions have distinct fingerprints and require their
+own evidence.
+
 P1's independent review and accepted document authorize the set of these
 exact run rows. The coordinator validates the current P1 accepted authority
 separately from each original run's authority. For an historical Red only,
