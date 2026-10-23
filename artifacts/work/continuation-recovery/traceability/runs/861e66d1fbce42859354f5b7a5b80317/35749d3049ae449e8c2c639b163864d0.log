@@ -1,0 +1,13 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 103.531s
+
+OK
