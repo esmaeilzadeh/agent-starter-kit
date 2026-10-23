@@ -1,0 +1,19 @@
+....F...................
+======================================================================
+FAIL: test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/tests/inner_loop_recovery.py", line 357, in test_crash_after_verification_or_ff
+    self.assertEqual(result.failures, [])
+AssertionError: Lists differ: [(<_ask.tests.inner_loop_reliability.Integ[569 chars]\n')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+(<_ask.tests.inner_loop_reliability.IntegrationTests testMethod=test_resume_preserves_candidate_after_ff_before_state_fold_interruption>, 'Traceback (most recent call last):\n  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/tests/inner_loop_reliability.py", line 319, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption\n    self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)\nAssertionError: \'965647abd5e4c84764b4ade9107d4eb4a562fa67\' != \'8942af2e2c1762eb988c9e4e58c0fd1512b78728\'\n- 965647abd5e4c84764b4ade9107d4eb4a562fa67\n+ 8942af2e2c1762eb988c9e4e58c0fd1512b78728\n\n')
+
+Diff is 694 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 24 tests in 82.889s
+
+FAILED (failures=1)

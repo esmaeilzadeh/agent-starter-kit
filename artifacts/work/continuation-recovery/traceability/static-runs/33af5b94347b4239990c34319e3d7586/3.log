@@ -1,0 +1,10 @@
+askit: kit /tmp/ask-static-orymz_80/candidate @ HEAD
+askit: cache /tmp/tmp.icJPkMJVDo/.cache/askit/kit
+Cloning into '/tmp/tmp.icJPkMJVDo/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/continuation-recovery'.
+askit: /tmp/tmp.icJPkMJVDo/.local/bin/askit -> /tmp/tmp.icJPkMJVDo/.cache/askit/kit/askit
+askit: /tmp/tmp.icJPkMJVDo/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.icJPkMJVDo/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)

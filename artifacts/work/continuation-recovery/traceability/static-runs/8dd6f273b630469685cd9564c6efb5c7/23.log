@@ -1,0 +1,3 @@
+check-clean-worktree: clean
+record-run: wrote demo @ b14e93ddfc28d0dab5b20967d429786bf223f60a -> results/demo
+PASS: record-run writes manifest and refuses SHA ≠ HEAD

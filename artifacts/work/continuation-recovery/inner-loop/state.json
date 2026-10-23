@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 21,
+  "revision": 22,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,40 +860,200 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "running",
-      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+      "status": "interrupted",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "f21a95f6b4c4499aacf37a3ffd27a77d",
-            "digest": "8247cafd4ee6781ce3bdc73416d1106765611406f84f2ac9c9c9b789ca0b80be",
-            "phase": "red",
-            "task_id": "CR-3",
-            "candidate_sha": "94458d8376a75f052adbf2c4737f4f3c18cef4b6",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
-          },
-          {
-            "run_id": "4e002835e740484c88160aeb14c4cc4e",
-            "digest": "f56c29852136382d161ce04b9d916c0e5b0944c9804c4be236517e6115b350a2",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
-          }
-        ]
-      },
+      "evidence": {},
       "attempt_number": 1,
-      "attempt_id": "CR-3:attempt-1",
-      "accepted_plan_ref": "14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
-      "accepted_plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
-      "attempt_started_revision": 20
+      "attempt_id": "",
+      "accepted_plan_ref": "",
+      "accepted_plan_digest": "",
+      "attempt_started_revision": null,
+      "attempt_history": [
+        {
+          "attempt_id": "CR-3:attempt-1",
+          "attempt_number": 1,
+          "status": "interrupted",
+          "reason": "Preserve the active CR-3 attempt before the reviewer-approved CR-T11/CR-T14 plan amendment is re-pinned.",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+          "interrupted_candidate_sha": "346249e491b4b47ca1b94b5656b1cf1ae3d88fab",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {
+            "traceability_runs": [
+              {
+                "run_id": "f21a95f6b4c4499aacf37a3ffd27a77d",
+                "digest": "8247cafd4ee6781ce3bdc73416d1106765611406f84f2ac9c9c9b789ca0b80be",
+                "phase": "red",
+                "task_id": "CR-3",
+                "candidate_sha": "94458d8376a75f052adbf2c4737f4f3c18cef4b6",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+              },
+              {
+                "run_id": "4e002835e740484c88160aeb14c4cc4e",
+                "digest": "f56c29852136382d161ce04b9d916c0e5b0944c9804c4be236517e6115b350a2",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+              }
+            ]
+          },
+          "accepted_plan_ref": "14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
+          "accepted_plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+          "execution_runs": [
+            {
+              "run_id": "2c2a95396426489dbfa9df5ed2bac492",
+              "digest": "15ef3c48a674799239aede2e5d6fdc03139debc4c9ae41312de3b3af4a533e01",
+              "phase": "red",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "b50dd24e0ef04a2aacff4c4a26db4dd5",
+              "digest": "9a504f6ceb1bdf13132b5b4ab55af767f791f3972ceeff1095ae8f894445cd2c",
+              "phase": "red",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "3196a591e2ee0c75ee0bda1539a9319555273662",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "51bc9dee6fb14b6ab38c2711f80d7131",
+              "digest": "a9b41e6ba37e639086ea7a6e9d444fcc5a0ce30ecbb2ad8607583dc2e8ca2818",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "fc431430eacda709824ca586cefcf9f733e9cc31",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "ad3db48b349f48bb882af289003d546c",
+              "digest": "4951bf4511aa0e76dba81bf0edf1c9b60e287fe61e2fa8c7fe18920cbe9029eb",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "222477f8374354277acf480d7eed4d1162e7bf74",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "f21a95f6b4c4499aacf37a3ffd27a77d",
+              "digest": "8247cafd4ee6781ce3bdc73416d1106765611406f84f2ac9c9c9b789ca0b80be",
+              "phase": "red",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "94458d8376a75f052adbf2c4737f4f3c18cef4b6",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "4e002835e740484c88160aeb14c4cc4e",
+              "digest": "f56c29852136382d161ce04b9d916c0e5b0944c9804c4be236517e6115b350a2",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "6a96d09a0d4c4394951b47fa33a14dd7",
+              "digest": "54e515fd8b973080308f470f5cfe2146f889a7c2522c171220280f34d0a50d44",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "f3a89fc48581c8e376c4d310f707d4edb5fdc3f5",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "0714a4eb996d4ffeac3b605720760e76",
+              "digest": "be47f7617357f2a454e83e2b74c6b07a9e5a60a2d6ba7a817096fee15c2cdf6d",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "0831d04faacd6e3cb05518aa8a7271febddc8329",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "6391de4a8d464e16b22aefdb3cf7ba6a",
+              "digest": "61b17f1d51ef61e56acf1c3ce58bfd7469978c4432d292d996d26cb9dc8c4a7f",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "ab7522938e0177c7dc0528661d3ea0bb1b387d12",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "939b33e40ee045d98e9abdfa82e1915b",
+              "digest": "a813d3aeaa2a547155102ddc58c385f848d84fc4658c2ea00865d0e489258645",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "7b78d049c8741a0effeee19e665a0da3d40ac738",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "3f3c0fd12afa46a1be921c7e50e65100",
+              "digest": "aa93f3586fe1fa59504d7df70845db7e9a186d4193300f65ed2ab67ba965261a",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "01abc53755a86405ee814684f7b31f80440a4000",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "8683de0e005d45dbac9207a8ab034aae",
+              "digest": "a7040cb6d89d560d442deae232b182ef27f82537444fb6a291164f462aa34852",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "0a50776d7a3c62d64ed45e73e13d1a909120ba24",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "5d48b739949942f9ba07c38960f468e5",
+              "digest": "0cc50abadeab2da6ae173c745138c3f344bbfe64f743e355cf9401f639be5142",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "0a50776d7a3c62d64ed45e73e13d1a909120ba24",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            },
+            {
+              "run_id": "517f864631a845e082f9a73fa888ef30",
+              "digest": "e1caa4fbdf253bba4022c379604a1e152401bb9346922cbac07b7f214ca51253",
+              "phase": "red",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "01abc53755a86405ee814684f7b31f80440a4000",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0"
+            }
+          ],
+          "started_revision": 20,
+          "interrupted_revision": 22
+        }
+      ]
     },
     "CR-4": {
       "status": "pending",

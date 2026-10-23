@@ -1,0 +1,57 @@
+.............Traceback (most recent call last):
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/tests/inner_loop_reliability.py", line 556, in <module>
+    unittest.main()
+  File "/usr/lib/python3.10/unittest/main.py", line 101, in __init__
+    self.runTests()
+  File "/usr/lib/python3.10/unittest/main.py", line 271, in runTests
+    self.result = testRunner.run(self.test)
+  File "/usr/lib/python3.10/unittest/runner.py", line 184, in run
+    test(result)
+  File "/usr/lib/python3.10/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.10/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.10/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.10/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.10/unittest/case.py", line 650, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/tests/inner_loop_reliability.py", line 307, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption
+    self.task_branch()
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/tests/inner_loop_reliability.py", line 102, in task_branch
+    cas_apply(self.root, "w", doc["revision"],
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/state.py", line 231, in cas_apply
+    with state_transaction(root, work_id, observed_revision) as doc:
+  File "/usr/lib/python3.10/contextlib.py", line 142, in __exit__
+    next(self.gen)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/state.py", line 169, in state_transaction
+    _publish_state(root, work_id, doc)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/state.py", line 126, in _publish_state
+    publish(root, work_id, doc)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 267, in publish
+    tree = _tree(root, objects)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 122, in _tree
+    return write(nodes)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 116, in write
+    sha = write(child)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 116, in write
+    sha = write(child)
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 116, in write
+    sha = write(child)
+  [Previous line repeated 2 more times]
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 120, in write
+    return _git(root, "mktree", input="".join(rows).encode()).decode().strip()
+  File "/tmp/ask-static-rsgtsbhw/candidate/_ask/scripts/inner_loop/checkpoint.py", line 27, in _git
+    proc = subprocess.run(["git", *args], cwd=root, input=input, capture_output=True)
+  File "/usr/lib/python3.10/subprocess.py", line 503, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/usr/lib/python3.10/subprocess.py", line 971, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.10/subprocess.py", line 1796, in _execute_child
+    self.pid = _posixsubprocess.fork_exec(
+KeyboardInterrupt

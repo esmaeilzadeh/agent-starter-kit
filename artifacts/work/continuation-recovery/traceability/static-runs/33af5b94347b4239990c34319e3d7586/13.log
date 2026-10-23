@@ -1,0 +1,16 @@
+.............F...............
+======================================================================
+FAIL: test_resume_preserves_candidate_after_ff_before_state_fold_interruption (__main__.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-static-orymz_80/candidate/_ask/tests/inner_loop_reliability.py", line 319, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption
+    self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)
+AssertionError: '1aec95ed1a75466d4a3a5d5e3e24030a0dd3db28' != '938bd13c340176bf8b53d84b00a3f263b79f90bf'
+- 1aec95ed1a75466d4a3a5d5e3e24030a0dd3db28
++ 938bd13c340176bf8b53d84b00a3f263b79f90bf
+
+
+----------------------------------------------------------------------
+Ran 29 tests in 54.737s
+
+FAILED (failures=1)

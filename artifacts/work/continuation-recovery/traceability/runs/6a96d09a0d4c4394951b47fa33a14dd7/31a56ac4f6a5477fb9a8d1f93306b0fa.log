@@ -1,0 +1,27 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+FAIL: test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-r3_u0cmm/candidate/_ask/tests/inner_loop_recovery.py", line 357, in test_crash_after_verification_or_ff
+    self.assertEqual(result.failures, [])
+AssertionError: Lists differ: [(<_ask.tests.inner_loop_reliability.Integ[568 chars]\n')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+(<_ask.tests.inner_loop_reliability.IntegrationTests testMethod=test_resume_preserves_candidate_after_ff_before_state_fold_interruption>, 'Traceback (most recent call last):\n  File "/tmp/ask-cases-r3_u0cmm/candidate/_ask/tests/inner_loop_reliability.py", line 319, in test_resume_preserves_candidate_after_ff_before_state_fold_interruption\n    self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)\nAssertionError: \'5609e137c67f8e57478348e8a6a57aa40fc7d328\' != \'23517f569dbeda08c7a58c035e84167c5a18668e\'\n- 5609e137c67f8e57478348e8a6a57aa40fc7d328\n+ 23517f569dbeda08c7a58c035e84167c5a18668e\n\n')
+
+Diff is 693 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 8 tests in 43.806s
+
+FAILED (failures=1)
