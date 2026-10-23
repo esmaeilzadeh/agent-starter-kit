@@ -146,7 +146,9 @@ def checkpoint_held_state(root: Path, work_id: str, doc: dict) -> dict:
     """Durably publish a transition while its state_transaction lock is held."""
     _require_coordinator()
     doc["revision"] = int(doc["revision"]) + 1
-    _publish_state(root, work_id, doc)
+    from inner_loop.checkpoint import is_repository, publish
+    if is_repository(root):
+        publish(root, work_id, doc)
     return doc
 
 
