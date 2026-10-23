@@ -1168,6 +1168,15 @@ class test_b(unittest.TestCase):
             task["attempt_history"],
         )
 
+        # A commit made after interruption is deliberately not attributed to
+        # attempt 1. Reopen may accept it only through a reviewed reconciliation
+        # that names the exact current source postimage.
+        self.write("src/a.py", "candidate = True\n# reviewed continuation\n")
+        self.commit("continue source after interrupted attempt")
+        post_interruption_head = self.git("rev-parse", "HEAD")
+        blocked = self.run_cli("status", "w")
+        self.assert_recovery_required(blocked, "src/a.py")
+
         amended_plan = copy.deepcopy(self.old_plan)
         amended_plan["tests"][0]["scenario"]["then"] = ["updated accepted assertion outcome"]
         self.write("work/w/test-plan.json", json.dumps(amended_plan, sort_keys=True))
@@ -1184,6 +1193,37 @@ class test_b(unittest.TestCase):
         write_json(self.root / "work/w/traceability-accepted.json", accepted_after)
         self.commit("accept reviewed amended test obligations")
         new_plan_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+        source_bytes = (self.root / "src/a.py").read_bytes()
+        reconciliation = {
+            "schema": "ask-inner-loop-reconciliation/v1",
+            "work_id": "w",
+            "task_id": "a",
+            "previous_checkpoint_sha": checkpoint[0],
+            "previous_revision": stopped["revision"],
+            "previous_attempt_id": prior["attempt_id"],
+            "interrupted_candidate_sha": prior["interrupted_candidate_sha"],
+            "new_attempt_id": "a:attempt-2",
+            "accepted_plan_ref": new_plan_ref,
+            "accepted_plan_digest": accepted_after["plan_digest"],
+            "new_attempt_base_sha": stopped["coordinator_sha"],
+            "candidate_sha": post_interruption_head,
+            "source_postimage": {"src/a.py": hashlib.sha256(source_bytes).hexdigest()},
+        }
+        reconciliation_payload = json.dumps(
+            reconciliation, sort_keys=True, separators=(",", ":")
+        ).encode()
+        reconciliation["review"] = {
+            "decision": "APPROVED",
+            "reviewer": "fixture-independent-reconciler",
+            "candidate_sha": post_interruption_head,
+            "payload_sha256": hashlib.sha256(reconciliation_payload).hexdigest(),
+        }
+        self.write(
+            "work/w/inner-loop/evidence/reconciliation-a.json",
+            json.dumps(reconciliation, indent=2) + "\n",
+        )
         reopened = self.run_cli("reopen", "w", "a", "--reason", "amended plan accepted")
         self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
         resumed = json.loads(state_path.read_text(encoding="utf-8"))
