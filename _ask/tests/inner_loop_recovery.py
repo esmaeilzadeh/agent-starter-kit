@@ -214,7 +214,7 @@ class RecoveryTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def _real_traceability_pair(self, runner_count=1):
+    def _real_traceability_pair(self, runner_count=1, old_runner=False):
         """Run the accepted plan on real failing and passing commits."""
         import shutil
         from verification.traceability.contracts import digest
@@ -226,6 +226,19 @@ class RecoveryTests(unittest.TestCase):
             dirs_exist_ok=True,
             ignore=shutil.ignore_patterns("__pycache__"),
         )
+        if old_runner:
+            # CR-2 is the supported pre-hook verifier base: it has no coordinator
+            # checkpoint import, so the parent must consume its receipt.
+            old_base = "2c508ff4248f16a3e3121d33a0fae7297c9b378e"
+            paths = subprocess.check_output(
+                ["git", "-C", str(REPO), "ls-tree", "-r", "--name-only", old_base,
+                 ".agents/ask/verification/"], text=True,
+            ).splitlines()
+            for name in paths:
+                if name.endswith(".py"):
+                    raw = subprocess.check_output(["git", "-C", str(REPO), "show", f"{old_base}:{name}"])
+                    (self.root / name).parent.mkdir(parents=True, exist_ok=True)
+                    (self.root / name).write_bytes(raw)
         (self.root / "_ask/policies").mkdir(parents=True, exist_ok=True)
         shutil.copyfile(REPO / "_ask/policies/delegation.md",
                         self.root / "_ask/policies/delegation.md")
@@ -305,7 +318,10 @@ class test_b(unittest.TestCase):
             "coordinator must checkpoint validated standalone run milestones",
         )
         for report in (red, green):
-            evidence.checkpoint_run(self.root, "w", "a", report["run_id"])
+            try:
+                evidence.checkpoint_run(self.root, "w", "a", report["run_id"])
+            except Exception as exc:
+                self.fail(f"valid accepted multi-runner report must finalize: {exc}")
             self.assertEqual({item["runner_id"] for item in report["executions"]},
                              {"fixture-a", "fixture-b"})
         state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
@@ -437,7 +453,33 @@ class test_b(unittest.TestCase):
         result = unittest.TestResult()
         class NestedFinalizationCase(reliability.IntegrationTests):
             def test_nested_real_reports_are_finalized_by_parent(self):
-                super().test_successful_in_place_integration_records_executed_lineage()
+                from inner_loop import driver
+                original_integrate = driver.git_integrate
+                before_fast_forward = {}
+
+                def interrupt_before_fast_forward(*args, **kwargs):
+                    retained = read_checkpoint(self.root, "w")
+                    before_fast_forward["state"] = retained[1] if retained else None
+                    raise RuntimeError("injected interruption before fast-forward")
+
+                driver.git_integrate = interrupt_before_fast_forward
+                try:
+                    with self.assertRaisesRegex(RuntimeError, "before fast-forward"):
+                        super().test_successful_in_place_integration_records_executed_lineage()
+                finally:
+                    driver.git_integrate = original_integrate
+
+                retained_task = ((before_fast_forward.get("state") or {}).get("tasks") or {}).get("a", {})
+                verification = (retained_task.get("evidence") or {}).get("verification")
+                self.assertIsInstance(verification, dict,
+                                      "verified evidence must be durable before invoking fast-forward")
+                self.assertEqual(verification.get("candidate_sha"), self.candidate)
+                self.assertEqual(verification.get("result"), "pass")
+                self.assertEqual(len((retained_task.get("evidence") or {}).get("traceability_runs", [])), 2)
+
+                # Recovery completes the missing FF/state fold from the exact
+                # retained verification checkpoint.
+                driver.integrate_ready(self.root, "w", "a")
                 task = load_state(self.root, "w")["tasks"]["a"]
                 runs = task["evidence"].get("traceability_runs", [])
                 self.assertEqual(len(runs), 2, runs)
@@ -455,7 +497,7 @@ class test_b(unittest.TestCase):
         self.assertEqual(result.failures, [])
 
     def test_standalone_run_finalization_interruptions(self):
-        red, _green = self._real_traceability_pair()
+        red, green = self._real_traceability_pair()
         env = dict(os.environ)
         # This child is the fixture's standalone coordinator, even when the
         # enclosing test is running under a verifier's detached candidate.
@@ -474,8 +516,31 @@ class test_b(unittest.TestCase):
         self.assertIn("coordinator_finalization", command.stdout)
         ledger = self.root / "work/w/traceability/executions.json"
         rows = json.loads(ledger.read_text())
-        ledger.write_text(json.dumps([row for row in rows if row["run_id"] != red["run_id"]]) + "\n")
+
+        # A malformed pending Green must be rejected before repairing its
+        # ledger entry or publishing a new coordinator checkpoint.
         from inner_loop import evidence
+        green_path = self.root / "work/w/traceability/runs" / green["run_id"] / "results.json"
+        green_original = green_path.read_bytes()
+        ledger_original = ledger.read_bytes()
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state_before = state_path.read_bytes()
+        malformed = json.loads(green_original)
+        malformed["executions"][0]["runner_id"] = "unplanned-runner"
+        malformed["executions"][0]["argv"] = ["python3", "-m", "unittest", "unplanned_suite"]
+        malformed["cases"][0]["phase"] = "red"
+        green_path.write_text(json.dumps(malformed, indent=2) + "\n")
+        ledger.write_text(json.dumps([row for row in rows if row["run_id"] != green["run_id"]]) + "\n")
+        try:
+            with self.assertRaises(evidence.NotIntegrable):
+                evidence.checkpoint_run(self.root, "w", "a", green["run_id"])
+            self.assertEqual(state_path.read_bytes(), state_before)
+            self.assertNotIn(green["run_id"], [row["run_id"] for row in json.loads(ledger.read_text())])
+        finally:
+            green_path.write_bytes(green_original)
+            ledger.write_bytes(ledger_original)
+
+        ledger.write_text(json.dumps([row for row in rows if row["run_id"] != red["run_id"]]) + "\n")
         self.assertTrue(
             callable(getattr(evidence, "checkpoint_run", None)),
             "coordinator must recover a complete report interrupted before ledger insertion",
@@ -488,21 +553,70 @@ class test_b(unittest.TestCase):
         recorded = {item["run_id"] for item in state["tasks"]["a"]["evidence"]["traceability_runs"]}
         self.assertIn(red["run_id"], recorded)
 
+        # The task branch holds this Green candidate while coordinator HEAD is
+        # still at the task base, the state immediately before fast-forward.
+        self.git("branch", "task-a", green["candidate_sha"])
+        self.git("reset", "--hard", self.anchor_commit)
+        from inner_loop.state import cas_apply
+        current = load_state(self.root, "w")
+        cas_apply(self.root, "w", current["revision"],
+                  lambda doc: doc["tasks"]["a"].update(task_branch="task-a"))
+        try:
+            evidence.checkpoint_run(self.root, "w", "a", green["run_id"])
+        except Exception as exc:
+            self.fail(f"selected isolated task candidate must finalize before FF: {exc}")
+        state = load_state(self.root, "w")
+        self.assertIn(green["run_id"], {
+            item["run_id"] for item in state["tasks"]["a"]["evidence"]["traceability_runs"]
+        })
+
     def test_old_pinned_runner_handoff(self):
         from inner_loop.evidence import snapshot_runner
-        verification = REPO / ".agents" / "ask" / "verification"
-        import shutil
-        shutil.copytree(verification, self.root / ".agents/ask/verification", dirs_exist_ok=True,
-                        ignore=shutil.ignore_patterns("__pycache__"))
-        old_runner = self.root / ".agents/ask/verification/run.py"
-        old_runner.write_text("PINNED_RUNNER = 'pre-hook'\\n", encoding="utf-8")
-        self.commit("pre-hook trusted verifier")
-        old_sha = self.git("rev-parse", "HEAD")
-        old_runner.write_text("raise RuntimeError('candidate verifier must not run')\\n", encoding="utf-8")
-        self.commit("candidate verifier replacement")
+        _red, green = self._real_traceability_pair(old_runner=True)
+        old_sha = load_state(self.root, "w")["tasks"]["a"]["base_sha"]
         with tempfile.TemporaryDirectory() as tmp:
             runner, _digest = snapshot_runner(self.root, old_sha, Path(tmp) / "trusted")
-            self.assertEqual(runner.read_text(encoding="utf-8"), "PINNED_RUNNER = 'pre-hook'\\n")
+            expected = subprocess.check_output(
+                ["git", "show", f"{old_sha}:.agents/ask/verification/run.py"], cwd=self.root,
+            )
+            self.assertEqual(runner.read_bytes(), expected)
+            output = self.root / "work/w/inner-loop/evidence/old-runner-verification.json"
+            env = dict(os.environ, ASK_ROOT=str(self.root), ASK_WORK_ID="w",
+                       ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
+                       ASK_TRACEABILITY_ANCHOR_SHA=old_sha,
+                       ASK_TRACEABILITY_SCOPE="task", ASK_TRACEABILITY_TASK_ID="a",
+                       VERIFY_JSON=str(output), VERIFY_OUT_DIR=str(output.parent))
+            completed = subprocess.run([sys.executable, str(runner)], cwd=self.root, env=env,
+                                       capture_output=True, text=True, timeout=60)
+            self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+            receipt = json.loads((self.root / "work/w/traceability/completion.json").read_text())
+            self.assertEqual(receipt["status"], "pass")
+            report_ids = {Path(path).parts[4] for path in receipt["execution_artifacts"]
+                          if "/runs/" in path and path.endswith(".log")}
+            self.assertTrue(report_ids)
+            from inner_loop import evidence
+            for run_id in sorted(report_ids):
+                evidence.checkpoint_run(self.root, "w", "a", run_id)
+            recorded = {item["run_id"] for item in load_state(self.root, "w")["tasks"]["a"]
+                        ["evidence"]["traceability_runs"]}
+            self.assertTrue(report_ids <= recorded)
+
+            # Incomplete historical schemas are diagnosed instead of being
+            # accepted as milestones.
+            run_id = sorted(report_ids)[0]
+            result_path = self.root / "work/w/traceability/runs" / run_id / "results.json"
+            valid = result_path.read_bytes()
+            malformed = json.loads(valid)
+            malformed["schema"] = "ask-test-results/v999"
+            result_path.write_text(json.dumps(malformed) + "\n")
+            ledger = self.root / "work/w/traceability/executions.json"
+            entries = json.loads(ledger.read_text())
+            ledger.write_text(json.dumps([item for item in entries if item["run_id"] != run_id]) + "\n")
+            try:
+                with self.assertRaisesRegex(evidence.NotIntegrable, "migration_required|incomplete"):
+                    evidence.checkpoint_run(self.root, "w", "a", run_id)
+            finally:
+                result_path.write_bytes(valid)
 
     def test_interrupt_and_reopen_preserve_attempt_history(self):
         self.write("accepted.json", json.dumps({"plan_review": {"plan_digest": "plan-before"}}) + "\n")
