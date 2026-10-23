@@ -345,22 +345,115 @@ class test_b(unittest.TestCase):
 
     def test_stale_review_preserves_execution(self):
         from _ask.tests.inner_loop_reliability import IntegrationTests
-        from inner_loop.evidence import NotIntegrable, read_candidate, validate_review
+        from inner_loop.evidence import (
+            NotIntegrable, checkpoint_run, read_candidate, validate_review,
+        )
         result = unittest.TestResult()
 
-        class ApprovedReviewCase(IntegrationTests):
+        class ApprovedReviewCase(RecoveryTests, IntegrationTests):
+            def setUp(self):
+                RecoveryTests.setUp(self)
+
+            def review(self, **options):
+                from verification.traceability.contracts import digest
+                from verification.traceability.evidence import (
+                    inventory, load_accepted, record_test_review, source_digests,
+                    write_json,
+                )
+                from inner_loop.evidence import record_review
+
+                contracts = load_accepted(
+                    self.root, "w", self.result["candidate_sha"], self.result["candidate_sha"]
+                )
+                plan = contracts["plan"]
+                actual = inventory(
+                    self.root, contracts["pin"]["contract_sha"], self.result["candidate_sha"], plan
+                )
+                test_ids = [test["id"] for test in plan["tests"]]
+                review = {
+                    "schema": "ask-test-review/v2", "reviewer": "fixture-independent",
+                    "candidate_sha": self.result["candidate_sha"],
+                    "base_sha": contracts["pin"]["contract_sha"],
+                    "spec_digest": digest(contracts["spec"]),
+                    "plan_digest": digest(plan), "scope": "task", "task_id": "a",
+                    "test_ids": test_ids, "criterion_ids": ["C1"],
+                    "source_digests": source_digests(self.root, self.result["candidate_sha"], plan),
+                    "inspected_sources": actual["inspected_sources"],
+                    "changed_cases": actual["changed_cases"],
+                    "inventory_exclusions": {
+                        name: "Fixture source is covered by its mapped assertion."
+                        for name in actual["unmapped_cases"]
+                    },
+                    "criteria": [{
+                        "id": "C1", "coverage_decision": "APPROVED",
+                        "assessment": "Both accepted cases compare source to a literal value.",
+                        "type_adequacy": {"integration": {
+                            "decision": "APPROVED",
+                            "assessment": "The trusted runner executes the committed candidate.",
+                        }},
+                    }],
+                    "tests": [{
+                        "id": test_id, "decision": "APPROVED",
+                        "assertion_assessment": "Compares the committed source to a literal value.",
+                        "counterexample": "The committed red value fails the assertion.",
+                        "tdd_continuity_assessment": "The same assertion is recorded for red and green.",
+                    } for test_id in test_ids],
+                }
+                path = "work/w/traceability/review-input.json"
+                write_json(self.root / path, review)
+                record_test_review(
+                    self.root, "w", self.result["candidate_sha"], self.result["candidate_sha"],
+                    path, "fixture-coordinator", review_document=review,
+                )
+                self.write("work/w/inner-loop/evidence/review.md",
+                           "Reviewer: independent-agent; APPROVED\n")
+                return record_review(
+                    self.root, "w", "a", "independent-agent", "_ask/policies/delegation.md",
+                    "work/w/inner-loop/evidence/review.md", **options,
+                )
+
             def test_approved_review_cannot_be_reused_after_result_changes(self):
+                red, green = self._real_traceability_pair()
+                self.candidate = green["candidate_sha"]
+                self.git("branch", "task-a", green["candidate_sha"])
+                self.git("reset", "--hard", self.anchor_commit)
+                from inner_loop.state import cas_apply
+                current = load_state(self.root, "w")
+                cas_apply(self.root, "w", current["revision"],
+                          lambda doc: doc["tasks"]["a"].update(task_branch="task-a"))
+                for report in (red, green):
+                    checkpoint_run(self.root, "w", "a", report["run_id"])
+                self.base = self.anchor_commit
+                from verification.traceability.evidence import load_accepted
+                accepted = load_accepted(
+                    self.root, "w", self.candidate, self.candidate
+                )
+                self.result = {
+                    "schema": "ask-task-result/v2", "work_id": "w", "task_id": "a",
+                    "base_sha": self.base, "candidate_sha": self.candidate,
+                    "contract_sha": accepted["pin"]["contract_sha"],
+                    "tdd": {"seam": "src/a.py",
+                            "red": {"command": "python -m unittest fixture", "output": "FAIL", "exit_code": 1},
+                            "green": {"command": "python -m unittest fixture", "output": "PASS", "exit_code": 0}},
+                    "exemption": None,
+                }
+                self.submit()
                 self.review()
                 before = load_state(self.root, "w")
                 task_before = before["tasks"]["a"]
                 execution_before = list(task_before["evidence"].get("traceability_runs", []))
                 review_before = copy.deepcopy(task_before["evidence"]["review"])
 
-                # Change a value bound by the approved review while retaining
-                # the same candidate. The old approval and run history must
-                # stay recorded, but it cannot authorize the altered result.
-                self.result["notes"] = "result changed after approval"
+                # Change the candidate after valid Red/Green and an approved
+                # review. The old approval and execution history stay
+                # recorded, but cannot authorize the new candidate.
+                self.git("switch", "task-a")
+                self.write("src/value", "candidate\n# changed after review\n")
+                self.commit("change task candidate after approved review")
+                self.candidate = self.git("rev-parse", "HEAD")
+                self.result["candidate_sha"] = self.candidate
                 self.submit()
+                self.git("switch", "agent/w")
                 current = load_state(self.root, "w")
                 candidate = read_candidate(self.root, "w", "a", current)
                 with self.assertRaisesRegex(NotIntegrable, "stale coordinator-recorded review"):
