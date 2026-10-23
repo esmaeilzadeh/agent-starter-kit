@@ -167,8 +167,17 @@ def _scope_test_ids(plan: dict, task_id: str) -> set[str] | None:
     return set(ids) if all(isinstance(item, str) for item in ids) else None
 
 
-def _checkpointed_verification(root: Path, work_id: str, state: dict | None) -> dict | None:
+def _checkpointed_verification(root: Path, work_id: str, state: dict | None,
+                               checkpoint: tuple[str, dict, dict[str, bytes]] | None = None) -> dict | None:
     """Return a passing verifier receipt whose bytes are bound to retained state."""
+    retained = checkpoint[2] if checkpoint is not None else {}
+
+    def retained_or_live(relative: str) -> bytes:
+        checkpoint_key = "artifacts/" + relative
+        if checkpoint_key in retained:
+            return retained[checkpoint_key]
+        return (root / relative).read_bytes()
+
     for task_id, task in ((state or {}).get("tasks") or {}).items():
         evidence = task.get("evidence") or {}
         verification = evidence.get("verification")
@@ -178,8 +187,8 @@ def _checkpointed_verification(root: Path, work_id: str, state: dict | None) -> 
                 or verification.get("task_id") != task_id):
             continue
         try:
-            result_path = root / "work" / work_id / "inner-loop" / "results" / f"{task_id}.json"
-            result_raw = result_path.read_bytes()
+            result_relative = f"work/{work_id}/inner-loop/results/{task_id}.json"
+            result_raw = retained_or_live(result_relative)
             result = json.loads(result_raw)
         except (OSError, ValueError):
             continue
@@ -191,19 +200,15 @@ def _checkpointed_verification(root: Path, work_id: str, state: dict | None) -> 
         record_path = verification.get("record_path")
         if not isinstance(record_path, str):
             continue
-        unresolved_path = root / record_path
-        path = unresolved_path.resolve()
-        if unresolved_path.is_symlink() or not path.is_relative_to(root.resolve()):
-            continue
         try:
-            raw = path.read_bytes()
+            raw = retained_or_live(record_path)
             if (not isinstance(record_digest, str)
                     or hashlib.sha256(raw).hexdigest() != record_digest
                     or json.loads(raw) != verification):
                 continue
-            completion = (root / "work" / work_id / "traceability" / "completion.json").read_bytes()
-            static = (root / "work" / work_id / "traceability" /
-                      f"static-{verification['candidate_sha']}.json").read_bytes()
+            completion = retained_or_live(f"work/{work_id}/traceability/completion.json")
+            static = retained_or_live(
+                f"work/{work_id}/traceability/static-{verification['candidate_sha']}.json")
         except (KeyError, OSError, ValueError):
             continue
         if (hashlib.sha256(completion).hexdigest() == verification.get("completion_digest")
@@ -311,7 +316,7 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
         if output_artifacts is None or not _traceability_matches_checkpoint(
             root, work_id, checkpoint, expected_row=row, expected_run_id=run_id,
             expected_artifacts=output_artifacts,
-            expected_verification=_checkpointed_verification(root, work_id, state),
+            expected_verification=_checkpointed_verification(root, work_id, state, checkpoint),
         ):
             continue
         if _valid_final_green_scope(root, work_id, report, previous["plan"], task_id,
@@ -469,11 +474,22 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
                 or not isinstance(static_digest, str)):
             return False
         verified_replacements = {
-            prefix + "completion.json": completion_digest,
             prefix + f"static-{candidate}.json": static_digest,
         }
     for name, content in retained.items():
         if name == ledger_path:
+            continue
+        # The completion report is a current projection. Its historical bytes
+        # are authenticated above from the retained checkpoint, so later
+        # verification may legitimately replace this live projection.
+        if name == prefix + "completion.json":
+            if name not in live:
+                return False
+            try:
+                if not isinstance(json.loads(live[name]), dict):
+                    return False
+            except (UnicodeDecodeError, ValueError):
+                return False
             continue
         expected_digest = verified_replacements.get(name)
         if live.get(name) != content and (expected_digest is None
@@ -493,6 +509,21 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
         if (len(parts) == 3 and parts[0] == "runs"
                 and parts[1] and all(char.isalnum() or char in "-_" for char in parts[1])
                 and (parts[2] == "results.json" or parts[2].endswith((".json", ".log")))):
+            allowed_new.add(name)
+            continue
+        if (len(parts) == 1 and parts[0].startswith(("static-", "verification-", "review-input"))
+                and parts[0].endswith(".json")):
+            allowed_new.add(name)
+            continue
+        if (len(parts) == 2 and parts[0] in {"reviews", "static-runs"}
+                and all(part and all(char.isalnum() or char in "-_." for char in part)
+                        for part in parts)
+                and parts[1].endswith((".json", ".log"))):
+            allowed_new.add(name)
+            continue
+        if (len(parts) == 3 and parts[0] == "static-runs" and parts[1]
+                and all(char.isalnum() or char in "-_." for char in parts[1])
+                and parts[2].endswith((".json", ".log"))):
             allowed_new.add(name)
             continue
         return False

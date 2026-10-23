@@ -570,6 +570,49 @@ class test_b(unittest.TestCase):
                 self.assertEqual({item["task_id"] for item in runs}, {"a"})
                 self.assertEqual({item["candidate_sha"] for item in runs}, {self.base, self.candidate})
 
+                # A later failed verification replaces the shared completion
+                # projection. It must not erase the historical passing receipt
+                # retained by the integrated checkpoint.
+                from inner_loop.recovery import (
+                    _checkpointed_verification, _traceability_matches_checkpoint,
+                )
+                checkpoint = read_checkpoint(self.root, "w")
+                self.assertIsNotNone(checkpoint)
+                self.assertIn("artifacts/work/w/traceability/completion.json", checkpoint[2])
+                retained_state = checkpoint[1]
+                historical = _checkpointed_verification(self.root, "w", retained_state, checkpoint)
+                self.assertIsNotNone(historical)
+                retained_files = checkpoint[2]
+                for relative, digest_key in (
+                    ("work/w/traceability/completion.json", "completion_digest"),
+                    (f"work/w/traceability/static-{historical['candidate_sha']}.json",
+                     "static_receipt_digest"),
+                ):
+                    self.assertEqual(
+                        hashlib.sha256(retained_files["artifacts/" + relative]).hexdigest(),
+                        historical[digest_key],
+                    )
+                completion = self.root / "work/w/traceability/completion.json"
+                completion.write_text('{"status":"fail","reason":"later candidate"}\n')
+                traceability = self.root / "work/w/traceability"
+                (traceability / "static-later.json").write_text('{"status":"fail"}\n')
+                (traceability / "static-runs/later/0.log").parent.mkdir(parents=True, exist_ok=True)
+                (traceability / "static-runs/later/0.log").write_text("failed verifier output\n")
+                (traceability / "reviews/later.json").parent.mkdir(parents=True, exist_ok=True)
+                (traceability / "reviews/later.json").write_text('{"verdict":"REJECTED"}\n')
+                (traceability / "verification-later.json").write_text('{"result":"fail"}\n')
+                self.assertEqual(
+                    _checkpointed_verification(self.root, "w", retained_state, checkpoint),
+                    historical,
+                    "a failed later verifier projection must not invalidate retained historical evidence",
+                )
+                self.assertTrue(
+                    _traceability_matches_checkpoint(
+                        self.root, "w", checkpoint, expected_verification=historical,
+                    ),
+                    "later derived verifier/review artifacts must coexist with exact retained evidence",
+                )
+
         try:
             NestedFinalizationCase("test_nested_real_reports_are_finalized_by_parent").run(result)
         finally:
