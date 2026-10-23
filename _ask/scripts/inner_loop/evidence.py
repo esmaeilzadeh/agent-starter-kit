@@ -205,7 +205,9 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
     cases = report.get('cases')
     if (not isinstance(executions, list) or not executions
             or not isinstance(cases, list)):
-        raise NotIntegrable('traceability report has unsupported execution/case shape')
+        raise NotIntegrable(
+            'migration_required/incomplete: traceability report lacks a complete execution/case inventory'
+        )
     runners = {item.get('id'): item for item in plan.get('runners', []) if isinstance(item, dict)}
     tests_by_runner: dict[str, dict] = {}
     for test_id, test in expected_by_id.items():

@@ -805,6 +805,24 @@ class test_b(unittest.TestCase):
                 result_path.write_bytes(valid)
                 ledger.write_bytes(ledger_valid)
 
+            # A supported report schema with required structural fields
+            # missing is also incomplete evidence, not a repairable Green.
+            incomplete = json.loads(valid)
+            incomplete.pop("cases", None)
+            result_path.write_text(json.dumps(incomplete) + "\n")
+            ledger.write_text(json.dumps([item for item in entries if item["run_id"] != run_id]) + "\n")
+            state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+            try:
+                with self.assertRaisesRegex(evidence.NotIntegrable,
+                                            "migration_required/incomplete"):
+                    evidence.checkpoint_run(self.root, "w", "a", run_id)
+                self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(),
+                                 state_before)
+                self.assertNotIn(run_id, {item["run_id"] for item in json.loads(ledger.read_text())})
+            finally:
+                result_path.write_bytes(valid)
+                ledger.write_bytes(ledger_valid)
+
             # Exercise the actual parent handoff: the coordinator pins and
             # runs the historical verifier, consumes only that completion
             # receipt, validates each report, then integrates the candidate.
