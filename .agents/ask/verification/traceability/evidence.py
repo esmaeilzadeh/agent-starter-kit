@@ -56,6 +56,14 @@ def _accept_plan(root,work_id,revision,reviewer,recorded_by,evidence):
     # cannot advance this ref; only an explicit reviewed accept-plan operation can.
     ref=f'refs/ask/accepted-tests/{work_id}'
     previous=subprocess.run(['git','rev-parse','--verify',ref],cwd=root,capture_output=True,text=True).stdout.strip()
+    if previous:
+        history_ref=f'refs/ask/accepted-tests-history/{work_id}/{previous}'
+        existing=subprocess.run(['git','rev-parse','--verify',history_ref],cwd=root,
+                                capture_output=True,text=True)
+        if existing.returncode:
+            git(root,'update-ref',history_ref,previous,'0'*40)
+        elif existing.stdout.strip()!=previous:
+            raise Invalid('retained accepted authority reference conflicts with its identity')
     def object_command(args,data):
         proc=subprocess.run(['git',*args],input=data,cwd=root,capture_output=True)
         if proc.returncode:raise Invalid(proc.stderr.decode())
@@ -171,7 +179,7 @@ def validate_historical_continuity(root, work_id, original, current, report,
         raise Invalid('historical report differs from its original ledger identity')
     ledger_identity=digest(ledger_row)
     authority_path=f'work/{work_id}/traceability-accepted.json'
-    authority_object=git(root,'rev-parse',f'{original_candidate}:{authority_path}')
+    candidate_pin_object=git(root,'rev-parse',f'{original_candidate}:{authority_path}')
     original_authority_digest=digest(original['pin'])
     rows={}
     for decision in decisions:
@@ -197,12 +205,22 @@ def validate_historical_continuity(root, work_id, original, current, report,
             or decision.get('original_plan_digest')!=original_plan_digest
             or decision.get('report_digest')!=calculated_report_digest
             or decision.get('ledger_row_digest')!=ledger_identity
-            or decision.get('original_authority_object')!=authority_object
+            or not text(decision.get('original_authority_object'))
+            or decision.get('original_candidate_pin_object')!=candidate_pin_object
             or decision.get('original_authority_digest')!=original_authority_digest
             or decision.get('original_contract_digest')!=digest(original['pin'])
             or decision.get('reviewer')!=expected_reviewer
             or not text(decision.get('behavioral_continuity'))):
             raise Invalid(f'{test_id}: historical continuity provenance or reviewer binding is stale')
+        authority_commit=decision['original_authority_object']
+        history_ref=f'refs/ask/accepted-tests-history/{work_id}/{authority_commit}'
+        retained=subprocess.run(['git','rev-parse','--verify',history_ref],cwd=root,
+                                capture_output=True,text=True)
+        authority_pin=json_at(root,authority_commit,'accepted.json')
+        parent=git(root,'rev-parse',f'{authority_commit}^')
+        if (retained.returncode or retained.stdout.strip()!=authority_commit
+            or authority_pin!=original['pin'] or parent!=original['pin'].get('contract_sha')):
+            raise Invalid(f'{test_id}: original coordinator authority is not exactly retained')
         if not isinstance(current_candidate_sha,str) or not current_candidate_sha:
             raise Invalid('historical continuity has no current candidate identity')
         old_sources=source_digests(root,case['source_sha'],original['plan'],[test_id])

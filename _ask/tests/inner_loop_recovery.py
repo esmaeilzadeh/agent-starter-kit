@@ -2126,6 +2126,7 @@ class test_b(unittest.TestCase):
 
         p1_plan = copy.deepcopy(self.old_plan)
         original = load_historical_accepted(self.root, "w", red["candidate_sha"])
+        original_authority_commit = self.git("rev-parse", "refs/ask/accepted-tests/w")
         original_ledger = next(row for row in json.loads(
             (self.root / "work/w/traceability/executions.json").read_text())
             if row.get("run_id") == red["run_id"])
@@ -2137,7 +2138,9 @@ class test_b(unittest.TestCase):
             "original_plan_digest": red["plan_digest"],
             "report_digest": report_digest,
             "ledger_row_digest": digest(original_ledger),
-            "original_authority_object": self.git("rev-parse", f"{red['candidate_sha']}:work/w/traceability-accepted.json"),
+            "original_authority_object": original_authority_commit,
+            "original_candidate_pin_object": self.git(
+                "rev-parse", f"{red['candidate_sha']}:work/w/traceability-accepted.json"),
             "original_authority_digest": digest(original["pin"]),
             "original_contract_digest": digest(original["pin"]),
             "original_source_digests": case["source_digests"],
@@ -2156,6 +2159,10 @@ class test_b(unittest.TestCase):
         }))
         accepted = accept_plan(
             self.root, "w", "HEAD", "fixture-p1-reviewer", "fixture-coordinator", review_path,
+        )
+        self.assertEqual(self.git(
+            "rev-parse", f"refs/ask/accepted-tests-history/w/{original_authority_commit}"),
+            original_authority_commit,
         )
         self.write("work/w/traceability-accepted.json", json.dumps(accepted, sort_keys=True) + "\n")
         self.commit("commit P1 historical Red authority")
@@ -2274,9 +2281,10 @@ class test_b(unittest.TestCase):
     def test_interrupted_preflight_is_read_only_and_derived(self):
         from inner_loop.checkpoint import read_checkpoint
         red, _green = self._real_traceability_pair()
+        state_path = self.root / "work/w/inner-loop/state.json"
+        retained_older_cache = state_path.read_bytes()
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "preflight before reopen")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
-        state_path = self.root / "work/w/inner-loop/state.json"
         state_before = state_path.read_bytes()
         checkpoint_before = read_checkpoint(self.root, "w")[0]
 
@@ -2306,13 +2314,20 @@ class test_b(unittest.TestCase):
         self.assertFalse(state_path.exists(), "preflight must not restore a missing runtime cache")
         self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_sha)
 
-        older = json.loads(cache)
-        older["revision"] -= 1
-        state_path.write_text(json.dumps(older, indent=2) + "\n")
-        older_cache = state_path.read_bytes()
+        state_path.write_bytes(retained_older_cache)
         old_cache_result = self.run_cli("preflight-run", "w", "a", "--run-id", new_run_id)
         self.assertEqual(old_cache_result.returncode, 0, old_cache_result.stdout + old_cache_result.stderr)
-        self.assertEqual(state_path.read_bytes(), older_cache, "preflight must not advance an older cache")
+        self.assertEqual(state_path.read_bytes(), retained_older_cache,
+                         "preflight must preserve an exact older checkpoint state")
+        forged = json.loads(cache)
+        forged["revision"] -= 1
+        state_path.write_text(json.dumps(forged, indent=2) + "\n")
+        forged_cache = state_path.read_bytes()
+        refused_forgery = self.run_cli("preflight-run", "w", "a", "--run-id", new_run_id)
+        self.assertNotEqual(refused_forgery.returncode, 0)
+        self.assertEqual(state_path.read_bytes(), forged_cache,
+                         "rejected preflight must not rewrite a divergent cache")
+        self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_sha)
         state_path.write_bytes(cache)
 
 

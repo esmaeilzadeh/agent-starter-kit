@@ -361,6 +361,30 @@ def read_checkpoint(root: Path, work_id: str, commit: str | None = None) -> tupl
     return commit, state, files
 
 
+def is_checkpoint_state_ancestor(root: Path, work_id: str, state: dict,
+                                 checkpoint_sha: str) -> bool:
+    """Return whether an exact cached state appears in this checkpoint's history."""
+    seen: set[str] = set()
+    cursor = checkpoint_sha
+    while cursor:
+        if cursor in seen:
+            raise CheckpointError("checkpoint history contains a cycle")
+        seen.add(cursor)
+        manifest, files = _read_tree(Path(root), cursor)
+        if manifest.get("work_id") != work_id:
+            raise CheckpointError("checkpoint history work_id mismatch")
+        try:
+            historical = json.loads(files[manifest["state_path"]])
+        except (KeyError, ValueError, TypeError) as exc:
+            raise CheckpointError("checkpoint history has no valid state snapshot") from exc
+        if historical == state:
+            return True
+        cursor = manifest.get("previous_checkpoint")
+        if cursor is not None and (not isinstance(cursor, str) or not cursor):
+            raise CheckpointError("checkpoint history pointer is invalid")
+    return False
+
+
 def _blob_type(root: Path, sha: str) -> str:
     if len(sha) != 40:
         return ""

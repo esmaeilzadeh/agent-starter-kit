@@ -34,6 +34,11 @@ def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def canonical_digest(value: object) -> str:
+    """Digest structured evidence using the same stable JSON encoding everywhere."""
+    return digest(json.dumps(value, sort_keys=True, separators=(',', ':')).encode())
+
+
 def git(root: Path, *args: str) -> str:
     proc = subprocess.run(['git', *args], cwd=root, capture_output=True, text=True)
     if proc.returncode:
@@ -426,7 +431,7 @@ def checkpoint_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
 
 def preflight_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
     """Read-only validation of one run selected from an interrupted attempt."""
-    from inner_loop.checkpoint import read_checkpoint
+    from inner_loop.checkpoint import is_checkpoint_state_ancestor, read_checkpoint
     from inner_loop.state import load_state
 
     checkpoint = read_checkpoint(root, work_id)
@@ -443,7 +448,8 @@ def preflight_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
         if cached == state:
             cache_status = 'current'
         elif (isinstance(cached, dict) and type(cached.get('revision')) is int
-              and cached['revision'] < int(state.get('revision', -1))):
+              and cached['revision'] < int(state.get('revision', -1))
+              and is_checkpoint_state_ancestor(root, work_id, cached, checkpoint_sha)):
             cache_status = 'older'
         else:
             raise NotIntegrable('preflight coordinator cache conflicts with retained checkpoint')
@@ -597,7 +603,8 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
     verifier_tree=git(root,'rev-parse',f"{migration['verifier_sha']}^{{tree}}")
     ancestry=subprocess.run(['git','merge-base','--is-ancestor',migration['coordinator_sha'],head],
                             cwd=root,capture_output=True)
-    if (ancestry.returncode or coordinator_tree!=migration['coordinator_tree']
+    if (ancestry.returncode or head != migration['coordinator_sha']
+        or coordinator_tree!=migration['coordinator_tree']
         or verifier_tree!=migration['verifier_tree']):
         raise NotIntegrable('coordinator/verifier source revisions differ from the reviewed P1 binding')
     try:
@@ -627,6 +634,17 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
     if (not isinstance(coordinator_sources,dict) or not coordinator_sources
         or not isinstance(verifier_sources,dict) or not verifier_sources):
         raise NotIntegrable('independent source review omits coordinator/verifier source digests')
+    def executable_sources(revision: str, prefix: str) -> set[str]:
+        listing=subprocess.run(['git','ls-tree','-r','--name-only',revision,'--',prefix],
+                               cwd=root,capture_output=True,text=True)
+        if listing.returncode:
+            raise NotIntegrable(f'cannot inventory reviewed executable sources under {prefix}')
+        return {name for name in listing.stdout.splitlines() if name.endswith('.py')}
+    expected_coordinator=executable_sources(migration['coordinator_sha'],'_ask/scripts/inner_loop')
+    expected_verifier=executable_sources(migration['verifier_sha'],'.agents/ask/verification')
+    if (set(coordinator_sources)!=expected_coordinator
+        or set(verifier_sources)!=expected_verifier):
+        raise NotIntegrable('independent source review does not bind the complete executable source inventory')
     for name,expected in coordinator_sources.items():
         for revision in (migration['coordinator_sha'],head):
             raw=subprocess.run(['git','show',f'{revision}:{name}'],cwd=root,capture_output=True)
@@ -708,7 +726,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                 'verifier_tree':migration['verifier_tree'],
                 'p1_spec_digest':migration['p1_spec_digest'],
                 'p1_plan_digest':migration['p1_plan_digest'],
-                'migration_binding_digest':digest(migration),
+                'migration_binding_digest':canonical_digest(migration),
             })
         with tempfile.TemporaryDirectory(prefix='ask-candidate-') as tmp:
             runner, report['runner_digest'] = snapshot_runner(root, verifier_sha, Path(tmp) / 'trusted')
@@ -811,7 +829,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                     or report.get('coordinator_sha') != migration['coordinator_sha']
                     or report.get('verifier_sha') != migration['verifier_sha']
                     or report.get('verifier_tree') != migration['verifier_tree']
-                    or report.get('migration_binding_digest') != digest(migration)
+                    or report.get('migration_binding_digest') != canonical_digest(migration)
                     or report.get('p1_spec_digest') != migration['p1_spec_digest']
                     or report.get('p1_plan_digest') != migration['p1_plan_digest']
                     or completion.get('candidate_sha') != identity['candidate_sha']
