@@ -355,6 +355,7 @@ class test_b(unittest.TestCase):
         red_exit = run_traceability(red_sha, "red", "after_report_publication")
         self.assertEqual(red_exit.returncode, 81, red_exit.stdout + red_exit.stderr)
         red_id, red = latest_report(before)
+        ledger = json.loads(ledger_path.read_text(encoding="utf-8")) if ledger_path.exists() else []
         self.assertEqual(red["candidate_sha"], red_sha)
         self.assertEqual(red["cases"][0]["outcome"], "failed")
         self.assertFalse(any(row.get("run_id") == red_id for row in ledger),
