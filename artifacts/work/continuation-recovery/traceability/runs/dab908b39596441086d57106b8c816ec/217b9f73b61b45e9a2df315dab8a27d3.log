@@ -1,0 +1,35 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+FAIL: test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-e3oeth8r/candidate/_ask/tests/inner_loop_recovery.py", line 833, in test_nested_verifier_coordinator_finalization
+    self.assertEqual(result.errors, [])
+AssertionError: Lists differ: [(<_ask.tests.inner_loop_recovery.Recovery[442 chars]\n')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+(<_ask.tests.inner_loop_recovery.RecoveryTests.test_nested_verifier_coordinator_finalization.<locals>.NestedFinalizationCase testMethod=test_nested_real_reports_are_finalized_by_parent>, 'Traceback (most recent call last):\n  File "/tmp/ask-cases-e3oeth8r/candidate/_ask/tests/inner_loop_recovery.py", line 814, in test_nested_real_reports_are_finalized_by_parent\n    self.assertEqual(run_document["coordinator_finalization"]["task_id"], "b")\nKeyError: \'coordinator_finalization\'\n')
+
++ []
+- [(<_ask.tests.inner_loop_recovery.RecoveryTests.test_nested_verifier_coordinator_finalization.<locals>.NestedFinalizationCase testMethod=test_nested_real_reports_are_finalized_by_parent>,
+-   'Traceback (most recent call last):\n'
+-   '  File '
+-   '"/tmp/ask-cases-e3oeth8r/candidate/_ask/tests/inner_loop_recovery.py", line '
+-   '814, in test_nested_real_reports_are_finalized_by_parent\n'
+-   '    self.assertEqual(run_document["coordinator_finalization"]["task_id"], '
+-   '"b")\n'
+-   "KeyError: 'coordinator_finalization'\n")]
+
+----------------------------------------------------------------------
+Ran 8 tests in 75.271s
+
+FAILED (failures=1)
