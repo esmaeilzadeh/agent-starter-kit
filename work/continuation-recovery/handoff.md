@@ -1,3 +1,5 @@
+> Current CR-3 continuation (2026-10-23): follow [the consolidated recovery decision](cr3-recovery-decision.md). It supersedes the serial proposal-review next steps; the planning history below remains preserved. CR-3 is interrupted, and the scoped T21 exception is not yet approved.
+
 # Isolated continuation-recovery planning handoff
 
 ## User objective and endpoint
