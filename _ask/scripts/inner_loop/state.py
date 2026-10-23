@@ -35,7 +35,8 @@ def _require_coordinator() -> None:
 
 
 def _require_reconciled(root: Path, work_id: str, state: dict | None,
-                        task_ids: list[str] | None = None) -> None:
+                        task_ids: list[str] | None = None,
+                        allowed_source_paths: set[str] | None = None) -> None:
     """Apply the recovery guard at every state mutation boundary."""
     from inner_loop.graph import load_graph
     from inner_loop.recovery import require_safe
@@ -49,7 +50,7 @@ def _require_reconciled(root: Path, work_id: str, state: dict | None,
             "tasks": [{"id": task_id, "depends_on": [], "owned_paths": []}
                       for task_id in (task_ids or (state or {}).get("tasks", {}))],
         }
-    require_safe(root, work_id, graph, state)
+    require_safe(root, work_id, graph, state, allowed_source_paths=allowed_source_paths)
 
 
 def load_state(root: Path, work_id: str) -> dict:
@@ -225,7 +226,8 @@ def checkpoint_held_state(root: Path, work_id: str, doc: dict) -> dict:
 def state_transaction(root: Path, work_id: str, observed_revision: int | None = None,
                       *, archive_attempt_evidence: bool = False,
                       update_review: bool = False,
-                      finalize_verification: bool = False):
+                      finalize_verification: bool = False,
+                      reconciliation_validator=None):
     """Hold the lock through validation, side effects and one atomic state fold."""
     with state_lock(root, work_id):
         doc = load_state(root, work_id)
@@ -233,7 +235,10 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         before = copy.deepcopy(doc)
         if observed_revision is not None and stored != observed_revision:
             raise CasConflict(f"revision mismatch: observed={observed_revision} stored={stored}")
-        _require_reconciled(root, work_id, doc)
+        allowed_source_paths = (reconciliation_validator(doc)
+                                if reconciliation_validator is not None else None)
+        _require_reconciled(root, work_id, doc,
+                            allowed_source_paths=allowed_source_paths)
         yield doc
         _preserve_attempt_history(before, doc)
         _preserve_attempt_evidence(before, doc, archive=archive_attempt_evidence,

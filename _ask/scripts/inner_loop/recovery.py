@@ -712,7 +712,8 @@ def _report(work_id: str, task_ids: set[str], paths: set[str], conflicts: list[s
     }
 
 
-def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) -> dict | None:
+def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None,
+            *, allowed_source_paths: set[str] | None = None) -> dict | None:
     """Return recovery evidence when runtime state conflicts with retained history."""
     root = Path(root).resolve()
     tasks = _task_map(graph, state)
@@ -894,6 +895,8 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
                 name for name in changed
                 if not any(fnmatch.fnmatchcase(name, pattern) for pattern in running_paths)
             ]
+            if allowed_source_paths:
+                changed = [name for name in changed if name not in allowed_source_paths]
             attributed = _interrupted_paths(root, work_id, tasks, state, head, task_id)
             changed = [name for name in changed if name not in attributed]
             if changed:
@@ -941,7 +944,8 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None) ->
     return _report(work_id, task_ids, paths, conflicts)
 
 
-def require_safe(root: Path, work_id: str, graph: dict, state: dict | None = None) -> None:
-    report = inspect(root, work_id, graph, state)
+def require_safe(root: Path, work_id: str, graph: dict, state: dict | None = None,
+                 *, allowed_source_paths: set[str] | None = None) -> None:
+    report = inspect(root, work_id, graph, state, allowed_source_paths=allowed_source_paths)
     if report is not None:
         raise RecoveryRequired(report)

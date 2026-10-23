@@ -1195,6 +1195,7 @@ class test_b(unittest.TestCase):
         new_plan_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
         checkpoint = read_checkpoint(self.root, "w")
         self.assertIsNotNone(checkpoint)
+        reconciliation_head = self.git("rev-parse", "HEAD")
         source_bytes = (self.root / "src/a.py").read_bytes()
         reconciliation = {
             "schema": "ask-inner-loop-reconciliation/v1",
@@ -1208,7 +1209,8 @@ class test_b(unittest.TestCase):
             "accepted_plan_ref": new_plan_ref,
             "accepted_plan_digest": accepted_after["plan_digest"],
             "new_attempt_base_sha": stopped["coordinator_sha"],
-            "candidate_sha": post_interruption_head,
+            "candidate_sha": reconciliation_head,
+            "recorded_by": "fixture-coordinator",
             "source_postimage": {"src/a.py": hashlib.sha256(source_bytes).hexdigest()},
         }
         reconciliation_payload = json.dumps(
@@ -1217,9 +1219,28 @@ class test_b(unittest.TestCase):
         reconciliation["review"] = {
             "decision": "APPROVED",
             "reviewer": "fixture-independent-reconciler",
-            "candidate_sha": post_interruption_head,
+            "candidate_sha": reconciliation_head,
             "payload_sha256": hashlib.sha256(reconciliation_payload).hexdigest(),
         }
+        invalid_reconciliation = copy.deepcopy(reconciliation)
+        invalid_reconciliation["source_postimage"]["src/a.py"] = "0" * 64
+        invalid_payload = {
+            key: value for key, value in invalid_reconciliation.items() if key != "review"
+        }
+        invalid_reconciliation["review"]["payload_sha256"] = hashlib.sha256(
+            json.dumps(invalid_payload, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        self.write(
+            "work/w/inner-loop/evidence/reconciliation-a.json",
+            json.dumps(invalid_reconciliation, indent=2) + "\n",
+        )
+        rejected_reconciliation = self.run_cli(
+            "reopen", "w", "a", "--reason", "amended plan accepted"
+        )
+        self.assertNotEqual(rejected_reconciliation.returncode, 0)
+        self.assertIn("source postimage mismatch",
+                      rejected_reconciliation.stdout + rejected_reconciliation.stderr)
+        self.assertEqual(load_state(self.root, "w")["tasks"]["a"]["status"], "interrupted")
         self.write(
             "work/w/inner-loop/evidence/reconciliation-a.json",
             json.dumps(reconciliation, indent=2) + "\n",
@@ -1234,6 +1255,8 @@ class test_b(unittest.TestCase):
         self.assertEqual(current.get("accepted_plan_digest"), accepted_after["plan_digest"])
         self.assertEqual(current["attempt_history"], task["attempt_history"])
         self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
+        self.assertEqual(current["source_reconciliation"]["candidate_sha"], reconciliation_head)
+        self.assertEqual(current["source_reconciliation"]["paths"], ["src/a.py"])
 
     def test_scope_compatible_historical_task_result_survives_plan_amendment(self):
         self.start_candidate()

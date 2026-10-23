@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import copy
 import fcntl
+import fnmatch
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -34,6 +36,124 @@ def accepted_plan_digest(root: Path, work_id: str) -> str:
     except (TypeError, ValueError):
         return ""
     return digest if isinstance(digest, str) else ""
+
+
+def _is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    return bool(ancestor and descendant) and subprocess.run(
+        ["git", "merge-base", "--is-ancestor", ancestor, descendant], cwd=root,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0
+
+
+def _reviewed_reconciliation(root: Path, work_id: str, task_id: str, doc: dict):
+    """Validate an exact reviewed source postimage before reopening an attempt."""
+    path = root / "work" / work_id / "inner-loop" / "evidence" / f"reconciliation-{task_id}.json"
+    if not path.is_file():
+        return None
+    try:
+        raw = path.read_bytes()
+        record = json.loads(raw)
+    except (OSError, ValueError) as exc:
+        raise ProtocolViolation(f"attempt reconciliation is unreadable: {exc}") from exc
+    if not isinstance(record, dict) or record.get("schema") != "ask-inner-loop-reconciliation/v1":
+        raise ProtocolViolation("attempt reconciliation has an unsupported schema")
+    task = (doc.get("tasks") or {}).get(task_id)
+    history = (task or {}).get("attempt_history") or []
+    if not task or task.get("status") != "interrupted" or not history:
+        raise ProtocolViolation("attempt reconciliation does not name an interrupted task")
+    prior = history[-1]
+    pin_ref = accepted_plan_ref(root, work_id)
+    pin_digest = accepted_plan_digest(root, work_id)
+    head = subprocess.run(["git", "rev-parse", "--verify", "HEAD^{commit}"], cwd=root,
+                          capture_output=True, text=True)
+    checkpoint = subprocess.run(
+        ["git", "rev-parse", "--verify", f"refs/ask/inner-loop/{work_id}"], cwd=root,
+        capture_output=True, text=True,
+    )
+    expected = {
+        "work_id": work_id,
+        "task_id": task_id,
+        "previous_checkpoint_sha": checkpoint.stdout.strip() if checkpoint.returncode == 0 else "",
+        "previous_revision": int(doc.get("revision", -1)),
+        "previous_attempt_id": prior.get("attempt_id"),
+        "interrupted_candidate_sha": prior.get("interrupted_candidate_sha"),
+        "new_attempt_id": f"{task_id}:attempt-{int(task.get('attempt_number') or 0) + 1}",
+        "accepted_plan_ref": pin_ref,
+        "accepted_plan_digest": pin_digest,
+        "new_attempt_base_sha": doc.get("coordinator_sha") or "",
+        "candidate_sha": head.stdout.strip() if head.returncode == 0 else "",
+    }
+    if any(record.get(key) != value for key, value in expected.items()):
+        raise ProtocolViolation("attempt reconciliation identity is stale or conflicts with coordinator state")
+    if not pin_ref or not pin_digest:
+        raise ProtocolViolation("attempt reconciliation requires an accepted plan ref and digest")
+    if not _is_ancestor(root, expected["new_attempt_base_sha"], expected["interrupted_candidate_sha"]):
+        raise ProtocolViolation("interrupted candidate is outside the recorded coordinator ancestry")
+    if not _is_ancestor(root, expected["interrupted_candidate_sha"], expected["candidate_sha"]):
+        raise ProtocolViolation("reconciled source postimage is outside the interrupted candidate ancestry")
+    if subprocess.run(["git", "status", "--porcelain"], cwd=root, capture_output=True,
+                      text=True).stdout.strip():
+        raise ProtocolViolation("attempt reconciliation requires a clean source postimage")
+
+    review = record.get("review")
+    recorded_by = record.get("recorded_by")
+    payload = {key: value for key, value in record.items() if key != "review"}
+    payload_digest = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if (not isinstance(review, dict) or review.get("decision") != "APPROVED"
+            or not isinstance(review.get("reviewer"), str) or not review["reviewer"].strip()
+            or not isinstance(recorded_by, str) or not recorded_by.strip()
+            or review.get("reviewer") == recorded_by
+            or review.get("candidate_sha") != expected["candidate_sha"]
+            or review.get("payload_sha256") != payload_digest):
+        raise ProtocolViolation("attempt reconciliation lacks an exact approved independent review")
+
+    from inner_loop.graph import load_graph
+    graph = load_graph(root, work_id)
+    graph_tasks = graph.get("tasks") or []
+    task_map = ({str(key): value for key, value in graph_tasks.items()}
+                if isinstance(graph_tasks, dict)
+                else {str(item.get("id")): item for item in graph_tasks if item.get("id")})
+    owner_patterns = [str(item) for item in (task_map.get(task_id) or {}).get("owned_paths") or []]
+    downstream_patterns: list[str] = []
+    for dependent_id, dependent in task_map.items():
+        pending = [dependent_id]
+        seen = set()
+        depends = False
+        while pending:
+            current = pending.pop()
+            if current in seen:
+                continue
+            seen.add(current)
+            current_task = task_map.get(current) or {}
+            dependencies = [str(item) for item in current_task.get("depends_on") or []]
+            if task_id in dependencies:
+                depends = True
+                break
+            pending.extend(dependencies)
+        if depends and (doc.get("tasks", {}).get(dependent_id) or {}).get("status") in {"pending", "ready"}:
+            downstream_patterns.extend(str(item) for item in dependent.get("owned_paths") or [])
+    changed = subprocess.run(
+        ["git", "diff", "--name-only", "-z", expected["interrupted_candidate_sha"] + ".." + expected["candidate_sha"]],
+        cwd=root, capture_output=True, text=True,
+    )
+    if changed.returncode:
+        raise ProtocolViolation("cannot inspect committed changes after the interrupted candidate")
+    changed_paths = {name for name in changed.stdout.split("\0") if name}
+    allowed = {name for name in changed_paths
+               if any(fnmatch.fnmatchcase(name, owner) for owner in owner_patterns)
+               and any(fnmatch.fnmatchcase(name, dependent) for dependent in downstream_patterns)}
+    postimage = record.get("source_postimage")
+    if not isinstance(postimage, dict) or set(postimage) != allowed or not allowed:
+        raise ProtocolViolation("attempt reconciliation must name every exact overlapping source change")
+    for name, digest in postimage.items():
+        blob = subprocess.run(["git", "show", f"{expected['candidate_sha']}:{name}"], cwd=root,
+                              capture_output=True)
+        if blob.returncode or hashlib.sha256(blob.stdout).hexdigest() != digest:
+            raise ProtocolViolation(f"attempt reconciliation source postimage mismatch: {name}")
+    return {"paths": allowed, "path": str(path.relative_to(root)),
+            "digest": hashlib.sha256(raw).hexdigest(), "candidate_sha": expected["candidate_sha"]}
 
 
 def _execution_runs(root: Path, work_id: str, task_id: str,
@@ -143,7 +263,15 @@ def interrupt_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
 def reopen_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
     if not isinstance(reason, str) or not reason.strip():
         raise ProtocolViolation("reopening an attempt requires a reason")
-    with state_transaction(root, work_id) as doc:
+    reconciliation: dict | None = None
+
+    def validate_reconciliation(doc: dict) -> set[str] | None:
+        nonlocal reconciliation
+        reconciliation = _reviewed_reconciliation(root, work_id, task_id, doc)
+        return set(reconciliation["paths"]) if reconciliation else None
+
+    with state_transaction(root, work_id,
+                           reconciliation_validator=validate_reconciliation) as doc:
         task = (doc.get("tasks") or {}).get(task_id)
         if not task or task.get("status") != "interrupted":
             raise ProtocolViolation(f"task {task_id} has no interrupted attempt to reopen")
@@ -176,4 +304,11 @@ def reopen_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
             "reopened_from_attempt": history[-1]["attempt_id"],
             "reopen_reason": reason.strip(),
         })
+        if reconciliation:
+            task["source_reconciliation"] = {
+                "path": reconciliation["path"],
+                "digest": reconciliation["digest"],
+                "candidate_sha": reconciliation["candidate_sha"],
+                "paths": sorted(reconciliation["paths"]),
+            }
     return doc
