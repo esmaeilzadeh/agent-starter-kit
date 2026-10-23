@@ -28,6 +28,7 @@ tasks:
   - id: "CR-3"
     depends_on: ["CR-2"]
     owned_paths:
+      - "_ask/scripts/inner_loop/attempts.py"
       - "_ask/scripts/inner_loop/checkpoint.py"
       - "_ask/scripts/inner_loop/state.py"
       - "_ask/scripts/inner_loop/recovery.py"
@@ -36,6 +37,12 @@ tasks:
       - "_ask/scripts/inner_loop/__main__.py"
       - ".agents/ask/verification/traceability/adapters.py"
       - ".agents/ask/verification/traceability/cli.py"
+      - ".agents/ask/verification/traceability/contracts.py"
+      - ".agents/ask/verification/traceability/evidence.py"
+      - ".agents/ask/verification/traceability/completion.py"
+      - ".agents/ask/verification/traceability/service.py"
+      - ".agents/ask/verification/traceability/coverage.py"
+      - ".agents/ask/verification/run.py"
       - "_ask/tests/inner_loop_recovery.py"
       - "_ask/tests/inner_loop_recovery_fixture.py"
       - ".agents/ask/task-loop.md"

@@ -1,13 +1,13 @@
 # Plan: durable continuation and evidence recovery
 
-Revision 10 retains the CR-T38 and CR-T55–57 changes from Revision 8, makes
-the interrupted candidate commit part of the durable checkpoint closure, and
-corrects CR-T57 criterion ownership: checkpoint retention maps to CR-02 while
-interrupted-path attribution and quiescence map to CR-07. CR-T22 remains mapped
-only to CR-07.
+Revision 11 is the P0 implementation/test contract for the approved CR-3
+recovery package. It retains Revision 10's CR-T38 and CR-T55–57 changes,
+checkpoint closure, and CR-T57 ownership. CR-T22 remains mapped only to CR-07.
+P0 does not activate the CR-T21 exception; that requires a later reviewed P1
+contract binding `cr3-scoped-decision-record.md`.
 Exactly one
 requirements contract remains `specs/current/continuation-recovery.json`
-(ask-spec/v1, CR-01–CR-08). Human authority and stop: `authorization.md`.
+(ask-spec/v1, CR-01–CR-08). Human authority: `authorization.md`.
 Explore skipped: destination already clear. This is continuation of the authorized
 planning interrupt, isolated on the selected base, not a new product request.
 
@@ -44,7 +44,7 @@ its first candidate failed aggregate integration and is not integrated.
 | --- | --- | --- | --- | --- |
 | CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture, recovery assertion, and mapped traceability entrypoint modules, shell entry, plus compatibility with existing coordinator reliability and public-entrypoint assertions | none | CR-T01–04,17,22–37,39–54 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration including the mapped reliability suite; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
 | CR-2 | Git-retained checkpoint closure, cache recovery, transfer CLI, explicit attempt interruption/reopen with retained prior plan and run history, scope-aware prior TaskResult validation, and durable attribution of interrupted candidate paths; checkpoint/attempts/state/driver/recovery/CLI | CR-1 | CR-T05–09,18,38,55–57 | CAS/crash/cache and post-FF checkpoint replay assertions, attempt-history replay and explicit reopen, scope-compatible historical result carry-forward, checkpoint-retained interrupted candidate attribution, GC and separate-object-database bundle E2E; real Red/Green, Refactor, review, integration |
-| CR-3 | Coordinator finalization for standalone/nested and old pinned verifier; checkpoint/state/recovery/driver/evidence/CLI, adapter/traceability CLI and protocol/docs projections | CR-2 | CR-T10–14,19–21 | Bounded real pinned verification, interrupted report/ledger finalization, old-base runner compatibility; real Red/Green, Refactor, review, integration |
+| CR-3 | Coordinator finalization and historical evidence recovery; exact receipt lifecycle, read-only preflight, per-case historical Red continuity, exact T21 exception enforcement, and reviewed trusted-verifier migration. CR-T12 is narrowly reclassified as regression while retaining its failed `final_green`; CR-T13 stays new and covers repeated reopen/receipt preservation; CR-T21 stays new in P0. | CR-2 | CR-T10–14,19–21,58–61 | Real task-scoped Red for new P0 behavior; current Green and Refactor; independent review of assertion continuity and exact contract; disposable two-interruption lifecycle through normal trusted-verifier integration; unchanged original reports, ledger rows, bases, attempts and consumed receipt |
 | CR-4 | Legacy reconciliation/adoption implementation and disposable tests; recovery/CLI and immutable fixtures; read-only real audit/proposal under adoption/ | CR-3 | CR-T15–16 | Exact Tasks1–5 provenance audit and independently reviewed adoption proposal; missing evidence honest; product state/authority untouched; real Red/Green, Refactor, review, normal repair integration |
 
 Owned paths are enumerated in the graph. CR-1 creates immutable fixture and test
@@ -54,11 +54,14 @@ CR-3 automatic finalization exists. No task is a deferred design decision.
 
 ## Verification and E2E
 
-All eight criteria map to integration and E2E obligations, 24 new behavior cases
-and 33 exact CR-1 regression selectors across three unittest runners.
-Every case has exactly one responsible task,
-observable scenarios and per-criterion assertions. All require actual assertion
-Red in future implementation; inherited product runs are never relabeled.
+All eight criteria map to integration and E2E obligations. Every case has
+exactly one responsible task, observable scenarios, exact source paths and
+per-criterion assertions. CR-T58–61 each cover a distinct P0 behavior; CR-T13
+owns repeated attempt/receipt history while CR-T60 owns receipt request binding
+and atomic stale-request refusal. CR-T12's regression classification retains
+its failed `final_green` history. T21 remains `new` with all checks mandatory;
+P0 has no active TDD exception. Historical Red is retained only under the
+case-by-case continuity review in the recovery decision note.
 
 E2E applies: disposable Git repositories, fresh processes, cache loss and process
 interruption at publication boundaries. CR-T18 deletes temporary refs, expires
@@ -92,12 +95,18 @@ Changed requirements, ownership, runner capability, schema, closure or unsupport
 recovery transition require spec-change and independent review before execution.
 Stale product preimages require refreshed audit; no broad repair bypass applies.
 
-## Seal and explicit stop
+## P0 acceptance and staged recovery
 
-Commit corrected contracts/design; obtain fresh independent review bound to
-canonical spec/plan/graph digests and exact design-file identities. Register
-only `continuation-recovery` using existing `traceability accept-plan`, commit
-the generated pin and durable `plan-seal.md`, and read back authority/digests.
+The submitted decision is recorded in `cr3-scoped-decision-record.md`; the
+approved intent remains byte-identical. Review and pin the exact P0 spec,
+test-plan and task graph digests through the normal coordinator path. P0
+contains no active T21 exception. After P0 acceptance, run the actual
+task-scoped test-only Red, implement only mapped behavior, then obtain current
+Green and Refactor evidence. Prepare P1 only after P0 implementation is
+demonstrated; P1 binds exact historical continuity rows and the approved
+decision record/digest. Follow `cr3-recovery-decision.md` for the required
+preflight, distinct attempt-2-to-3 receipt, reopen, checkpoint, independent
+review and normal integration order.
+
 The original product contract, intent, branch ref, runtime and authority remain
-unchanged. STOP after sealing. Implementation, runtime initialization/bootstrap,
-product adoption and scheduling require later explicit human authorization.
+unchanged. Product adoption and scheduling remain outside the accepted scope.

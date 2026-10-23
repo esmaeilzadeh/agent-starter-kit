@@ -516,26 +516,26 @@
       "change_kind": "new",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_checkpoint_real_red_and_green",
       "scenario": {
-        "given": "A real assertion test fails, implementation is committed, and the same assertion passes",
-        "when": "Traceability publishes each run before TaskResult exists; process exits after each milestone",
+        "given": "A retained original Red demonstrated the checkpoint entrypoint was unavailable and the observer was later corrected in afc7ab2",
+        "when": "Current assertions are independently assessed for behavioral continuity and the exact candidate is run",
         "then": [
-          "Checkpoint retains real run IDs, source and test continuity, outcomes and log digests",
-          "Resumption retains original Red and Green instead of demanding a newly failing run"
+          "Carry only the original failure scope as historical Red; do not attribute later publication assertions to that run",
+          "Require current Green and a disposable observer sensitivity control for the afc7ab2 correction"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "CR-02",
           "checks": [
-            "Checkpoint retains real run IDs, source and test continuity, outcomes and log digests",
-            "Resumption retains original Red and Green instead of demanding a newly failing run"
+            "Carry only the original failure scope as historical Red; do not attribute later publication assertions to that run",
+            "Require current Green and a disposable observer sensitivity control for the afc7ab2 correction"
           ]
         },
         {
           "criterion_id": "CR-04",
           "checks": [
-            "Checkpoint retains real run IDs, source and test continuity, outcomes and log digests",
-            "Resumption retains original Red and Green instead of demanding a newly failing run"
+            "Carry only the original failure scope as historical Red; do not attribute later publication assertions to that run",
+            "Require current Green and a disposable observer sensitivity control for the afc7ab2 correction"
           ]
         }
       ],
@@ -616,7 +616,7 @@
         "CR-08"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_crash_after_verification_or_ff",
       "scenario": {
         "given": "Candidate has current review and real coordinator verification",
@@ -677,26 +677,26 @@
       "change_kind": "new",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_guard_rollback_and_explicit_attempts",
       "scenario": {
-        "given": "A task contains recorded Green/review or integration",
-        "when": "Generic CAS attempts rollback; explicit reviewed reopen names a new attempt",
+        "given": "A task has recorded Green/review and an interrupted attempt with a reviewed reconciliation receipt",
+        "when": "The coordinator performs two explicit reopen cycles, interrupting after the first reopen and submitting a distinct reviewed transition request for the second",
         "then": [
-          "Refuse silent overwrite of execution history",
-          "Retain old attempt and its evidence; new attempt has an explicit authorized baseline"
+          "Preserve both interrupted attempts, their candidates and the first consumed receipt as immutable history",
+          "Select the second receipt by exact prior/next attempt identity and refuse a stale new request without replacing history"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "CR-04",
           "checks": [
-            "Refuse silent overwrite of execution history",
-            "Retain old attempt and its evidence; new attempt has an explicit authorized baseline"
+            "Preserve both interrupted attempts, their candidates and the first consumed receipt as immutable history",
+            "Select the second receipt by exact prior/next attempt identity and refuse a stale new request without replacing history"
           ]
         },
         {
           "criterion_id": "CR-07",
           "checks": [
-            "Refuse silent overwrite of execution history",
-            "Retain old attempt and its evidence; new attempt has an explicit authorized baseline"
+            "Preserve both interrupted attempts, their candidates and the first consumed receipt as immutable history",
+            "Select the second receipt by exact prior/next attempt identity and refuse a stale new request without replacing history"
           ]
         }
       ],
@@ -796,7 +796,7 @@
       "change_kind": "new",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
       "scenario": {
-        "given": "A fixture mirrors old Tasks 1–5 execution with a restarted queue and reviewed legacy provenance",
+        "given": "A fixture mirrors old Tasks 1\u20135 execution with a restarted queue and reviewed legacy provenance",
         "when": "Read-only report and explicit adoption are performed",
         "then": [
           "Original base/candidate and Red/Green provenance remain intact",
@@ -855,8 +855,8 @@
         "given": "A reconciled multi-task legacy checkpoint and audit report exist",
         "when": "Export/reload and select next eligible milestone without scheduling product work",
         "then": [
-          "Tasks 1–5 are individually accounted for with verified versus missing evidence",
-          "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
+          "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
+          "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
           "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
         ]
       },
@@ -864,24 +864,24 @@
         {
           "criterion_id": "CR-02",
           "checks": [
-            "Tasks 1–5 are individually accounted for with verified versus missing evidence",
-            "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
+            "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
+            "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
             "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
           ]
         },
         {
           "criterion_id": "CR-06",
           "checks": [
-            "Tasks 1–5 are individually accounted for with verified versus missing evidence",
-            "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
+            "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
+            "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
             "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
           ]
         },
         {
           "criterion_id": "CR-08",
           "checks": [
-            "Tasks 1–5 are individually accounted for with verified versus missing evidence",
-            "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
+            "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
+            "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
             "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
           ]
         }
@@ -913,7 +913,7 @@
       "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff",
       "scenario": {
-        "given": "Separate repair workstream with its four-task contract and an immutable fixture of the original blocked ten-task state (revision 11, Task1 integrated, Task2 blocked, Tasks3–10 pending)",
+        "given": "Separate repair workstream with its four-task contract and an immutable fixture of the original blocked ten-task state (revision 11, Task1 integrated, Task2 blocked, Tasks3\u201310 pending)",
         "when": "Normal existing initialization admits CR-1, then after simulated valid CR-1 integration admits CR-2 (without executing the future CR-2 outcome) in disposable repositories",
         "then": [
           "Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity",
@@ -1034,7 +1034,8 @@
         "when": "The child verifies and exits while checkpointing is enabled in the parent; execution is bounded by a timeout",
         "then": [
           "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
-          "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution"
+          "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
+          "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
         ]
       },
       "expected_assertions": [
@@ -1042,28 +1043,32 @@
           "criterion_id": "CR-03",
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
-            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution"
+            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
+            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
           ]
         },
         {
           "criterion_id": "CR-04",
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
-            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution"
+            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
+            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
           ]
         },
         {
           "criterion_id": "CR-07",
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
-            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution"
+            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
+            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
           ]
         },
         {
           "criterion_id": "CR-08",
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
-            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution"
+            "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
+            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
           ]
         }
       ],
@@ -2414,7 +2419,7 @@
       "change_kind": "new",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
       "scenario": {
-        "given": "An integrated task result is bound to a prior accepted contract, and the amended plan keeps that task’s current cases unchanged while moving another case to a different task",
+        "given": "An integrated task result is bound to a prior accepted contract, and the amended plan keeps that task\u2019s current cases unchanged while moving another case to a different task",
         "when": "Recovery evaluates the retained TaskResult against the amended accepted contract",
         "then": [
           "Preserve the original result and contract identity as historical evidence.",
@@ -2486,6 +2491,258 @@
         "_ask/scripts/inner_loop/state.py",
         "_ask/scripts/inner_loop/__main__.py"
       ]
+    },
+    {
+      "id": "CR-T58",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-04",
+        "CR-05"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_t21_exception_requires_exact_p1_decision",
+      "scenario": {
+        "given": "A disposable fixture has P0 and P1 contracts, with P1 optionally declaring the submitted CR-T21 evidence exception",
+        "when": "The coordinator validates completion and authorization for the exact work/task/case and for negative-control scopes",
+        "then": [
+          "P0 cannot activate the exception; only the exact continuation-recovery/CR-3/CR-T21 declaration bound to the submitted decision and accepted P1 can",
+          "Wrong work, task, case, decision digest or unaccepted P1 is refused while all T21 behavior checks and current Green remain required"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-04",
+          "checks": [
+            "P0 cannot activate the exception; only the exact continuation-recovery/CR-3/CR-T21 declaration bound to the submitted decision and accepted P1 can",
+            "Wrong work, task, case, decision digest or unaccepted P1 is refused while all T21 behavior checks and current Green remain required"
+          ]
+        },
+        {
+          "criterion_id": "CR-05",
+          "checks": [
+            "P0 cannot activate the exception; only the exact continuation-recovery/CR-3/CR-T21 declaration bound to the submitted decision and accepted P1 can",
+            "Wrong work, task, case, decision digest or unaccepted P1 is refused while all T21 behavior checks and current Green remain required"
+          ]
+        }
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/tests/inner_loop_recovery_fixture.py",
+        "_ask/scripts/inner_loop/attempts.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/run.py"
+      ]
+    },
+    {
+      "id": "CR-T59",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-02",
+        "CR-04",
+        "CR-05",
+        "CR-08"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_historical_red_continuity_through_checkpoint_and_integration",
+      "scenario": {
+        "given": "A disposable coordinator retains original and P0 Red reports, then accepts a reviewed P1 continuity table and current Green",
+        "when": "Read-only preflight and real checkpoint-run validate history before the normal integration verifier runs",
+        "then": [
+          "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
+          "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-02",
+          "checks": [
+            "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
+            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+          ]
+        },
+        {
+          "criterion_id": "CR-04",
+          "checks": [
+            "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
+            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+          ]
+        },
+        {
+          "criterion_id": "CR-05",
+          "checks": [
+            "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
+            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+          ]
+        },
+        {
+          "criterion_id": "CR-08",
+          "checks": [
+            "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
+            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+          ]
+        }
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/tests/inner_loop_recovery_fixture.py",
+        "_ask/scripts/inner_loop/attempts.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/run.py"
+      ]
+    },
+    {
+      "id": "CR-T60",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-03",
+        "CR-04",
+        "CR-07"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_consumed_receipt_selection_is_atomic",
+      "scenario": {
+        "given": "The retained checkpoint has two interrupted attempts and an immutable consumed attempt-1-to-2 receipt",
+        "when": "A distinct attempt-2-to-3 request is validated with exact checkpoint, plan, source and postimage bindings",
+        "then": [
+          "The consumed receipt remains historical while the new request is selected by transition identity",
+          "Stale or altered requests fail before publication and leave state, checkpoint and receipt history byte-identical"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-03",
+          "checks": [
+            "The consumed receipt remains historical while the new request is selected by transition identity",
+            "Stale or altered requests fail before publication and leave state, checkpoint and receipt history byte-identical"
+          ]
+        },
+        {
+          "criterion_id": "CR-04",
+          "checks": [
+            "The consumed receipt remains historical while the new request is selected by transition identity",
+            "Stale or altered requests fail before publication and leave state, checkpoint and receipt history byte-identical"
+          ]
+        },
+        {
+          "criterion_id": "CR-07",
+          "checks": [
+            "The consumed receipt remains historical while the new request is selected by transition identity",
+            "Stale or altered requests fail before publication and leave state, checkpoint and receipt history byte-identical"
+          ]
+        }
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/tests/inner_loop_recovery_fixture.py",
+        "_ask/scripts/inner_loop/attempts.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/run.py"
+      ]
+    },
+    {
+      "id": "CR-T61",
+      "task_id": "CR-3",
+      "criterion_ids": [
+        "CR-03",
+        "CR-04",
+        "CR-08"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_interrupted_preflight_is_read_only_and_derived",
+      "scenario": {
+        "given": "CR-3 is interrupted with retained coordinator state and exact original/P0 run and ledger records",
+        "when": "The coordinator preflights selected runs before reopen using identities derived from retained state",
+        "then": [
+          "Valid historical and current evidence receives a canonical assessment through the same validator used by finalization",
+          "Stale or invalid evidence is refused and preflight writes no state, checkpoint, ledger, report or task milestone"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CR-03",
+          "checks": [
+            "Valid historical and current evidence receives a canonical assessment through the same validator used by finalization",
+            "Stale or invalid evidence is refused and preflight writes no state, checkpoint, ledger, report or task milestone"
+          ]
+        },
+        {
+          "criterion_id": "CR-04",
+          "checks": [
+            "Valid historical and current evidence receives a canonical assessment through the same validator used by finalization",
+            "Stale or invalid evidence is refused and preflight writes no state, checkpoint, ledger, report or task milestone"
+          ]
+        },
+        {
+          "criterion_id": "CR-08",
+          "checks": [
+            "Valid historical and current evidence receives a canonical assessment through the same validator used by finalization",
+            "Stale or invalid evidence is refused and preflight writes no state, checkpoint, ledger, report or task milestone"
+          ]
+        }
+      ],
+      "runner_id": "continuation-recovery",
+      "source_paths": [
+        "_ask/tests/inner_loop_recovery.py",
+        "_ask/tests/inner_loop_recovery_fixture.py",
+        "_ask/scripts/inner_loop/attempts.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/state.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/driver.py",
+        "_ask/scripts/inner_loop/evidence.py",
+        "_ask/scripts/inner_loop/__main__.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/run.py"
+      ]
     }
   ],
   "task_scopes": [
@@ -2556,7 +2813,11 @@
         "CR-T14",
         "CR-T19",
         "CR-T20",
-        "CR-T21"
+        "CR-T21",
+        "CR-T58",
+        "CR-T59",
+        "CR-T60",
+        "CR-T61"
       ]
     },
     {
