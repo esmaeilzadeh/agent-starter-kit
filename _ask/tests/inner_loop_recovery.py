@@ -214,8 +214,8 @@ class RecoveryTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def _real_traceability_pair(self):
-        """Run the accepted two-case plan on real failing and passing commits."""
+    def _real_traceability_pair(self, runner_count=1):
+        """Run the accepted plan on real failing and passing commits."""
         import shutil
         from verification.traceability.contracts import digest
         from verification.traceability.evidence import accept_plan
@@ -234,20 +234,29 @@ class RecoveryTests(unittest.TestCase):
             "criteria": [{"id": "C1", "given": "a task candidate", "when": "the assertion runs",
                           "then": ["the source value is green"], "verification_mode": "tests"}],
         }
+        runners = ([{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
+                     "adapter": "unittest"}]
+                   if runner_count == 1 else [
+                       {"id": "fixture-a", "argv": ["python", "-m", "unittest", "fixture"],
+                        "adapter": "unittest"},
+                       {"id": "fixture-b", "argv": ["python", "-m", "unittest", "fixture"],
+                        "adapter": "unittest"},
+                   ])
         self.old_plan = {
             "schema": "ask-test-plan/v1", "work_id": "w", "spec_digest": digest(self.spec),
             "obligations": [{"criterion_id": "C1", "required_types": ["integration"]}],
-            "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
-                         "adapter": "unittest"}],
+            "runners": runners,
             "tests": [
                 {"id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
                  "case_id": "tests.test_a", "scenario": {"given": "red source", "when": "test_a runs", "then": ["fails" ]},
                  "expected_assertions": [{"criterion_id": "C1", "checks": ["source is green"]}],
-                 "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new"},
+                 "runner_id": "fixture-a" if runner_count > 1 else "fixture",
+                 "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new"},
                 {"id": "T-B", "task_id": "a", "criterion_ids": ["C1"],
                  "case_id": "tests.test_b", "scenario": {"given": "red source", "when": "test_b runs", "then": ["fails" ]},
                  "expected_assertions": [{"criterion_id": "C1", "checks": ["source is green"]}],
-                 "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new"},
+                 "runner_id": "fixture-b" if runner_count > 1 else "fixture",
+                 "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new"},
             ],
             "task_scopes": [{"task_id": "a", "test_ids": ["T-A", "T-B"]},
                             {"task_id": "b", "test_ids": []}],
@@ -289,7 +298,7 @@ class test_b(unittest.TestCase):
         return red, green
 
     def test_checkpoint_real_red_and_green(self):
-        red, green = self._real_traceability_pair()
+        red, green = self._real_traceability_pair(runner_count=2)
         from inner_loop import evidence
         self.assertTrue(
             callable(getattr(evidence, "checkpoint_run", None)),
@@ -297,6 +306,8 @@ class test_b(unittest.TestCase):
         )
         for report in (red, green):
             evidence.checkpoint_run(self.root, "w", "a", report["run_id"])
+            self.assertEqual({item["runner_id"] for item in report["executions"]},
+                             {"fixture-a", "fixture-b"})
         state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
         recorded = state["tasks"]["a"]["evidence"]["traceability_runs"]
         self.assertEqual([item["run_id"] for item in recorded], [red["run_id"], green["run_id"]])
