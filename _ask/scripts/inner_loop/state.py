@@ -142,7 +142,18 @@ def _preserve_attempt_history(before: dict, after: dict) -> None:
             )
 
 
-def _preserve_attempt_evidence(before: dict, after: dict, *, archive: bool) -> None:
+def _preserve_existing_receipt(old, new) -> bool:
+    """Allow receipt enrichment while preserving every previously recorded value."""
+    if isinstance(old, dict):
+        return isinstance(new, dict) and all(
+            key in new and _preserve_existing_receipt(value, new[key])
+            for key, value in old.items()
+        )
+    return old == new
+
+
+def _preserve_attempt_evidence(before: dict, after: dict, *, archive: bool,
+                               update_review: bool, finalize_verification: bool) -> None:
     """Prevent generic transitions from erasing completed execution milestones."""
     old_tasks = before.get("tasks") or {}
     new_tasks = after.get("tasks") or {}
@@ -164,18 +175,38 @@ def _preserve_attempt_evidence(before: dict, after: dict, *, archive: bool) -> N
             raise ProtocolViolation(
                 f"task {task_id} execution evidence cannot be removed or rewritten"
             )
-        if old_evidence.get("review") and "review" not in new_evidence:
-            raise ProtocolViolation(f"task {task_id} review evidence cannot be removed")
-        old_verification = old_evidence.get("verification") or {}
-        if old_verification.get("result") == "pass":
-            new_verification = new_evidence.get("verification") or {}
-            identity = ("work_id", "task_id", "base_sha", "candidate_sha", "result_digest")
-            if (new_verification.get("result") != "pass"
-                    or any(new_verification.get(key) != old_verification.get(key)
-                           for key in identity)):
+        if "review" in old_evidence:
+            if "review" not in new_evidence or (
+                    not update_review and new_evidence["review"] != old_evidence["review"]):
                 raise ProtocolViolation(
-                    f"task {task_id} verified candidate evidence cannot be removed or rewritten"
+                    f"task {task_id} review evidence cannot be removed or rewritten"
                 )
+        for key, old_value in old_evidence.items():
+            if key in {"traceability_runs", "review", "verification", "verification_record_digest"}:
+                continue
+            if new_evidence.get(key) != old_value:
+                raise ProtocolViolation(
+                    f"task {task_id} evidence field {key} cannot be removed or rewritten"
+                )
+        old_verification = old_evidence.get("verification") or {}
+        if old_verification:
+            new_verification = new_evidence.get("verification") or {}
+            preserved = (
+                _preserve_existing_receipt(old_verification, new_verification)
+                if finalize_verification
+                else new_verification == old_verification
+            )
+            if not preserved:
+                raise ProtocolViolation(
+                    f"task {task_id} verification receipt cannot be removed or rewritten"
+                )
+        if ("verification_record_digest" in old_evidence
+                and not finalize_verification
+                and new_evidence.get("verification_record_digest") !=
+                old_evidence["verification_record_digest"]):
+            raise ProtocolViolation(
+                f"task {task_id} verification receipt digest cannot be removed or rewritten"
+            )
         if old_task.get("status") == "integrated" and new_task.get("status") != "integrated":
             raise ProtocolViolation(f"task {task_id} integrated milestone cannot be rolled back")
 
@@ -192,7 +223,9 @@ def checkpoint_held_state(root: Path, work_id: str, doc: dict) -> dict:
 
 @contextmanager
 def state_transaction(root: Path, work_id: str, observed_revision: int | None = None,
-                      *, archive_attempt_evidence: bool = False):
+                      *, archive_attempt_evidence: bool = False,
+                      update_review: bool = False,
+                      finalize_verification: bool = False):
     """Hold the lock through validation, side effects and one atomic state fold."""
     with state_lock(root, work_id):
         doc = load_state(root, work_id)
@@ -203,7 +236,9 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         _require_reconciled(root, work_id, doc)
         yield doc
         _preserve_attempt_history(before, doc)
-        _preserve_attempt_evidence(before, doc, archive=archive_attempt_evidence)
+        _preserve_attempt_evidence(before, doc, archive=archive_attempt_evidence,
+                                   update_review=update_review,
+                                   finalize_verification=finalize_verification)
         revision = int(doc["revision"])
         if revision < stored:
             raise CasConflict(f"transaction revision moved backwards: started={stored} current={revision}")

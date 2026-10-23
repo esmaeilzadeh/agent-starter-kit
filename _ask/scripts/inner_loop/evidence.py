@@ -400,7 +400,7 @@ def _record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy
         raise NotIntegrable(f'reviewer identity and canonical policy {POLICY} required')
     if verdict not in {'APPROVED', 'REJECTED'} or boundary not in {'ok', 'extras', 'glob_too_narrow'}:
         raise NotIntegrable('invalid review verdict/boundary')
-    with state_transaction(root, work_id) as doc:
+    with state_transaction(root, work_id, update_review=True) as doc:
         candidate = read_candidate(root, work_id, task_id, doc)
         if verdict == 'APPROVED':
             check_integrable(candidate.result)

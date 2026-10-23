@@ -389,7 +389,9 @@ class test_b(unittest.TestCase):
         # API. The reviewed interrupt/reopen path below archives it first.
         self._real_traceability_pair()
         from inner_loop import evidence
-        from inner_loop.state import ProtocolViolation, cas_apply
+        from inner_loop.state import (
+            ProtocolViolation, _preserve_attempt_evidence, cas_apply,
+        )
         state = load_state(self.root, "w")
         ledger = json.loads((self.root / "work/w/traceability/executions.json").read_text())
         green_id = next(row["run_id"] for row in reversed(ledger)
@@ -403,6 +405,32 @@ class test_b(unittest.TestCase):
                       lambda doc: doc["tasks"]["a"].update(evidence={}))
         after = load_state(self.root, "w")["tasks"]["a"]["evidence"]
         self.assertEqual(after, recorded)
+
+        # Exercise each retained identity independently so the run-history
+        # guard cannot mask review or verifier-receipt rewrites.
+        baseline = load_state(self.root, "w")
+        baseline["tasks"]["a"]["evidence"]["review"] = {
+            "reviewer": "independent", "verdict": "APPROVED",
+            "candidate_sha": self.git("rev-parse", "HEAD"),
+            "result_digest": "review-result-digest",
+        }
+        changed_review = copy.deepcopy(baseline)
+        changed_review["tasks"]["a"]["evidence"]["review"]["reviewer"] = "rewritten"
+        with self.assertRaisesRegex(ProtocolViolation, "review evidence.*rewritten"):
+            _preserve_attempt_evidence(baseline, changed_review, archive=False,
+                                       update_review=False, finalize_verification=False)
+
+        baseline["tasks"]["a"]["evidence"]["verification"] = {
+            "result": "pass", "candidate_sha": self.git("rev-parse", "HEAD"),
+            "checks": [{"id": "mandatory", "status": "pass"}],
+            "completion_digest": "completion-receipt-digest",
+        }
+        baseline["tasks"]["a"]["evidence"]["verification_record_digest"] = "record-digest"
+        changed_receipt = copy.deepcopy(baseline)
+        changed_receipt["tasks"]["a"]["evidence"]["verification"]["checks"][0]["status"] = "skipped"
+        with self.assertRaisesRegex(ProtocolViolation, "verification receipt.*rewritten"):
+            _preserve_attempt_evidence(baseline, changed_receipt, archive=False,
+                                       update_review=False, finalize_verification=False)
 
         # The explicit attempt API preserves the exact old evidence before it
         # clears the active attempt, then reopening requires a newly accepted

@@ -105,7 +105,7 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
     if task_id is None:
         raise NotIntegrable('selected task identity is required before integration')
     with workflow_admission(root, work_id, delivery_task_id=task_id), \
-            state_transaction(root, work_id) as doc:
+            state_transaction(root, work_id, finalize_verification=True) as doc:
         running = _running(doc)
         if len(running) != 1 or task_id not in running:
             raise Escalate("explicit selected task is not the unique running task")
