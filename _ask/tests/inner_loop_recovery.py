@@ -2190,6 +2190,18 @@ class test_b(unittest.TestCase):
         state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
         checkpoint_before = read_checkpoint(self.root, "w")[0]
         receipt_before = (self.root / "work/w/inner-loop/evidence/reconciliation-a.json").read_bytes()
+        new_receipt_path = self.root / request_path
+        new_receipt_before = new_receipt_path.read_bytes()
+        altered = copy.deepcopy(request)
+        altered["candidate_sha"] = self.anchor_commit
+        new_receipt_path.write_text(json.dumps(altered, indent=2) + "\n")
+        refused = self.run_cli("reopen", "w", "a", "--reason", "reject altered attempt transition")
+        self.assertNotEqual(refused.returncode, 0, refused.stdout + refused.stderr)
+        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), state_before)
+        self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_before)
+        self.assertEqual((self.root / "work/w/inner-loop/evidence/reconciliation-a.json").read_bytes(), receipt_before)
+        self.assertEqual(new_receipt_path.read_text(), json.dumps(altered, indent=2) + "\n")
+        new_receipt_path.write_bytes(new_receipt_before)
 
         reopened = self.run_cli("reopen", "w", "a", "--reason", "approved attempt 2 to 3 request")
         self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
