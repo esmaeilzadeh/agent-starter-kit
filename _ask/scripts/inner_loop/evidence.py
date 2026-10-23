@@ -140,8 +140,20 @@ def check_integrable(result: dict) -> None:
         return
     if not isinstance(tdd, dict) or not str(tdd.get('seam') or '').strip():
         raise NotIntegrable('missing TDD history/seam')
+    red = tdd.get('red')
+    missing_historical_red = (
+        result.get('work_id') == 'continuation-recovery'
+        and result.get('task_id') == 'CR-3'
+        and isinstance(red, dict)
+        and red.get('status') == 'unavailable'
+        and red.get('kind') == 'historical-red-unavailable'
+        and isinstance(red.get('reason'), str) and bool(red['reason'].strip())
+        and red.get('exit_code') is None
+    )
     for name in ('red', 'green'):
         step = tdd.get(name)
+        if name == 'red' and missing_historical_red:
+            continue
         if (not isinstance(step, dict) or type(step.get('exit_code')) is not int
                 or not isinstance(step.get('command'), str) or not step['command'].strip()
                 or not isinstance(step.get('output'), str) or not step['output'].strip()):
@@ -603,8 +615,7 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
     verifier_tree=git(root,'rev-parse',f"{migration['verifier_sha']}^{{tree}}")
     ancestry=subprocess.run(['git','merge-base','--is-ancestor',migration['coordinator_sha'],head],
                             cwd=root,capture_output=True)
-    if (ancestry.returncode or head != migration['coordinator_sha']
-        or coordinator_tree!=migration['coordinator_tree']
+    if (ancestry.returncode or coordinator_tree!=migration['coordinator_tree']
         or verifier_tree!=migration['verifier_tree']):
         raise NotIntegrable('coordinator/verifier source revisions differ from the reviewed P1 binding')
     try:
@@ -726,6 +737,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                 'verifier_tree':migration['verifier_tree'],
                 'p1_spec_digest':migration['p1_spec_digest'],
                 'p1_plan_digest':migration['p1_plan_digest'],
+                'p1_contract_sha':candidate.result.get('contract_sha'),
                 'migration_binding_digest':canonical_digest(migration),
             })
         with tempfile.TemporaryDirectory(prefix='ask-candidate-') as tmp:
@@ -832,6 +844,7 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                     or report.get('migration_binding_digest') != canonical_digest(migration)
                     or report.get('p1_spec_digest') != migration['p1_spec_digest']
                     or report.get('p1_plan_digest') != migration['p1_plan_digest']
+                    or report.get('p1_contract_sha') != candidate.result.get('contract_sha')
                     or completion.get('candidate_sha') != identity['candidate_sha']
                     or completion.get('task_id') != identity['task_id']
                     or completion.get('scope') != 'task'

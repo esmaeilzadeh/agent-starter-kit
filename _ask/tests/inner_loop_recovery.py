@@ -5,6 +5,7 @@ import json
 import hashlib
 import os
 import copy
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -216,7 +217,6 @@ class RecoveryTests(unittest.TestCase):
 
     def _real_traceability_pair(self, runner_count=1, old_runner=False, run_reports=True):
         """Run the accepted plan on real failing and passing commits."""
-        import shutil
         from verification.traceability.contracts import digest
         from verification.traceability.evidence import accept_plan
 
@@ -2201,6 +2201,265 @@ class test_b(unittest.TestCase):
             self.root, "w", current_contracts, current_sha, "workstream", None)
         self.assertIn(red["run_id"], {item["run_id"] for item in workstream_selected})
         self.assertNotIn(red["run_id"], {item["run_id"] for item in workstream_rejected})
+
+        self._cr3_normal_integration_fixture()
+
+    def _cr3_normal_integration_fixture(self):
+        """Run the accepted P1 C/V boundary through the normal coordinator integration."""
+        import shutil
+        from verification.traceability.contracts import digest
+
+        work_id, task_id = "continuation-recovery", "CR-3"
+        root = Path(self.temp.name) / "cr3-integration"
+        subprocess.run(["git", "clone", "--shared", "--no-checkout", str(REPO), str(root)],
+                       check=True, capture_output=True, text=True)
+        def git(*args):
+            return subprocess.check_output(["git", *args], cwd=root, text=True,
+                                           stderr=subprocess.PIPE).strip()
+        git("config", "user.email", "cr3-integration@example.test")
+        git("config", "user.name", "CR3 Integration Fixture")
+        coordinator_sha = git("rev-parse", "refs/heads/agent/continuation-recovery")
+        original_base = "2c508ff4248f16a3e3121d33a0fae7297c9b378e"
+        self.assertEqual(git("merge-base", "--is-ancestor", original_base, coordinator_sha), "")
+        p0_authority = subprocess.check_output(
+            ["git", "rev-parse", "refs/ask/accepted-tests/continuation-recovery"],
+            cwd=REPO, text=True,
+        ).strip()
+        git("update-ref", "refs/ask/accepted-tests/continuation-recovery", p0_authority)
+        git("switch", "-qc", "task/CR-3", coordinator_sha)
+
+        decision_path = "work/continuation-recovery/cr3-scoped-decision-record.md"
+        decision_raw = subprocess.check_output(["git", "show", f"{coordinator_sha}:{decision_path}"], cwd=root)
+        decision_digest = hashlib.sha256(decision_raw).hexdigest()
+        declaration = {
+            "work_id": work_id, "task_id": task_id, "test_id": "CR-T21",
+            "kind": "historical-red-unavailable", "decision_artifact": decision_path,
+            "decision_digest": decision_digest,
+            "missing_red": "The approved P1 disposition records that no retained Red exists for this case.",
+        }
+        spec = json.loads(subprocess.check_output(
+            ["git", "show", f"{coordinator_sha}:specs/current/continuation-recovery.json"],
+            cwd=root, text=True))
+        plan = json.loads(subprocess.check_output(
+            ["git", "show", f"{coordinator_sha}:work/continuation-recovery/test-plan.json"],
+            cwd=root, text=True))
+        plan["tests"] = [test for test in plan["tests"]
+                         if test.get("task_id") != task_id or test.get("id") == "CR-T21"]
+        for obligation in plan.get("obligations", []):
+            obligation["required_types"] = ["integration"]
+        for scope in plan["task_scopes"]:
+            if scope.get("task_id") == task_id:
+                scope["test_ids"] = ["CR-T21"]
+        plan["runners"].append({"id": "fixture", "argv": ["python3", "-m", "unittest", "t21_fixture"],
+                                "adapter": "unittest"})
+        t21 = next(test for test in plan["tests"] if test["id"] == "CR-T21")
+        t21.update({"case_id": "t21_fixture.T21.test_behavior", "runner_id": "fixture",
+                    "source_paths": ["src/t21-value"]})
+        plan["historical_red_exceptions"] = [declaration]
+        pin0 = json.loads(subprocess.check_output(
+            ["git", "show", f"{p0_authority}:accepted.json"], cwd=root, text=True))
+        def source_inventory(prefix):
+            names = git("ls-tree", "-r", "--name-only", coordinator_sha, "--", prefix).splitlines()
+            return {name: hashlib.sha256(subprocess.check_output(
+                ["git", "show", f"{coordinator_sha}:{name}"], cwd=root)).hexdigest()
+                    for name in names if name.endswith(".py")}
+        migration = {
+            "work_id": work_id, "task_id": task_id,
+            "coordinator_sha": coordinator_sha,
+            "coordinator_tree": git("rev-parse", f"{coordinator_sha}^{{tree}}"),
+            "verifier_sha": coordinator_sha,
+            "verifier_tree": git("rev-parse", f"{coordinator_sha}^{{tree}}"),
+            "original_base_sha": original_base,
+            "p1_spec_digest": digest(spec), "p1_plan_digest": digest(plan),
+            "p0_plan_digest": pin0["plan_digest"],
+            "p0_review_identity": pin0["reviewer"],
+            "p0_review_digest": pin0["plan_review_digest"],
+            "scope_decision_artifact": decision_path,
+            "scope_decision_digest": decision_digest,
+            "integration_output_schema": "ask-integration-evidence/v1",
+            "source_review_artifact": "work/continuation-recovery/cr3-cv-review.json",
+        }
+        source_review = {
+            "decision": "APPROVED", "reviewer": "fixture-independent-source-reviewer",
+            "coordinator_sha": coordinator_sha,
+            "coordinator_tree": migration["coordinator_tree"],
+            "verifier_sha": coordinator_sha, "verifier_tree": migration["verifier_tree"],
+            "original_base_sha": original_base, "p0_plan_digest": pin0["plan_digest"],
+            "review_identity": pin0["reviewer"], "review_digest": pin0["plan_review_digest"],
+            "coordinator_source_digests": source_inventory("_ask/scripts/inner_loop"),
+            "verifier_source_digests": source_inventory(".agents/ask/verification"),
+        }
+        (root / migration["source_review_artifact"]).parent.mkdir(parents=True, exist_ok=True)
+        review_raw = json.dumps(source_review, sort_keys=True, separators=(",", ":")).encode()
+        (root / migration["source_review_artifact"]).write_bytes(review_raw)
+        migration["source_review_digest"] = hashlib.sha256(review_raw).hexdigest()
+        p1_review = {
+            "decision": "APPROVED", "reviewer": "fixture-independent-plan-reviewer",
+            "spec_digest": digest(spec), "plan_digest": digest(plan),
+            "historical_red_exceptions": [declaration],
+            "coordinator_migration": migration,
+        }
+        review_path = root / "work/continuation-recovery/cr3-p1-plan-review.json"
+        review_path.parent.mkdir(parents=True, exist_ok=True)
+        review_path.write_text(json.dumps(p1_review, sort_keys=True) + "\n")
+        (root / "specs/current/continuation-recovery.json").write_text(json.dumps(spec, sort_keys=True) + "\n")
+        (root / "work/continuation-recovery/test-plan.json").write_text(json.dumps(plan, sort_keys=True) + "\n")
+        (root / "t21_fixture.py").write_text(
+            "import pathlib, unittest\n"
+            "class T21(unittest.TestCase):\n"
+            "    def test_behavior(self): self.assertEqual(pathlib.Path('src/t21-value').read_text(), 'expected\\n')\n"
+        )
+        (root / ".agents/verification.yaml").write_text(
+            "schema: ask-checkplan/v1\nno_production_datastore: true\n"
+            "checks:\n  - id: required\n    tier: mandatory\n    command: 'true'\n")
+        git("add", "specs/current/continuation-recovery.json",
+            "work/continuation-recovery/test-plan.json",
+            migration["source_review_artifact"],
+            "work/continuation-recovery/cr3-p1-plan-review.json",
+            "t21_fixture.py", ".agents/verification.yaml")
+        git("commit", "-qm", "prepare disposable reviewed P1 C/V integration contract")
+        contract_sha = git("rev-parse", "HEAD")
+        from verification.traceability.evidence import accept_plan, write_json
+        accepted = accept_plan(root, work_id, contract_sha, p1_review["reviewer"],
+                               "fixture-coordinator", "work/continuation-recovery/cr3-p1-plan-review.json")
+        write_json(root / "work/continuation-recovery/traceability-accepted.json", accepted)
+        git("add", "work/continuation-recovery/traceability-accepted.json")
+        git("commit", "-qm", "accept disposable reviewed P1 contract")
+        contract_checkout_sha = git("rev-parse", "HEAD")
+        (root / "src/t21-value").parent.mkdir(parents=True, exist_ok=True)
+        (root / "src/t21-value").write_text("expected\n")
+        git("add", "src/t21-value")
+        git("commit", "-qm", "implement passing disposable CR-T21 candidate")
+        candidate_sha = git("rev-parse", "HEAD")
+        from verification.traceability.adapters import run_tests
+        green = run_tests(root, {"spec": spec, "plan": plan}, candidate_sha,
+                          "task", task_id, "final_green")
+
+        # Keep one real historical CR-3 Red report in the disposable runtime.
+        # Integration must checkpoint it byte-for-byte even though P1 no longer
+        # selects that historical test as a current task milestone.
+        historical_run_id = "b50dd24e0ef04a2aacff4c4a26db4dd5"
+        historical_relative = f"work/{work_id}/traceability/runs/{historical_run_id}/results.json"
+        historical_raw = (REPO / historical_relative).read_bytes()
+        historical_report = json.loads(historical_raw)
+        self.assertEqual(historical_report["run_id"], historical_run_id)
+        historical_target = root / historical_relative
+        historical_target.parent.mkdir(parents=True, exist_ok=True)
+        historical_target.write_bytes(historical_raw)
+        executions_path = root / f"work/{work_id}/traceability/executions.json"
+        executions_raw = (REPO / f"work/{work_id}/traceability/executions.json").read_bytes()
+        executions = json.loads(executions_raw)
+        executions_path.write_text(json.dumps(executions, indent=2) + "\n")
+
+        git("branch", "-f", "agent/continuation-recovery", contract_checkout_sha)
+        git("switch", "-q", "agent/continuation-recovery")
+        from inner_loop.state import _publish_state, load_state
+        graph = load_graph(root, work_id)
+        state_tasks = {}
+        for item in graph["tasks"]:
+            tid = item["id"]
+            state_tasks[tid] = {
+                "status": "integrated" if tid in {"CR-1", "CR-2"} else "pending",
+                "base_sha": "", "task_branch": "", "result_path": "",
+                "boundary_reject": None, "review_round": 0, "debug_round": 0,
+                "evidence": {}, "attempt_number": 0, "attempt_id": "",
+                "accepted_plan_ref": "", "accepted_plan_digest": "",
+                "attempt_started_revision": None, "attempt_history": [],
+            }
+        state_tasks[task_id].update({
+            "status": "running", "base_sha": original_base, "task_branch": "task/CR-3",
+            "attempt_number": 1, "attempt_id": "CR-3:attempt-1",
+            "attempt_started_revision": 1,
+            "accepted_plan_ref": "refs/ask/accepted-tests/continuation-recovery",
+            "accepted_plan_digest": accepted["plan_digest"],
+        })
+        state = {"schema": "ask-inner-loop-state/v1", "work_id": work_id, "revision": 1,
+                 "coordinator_sha": contract_checkout_sha,
+                 "coordinator_branch": "agent/continuation-recovery", "tasks": state_tasks}
+        _publish_state(root, work_id, state)
+        result = {
+            "schema": "ask-task-result/v2", "work_id": work_id, "task_id": task_id,
+            "base_sha": original_base, "candidate_sha": candidate_sha,
+            "contract_sha": accepted["contract_sha"],
+            "tdd": {"seam": "src/t21-value",
+                    "red": {"status": "unavailable", "kind": "historical-red-unavailable",
+                            "reason": "The accepted P1 plan records the approved unavailable-history disposition.",
+                            "exit_code": None},
+                    "green": {"command": "python3 -m unittest t21_fixture",
+                              "output": "CR-T21 passed", "exit_code": 0}},
+            "exemption": None,
+        }
+        result_path = root / "work/continuation-recovery/inner-loop/results/CR-3.json"
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.write_text(json.dumps(result) + "\n")
+        from verification.traceability.evidence import inventory, record_test_review, source_digests
+        contracts = __import__("verification.traceability.evidence", fromlist=["load_accepted"]).load_accepted(
+            root, work_id, candidate_sha, candidate_sha)
+        actual = inventory(root, accepted["contract_sha"], candidate_sha, plan)
+        test_review = {
+            "schema": "ask-test-review/v2", "reviewer": "fixture-independent-test-reviewer",
+            "candidate_sha": candidate_sha, "base_sha": accepted["contract_sha"],
+            "spec_digest": digest(spec), "plan_digest": digest(plan),
+            "scope": "task", "task_id": task_id, "test_ids": ["CR-T21"],
+            "criterion_ids": t21["criterion_ids"],
+            "source_digests": source_digests(root, candidate_sha, plan, ["CR-T21"]),
+            "inspected_sources": actual["inspected_sources"], "changed_cases": actual["changed_cases"],
+            "inventory_exclusions": {name: "Fixture assertions are covered by CR-T21."
+                                     for name in actual["unmapped_cases"]},
+            "criteria": [{"id": criterion, "coverage_decision": "APPROVED",
+                          "assessment": "The accepted task case observes the required value.",
+                          "type_adequacy": {"integration": {"decision": "APPROVED",
+                              "assessment": "The trusted runner executes the committed candidate."}}}
+                         for criterion in t21["criterion_ids"]],
+            "tests": [{"id": "CR-T21", "decision": "APPROVED",
+                       "assertion_assessment": "The committed value is checked against a literal.",
+                       "counterexample": "A different value fails the assertion.",
+                       "tdd_continuity_assessment": "T21 is green under its exact approved historical-Red disposition."}],
+        }
+        test_review_path = "work/continuation-recovery/traceability/test-review.json"
+        write_json(root / test_review_path, test_review)
+        record_test_review(root, work_id, candidate_sha, candidate_sha, test_review_path,
+                           "fixture-coordinator", review_document=test_review)
+        from inner_loop.evidence import record_review
+        semantic_path = root / "work/continuation-recovery/inner-loop/evidence/review.md"
+        semantic_path.parent.mkdir(parents=True, exist_ok=True)
+        semantic_path.write_text("Reviewer: fixture-independent-test-reviewer; APPROVED\n")
+        try:
+            record_review(root, work_id, task_id, "fixture-independent-test-reviewer",
+                          "_ask/policies/delegation.md",
+                          "work/continuation-recovery/inner-loop/evidence/review.md")
+        except Exception as exc:
+            self.fail(f"normal coordinator review admission refused the fixture: "
+                      f"{getattr(exc, 'report', exc)}")
+        from inner_loop.driver import integrate_ready
+        integrated_sha = integrate_ready(root, work_id, task_id)
+        self.assertEqual(integrated_sha, candidate_sha)
+        final_state = load_state(root, work_id)
+        task = final_state["tasks"][task_id]
+        self.assertEqual(task["status"], "integrated")
+        receipt = task["evidence"]["verification"]
+        self.assertEqual(receipt["base_sha"], original_base)
+        self.assertEqual(receipt["candidate_sha"], candidate_sha)
+        self.assertEqual(receipt["resulting_sha"], candidate_sha)
+        self.assertEqual(receipt["coordinator_sha"], coordinator_sha)
+        self.assertEqual(receipt["verifier_sha"], coordinator_sha)
+        self.assertEqual(receipt["coordinator_tree"], git("rev-parse", f"{coordinator_sha}^{{tree}}"))
+        self.assertEqual(receipt["verifier_tree"], git("rev-parse", f"{coordinator_sha}^{{tree}}"))
+        self.assertEqual(receipt["p1_spec_digest"], accepted["spec_digest"])
+        self.assertEqual(receipt["p1_plan_digest"], accepted["plan_digest"])
+        self.assertEqual(receipt["p1_contract_sha"], accepted["contract_sha"])
+        self.assertTrue(receipt["traceability_run_ids"])
+        for run_id in receipt["traceability_run_ids"]:
+            run = json.loads((root / f"work/{work_id}/traceability/runs/{run_id}/results.json").read_text())
+            self.assertEqual(run["candidate_sha"], candidate_sha)
+            self.assertEqual(run["plan_digest"], accepted["plan_digest"])
+        self.assertEqual(final_state["coordinator_sha"], candidate_sha)
+        from inner_loop.checkpoint import read_checkpoint
+        checkpoint = read_checkpoint(root, work_id)
+        self.assertIsNotNone(checkpoint)
+        checkpoint_files = checkpoint[2]
+        self.assertEqual(checkpoint_files[f"artifacts/{historical_relative}"], historical_raw)
+        self.assertIn(f"artifacts/work/{work_id}/traceability/executions.json", checkpoint_files)
 
     def test_consumed_receipt_selection_is_atomic(self):
         from inner_loop.checkpoint import read_checkpoint
