@@ -349,10 +349,38 @@ class test_b(unittest.TestCase):
     def test_crash_after_verification_or_ff(self):
         self.test_crash_around_checkpoint_publication()
         from _ask.tests.inner_loop_reliability import IntegrationTests
+        from inner_loop import driver
         result = unittest.TestResult()
-        IntegrationTests(
-            "test_resume_preserves_candidate_after_ff_before_state_fold_interruption"
-        ).run(result)
+
+        class PostFastForwardRecoveryCase(IntegrationTests):
+            def test_interrupt_after_real_fast_forward(self):
+                original_integrate = driver.git_integrate
+
+                def integrate_then_interrupt(*args, **kwargs):
+                    sha = original_integrate(*args, **kwargs)
+                    raise RuntimeError("injected interruption after fast-forward " + sha)
+
+                driver.git_integrate = integrate_then_interrupt
+                try:
+                    with self.assertRaisesRegex(RuntimeError, "after fast-forward"):
+                        super().test_fast_forward_matches_verified_candidate()
+                finally:
+                    driver.git_integrate = original_integrate
+
+                self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)
+                retained = read_checkpoint(self.root, "w")
+                self.assertIsNotNone(retained)
+                task = retained[1]["tasks"]["a"]
+                self.assertEqual(task["status"], "running")
+                self.assertEqual(task["evidence"]["verification"]["candidate_sha"], self.candidate)
+                self.assertEqual(retained[1]["coordinator_sha"], self.base)
+
+                driver.integrate_ready(self.root, "w", "a")
+                recovered = load_state(self.root, "w")
+                self.assertEqual(recovered["tasks"]["a"]["status"], "integrated")
+                self.assertEqual(recovered["coordinator_sha"], self.candidate)
+
+        PostFastForwardRecoveryCase("test_interrupt_after_real_fast_forward").run(result)
         self.assertEqual(result.errors, [])
         self.assertEqual(result.failures, [])
 
