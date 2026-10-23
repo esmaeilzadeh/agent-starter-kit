@@ -2212,6 +2212,7 @@ class test_b(unittest.TestCase):
         self.assertNotEqual(read_checkpoint(self.root, "w")[0], checkpoint_before)
 
     def test_interrupted_preflight_is_read_only_and_derived(self):
+        from inner_loop.checkpoint import read_checkpoint
         red, _green = self._real_traceability_pair()
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "preflight before reopen")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
@@ -2228,6 +2229,31 @@ class test_b(unittest.TestCase):
         self.assertEqual(report["task_id"], "a")
         self.assertTrue(report["read_only"])
         self.assertIn("assessment", report)
+
+        # A worker run produced after interruption is registered in the
+        # append-only ledger but is not part of the archived attempt yet.
+        from verification.traceability.adapters import run_tests
+        from verification.traceability.evidence import load_accepted
+        candidate = self.git("rev-parse", "HEAD")
+        contracts = load_accepted(self.root, "w", candidate, candidate)
+        current = run_tests(self.root, contracts, candidate, "task", "a", "final_green")
+        new_run_id = current["run_id"]
+        checkpoint_sha = read_checkpoint(self.root, "w")[0]
+        cache = state_path.read_bytes()
+        state_path.unlink()
+        missing_cache = self.run_cli("preflight-run", "w", "a", "--run-id", new_run_id)
+        self.assertEqual(missing_cache.returncode, 0, missing_cache.stdout + missing_cache.stderr)
+        self.assertFalse(state_path.exists(), "preflight must not restore a missing runtime cache")
+        self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_sha)
+
+        older = json.loads(cache)
+        older["revision"] -= 1
+        state_path.write_text(json.dumps(older, indent=2) + "\n")
+        older_cache = state_path.read_bytes()
+        old_cache_result = self.run_cli("preflight-run", "w", "a", "--run-id", new_run_id)
+        self.assertEqual(old_cache_result.returncode, 0, old_cache_result.stdout + old_cache_result.stderr)
+        self.assertEqual(state_path.read_bytes(), older_cache, "preflight must not advance an older cache")
+        state_path.write_bytes(cache)
 
 
 if __name__ == "__main__":

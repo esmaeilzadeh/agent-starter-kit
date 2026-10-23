@@ -145,7 +145,8 @@ def check_integrable(result: dict) -> None:
             raise NotIntegrable(f'{name} did not {"fail" if name == "red" else "pass"}')
 
 
-def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple[dict, dict]:
+def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
+                   state: dict | None = None) -> tuple[dict, dict]:
     """Validate one complete task run and return its report and canonical ledger row."""
     import re
     if not isinstance(run_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', run_id):
@@ -158,18 +159,24 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
     from verification.traceability.contracts import digest as contract_digest
     from verification.traceability.contracts import file_digest
 
-    state = None
-    from inner_loop.state import load_state
-    state = load_state(root, work_id)
+    if state is None:
+        from inner_loop.state import load_state
+        state = load_state(root, work_id)
     task = (state.get('tasks') or {}).get(task_id) or {}
     base = task.get('base_sha') or ''
     if task.get('status') == 'interrupted':
         histories = [item for item in task.get('attempt_history', [])
                      if any(isinstance(run, dict) and run.get('run_id') == run_id
                             for run in item.get('execution_runs', []))]
-        if len(histories) != 1:
-            raise NotIntegrable('interrupted run is not selected by one retained attempt')
-        base = histories[0].get('base_sha') or ''
+        if len(histories) > 1:
+            raise NotIntegrable('interrupted run is selected by multiple retained attempts')
+        if histories:
+            base = histories[0].get('base_sha') or ''
+        else:
+            attempts = task.get('attempt_history', [])
+            if not attempts:
+                raise NotIntegrable('interrupted run has no retained original task base')
+            base = attempts[-1].get('base_sha') or ''
     if not base or not _commit_is_ancestor(root, base, git(root, 'rev-parse', 'HEAD')):
         raise NotIntegrable('run validation has no valid original/active task base')
 
@@ -354,7 +361,7 @@ def _checkpoint_run_locked(root: Path, work_id: str, task_id: str, run_id: str,
     task = (state.get('tasks') or {}).get(task_id) or {}
     if task.get('status') != 'running':
         raise NotIntegrable('traceability run can only finalize for the active task attempt')
-    report, row = _execution_row(root, work_id, task_id, run_id)
+    report, row = _execution_row(root, work_id, task_id, run_id, state=state)
     traceability = root / 'work' / work_id / 'traceability'
     ledger_path = traceability / 'executions.json'
     ledger_lock = traceability / 'executions.lock'
@@ -415,18 +422,32 @@ def preflight_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
     from inner_loop.checkpoint import read_checkpoint
     from inner_loop.state import load_state
 
-    state = load_state(root, work_id)
+    checkpoint = read_checkpoint(root, work_id)
+    if checkpoint is None:
+        raise NotIntegrable('preflight requires a retained coordinator checkpoint')
+    checkpoint_sha, state, _checkpoint_files = checkpoint
+    state_path = root / 'work' / work_id / 'inner-loop' / 'state.json'
+    cache_status = 'missing'
+    if state_path.exists():
+        try:
+            cached = json.loads(state_path.read_bytes())
+        except (OSError, ValueError) as exc:
+            raise NotIntegrable(f'preflight coordinator cache is unreadable: {exc}') from exc
+        if cached == state:
+            cache_status = 'current'
+        elif (isinstance(cached, dict) and type(cached.get('revision')) is int
+              and cached['revision'] < int(state.get('revision', -1))):
+            cache_status = 'older'
+        else:
+            raise NotIntegrable('preflight coordinator cache conflicts with retained checkpoint')
     task = (state.get('tasks') or {}).get(task_id) or {}
     if task.get('status') != 'interrupted':
         raise NotIntegrable('preflight-run requires an interrupted task')
-    checkpoint = read_checkpoint(root, work_id)
-    if checkpoint is None or checkpoint[1] != state:
-        raise NotIntegrable('coordinator state differs from its retained checkpoint')
-    report, row = _execution_row(root, work_id, task_id, run_id)
+    report, row = _execution_row(root, work_id, task_id, run_id, state=state)
     summaries = [summary for attempt in task.get('attempt_history', [])
                  for summary in attempt.get('execution_runs', [])
                  if isinstance(summary, dict) and summary.get('run_id') == run_id]
-    if len(summaries) != 1 or summaries[0] != row:
+    if summaries and (len(summaries) != 1 or summaries[0] != row):
         raise NotIntegrable('preflight run differs from retained attempt history')
     ledger_path = root / 'work' / work_id / 'traceability' / 'executions.json'
     try:
@@ -440,7 +461,8 @@ def preflight_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
         'work_id': work_id, 'task_id': task_id, 'run_id': run_id,
         'phase': row['phase'], 'candidate_sha': row['candidate_sha'],
         'spec_digest': row['spec_digest'], 'plan_digest': row['plan_digest'],
-        'report_digest': row['digest'], 'checkpoint_sha': checkpoint[0],
+        'report_digest': row['digest'], 'checkpoint_sha': checkpoint_sha,
+        'cache_status': cache_status,
         'assessment': 'original report, pinned runner, accepted contract and retained ledger row agree',
     }
 
