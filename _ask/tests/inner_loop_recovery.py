@@ -577,6 +577,37 @@ class test_b(unittest.TestCase):
                    "checks:\n  - id: fixture\n    tier: mandatory\n    command: 'true'\n")
         _red, green = self._real_traceability_pair(old_runner=True)
         old_sha = load_state(self.root, "w")["tasks"]["a"]["base_sha"]
+        from verification.traceability.contracts import digest
+        from verification.traceability.evidence import (
+            inventory, load_accepted, record_test_review, source_digests, write_json,
+        )
+        contracts = load_accepted(self.root, "w", green["candidate_sha"], green["candidate_sha"])
+        plan = contracts["plan"]
+        actual = inventory(self.root, contracts["pin"]["contract_sha"], green["candidate_sha"], plan)
+        review = {
+            "schema": "ask-test-review/v2", "reviewer": "fixture-independent",
+            "candidate_sha": green["candidate_sha"], "base_sha": old_sha,
+            "spec_digest": digest(contracts["spec"]), "plan_digest": digest(plan),
+            "scope": "task", "task_id": "a", "test_ids": ["T-A", "T-B"],
+            "criterion_ids": ["C1"],
+            "source_digests": source_digests(self.root, green["candidate_sha"], plan, ["T-A", "T-B"]),
+            "inspected_sources": actual["inspected_sources"], "changed_cases": actual["changed_cases"],
+            "inventory_exclusions": {name: "Fixture source is covered by its mapped assertion."
+                                     for name in actual["unmapped_cases"]},
+            "criteria": [{"id": "C1", "coverage_decision": "APPROVED",
+                          "assessment": "Both accepted cases compare source to a literal value.",
+                          "type_adequacy": {"integration": {"decision": "APPROVED",
+                              "assessment": "The trusted runner executes the committed candidate."}}}],
+            "tests": [{"id": test_id, "decision": "APPROVED",
+                       "assertion_assessment": "Compares source against the literal green value.",
+                       "counterexample": "The committed red value fails the assertion.",
+                       "tdd_continuity_assessment": "The same assertion is recorded for red and green."}
+                      for test_id in ("T-A", "T-B")],
+        }
+        review_path = "work/w/traceability/old-runner-review.json"
+        write_json(self.root / review_path, review)
+        record_test_review(self.root, "w", green["candidate_sha"], green["candidate_sha"],
+                           review_path, "fixture-coordinator", review_document=review)
         with tempfile.TemporaryDirectory() as tmp:
             runner, _digest = snapshot_runner(self.root, old_sha, Path(tmp) / "trusted")
             expected = subprocess.check_output(
