@@ -566,6 +566,24 @@ class test_b(unittest.TestCase):
         ledger = self.root / "work/w/traceability/executions.json"
         rows = json.loads(ledger.read_text())
 
+        worker_env = dict(env, ASK_INNER_LOOP_ROLE="worker")
+        worker = subprocess.run(
+            [sys.executable, "-m", "verification.traceability.cli", "--root", str(self.root),
+             "run", "w", "--candidate-sha", self.git("rev-parse", "HEAD"),
+             "--anchor-sha", self.git("rev-parse", "HEAD"), "--scope", "task", "--task-id", "a",
+             "--phase", "final_green"], cwd=self.root, env=worker_env, capture_output=True,
+            text=True, timeout=30,
+        )
+        self.assertEqual(worker.returncode, 0, worker.stdout + worker.stderr)
+        self.assertNotIn("coordinator_finalization", worker.stdout)
+        worker_report = json.loads(worker.stdout)
+        state = load_state(self.root, "w")
+        self.assertNotIn(worker_report["run_id"], {
+            item["run_id"] for item in state["tasks"]["a"]["evidence"]["traceability_runs"]
+        })
+        evidence.checkpoint_run(self.root, "w", "a", worker_report["run_id"])
+        rows = json.loads(ledger.read_text())
+
         # A malformed pending Green must be rejected before repairing its
         # ledger entry or publishing a new coordinator checkpoint.
         green_path = self.root / "work/w/traceability/runs" / green["run_id"] / "results.json"
