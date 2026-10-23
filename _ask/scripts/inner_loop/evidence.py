@@ -161,8 +161,15 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
     state = load_state(root, work_id)
     task = (state.get('tasks') or {}).get(task_id) or {}
     base = task.get('base_sha') or ''
+    if task.get('status') == 'interrupted':
+        histories = [item for item in task.get('attempt_history', [])
+                     if any(isinstance(run, dict) and run.get('run_id') == run_id
+                            for run in item.get('execution_runs', []))]
+        if len(histories) != 1:
+            raise NotIntegrable('interrupted run is not selected by one retained attempt')
+        base = histories[0].get('base_sha') or ''
     if not base or not _commit_is_ancestor(root, base, git(root, 'rev-parse', 'HEAD')):
-        raise NotIntegrable('run finalization has no valid active task base')
+        raise NotIntegrable('run validation has no valid original/active task base')
 
     run_dir = root / 'work' / work_id / 'traceability' / 'runs' / run_id
     try:
@@ -384,6 +391,41 @@ def checkpoint_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
         publish(root, work_id, state)
         _write_state(state_path(root, work_id), state)
     return summary
+
+
+def preflight_run(root: Path, work_id: str, task_id: str, run_id: str) -> dict:
+    """Read-only validation of one run selected from an interrupted attempt."""
+    from inner_loop.checkpoint import read_checkpoint
+    from inner_loop.state import load_state
+
+    state = load_state(root, work_id)
+    task = (state.get('tasks') or {}).get(task_id) or {}
+    if task.get('status') != 'interrupted':
+        raise NotIntegrable('preflight-run requires an interrupted task')
+    checkpoint = read_checkpoint(root, work_id)
+    if checkpoint is None or checkpoint[1] != state:
+        raise NotIntegrable('coordinator state differs from its retained checkpoint')
+    report, row = _execution_row(root, work_id, task_id, run_id)
+    summaries = [summary for attempt in task.get('attempt_history', [])
+                 for summary in attempt.get('execution_runs', [])
+                 if isinstance(summary, dict) and summary.get('run_id') == run_id]
+    if len(summaries) != 1 or summaries[0] != row:
+        raise NotIntegrable('preflight run differs from retained attempt history')
+    ledger_path = root / 'work' / work_id / 'traceability' / 'executions.json'
+    try:
+        rows = json.loads(ledger_path.read_text(encoding='utf-8'))
+    except (OSError, ValueError) as exc:
+        raise NotIntegrable(f'preflight execution ledger is unavailable: {exc}') from exc
+    if not isinstance(rows, list) or rows.count(row) != 1:
+        raise NotIntegrable('preflight run is missing or conflicting in the execution ledger')
+    return {
+        'schema': 'ask-inner-loop-preflight/v1', 'status': 'valid', 'read_only': True,
+        'work_id': work_id, 'task_id': task_id, 'run_id': run_id,
+        'phase': row['phase'], 'candidate_sha': row['candidate_sha'],
+        'spec_digest': row['spec_digest'], 'plan_digest': row['plan_digest'],
+        'report_digest': row['digest'], 'checkpoint_sha': checkpoint[0],
+        'assessment': 'original report, pinned runner, accepted contract and retained ledger row agree',
+    }
 
 
 def artifact(root: Path, name: str) -> tuple[str, str]:
