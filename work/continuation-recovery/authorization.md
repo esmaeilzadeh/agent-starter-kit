@@ -51,3 +51,15 @@ committed source changes to a recorded interrupted attempt before checking
 overlapping dependent-task paths, and the checkpoint must retain that exact
 interrupted candidate commit. No requirement, intent, or product-adoption scope
 changes.
+
+On 2026-10-23, the user approved the bounded CR-3 recovery package in
+`cr3-scoped-decision-proposal.md` (decision record:
+`cr3-scoped-decision-record.md`). This authorizes P0 contract preparation and
+the staged CR-3 recovery sequence only under its independent review, coordinator
+acceptance, and evidence gates. The exact `continuation-recovery` / `CR-3` /
+`CR-T21` historical-Red-unavailable exception may be activated only by a P1
+contract binding the submitted decision record and its digest, followed by
+normal coordinator acceptance. All T21 behavioral checks and current Green
+remain mandatory. The original task base, historical evidence, attempts, and
+consumed receipt remain unchanged. No CR-1/CR-2 reopening, product runtime
+mutation, product adoption, or product scheduling is authorized.
