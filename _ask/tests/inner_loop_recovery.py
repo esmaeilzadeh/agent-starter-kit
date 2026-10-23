@@ -789,12 +789,17 @@ class test_b(unittest.TestCase):
                 self.assertEqual(run_once(self.root, "w"), "running=b")
                 pythonpath = os.pathsep.join((str(self.root / ".agents/ask"), str(SCRIPTS),
                                               os.environ.get("PYTHONPATH", "")))
+                nested_env = dict(
+                    os.environ,
+                    PYTHONPATH=pythonpath,
+                    ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
+                )
                 cli = [sys.executable, "-m", "verification.traceability.cli",
                        "--root", str(self.root)]
                 failed = subprocess.run(
                     cli + ["check-completion", "w", "--candidate-sha", self.candidate,
                            "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b"],
-                    cwd=self.root, env=dict(os.environ, PYTHONPATH=pythonpath),
+                    cwd=self.root, env=nested_env,
                     capture_output=True, text=True,
                 )
                 self.assertEqual(failed.returncode, 1, failed.stdout + failed.stderr)
@@ -806,7 +811,7 @@ class test_b(unittest.TestCase):
                     cli + ["run", "w", "--candidate-sha", self.candidate,
                            "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b",
                            "--phase", "final_green"],
-                    cwd=self.root, env=dict(os.environ, PYTHONPATH=pythonpath),
+                    cwd=self.root, env=nested_env,
                     capture_output=True, text=True,
                 )
                 self.assertEqual(finalized.returncode, 0, finalized.stdout + finalized.stderr)
