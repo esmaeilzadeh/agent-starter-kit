@@ -196,6 +196,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
             or not _candidate_in_task_lineage(root, task, candidate)):
         raise NotIntegrable('traceability candidate is outside the active task ancestry')
 
+    historical_context = None
     try:
         contracts = load_accepted(root, work_id, candidate, candidate)
     except TraceabilityInvalid:
@@ -207,11 +208,9 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
                       and item.get('task_id') == task_id and item.get('run_id') == run_id
                       and item.get('candidate_sha') == candidate
                       and item.get('original_plan_digest') == report.get('plan_digest')]
-        if len(continuity) != 1:
+        if not continuity:
             raise NotIntegrable('historical Red has no exact current continuity decision')
-        decision = continuity[0]
-        if not isinstance(decision.get('behavioral_continuity'), str) or not decision['behavioral_continuity'].strip():
-            raise NotIntegrable('historical Red continuity assessment is missing')
+        historical_context = (current, contracts, continuity, current_sha)
     plan, spec = contracts['plan'], contracts['spec']
     if (report.get('plan_digest') != contract_digest(plan)
             or report.get('spec_digest') != contract_digest(spec)):
@@ -352,6 +351,14 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         'spec_digest': report['spec_digest'],
         'plan_digest': report['plan_digest'],
     }
+    if historical_context:
+        current_contracts, original_contracts, decisions, current_sha = historical_context
+        try:
+            from verification.traceability.evidence import validate_historical_continuity
+            validate_historical_continuity(root, work_id, original_contracts, current_contracts,
+                                           report, ledger_row, decisions, current_sha)
+        except TraceabilityInvalid as exc:
+            raise NotIntegrable(str(exc)) from exc
     return report, ledger_row
 
 
@@ -555,6 +562,80 @@ def snapshot_runner(root: Path, base_sha: str, destination: Path) -> tuple[Path,
     return runner, digest(json.dumps(hashes, sort_keys=True).encode())
 
 
+def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
+    """Resolve only the reviewed P1 coordinator/verifier pair for CR-3."""
+    identity=candidate.identity
+    if (identity.get('work_id')!='continuation-recovery'
+        or identity.get('task_id')!='CR-3'
+        or identity.get('base_sha')!='2c508ff4248f16a3e3121d33a0fae7297c9b378e'):
+        raise NotIntegrable('coordinator migration is limited to the approved CR-3 base and scope')
+    sys.path.insert(0,str(root/'.agents'/'ask'))
+    try:
+        from verification.traceability.evidence import load_accepted
+        accepted=load_accepted(root,'continuation-recovery',identity['candidate_sha'],
+                               identity['candidate_sha'])
+        pin=accepted['pin']
+    except Exception as exc:
+        raise NotIntegrable(f'accepted P1 migration authority is unavailable: {exc}') from exc
+    migration=(pin.get('plan_review') or {}).get('coordinator_migration')
+    required=('coordinator_sha','coordinator_tree','verifier_sha','verifier_tree',
+              'original_base_sha','p1_spec_digest','p1_plan_digest','p0_plan_digest',
+              'p0_review_identity','p0_review_digest','scope_decision_artifact',
+              'scope_decision_digest','integration_output_schema','source_review_artifact',
+              'source_review_digest')
+    if (not isinstance(migration,dict) or any(not isinstance(migration.get(k),str)
+                                               or not migration[k] for k in required)
+        or migration.get('work_id')!='continuation-recovery'
+        or migration.get('task_id')!='CR-3'
+        or migration.get('original_base_sha')!=identity['base_sha']
+        or migration.get('p1_spec_digest')!=pin.get('spec_digest')
+        or migration.get('p1_plan_digest')!=pin.get('plan_digest')
+        or migration.get('integration_output_schema')!='ask-integration-evidence/v1'):
+        raise NotIntegrable('accepted P1 coordinator migration binding is incomplete or stale')
+    head=git(root,'rev-parse','HEAD')
+    coordinator_tree=git(root,'rev-parse',f"{migration['coordinator_sha']}^{{tree}}")
+    verifier_tree=git(root,'rev-parse',f"{migration['verifier_sha']}^{{tree}}")
+    ancestry=subprocess.run(['git','merge-base','--is-ancestor',migration['coordinator_sha'],head],
+                            cwd=root,capture_output=True)
+    if (ancestry.returncode or coordinator_tree!=migration['coordinator_tree']
+        or verifier_tree!=migration['verifier_tree']):
+        raise NotIntegrable('coordinator/verifier source revisions differ from the reviewed P1 binding')
+    try:
+        review_raw=(root/migration['source_review_artifact']).read_bytes()
+        source_review=json.loads(review_raw)
+    except (OSError,ValueError) as exc:
+        raise NotIntegrable('independent coordinator/verifier source review is unavailable') from exc
+    if (hashlib.sha256(review_raw).hexdigest()!=migration['source_review_digest']
+        or source_review.get('decision')!='APPROVED'
+        or source_review.get('coordinator_sha')!=migration['coordinator_sha']
+        or source_review.get('coordinator_tree')!=migration['coordinator_tree']
+        or source_review.get('verifier_sha')!=migration['verifier_sha']
+        or source_review.get('verifier_tree')!=migration['verifier_tree']
+        or not str(source_review.get('reviewer') or '').strip()):
+        raise NotIntegrable('independent source review does not approve the exact C/V identities')
+    coordinator_sources=source_review.get('coordinator_source_digests')
+    verifier_sources=source_review.get('verifier_source_digests')
+    if (not isinstance(coordinator_sources,dict) or not coordinator_sources
+        or not isinstance(verifier_sources,dict) or not verifier_sources):
+        raise NotIntegrable('independent source review omits coordinator/verifier source digests')
+    for name,expected in coordinator_sources.items():
+        for revision in (migration['coordinator_sha'],head):
+            raw=subprocess.run(['git','show',f'{revision}:{name}'],cwd=root,capture_output=True)
+            if raw.returncode or hashlib.sha256(raw.stdout).hexdigest()!=expected:
+                raise NotIntegrable(f'independently reviewed coordinator source changed: {name}')
+    for name,expected in verifier_sources.items():
+        raw=subprocess.run(['git','show',f"{migration['verifier_sha']}:{name}"],cwd=root,
+                           capture_output=True)
+        if raw.returncode or hashlib.sha256(raw.stdout).hexdigest()!=expected:
+            raise NotIntegrable(f'independently reviewed verifier source changed: {name}')
+    decision_raw=subprocess.run(['git','show',f"{pin['contract_sha']}:{migration['scope_decision_artifact']}"],
+                                cwd=root,capture_output=True)
+    if (decision_raw.returncode
+        or hashlib.sha256(decision_raw.stdout).hexdigest()!=migration['scope_decision_digest']):
+        raise NotIntegrable('P1 migration does not bind the submitted human scope decision')
+    return migration
+
+
 def plan_identity(checkout: Path, runner: Path) -> tuple[str, list[dict]]:
     # Resolve plans through pinned imports in a separate process. The current
     # coordinator checkout may already contain candidate changes to those files.
@@ -591,9 +672,30 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                   evidence_path=str((out / 'verification.json').relative_to(root)),
                   log_path=str((out / 'output.log').relative_to(root)))
     try:
+        migration=None
+        verifier_sha=identity['base_sha']
+        if identity.get('work_id')=='continuation-recovery' and identity.get('task_id')=='CR-3':
+            migration=_authorized_cr3_migration(root,candidate)
+            verifier_sha=migration['verifier_sha']
+            historical_runner=subprocess.run(
+                ['git','show',f"{identity['base_sha']}:.agents/ask/verification/traceability/unittest_runner.py"],
+                cwd=root,capture_output=True)
+            if historical_runner.returncode:
+                raise NotIntegrable('original task base has no historical runner identity')
+            report.update({
+                'original_task_base_sha':identity['base_sha'],
+                'historical_runner_digest':hashlib.sha256(historical_runner.stdout).hexdigest(),
+                'coordinator_sha':migration['coordinator_sha'],
+                'coordinator_tree':migration['coordinator_tree'],
+                'verifier_sha':verifier_sha,
+                'verifier_tree':migration['verifier_tree'],
+                'p1_spec_digest':migration['p1_spec_digest'],
+                'p1_plan_digest':migration['p1_plan_digest'],
+                'migration_binding_digest':digest(migration),
+            })
         with tempfile.TemporaryDirectory(prefix='ask-candidate-') as tmp:
-            runner, report['runner_digest'] = snapshot_runner(root, identity['base_sha'], Path(tmp) / 'trusted')
-            report['runner_sha'] = identity['base_sha']
+            runner, report['runner_digest'] = snapshot_runner(root, verifier_sha, Path(tmp) / 'trusted')
+            report['runner_sha'] = verifier_sha
             capability_file=runner.parent/'traceability/__init__.py'
             import ast
             capability=None

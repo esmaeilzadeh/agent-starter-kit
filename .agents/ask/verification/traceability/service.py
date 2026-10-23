@@ -102,11 +102,19 @@ def reports(root,work_id,contracts,sha,scope,task_id):
     matching=[e for e in ledger if e.get('spec_digest')==digest(contracts['spec']) and e.get('plan_digest')==current_plan_digest]
     decisions=[d for d in contracts['plan'].get('historical_red_continuity', [])
                if isinstance(d,dict) and d.get('work_id')==work_id
-               and d.get('task_id')==task_id and d.get('original_plan_digest')]
-    historical=[e for e in ledger if e.get('phase')=='red' and e.get('scope')=='task'
-                and e.get('task_id')==task_id and any(
-                    e.get('run_id')==d.get('run_id') and e.get('candidate_sha')==d.get('candidate_sha')
-                    and e.get('plan_digest')==d.get('original_plan_digest') for d in decisions)]
+               and (scope=='workstream' or d.get('task_id')==task_id)
+               and d.get('original_plan_digest')]
+    historical=[]
+    for entry in ledger:
+        if entry.get('phase')!='red' or entry.get('scope')!='task':continue
+        bound=[d for d in decisions if entry.get('run_id')==d.get('run_id')
+               and entry.get('task_id')==d.get('task_id')
+               and entry.get('candidate_sha')==d.get('candidate_sha')
+               and entry.get('plan_digest')==d.get('original_plan_digest')]
+        if (bound and (scope=='workstream' or entry.get('task_id')==task_id)
+            and all(d.get('report_digest')==entry.get('digest')
+                    and d.get('ledger_row_digest')==digest(entry) for d in bound)):
+            historical.append(entry)
     finals=[e for e in matching if e['phase']=='final_green' and e['candidate_sha']==sha and e['scope']==scope and e['task_id']==task_id]
     selected=[e for e in matching if e['phase']=='red']+historical+finals[-1:]
     docs=[];rejected=[]

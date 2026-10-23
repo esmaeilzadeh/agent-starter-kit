@@ -6,7 +6,8 @@ from . import CAPABILITY
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
 from .coverage import scoped_tests, validate_plan
 from .evidence import (file_digest_bytes, git, read_at, review_errors, source_changes,
-                       source_digests,load_accepted,load_historical_accepted)
+                       source_digests,load_accepted,load_historical_accepted,
+                       validate_historical_continuity)
 
 
 def _require_red_source_ancestor(root, red_sha, candidate_sha):
@@ -79,26 +80,27 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             if not slug(run_id) or run_id in seen_runs:
                 errors.append('invalid or duplicate run identity');continue
             seen_runs.add(run_id)
+            report_task_id=execution_report.get('task_id')
             historical_decisions=[d for d in plan.get('historical_red_continuity', [])
                                   if isinstance(d,dict) and d.get('work_id')==work_id
-                                  and d.get('task_id')==task_id and d.get('run_id')==run_id
+                                  and d.get('task_id')==report_task_id and d.get('run_id')==run_id
                                   and d.get('candidate_sha')==execution_report.get('candidate_sha')
                                   and d.get('original_plan_digest')==execution_report.get('plan_digest')]
-            historical_decision=historical_decisions[0] if len(historical_decisions)==1 else None
+            historical_decisions_by_test={d.get('test_id'):d for d in historical_decisions
+                                          if isinstance(d.get('test_id'),str)}
+            historical_decision=historical_decisions[0] if historical_decisions else None
             retained=load(root/'work'/work_id/'traceability'/'runs'/run_id/'results.json')
             if retained!=execution_report:errors.append(f'{run_id}: report differs from coordinator execution record')
             report_adapter=expected_adapter
             if historical_decision:
                 original=load_historical_accepted(root,work_id,execution_report['candidate_sha'])
-                if (digest(original['spec'])!=execution_report.get('spec_digest')
-                    or digest(original['plan'])!=execution_report.get('plan_digest')):
-                    errors.append(f'{run_id}: historical report differs from its original accepted contract')
-                original_test={t['id']:t for t in original['plan']['tests']}.get(historical_decision.get('test_id'))
-                current_test=test_map.get(historical_decision.get('test_id'))
-                if (not original_test or not current_test
-                    or any(original_test.get(k)!=current_test.get(k) for k in ('case_id','runner_id','source_paths'))
-                    or not text(historical_decision.get('behavioral_continuity'))):
-                    errors.append(f'{run_id}: historical case lacks an applicable reviewed continuity decision')
+                ledger_rows=load(root/'work'/work_id/'traceability'/'executions.json')
+                original_rows=[entry for entry in ledger_rows if entry.get('run_id')==run_id]
+                if len(original_rows)!=1:
+                    errors.append(f'{run_id}: original ledger identity is missing or duplicated')
+                else:
+                    validate_historical_continuity(root,work_id,original,contracts,execution_report,
+                                                   original_rows[0],historical_decisions,sha)
                 report_adapter=file_digest_bytes(read_at(root,execution_report['candidate_sha'],
                     '.agents/ask/verification/traceability/unittest_runner.py'))
             if (execution_report.get('schema')!='ask-test-results/v1'
@@ -120,7 +122,7 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             seen_cases=set()
             for case in execution_report.get('cases',[]):
                 tid=case.get('test_id');test=test_map.get(tid);run=processes.get(case.get('execution_id'))
-                if historical_decision and tid!=historical_decision.get('test_id'):
+                if historical_decision and tid not in historical_decisions_by_test:
                     continue
                 identity=(case.get('runner_id'),case.get('case_id'))
                 if identity in seen_cases:errors.append(f'{run_id}: duplicate case {tid}')
@@ -154,6 +156,8 @@ def evaluate_completion(contracts, review, executions, trusted_context):
         if static.get('result')!='pass' or static.get('candidate_sha')!=sha:errors.append('mandatory static checks missing/failed/stale')
         semantic_tests={t['id']:t for t in semantic.get('tests',[]) if isinstance(t,dict) and 'id' in t}
         semantic_criteria={c['id']:c for c in semantic.get('criteria',[]) if isinstance(c,dict) and 'id' in c}
+        historical_exceptions={item['test_id']:item for item in plan.get('historical_red_exceptions', [])
+                               if isinstance(item,dict)}
         obligations={o['criterion_id']:o['required_types'] for o in plan['obligations']}
         for criterion in spec['criteria']:
             cid=criterion['id'];tests=[t for t in selected if cid in t['criterion_ids']]
@@ -163,10 +167,20 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                 tid=test['id'];green=finals.get(tid);red=reds.get(tid,[])
                 exemption=semantic_tests.get(tid,{}).get('tdd_exemption')
                 if exemption and red:errors.append(f'{tid}: exemption and TDD history are mutually exclusive')
-                tdd='exempt:'+exemption['kind'] if exemption and green else 'regression' if test['change_kind']=='regression' else 'red_green' if red and green else 'missing'
+                historical_exception=historical_exceptions.get(tid)
+                if historical_exception and red:
+                    errors.append(f'{tid}: historical-Red exception conflicts with retained Red')
+                if historical_exception and test['change_kind']!='new':
+                    errors.append(f'{tid}: historical-Red exception applies only to a new test')
+                tdd=('exception:historical-red-unavailable' if historical_exception and green
+                     else 'exempt:'+exemption['kind'] if exemption and green
+                     else 'regression' if test['change_kind']=='regression'
+                     else 'red_green' if red and green else 'missing')
                 if not green or green.get('outcome')!='passed':missing.append({'criterion_id':cid,'required_type':test['type'],'test_id':tid,'reason':'final passing execution missing'})
                 if tdd=='missing':missing.append({'criterion_id':cid,'test_id':tid,'reason':'recognized behavior red and final green required'})
-                evidence.append({'test_id':tid,'case_id':test['case_id'],'type':test['type'],'tdd':tdd,'red':red,'final_execution':green})
+                evidence.append({'test_id':tid,'case_id':test['case_id'],'type':test['type'],'tdd':tdd,
+                                 'historical_red_status':'historical Red unavailable / approved exception' if historical_exception else None,
+                                 'red':red,'final_execution':green})
             rows.append({'criterion_id':cid,'verification_mode':criterion['verification_mode'],'required_types':obligations.get(cid,[]),'review':semantic_criteria.get(cid),'tests':evidence})
         if not errors and not missing:report['status']='pass'
     except (Invalid,OSError,KeyError,TypeError,ValueError,AttributeError) as exc:

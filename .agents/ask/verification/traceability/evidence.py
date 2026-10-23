@@ -86,12 +86,41 @@ def load_accepted(root,work_id,anchor_sha,candidate_sha=None):
         or pin['plan_review'].get('reviewer')!=pin['reviewer']
         or pin['plan_review'].get('spec_digest')!=pin['spec_digest']
         or pin['plan_review'].get('plan_digest')!=pin['plan_digest']):raise Invalid('stale accepted plan review')
+    _validate_historical_red_exception(root, work_id, pin, contracts)
     git(root,'merge-base','--is-ancestor',pin['contract_sha'],candidate_sha or anchor_sha)
     if candidate_sha:
         actual=contracts_at(root,work_id,candidate_sha)
         if any(digest(actual[k])!=pin[k+'_digest'] for k in actual):raise Invalid('candidate changed accepted obligations; reviewed amendment required')
         if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:raise Invalid('candidate changed delegation policy')
     return dict(contracts,pin=pin)
+
+
+def _validate_historical_red_exception(root, work_id, pin, contracts):
+    declarations=contracts['plan'].get('historical_red_exceptions', [])
+    review=pin.get('plan_review') or {}
+    authorized=review.get('historical_red_exceptions', [])
+    if not declarations:
+        if authorized:
+            raise Invalid('plan review authorizes a historical Red exception absent from its contract')
+        return
+    if declarations!=authorized:
+        raise Invalid('historical Red exception is not bound by the accepted plan review')
+    migration=review.get('coordinator_migration')
+    if (not isinstance(migration,dict) or migration.get('work_id')!=work_id
+        or migration.get('task_id')!='CR-3' or work_id!='continuation-recovery'
+        or not text(migration.get('coordinator_sha')) or not text(migration.get('coordinator_tree'))
+        or not text(migration.get('verifier_sha')) or not text(migration.get('verifier_tree'))
+        or migration.get('scope_decision_digest')!=declarations[0].get('decision_digest')):
+        raise Invalid('historical Red exception requires its exact P1 coordinator migration authorization')
+    for item in declarations:
+        if item.get('work_id')!=work_id or item.get('task_id')!='CR-3' or item.get('test_id')!='CR-T21':
+            raise Invalid('historical Red exception exceeds its approved scope')
+        try:
+            raw=read_at(root,pin['contract_sha'],item['decision_artifact'])
+        except Invalid as exc:
+            raise Invalid('historical Red decision artifact is unavailable') from exc
+        if file_digest_bytes(raw)!=item.get('decision_digest'):
+            raise Invalid('historical Red decision artifact digest mismatch')
 
 
 def load_historical_accepted(root, work_id, candidate_sha):
@@ -118,6 +147,70 @@ def load_historical_accepted(root, work_id, candidate_sha):
     if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:
         raise Invalid('historical run candidate changed its accepted policy')
     return dict(contracts,pin=pin)
+
+
+def validate_historical_continuity(root, work_id, original, current, report,
+                                  ledger_row, decisions, current_candidate_sha):
+    """Validate per-case historical Red provenance and reviewed applicability."""
+    import hashlib
+    from .coverage import scoped_tests
+
+    run_id=report.get('run_id')
+    original_candidate=report.get('candidate_sha')
+    original_plan_digest=digest(original['plan'])
+    if (report.get('schema')!='ask-test-results/v1' or report.get('work_id',work_id)!=work_id
+        or report.get('task_id') is None or report.get('scope')!='task'
+        or report.get('plan_digest')!=original_plan_digest
+        or report.get('spec_digest')!=digest(original['spec'])):
+        raise Invalid('historical report identity differs from its original accepted contract')
+    calculated_report_digest=hashlib.sha256(json.dumps(
+        report,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    if (ledger_row.get('run_id')!=run_id or ledger_row.get('candidate_sha')!=original_candidate
+        or ledger_row.get('task_id')!=report.get('task_id') or ledger_row.get('phase')!='red'
+        or ledger_row.get('digest')!=calculated_report_digest):
+        raise Invalid('historical report differs from its original ledger identity')
+    ledger_identity=digest(ledger_row)
+    authority_path=f'work/{work_id}/traceability-accepted.json'
+    authority_object=git(root,'rev-parse',f'{original_candidate}:{authority_path}')
+    original_authority_digest=digest(original['pin'])
+    rows={}
+    for decision in decisions:
+        test_id=decision.get('test_id')
+        if test_id in rows:
+            raise Invalid('duplicate historical continuity decision for one case')
+        rows[test_id]=decision
+    if not rows:
+        raise Invalid('historical run has no per-case continuity decisions')
+    original_tests={t['id']:t for t in scoped_tests(original['plan'],'task',report['task_id'])}
+    current_tests={t['id']:t for t in scoped_tests(current['plan'],'task',report['task_id'])}
+    failures={case.get('test_id'):case for case in report.get('cases',[])
+              if case.get('phase')=='red' and case.get('outcome')=='failed'
+              and case.get('failure_kind')=='behavior_assertion'}
+    expected_reviewer=(current.get('pin') or {}).get('reviewer')
+    for test_id,decision in rows.items():
+        old_test=original_tests.get(test_id);new_test=current_tests.get(test_id)
+        case=failures.get(test_id)
+        if not old_test or not new_test or not case:
+            raise Invalid(f'{test_id}: historical continuity does not identify an original failed case')
+        if (decision.get('work_id')!=work_id or decision.get('task_id')!=report['task_id']
+            or decision.get('run_id')!=run_id or decision.get('candidate_sha')!=original_candidate
+            or decision.get('original_plan_digest')!=original_plan_digest
+            or decision.get('report_digest')!=calculated_report_digest
+            or decision.get('ledger_row_digest')!=ledger_identity
+            or decision.get('original_authority_object')!=authority_object
+            or decision.get('original_authority_digest')!=original_authority_digest
+            or decision.get('original_contract_digest')!=digest(original['pin'])
+            or decision.get('reviewer')!=expected_reviewer
+            or not text(decision.get('behavioral_continuity'))):
+            raise Invalid(f'{test_id}: historical continuity provenance or reviewer binding is stale')
+        if not isinstance(current_candidate_sha,str) or not current_candidate_sha:
+            raise Invalid('historical continuity has no current candidate identity')
+        old_sources=source_digests(root,case['source_sha'],original['plan'],[test_id])
+        new_sources=source_digests(root,current_candidate_sha,current['plan'],[test_id])
+        if (decision.get('original_source_digests')!=old_sources
+            or decision.get('current_source_digests')!=new_sources):
+            raise Invalid(f'{test_id}: historical continuity source identities are stale')
+    return rows
 
 
 def file_digest_bytes(raw):

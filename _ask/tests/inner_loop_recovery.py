@@ -2068,7 +2068,9 @@ class test_b(unittest.TestCase):
         self.assertEqual(self.git("rev-parse", authority_ref), authority_before)
 
     def test_t21_exception_requires_exact_p1_decision(self):
+        from inner_loop.graph import load_graph
         from verification.traceability.coverage import validate_plan
+        from verification.traceability.evidence import load_accepted, _validate_historical_red_exception
 
         self._real_traceability_pair(run_reports=False)
         p0_plan = copy.deepcopy(self.old_plan)
@@ -2082,23 +2084,67 @@ class test_b(unittest.TestCase):
             "P0 must refuse a historical-Red exception even when its declaration looks complete",
         )
 
+        # The same exact scope is structurally representable in P1, but only
+        # when the accepted independent decision binds the approved artifact.
+        approved = json.loads((REPO / "work/continuation-recovery/test-plan.json").read_text())
+        spec = json.loads((REPO / "specs/current/continuation-recovery.json").read_text())
+        decision_digest = "409f38a1120f45f48d6693176e21d0cab93e0107e412614945f09b9c23e44fe8"
+        declaration = {
+            "work_id": "continuation-recovery", "task_id": "CR-3", "test_id": "CR-T21",
+            "kind": "historical-red-unavailable",
+            "decision_artifact": "work/continuation-recovery/cr3-scoped-decision-record.md",
+            "decision_digest": decision_digest,
+            "missing_red": "No retained behavior assertion failure exists for the expanded T21 behavior.",
+        }
+        approved["historical_red_exceptions"] = [declaration]
+        self.assertEqual(validate_plan(spec, approved, load_graph(REPO, "continuation-recovery")), [])
+        current = load_accepted(REPO, "continuation-recovery", "HEAD", "HEAD")
+        pin = copy.deepcopy(current["pin"])
+        pin["plan_review"]["historical_red_exceptions"] = [declaration]
+        pin["plan_review"]["coordinator_migration"] = {
+            "work_id": "continuation-recovery", "task_id": "CR-3",
+            "coordinator_sha": "a" * 40, "coordinator_tree": "b" * 40,
+            "verifier_sha": "c" * 40, "verifier_tree": "d" * 40,
+            "scope_decision_digest": decision_digest,
+        }
+        _validate_historical_red_exception(REPO, "continuation-recovery", pin,
+                                           {"plan": approved})
+        pin["plan_review"]["coordinator_migration"]["task_id"] = "CR-2"
+        with self.assertRaisesRegex(Exception, "exact P1 coordinator migration"):
+            _validate_historical_red_exception(REPO, "continuation-recovery", pin,
+                                               {"plan": approved})
+
     def test_historical_red_continuity_through_checkpoint_and_integration(self):
         from inner_loop import evidence
         from verification.traceability.contracts import digest
         from verification.traceability.evidence import accept_plan
+        from verification.traceability.evidence import load_historical_accepted, source_digests
 
         red, green = self._real_traceability_pair()
         evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
         evidence.checkpoint_run(self.root, "w", "a", green["run_id"])
 
         p1_plan = copy.deepcopy(self.old_plan)
+        original = load_historical_accepted(self.root, "w", red["candidate_sha"])
+        original_ledger = next(row for row in json.loads(
+            (self.root / "work/w/traceability/executions.json").read_text())
+            if row.get("run_id") == red["run_id"])
+        report_digest = hashlib.sha256(json.dumps(
+            red, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         p1_plan["historical_red_continuity"] = [{
-            "work_id": "w", "task_id": "a", "test_id": "T-A",
+            "work_id": "w", "task_id": "a", "test_id": case["test_id"],
             "run_id": red["run_id"], "candidate_sha": red["candidate_sha"],
             "original_plan_digest": red["plan_digest"],
-            "current_green_run_id": green["run_id"],
+            "report_digest": report_digest,
+            "ledger_row_digest": digest(original_ledger),
+            "original_authority_object": self.git("rev-parse", f"{red['candidate_sha']}:work/w/traceability-accepted.json"),
+            "original_authority_digest": digest(original["pin"]),
+            "original_contract_digest": digest(original["pin"]),
+            "original_source_digests": case["source_digests"],
+            "current_source_digests": source_digests(self.root, self.git("rev-parse", "HEAD"), p1_plan, [case["test_id"]]),
+            "reviewer": "fixture-p1-reviewer",
             "behavioral_continuity": "same source-value assertion remains mapped",
-        }]
+        } for case in red["cases"] if case.get("outcome") == "failed"]
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accept reviewed P1 fixture")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
         self.write("work/w/test-plan.json", json.dumps(p1_plan, sort_keys=True))
@@ -2113,6 +2159,14 @@ class test_b(unittest.TestCase):
         )
         self.write("work/w/traceability-accepted.json", json.dumps(accepted, sort_keys=True) + "\n")
         self.commit("commit P1 historical Red authority")
+        from verification.traceability.adapters import run_tests
+        current_sha = self.git("rev-parse", "HEAD")
+        current_green = run_tests(self.root, {"spec": self.spec, "plan": p1_plan},
+                                  current_sha, "task", "a", "final_green")
+        interrupted_preflight = self.run_cli(
+            "preflight-run", "w", "a", "--run-id", current_green["run_id"])
+        self.assertEqual(interrupted_preflight.returncode, 0,
+                         interrupted_preflight.stdout + interrupted_preflight.stderr)
         reopened = self.run_cli("reopen", "w", "a", "--reason", "exercise P1 historical Red")
         self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
 
@@ -2127,12 +2181,14 @@ class test_b(unittest.TestCase):
         self.assertEqual(receipt["phase"], "red")
         self.assertEqual(receipt["candidate_sha"], red["candidate_sha"])
         self.assertEqual(receipt["plan_digest"], red["plan_digest"])
+        evidence.checkpoint_run(self.root, "w", "a", current_green["run_id"])
         from verification.traceability.evidence import load_accepted
         from verification.traceability.service import reports
         current_sha = self.git("rev-parse", "HEAD")
         current_contracts = load_accepted(self.root, "w", current_sha, current_sha)
         selected, rejected = reports(self.root, "w", current_contracts, current_sha, "task", "a")
         self.assertIn(red["run_id"], {item["run_id"] for item in selected})
+        self.assertEqual(sum(item["run_id"] == red["run_id"] for item in selected), 1)
         self.assertNotIn(red["run_id"], {item["run_id"] for item in rejected})
 
     def test_consumed_receipt_selection_is_atomic(self):

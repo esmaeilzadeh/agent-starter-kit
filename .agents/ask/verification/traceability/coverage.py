@@ -1,5 +1,6 @@
 """Validate the whole accepted obligation registry before selecting task scope."""
 from __future__ import annotations
+import re
 from .contracts import TYPES, POLICY, Violation, digest, indexed, safe_path, scenario, slug, string_list, text
 
 
@@ -7,8 +8,6 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
     errors=[]
     if not isinstance(spec,dict) or not isinstance(plan,dict):
         return [Violation('invalid_contract',field='spec/plan')]
-    if 'historical_red_exceptions' in plan:
-        errors.append(Violation('unsupported_historical_red_exception', 'historical_red_exceptions'))
     for doc,name,version in [(spec,'spec','ask-spec/v1'),(plan,'plan','ask-test-plan/v1')]:
         if doc.get('schema')!=version: errors.append(Violation('unsupported_schema',field=name))
         if not slug(doc.get('work_id')): errors.append(Violation('invalid_work_id',field=name))
@@ -74,6 +73,31 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
         if not string_list(ids,nonempty=False) or not set(ids)<=tests.keys(): errors.append(Violation('invalid_task_scope',field=task_id));continue
         assigned.update(ids)
     if graph_ids and assigned!=set(tests): errors.append(Violation('unassigned_tests'))
+    if 'historical_red_exceptions' in plan:
+        declarations=plan.get('historical_red_exceptions')
+        if not isinstance(declarations,list) or not declarations:
+            errors.append(Violation('invalid_historical_red_exception'))
+        else:
+            seen_exceptions=set()
+            for item in declarations:
+                if not isinstance(item,dict):
+                    errors.append(Violation('invalid_historical_red_exception'))
+                    continue
+                identity=(item.get('work_id'),item.get('task_id'),item.get('test_id'))
+                test=tests.get(item.get('test_id'))
+                if (identity!=('continuation-recovery','CR-3','CR-T21')
+                    or plan.get('work_id')!='continuation-recovery'
+                    or not test or test.get('task_id')!='CR-3' or test.get('change_kind')!='new'
+                    or item.get('kind')!='historical-red-unavailable'
+                    or not text(item.get('decision_artifact'))
+                    or not safe_path(item.get('decision_artifact'))
+                    or not isinstance(item.get('decision_digest'),str)
+                    or not re.fullmatch(r'[0-9a-f]{64}',item.get('decision_digest',''))
+                    or not text(item.get('missing_red'))):
+                    errors.append(Violation('unsupported_historical_red_exception',field=str(identity)))
+                if identity in seen_exceptions:
+                    errors.append(Violation('duplicate_historical_red_exception',field=str(identity)))
+                seen_exceptions.add(identity)
     exceptions=plan.get('task_scoped_baseline_regression_exemptions',{})
     if not isinstance(exceptions,dict):
         errors.append(Violation('invalid_baseline_regression_exemptions'))
