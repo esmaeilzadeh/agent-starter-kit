@@ -7,6 +7,8 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
     errors=[]
     if not isinstance(spec,dict) or not isinstance(plan,dict):
         return [Violation('invalid_contract',field='spec/plan')]
+    if 'historical_red_exceptions' in plan:
+        errors.append(Violation('unsupported_historical_red_exception', 'historical_red_exceptions'))
     for doc,name,version in [(spec,'spec','ask-spec/v1'),(plan,'plan','ask-test-plan/v1')]:
         if doc.get('schema')!=version: errors.append(Violation('unsupported_schema',field=name))
         if not slug(doc.get('work_id')): errors.append(Violation('invalid_work_id',field=name))
