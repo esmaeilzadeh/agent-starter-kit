@@ -344,12 +344,84 @@ class test_b(unittest.TestCase):
         )
 
     def test_stale_review_preserves_execution(self):
-        self.test_new_candidate_preserves_stale_rejected_review_history()
+        from _ask.tests.inner_loop_reliability import IntegrationTests
+        from inner_loop.evidence import NotIntegrable, read_candidate, validate_review
+        result = unittest.TestResult()
+
+        class ApprovedReviewCase(IntegrationTests):
+            def test_approved_review_cannot_be_reused_after_result_changes(self):
+                self.review()
+                before = load_state(self.root, "w")
+                task_before = before["tasks"]["a"]
+                execution_before = list(task_before["evidence"].get("traceability_runs", []))
+                review_before = copy.deepcopy(task_before["evidence"]["review"])
+
+                # Change a value bound by the approved review while retaining
+                # the same candidate. The old approval and run history must
+                # stay recorded, but it cannot authorize the altered result.
+                self.result["notes"] = "result changed after approval"
+                self.submit()
+                current = load_state(self.root, "w")
+                candidate = read_candidate(self.root, "w", "a", current)
+                with self.assertRaisesRegex(NotIntegrable, "stale coordinator-recorded review"):
+                    validate_review(self.root, current["tasks"]["a"], candidate)
+
+                retained = load_state(self.root, "w")["tasks"]["a"]["evidence"]
+                self.assertEqual(retained["review"], review_before)
+                self.assertEqual(retained.get("traceability_runs", []), execution_before)
+                self.assertNotIn("verification", retained)
+
+        ApprovedReviewCase("test_approved_review_cannot_be_reused_after_result_changes").run(result)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
 
     def test_crash_after_verification_or_ff(self):
         self.test_crash_around_checkpoint_publication()
         from _ask.tests.inner_loop_reliability import IntegrationTests
         from inner_loop import driver
+        result = unittest.TestResult()
+
+        class PreFastForwardRecoveryCase(IntegrationTests):
+            def test_interrupt_after_verification_before_fast_forward(self):
+                self.task_branch()
+                self.review()
+                original_integrate = driver.git_integrate
+
+                def interrupt_before_fast_forward(*args, **kwargs):
+                    raise RuntimeError("injected interruption before fast-forward")
+
+                driver.git_integrate = interrupt_before_fast_forward
+                try:
+                    with self.assertRaisesRegex(RuntimeError, "before fast-forward"):
+                        driver.integrate_ready(self.root, "w", "a")
+                finally:
+                    driver.git_integrate = original_integrate
+
+                retained = read_checkpoint(self.root, "w")
+                self.assertIsNotNone(retained)
+                task = retained[1]["tasks"]["a"]
+                receipt = task["evidence"]["verification"]
+                self.assertEqual(task["status"], "running")
+                self.assertEqual(receipt["result"], "pass")
+                self.assertEqual(receipt["candidate_sha"], self.candidate)
+                self.assertEqual(retained[1]["coordinator_sha"], self.base)
+                self.assertEqual(self.git("rev-parse", "HEAD"), self.base)
+
+                driver.integrate_ready(self.root, "w", "a")
+                recovered = load_state(self.root, "w")
+                self.assertEqual(recovered["tasks"]["a"]["status"], "integrated")
+                self.assertEqual(recovered["coordinator_sha"], self.candidate)
+                recovered_receipt = recovered["tasks"]["a"]["evidence"]["verification"]
+                for key in ("candidate_sha", "completion_digest", "static_receipt_digest",
+                            "traceability_run_ids", "result_digest"):
+                    self.assertEqual(recovered_receipt[key], receipt[key], key)
+
+        PreFastForwardRecoveryCase(
+            "test_interrupt_after_verification_before_fast_forward"
+        ).run(result)
+        self.assertEqual(result.errors, [])
+        self.assertEqual(result.failures, [])
+
         result = unittest.TestResult()
 
         class PostFastForwardRecoveryCase(IntegrationTests):
@@ -947,42 +1019,21 @@ class test_b(unittest.TestCase):
             self.assertEqual(recorded, final_ids)
 
     def test_interrupt_and_reopen_preserve_attempt_history(self):
-        self.write("accepted.json", json.dumps({"plan_review": {"plan_digest": "plan-before"}}) + "\n")
-        self.commit("accepted plan review identity")
-        self.git("update-ref", "refs/ask/accepted-tests/w", self.git("rev-parse", "HEAD"))
-        started = self.run_cli("run", "w")
-        self.assertEqual(started.returncode, 0, started.stdout + started.stderr)
-        self.assertIn("running=a", started.stdout)
-
+        red, green = self._real_traceability_pair()
+        from inner_loop import evidence
+        from verification.traceability.contracts import digest
+        from verification.traceability.evidence import accept_plan, write_json
+        for report in (red, green):
+            evidence.checkpoint_run(self.root, "w", "a", report["run_id"])
         state_path = self.root / "work/w/inner-loop/state.json"
         before = json.loads(state_path.read_text(encoding="utf-8"))
         old_plan_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
-        execution_rows = [
-            {
-                "run_id": "old-red-1",
-                "digest": "1" * 64,
-                "phase": "red",
-                "scope": "task",
-                "task_id": "a",
-                "candidate_sha": self.anchor_commit,
-                "spec_digest": "spec-before",
-                "plan_digest": "plan-before",
-            },
-            {
-                "run_id": "old-red-2",
-                "digest": "2" * 64,
-                "phase": "red",
-                "scope": "task",
-                "task_id": "a",
-                "candidate_sha": self.anchor_commit,
-                "spec_digest": "spec-before",
-                "plan_digest": "plan-before",
-            },
-        ]
-        ledger = self.root / "work/w/traceability/executions.json"
-        ledger.parent.mkdir(parents=True, exist_ok=True)
-        ledger.write_text(json.dumps(execution_rows) + "\n", encoding="utf-8")
-        publish(self.root, "w", before)
+        accepted_before = json.loads(
+            (self.root / "work/w/traceability-accepted.json").read_text(encoding="utf-8")
+        )
+        execution_rows = json.loads(
+            (self.root / "work/w/traceability/executions.json").read_text(encoding="utf-8")
+        )
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accepted plan amendment")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
 
@@ -995,8 +1046,12 @@ class test_b(unittest.TestCase):
         self.assertEqual(prior["base_sha"], before["tasks"]["a"]["base_sha"])
         self.assertEqual(prior["reason"], "accepted plan amendment")
         self.assertEqual(prior["accepted_plan_ref"], old_plan_ref)
-        self.assertEqual(prior.get("accepted_plan_digest"), "plan-before")
+        self.assertEqual(prior.get("accepted_plan_digest"), accepted_before["plan_digest"])
         self.assertEqual(prior["execution_runs"], execution_rows)
+        self.assertEqual({row["run_id"] for row in prior["execution_runs"]},
+                         {red["run_id"], green["run_id"]})
+        self.assertEqual(prior["evidence"]["traceability_runs"],
+                         before["tasks"]["a"]["evidence"]["traceability_runs"])
         self.assertTrue(prior["attempt_id"])
 
         # A generic CAS cannot erase the attempt that interrupt_task archived.
@@ -1020,10 +1075,22 @@ class test_b(unittest.TestCase):
             task["attempt_history"],
         )
 
-        self.write("accepted.json", json.dumps({"plan_review": {"plan_digest": "plan-after"}}) + "\n")
-        self.commit("accept amended test obligations")
-        new_plan_ref = self.git("rev-parse", "HEAD")
-        self.git("update-ref", "refs/ask/accepted-tests/w", new_plan_ref)
+        amended_plan = copy.deepcopy(self.old_plan)
+        amended_plan["tests"][0]["scenario"]["then"] = ["updated accepted assertion outcome"]
+        self.write("work/w/test-plan.json", json.dumps(amended_plan, sort_keys=True))
+        self.commit("amend accepted test obligations")
+        plan_review = {
+            "decision": "APPROVED", "reviewer": "fixture-plan-reviewer",
+            "spec_digest": digest(self.spec), "plan_digest": digest(amended_plan),
+        }
+        write_json(self.root / "work/w/traceability/plan-review.json", plan_review)
+        accepted_after = accept_plan(
+            self.root, "w", "HEAD", "fixture-plan-reviewer", "fixture-coordinator",
+            "work/w/traceability/plan-review.json",
+        )
+        write_json(self.root / "work/w/traceability-accepted.json", accepted_after)
+        self.commit("accept reviewed amended test obligations")
+        new_plan_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
         reopened = self.run_cli("reopen", "w", "a", "--reason", "amended plan accepted")
         self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
         resumed = json.loads(state_path.read_text(encoding="utf-8"))
@@ -1031,7 +1098,7 @@ class test_b(unittest.TestCase):
         self.assertEqual(current["status"], "running")
         self.assertNotEqual(current["attempt_id"], prior["attempt_id"])
         self.assertEqual(current["accepted_plan_ref"], new_plan_ref)
-        self.assertEqual(current.get("accepted_plan_digest"), "plan-after")
+        self.assertEqual(current.get("accepted_plan_digest"), accepted_after["plan_digest"])
         self.assertEqual(current["attempt_history"], task["attempt_history"])
         self.assertEqual(current["attempt_history"][0]["reason"], "accepted plan amendment")
 
