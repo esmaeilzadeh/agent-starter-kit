@@ -498,6 +498,55 @@ class test_b(unittest.TestCase):
 
     def test_standalone_run_finalization_interruptions(self):
         red, green = self._real_traceability_pair()
+        from inner_loop import evidence
+
+        def interrupted_standalone(hook):
+            run_root = self.root / "work/w/traceability/runs"
+            before = {path.name for path in run_root.iterdir()}
+            env = dict(os.environ, ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
+                       ASK_TRACEABILITY_CRASH_AT=hook,
+                       PYTHONPATH=os.pathsep.join((str(self.root / ".agents/ask"), str(SCRIPTS),
+                                                   os.environ.get("PYTHONPATH", ""))))
+            proc = subprocess.run(
+                [sys.executable, "-m", "verification.traceability.cli", "--root", str(self.root),
+                 "run", "w", "--candidate-sha", self.git("rev-parse", "HEAD"),
+                 "--anchor-sha", self.git("rev-parse", "HEAD"), "--scope", "task", "--task-id", "a",
+                 "--phase", "final_green"], cwd=self.root, env=env, capture_output=True, text=True,
+                timeout=30,
+            )
+            self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            added = {path.name for path in run_root.iterdir()} - before
+            self.assertEqual(len(added), 1, f"{hook} should leave one complete report: {added}")
+            return next(iter(added))
+
+        report_only_id = interrupted_standalone("after_report_publication")
+        ledger = self.root / "work/w/traceability/executions.json"
+        rows = json.loads(ledger.read_text())
+        self.assertNotIn(report_only_id, {row["run_id"] for row in rows})
+        evidence.checkpoint_run(self.root, "w", "a", report_only_id)
+
+        ledger_only_id = interrupted_standalone("after_ledger_insertion")
+        rows = json.loads(ledger.read_text())
+        self.assertIn(ledger_only_id, {row["run_id"] for row in rows})
+        evidence.checkpoint_run(self.root, "w", "a", ledger_only_id)
+
+        crash_env = dict(os.environ, PYTHONPATH=os.pathsep.join(
+            part for part in (str(SCRIPTS), os.environ.get("PYTHONPATH", "")) if part
+        ), ASK_INNER_LOOP_CRASH_AT="after_ref_publication")
+        killed = subprocess.run(
+            [sys.executable, "-m", "inner_loop", "--root", str(self.root),
+             "checkpoint-run", "w", "a", "--run-id", ledger_only_id],
+            cwd=self.root, env=crash_env, capture_output=True, text=True, timeout=30,
+        )
+        self.assertEqual(killed.returncode, 76, killed.stdout + killed.stderr)
+        retained = read_checkpoint(self.root, "w")
+        self.assertIn(ledger_only_id, {
+            item["run_id"] for item in retained[1]["tasks"]["a"]["evidence"]["traceability_runs"]
+        })
+        self.assertIn(ledger_only_id, {
+            item["run_id"] for item in load_state(self.root, "w")["tasks"]["a"]["evidence"]["traceability_runs"]
+        })
+
         env = dict(os.environ)
         # This child is the fixture's standalone coordinator, even when the
         # enclosing test is running under a verifier's detached candidate.
@@ -519,7 +568,6 @@ class test_b(unittest.TestCase):
 
         # A malformed pending Green must be rejected before repairing its
         # ledger entry or publishing a new coordinator checkpoint.
-        from inner_loop import evidence
         green_path = self.root / "work/w/traceability/runs" / green["run_id"] / "results.json"
         green_original = green_path.read_bytes()
         ledger_original = ledger.read_bytes()
@@ -586,7 +634,7 @@ class test_b(unittest.TestCase):
         actual = inventory(self.root, contracts["pin"]["contract_sha"], green["candidate_sha"], plan)
         review = {
             "schema": "ask-test-review/v2", "reviewer": "fixture-independent",
-            "candidate_sha": green["candidate_sha"], "base_sha": old_sha,
+            "candidate_sha": green["candidate_sha"], "base_sha": contracts["pin"]["contract_sha"],
             "spec_digest": digest(contracts["spec"]), "plan_digest": digest(plan),
             "scope": "task", "task_id": "a", "test_ids": ["T-A", "T-B"],
             "criterion_ids": ["C1"],
@@ -704,6 +752,15 @@ class test_b(unittest.TestCase):
         self.assertEqual(prior.get("accepted_plan_digest"), "plan-before")
         self.assertEqual(prior["execution_runs"], execution_rows)
         self.assertTrue(prior["attempt_id"])
+
+        # A generic CAS cannot erase the attempt that interrupt_task archived.
+        from inner_loop.state import ProtocolViolation, cas_apply
+        before_rollback = load_state(self.root, "w")
+        with self.assertRaisesRegex(ProtocolViolation, "attempt history cannot be removed or rewritten"):
+            cas_apply(self.root, "w", before_rollback["revision"],
+                      lambda doc: doc["tasks"]["a"].update(attempt_history=[]))
+        self.assertEqual(load_state(self.root, "w")["tasks"]["a"]["attempt_history"],
+                         before_rollback["tasks"]["a"]["attempt_history"])
 
         quiescent = self.run_cli("run", "w")
         self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
@@ -1322,7 +1379,7 @@ class test_b(unittest.TestCase):
         checkpoint = self._checkpoint_ref()
         self.assertIsNotNone(checkpoint, "writer transitions must publish retained checkpoints")
         for ref in self.git("for-each-ref", "--format=%(refname)").splitlines():
-            if ref != "refs/ask/inner-loop/w":
+            if ref not in {"refs/ask/inner-loop/w", "refs/heads/agent/w"}:
                 self.git("update-ref", "-d", ref)
         self.git("reflog", "expire", "--expire=now", "--all")
         self.git("gc", "--prune=now")
@@ -1334,21 +1391,39 @@ class test_b(unittest.TestCase):
         self.assertTrue(bundle.is_file())
 
         imported = Path(self.temp.name) / "imported"
-        self.git("clone", "-q", "--bare", str(self.root), str(imported))
+        self.git("clone", "-q", "--no-local", str(self.root), str(imported))
+        subprocess.run(["git", "update-ref", "-d", "refs/ask/inner-loop/w"],
+                       cwd=imported, check=False)
+        imported_env = {**os.environ, "PYTHONPATH": os.pathsep.join(
+            part for part in (str(SCRIPTS), os.environ.get("PYTHONPATH", "")) if part
+        )}
+        missing = subprocess.run(
+            [sys.executable, "-m", "inner_loop", "--root", str(imported), "status", "w"],
+            cwd=imported, env=imported_env, capture_output=True, text=True,
+        )
+        self.assertEqual(missing.returncode, 2, missing.stdout + missing.stderr)
+        self.assertEqual(json.loads(missing.stdout)["status"], "recovery_required")
+        self.assertIn("no runtime attempt record", missing.stdout)
+        self.assertNotIn("integrated", missing.stdout)
         result = subprocess.run(
             [sys.executable, "-m", "inner_loop", "--root", str(imported),
              "checkpoint-import", "w", str(bundle)],
             cwd=imported,
-            env={**os.environ, "PYTHONPATH": os.pathsep.join(
-                part for part in (str(SCRIPTS), os.environ.get("PYTHONPATH", "")) if part
-            )},
+            env=imported_env,
             capture_output=True,
             text=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint)
-        self.assertEqual(self.git("--git-dir", str(imported), "rev-parse",
+        self.assertEqual(self.git("-C", str(imported), "rev-parse",
                                   "refs/ask/inner-loop/w"), checkpoint)
+        restored = subprocess.run(
+            [sys.executable, "-m", "inner_loop", "--root", str(imported), "status", "w"],
+            cwd=imported, env=imported_env, capture_output=True, text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stdout + restored.stderr)
+        self.assertIn("revision=", restored.stdout)
+        self.assertIn("a\trunning", restored.stdout)
 
     def test_isolated_repair_initialization_and_legacy_handoff(self):
         fixture = Path(self.temp.name) / "legacy-product"
