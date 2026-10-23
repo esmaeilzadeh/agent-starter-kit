@@ -614,6 +614,51 @@ class test_b(unittest.TestCase):
                     "later derived verifier/review artifacts must coexist with exact retained evidence",
                 )
 
+                # Exercise the production continuation path: task B runs a
+                # real failed completion check after A was integrated, then
+                # its passing test run must still finalize into the coordinator
+                # checkpoint. The new checkpoint must retain A's historical
+                # passing receipt even though completion.json now projects B's
+                # failed check.
+                from inner_loop.driver import run_once
+                self.assertEqual(run_once(self.root, "w"), "running=b")
+                pythonpath = os.pathsep.join((str(self.root / ".agents/ask"), str(SCRIPTS),
+                                              os.environ.get("PYTHONPATH", "")))
+                cli = [sys.executable, "-m", "verification.traceability.cli",
+                       "--root", str(self.root)]
+                failed = subprocess.run(
+                    cli + ["check-completion", "w", "--candidate-sha", self.candidate,
+                           "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b"],
+                    cwd=self.root, env=dict(os.environ, PYTHONPATH=pythonpath),
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(failed.returncode, 1, failed.stdout + failed.stderr)
+                self.assertEqual(json.loads(failed.stdout)["status"], "fail")
+                failed_projection = json.loads(completion.read_text(encoding="utf-8"))
+                self.assertEqual(failed_projection["status"], "fail")
+
+                finalized = subprocess.run(
+                    cli + ["run", "w", "--candidate-sha", self.candidate,
+                           "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b",
+                           "--phase", "final_green"],
+                    cwd=self.root, env=dict(os.environ, PYTHONPATH=pythonpath),
+                    capture_output=True, text=True,
+                )
+                self.assertEqual(finalized.returncode, 0, finalized.stdout + finalized.stderr)
+                run_document = json.loads(finalized.stdout)
+                self.assertEqual(run_document["coordinator_finalization"]["task_id"], "b")
+                self.assertEqual(run_document["coordinator_finalization"]["phase"], "final_green")
+                advanced = read_checkpoint(self.root, "w")
+                self.assertIsNotNone(advanced)
+                self.assertEqual(advanced[1]["tasks"]["a"]["status"], "integrated")
+                self.assertEqual(advanced[1]["tasks"]["b"]["evidence"]["traceability_runs"][-1]["phase"],
+                                 "final_green")
+                self.assertEqual(
+                    _checkpointed_verification(self.root, "w", advanced[1], advanced),
+                    historical,
+                    "advancing the checkpoint must preserve the earlier passing receipt chain",
+                )
+
         try:
             NestedFinalizationCase("test_nested_real_reports_are_finalized_by_parent").run(result)
         finally:

@@ -167,6 +167,43 @@ def _scope_test_ids(plan: dict, task_id: str) -> set[str] | None:
     return set(ids) if all(isinstance(item, str) for item in ids) else None
 
 
+def _checkpoint_artifact_with_digest(root: Path, work_id: str,
+                                     checkpoint: tuple[str, dict, dict[str, bytes]] | None,
+                                     relative: str, expected_digest: str) -> bytes | None:
+    """Find exact artifact bytes in the authenticated checkpoint ancestry."""
+    from inner_loop.checkpoint import read_checkpoint
+
+    current = checkpoint or read_checkpoint(root, work_id)
+    seen: set[str] = set()
+    artifact_key = "artifacts/" + relative
+    while current is not None:
+        commit = current[0]
+        if commit in seen:
+            return None
+        seen.add(commit)
+        content = current[2].get(artifact_key)
+        if (isinstance(content, bytes)
+                and hashlib.sha256(content).hexdigest() == expected_digest):
+            return content
+        raw_manifest = _git_bytes(root, "show", f"{commit}:checkpoint.json")
+        try:
+            manifest = json.loads(raw_manifest) if raw_manifest is not None else None
+        except (UnicodeDecodeError, ValueError):
+            return None
+        if not isinstance(manifest, dict) or manifest.get("work_id") != work_id:
+            return None
+        previous = manifest.get("previous_checkpoint")
+        if previous is None:
+            return None
+        if not isinstance(previous, str):
+            return None
+        try:
+            current = read_checkpoint(root, work_id, previous)
+        except (OSError, ValueError, RuntimeError):
+            return None
+    return None
+
+
 def _checkpointed_verification(root: Path, work_id: str, state: dict | None,
                                checkpoint: tuple[str, dict, dict[str, bytes]] | None = None) -> dict | None:
     """Return a passing verifier receipt whose bytes are bound to retained state."""
@@ -206,7 +243,16 @@ def _checkpointed_verification(root: Path, work_id: str, state: dict | None,
                     or hashlib.sha256(raw).hexdigest() != record_digest
                     or json.loads(raw) != verification):
                 continue
-            completion = retained_or_live(f"work/{work_id}/traceability/completion.json")
+            completion_path = f"work/{work_id}/traceability/completion.json"
+            completion = retained_or_live(completion_path)
+            expected_completion_digest = verification.get("completion_digest")
+            if (hashlib.sha256(completion).hexdigest() != expected_completion_digest
+                    and isinstance(expected_completion_digest, str)):
+                completion = _checkpoint_artifact_with_digest(
+                    root, work_id, checkpoint, completion_path, expected_completion_digest,
+                )
+                if completion is None:
+                    continue
             static = retained_or_live(
                 f"work/{work_id}/traceability/static-{verification['candidate_sha']}.json")
         except (KeyError, OSError, ValueError):
