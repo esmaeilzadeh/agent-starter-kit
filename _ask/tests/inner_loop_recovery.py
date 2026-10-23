@@ -2067,6 +2067,145 @@ class test_b(unittest.TestCase):
         self.assertEqual({name: (self.root / name).read_bytes() for name in legacy_files}, state_before)
         self.assertEqual(self.git("rev-parse", authority_ref), authority_before)
 
+    def test_t21_exception_requires_exact_p1_decision(self):
+        from verification.traceability.coverage import validate_plan
+
+        self._real_traceability_pair(run_reports=False)
+        p0_plan = copy.deepcopy(self.old_plan)
+        p0_plan["historical_red_exceptions"] = [{
+            "work_id": "w", "task_id": "a", "test_id": "T-A",
+            "decision_digest": "1" * 64, "accepted_plan": self.anchor_commit,
+        }]
+        violations = validate_plan(self.spec, p0_plan, load_graph(self.root, "w"))
+        self.assertTrue(
+            violations,
+            "P0 must refuse a historical-Red exception even when its declaration looks complete",
+        )
+
+    def test_historical_red_continuity_through_checkpoint_and_integration(self):
+        from inner_loop import evidence
+        from verification.traceability.contracts import digest
+        from verification.traceability.evidence import accept_plan
+
+        red, green = self._real_traceability_pair()
+        evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
+        evidence.checkpoint_run(self.root, "w", "a", green["run_id"])
+
+        p1_plan = copy.deepcopy(self.old_plan)
+        p1_plan["historical_red_continuity"] = [{
+            "work_id": "w", "task_id": "a", "test_id": "T-A",
+            "run_id": red["run_id"], "candidate_sha": red["candidate_sha"],
+            "original_plan_digest": red["plan_digest"],
+            "current_green_run_id": green["run_id"],
+            "behavioral_continuity": "same source-value assertion remains mapped",
+        }]
+        self.write("work/w/test-plan.json", json.dumps(p1_plan, sort_keys=True))
+        self.commit("accept P1 historical Red continuity fixture")
+        review_path = "work/w/traceability/plan-review.json"
+        self.write(review_path, json.dumps({
+            "decision": "APPROVED", "reviewer": "fixture-p1-reviewer",
+            "spec_digest": digest(self.spec), "plan_digest": digest(p1_plan),
+        }))
+        accepted = accept_plan(
+            self.root, "w", "HEAD", "fixture-p1-reviewer", "fixture-coordinator", review_path,
+        )
+        self.write("work/w/traceability-accepted.json", json.dumps(accepted, sort_keys=True) + "\n")
+        self.commit("commit P1 historical Red authority")
+
+        try:
+            receipt = evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
+        except Exception as exc:
+            self.fail(
+                "the exact P1 continuity row must admit original Red through checkpoint-run "
+                f"without rewriting its report or ledger identity: {exc}"
+            )
+        self.assertEqual(receipt["run_id"], red["run_id"])
+        self.assertEqual(receipt["phase"], "red")
+        self.assertEqual(receipt["candidate_sha"], red["candidate_sha"])
+        self.assertEqual(receipt["plan_digest"], red["plan_digest"])
+
+    def test_consumed_receipt_selection_is_atomic(self):
+        from inner_loop.checkpoint import read_checkpoint
+        from inner_loop.state import load_state
+        from verification.traceability.contracts import digest
+        from verification.traceability.evidence import accept_plan
+
+        # Reuse the established attempt-1 -> attempt-2 fixture, then create a
+        # distinct, reviewed attempt-2 -> attempt-3 source transition.
+        self.test_interrupt_and_reopen_preserve_attempt_history()
+        interrupted = self.run_cli("interrupt", "w", "a", "--reason", "preserve attempt 2")
+        self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
+        prior_state = load_state(self.root, "w")
+        prior = prior_state["tasks"]["a"]["attempt_history"][-1]
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        self.write("src/a.py", "candidate = True\n# attempt 3 reviewed source\n")
+        p1_plan = copy.deepcopy(self.old_plan)
+        p1_plan["tests"][0]["scenario"]["then"] = ["attempt 3 exact assertion"]
+        self.write("work/w/test-plan.json", json.dumps(p1_plan, sort_keys=True))
+        self.commit("accept attempt 3 test plan")
+        review_path = "work/w/traceability/plan-review.json"
+        self.write(review_path, json.dumps({
+            "decision": "APPROVED", "reviewer": "fixture-attempt-3-reviewer",
+            "spec_digest": digest(self.spec), "plan_digest": digest(p1_plan),
+        }))
+        accepted = accept_plan(
+            self.root, "w", "HEAD", "fixture-attempt-3-reviewer", "fixture-coordinator", review_path,
+        )
+        self.write("work/w/traceability-accepted.json", json.dumps(accepted, sort_keys=True) + "\n")
+        self.commit("commit attempt 3 accepted plan")
+        candidate = self.git("rev-parse", "HEAD")
+        source_bytes = (self.root / "src/a.py").read_bytes()
+        request = {
+            "schema": "ask-inner-loop-reconciliation/v1", "work_id": "w", "task_id": "a",
+            "previous_checkpoint_sha": checkpoint[0], "previous_revision": prior_state["revision"],
+            "previous_attempt_id": prior["attempt_id"],
+            "interrupted_candidate_sha": prior["interrupted_candidate_sha"],
+            "new_attempt_id": "a:attempt-3",
+            "accepted_plan_ref": self.git("rev-parse", "refs/ask/accepted-tests/w"),
+            "accepted_plan_digest": accepted["plan_digest"],
+            "new_attempt_base_sha": prior_state["coordinator_sha"], "candidate_sha": candidate,
+            "recorded_by": "fixture-coordinator",
+            "source_postimage": {"src/a.py": hashlib.sha256(source_bytes).hexdigest()},
+        }
+        payload = json.dumps(request, sort_keys=True, separators=(",", ":")).encode()
+        request["review"] = {
+            "decision": "APPROVED", "reviewer": "fixture-attempt-3-reviewer",
+            "candidate_sha": candidate, "payload_sha256": hashlib.sha256(payload).hexdigest(),
+        }
+        request_path = "work/w/inner-loop/evidence/reconciliation-a-attempt-2-to-3.json"
+        self.write(request_path, json.dumps(request, indent=2) + "\n")
+        state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        checkpoint_before = read_checkpoint(self.root, "w")[0]
+        receipt_before = (self.root / "work/w/inner-loop/evidence/reconciliation-a.json").read_bytes()
+
+        reopened = self.run_cli("reopen", "w", "a", "--reason", "approved attempt 2 to 3 request")
+        self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
+        state_after = load_state(self.root, "w")
+        self.assertEqual(state_after["tasks"]["a"]["attempt_id"], "a:attempt-3")
+        self.assertEqual((self.root / "work/w/inner-loop/evidence/reconciliation-a.json").read_bytes(), receipt_before)
+        self.assertNotEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), state_before)
+        self.assertNotEqual(read_checkpoint(self.root, "w")[0], checkpoint_before)
+
+    def test_interrupted_preflight_is_read_only_and_derived(self):
+        self.start_candidate()
+        interrupted = self.run_cli("interrupt", "w", "a", "--reason", "preflight before reopen")
+        self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state_before = state_path.read_bytes()
+        checkpoint_before = read_checkpoint(self.root, "w")[0]
+
+        result = self.run_cli("preflight-run", "w", "a", "--run-id", "retained-run")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(state_path.read_bytes(), state_before)
+        self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_before)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["work_id"], "w")
+        self.assertEqual(report["task_id"], "a")
+        self.assertTrue(report["read_only"])
+        self.assertIn("assessment", report)
+
 
 if __name__ == "__main__":
     unittest.main()
