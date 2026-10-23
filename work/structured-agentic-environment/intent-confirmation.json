@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v1",
-  "work_id": "structured-agentic-environment",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "dab76c788368a38710c62ae59b707d2e20ba8ea6808e63dc6276e9163de0838d",
-  "human_response": "approve"
-}
