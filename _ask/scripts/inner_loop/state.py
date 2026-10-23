@@ -142,6 +142,44 @@ def _preserve_attempt_history(before: dict, after: dict) -> None:
             )
 
 
+def _preserve_attempt_evidence(before: dict, after: dict, *, archive: bool) -> None:
+    """Prevent generic transitions from erasing completed execution milestones."""
+    old_tasks = before.get("tasks") or {}
+    new_tasks = after.get("tasks") or {}
+    for task_id, old_task in old_tasks.items():
+        new_task = new_tasks.get(task_id) or {}
+        old_evidence = old_task.get("evidence") or {}
+        new_evidence = new_task.get("evidence") or {}
+        if archive and new_task.get("status") == "interrupted":
+            old_history = old_task.get("attempt_history") or []
+            new_history = new_task.get("attempt_history") or []
+            if (len(new_history) == len(old_history) + 1
+                    and new_history[:len(old_history)] == old_history
+                    and new_history[-1].get("evidence") == old_evidence):
+                continue
+        old_runs = old_evidence.get("traceability_runs") or []
+        new_runs = new_evidence.get("traceability_runs") or []
+        if old_runs and (not isinstance(new_runs, list)
+                         or new_runs[:len(old_runs)] != old_runs):
+            raise ProtocolViolation(
+                f"task {task_id} execution evidence cannot be removed or rewritten"
+            )
+        if old_evidence.get("review") and "review" not in new_evidence:
+            raise ProtocolViolation(f"task {task_id} review evidence cannot be removed")
+        old_verification = old_evidence.get("verification") or {}
+        if old_verification.get("result") == "pass":
+            new_verification = new_evidence.get("verification") or {}
+            identity = ("work_id", "task_id", "base_sha", "candidate_sha", "result_digest")
+            if (new_verification.get("result") != "pass"
+                    or any(new_verification.get(key) != old_verification.get(key)
+                           for key in identity)):
+                raise ProtocolViolation(
+                    f"task {task_id} verified candidate evidence cannot be removed or rewritten"
+                )
+        if old_task.get("status") == "integrated" and new_task.get("status") != "integrated":
+            raise ProtocolViolation(f"task {task_id} integrated milestone cannot be rolled back")
+
+
 def checkpoint_held_state(root: Path, work_id: str, doc: dict) -> dict:
     """Durably publish a transition while its state_transaction lock is held."""
     _require_coordinator()
@@ -153,7 +191,8 @@ def checkpoint_held_state(root: Path, work_id: str, doc: dict) -> dict:
 
 
 @contextmanager
-def state_transaction(root: Path, work_id: str, observed_revision: int | None = None):
+def state_transaction(root: Path, work_id: str, observed_revision: int | None = None,
+                      *, archive_attempt_evidence: bool = False):
     """Hold the lock through validation, side effects and one atomic state fold."""
     with state_lock(root, work_id):
         doc = load_state(root, work_id)
@@ -164,6 +203,7 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         _require_reconciled(root, work_id, doc)
         yield doc
         _preserve_attempt_history(before, doc)
+        _preserve_attempt_evidence(before, doc, archive=archive_attempt_evidence)
         revision = int(doc["revision"])
         if revision < stored:
             raise CasConflict(f"transaction revision moved backwards: started={stored} current={revision}")

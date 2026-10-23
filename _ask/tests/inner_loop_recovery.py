@@ -385,7 +385,34 @@ class test_b(unittest.TestCase):
         self.assertEqual(result.failures, [])
 
     def test_guard_rollback_and_explicit_attempts(self):
-        self.test_interrupt_and_reopen_preserve_attempt_history()
+        # A real accepted Green must not be erasable through the generic CAS
+        # API. The reviewed interrupt/reopen path below archives it first.
+        self._real_traceability_pair()
+        from inner_loop import evidence
+        from inner_loop.state import ProtocolViolation, cas_apply
+        state = load_state(self.root, "w")
+        ledger = json.loads((self.root / "work/w/traceability/executions.json").read_text())
+        green_id = next(row["run_id"] for row in reversed(ledger)
+                        if row.get("phase") == "final_green")
+        evidence.checkpoint_run(self.root, "w", "a", green_id)
+        state = load_state(self.root, "w")
+        recorded = copy.deepcopy(state["tasks"]["a"]["evidence"])
+        self.assertTrue(any(item["run_id"] == green_id for item in recorded["traceability_runs"]))
+        with self.assertRaisesRegex(ProtocolViolation, "evidence.*cannot be removed or rewritten"):
+            cas_apply(self.root, "w", state["revision"],
+                      lambda doc: doc["tasks"]["a"].update(evidence={}))
+        after = load_state(self.root, "w")["tasks"]["a"]["evidence"]
+        self.assertEqual(after, recorded)
+
+        # The explicit attempt API preserves the exact old evidence before it
+        # clears the active attempt, then reopening requires a newly accepted
+        # plan and starts a clean attempt.
+        fresh = type(self)("test_interrupt_and_reopen_preserve_attempt_history")
+        fresh.setUp()
+        try:
+            fresh.test_interrupt_and_reopen_preserve_attempt_history()
+        finally:
+            fresh.doCleanups()
 
     def test_clone_and_cli_recovery_diagnostics(self):
         self.test_retain_objects_after_gc_and_bundle_transfer()
@@ -669,6 +696,9 @@ class test_b(unittest.TestCase):
         self.write(".agents/verification.yaml",
                    "schema: ask-checkplan/v1\nno_production_datastore: true\n"
                    "checks:\n  - id: fixture\n    tier: mandatory\n    command: 'true'\n")
+        self.write("_ask/policies/delegation.md",
+                   "Coordinator delegates review to an identified review agent.\n")
+        self.commit("CR-3 old-runner integration policy")
         _red, green = self._real_traceability_pair(old_runner=True)
         old_sha = load_state(self.root, "w")["tasks"]["a"]["base_sha"]
         from verification.traceability.contracts import digest
@@ -723,11 +753,10 @@ class test_b(unittest.TestCase):
                           if "/runs/" in path and path.endswith(".log")}
             self.assertTrue(report_ids)
             from inner_loop import evidence
-            for run_id in sorted(report_ids):
-                evidence.checkpoint_run(self.root, "w", "a", run_id)
-            recorded = {item["run_id"] for item in load_state(self.root, "w")["tasks"]["a"]
-                        ["evidence"]["traceability_runs"]}
-            self.assertTrue(report_ids <= recorded)
+            self.assertFalse(report_ids & {
+                item["run_id"] for item in load_state(self.root, "w")["tasks"]["a"]
+                ["evidence"].get("traceability_runs", [])
+            }, "the old runner is a worker; only its parent may publish milestones")
 
             # Incomplete historical schemas are diagnosed instead of being
             # accepted as milestones.
@@ -736,8 +765,9 @@ class test_b(unittest.TestCase):
             valid = result_path.read_bytes()
             malformed = json.loads(valid)
             malformed["schema"] = "ask-test-results/v999"
-            result_path.write_text(json.dumps(malformed) + "\n")
             ledger = self.root / "work/w/traceability/executions.json"
+            ledger_valid = ledger.read_bytes()
+            result_path.write_text(json.dumps(malformed) + "\n")
             entries = json.loads(ledger.read_text())
             ledger.write_text(json.dumps([item for item in entries if item["run_id"] != run_id]) + "\n")
             try:
@@ -745,6 +775,41 @@ class test_b(unittest.TestCase):
                     evidence.checkpoint_run(self.root, "w", "a", run_id)
             finally:
                 result_path.write_bytes(valid)
+                ledger.write_bytes(ledger_valid)
+
+            # Exercise the actual parent handoff: the coordinator pins and
+            # runs the historical verifier, consumes only that completion
+            # receipt, validates each report, then integrates the candidate.
+            task_result = {
+                "schema": "ask-task-result/v2", "work_id": "w", "task_id": "a",
+                "base_sha": old_sha, "candidate_sha": green["candidate_sha"],
+                "tdd": {"seam": "src/a.py",
+                        "red": {"command": "fixture", "output": "assertion failed", "exit_code": 1},
+                        "green": {"command": "fixture", "output": "passed", "exit_code": 0}},
+                "exemption": None,
+            }
+            task_result_path = self.root / "work/w/inner-loop/results/a.json"
+            task_result_path.parent.mkdir(parents=True, exist_ok=True)
+            task_result_path.write_text(json.dumps(task_result, indent=2) + "\n")
+            coordinator_review = self.root / "work/w/inner-loop/evidence/review.md"
+            coordinator_review.parent.mkdir(parents=True, exist_ok=True)
+            coordinator_review.write_text("Reviewer: fixture-independent; APPROVED\n")
+            evidence.record_review(self.root, "w", "a", "fixture-independent",
+                                   "_ask/policies/delegation.md",
+                                   "work/w/inner-loop/evidence/review.md")
+            from inner_loop.driver import integrate_ready
+            integrate_ready(self.root, "w", "a")
+            final_receipt = json.loads(
+                (self.root / "work/w/traceability/completion.json").read_text()
+            )
+            final_ids = {Path(path).parts[4] for path in final_receipt["execution_artifacts"]
+                         if "/runs/" in path and path.endswith(".log")}
+            self.assertTrue(final_ids, "historical runner completion receipt must name task runs")
+            state = load_state(self.root, "w")
+            self.assertEqual(state["tasks"]["a"]["status"], "integrated")
+            recorded = {item["run_id"] for item in state["tasks"]["a"]["evidence"]
+                        ["traceability_runs"]}
+            self.assertEqual(recorded, final_ids)
 
     def test_interrupt_and_reopen_preserve_attempt_history(self):
         self.write("accepted.json", json.dumps({"plan_review": {"plan_digest": "plan-before"}}) + "\n")
@@ -1451,6 +1516,17 @@ class test_b(unittest.TestCase):
         self.assertEqual(json.loads(missing.stdout)["status"], "recovery_required")
         self.assertIn("no runtime attempt record", missing.stdout)
         self.assertNotIn("integrated", missing.stdout)
+        for command in ("reconcile", "run", "resume"):
+            diagnosed = subprocess.run(
+                [sys.executable, "-m", "inner_loop", "--root", str(imported), command, "w"],
+                cwd=imported, env=imported_env, capture_output=True, text=True,
+            )
+            self.assertEqual(diagnosed.returncode, 2,
+                             diagnosed.stdout + diagnosed.stderr)
+            self.assertIn("recovery_required", diagnosed.stdout + diagnosed.stderr)
+            self.assertIn("no runtime attempt record", diagnosed.stdout + diagnosed.stderr)
+            self.assertFalse((imported / "work/w/inner-loop/state.json").exists(),
+                             f"{command} must not fabricate state without the checkpoint")
         result = subprocess.run(
             [sys.executable, "-m", "inner_loop", "--root", str(imported),
              "checkpoint-import", "w", str(bundle)],
@@ -1470,6 +1546,30 @@ class test_b(unittest.TestCase):
         self.assertEqual(restored.returncode, 0, restored.stdout + restored.stderr)
         self.assertIn("revision=", restored.stdout)
         self.assertIn("a\trunning", restored.stdout)
+        retained_state = json.loads(
+            (imported / "work/w/inner-loop/state.json").read_text(encoding="utf-8")
+        )
+        retained_milestones = {
+            task_id: (task["status"], task.get("attempt_id"),
+                      task.get("evidence", {}).get("traceability_runs", []))
+            for task_id, task in retained_state["tasks"].items()
+        }
+        for command in ("status", "reconcile", "run", "resume"):
+            recovered = subprocess.run(
+                [sys.executable, "-m", "inner_loop", "--root", str(imported), command, "w"],
+                cwd=imported, env=imported_env, capture_output=True, text=True,
+            )
+            self.assertEqual(recovered.returncode, 0,
+                             recovered.stdout + recovered.stderr)
+            after = json.loads(
+                (imported / "work/w/inner-loop/state.json").read_text(encoding="utf-8")
+            )
+            actual_milestones = {
+                task_id: (task["status"], task.get("attempt_id"),
+                          task.get("evidence", {}).get("traceability_runs", []))
+                for task_id, task in after["tasks"].items()
+            }
+            self.assertEqual(actual_milestones, retained_milestones, command)
 
     def test_isolated_repair_initialization_and_legacy_handoff(self):
         fixture = Path(self.temp.name) / "legacy-product"

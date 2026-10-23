@@ -71,7 +71,7 @@ def new_attempt(task_id: str, task: dict, root: Path, work_id: str, revision: in
 def interrupt_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
     if not isinstance(reason, str) or not reason.strip():
         raise ProtocolViolation("attempt interruption requires a reason")
-    with state_transaction(root, work_id) as doc:
+    with state_transaction(root, work_id, archive_attempt_evidence=True) as doc:
         task = (doc.get("tasks") or {}).get(task_id)
         if not task or task.get("status") != "running":
             raise ProtocolViolation(f"task {task_id} is not the active running attempt")
