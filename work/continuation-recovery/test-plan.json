@@ -1035,7 +1035,7 @@
         "then": [
           "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
           "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
-          "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
+          "Normal integration runs only through the independently reviewed coordinator commit and exact P1-bound verifier commit/tree; the binding includes the unchanged task base, candidate, accepted contract and historical runner"
         ]
       },
       "expected_assertions": [
@@ -1044,7 +1044,7 @@
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
             "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
-            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
+            "Normal integration runs only through the independently reviewed coordinator commit and exact P1-bound verifier commit/tree; the binding includes the unchanged task base, candidate, accepted contract and historical runner"
           ]
         },
         {
@@ -1052,7 +1052,7 @@
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
             "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
-            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
+            "Normal integration runs only through the independently reviewed coordinator commit and exact P1-bound verifier commit/tree; the binding includes the unchanged task base, candidate, accepted contract and historical runner"
           ]
         },
         {
@@ -1060,7 +1060,7 @@
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
             "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
-            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
+            "Normal integration runs only through the independently reviewed coordinator commit and exact P1-bound verifier commit/tree; the binding includes the unchanged task base, candidate, accepted contract and historical runner"
           ]
         },
         {
@@ -1068,7 +1068,7 @@
           "checks": [
             "Child never imports checkpoint code or acquires parent state lock; parent finalizes only receipt-selected run IDs using its held transaction",
             "Verification and exact FF/integrated checkpoints finish without deadlock or candidate-code verifier substitution",
-            "Normal integration uses the independently reviewed verifier migration authorization, which binds the unchanged task base, candidate, accepted contract and runner"
+            "Normal integration runs only through the independently reviewed coordinator commit and exact P1-bound verifier commit/tree; the binding includes the unchanged task base, candidate, accepted contract and historical runner"
           ]
         }
       ],
@@ -2564,7 +2564,7 @@
         "when": "Read-only preflight and real checkpoint-run validate history before the normal integration verifier runs",
         "then": [
           "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
-          "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+          "Historical Red and current Green share the same evidence decision; accepted P1 binds the independently reviewed coordinator and verifier commit/trees, and the integration receipt binds those exact identities with the unchanged base, candidate, contract and runner"
         ]
       },
       "expected_assertions": [
@@ -2572,28 +2572,28 @@
           "criterion_id": "CR-02",
           "checks": [
             "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
-            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+            "Historical Red and current Green share the same evidence decision; accepted P1 binds the independently reviewed coordinator and verifier commit/trees, and the integration receipt binds those exact identities with the unchanged base, candidate, contract and runner"
           ]
         },
         {
           "criterion_id": "CR-04",
           "checks": [
             "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
-            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+            "Historical Red and current Green share the same evidence decision; accepted P1 binds the independently reviewed coordinator and verifier commit/trees, and the integration receipt binds those exact identities with the unchanged base, candidate, contract and runner"
           ]
         },
         {
           "criterion_id": "CR-05",
           "checks": [
             "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
-            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+            "Historical Red and current Green share the same evidence decision; accepted P1 binds the independently reviewed coordinator and verifier commit/trees, and the integration receipt binds those exact identities with the unchanged base, candidate, contract and runner"
           ]
         },
         {
           "criterion_id": "CR-08",
           "checks": [
             "Original run/authority/report/ledger identities and per-case behavioral continuity are validated without rewriting historical records or granting Red to passing cases",
-            "Historical Red and current Green share the same evidence decision, and the authorized verifier receipt binds the unchanged base, exact candidate, contract and runner"
+            "Historical Red and current Green share the same evidence decision; accepted P1 binds the independently reviewed coordinator and verifier commit/trees, and the integration receipt binds those exact identities with the unchanged base, candidate, contract and runner"
           ]
         }
       ],

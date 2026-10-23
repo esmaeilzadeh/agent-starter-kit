@@ -1,10 +1,12 @@
 # Plan: durable continuation and evidence recovery
 
-Revision 11 is the P0 implementation/test contract for the approved CR-3
+Revision 12 is the P0 implementation/test contract for the approved CR-3
 recovery package. It retains Revision 10's CR-T38 and CR-T55–57 changes,
 checkpoint closure, and CR-T57 ownership. CR-T22 remains mapped only to CR-07.
 P0 does not activate the CR-T21 exception; that requires a later reviewed P1
-contract binding `cr3-scoped-decision-record.md`.
+contract binding `cr3-scoped-decision-record.md`. The approved bounded CR-3
+coordinator-upgrade correction is recorded in
+`cr3-coordinator-upgrade-decision.md`.
 Exactly one
 requirements contract remains `specs/current/continuation-recovery.json`
 (ask-spec/v1, CR-01–CR-08). Human authority: `authorization.md`.
@@ -47,22 +49,27 @@ Preflight, completion selection and `checkpoint-run` use this same decision;
 preflight derives identities from retained state, is read-only, and never marks
 a task milestone.
 
-The pinned verifier at the original CR-3 base `2c508ff` cannot enforce P1's
-per-case continuity table or the narrow T21 declaration. Keep that task base
-and every historical runner identity unchanged. P0 adds a coordinator-owned,
-scope-limited verifier-migration receipt. At P1, the accepted contract binds
-the exact verifier source commit/tree and its independent candidate-review
-evidence; coordinator `verify_candidate` selects that exact revision only
-after validating the accepted P1 migration binding. Caller paths, ambient
-environment values, and arbitrary candidate verifier selection are rejected.
-The integration result binds work/task, unchanged `base_sha`, exact candidate
-commit/tree, accepted contract digests, runner identity and migration receipt
-digest. The selected verifier retains the existing static, semantic, candidate,
-completion and integration checks. CR-T19 and CR-T59 exercise this through the
-real disposable coordinator integration path; `check-completion` alone is not
-evidence for the migration boundary. The exact implementation source commit is
-not known until the P0 implementation candidate exists; P1 must record its
-immutable identity before activation.
+The coordinator pinned at the original CR-3 base `2c508ff` cannot enforce
+P1's per-case continuity table or the narrow T21 declaration. Keep that task
+base and every historical runner identity unchanged. The approved scope change
+authorizes a bounded, independently reviewed coordinator upgrade for CR-3;
+this is a code-path upgrade, not a data migration. P0 implements the selector
+and receipt checks in coordinator source `C`, but neither `C` nor verifier
+source `V` may run for integration until an exact independent review approves
+both and accepted P1 binds their immutable commit/tree identities, the P1
+contract digests and the review identity/digest. Normal P1 coordinator
+acceptance records that exact binding. Run integration through only reviewed
+`C`, which checks that the live accepted P1 binding matches the unchanged task
+base and selects only bound `V`. No caller path, ambient value, unreviewed
+source, or arbitrary candidate verifier may select executable code. The
+integration result binds work/task, unchanged `base_sha`, exact coordinator
+`C`, verifier `V`, candidate commit/tree, accepted contract digests, historical
+runner identity and P1 binding digest. The selected verifier retains existing
+static, semantic, candidate, completion and integration checks. CR-T19 and
+CR-T59 exercise this through the real disposable coordinator integration
+path; `check-completion` alone is insufficient evidence. Exact source commits
+are determined from the P0 implementation candidate and must be recorded and
+independently reviewed before P1 acceptance and activation.
 
 ## Work breakdown
 
@@ -75,7 +82,7 @@ its first candidate failed aggregate integration and is not integrated.
 | --- | --- | --- | --- | --- |
 | CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture, recovery assertion, and mapped traceability entrypoint modules, shell entry, plus compatibility with existing coordinator reliability and public-entrypoint assertions | none | CR-T01–04,17,22–37,39–54 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration including the mapped reliability suite; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
 | CR-2 | Git-retained checkpoint closure, cache recovery, transfer CLI, explicit attempt interruption/reopen with retained prior plan and run history, scope-aware prior TaskResult validation, and durable attribution of interrupted candidate paths; checkpoint/attempts/state/driver/recovery/CLI | CR-1 | CR-T05–09,18,38,55–57 | CAS/crash/cache and post-FF checkpoint replay assertions, attempt-history replay and explicit reopen, scope-compatible historical result carry-forward, checkpoint-retained interrupted candidate attribution, GC and separate-object-database bundle E2E; real Red/Green, Refactor, review, integration |
-| CR-3 | Coordinator finalization and historical evidence recovery; exact receipt lifecycle, read-only preflight, per-case historical Red continuity, exact T21 exception enforcement, and reviewed trusted-verifier migration. CR-T12 is narrowly reclassified as regression while retaining its failed `final_green`; CR-T13 stays new and covers repeated reopen/receipt preservation; CR-T21 stays new in P0. | CR-2 | CR-T10–14,19–21,58–61 | Real task-scoped Red for new P0 behavior; current Green and Refactor; independent review of assertion continuity and exact contract; disposable two-interruption lifecycle through normal trusted-verifier integration; unchanged original reports, ledger rows, bases, attempts and consumed receipt |
+| CR-3 | Coordinator finalization and historical evidence recovery; exact receipt lifecycle, read-only preflight, per-case historical Red continuity, exact T21 exception enforcement, and reviewed coordinator/verifier upgrade. CR-T12 is narrowly reclassified as regression while retaining its failed `final_green`; CR-T13 stays new and covers repeated reopen/receipt preservation; CR-T21 stays new in P0. | CR-2 | CR-T10–14,19–21,58–61 | Real task-scoped Red for new P0 behavior; current Green and Refactor; independent review of assertion continuity and exact contract; disposable two-interruption lifecycle through the exact reviewed coordinator/verifier integration path; unchanged original reports, ledger rows, bases, attempts and consumed receipt |
 | CR-4 | Legacy reconciliation/adoption implementation and disposable tests; recovery/CLI and immutable fixtures; read-only real audit/proposal under adoption/ | CR-3 | CR-T15–16 | Exact Tasks1–5 provenance audit and independently reviewed adoption proposal; missing evidence honest; product state/authority untouched; real Red/Green, Refactor, review, normal repair integration |
 
 Owned paths are enumerated in the graph. CR-1 creates immutable fixture and test
@@ -134,8 +141,9 @@ test-plan and task graph digests through the normal coordinator path. P0
 contains no active T21 exception. After P0 acceptance, run the actual
 task-scoped test-only Red, implement only mapped behavior, then obtain current
 Green and Refactor evidence. Prepare P1 only after P0 implementation is
-demonstrated; P1 binds exact historical continuity rows and the approved
-decision record/digest. Follow `cr3-recovery-decision.md` for the required
+demonstrated; P1 binds exact historical continuity rows, the approved
+decision record/digest, and independently reviewed coordinator/verifier
+commit/tree identities with review evidence. Follow `cr3-recovery-decision.md` for the required
 preflight, distinct attempt-2-to-3 receipt, reopen, checkpoint, independent
 review and normal integration order.
 
