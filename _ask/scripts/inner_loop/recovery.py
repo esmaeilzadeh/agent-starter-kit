@@ -511,7 +511,8 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
                 and (parts[2] == "results.json" or parts[2].endswith((".json", ".log")))):
             allowed_new.add(name)
             continue
-        if (len(parts) == 1 and parts[0].startswith(("static-", "verification-", "review-input"))
+        if (len(parts) == 1 and parts[0].startswith(
+                ("static-", "verification-", "review-input", "plan-review-"))
                 and parts[0].endswith(".json")):
             allowed_new.add(name)
             continue

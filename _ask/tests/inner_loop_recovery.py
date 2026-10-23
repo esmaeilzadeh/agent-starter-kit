@@ -601,6 +601,7 @@ class test_b(unittest.TestCase):
                 (traceability / "reviews/later.json").parent.mkdir(parents=True, exist_ok=True)
                 (traceability / "reviews/later.json").write_text('{"verdict":"REJECTED"}\n')
                 (traceability / "verification-later.json").write_text('{"result":"fail"}\n')
+                (traceability / "plan-review-later.json").write_text('{"decision":"APPROVED"}\n')
                 self.assertEqual(
                     _checkpointed_verification(self.root, "w", retained_state, checkpoint),
                     historical,
