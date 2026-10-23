@@ -572,6 +572,9 @@ class test_b(unittest.TestCase):
 
     def test_old_pinned_runner_handoff(self):
         from inner_loop.evidence import snapshot_runner
+        self.write(".agents/verification.yaml",
+                   "schema: ask-checkplan/v1\nno_production_datastore: true\n"
+                   "checks:\n  - id: fixture\n    tier: mandatory\n    command: 'true'\n")
         _red, green = self._real_traceability_pair(old_runner=True)
         old_sha = load_state(self.root, "w")["tasks"]["a"]["base_sha"]
         with tempfile.TemporaryDirectory() as tmp:
