@@ -2127,6 +2127,13 @@ class test_b(unittest.TestCase):
         self.assertEqual(receipt["phase"], "red")
         self.assertEqual(receipt["candidate_sha"], red["candidate_sha"])
         self.assertEqual(receipt["plan_digest"], red["plan_digest"])
+        from verification.traceability.evidence import load_accepted
+        from verification.traceability.service import reports
+        current_sha = self.git("rev-parse", "HEAD")
+        current_contracts = load_accepted(self.root, "w", current_sha, current_sha)
+        selected, rejected = reports(self.root, "w", current_contracts, current_sha, "task", "a")
+        self.assertIn(red["run_id"], {item["run_id"] for item in selected})
+        self.assertNotIn(red["run_id"], {item["run_id"] for item in rejected})
 
     def test_consumed_receipt_selection_is_atomic(self):
         from inner_loop.checkpoint import read_checkpoint

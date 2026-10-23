@@ -6,7 +6,7 @@ from . import CAPABILITY
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
 from .coverage import scoped_tests, validate_plan
 from .evidence import (file_digest_bytes, git, read_at, review_errors, source_changes,
-                       source_digests,load_accepted)
+                       source_digests,load_accepted,load_historical_accepted)
 
 
 def _require_red_source_ancestor(root, red_sha, candidate_sha):
@@ -79,11 +79,32 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             if not slug(run_id) or run_id in seen_runs:
                 errors.append('invalid or duplicate run identity');continue
             seen_runs.add(run_id)
+            historical_decisions=[d for d in plan.get('historical_red_continuity', [])
+                                  if isinstance(d,dict) and d.get('work_id')==work_id
+                                  and d.get('task_id')==task_id and d.get('run_id')==run_id
+                                  and d.get('candidate_sha')==execution_report.get('candidate_sha')
+                                  and d.get('original_plan_digest')==execution_report.get('plan_digest')]
+            historical_decision=historical_decisions[0] if len(historical_decisions)==1 else None
             retained=load(root/'work'/work_id/'traceability'/'runs'/run_id/'results.json')
             if retained!=execution_report:errors.append(f'{run_id}: report differs from coordinator execution record')
-            if (execution_report.get('schema')!='ask-test-results/v1' or execution_report.get('spec_digest')!=digest(spec)
-                or execution_report.get('plan_digest')!=digest(plan)
-                or execution_report.get('runner_identity')!={'capability':CAPABILITY,'adapter_digest':expected_adapter}):errors.append(f'{run_id}: stale contracts or runner')
+            report_adapter=expected_adapter
+            if historical_decision:
+                original=load_historical_accepted(root,work_id,execution_report['candidate_sha'])
+                if (digest(original['spec'])!=execution_report.get('spec_digest')
+                    or digest(original['plan'])!=execution_report.get('plan_digest')):
+                    errors.append(f'{run_id}: historical report differs from its original accepted contract')
+                original_test={t['id']:t for t in original['plan']['tests']}.get(historical_decision.get('test_id'))
+                current_test=test_map.get(historical_decision.get('test_id'))
+                if (not original_test or not current_test
+                    or any(original_test.get(k)!=current_test.get(k) for k in ('case_id','runner_id','source_paths'))
+                    or not text(historical_decision.get('behavioral_continuity'))):
+                    errors.append(f'{run_id}: historical case lacks an applicable reviewed continuity decision')
+                report_adapter=file_digest_bytes(read_at(root,execution_report['candidate_sha'],
+                    '.agents/ask/verification/traceability/unittest_runner.py'))
+            if (execution_report.get('schema')!='ask-test-results/v1'
+                or (not historical_decision and (execution_report.get('spec_digest')!=digest(spec)
+                    or execution_report.get('plan_digest')!=digest(plan)))
+                or execution_report.get('runner_identity')!={'capability':CAPABILITY,'adapter_digest':report_adapter}):errors.append(f'{run_id}: stale contracts or runner')
             processes={};cases_by_execution={}
             for run in execution_report.get('executions',[]):
                 eid=run.get('id');runner=runners.get(run.get('runner_id'))
@@ -99,6 +120,8 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             seen_cases=set()
             for case in execution_report.get('cases',[]):
                 tid=case.get('test_id');test=test_map.get(tid);run=processes.get(case.get('execution_id'))
+                if historical_decision and tid!=historical_decision.get('test_id'):
+                    continue
                 identity=(case.get('runner_id'),case.get('case_id'))
                 if identity in seen_cases:errors.append(f'{run_id}: duplicate case {tid}')
                 seen_cases.add(identity)

@@ -94,6 +94,32 @@ def load_accepted(root,work_id,anchor_sha,candidate_sha=None):
     return dict(contracts,pin=pin)
 
 
+def load_historical_accepted(root, work_id, candidate_sha):
+    """Load the immutable acceptance embedded in an original run candidate."""
+    pin=json_at(root,candidate_sha,f'work/{work_id}/traceability-accepted.json')
+    if (pin.get('schema')!='ask-accepted-tests/v1' or pin.get('capability')!=CAPABILITY
+        or pin.get('work_id')!=work_id or not text(pin.get('reviewer'))
+        or not text(pin.get('recorded_by')) or pin['reviewer']==pin['recorded_by']
+        or pin.get('policy')!=POLICY):
+        raise Invalid('historical run has no valid original accepted authority')
+    if (pin.get('plan_review_digest')!=digest(pin.get('plan_review'))
+        or pin['plan_review'].get('decision')!='APPROVED'
+        or pin['plan_review'].get('reviewer')!=pin['reviewer']
+        or pin['plan_review'].get('spec_digest')!=pin.get('spec_digest')
+        or pin['plan_review'].get('plan_digest')!=pin.get('plan_digest')):
+        raise Invalid('historical accepted plan review is stale')
+    contracts=contracts_at(root,work_id,pin['contract_sha'])
+    if any(pin.get(key+'_digest')!=digest(value) for key,value in contracts.items()):
+        raise Invalid('historical accepted contract digest mismatch')
+    git(root,'merge-base','--is-ancestor',pin['contract_sha'],candidate_sha)
+    actual=contracts_at(root,work_id,candidate_sha)
+    if any(digest(actual[key])!=pin[key+'_digest'] for key in actual):
+        raise Invalid('historical run candidate changed its accepted contract')
+    if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:
+        raise Invalid('historical run candidate changed its accepted policy')
+    return dict(contracts,pin=pin)
+
+
 def file_digest_bytes(raw):
     import hashlib
     return hashlib.sha256(raw).hexdigest()

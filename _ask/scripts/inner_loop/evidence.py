@@ -152,6 +152,8 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
         raise NotIntegrable('invalid traceability run ID')
     sys.path.insert(0, str(root / '.agents' / 'ask'))
     from verification.traceability.evidence import load_accepted
+    from verification.traceability.evidence import load_historical_accepted
+    from verification.traceability.contracts import Invalid as TraceabilityInvalid
     from verification.traceability.coverage import scoped_tests
     from verification.traceability.contracts import digest as contract_digest
     from verification.traceability.contracts import file_digest
@@ -187,7 +189,22 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str) -> tuple
             or not _candidate_in_task_lineage(root, task, candidate)):
         raise NotIntegrable('traceability candidate is outside the active task ancestry')
 
-    contracts = load_accepted(root, work_id, candidate, candidate)
+    try:
+        contracts = load_accepted(root, work_id, candidate, candidate)
+    except TraceabilityInvalid:
+        current_sha = git(root, 'rev-parse', 'HEAD')
+        current = load_accepted(root, work_id, current_sha, current_sha)
+        contracts = load_historical_accepted(root, work_id, candidate)
+        continuity = [item for item in current['plan'].get('historical_red_continuity', [])
+                      if isinstance(item, dict) and item.get('work_id') == work_id
+                      and item.get('task_id') == task_id and item.get('run_id') == run_id
+                      and item.get('candidate_sha') == candidate
+                      and item.get('original_plan_digest') == report.get('plan_digest')]
+        if len(continuity) != 1:
+            raise NotIntegrable('historical Red has no exact current continuity decision')
+        decision = continuity[0]
+        if not isinstance(decision.get('behavioral_continuity'), str) or not decision['behavioral_continuity'].strip():
+            raise NotIntegrable('historical Red continuity assessment is missing')
     plan, spec = contracts['plan'], contracts['spec']
     if (report.get('plan_digest') != contract_digest(plan)
             or report.get('spec_digest') != contract_digest(spec)):

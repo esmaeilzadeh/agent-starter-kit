@@ -98,9 +98,17 @@ def reports(root,work_id,contracts,sha,scope,task_id):
     except ValueError as exc:raise Invalid('invalid coordinator-executed case evidence') from exc
     if not isinstance(ledger,list) or any(not isinstance(entry,dict) for entry in ledger):
         raise Invalid('invalid coordinator-executed case evidence')
-    matching=[e for e in ledger if e.get('spec_digest')==digest(contracts['spec']) and e.get('plan_digest')==digest(contracts['plan'])]
+    current_plan_digest=digest(contracts['plan'])
+    matching=[e for e in ledger if e.get('spec_digest')==digest(contracts['spec']) and e.get('plan_digest')==current_plan_digest]
+    decisions=[d for d in contracts['plan'].get('historical_red_continuity', [])
+               if isinstance(d,dict) and d.get('work_id')==work_id
+               and d.get('task_id')==task_id and d.get('original_plan_digest')]
+    historical=[e for e in ledger if e.get('phase')=='red' and e.get('scope')=='task'
+                and e.get('task_id')==task_id and any(
+                    e.get('run_id')==d.get('run_id') and e.get('candidate_sha')==d.get('candidate_sha')
+                    and e.get('plan_digest')==d.get('original_plan_digest') for d in decisions)]
     finals=[e for e in matching if e['phase']=='final_green' and e['candidate_sha']==sha and e['scope']==scope and e['task_id']==task_id]
-    selected=[e for e in matching if e['phase']=='red']+finals[-1:]
+    selected=[e for e in matching if e['phase']=='red']+historical+finals[-1:]
     docs=[];rejected=[]
     known={(t['runner_id'],t['case_id'],t['id']) for t in contracts['plan']['tests']}
     for entry in selected:
