@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v1",
-  "work_id": "refactor-inner-loop",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "5ec0ceca0d25cb5e428d257a4de94d8609ac5f975bee7f3ffc12c75ffa7c8a9c",
-  "human_response": "permission granted continue till end and push/ then merge it back to develop and push"
-}
