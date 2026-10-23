@@ -601,7 +601,12 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
         or verifier_tree!=migration['verifier_tree']):
         raise NotIntegrable('coordinator/verifier source revisions differ from the reviewed P1 binding')
     try:
-        review_raw=(root/migration['source_review_artifact']).read_bytes()
+        review_proc=subprocess.run(
+            ['git','show',f"{pin['contract_sha']}:{migration['source_review_artifact']}"],
+            cwd=root,capture_output=True)
+        if review_proc.returncode:
+            raise OSError('source review is absent from the accepted P1 contract revision')
+        review_raw=review_proc.stdout
         source_review=json.loads(review_raw)
     except (OSError,ValueError) as exc:
         raise NotIntegrable('independent coordinator/verifier source review is unavailable') from exc
@@ -611,6 +616,10 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
         or source_review.get('coordinator_tree')!=migration['coordinator_tree']
         or source_review.get('verifier_sha')!=migration['verifier_sha']
         or source_review.get('verifier_tree')!=migration['verifier_tree']
+        or source_review.get('original_base_sha')!=identity['base_sha']
+        or source_review.get('p0_plan_digest')!=migration['p0_plan_digest']
+        or source_review.get('review_identity')!=migration['p0_review_identity']
+        or source_review.get('review_digest')!=migration['p0_review_digest']
         or not str(source_review.get('reviewer') or '').strip()):
         raise NotIntegrable('independent source review does not approve the exact C/V identities')
     coordinator_sources=source_review.get('coordinator_source_digests')
@@ -633,6 +642,14 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
     if (decision_raw.returncode
         or hashlib.sha256(decision_raw.stdout).hexdigest()!=migration['scope_decision_digest']):
         raise NotIntegrable('P1 migration does not bind the submitted human scope decision')
+    exception_declarations=(pin.get('plan_review') or {}).get('historical_red_exceptions') or []
+    if (len(exception_declarations)!=1
+        or exception_declarations[0].get('work_id')!='continuation-recovery'
+        or exception_declarations[0].get('task_id')!='CR-3'
+        or exception_declarations[0].get('test_id')!='CR-T21'
+        or exception_declarations[0].get('decision_artifact')!=migration['scope_decision_artifact']
+        or exception_declarations[0].get('decision_digest')!=migration['scope_decision_digest']):
+        raise NotIntegrable('P1 migration and exact T21 human decision do not agree')
     return migration
 
 
@@ -789,6 +806,20 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
                     selected_runs.add(parts[4])
                 report['traceability_run_ids'] = sorted(selected_runs)
                 report['completion_digest'] = hashlib.sha256(completion_raw).hexdigest()
+                if migration and (
+                    report.get('original_task_base_sha') != identity['base_sha']
+                    or report.get('coordinator_sha') != migration['coordinator_sha']
+                    or report.get('verifier_sha') != migration['verifier_sha']
+                    or report.get('verifier_tree') != migration['verifier_tree']
+                    or report.get('migration_binding_digest') != digest(migration)
+                    or report.get('p1_spec_digest') != migration['p1_spec_digest']
+                    or report.get('p1_plan_digest') != migration['p1_plan_digest']
+                    or completion.get('candidate_sha') != identity['candidate_sha']
+                    or completion.get('task_id') != identity['task_id']
+                    or completion.get('scope') != 'task'
+                    or not report.get('traceability_run_ids')
+                ):
+                    raise NotIntegrable('coordinator migration integration receipt is incomplete or mismatched')
                 if (git(checkout, 'rev-parse', 'HEAD') != identity['candidate_sha']
                         or git(checkout, 'status', '--porcelain')
                         or plan_identity(checkout, runner)[0] != report['checkplan_digest']):

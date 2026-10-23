@@ -2190,6 +2190,10 @@ class test_b(unittest.TestCase):
         self.assertIn(red["run_id"], {item["run_id"] for item in selected})
         self.assertEqual(sum(item["run_id"] == red["run_id"] for item in selected), 1)
         self.assertNotIn(red["run_id"], {item["run_id"] for item in rejected})
+        workstream_selected, workstream_rejected = reports(
+            self.root, "w", current_contracts, current_sha, "workstream", None)
+        self.assertIn(red["run_id"], {item["run_id"] for item in workstream_selected})
+        self.assertNotIn(red["run_id"], {item["run_id"] for item in workstream_rejected})
 
     def test_consumed_receipt_selection_is_atomic(self):
         from inner_loop.checkpoint import read_checkpoint

@@ -172,6 +172,8 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                     errors.append(f'{tid}: historical-Red exception conflicts with retained Red')
                 if historical_exception and test['change_kind']!='new':
                     errors.append(f'{tid}: historical-Red exception applies only to a new test')
+                if historical_exception and exemption:
+                    errors.append(f'{tid}: historical-Red exception cannot be combined with a semantic TDD exemption')
                 tdd=('exception:historical-red-unavailable' if historical_exception and green
                      else 'exempt:'+exemption['kind'] if exemption and green
                      else 'regression' if test['change_kind']=='regression'
