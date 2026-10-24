@@ -2386,8 +2386,11 @@ class test_b(unittest.TestCase):
         historical_target.parent.mkdir(parents=True, exist_ok=True)
         historical_target.write_bytes(historical_raw)
         executions_path = root / f"work/{work_id}/traceability/executions.json"
-        executions_raw = (runtime_root / f"work/{work_id}/traceability/executions.json").read_bytes()
-        executions = json.loads(executions_raw)
+        # This disposable plan runs only its P1 T21 Green. Keep that run's
+        # ledger row; importing the host ledger would select every retained
+        # historical Red although this fixture intentionally copies one report.
+        executions = json.loads(executions_path.read_text())
+        executions = [entry for entry in executions if entry.get("run_id") == green["run_id"]]
         executions_path.write_text(json.dumps(executions, indent=2) + "\n")
 
         git("branch", "-f", "agent/continuation-recovery", contract_checkout_sha)
