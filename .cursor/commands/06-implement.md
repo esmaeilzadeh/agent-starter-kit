@@ -4,7 +4,10 @@
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Requires: clean tree, dedicated branch, accepted spec, plan. Work under `work/<work-id>/`.
+Requires: clean tree and dedicated branch. Feature work uses the accepted spec
+and plan under `work/<work-id>/`. A reproduced bug against an existing contract
+may reuse that contract and a concise repair record instead of creating a new
+feature spec/plan; follow `_ask/policies/workflow.md`.
 
 ## 15.6 06 Implement Agent
 
@@ -21,14 +24,14 @@ state only when its planned completion evidence is present. A new deliverable
 or changed test assignment returns to Plan for an amended, independently
 reviewed contract before implementation continues.
 
-Preconditions (`./ask check-workstream`; missing intent confirmation is a hard refusal — `_ask/policies/workflow.md`):
+Preconditions (`./ask check-workstream` for feature work; see `_ask/policies/workflow.md` for the reproduced-bug path):
 
 ```text
 clean working tree          ← still hard (safety)
 dedicated branch
 explicit human confirmation of the complete current intent and assumptions
-accepted spec               ← on-path: prepare from defaults if missing
-active plan                 ← on-path: prepare from defaults if missing
+accepted spec and plan      ← feature path; prepare from defaults if missing
+existing contract plus concise repair record ← reproduced-bug path
 no unrelated uncommitted changes
 ```
 
@@ -58,7 +61,8 @@ At meaningful milestones, create commits so that important engineering states ar
 
 - A later explicit human direction can extend a previously approved execution endpoint. When What, Why, and assumptions stay the same, record that direction in the plan or a scoped authorization artifact and keep the approved `intent.md` byte-for-byte unchanged; do not ask the human to reapprove the complete intent. A generic “continue” does not override an explicit stop. A clear direction such as “continue through acceptance” does. If What, Why, or an assumption changes, use the normal intent/spec-change choice and bind renewed approval to the changed intent.
 
-- **Default:** run `./ask check-workstream <work-id>` before implementing. If it fails for missing spec/plan and they are still on the kit path, **prepare** those artifacts from accepted defaults (if intent is not yet approved, present its choice question once), then continue — do not implement on empty paper. Off-path (“just code”) only if they explicitly left: warn once and follow.
+- **Reproduced bug:** follow the short path in `_ask/policies/workflow.md`; the existing accepted contract and concise repair record replace new feature spec/plan artifacts. Keep applicable clean-worktree, scope, review, commit, and verification gates.
+- **Default feature path:** run `./ask check-workstream <work-id>` before implementing. If it fails for missing spec/plan and the work is still on the kit path, **prepare** those artifacts from accepted defaults (if intent is not yet approved, present its choice question once), then continue — do not implement feature work on empty paper. Off-path (“just code”) only if they explicitly left: warn once and follow.
 - If the tree is dirty: stop and grill the human per `_ask/policies/worktree.md` (never silent stash/reset). That refusal is safety, not workflow theater.
 - One plan → one `agent/<work-id>` branch; do not start a second related branch that would conflict on shared files while this one is active.
 - Commit after each meaningful step on the workstream branch **without waiting for the human to ask** (kit policy overrides global “only commit when asked”).
@@ -79,6 +83,6 @@ Build the spec’s confirmed E2E journeys, or keep `not_applicable` plus reason.
 
 ## Structured test evidence
 
-Capture actual failing behavior cases at immutable red revisions with `./ask traceability run`; commit the candidate and retain final green separately. Planned outcomes never count as execution.
+Capture actual failing behavior at immutable red revisions with `./ask traceability run`; commit the candidate and retain final green separately. For a bug fix, only the reproduced defect is a Red target; mapped regression guards require Green, not manufactured failures. Planned outcomes never count as execution.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
