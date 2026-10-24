@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 27,
+  "revision": 28,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,19 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 2,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 3,
+      "attempt_id": "CR-3:attempt-3",
+      "accepted_plan_ref": "01ab63265bd0adfb2b6bc0aadde86ba46eccbeb8",
+      "accepted_plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+      "attempt_started_revision": 28,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1132,13 +1132,14 @@
           "interrupted_revision": 27
         }
       ],
-      "reopened_from_attempt": "CR-3:attempt-1",
-      "reopen_reason": "resume CR-3 under accepted reviewed plan; preserve attempt 1 and reconcile exact reviewed overlap",
+      "reopened_from_attempt": "CR-3:attempt-2",
+      "reopen_reason": "Resume CR-3 after reviewed attempt-2-to-3 source and evidence reconciliation",
       "source_reconciliation": {
-        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3.json",
-        "digest": "cbab1b86bd3797eb32b996879c8a2a6c8f97da10f182ac83d022d01ce0d2cc2a",
-        "candidate_sha": "8e61c14f6deafb334d3d4cbb8230abfde9358d5f",
+        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-2-to-3.json",
+        "digest": "6c874965393f281efa8424bbbbf7d16917349e11ad64ad41c677f923caac298e",
+        "candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
         "paths": [
+          "_ask/scripts/inner_loop/__main__.py",
           "_ask/scripts/inner_loop/recovery.py",
           "_ask/tests/inner_loop_recovery.py"
         ]

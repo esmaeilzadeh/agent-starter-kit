@@ -1,0 +1,10 @@
+{
+  "decision": "APPROVED",
+  "reviewer": "codex-independent-review:/root/review_cr3_p0",
+  "reviewed_commit": "a147f5c4d3946071f0627c90c037ded2ff287869",
+  "contract_source_sha": "a553ef9b81321cfb5e74e596c5c3ff6b347e35db",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+  "graph_digest": "d7f6819c4990f4e416f693ff3a274e92c2b57b7ca78ef04c1c2e58d622d979f5",
+  "blocking_findings": []
+}

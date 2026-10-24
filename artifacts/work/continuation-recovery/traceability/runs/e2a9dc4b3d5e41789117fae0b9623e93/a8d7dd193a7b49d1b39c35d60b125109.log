@@ -1,0 +1,53 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests) ... ERROR
+test_interrupted_preflight_is_read_only_and_derived (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_t21_exception_requires_exact_p1_decision (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+
+======================================================================
+ERROR: test_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-o9l5rny5/candidate/_ask/tests/inner_loop_recovery.py", line 2109, in test_historical_red_continuity_through_checkpoint_and_integration
+    accepted = accept_plan(
+  File "/tmp/ask-cases-o9l5rny5/candidate/.agents/ask/verification/traceability/evidence.py", line 280, in accept_plan
+    raise Invalid('cannot amend accepted obligations while a task is running')
+verification.traceability.contracts.Invalid: cannot amend accepted obligations while a task is running
+
+======================================================================
+FAIL: test_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-o9l5rny5/candidate/_ask/tests/inner_loop_recovery.py", line 2184, in test_consumed_receipt_selection_is_atomic
+    self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
+AssertionError: 2 != 0 : attempt reconciliation identity is stale or conflicts with coordinator state
+
+
+======================================================================
+FAIL: test_interrupted_preflight_is_read_only_and_derived (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-o9l5rny5/candidate/_ask/tests/inner_loop_recovery.py", line 2194, in test_interrupted_preflight_is_read_only_and_derived
+    self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
+AssertionError: 2 != 0 : attempt has a TaskResult file; reconcile it before interruption
+
+
+======================================================================
+FAIL: test_t21_exception_requires_exact_p1_decision (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-o9l5rny5/candidate/_ask/tests/inner_loop_recovery.py", line 2080, in test_t21_exception_requires_exact_p1_decision
+    self.assertTrue(
+AssertionError: [] is not true : P0 must refuse a historical-Red exception even when its declaration looks complete
+
+----------------------------------------------------------------------
+Ran 12 tests in 170.496s
+
+FAILED (failures=3, errors=1)

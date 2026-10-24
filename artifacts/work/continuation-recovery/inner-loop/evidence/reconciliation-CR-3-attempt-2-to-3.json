@@ -1,0 +1,41 @@
+{
+  "accepted_plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+  "accepted_plan_ref": "01ab63265bd0adfb2b6bc0aadde86ba46eccbeb8",
+  "candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+  "green_run": {
+    "candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+    "plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+    "report_digest": "b1e41bbafcc66d33dd351a996191fd102072857a9e1a19470930a461b3d15d6f",
+    "run_id": "6d36ea28edae44768e7e01e175a91d8a",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1"
+  },
+  "interrupted_candidate_sha": "08339eb5bf9802cf815819bf3168f13c5296d9bd",
+  "new_attempt_base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "new_attempt_id": "CR-3:attempt-3",
+  "preflight": {
+    "checkpoint_sha": "b7671c0eb5b3167e3684ba1e7764b5cf13d62b94",
+    "read_only": true,
+    "report_digest": "b1e41bbafcc66d33dd351a996191fd102072857a9e1a19470930a461b3d15d6f",
+    "run_id": "6d36ea28edae44768e7e01e175a91d8a",
+    "status": "valid"
+  },
+  "previous_attempt_id": "CR-3:attempt-2",
+  "previous_checkpoint_sha": "b7671c0eb5b3167e3684ba1e7764b5cf13d62b94",
+  "previous_revision": 27,
+  "recorded_by": "/root",
+  "review": {
+    "candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+    "decision": "APPROVED",
+    "payload_sha256": "1d383d18013f4f97c1aa909c63a835b9de5233276a3119c196c1e5f58cca471e",
+    "reviewer": "/root/cr3_recovery_source_review"
+  },
+  "review_evidence": "work/continuation-recovery/inner-loop/evidence/CR-3-review-16baab3.md",
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "source_postimage": {
+    "_ask/scripts/inner_loop/__main__.py": "cfa7ad93f025336876dcbbc3c8354a31640a48c839bc5ea9085ee0e5e49d36b7",
+    "_ask/scripts/inner_loop/recovery.py": "acb7a5058e47437d2783c367aa5710da1302b3633c67afbb4bd72f3821cc3ca8",
+    "_ask/tests/inner_loop_recovery.py": "fc857e8e5372e1eb067b691814f97f4924095f1cc5951852b7167bc87761c064"
+  },
+  "task_id": "CR-3",
+  "work_id": "continuation-recovery"
+}

@@ -3,12 +3,12 @@
   "status": "fail",
   "scope": "workstream",
   "task_id": null,
-  "candidate_sha": "c19ae15044653f9c8227fb74c72a4e9161984625",
+  "candidate_sha": "ad716fec75e1aae27b198073b6fc6a5442d71780",
   "input_digests": {},
   "criterion_evidence": [],
   "missing_evidence": [],
   "errors": [
-    "migration_required: missing/invalid JSON /home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/c19ae15044653f9c8227fb74c72a4e9161984625.json: [Errno 2] No such file or directory: '/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/c19ae15044653f9c8227fb74c72a4e9161984625.json'"
+    "migration_required: missing/invalid JSON /home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/ad716fec75e1aae27b198073b6fc6a5442d71780.json: [Errno 2] No such file or directory: '/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/traceability/reviews/ad716fec75e1aae27b198073b6fc6a5442d71780.json'"
   ],
   "execution_artifacts": [],
   "evidence_state": "unavailable"

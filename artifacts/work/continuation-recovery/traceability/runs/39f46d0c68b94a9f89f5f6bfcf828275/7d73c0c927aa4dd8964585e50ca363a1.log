@@ -1,0 +1,49 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_preflight_is_read_only_and_derived (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py", line 53, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py", line 47, in main
+    result=unittest.TextTestRunner(verbosity=2,resultclass=CaseResult).run(suite)
+  File "/usr/lib/python3.10/unittest/runner.py", line 184, in run
+    test(result)
+  File "/usr/lib/python3.10/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.10/unittest/suite.py", line 122, in run
+    test(result)
+  File "/usr/lib/python3.10/unittest/case.py", line 650, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/tests/inner_loop_recovery.py", line 523, in test_stale_review_preserves_execution
+    ApprovedReviewCase("test_approved_review_cannot_be_reused_after_result_changes").run(result)
+  File "/usr/lib/python3.10/unittest/case.py", line 591, in run
+    self._callTestMethod(testMethod)
+  File "/usr/lib/python3.10/unittest/case.py", line 549, in _callTestMethod
+    method()
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/tests/inner_loop_recovery.py", line 518, in test_approved_review_cannot_be_reused_after_result_changes
+    retained = load_state(self.root, "w")["tasks"]["a"]["evidence"]
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/scripts/inner_loop/state.py", line 80, in load_state
+    restored = restore_cache(root, work_id, cached)
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/scripts/inner_loop/checkpoint.py", line 377, in restore_cache
+    checkpoint = read_checkpoint(root, work_id)
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/scripts/inner_loop/checkpoint.py", line 326, in read_checkpoint
+    or len(content) != size or _blob_id(root, content) != blob):
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/scripts/inner_loop/checkpoint.py", line 372, in _blob_id
+    return _git(root, "hash-object", "--stdin", input=content).decode().strip()
+  File "/tmp/ask-cases-a3bg15_o/candidate/_ask/scripts/inner_loop/checkpoint.py", line 27, in _git
+    proc = subprocess.run(["git", *args], cwd=root, input=input, capture_output=True)
+  File "/usr/lib/python3.10/subprocess.py", line 503, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/usr/lib/python3.10/subprocess.py", line 961, in __init__
+    self.stdout = io.open(c2pread, 'rb', bufsize)
+KeyboardInterrupt
