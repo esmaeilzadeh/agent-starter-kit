@@ -2,6 +2,12 @@
 
 Updated: 2026-10-24. Workstream: `continuation-recovery`, task `CR-3`.
 
+Latest route reassessment: read `cr3-bug-fix-route-handoff.md` before resuming.
+It distinguishes the original missing-state reproduction, CR-T60's separate
+consumed-receipt defect, and CR-T13's Green regression-guard role. It records
+the latest bug-fix routing discussion without changing the accepted plan or
+authorization.
+
 ## User direction
 
 Continue the existing CR-3 workstream from its current authorized stage until
