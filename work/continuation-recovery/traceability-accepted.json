@@ -1,24 +1,54 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "a147f5c4d3946071f0627c90c037ded2ff287869",
+  "contract_sha": "fa967ea1e49e0b05d0d3b16c32d46b27dd298016",
   "work_id": "continuation-recovery",
-  "reviewer": "codex-independent-review:/root/review_cr3_p0",
+  "reviewer": "codex-independent-review:/root/cr3_p1_plan_review",
   "recorded_by": "/root",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
   "plan_review": {
+    "schema": "ask-plan-review/v1",
     "decision": "APPROVED",
-    "reviewer": "codex-independent-review:/root/review_cr3_p0",
-    "reviewed_commit": "a147f5c4d3946071f0627c90c037ded2ff287869",
-    "contract_source_sha": "a553ef9b81321cfb5e74e596c5c3ff6b347e35db",
+    "reviewer": "codex-independent-review:/root/cr3_p1_plan_review",
+    "work_id": "continuation-recovery",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-    "plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
-    "graph_digest": "d7f6819c4990f4e416f693ff3a274e92c2b57b7ca78ef04c1c2e58d622d979f5",
-    "blocking_findings": []
+    "plan_digest": "cc23aca958fc519cf63b867e58b37a3c9c721ae943b59f198d38ecb61e93c7db",
+    "findings": [],
+    "historical_red_exceptions": [
+      {
+        "work_id": "continuation-recovery",
+        "task_id": "CR-3",
+        "test_id": "CR-T21",
+        "kind": "historical-red-unavailable",
+        "decision_artifact": "work/continuation-recovery/cr3-scoped-decision-record.md",
+        "decision_digest": "409f38a1120f45f48d6693176e21d0cab93e0107e412614945f09b9c23e44fe8",
+        "missing_red": "No retained CR-T21 report records a behavior assertion failure: the case is a setup/runtime error in b5e4fc3b34c14e5a93312d2744be9adf and passes in the other retained Red-phase reports. The exception records that evidence gap; it does not claim a Red."
+      }
+    ],
+    "coordinator_migration": {
+      "work_id": "continuation-recovery",
+      "task_id": "CR-3",
+      "coordinator_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+      "coordinator_tree": "e5e21b7925abf207df0596326d443d9ec41b9e22",
+      "verifier_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+      "verifier_tree": "e5e21b7925abf207df0596326d443d9ec41b9e22",
+      "original_base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+      "p1_spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+      "p1_plan_digest": "cc23aca958fc519cf63b867e58b37a3c9c721ae943b59f198d38ecb61e93c7db",
+      "p0_plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+      "p0_review_identity": "codex-independent-review:/root/review_cr3_p0",
+      "p0_review_digest": "dee9e04895e9fa7b0451319a7a4bb6953e8c13ecf2fc43faf756b1e08369fe08",
+      "scope_decision_artifact": "work/continuation-recovery/cr3-scoped-decision-record.md",
+      "scope_decision_digest": "409f38a1120f45f48d6693176e21d0cab93e0107e412614945f09b9c23e44fe8",
+      "integration_output_schema": "ask-integration-evidence/v1",
+      "source_review_artifact": "work/continuation-recovery/cr3-cv-review.json",
+      "source_review_digest": "f8954949aedd704fdf8a95f227a0aa3183ff866e10aaf60638cd9338788381ae"
+    },
+    "assessment": "Reviewed commit fa967ea. All 15 continuity rows identify a retained failed/behavior_assertion case; report, ledger, candidate, accepted-authority, original-contract and original/current source bindings match the retained artifacts. Sibling cases are assessed independently: passing and setup/runtime-error outcomes receive no historical Red. T13 is excluded from continuity and remains a cannot-reproduce-as-mapped one-cycle regression guard. The exact T21 exception matches the submitted decision and keeps its behavioral checks and current Green required. The migration binding matches the approved C/V source review and unchanged CR-3 base. No findings."
   },
-  "plan_review_digest": "dee9e04895e9fa7b0451319a7a4bb6953e8c13ecf2fc43faf756b1e08369fe08",
+  "plan_review_digest": "08790c1d14d68c9c8098d017cb2a7f9e2c32b991fcfcb3486f610696daf327fb",
   "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-  "plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+  "plan_digest": "cc23aca958fc519cf63b867e58b37a3c9c721ae943b59f198d38ecb61e93c7db",
   "graph_digest": "d7f6819c4990f4e416f693ff3a274e92c2b57b7ca78ef04c1c2e58d622d979f5"
 }
