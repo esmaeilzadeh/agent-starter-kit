@@ -2178,6 +2178,11 @@ class test_b(unittest.TestCase):
         from verification.traceability.evidence import load_historical_accepted, source_digests
 
         red, green = self._real_traceability_pair(setup_error_sibling=True)
+        red_cases = {case["test_id"]: case for case in red["cases"]}
+        self.assertEqual(red_cases["T-A"].get("outcome"), "failed")
+        self.assertEqual(red_cases["T-A"].get("failure_kind"), "behavior_assertion")
+        self.assertEqual(red_cases["T-B"].get("outcome"), "error")
+        self.assertEqual(red_cases["T-B"].get("failure_kind"), "setup_or_runtime_error")
         evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
         evidence.checkpoint_run(self.root, "w", "a", green["run_id"])
 
@@ -2205,6 +2210,10 @@ class test_b(unittest.TestCase):
             "reviewer": "fixture-p1-reviewer",
             "behavioral_continuity": "same source-value assertion remains mapped",
         } for case in red["cases"] if case.get("outcome") == "failed"]
+        self.assertEqual(
+            [row["test_id"] for row in p1_plan["historical_red_continuity"]], ["T-A"],
+            "the behavior assertion is retained as Red and the setup-error sibling is excluded",
+        )
         interrupted = self.run_cli("interrupt", "w", "a", "--reason", "accept reviewed P1 fixture")
         self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
         self.write("work/w/test-plan.json", json.dumps(p1_plan, sort_keys=True))
