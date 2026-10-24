@@ -2870,7 +2870,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -2916,7 +2916,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -2962,7 +2962,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -3008,7 +3008,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -3054,7 +3054,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -3100,7 +3100,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -3146,7 +3146,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -3196,7 +3196,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
@@ -3250,7 +3250,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
@@ -3304,7 +3304,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
@@ -3354,7 +3354,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
         ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
@@ -3404,7 +3404,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
@@ -3458,7 +3458,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
@@ -3512,7 +3512,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
@@ -3566,7 +3566,7 @@
       },
       "current_source_digests": {
         ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
-        ".agents/ask/verification/traceability/adapters.py": "b1ea129b56e4d4e07f203175bf9ab360985f1d33a3a95eba725f6e776b333aa3",
+        ".agents/ask/verification/traceability/adapters.py": "b0f90d10afa080ca730cfee4ad9ffe36a4b1ea3a600ba7c0ded80661d4321c72",
         ".agents/ask/verification/traceability/cli.py": "e715b0a5c5b3c8ca0c8b7b782caf02adf35f30a32939023d776bd67345a780a7",
         ".agents/ask/verification/traceability/completion.py": "cb3c4a434c91740f51ac3e138612049cbf504ad64a36521207d6b2e9df4d4c08",
         ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
