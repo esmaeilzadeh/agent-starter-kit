@@ -1,9 +1,0 @@
-schema: ask-inner-loop-tasks/v1
-work_id: verify-candidate-source-stability
-tasks:
-  - id: validate-and-close
-    depends_on: []
-    owned_paths:
-      - work/verify-candidate-source-stability/**
-      - specs/current/verify-candidate-source-stability.*
-      - .later/verify-candidate-source-stability.md

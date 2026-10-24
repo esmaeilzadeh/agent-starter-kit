@@ -1,3 +1,0 @@
-revision=0
-running=t revision=2
-PASS: inner-loop graph validate, CAS, single-writer, commit-allowlist, retry-resume, driver
