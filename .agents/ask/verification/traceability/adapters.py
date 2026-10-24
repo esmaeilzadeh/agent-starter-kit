@@ -47,6 +47,11 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
                          PYTHONPATH=python_path,
                          ASK_TRACEABILITY_RUNTIME_ROOT=str(root))
+                # Coordinator/worker mode belongs to the outer CLI command.
+                # Do not leak that one-command role into the isolated test
+                # process, whose fixtures exercise both coordinator and worker
+                # operations explicitly.
+                env.pop('ASK_INNER_LOOP_ROLE', None)
                 with log.open('w') as stream:
                     try:
                         selection=[t['case_id'] for t in expected] if scope=='task' else None
