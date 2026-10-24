@@ -2218,6 +2218,14 @@ class test_b(unittest.TestCase):
                                            stderr=subprocess.PIPE).strip()
         git("config", "user.email", "cr3-integration@example.test")
         git("config", "user.name", "CR3 Integration Fixture")
+        coordinator_sha = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=REPO, text=True,
+        ).strip()
+        # The enclosing traceability runner checks out an immutable candidate
+        # detached, so a local clone has no named coordinator branch to copy.
+        # Seed the fixture ref from that exact candidate before exercising the
+        # normal integration path.
+        git("update-ref", "refs/heads/agent/continuation-recovery", coordinator_sha)
         coordinator_sha = git("rev-parse", "refs/heads/agent/continuation-recovery")
         original_base = "2c508ff4248f16a3e3121d33a0fae7297c9b378e"
         self.assertEqual(git("merge-base", "--is-ancestor", original_base, coordinator_sha), "")
