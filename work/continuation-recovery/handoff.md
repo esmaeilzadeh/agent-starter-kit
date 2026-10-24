@@ -1,62 +1,75 @@
-> Current CR-3 continuation (2026-10-23): follow [the consolidated recovery decision](cr3-recovery-decision.md). It supersedes the serial proposal-review next steps; the planning history below remains preserved. CR-3 is interrupted, and the scoped T21 exception is not yet approved.
+# CR-3 continuation handoff
 
-# Isolated continuation-recovery planning handoff
+Updated: 2026-10-24. Workstream: `continuation-recovery`, task `CR-3`.
 
-## User objective and endpoint
+## User direction
 
-Apply every finding in the recovery plan re-review, seal the corrected plan and
-stop. No implementation, behavior tests, runtime bootstrap or product scheduling.
-The user then directed that urgent interrupt work use a separate branch and
-fresh context, with a required choice of base: current work branch, develop or
-main. They selected the recommended current branch with “rec”. Persist this
-rule in AGENTS.md using writing-for-agents, preserving unrelated instructions.
+Continue the existing CR-3 workstream from its current authorized stage until
+its loop is complete. Keep the work within CR-3; do not ask to expand scope.
+The user asked to preserve this conversation in a handoff note, commit it, and
+push the branch.
 
-## Isolation
+## Current repository state
 
-New branch: `agent/continuation-recovery`, created directly from the selected
-`agent/shorter-hashes` at `d04b3a4e515105df8cdf703f2fa0a28895f1524d`.
-`agent/shorter-hashes` has not advanced. The carried uncommitted planning changes
-are being checkpointed here for the fresh-context agent. They are unfinished
-design artifacts, not an accepted contract or implementation.
+- Branch: `agent/continuation-recovery`.
+- Source HEAD before this handoff: `16baab34a8ed8892df5f7846e907b469e11bbc73`.
+- Tracked worktree was clean; `./ask check-clean` passed.
+- CR-3 coordinator state is revision 29, `interrupted`, with three interrupted
+  attempts. CR-4 remains pending.
+- Accepted P0 plan digest: `bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec`.
+- Candidate `16baab3` has a registered P0 Green run
+  `6d36ea28edae44768e7e01e175a91d8a` with 12/12 mapped cases passing.
+- The attempt-2-to-3 reconciliation receipt has already been consumed. Do not
+  reuse it. A new attempt-3-to-4 receipt is required after the remaining P1
+  gates.
+- P1 has not been prepared or accepted. The T21 exception is not active until
+  the exact declaration is included in independently reviewed and accepted P1.
+- The independent source review approved `16baab3` as coordinator/verifier
+  source. The required exact-candidate test/semantic review record is still
+  absent: `./ask traceability check-completion` reports the missing
+  `traceability/reviews/16baab34a8ed8892df5f7846e907b469e11bbc73.json`.
 
-## Inputs and carried revisions
+## Corrected Red inventory for CR-T11 through CR-T21
 
-Original proposal/review: `work/shorter-hashes/continuation-recovery/`.
-Authoritative findings: `plan-review-reevaluation.md`, R1–R4. Revision-2 edits
-already present there propose real Git retention edges, coordinator-only run
-finalization, a reviewed CAS bootstrap and exact test source bindings. Existing
-canonical shorter-hashes spec/test/graph were edited before the isolation rule
-arrived; do not accept those changes into the original product workstream.
-Re-home the fix into `work/continuation-recovery/`, use its own canonical spec,
-test plan, TaskGraph and accepted-tests authority, and restore shorter-hashes
-canonical files and planning artifacts to the branch-point bytes where they
-were changed by this unfinished interrupt. Keep copied useful design content.
+The answer to “did I apply the default rule consistently?” is **no**. Treat a
+run as Red evidence only when it is a complete run of behavior-assertion
+failures with no setup/runtime/unsupported cases. A failed case inside an
+otherwise invalid run is not a valid Red.
 
-The separate branch removes the need to insert CR tasks into the original
-product scheduler to start the repair. Still fully address R2: define normal
-repair-workstream initialization, preserve the product's blocked legacy state,
-and specify a later explicit reviewed product adoption/integration handoff. A
-fresh repair context is not permission to infer old tasks completed. Reassess
-the carried combined-bootstrap design against the now-separate workstream.
+| Case | Evidence and treatment |
+| --- | --- |
+| T11 | No valid Red. Its failure in run `b5e4fc3b34c14e5a93312d2744be9adf` is unusable because that run also has setup/runtime errors. An approved baseline review found the assertion already passes at the task base; it is classified as regression, so Red is not required. |
+| T12 | No valid Red. It is classified as regression, so Red is not required. Earlier conversation incorrectly called run `6a96d09a0d4c4394951b47fa33a14dd7` a Red; its T12 failure is `final_green`, not Red. Preserve that failed Green history. |
+| T13 | No valid Red. It is `new`, so this remains unresolved. The accepted scenario requires two reopen cycles and preservation of both attempts plus the first consumed receipt. The mapped test `test_guard_rollback_and_explicit_attempts` currently invokes only one `test_interrupt_and_reopen_preserve_attempt_history` cycle. Do not claim Red continuity or infer a fix-ready failure from this mismatch. |
+| T14 | No valid Red. Its failure in invalid run `b5e4fc3b34c14e5a93312d2744be9adf` is unusable. An approved baseline review found the assertion already passes at the task base; it is classified as regression, so Red is not required. |
+| T19 | Valid behavior Red exists in `f21a95f6b4c4499aacf37a3ffd27a77d` and `dab908b39596441086d57106b8c816ec`; current candidate passes it. |
+| T20 | Valid behavior Red exists in `b50dd24e0ef04a2aacff4c4a26db4dd5`; current candidate passes it. |
+| T21 | No valid Red. The scoped decision permits only this case's historical-Red-unavailable exception, with all behavioral checks and current Green still required. P1 acceptance is still required before the exception is active. |
 
-## Formal sealing
+Run `b5e4fc3b34c14e5a93312d2744be9adf` contains behavior failures for T11,
+T12, T14 and T19, but T13, T20 and T21 have setup/runtime errors. Do not use
+that run as a valid Red. The distinct consumed-receipt selection defect has a
+valid Red under CR-T60 in run
+`f8207e36d1794b499e043ba263cacb32`; do not silently relabel that as T13
+evidence without an explicit per-case applicability assessment.
 
-Use current standard ask-spec/v1, ask-test-plan/v1 and graph contracts; obtain
-fresh independent exact-artifact approval before existing traceability accept-plan
-registers only `continuation-recovery`. Record a plan seal with source commit,
-digests, reviewer, user authorization and the explicit stop. Do not move the
-accepted-tests authority of shorter-hashes or mutate its runtime state. Approved
-product intent remains byte-identical. Do not claim runtime passes from planning.
+## Exact next work
 
-## Existing observations
+Resume from the approved CR-3 recovery decision and task-loop. Resolve the T13
+scenario-to-assertion gap within the already approved CR-3 scope. Establish
+whether its accepted two-cycle behavior can be made to fail on the appropriate
+pre-fix candidate; record only genuine, complete behavior Red. Do not fabricate
+Red or silently reclassify T13. Then continue the gated P0/P1 sequence in
+`cr3-recovery-decision.md` and `cr3-scoped-decision-record.md`: current Green,
+read-only preflight, fresh exact-candidate review, a new reviewed
+attempt-3-to-4 receipt, real reopen/checkpoint, integration evidence, and CR-4
+admission only after CR-3 completes.
 
-Original product state revision 11: Task1 integrated, Task2 blocked, Tasks3–10
-pending. Its code/history for Tasks1–5 predates the restarted queue. A baseline
-snapshot is in the carried `bootstrap-baseline.json`. Its observed accepted-tests
-ref and tracked pin may differ; preserve these observations without asserting
-historical approval validity. The original approved intent digest is
-`8784f3748505fe0ac51ccb9a7dfe78de0c04f79cd26dac58689fdee10cb084e6`.
+The strict per-test evidence rule is: ledger rows identify runs and candidates;
+per-test phase/outcome/failure kind come from each run's `results.json`. A
+behavior failure is Red only when the entire registered run is otherwise
+complete and valid. Regression cases do not need Red. A new case without valid
+Red must be reported as unresolved/not reproduced until actual evidence or an
+already approved narrow exception applies.
 
-Existing skills are prepared/readable; pin validation using
-`SKIP_INSTALL=1 ./ask prepare` and binding sync completed. Do not install unrelated
-skills or run setup. All labor and stepwise commits now belong to this branch.
+No tests were run for this documentation-only handoff update.
