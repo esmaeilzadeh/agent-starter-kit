@@ -1371,13 +1371,19 @@ class test_b(unittest.TestCase):
             "commit-tree", contract_tree, "-m", "parentless accepted authority"
         )
         current_plan_digest = self.json_digest(amended)
-        self.write(
-            "work/w/traceability-accepted.json",
-            json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
-                        "contract_sha": current_contract, "spec_digest": self.old_spec_digest,
-                        "plan_digest": current_plan_digest, "graph_digest": self.old_graph_digest,
-                        "plan_review": {"contract_source_sha": contract_source}}) + "\n",
-        )
+        plan_review = {
+            "decision": "APPROVED", "reviewer": "independent-reviewer",
+            "spec_digest": self.old_spec_digest, "plan_digest": current_plan_digest,
+            "contract_source_sha": contract_source,
+        }
+        current_pin = {
+            "schema": "ask-accepted-tests/v1", "work_id": "w",
+            "contract_sha": current_contract, "spec_digest": self.old_spec_digest,
+            "plan_digest": current_plan_digest, "graph_digest": self.old_graph_digest,
+            "reviewer": "independent-reviewer", "recorded_by": "coordinator",
+            "plan_review": plan_review, "plan_review_digest": self.json_digest(plan_review),
+        }
+        self.write("work/w/traceability-accepted.json", json.dumps(current_pin) + "\n")
         self.commit("record amended accepted plan")
         self.write(
             "work/w/traceability/executions.json",
@@ -1420,6 +1426,20 @@ class test_b(unittest.TestCase):
         self.assertIsNone(result, result)
         self.assertEqual(self.result_path.read_bytes(), original_result)
         self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], historical_contract)
+
+        # A reviewed source pointer must contain the exact documents sealed by
+        # the parentless authority. A self-consistent review digest alone is
+        # not enough to authorize a different contract source.
+        mismatched_review = dict(plan_review, contract_source_sha=historical_contract)
+        mismatched_pin = dict(current_pin, plan_review=mismatched_review,
+                              plan_review_digest=self.json_digest(mismatched_review))
+        self.write("work/w/traceability-accepted.json", json.dumps(mismatched_pin) + "\n")
+        mismatch = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
+        self.assert_recovery_required(
+            subprocess.CompletedProcess([], 1, stdout=json.dumps(mismatch), stderr=""),
+            "TaskResult contract identity mismatch",
+        )
+        self.write("work/w/traceability-accepted.json", json.dumps(current_pin) + "\n")
 
         # Normal CR-2 execution may append new traceability evidence between
         # coordinator checkpoints; unchanged historical evidence still carries.

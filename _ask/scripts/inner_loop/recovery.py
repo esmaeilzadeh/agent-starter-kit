@@ -304,6 +304,17 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
     contract_source = current_pin.get("contract_source_sha")
     if not isinstance(contract_source, str) and isinstance(review, dict):
         contract_source = review.get("contract_source_sha")
+    review_digest = hashlib.sha256(json.dumps(
+        review, sort_keys=True, separators=(",", ":")
+    ).encode()).hexdigest() if isinstance(review, dict) else None
+    if (not isinstance(review, dict)
+            or current_pin.get("plan_review_digest") != review_digest
+            or review.get("decision") != "APPROVED"
+            or review.get("reviewer") != current_pin.get("reviewer")
+            or current_pin.get("reviewer") == current_pin.get("recorded_by")
+            or review.get("spec_digest") != current_pin.get("spec_digest")
+            or review.get("plan_digest") != current_pin.get("plan_digest")):
+        return False
     # Acceptance authority commits are immutable records and may intentionally
     # have no Git parents. Scope carry-forward follows the bound contract
     # source, whose ancestry proves how the accepted documents evolved.
@@ -313,7 +324,9 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
         return False
     previous = _accepted_contract_documents(root, work_id, old_pin)
     current = _accepted_contract_documents(root, work_id, current_pin)
-    if previous is None or current is None:
+    source_pin = dict(current_pin, contract_sha=contract_source)
+    source = _accepted_contract_documents(root, work_id, source_pin)
+    if previous is None or current is None or source is None or source != current:
         return False
     if previous["spec"] != current["spec"]:
         return False
