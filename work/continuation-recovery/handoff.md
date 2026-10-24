@@ -29,47 +29,54 @@ push the branch.
   absent: `./ask traceability check-completion` reports the missing
   `traceability/reviews/16baab34a8ed8892df5f7846e907b469e11bbc73.json`.
 
-## Corrected Red inventory for CR-T11 through CR-T21
+## Corrected per-case Red inventory
 
-The answer to “did I apply the default rule consistently?” is **no**. Treat a
-run as Red evidence only when it is a complete run of behavior-assertion
-failures with no setup/runtime/unsupported cases. A failed case inside an
-otherwise invalid run is not a valid Red.
+Correction to the previous handoff: I incorrectly treated setup/runtime errors
+in sibling cases as invalidating behavior Red for the entire run. The harness
+stores outcomes per case. A registered Red report with complete collection and
+the target case recorded as `failed` / `behavior_assertion` is valid Red for
+that case; sibling cases recorded as setup/runtime errors do not erase it.
+Those sibling cases themselves do not receive Red. This matches
+`unittest_runner.py`'s per-case `failure_kind` and `completion.py`'s per-case
+Red selection.
 
-| Case | Evidence and treatment |
-| --- | --- |
-| T11 | No valid Red. Its failure in run `b5e4fc3b34c14e5a93312d2744be9adf` is unusable because that run also has setup/runtime errors. An approved baseline review found the assertion already passes at the task base; it is classified as regression, so Red is not required. |
-| T12 | No valid Red. It is classified as regression, so Red is not required. Earlier conversation incorrectly called run `6a96d09a0d4c4394951b47fa33a14dd7` a Red; its T12 failure is `final_green`, not Red. Preserve that failed Green history. |
-| T13 | No valid Red. It is `new`, so this remains unresolved. The accepted scenario requires two reopen cycles and preservation of both attempts plus the first consumed receipt. The mapped test `test_guard_rollback_and_explicit_attempts` currently invokes only one `test_interrupt_and_reopen_preserve_attempt_history` cycle. Do not claim Red continuity or infer a fix-ready failure from this mismatch. |
-| T14 | No valid Red. Its failure in invalid run `b5e4fc3b34c14e5a93312d2744be9adf` is unusable. An approved baseline review found the assertion already passes at the task base; it is classified as regression, so Red is not required. |
-| T19 | Valid behavior Red exists in `f21a95f6b4c4499aacf37a3ffd27a77d` and `dab908b39596441086d57106b8c816ec`; current candidate passes it. |
-| T20 | Valid behavior Red exists in `b50dd24e0ef04a2aacff4c4a26db4dd5`; current candidate passes it. |
-| T21 | No valid Red. The scoped decision permits only this case's historical-Red-unavailable exception, with all behavioral checks and current Green still required. P1 acceptance is still required before the exception is active. |
+| Test | Valid Red evidence | Current P0 Green | Disposition |
+| --- | --- | --- | --- |
+| CR-T10 | `b50dd24e0ef04a2aacff4c4a26db4dd5` on `3196a591e2ee0c75ee0bda1539a9319555273662` | Pass in `6d36ea28edae44768e7e01e175a91d8a` on `16baab34a8ed8892df5f7846e907b469e11bbc73` | Valid behavior Red; retain continuity evidence. |
+| CR-T11 | `b5e4fc3b34c14e5a93312d2744be9adf` on `ad716fec75e1aae27b198073b6fc6a5442d71780` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. Sibling setup/runtime errors do not invalidate this case's recorded assertion failure. |
+| CR-T12 | `b5e4fc3b34c14e5a93312d2744be9adf` on `ad716fec75e1aae27b198073b6fc6a5442d71780` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. Also preserve the separate failed `final_green` outcome in `6a96d09a0d4c4394951b47fa33a14dd7`; that run is not Red. |
+| CR-T13 | None. It is a setup/runtime error in `b5e4fc3b34c14e5a93312d2744be9adf`; its case outcome is `passed` in Red-phase run `f8207e36d1794b499e043ba263cacb32`. | Pass in `6d36ea28edae44768e7e01e175a91d8a` | **Cannot reproduce as mapped.** The accepted scenario says two reopen cycles; `test_guard_rollback_and_explicit_attempts` invokes one. Do not fix or claim Red for this case. Remove this unsupported mapping from P1; keep the actual receipt-selection defect under CR-T60. |
+| CR-T14 | `b5e4fc3b34c14e5a93312d2744be9adf` on `ad716fec75e1aae27b198073b6fc6a5442d71780` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. Sibling setup/runtime errors do not invalidate this case's recorded assertion failure. |
+| CR-T19 | `f21a95f6b4c4499aacf37a3ffd27a77d` on `94458d8376a75f052adbf2c4737f4f3c18cef4b6`; `dab908b39596441086d57106b8c816ec` on `8e61c14f6deafb334d3d4cbb8230abfde9358d5f`; also `b5e4fc3b34c14e5a93312d2744be9adf` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red; retain original report/ledger identities and assess plan continuity. |
+| CR-T20 | `b50dd24e0ef04a2aacff4c4a26db4dd5` on `3196a591e2ee0c75ee0bda1539a9319555273662` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. Its later setup/runtime error does not erase the earlier case-level Red. |
+| CR-T21 | None. The case is a setup/runtime error in `b5e4fc3b34c14e5a93312d2744be9adf` and passes in other Red-phase reports. | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Approved narrow historical-Red-unavailable exception; remains inactive until independently reviewed P1 is accepted. All behavior checks and current Green remain mandatory. |
+| CR-T58 | `e2a9dc4b3d5e41789117fae0b9623e93` on `5acba992f8cf928007f077451d5c23b1017d5eaa`; `f8207e36d1794b499e043ba263cacb32` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. |
+| CR-T59 | `f8207e36d1794b499e043ba263cacb32` on `fb1a0fc5735f3764d5ad5cf28a8beec22f22cc04` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. |
+| CR-T60 | `e2a9dc4b3d5e41789117fae0b9623e93` on `5acba992f8cf928007f077451d5c23b1017d5eaa`; `f8207e36d1794b499e043ba263cacb32` on `fb1a0fc5735f3764d5ad5cf28a8beec22f22cc04` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red for consumed-receipt selection/atomicity. Keep distinct from T13's one-cycle mapped test. |
+| CR-T61 | `e2a9dc4b3d5e41789117fae0b9623e93` on `5acba992f8cf928007f077451d5c23b1017d5eaa`; `f8207e36d1794b499e043ba263cacb32` | Pass in `6d36ea28edae44768e7e01e175a91d8a` | Valid behavior Red. |
 
-Run `b5e4fc3b34c14e5a93312d2744be9adf` contains behavior failures for T11,
-T12, T14 and T19, but T13, T20 and T21 have setup/runtime errors. Do not use
-that run as a valid Red. The distinct consumed-receipt selection defect has a
-valid Red under CR-T60 in run
-`f8207e36d1794b499e043ba263cacb32`; do not silently relabel that as T13
-evidence without an explicit per-case applicability assessment.
+The full P0 task Green report `6d36ea28edae44768e7e01e175a91d8a` records 12/12
+planned cases passing on candidate `16baab34a8ed8892df5f7846e907b469e11bbc73`.
+That is case execution evidence, not task completion: exact-candidate semantic
+review is still missing, P1 is not accepted, and the live attempt remains
+interrupted.
 
 ## Exact next work
 
-Resume from the approved CR-3 recovery decision and task-loop. Resolve the T13
-scenario-to-assertion gap within the already approved CR-3 scope. Establish
-whether its accepted two-cycle behavior can be made to fail on the appropriate
-pre-fix candidate; record only genuine, complete behavior Red. Do not fabricate
-Red or silently reclassify T13. Then continue the gated P0/P1 sequence in
-`cr3-recovery-decision.md` and `cr3-scoped-decision-record.md`: current Green,
-read-only preflight, fresh exact-candidate review, a new reviewed
-attempt-3-to-4 receipt, real reopen/checkpoint, integration evidence, and CR-4
-admission only after CR-3 completes.
+Continue the accepted CR-3 loop. Correct the P1 case map so CR-T13's
+unreproduced two-cycle claim is removed from active acceptance and recorded as
+“cannot reproduce as mapped”; keep CR-T60's actual receipt-selection Red and
+Green. Then complete independent P1 review/acceptance, P1 current Green and
+read-only preflight, a fresh exact-candidate review, a new reviewed
+attempt-3-to-4 receipt, real reopen/checkpoint, and integration evidence.
+CR-4 remains pending until CR-3 completes.
 
-The strict per-test evidence rule is: ledger rows identify runs and candidates;
-per-test phase/outcome/failure kind come from each run's `results.json`. A
-behavior failure is Red only when the entire registered run is otherwise
-complete and valid. Regression cases do not need Red. A new case without valid
-Red must be reported as unresolved/not reproduced until actual evidence or an
-already approved narrow exception applies.
+Evidence rule: ledger rows bind the report, phase, and candidate; each test's
+phase/outcome/failure kind comes from its own `results.json` entry. A target
+case is Red only when the registered Red report has complete collection and
+that case is a behavior assertion failure. An error in another case does not
+invalidate this case. Never count a setup/runtime failure as Red. A new case
+with no valid Red follows the cannot-reproduce/exception disposition; do not
+invent a Red or silently fix behavior that has not failed.
 
 No tests were run for this documentation-only handoff update.
