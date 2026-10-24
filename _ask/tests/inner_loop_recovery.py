@@ -2348,14 +2348,15 @@ class test_b(unittest.TestCase):
         # selects that historical test as a current task milestone.
         historical_run_id = "b50dd24e0ef04a2aacff4c4a26db4dd5"
         historical_relative = f"work/{work_id}/traceability/runs/{historical_run_id}/results.json"
-        historical_raw = (REPO / historical_relative).read_bytes()
+        runtime_root = Path(os.environ.get("ASK_TRACEABILITY_RUNTIME_ROOT") or REPO).resolve()
+        historical_raw = (runtime_root / historical_relative).read_bytes()
         historical_report = json.loads(historical_raw)
         self.assertEqual(historical_report["run_id"], historical_run_id)
         historical_target = root / historical_relative
         historical_target.parent.mkdir(parents=True, exist_ok=True)
         historical_target.write_bytes(historical_raw)
         executions_path = root / f"work/{work_id}/traceability/executions.json"
-        executions_raw = (REPO / f"work/{work_id}/traceability/executions.json").read_bytes()
+        executions_raw = (runtime_root / f"work/{work_id}/traceability/executions.json").read_bytes()
         executions = json.loads(executions_raw)
         executions_path.write_text(json.dumps(executions, indent=2) + "\n")
 
