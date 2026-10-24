@@ -1362,13 +1362,21 @@ class test_b(unittest.TestCase):
         ]
         self.write("work/w/test-plan.json", json.dumps(amended, sort_keys=True))
         self.commit("move an unrelated obligation to task b")
-        current_contract = self.git("rev-parse", "HEAD")
+        contract_source = self.git("rev-parse", "HEAD")
+        # Accepted authority commits are deliberately parentless. Their
+        # contract source retains the source ancestry, while the authority
+        # itself must not be used as an ancestry checkpoint.
+        contract_tree = self.git("rev-parse", f"{contract_source}^{{tree}}")
+        current_contract = self.git(
+            "commit-tree", contract_tree, "-m", "parentless accepted authority"
+        )
         current_plan_digest = self.json_digest(amended)
         self.write(
             "work/w/traceability-accepted.json",
             json.dumps({"schema": "ask-accepted-tests/v1", "work_id": "w",
                         "contract_sha": current_contract, "spec_digest": self.old_spec_digest,
-                        "plan_digest": current_plan_digest, "graph_digest": self.old_graph_digest}) + "\n",
+                        "plan_digest": current_plan_digest, "graph_digest": self.old_graph_digest,
+                        "plan_review": {"contract_source_sha": contract_source}}) + "\n",
         )
         self.commit("record amended accepted plan")
         self.write(

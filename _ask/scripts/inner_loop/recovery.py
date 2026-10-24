@@ -290,9 +290,6 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
         old_anchor = contract_sha
     else:
         old_pin = _json_at(root, base, f"work/{work_id}/traceability-accepted.json")
-    if not _is_ancestor(root, old_anchor or "", current_anchor):
-        return False
-
     try:
         current_pin = json.loads(
             (root / "work" / work_id / "traceability-accepted.json").read_text(encoding="utf-8")
@@ -302,6 +299,17 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
     if not isinstance(current_pin, dict):
         return False
     if not old_pin or not current_pin or current_pin.get("contract_sha") != current_anchor:
+        return False
+    review = current_pin.get("plan_review")
+    contract_source = current_pin.get("contract_source_sha")
+    if not isinstance(contract_source, str) and isinstance(review, dict):
+        contract_source = review.get("contract_source_sha")
+    # Acceptance authority commits are immutable records and may intentionally
+    # have no Git parents. Scope carry-forward follows the bound contract
+    # source, whose ancestry proves how the accepted documents evolved.
+    if (not isinstance(contract_source, str)
+            or not _commit_exists(root, contract_source)
+            or not _is_ancestor(root, old_anchor or "", contract_source)):
         return False
     previous = _accepted_contract_documents(root, work_id, old_pin)
     current = _accepted_contract_documents(root, work_id, current_pin)
