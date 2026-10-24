@@ -215,7 +215,8 @@ class RecoveryTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def _real_traceability_pair(self, runner_count=1, old_runner=False, run_reports=True):
+    def _real_traceability_pair(self, runner_count=1, old_runner=False, run_reports=True,
+                                setup_error_sibling=False):
         """Run the accepted plan on real failing and passing commits."""
         from verification.traceability.contracts import digest
         from verification.traceability.evidence import accept_plan
@@ -287,6 +288,12 @@ class RecoveryTests(unittest.TestCase):
         self.anchor_commit = self.git("rev-parse", "HEAD")
         started = self.run_cli("run", "w")
         self.assertEqual(started.returncode, 0, started.stdout + started.stderr)
+        sibling_setup = (
+            "    def setUp(self):\n"
+            "        if pathlib.Path('src/a.py').read_text() == 'red\\n':\n"
+            "            raise RuntimeError('sibling setup failure')\n"
+            if setup_error_sibling else ""
+        )
         self.write(
             "fixture.py",
             """import pathlib, unittest
@@ -294,7 +301,7 @@ class test_a(unittest.TestCase):
     def runTest(self): self.assertEqual(pathlib.Path('src/a.py').read_text(), 'green\\n')
     def id(self): return 'tests.test_a'
 class test_b(unittest.TestCase):
-    def runTest(self): self.assertEqual(pathlib.Path('src/a.py').read_text(), 'green\\n')
+""" + sibling_setup + """    def runTest(self): self.assertEqual(pathlib.Path('src/a.py').read_text(), 'green\\n')
     def id(self): return 'tests.test_b'
 """,
         )
@@ -305,12 +312,32 @@ class test_b(unittest.TestCase):
             self.write("src/a.py", "green\n")
             self.commit("CR-3 real assertion green fixture")
             return red_sha, self.git("rev-parse", "HEAD")
-        from verification.traceability.adapters import run_tests
-        contracts = {"spec": self.spec, "plan": self.old_plan}
-        red = run_tests(self.root, contracts, red_sha, "task", "a", "red")
+        if setup_error_sibling:
+            env = dict(os.environ, ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
+                       ASK_INNER_LOOP_ROLE="worker")
+            env["PYTHONPATH"] = os.pathsep.join(
+                part for part in (str(self.root / ".agents/ask"),
+                                  os.environ.get("PYTHONPATH", "")) if part
+            )
+            red_process = subprocess.run(
+                [sys.executable, "-m", "verification.traceability.cli", "--root",
+                 str(self.root), "run", "w", "--candidate-sha", red_sha,
+                 "--anchor-sha", self.anchor_commit, "--scope", "task",
+                 "--task-id", "a", "--phase", "red"],
+                cwd=self.root, env=env, capture_output=True, text=True,
+            )
+            self.assertEqual(red_process.returncode, 0,
+                             red_process.stdout + red_process.stderr)
+            red = json.loads(red_process.stdout)
+        else:
+            from verification.traceability.adapters import run_tests
+            contracts = {"spec": self.spec, "plan": self.old_plan}
+            red = run_tests(self.root, contracts, red_sha, "task", "a", "red")
         self.write("src/a.py", "green\n")
         self.commit("CR-3 real assertion green fixture")
         green_sha = self.git("rev-parse", "HEAD")
+        from verification.traceability.adapters import run_tests
+        contracts = {"spec": self.spec, "plan": self.old_plan}
         green = run_tests(self.root, contracts, green_sha, "task", "a", "final_green")
         return red, green
 
@@ -2150,7 +2177,7 @@ class test_b(unittest.TestCase):
         from verification.traceability.evidence import accept_plan
         from verification.traceability.evidence import load_historical_accepted, source_digests
 
-        red, green = self._real_traceability_pair()
+        red, green = self._real_traceability_pair(setup_error_sibling=True)
         evidence.checkpoint_run(self.root, "w", "a", red["run_id"])
         evidence.checkpoint_run(self.root, "w", "a", green["run_id"])
 
@@ -2204,6 +2231,10 @@ class test_b(unittest.TestCase):
             "preflight-run", "w", "a", "--run-id", current_green["run_id"])
         self.assertEqual(interrupted_preflight.returncode, 0,
                          interrupted_preflight.stdout + interrupted_preflight.stderr)
+        historical_red_preflight = self.run_cli(
+            "preflight-run", "w", "a", "--run-id", red["run_id"])
+        self.assertEqual(historical_red_preflight.returncode, 0,
+                         historical_red_preflight.stdout + historical_red_preflight.stderr)
         reopened = self.run_cli("reopen", "w", "a", "--reason", "exercise P1 historical Red")
         self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
 

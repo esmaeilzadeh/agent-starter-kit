@@ -126,10 +126,26 @@ def execute(args,root):
             try:doc['coordinator_finalization']=json.loads(finalized.stdout)
             except ValueError:raise Invalid('coordinator returned malformed run-finalization evidence')
         expected=[t for t in contracts['plan']['tests'] if args.scope=='workstream' or t['id'] in next(s['test_ids'] for s in contracts['plan']['task_scopes'] if s['task_id']==args.task_id)]
+        expected_ids={test['id'] for test in expected}
+        case_ids=[case.get('test_id') for case in doc['cases'] if isinstance(case,dict)]
+        red_cases_valid=(
+            len(doc['cases'])==len(expected)
+            and len(case_ids)==len(expected)
+            and set(case_ids)==expected_ids
+            and all(
+                case.get('outcome')=='passed'
+                or (case.get('outcome')=='failed'
+                    and case.get('failure_kind')=='behavior_assertion')
+                or (case.get('outcome')=='error'
+                    and case.get('failure_kind')=='setup_or_runtime_error')
+                for case in doc['cases']
+            )
+        )
         if (any(r['collection_status']!='ok' for r in doc['executions'])
+            or (args.phase=='red' and not red_cases_valid)
             or (args.phase=='final_green' and len(doc['cases'])!=len(expected))
             or (args.phase=='final_green' and (any(r['exit_code']!=0 for r in doc['executions']) or any(c['outcome']!='passed' for c in doc['cases'])))
-            or (args.phase=='red' and (not any(c['outcome']=='failed' and c['failure_kind']=='behavior_assertion' for c in doc['cases']) or any(c['outcome'] in {'error','unsupported_subtest'} for c in doc['cases'])))):
+            or (args.phase=='red' and not any(c.get('outcome')=='failed' and c.get('failure_kind')=='behavior_assertion' for c in doc['cases']))):
             return doc,1
     elif args.command=='record-result':
         if args.result=='pass':

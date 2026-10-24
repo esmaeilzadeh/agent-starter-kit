@@ -336,6 +336,11 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
                 raise NotIntegrable('behavior assertion failure is not bound to a failing Red execution')
             behavior_red = True
             behavior_red_executions.add(execution['id'])
+        elif (outcome == 'error' and case.get('failure_kind') == 'setup_or_runtime_error'
+              and execution['phase'] == 'red'):
+            # A setup/runtime error belongs to this case only. It must not
+            # erase a sibling case's independently recorded behavior Red.
+            pass
         elif outcome != 'passed':
             raise NotIntegrable('traceability case contains an error or unsupported outcome')
         if execution['phase'] == 'final_green' and outcome != 'passed':
