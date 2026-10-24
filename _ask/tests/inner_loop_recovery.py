@@ -1421,6 +1421,8 @@ class test_b(unittest.TestCase):
         self.write("work/w/traceability/executions.json", json.dumps([ledger_row]) + "\n")
         state = json.loads(state_path.read_text(encoding="utf-8"))
         publish(self.root, "w", state)
+        self.write("work/w/traceability/plan-review-scope-carry-forward.md",
+                   "Independent review note for the accepted plan.\n")
 
         result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(result, result)

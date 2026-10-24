@@ -598,6 +598,10 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
                 and parts[0].endswith(".json")):
             allowed_new.add(name)
             continue
+        if (len(parts) == 1 and parts[0].startswith("plan-review-")
+                and parts[0].endswith(".md")):
+            allowed_new.add(name)
+            continue
         if (len(parts) == 2 and parts[0] in {"reviews", "static-runs"}
                 and all(part and all(char.isalnum() or char in "-_." for char in part)
                         for part in parts)
