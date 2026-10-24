@@ -27,9 +27,9 @@ Preconditions (`./ask check-workstream` for feature work; see `_ask/policies/wor
 ```text
 clean working tree          ← still hard (safety)
 dedicated branch
-explicit human confirmation of the complete current intent and assumptions
+explicit complete-intent approval ← feature path
 accepted spec and plan      ← feature path; prepare from defaults if missing
-existing contract plus concise repair record ← reproduced-bug path
+reporter-authorized repair request and concise reproduction record ← bug-fix path
 no unrelated uncommitted changes
 ```
 

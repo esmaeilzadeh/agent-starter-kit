@@ -13,6 +13,12 @@ Output artifact: `work/<work-id>/intent.md` (from `_ask/templates/intent.md`).
 
 ## Adopted subject intake
 
+Before this stage or its subject-intake command, apply the mandatory request
+route gate in root `AGENTS.md` and `_ask/policies/workflow.md`. A reported defect
+against existing behavior does not enter Grill. If a request mixes a defect and
+a behavior change, Grill only the separate feature workstream. Direct `/01-grill`
+invocation does not bypass routing.
+
 Before selecting/creating execution work or recording intent, invoke the shared
 read-only intake for this request:
 

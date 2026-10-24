@@ -2,18 +2,40 @@
 
 The kit’s default feature path is Explore (if foggy) → Grill → Spec → Challenge → Plan → Implement → Review → Refactor → Verify → Accept.
 
-That path is **guidance**. It must not feel like a lock, and it must not feel like optional paperwork you can omit while still “on the kit.”
+## Request route gate
+
+Run this gate after continuation recovery and before choosing any stage prompt,
+slash command, or skill. Classify each independently deliverable outcome against
+the accepted expected behavior. State the route and its evidence before any
+stage-specific question or action; do not continue until every outcome has a
+route:
+
+- **Bug fix:** reported behavior violates an existing contract. Start from the
+  reporter’s context and reproduce the fault.
+- **Feature:** the request adds behavior or changes the existing contract. Use
+  the feature path.
+- **Mixed request:** create separate bug-fix and feature workstreams, each with
+  its own scope and evidence. Record dependencies and run overlapping work in
+  sequence.
+
+If the expected behavior is unclear, ask one concise question to distinguish an
+existing-contract defect from a requested behavior change. A direct stage
+invocation does not bypass this gate. Do not make a reported defect enter the
+feature path because the report mentions possible edge cases or because an
+accepted guard has no historical Red.
+
+That feature path is **guidance**. It must not feel like a lock, and it must not feel like optional paperwork you can omit while still “on the kit.” The request route gate remains mandatory for every path.
 
 ## Reproduced bug fixes
 
 When a request reports a defect, compare the observed behavior with the
 existing accepted contract and reproduce the reported fault first. If it
 reproduces, reuse that contract and record only the observed/expected behavior,
-reproduction, focused regression test, minimal fix, and verification. Do not
-create a new feature spec/plan or tests for hypothetical failure modes. Keep
-Red focused on the reproduced defect; existing accepted edge guards are Green
-checks, not separate Red targets. Run the relevant broader suite at the task's
-verification boundary.
+reporter reproduction, focused regression test, minimal fix, and verification.
+Do not create a new feature spec/plan or tests for hypothetical failure modes.
+Keep Red focused on the reproduced defect; existing accepted edge guards are
+Green checks, not separate Red targets. Run the relevant broader suite at the
+task's verification boundary.
 
 If the fault does not reproduce, record what was tried and gather evidence
 without inventing a Red or a fix. If expected behavior is undefined or the
@@ -53,9 +75,9 @@ does not override an explicit stop; an explicit endpoint direction does.
 
 Every new Cursor session starts **on-path**. There is no durable off-path flag in git.
 
-`/off-path` (`.cursor/commands/off-path.md`, source `_ask/cursor-commands/off-path.md`) switches **only the current chat**. Warn once, then follow. Do not write `work/*/kit-path` or record off-path in `intent.md`.
+`/off-path` (`.cursor/commands/off-path.md`, source `_ask/cursor-commands/off-path.md`) switches **only the current chat**. Warn once, then follow the requested implementation style. It does not bypass request routing, reproduction of a reported bug, or the separation of mixed work. Do not write `work/*/kit-path` or record off-path in `intent.md`.
 
-A new chat is on-path again. Saying “skip the kit” / “just code” in an on-path session has the same session-only effect (warn once, follow) without needing the slash command.
+A new chat is on-path again. Saying “skip the kit” / “just code” in an on-path session has the same session-only effect for feature-workflow artifacts (warn once, follow) without needing the slash command. The request route gate still applies.
 
 ## Still hard (safety, not ceremony)
 

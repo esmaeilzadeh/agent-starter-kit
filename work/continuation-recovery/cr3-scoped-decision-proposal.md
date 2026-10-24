@@ -1,8 +1,11 @@
 # CR-3 scoped decision proposal
 
-Status: draft for one human scope decision. This file is not an accepted
-contract, an `accept-plan` receipt, a T21 authorization, or permission to
-change source/runtime state. It supplements
+Status: superseded historical proposal. Do not use this draft to classify test
+Red targets or authorize implementation. The user withdrew its repeated-reopen
+Red treatment of CR-T13; see `cr3-recovery-decision.md` and
+`cr3-t13-disposition.md` for the current classification. This file is not an
+accepted contract, an `accept-plan` receipt, a T21 authorization, or permission
+to change source/runtime state. It supplements
 [`cr3-recovery-decision.md`](cr3-recovery-decision.md); that decision note
 controls if any wording here differs.
 
