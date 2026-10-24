@@ -1,7 +1,0 @@
-Production revision: 2c508ff4248f16a3e3121d33a0fae7297c9b378e
-Test sources overlaid from 0a50776d7a3c62d64ed45e73e13d1a909120ba24; diagnostic probe, not immutable registered execution.
-..
-----------------------------------------------------------------------
-Ran 2 tests in 4.576s
-
-OK

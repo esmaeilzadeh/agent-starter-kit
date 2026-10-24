@@ -1,7 +1,0 @@
-{
-  "schema": "ask-verify-result/v1",
-  "commit_sha": "767b83dd56b32ba155020a7996510cfea0233ec0",
-  "result": "fail",
-  "checks": [],
-  "error": "candidate acceptance document differs from coordinator authority"
-}
