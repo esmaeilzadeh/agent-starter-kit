@@ -796,7 +796,7 @@
       "change_kind": "new",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
       "scenario": {
-        "given": "A fixture mirrors old Tasks 1\u20135 execution with a restarted queue and reviewed legacy provenance",
+        "given": "A fixture mirrors old Tasks 1–5 execution with a restarted queue and reviewed legacy provenance",
         "when": "Read-only report and explicit adoption are performed",
         "then": [
           "Original base/candidate and Red/Green provenance remain intact",
@@ -855,8 +855,8 @@
         "given": "A reconciled multi-task legacy checkpoint and audit report exist",
         "when": "Export/reload and select next eligible milestone without scheduling product work",
         "then": [
-          "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
-          "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
+          "Tasks 1–5 are individually accounted for with verified versus missing evidence",
+          "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
           "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
         ]
       },
@@ -864,24 +864,24 @@
         {
           "criterion_id": "CR-02",
           "checks": [
-            "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
-            "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
+            "Tasks 1–5 are individually accounted for with verified versus missing evidence",
+            "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
             "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
           ]
         },
         {
           "criterion_id": "CR-06",
           "checks": [
-            "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
-            "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
+            "Tasks 1–5 are individually accounted for with verified versus missing evidence",
+            "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
             "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
           ]
         },
         {
           "criterion_id": "CR-08",
           "checks": [
-            "Tasks 1\u20135 are individually accounted for with verified versus missing evidence",
-            "Tasks 6\u201310 remain pending absent evidence and no product task starts before authorization",
+            "Tasks 1–5 are individually accounted for with verified versus missing evidence",
+            "Tasks 6–10 remain pending absent evidence and no product task starts before authorization",
             "Reviewed adoption refuses stale exact product preimages, active writers and unsupported verifier/schema, preserves all original attempts and never schedules product tasks"
           ]
         }
@@ -913,7 +913,7 @@
       "change_kind": "regression",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_isolated_repair_initialization_and_legacy_handoff",
       "scenario": {
-        "given": "Separate repair workstream with its four-task contract and an immutable fixture of the original blocked ten-task state (revision 11, Task1 integrated, Task2 blocked, Tasks3\u201310 pending)",
+        "given": "Separate repair workstream with its four-task contract and an immutable fixture of the original blocked ten-task state (revision 11, Task1 integrated, Task2 blocked, Tasks3–10 pending)",
         "when": "Normal existing initialization admits CR-1, then after simulated valid CR-1 integration admits CR-2 (without executing the future CR-2 outcome) in disposable repositories",
         "then": [
           "Repair admission never indexes missing CR IDs in the product state; normal guards recognize only its own workstream identity",
@@ -2419,7 +2419,7 @@
       "change_kind": "new",
       "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_scope_compatible_historical_task_result_survives_plan_amendment",
       "scenario": {
-        "given": "An integrated task result is bound to a prior accepted contract, and the amended plan keeps that task\u2019s current cases unchanged while moving another case to a different task",
+        "given": "An integrated task result is bound to a prior accepted contract, and the amended plan keeps that task’s current cases unchanged while moving another case to a different task",
         "when": "Recovery evaluates the retained TaskResult against the amended accepted contract",
         "then": [
           "Preserve the original result and contract identity as historical evidence.",
