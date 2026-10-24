@@ -5,8 +5,8 @@ The accepted P0 plan digest is
 `bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec`; its
 contract and implementation history remain preserved. P1 adds the reviewed
 per-case Red continuity rows, the approved narrow T21 missing-Red declaration,
-and exact coordinator/verifier source binding. CR-T13 is recorded as cannot
-reproduce as mapped and remains only as a one-cycle regression guard; see
+and exact coordinator/verifier source binding. CR-T13 is a one-cycle regression
+guard, not a bug-reproduction case; no defect is claimed. See
 `cr3-t13-disposition.md`. It retains Revision 10's CR-T38 and CR-T55–57 changes,
 checkpoint closure, and CR-T57 ownership. CR-T22 remains mapped only to CR-07.
 P0 did not activate the CR-T21 exception; P1 activates it only after exact
@@ -56,6 +56,13 @@ Preflight, completion selection and `checkpoint-run` use this same decision;
 preflight derives identities from retained state, is read-only, and never marks
 a task milestone.
 
+Human direction for this continuation clarifies the TDD classification: a case
+in the accepted test map is not automatically a Red target. Reproduce an actual
+reported defect against the existing contract first, then add its focused
+regression and make the smallest fix. Existing edge guards remain Green checks;
+do not plan tests for hypothetical failures. CR-T13 is such a guard: its test
+covers one authorized reopen cycle and does not claim a two-cycle defect.
+
 The coordinator pinned at the original CR-3 base `2c508ff` cannot enforce
 P1's per-case continuity table or the narrow T21 declaration. Keep that task
 base and every historical runner identity unchanged. The approved scope change
@@ -89,7 +96,7 @@ its first candidate failed aggregate integration and is not integrated.
 | --- | --- | --- | --- | --- |
 | CR-1 | Work-ID-scoped reconciliation before admission; state/driver/recovery/CLI, immutable fixture, recovery assertion, and mapped traceability entrypoint modules, shell entry, plus compatibility with existing coordinator reliability and public-entrypoint assertions | none | CR-T01–04,17,22–37,39–54 | Actual assertion Red/Green, Refactor, independent exact review, normal verification/FF integration including the mapped reliability suite; isolated queue admits CR-1 and subsequently CR-2 while product bytes remain unchanged |
 | CR-2 | Git-retained checkpoint closure, cache recovery, transfer CLI, explicit attempt interruption/reopen with retained prior plan and run history, scope-aware prior TaskResult validation, and durable attribution of interrupted candidate paths; checkpoint/attempts/state/driver/recovery/CLI | CR-1 | CR-T05–09,18,38,55–57 | CAS/crash/cache and post-FF checkpoint replay assertions, attempt-history replay and explicit reopen, scope-compatible historical result carry-forward, checkpoint-retained interrupted candidate attribution, GC and separate-object-database bundle E2E; real Red/Green, Refactor, review, integration |
-| CR-3 | Coordinator finalization and historical evidence recovery; exact receipt lifecycle, read-only preflight, per-case historical Red continuity, exact T21 exception enforcement, and reviewed coordinator/verifier upgrade. CR-T12 is narrowly reclassified as regression while retaining its failed `final_green`; CR-T13's claimed two-cycle issue is cannot-reproduce as mapped and its single-cycle assertion remains a regression guard; CR-T21 has the exact P1 historical-Red-unavailable declaration. | CR-2 | CR-T10–12,14,19–21,58–61 | Preserve actual P0 behavior Reds; P1 binds exact per-case continuity, requires current Green and Refactor, and completes independent contract/source review; run the disposable two-interruption lifecycle through the exact reviewed coordinator/verifier integration path; preserve original reports, ledger rows, bases, attempts and consumed receipt |
+| CR-3 | Coordinator finalization and historical evidence recovery; exact receipt lifecycle, read-only preflight, per-case historical Red continuity, exact T21 exception enforcement, and reviewed coordinator/verifier upgrade. CR-T12 is narrowly reclassified as regression while retaining its failed `final_green`; CR-T13 remains a one-cycle regression guard with no claimed defect; CR-T21 has the exact P1 historical-Red-unavailable declaration. | CR-2 | CR-T10–12,14,19–21,58–61 | Preserve actual P0 behavior Reds; P1 binds exact per-case continuity, requires current Green and Refactor, and completes independent contract/source review; run the disposable two-interruption lifecycle through the exact reviewed coordinator/verifier integration path; preserve original reports, ledger rows, bases, attempts and consumed receipt |
 | CR-4 | Legacy reconciliation/adoption implementation and disposable tests; recovery/CLI and immutable fixtures; read-only real audit/proposal under adoption/ | CR-3 | CR-T15–16 | Exact Tasks1–5 provenance audit and independently reviewed adoption proposal; missing evidence honest; product state/authority untouched; real Red/Green, Refactor, review, normal repair integration |
 
 Owned paths are enumerated in the graph. CR-1 creates immutable fixture and test
@@ -102,9 +109,9 @@ CR-3 automatic finalization exists. No task is a deferred design decision.
 All eight criteria map to integration and E2E obligations. Every case has
 exactly one responsible task, observable scenarios, exact source paths and
 per-criterion assertions. CR-T58–61 each cover a distinct P0 behavior. CR-T60
-owns receipt request binding and atomic stale-request refusal. CR-T13's
-single-cycle regression guard does not represent the claimed repeated-reopen
-issue; its cannot-reproduce disposition is recorded separately. CR-T12's
+owns receipt request binding and atomic stale-request refusal. CR-T13 is only a
+single-cycle guard; no repeated-reopen defect is claimed or assigned to it.
+CR-T12's
 regression classification retains its failed `final_green` history. P1 declares
 the narrow T21 historical-Red-unavailable exception while retaining every
 behavioral check and current Green requirement. Historical Reds are selected
@@ -149,8 +156,8 @@ approved intent remains byte-identical. P0 was accepted without an active T21
 exception, and its mapped Red/Green evidence is preserved. The P1 draft binds
 only cases with valid per-case behavior Reds, the exact approved T21 decision,
 and independently reviewed coordinator/verifier commit/tree identities. The
-T13 disposition is recorded in `cr3-t13-disposition.md`; no Red is invented
-for it. Complete exact P1 review and normal coordinator acceptance, then run
+T13 guard classification is recorded in `cr3-t13-disposition.md`; it has no
+Red requirement. Complete exact P1 review and normal coordinator acceptance, then run
 P1 current Green and read-only preflight. Only after those pass, create a fresh
 attempt-3-to-4 receipt, reopen, checkpoint, obtain exact-candidate review, and
 complete normal integration.

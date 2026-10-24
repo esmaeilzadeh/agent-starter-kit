@@ -22,6 +22,16 @@ added machinery to satisfy that reassessment. Some implementation defects were
 real, but a new prose proposal at every finding did not advance the first
 unmet milestone. The coordinator reviewer accepts responsibility for this.
 
+## Later clarification from the user (2026-10-24)
+
+This clarification supersedes the T13 treatment below and any earlier proposal
+that assigned a repeated-reopen defect to T13. T13 is a one-cycle regression
+guard, not a bug-reproduction case; no T13 defect or Red is claimed. For an
+actual reported bug, reproduce the faulty behavior against the existing
+contract, add the focused failing regression, and make the minimal fix. Do not
+turn hypothetical failure modes into feature plans or separate Red targets.
+CR-T60 remains the distinct consumed-receipt defect.
+
 ## Authoritative requirements and corrections
 
 | Source | Required behavior | Effect on CR-3 |
@@ -79,7 +89,7 @@ That is an applicability/reconciliation problem, not proof that no Red occurred.
 | T10 | Retain original Red with its exact scope; independently assess test evolution; current Green and observer sensitivity evidence. |
 | T11, T14 | Keep already accepted regression classifications. |
 | T12 | Prepare the already-supported narrow regression reclassification; preserve its failed `final_green` phase. |
-| T13 | Retain prior passing history; capture real Red for the newly discovered repeated-reopen/receipt defect before fixing that behavior. |
+| T13 | Superseded: retain it as a one-cycle regression guard; it is not a bug-reproduction case and has no Red requirement. |
 | T19 | Retain applicable original/attempt-2 Red and review source continuity; use current Green. |
 | T20 | Retain its original Red with applicable mapped behavior and current Green. |
 | T21 | No valid retained Red for the expanded behavior. Keep `new`, all behavioral checks, and disclose the gap. The narrow exception still requires a submitted human decision. |
@@ -137,7 +147,7 @@ can be complete without becoming the active contract. Do not interpret the
 request to improve this note as approval of T21's exception.
 
 The single human decision package must contain the complete concrete proposal:
-T12 reclassification; T13 receipt regression; historical evidence applicability;
+T12 reclassification; T13 guard clarification; T60 receipt regression; historical evidence applicability;
 T21's one-case exception at both task and workstream completion; preflight and
 bootstrap work while interrupted; exact additional ownership; and any required
 trusted-verifier compatibility/migration. T10 semantic continuity is assessed
@@ -237,10 +247,10 @@ workstream. Each fixture owns its own state, refs, ledger and authority.
 
 The accepted test plan must map every new selector to an existing CR criterion,
 task and exact source paths. CR-T58–61 are proposed IDs, not already accepted
-cases. Resolve overlap between extended T13 and any added receipt case before
-acceptance: each selector has one case/task mapping; distinct additional cases
-must test distinct required outcomes. Test filtering cannot silently omit
-mapped cases to obtain a passing full-scope run.
+cases. T13 remains its one-cycle guard; T60 covers receipt request identity and
+stale-request atomic refusal. Each selector has one case/task mapping; distinct
+additional cases must test distinct required outcomes. Test filtering cannot
+silently omit mapped cases to obtain a passing full-scope run.
 
 ### E. Command and environment discipline
 

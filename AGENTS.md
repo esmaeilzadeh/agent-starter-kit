@@ -5,6 +5,15 @@ This repository uses the AI Engineering Starter Kit (Cursor-first).
 Protocol SoT for stages, bindings, and verification is `.agents/ask/`. `_ask/` holds Guide, Build Spec, policies, skills manifest, and templates. `_ask/agents` and `_ask/bindings` are pointers. Do not treat Cursor config as the source of truth.
 When an inner-loop TaskGraph is active, follow `.agents/ask/task-loop.md` for per-task Red → Green → Refactor, independent Review, correction, and integration evidence.
 
+## Bug reports
+
+Before treating a reported defect as feature work, check the existing expected
+behavior and reproduce the fault. If it reproduces against the existing
+contract, use the focused bug-fix path in `_ask/policies/workflow.md`; do not
+create a new feature spec/plan or tests for hypothetical failure modes. If it
+does not reproduce, gather evidence without inventing a Red or fix. If expected
+behavior is undefined or must change, use the normal feature path.
+
 ## Checklist
 
 1. **Continuation before new-task intake:** For “continue,” “resume,” or equivalent, inspect the current branch, workstream artifacts, inner-loop state, and recent commits. Resolve an explicitly named workstream first; if it is ambiguous or unavailable, ask about it and do not substitute the checkout. Without an explicit target, prefer a matching checked-out `agent/<work-id>` workstream over unrelated live workstreams. Resume its exact authorized stage and task. If it is terminal or its plan explicitly stops, report that endpoint without a chooser and do not infer later-stage authorization. A later explicit human direction can supersede that endpoint; record it in the plan or a scoped authorization artifact and keep the approved `intent.md` byte-identical when What/Why/assumptions are unchanged. A generic “continue” does not override an explicit stop. Use remaining evidence for other checkouts; ask only when no target is identifiable, multiple targets remain plausible, or stage/authorization evidence conflicts. **Explore gate (new task):** apply only after establishing that the request starts a genuinely new task. Decide foggy vs clear and **say so**. `/00-explore` (or explicit “00-explore”) → start kit **00 Explore** immediately (not Cursor’s built-in Explore subagent); do not ask whether Explore is needed. Free chat → offer **Start Explore** / **Start Grill** choice buttons and wait for a submitted choice. `/01-grill` does not skip 00 when the destination is foggy. **Real skip** (destination already ownable): omit 00; do not write `explore-map.md`; put `Explore skipped: destination already clear.` in `intent.md`. If 00 runs: create `work/<work-id>/explore-map.md` if missing; Handoff must be non-empty before 01.
