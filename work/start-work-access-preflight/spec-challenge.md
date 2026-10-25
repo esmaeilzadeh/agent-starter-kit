@@ -7,7 +7,7 @@
 ## Specification
 
 `specs/current/start-work-access-preflight.md` and its JSON companion;
-reviewed at `03076c4f2a7e62eb7d7a6c3c071e7b5322c141a9`.
+reviewed at `5c6e6b78da556a62e0cb54dc0beb68076465d197`.
 
 ## Ambiguities
 
@@ -32,6 +32,9 @@ None.
 
 ## Challenge verdict
 
-PASS. Independent review approved criteria, failure handling, and review-only
-fallback rationale. Reviewed Markdown SHA-256:
-`4e056ca9a7a4d744a4a3dcdf0378057887d00030a2c96bff6d3e5bc0c4a6eaa5`.
+PASS. Independent review approved criteria, failure handling, and all planned
+test types. It confirms ACC-005 tests the written instruction contract; it
+does not claim to prove runtime compliance.
+
+Spec digest: `b157d0bd02a8cb8aacad8ef3bb6c3b96ae465fe73d7fda5259c39a1f42348b1f`.
+Test-plan digest: `48ed95a905ce53366bcaf99a10e6651a93454a25909becfe4435cc7a32cfc146`.
