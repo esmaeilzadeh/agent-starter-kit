@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "ef5b787391684b60d401a12efbaaee7125b2556f",
+  "contract_sha": "2d35df0fdd63924130bb5a09f86ea1228ab4e297",
   "work_id": "start-work-access-preflight",
   "reviewer": "access_preflight_spec_challenge (codex/gpt-6-astra)",
   "recorded_by": "coordinator",
@@ -10,11 +10,11 @@
   "plan_review": {
     "decision": "APPROVED",
     "reviewer": "access_preflight_spec_challenge (codex/gpt-6-astra)",
-    "spec_digest": "b157d0bd02a8cb8aacad8ef3bb6c3b96ae465fe73d7fda5259c39a1f42348b1f",
-    "plan_digest": "48ed95a905ce53366bcaf99a10e6651a93454a25909becfe4435cc7a32cfc146"
+    "spec_digest": "fc058661dd99a2c50759172650c2f110df4315b46f3956ca47e829cfcc3fe66d",
+    "plan_digest": "8449c0baab73f6b5cfac22da776eef3104dcead62d52545bb01f8f56dd8ff038"
   },
-  "plan_review_digest": "cc292d7ae2e6f5626f20d97fe8211199466160abc47ef709c67d3faff340d920",
-  "spec_digest": "b157d0bd02a8cb8aacad8ef3bb6c3b96ae465fe73d7fda5259c39a1f42348b1f",
-  "plan_digest": "48ed95a905ce53366bcaf99a10e6651a93454a25909becfe4435cc7a32cfc146",
-  "graph_digest": "ad022c75803618a1b83a18e362c57a6aed3f832205131071b1956867c37543d7"
+  "plan_review_digest": "fe42edcba92251df2f9a29e81bd6a081061857147dbaf620438499d706e10f4e",
+  "spec_digest": "fc058661dd99a2c50759172650c2f110df4315b46f3956ca47e829cfcc3fe66d",
+  "plan_digest": "8449c0baab73f6b5cfac22da776eef3104dcead62d52545bb01f8f56dd8ff038",
+  "graph_digest": "e8ff7df0ae82ac52b36a10596becaa8e110ea629ba62ee59ebf25d7b256f2e35"
 }
