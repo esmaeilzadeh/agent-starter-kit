@@ -341,6 +341,8 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
               and execution['phase'] == 'red'):
             # A setup/runtime error belongs to this case only. It must not
             # erase a sibling case's independently recorded behavior Red.
+            if execution['exit_code'] == 0:
+                raise NotIntegrable('setup/runtime error is bound to a passing execution')
             setup_error_executions.add(execution['id'])
         elif outcome != 'passed':
             raise NotIntegrable('traceability case contains an error or unsupported outcome')
