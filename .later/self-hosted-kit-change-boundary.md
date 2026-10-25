@@ -54,3 +54,16 @@ Explore and review.
 This is separate from the active continuation-recovery bug fix and from the
 parked proposal to reconsider mandatory Red evidence. It does not authorize
 implementation or a repository-wide language migration.
+
+## CR-4 closeout evidence
+
+At candidate `622e89c`, all 38 CheckPlan checks passed, while outer completion
+rejected a task review at the workstream boundary and stale CR-T10 historical
+source bindings after a dependent task changed shared recovery code. Focused
+CR-4 completion also enforced the per-case Reds explicitly waived by the human.
+Normal report-based integration succeeded at coordinator revision 59, but the
+wrapper spent its remaining time rescanning state and reached its timeout after
+that successful publication. Preserve these as examples for this parked design
+work; the CR-4 repair applied the human's one-time exception without changing
+global policy or manufacturing evidence. See
+`work/continuation-recovery/cr4-completion.md`.
