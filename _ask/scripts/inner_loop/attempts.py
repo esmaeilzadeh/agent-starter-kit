@@ -38,6 +38,21 @@ def accepted_plan_digest(root: Path, work_id: str) -> str:
     return digest if isinstance(digest, str) else ""
 
 
+def accepted_plan_review_digest(root: Path, ref: str) -> str:
+    if not ref:
+        return ""
+    proc = subprocess.run(["git", "show", f"{ref}:accepted.json"], cwd=root,
+                          capture_output=True, text=True)
+    if proc.returncode:
+        return ""
+    try:
+        decision = json.loads(proc.stdout)
+    except (TypeError, ValueError):
+        return ""
+    digest = decision.get("plan_review_digest", "") if isinstance(decision, dict) else ""
+    return digest if isinstance(digest, str) else ""
+
+
 def _is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
     return bool(ancestor and descendant) and subprocess.run(
         ["git", "merge-base", "--is-ancestor", ancestor, descendant], cwd=root,
@@ -294,8 +309,13 @@ def reopen_task(root: Path, work_id: str, task_id: str, reason: str) -> dict:
             raise ProtocolViolation("accepted test-plan ref is unavailable; cannot reopen this task")
         if not current_digest:
             raise ProtocolViolation("accepted plan digest is unavailable; cannot reopen this task")
-        if (current_ref == history[-1].get("accepted_plan_ref")
-                or current_digest == history[-1].get("accepted_plan_digest")):
+        previous_ref = history[-1].get("accepted_plan_ref") or ""
+        previous_digest = history[-1].get("accepted_plan_digest") or ""
+        previous_review_digest = accepted_plan_review_digest(root, previous_ref)
+        current_review_digest = accepted_plan_review_digest(root, current_ref)
+        if (current_ref == previous_ref
+                or (current_digest == previous_digest
+                    and current_review_digest == previous_review_digest)):
             raise ProtocolViolation("accept the reviewed plan amendment before reopening this task")
 
         attempt = new_attempt(task_id, task, root, work_id, int(doc["revision"]) + 1)

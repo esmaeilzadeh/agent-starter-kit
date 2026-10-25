@@ -690,6 +690,67 @@ class test_b(unittest.TestCase):
         finally:
             fresh.doCleanups()
 
+        source_rebind = type(self)("test_guard_rollback_and_explicit_attempts")
+        source_rebind.setUp()
+        try:
+            source_rebind._source_only_plan_rebind_allows_reopen()
+        finally:
+            source_rebind.doCleanups()
+
+    def _source_only_plan_rebind_allows_reopen(self):
+        from verification.traceability.contracts import digest, load
+        from verification.traceability.evidence import accept_plan, write_json
+
+        review_path = "work/w/traceability/plan-review.json"
+        self._real_traceability_pair(run_reports=False)
+        accepted_before = load(self.root / "work/w/traceability-accepted.json")
+        previous_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
+
+        interrupted = self.run_cli(
+            "interrupt", "w", "a", "--reason", "reviewed source-only verifier rebind",
+        )
+        self.assertEqual(interrupted.returncode, 0, interrupted.stdout + interrupted.stderr)
+
+        review = load(self.root / review_path)
+        unchanged = accept_plan(
+            self.root, "w", "HEAD", "fixture-reviewer", "fixture-coordinator", review_path,
+        )
+        write_json(self.root / "work/w/traceability-accepted.json", unchanged)
+        self.commit("reaccept unchanged source binding")
+        unchanged_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
+        self.assertNotEqual(previous_ref, unchanged_ref)
+        self.assertEqual(accepted_before["plan_digest"], unchanged["plan_digest"])
+        self.assertEqual(accepted_before["plan_review_digest"], unchanged["plan_review_digest"])
+        unchanged_reopen = self.run_cli(
+            "reopen", "w", "a", "--reason", "unchanged review cannot authorize reopen",
+        )
+        self.assertNotEqual(unchanged_reopen.returncode, 0)
+        self.assertIn("accept the reviewed plan amendment",
+                      unchanged_reopen.stdout + unchanged_reopen.stderr)
+        self.assertEqual(load_state(self.root, "w")["tasks"]["a"]["status"], "interrupted")
+
+        review["coordinator_migration"] = {"verifier_sha": "new-reviewed-source"}
+        write_json(self.root / review_path, review)
+        accepted_after = accept_plan(
+            self.root, "w", "HEAD", "fixture-reviewer", "fixture-coordinator", review_path,
+        )
+        write_json(self.root / "work/w/traceability-accepted.json", accepted_after)
+        self.commit("accept source-only verifier rebind")
+        next_ref = self.git("rev-parse", "refs/ask/accepted-tests/w")
+
+        self.assertNotEqual(unchanged_ref, next_ref)
+        self.assertEqual(accepted_before["plan_digest"], accepted_after["plan_digest"])
+        self.assertNotEqual(unchanged["plan_review_digest"], accepted_after["plan_review_digest"])
+        reopened = self.run_cli(
+            "reopen", "w", "a", "--reason", "reviewed source-only verifier rebind",
+        )
+        self.assertEqual(reopened.returncode, 0, reopened.stdout + reopened.stderr)
+        resumed = load_state(self.root, "w")["tasks"]["a"]
+        self.assertEqual(resumed["status"], "running")
+        self.assertEqual(resumed["accepted_plan_ref"], next_ref)
+        self.assertEqual(resumed["accepted_plan_digest"], accepted_after["plan_digest"])
+        self.assertEqual(len(resumed["attempt_history"]), 1)
+
     def test_clone_and_cli_recovery_diagnostics(self):
         self.test_retain_objects_after_gc_and_bundle_transfer()
 
