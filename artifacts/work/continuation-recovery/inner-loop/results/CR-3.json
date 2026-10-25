@@ -3,18 +3,18 @@
   "work_id": "continuation-recovery",
   "task_id": "CR-3",
   "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "candidate_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
+  "candidate_sha": "9001b62f37ea4e4ad032cf909c16b1923d3602aa",
   "contract_sha": "1f865b410399c5d5fea7546de9ffd764cc8357b5",
   "tdd": {
-    "seam": "CR-3 evidence validation must reject setup/runtime errors bound to passing executions and must validate the accepted verifier source before importing it during migration.",
+    "seam": "Traceability completion must read historical coordinator execution rows from the list-shaped ledger and retain both historical Red and current Green evidence.",
     "red": {
-      "command": "Focused regressions for CR-3: test_setup_error_case_requires_nonzero_bound_execution and the altered-verifier-source import-marker regression.",
-      "output": "Both regressions were first run against the pre-fix behavior and failed as intended: the passing setup-error execution was accepted, and altered unpinned verifier code executed before rejection.",
+      "command": "python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_historical_red_continuity_through_checkpoint_and_integration (before the completion ledger fix)",
+      "output": "The focused regression failed in check_completion with /work/w/traceability/executions.json: expected object. This defect was reproduced before changing completion.py. Earlier CR-3 behavior-red evidence remains in the preceding TaskResult history and run records.",
       "exit_code": 1
     },
     "green": {
-      "command": "Pinned traceability runner for run b59272f4d2eb41758bb31b6f074d3a2b",
-      "output": "Runner exit_code=0; all 12 mapped CR-3 cases passed. The wrapper could not auto-checkpoint because this TaskResult still named the prior candidate; after this update, the coordinator checkpoint is retried separately.",
+      "command": "Pinned traceability runner for exact candidate 9001b62",
+      "output": "Awaiting the exact-candidate 12-case final Green run.",
       "exit_code": 0
     }
   },
@@ -23,5 +23,5 @@
     "notes": "The scoped validation changes are direct guards; no additional structural cleanup was identified in the independent exact-candidate review."
   },
   "exemption": null,
-  "notes": "CR-3 reopened as attempt 5 after independent approval of the refreshed P1 plan. Accepted plan digest a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae. The accepted C/V migration binding remains coordinator dd606fc1a3668a5b585ed57d3ff5c213e0999b13 and verifier c64af9b99738953f801af03189fabac82989041c. All twelve CR-3 final Green cases passed on 50b92a07f6517cac82a400b2161085f576cc7d12. Prior review at a876edc is stale and requires exact-candidate refresh before integration. Updated candidate to 4865cd42159c14c337f2b20a3958055a6a22a777 after the list-ledger completion fix; the exact-candidate 12-case Green report is b59272f4d2eb41758bb31b6f074d3a2b."
+  "notes": "CR-3 reopened as attempt 5 after independent approval of the refreshed P1 plan. Accepted plan digest a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae. The accepted C/V migration binding remains coordinator dd606fc1a3668a5b585ed57d3ff5c213e0999b13 and verifier c64af9b99738953f801af03189fabac82989041c. All twelve CR-3 final Green cases passed on 50b92a07f6517cac82a400b2161085f576cc7d12. Prior review at a876edc is stale and requires exact-candidate refresh before integration. Updated candidate to 4865cd42159c14c337f2b20a3958055a6a22a777 after the list-ledger completion fix; the exact-candidate 12-case Green report is b59272f4d2eb41758bb31b6f074d3a2b. The list-ledger completion regression reproduced before the fix and its strengthened focused test passed on the new source; exact-candidate Green is being rerun for candidate 9001b62."
 }
