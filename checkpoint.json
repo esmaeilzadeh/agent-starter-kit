@@ -932,10 +932,10 @@
       "size": 2815
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "44058fc3ad6690066a5a34f666906db350720958",
+      "blob": "da7e7b692d7183f7a23124112ef747dddad36328",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "48675e9d639518f95bd3c834f3ef597f469fed965ec712276219d09f3f242e57",
-      "size": 85115
+      "sha256": "6d8ab63e9c3053118df392275763182c9cdf9c9b093bac842a6d7b42885fa4cc",
+      "size": 85931
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2f31c3287064582458b310e0660cfdba15e41482",
@@ -9117,8 +9117,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 47,
-  "previous_checkpoint": "6e0c08ea577bf867d371b5d418e6222b3b5a9cc2",
+  "generation": 48,
+  "previous_checkpoint": "3c385f8631221e9e00a3a621b495530fa954aa4a",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",
