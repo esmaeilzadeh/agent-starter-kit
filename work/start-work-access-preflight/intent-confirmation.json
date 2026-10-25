@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v2",
-  "work_id": "start-work-access-preflight",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "c6326cecf20a9b487f4562c83b2b1a2f53e3cbc8a9c9b69229110c89971162e1",
-  "human_choice": "approve"
-}

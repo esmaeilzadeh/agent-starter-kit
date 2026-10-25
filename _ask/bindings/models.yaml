@@ -1,6 +1,0 @@
-# Persistent repository defaults, applied to every workstream unless overridden.
-codex:
-  05-plan: gpt-6.1-sol
-reasoning_effort:
-  codex:
-    05-plan: high

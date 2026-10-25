@@ -1,3 +1,0 @@
-# Simple configuration challenge: use the lower-budget model explicitly.
-codex:
-  03-spec-challenge: gpt-6-luna
