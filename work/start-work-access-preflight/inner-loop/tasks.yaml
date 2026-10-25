@@ -1,0 +1,15 @@
+schema: ask-inner-loop-tasks/v1
+work_id: start-work-access-preflight
+tasks:
+  - id: ACCESS-1
+    depends_on: []
+    owned_paths:
+      - _ask/scripts/access-check.sh
+      - _ask/scripts/start-work.sh
+      - ask
+      - .cursor/**
+      - .codex/**
+      - .claude/**
+      - .opencode/**
+      - AGENTS.md
+      - _ask/tests/test_access_check.py
