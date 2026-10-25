@@ -41,13 +41,15 @@ probe_dir() {
 
 git_dir="$(resolve_from_root "$(git rev-parse --git-dir)")"
 common_dir="$(resolve_from_root "$(git rev-parse --git-common-dir)")"
-workspace_dir="$ROOT"
-[[ -d "$ROOT/work" ]] && workspace_dir="$ROOT/work"
 
-for item in "worktree Git metadata:$git_dir" "shared Git metadata:$common_dir" "workspace:$workspace_dir"; do
+for item in "worktree Git metadata:$git_dir" "shared Git metadata:$common_dir"; do
   label="${item%%:*}"
   dir="${item#*:}"
   probe_dir "$dir" "$label" || exit 1
 done
+probe_dir "$ROOT" "workspace" || exit 1
+if [[ -d "$ROOT/work" ]]; then
+  probe_dir "$ROOT/work" "workstream workspace" || exit 1
+fi
 
 echo "access-check: Git metadata and workspace are writable"
