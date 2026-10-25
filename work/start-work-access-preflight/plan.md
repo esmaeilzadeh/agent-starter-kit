@@ -19,7 +19,7 @@ the reason recorded. Keep IDs aligned with `inner-loop/tasks.yaml` and
 
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
-| ACCESS-1 | Shared local write preflight and start/session wiring | none | `_ask/scripts/access-check.sh`, `_ask/scripts/start-work.sh`, `./ask`, `.cursor/**`, `.codex/**`, `.claude/**`, `.opencode/**`, `AGENTS.md`, `_ask/tests/test_access_check.py` | ACC-T1, ACC-T2, ACC-T3, ACC-T4, ACC-T5 | focused Red → Green → Refactor, independent review, `./ask verify` |
+| ACCESS-1 | Shared local write preflight and start/session wiring | none | `_ask/scripts/access-check.sh`, `_ask/scripts/start-work.sh`, `./ask`, `.cursor/**`, `.codex/**`, `.opencode/**`, `AGENTS.md`, `_ask/tests/test_access_check.py` | ACC-T1, ACC-T2, ACC-T3, ACC-T4, ACC-T5 | focused Red → Green → Refactor, independent review, `./ask verify` |
 
 One task is appropriate because the command and its entrypoint adapters form
 one user-visible guard; splitting them would leave the check unavailable or

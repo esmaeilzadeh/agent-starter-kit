@@ -21,9 +21,9 @@ branch-base rules.
 - A failed probe exits non-zero, identifies the blocked location, and gives a
   next step. It attempts cleanup and reports the exact path if cleanup fails.
 - A successful check leaves no probe files.
-- Project startup and resume instructions for Codex, Cursor, Claude, and
-  OpenCode invoke the shared check; native lifecycle hooks invoke it where the
-  runtime supports them. `start-work` runs it before checkout/branch creation.
+- Project startup and resume instructions for Codex, Cursor, and OpenCode
+  invoke the shared check; Cursor's session-start hook invokes it as well.
+  `start-work` runs it before checkout/branch creation.
 - A failed check prevents work from proceeding.
 
 ## Interfaces
