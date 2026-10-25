@@ -305,6 +305,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
     seen_by_runner: dict[str, set[str]] = {runner_id: set() for runner_id in tests_by_runner}
     behavior_red = False
     behavior_red_executions = set()
+    setup_error_executions = set()
     for case in cases:
         if not isinstance(case, dict):
             raise NotIntegrable('malformed traceability case')
@@ -340,7 +341,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
               and execution['phase'] == 'red'):
             # A setup/runtime error belongs to this case only. It must not
             # erase a sibling case's independently recorded behavior Red.
-            pass
+            setup_error_executions.add(execution['id'])
         elif outcome != 'passed':
             raise NotIntegrable('traceability case contains an error or unsupported outcome')
         if execution['phase'] == 'final_green' and outcome != 'passed':
@@ -352,9 +353,11 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         raise NotIntegrable('traceability execution does not cover its accepted runner cases')
     if phase == 'red' and (not behavior_red or not any(e['exit_code'] != 0 for e in executions)):
         raise NotIntegrable('Red requires a collected behavior assertion failure')
-    if phase == 'red' and any(e['exit_code'] != 0 and e['id'] not in behavior_red_executions
-                              for e in executions):
-        raise NotIntegrable('failing Red execution has no mapped behavior assertion')
+    if phase == 'red' and any(
+            e['exit_code'] != 0
+            and e['id'] not in behavior_red_executions | setup_error_executions
+            for e in executions):
+        raise NotIntegrable('failing Red execution has no mapped behavior or setup error')
     if phase == 'final_green' and (behavior_red or any(e['exit_code'] != 0 for e in executions)):
         raise NotIntegrable('final Green requires all mapped cases to pass')
     for case in cases:
