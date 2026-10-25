@@ -93,6 +93,7 @@ class AccessCheckTests(unittest.TestCase):
                                 env=dict(os.environ, PATH=self.failing_mktemp(".git/")),
                                 capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
+        self.assertIn("write denied", result.stderr)
         self.assertEqual(self.git("rev-parse", "HEAD").stdout.strip(), before)
         self.assertEqual(self.git("branch", "--show-current").stdout.strip(), "develop")
         self.assertFalse((self.root / "work/access-denied").exists())
