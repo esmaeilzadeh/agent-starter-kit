@@ -1,14 +1,14 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "1f865b410399c5d5fea7546de9ffd764cc8357b5",
+  "contract_sha": "761ef8c5cbd159d623cb84bce5520f20357fd334",
   "work_id": "continuation-recovery",
-  "reviewer": "/root/cr3_plan_rebind_review",
+  "reviewer": "/root/cr3_attempt_reconciliation_review",
   "recorded_by": "/root",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
   "plan_review": {
-    "assessment": "Independently reviewed the current CR-3 P1 package at HEAD 27ecce04c95059e1a920401ce74984440fbb62f4 (semantic plan digest bba7034eb1a562c779748991cdf190be406217d3f081667472f01b88531e6e4a; source-review SHA-256 a3d392a558ea8694781b4b2ee9b51c9810c1bb0aade99bc4104bcb6455835099). CR-T13 is a one-cycle regression guard with no Red requirement or continuity row; the mapped test and disposition say so. The reproduction-first rule applies to an actual reported defect, and the workflow/task-loop explicitly keep accepted regression guards Green and prohibit invented failure targets. The 11 retained continuity rows bind actual behavior Reds to complete reports and exact ledger, candidate, authority/pin, and source evidence. Report case sets match their accepted candidate task scopes. The b5e4fc3b34c14e5a93312d2744be9adf report is incomplete (8/12); its T11/T12/T14/T19 outcomes remain excluded. T11/T12/T14 remain in-scope regression guards requiring current Green, and T19 retains its two complete Reds from f21a95f6b4c4499aacf37a3ffd27a77d and dab908b39596441086d57106b8c816ec. Sibling setup/runtime errors neither count as Reds nor invalidate other case-level behavior Reds in a complete report. T21 retains the exact decision-bound exception; its behavior checks and current Green remain mandatory. The older cr3-cv-review.json assessment (P1 digest 0f0ae986\u2026 and \u201ccannot-reproduce-as-mapped\u201d T13 wording) is a superseded source-review snapshot. The later user clarification recorded in cr3-recovery-decision.md, current cr3-t13-disposition.md, and the current P1 plan explicitly supersede it; the source-review artifact remains pinned as C/V, P0, base, and intent evidence, not as the current T13 classification or approval of this P1 plan. Thus it does not make the package contradictory. P0 plan/review, decision, and approved intent bytes (SHA-256 92f72fbbbc0ba4e22dab7dc6976fdae4336d9dbcfff3631ee0011c8cf2ad4df5) are unchanged. No findings.",
+    "assessment": "Independently reviewed the CR-3 P1 package rebind. The exact coordinator C remains dd606fc1a3668a5b585ed57d3ff5c213e0999b13 / 4eee8da6a4861a8ac00c20316812fa738d523610 with all 13 source modules verified. Verifier V is rebound only to 4865cd42159c14c337f2b20a3958055a6a22a777 / 8a632480845923a5ae396740231041b97c76d788; all 14 verifier source modules and their digests match the independently approved source review work/continuation-recovery/cr3-cv-review-4865cd4.json (SHA-256 bbeb29e9daed90acd07be6bb0dac042c3a618f86231611180efbf5083d152f4e). The P1 spec and plan digests, original base, coordinator C/tree, P0 bindings, T21 exception, and approved intent are unchanged. The existing user-approved coordinator-upgrade decision authorizes this exact reviewed verifier binding. No findings.",
     "coordinator_migration": {
       "coordinator_sha": "dd606fc1a3668a5b585ed57d3ff5c213e0999b13",
       "coordinator_tree": "4eee8da6a4861a8ac00c20316812fa738d523610",
@@ -21,11 +21,11 @@
       "p1_spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
       "scope_decision_artifact": "work/continuation-recovery/cr3-scoped-decision-record.md",
       "scope_decision_digest": "409f38a1120f45f48d6693176e21d0cab93e0107e412614945f09b9c23e44fe8",
-      "source_review_artifact": "work/continuation-recovery/cr3-cv-review-dd606fc.json",
-      "source_review_digest": "c69bfe016bb39473fa9140ebe34baad9d387386bce48439421c2cc9f09fa45ff",
+      "source_review_artifact": "work/continuation-recovery/cr3-cv-review-4865cd4.json",
+      "source_review_digest": "bbeb29e9daed90acd07be6bb0dac042c3a618f86231611180efbf5083d152f4e",
       "task_id": "CR-3",
-      "verifier_sha": "c64af9b99738953f801af03189fabac82989041c",
-      "verifier_tree": "98d6af26b0375cec1c029b5f68877fce51be99bd",
+      "verifier_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
+      "verifier_tree": "8a632480845923a5ae396740231041b97c76d788",
       "work_id": "continuation-recovery"
     },
     "decision": "APPROVED",
@@ -42,12 +42,12 @@
       }
     ],
     "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
-    "reviewer": "/root/cr3_plan_rebind_review",
+    "reviewer": "/root/cr3_attempt_reconciliation_review",
     "schema": "ask-plan-review/v1",
     "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
     "work_id": "continuation-recovery"
   },
-  "plan_review_digest": "5f7f100f4999b3f3f57eb7c37d3c9cd1699422c6a6152f2c6df97a7c43b5e9b1",
+  "plan_review_digest": "99bd62fd9a6ced37ae2f9ebe272a239b19ea3e4ed8eb19061593f7eeea86fb56",
   "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
   "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
   "graph_digest": "d7f6819c4990f4e416f693ff3a274e92c2b57b7ca78ef04c1c2e58d622d979f5"
