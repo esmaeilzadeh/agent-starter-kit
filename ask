@@ -17,6 +17,9 @@ Same help: no command, -h, --help, or help.
 In a repo that already has the kit, `askit` prints this same text (it wraps ./ask).
 
 Commands:
+  access-check
+      Probe write access to local Git metadata and the workspace. No flags.
+
   check-clean
       Refuse if the worktree is dirty. No flags.
 
@@ -232,6 +235,9 @@ fi
 shift
 
 case "$cmd" in
+  access-check)
+    exec "$SCRIPTS/access-check.sh" "$@"
+    ;;
   check-clean|check-clean-worktree)
     exec "$SCRIPTS/check-clean-worktree.sh" "$@"
     ;;

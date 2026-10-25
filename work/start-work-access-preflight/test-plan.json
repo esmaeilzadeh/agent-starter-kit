@@ -1,0 +1,215 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "start-work-access-preflight",
+  "spec_digest": "fc058661dd99a2c50759172650c2f110df4315b46f3956ca47e829cfcc3fe66d",
+  "obligations": [
+    {
+      "criterion_id": "ACC-001",
+      "required_types": [
+        "unit"
+      ]
+    },
+    {
+      "criterion_id": "ACC-002",
+      "required_types": [
+        "unit"
+      ]
+    },
+    {
+      "criterion_id": "ACC-003",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "ACC-004",
+      "required_types": [
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "ACC-005",
+      "required_types": [
+        "unit"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "id": "access-check-tests",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_access_check.py"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "ACC-T1",
+      "criterion_ids": [
+        "ACC-001"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Writable Git metadata and workspace paths",
+        "when": "the preflight runs",
+        "then": [
+          "it passes",
+          "it leaves no probe files"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "ACC-001",
+          "checks": [
+            "success exit",
+            "probe cleanup"
+          ]
+        }
+      ],
+      "runner_id": "access-check-tests",
+      "case_id": "test_access_check.AccessCheckTests.test_writable_paths_pass_and_cleanup",
+      "source_paths": [
+        "_ask/tests/test_access_check.py"
+      ]
+    },
+    {
+      "id": "ACC-T2",
+      "criterion_ids": [
+        "ACC-002"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A denied write or cleanup operation",
+        "when": "the preflight runs",
+        "then": [
+          "it fails",
+          "it names the blocked or leftover path"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "ACC-002",
+          "checks": [
+            "nonzero exit",
+            "actionable path message"
+          ]
+        }
+      ],
+      "runner_id": "access-check-tests",
+      "case_id": "test_access_check.AccessCheckTests.test_denied_write_and_cleanup_failure_report_paths",
+      "source_paths": [
+        "_ask/tests/test_access_check.py"
+      ]
+    },
+    {
+      "id": "ACC-T3",
+      "criterion_ids": [
+        "ACC-003"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A temporary Git repository where a required write is denied",
+        "when": "the public start-work command runs",
+        "then": [
+          "it fails before HEAD, branches, or workstream files change"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "ACC-003",
+          "checks": [
+            "nonzero exit",
+            "unchanged branch and workstream state"
+          ]
+        }
+      ],
+      "runner_id": "access-check-tests",
+      "case_id": "test_access_check.AccessCheckTests.test_start_work_refuses_before_mutation",
+      "source_paths": [
+        "_ask/tests/test_access_check.py"
+      ]
+    },
+    {
+      "id": "ACC-T4",
+      "criterion_ids": [
+        "ACC-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Cursor's sessionStart hook with a failing shared check",
+        "when": "the hook runs",
+        "then": [
+          "the failure is surfaced",
+          "the agent receives a stop instruction"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "ACC-004",
+          "checks": [
+            "hooks.json registers the startup hook",
+            "failure becomes visible stop condition"
+          ]
+        }
+      ],
+      "runner_id": "access-check-tests",
+      "case_id": "test_access_check.AccessCheckTests.test_runtime_hook_surfaces_failure_as_stop_condition",
+      "source_paths": [
+        "_ask/tests/test_access_check.py"
+      ]
+    },
+    {
+      "id": "ACC-T5",
+      "criterion_ids": [
+        "ACC-005"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Project agent instructions for supported runtimes",
+        "when": "the startup/resume rule is inspected",
+        "then": [
+          "the shared access check is required before work proceeds"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "ACC-005",
+          "checks": [
+            "startup and resume both require access-check",
+            "the rule applies across supported runtime bundles"
+          ]
+        }
+      ],
+      "runner_id": "access-check-tests",
+      "case_id": "test_access_check.AccessCheckTests.test_project_instructions_require_check_on_start_and_resume",
+      "source_paths": [
+        "_ask/tests/test_access_check.py"
+      ]
+    }
+  ],
+  "task_scopes": [
+    {
+      "task_id": "ACCESS-1",
+      "test_ids": [
+        "ACC-T1",
+        "ACC-T2",
+        "ACC-T3",
+        "ACC-T4",
+        "ACC-T5"
+      ]
+    }
+  ]
+}

@@ -13,6 +13,7 @@ WORK_ID="$1"
 BRANCH="agent/${WORK_ID}"
 
 "$ROOT/_ask/scripts/check-clean-worktree.sh"
+"$ROOT/_ask/scripts/access-check.sh"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "start-work: not a git repository" >&2

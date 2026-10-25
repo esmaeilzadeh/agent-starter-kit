@@ -8,7 +8,7 @@ fail() { echo "FAIL: $*" >&2; exit 1; }
 
 setup_kit() {
   mkdir -p _ask/scripts _ask/templates
-  cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/start-work.sh" _ask/scripts/
+  cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/access-check.sh" "$ROOT/_ask/scripts/start-work.sh" _ask/scripts/
   chmod +x _ask/scripts/*.sh
   cp "$ROOT/_ask/templates/"*.md "$ROOT/_ask/templates/"*.json _ask/templates/ 2>/dev/null || \
     cp "$ROOT/_ask/templates/"* _ask/templates/
