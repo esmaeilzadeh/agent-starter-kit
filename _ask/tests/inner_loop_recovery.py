@@ -2172,7 +2172,9 @@ class test_b(unittest.TestCase):
         from verification.traceability.evidence import accept_plan
         from verification.traceability.evidence import load_historical_accepted, source_digests
 
-        red, green = self._real_traceability_pair(setup_error_sibling=True)
+        red, green = self._real_traceability_pair(
+            runner_count=2, setup_error_sibling=True,
+        )
         red_cases = {case["test_id"]: case for case in red["cases"]}
         self.assertEqual(red_cases["T-A"].get("outcome"), "failed")
         self.assertEqual(red_cases["T-A"].get("failure_kind"), "behavior_assertion")
