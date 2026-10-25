@@ -49,7 +49,10 @@ class AccessCheckTests(unittest.TestCase):
         result = subprocess.run([str(ROOT / "ask"), "access-check"], cwd=ROOT,
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(list((ROOT / ".git").glob(".ask-access-check.*")), [])
+        probe_files = [*ROOT.glob(".ask-access-check.*"),
+                       *ROOT.joinpath(".git").glob(".ask-access-check.*"),
+                       *ROOT.joinpath("work").glob(".ask-access-check.*")]
+        self.assertEqual(probe_files, [])
 
     def test_denied_write_and_cleanup_failure_report_paths(self):
         denied = subprocess.run([str(ROOT / "ask"), "access-check"], cwd=ROOT,
@@ -58,12 +61,22 @@ class AccessCheckTests(unittest.TestCase):
         self.assertNotEqual(denied.returncode, 0)
         self.assertIn(".git", denied.stderr)
         self.assertIn("access", denied.stderr.lower())
+        workspace_denied = subprocess.run(
+            [str(ROOT / "ask"), "access-check"], cwd=ROOT,
+            env=dict(os.environ, PATH=self.failing_mktemp(ROOT.name + "/.ask-access-check.")),
+            capture_output=True, text=True)
+        self.assertNotEqual(workspace_denied.returncode, 0)
+        self.assertIn("workspace", workspace_denied.stderr.lower())
         bindir = self.root / "bin-rm"
         bindir.mkdir()
         real_rm = shutil.which("rm")
-        self.addCleanup(lambda: subprocess.run(
-            [real_rm, *map(str, (ROOT / ".git").glob(".ask-access-check.*"))],
-            check=False, capture_output=True) if real_rm else None)
+        def cleanup_leftovers():
+            probes = [*ROOT.glob(".ask-access-check.*"),
+                      *ROOT.joinpath(".git").glob(".ask-access-check.*"),
+                      *ROOT.joinpath("work").glob(".ask-access-check.*")]
+            if real_rm and probes:
+                subprocess.run([real_rm, *map(str, probes)], check=False, capture_output=True)
+        self.addCleanup(cleanup_leftovers)
         (bindir / "rm").write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
         (bindir / "rm").chmod(0o755)
         leftover = subprocess.run([str(ROOT / "ask"), "access-check"], cwd=ROOT,
