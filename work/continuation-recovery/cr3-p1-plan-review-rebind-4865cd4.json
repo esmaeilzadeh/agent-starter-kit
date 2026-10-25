@@ -1,0 +1,40 @@
+{
+  "assessment": "Independently reviewed the CR-3 P1 package rebind. The exact coordinator C remains dd606fc1a3668a5b585ed57d3ff5c213e0999b13 / 4eee8da6a4861a8ac00c20316812fa738d523610 with all 13 source modules verified. Verifier V is rebound only to 4865cd42159c14c337f2b20a3958055a6a22a777 / 8a632480845923a5ae396740231041b97c76d788; all 14 verifier source modules and their digests match the independently approved source review work/continuation-recovery/cr3-cv-review-4865cd4.json (SHA-256 bbeb29e9daed90acd07be6bb0dac042c3a618f86231611180efbf5083d152f4e). The P1 spec and plan digests, original base, coordinator C/tree, P0 bindings, T21 exception, and approved intent are unchanged. The existing user-approved coordinator-upgrade decision authorizes this exact reviewed verifier binding. No findings.",
+  "coordinator_migration": {
+    "coordinator_sha": "dd606fc1a3668a5b585ed57d3ff5c213e0999b13",
+    "coordinator_tree": "4eee8da6a4861a8ac00c20316812fa738d523610",
+    "integration_output_schema": "ask-integration-evidence/v1",
+    "original_base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+    "p0_plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+    "p0_review_digest": "dee9e04895e9fa7b0451319a7a4bb6953e8c13ecf2fc43faf756b1e08369fe08",
+    "p0_review_identity": "codex-independent-review:/root/review_cr3_p0",
+    "p1_plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
+    "p1_spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "scope_decision_artifact": "work/continuation-recovery/cr3-scoped-decision-record.md",
+    "scope_decision_digest": "409f38a1120f45f48d6693176e21d0cab93e0107e412614945f09b9c23e44fe8",
+    "source_review_artifact": "work/continuation-recovery/cr3-cv-review-4865cd4.json",
+    "source_review_digest": "bbeb29e9daed90acd07be6bb0dac042c3a618f86231611180efbf5083d152f4e",
+    "task_id": "CR-3",
+    "verifier_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
+    "verifier_tree": "8a632480845923a5ae396740231041b97c76d788",
+    "work_id": "continuation-recovery"
+  },
+  "decision": "APPROVED",
+  "findings": [],
+  "historical_red_exceptions": [
+    {
+      "decision_artifact": "work/continuation-recovery/cr3-scoped-decision-record.md",
+      "decision_digest": "409f38a1120f45f48d6693176e21d0cab93e0107e412614945f09b9c23e44fe8",
+      "kind": "historical-red-unavailable",
+      "missing_red": "No retained CR-T21 report records a behavior assertion failure: the case is a setup/runtime error in b5e4fc3b34c14e5a93312d2744be9adf and passes in the other retained Red-phase reports. The exception records that evidence gap; it does not claim a Red.",
+      "task_id": "CR-3",
+      "test_id": "CR-T21",
+      "work_id": "continuation-recovery"
+    }
+  ],
+  "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
+  "reviewer": "/root/cr3_attempt_reconciliation_review",
+  "schema": "ask-plan-review/v1",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "work_id": "continuation-recovery"
+}
