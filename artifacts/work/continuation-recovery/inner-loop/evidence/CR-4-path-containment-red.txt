@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/inner-loop/evidence/CR-4-path-containment-repro.py", line 21, in <module>
+    assert module._legacy_artifact(checkout, "HEAD", "../outside.json") == (None, "missing"), \
+AssertionError: legacy checkout fallback reads outside repository

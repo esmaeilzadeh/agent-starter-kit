@@ -1,0 +1,12 @@
+test_E01_public_red_review_verify_record_accept_journey (test_traceability_entrypoints.EntrypointTests) ... ok
+test_E02_omitted_e2e_names_missing_case_and_never_records_pass (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I05_all_normal_entrypoints_reject_omitted_e2e (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I06_preflight_failure_replaces_old_pass (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I07_complete_evidence_agrees_across_entrypoints (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I08_integration_accepts_reviewed_contract_amended_after_task_base (test_traceability_entrypoints.EntrypointTests) ... ok
+test_I09_runtime_agent_sync_preserves_candidate_tree (test_traceability_entrypoints.EntrypointTests) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 34.947s
+
+OK

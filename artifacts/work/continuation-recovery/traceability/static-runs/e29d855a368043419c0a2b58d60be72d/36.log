@@ -1,0 +1,18 @@
+check-clean-worktree: clean
+access-check: Git metadata and workspace are writable
+start-work: work-id=smoke-demo
+start-work: branch=agent/smoke-demo
+start-work: HEAD=29217337f309e97af16ab0fb6445eed9449c809f
+start-work: workstream=work/smoke-demo
+handoff ok
+Recorded confirmation for work/smoke-demo/intent.md
+check-clean-worktree: clean
+intent-confirmation: valid work-id=smoke-demo
+check-workstream: ok work-id=smoke-demo branch=agent/smoke-demo
+{
+  "work_id": "smoke-demo",
+  "commit_sha": "cf0ce51d65ffcd8a9ab52f6458d623a1cf04480a",
+  "result": "handoff-checked",
+  "notes": ""
+}
+PASS: workstream smoke Explore handoff to verify SHA

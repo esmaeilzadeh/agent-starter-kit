@@ -1,0 +1,34 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-4",
+  "base_sha": "bf8696707293700a384850710490432420cadfce",
+  "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+  "contract_sha": "cae9913d99abb5b174988e50d8e9ee2d8f829cfc",
+  "tdd": {
+    "seam": "Read-only provenance audit and independently reviewed proposal; repository containment of legacy evidence paths.",
+    "red": {
+      "command": "python3 work/continuation-recovery/inner-loop/evidence/CR-4-path-containment-repro.py",
+      "output": "Traceback (most recent call last):\n  File \"/home/mohamad/Projects/UNI/ai-agent-start-kit/work/continuation-recovery/inner-loop/evidence/CR-4-path-containment-repro.py\", line 21, in <module>\n    assert module._legacy_artifact(checkout, \"HEAD\", \"../outside.json\") == (None, \"missing\"), \\\nAssertionError: legacy checkout fallback reads outside repository\n",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "ASK_INNER_LOOP_ROLE=worker ./ask traceability run continuation-recovery --candidate-sha 622e89c879c1b09d4982b84b3327bcfcaa216059 --scope task --task-id CR-4 --phase final_green",
+      "output": "Both CR-T15 and CR-T16 passed with complete pinned-runner collection.",
+      "exit_code": 0
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "The shared artifact helper now enforces containment before checkout fallback. No further structural change is needed within CR-4."
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+    "run_id": "828faea9006a42c1b618d49f4906a79d",
+    "report_path": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/results.json",
+    "sha256": "7b83b5a55ba5be2ac8ae39a65ee0f4fa302e63b4435b58ee9dd681ac841f0a26"
+  },
+  "notes": "Human authorized CR3/CR4 one-time kit and per-case historical Red exceptions. No synthetic Red or legacy adoption claimed. Proposal payload independently approved; full repository verification and exact current review recorded separately."
+}

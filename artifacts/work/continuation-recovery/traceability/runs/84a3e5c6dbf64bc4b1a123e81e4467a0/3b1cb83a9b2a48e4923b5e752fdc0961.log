@@ -1,0 +1,4 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests) ... 

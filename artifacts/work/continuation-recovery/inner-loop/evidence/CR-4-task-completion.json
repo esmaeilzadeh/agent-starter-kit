@@ -1,0 +1,329 @@
+{
+  "schema": "ask-completion/v1",
+  "status": "fail",
+  "scope": "task",
+  "task_id": "CR-4",
+  "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+  "input_digests": {
+    "spec": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "plan": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539",
+    "accepted": "6e6a71a93212cdcc986fb08f5e7fcb0f9aeb32bf9d8964cd9bddd21b21f355a5",
+    "review": "537d7272c6645175dcf3f5ae895b02df0ef938e8be8b6f3f7424073896eb28a1",
+    "executions": "96f8d022f968711c4b9bdca6cc49f7b59d9591f4e9fe3f5e61db5e5c7f9cf569"
+  },
+  "criterion_evidence": [
+    {
+      "criterion_id": "CR-02",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-02",
+        "coverage_decision": "APPROVED",
+        "assessment": "For CR-4, T15/T16 assert the legacy audit retains task identity/milestones and leaves tasks 6\u201310 pending; T15 also confirms the separate repair queue starts at CR-1 then CR-2 while legacy state/authority remain untouched. Checkpoint closure and transfer mechanics remain evidence from earlier task scope, not claims made by this CR-4 review.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The selected integration cases exercise real disposable Git refs, CLI audit/proposal paths, task-state setup, exact ref movement, and validation side-effect checks."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T16",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+          "type": "integration",
+          "tdd": "missing",
+          "historical_red_status": null,
+          "red": [],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T16",
+            "runner_id": "continuation-recovery",
+            "execution_id": "3db24efc3cf447e4bf9a5b0b7abb4035",
+            "phase": "final_green",
+            "source_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+              "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8",
+              "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+              "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+              "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+              "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+              "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+              "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+              ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+              ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+            "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-04",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-04",
+        "coverage_decision": "APPROVED",
+        "assessment": "T15 checks per-task Red/Green provenance, missing/unverifiable review and integration milestones, and that an integrated status without a receipt is not accepted. T16 checks preimage, decision, moved-ref, active-writer, and unsupported-verifier refusal without rewriting task history.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Assertions directly inspect milestone statuses, state/result/ledger bytes, refs, authority, and validation outcomes in disposable repositories."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T15",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+          "type": "integration",
+          "tdd": "missing",
+          "historical_red_status": null,
+          "red": [],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T15",
+            "runner_id": "continuation-recovery",
+            "execution_id": "3db24efc3cf447e4bf9a5b0b7abb4035",
+            "phase": "final_green",
+            "source_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+              "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8",
+              "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+              "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+              "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+              "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+              "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+              "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+              ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+              ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+            "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-06",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-06",
+        "coverage_decision": "APPROVED",
+        "assessment": "T15 generates a proposal bound to the read-only audit, validates its reviewed binding, and snapshots legacy state/result/authority to prove no mutation. T16 confirms stale preimages, a changed decision despite recomputed review digest, moved refs, active writers, and unsupported verifier capability are refused. Missing and checkout-only evidence remains explicitly labeled.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "The selected cases use independent disposable Git state and exercise audit, proposal, review-binding, precondition, and no-mutation behavior through functions and CLI."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T15",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+          "type": "integration",
+          "tdd": "missing",
+          "historical_red_status": null,
+          "red": [],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T15",
+            "runner_id": "continuation-recovery",
+            "execution_id": "3db24efc3cf447e4bf9a5b0b7abb4035",
+            "phase": "final_green",
+            "source_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+              "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8",
+              "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+              "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+              "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+              "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+              "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+              "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+              ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+              ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+            "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+          }
+        },
+        {
+          "test_id": "CR-T16",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+          "type": "integration",
+          "tdd": "missing",
+          "historical_red_status": null,
+          "red": [],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T16",
+            "runner_id": "continuation-recovery",
+            "execution_id": "3db24efc3cf447e4bf9a5b0b7abb4035",
+            "phase": "final_green",
+            "source_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+              "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8",
+              "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+              "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+              "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+              "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+              "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+              "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+              ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+              ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+            "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+          }
+        }
+      ]
+    },
+    {
+      "criterion_id": "CR-08",
+      "verification_mode": "tests",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "review": {
+        "id": "CR-08",
+        "coverage_decision": "APPROVED",
+        "assessment": "T15 verifies normal initialization/admission of the separate CR-1\u2192CR-2 repair queue while the shorter-hashes legacy state and authority are byte-identical. T16 preserves tasks 6\u201310 as pending and proves proposal validation does not schedule product work. No product adoption or integration is claimed.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Disposable integration assertions bind the exact legacy branch/authority refs and verify queue admission and no-write boundaries."
+          }
+        }
+      },
+      "tests": [
+        {
+          "test_id": "CR-T15",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+          "type": "integration",
+          "tdd": "missing",
+          "historical_red_status": null,
+          "red": [],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_legacy_red_green_adoption",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T15",
+            "runner_id": "continuation-recovery",
+            "execution_id": "3db24efc3cf447e4bf9a5b0b7abb4035",
+            "phase": "final_green",
+            "source_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+              "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8",
+              "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+              "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+              "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+              "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+              "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+              "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+              ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+              ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+            "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+          }
+        },
+        {
+          "test_id": "CR-T16",
+          "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+          "type": "integration",
+          "tdd": "missing",
+          "historical_red_status": null,
+          "red": [],
+          "final_execution": {
+            "case_id": "_ask.tests.inner_loop_recovery.RecoveryTests.test_workstream_recovery_handoff",
+            "outcome": "passed",
+            "failure_kind": null,
+            "test_id": "CR-T16",
+            "runner_id": "continuation-recovery",
+            "execution_id": "3db24efc3cf447e4bf9a5b0b7abb4035",
+            "phase": "final_green",
+            "source_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "source_digests": {
+              "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+              "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8",
+              "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+              "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+              "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+              "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+              "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+              "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+              ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+              ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249"
+            },
+            "output_artifact": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+            "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+          }
+        }
+      ]
+    }
+  ],
+  "missing_evidence": [
+    {
+      "criterion_id": "CR-02",
+      "test_id": "CR-T16",
+      "reason": "recognized behavior red and final green required"
+    },
+    {
+      "criterion_id": "CR-04",
+      "test_id": "CR-T15",
+      "reason": "recognized behavior red and final green required"
+    },
+    {
+      "criterion_id": "CR-06",
+      "test_id": "CR-T15",
+      "reason": "recognized behavior red and final green required"
+    },
+    {
+      "criterion_id": "CR-06",
+      "test_id": "CR-T16",
+      "reason": "recognized behavior red and final green required"
+    },
+    {
+      "criterion_id": "CR-08",
+      "test_id": "CR-T15",
+      "reason": "recognized behavior red and final green required"
+    },
+    {
+      "criterion_id": "CR-08",
+      "test_id": "CR-T16",
+      "reason": "recognized behavior red and final green required"
+    }
+  ],
+  "errors": [],
+  "execution_artifacts": [
+    "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log"
+  ],
+  "rejected_historical_attempts": []
+}

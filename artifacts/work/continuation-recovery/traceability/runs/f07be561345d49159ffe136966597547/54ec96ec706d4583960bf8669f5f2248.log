@@ -1,0 +1,37 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_concurrent_checkpoint_writers (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_contract_and_checkout_conflict (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_around_checkpoint_publication (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_fresh_initialization_and_missing_legacy_evidence (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupt_and_reopen_preserve_attempt_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_candidate_paths_do_not_block_dependent_tasks (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_interrupted_preflight_is_read_only_and_derived (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_isolated_repair_initialization_and_legacy_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_legacy_red_green_adoption (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_missing_state_retained_result (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_new_candidate_preserves_stale_rejected_review_history (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_pending_state_conflicts_with_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_reject_incomplete_or_unsafe_checkpoint (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_restore_deleted_runtime_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_retain_objects_after_gc_and_bundle_transfer (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_running_task_changes_may_overlap_later_task_ownership (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_scope_compatible_historical_task_result_survives_plan_amendment (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_setup_error_case_requires_nonzero_bound_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_and_newer_cache (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_t21_exception_requires_exact_p1_decision (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_taskresult_pinned_verification_report_avoids_a_second_test_run (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_workstream_recovery_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 179.628s
+
+OK

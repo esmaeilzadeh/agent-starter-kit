@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 56,
+  "revision": 57,
   "coordinator_sha": "bf8696707293700a384850710490432420cadfce",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -2097,7 +2097,23 @@
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "review": {
+          "work_id": "continuation-recovery",
+          "task_id": "CR-4",
+          "base_sha": "bf8696707293700a384850710490432420cadfce",
+          "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+          "result_digest": "91220cf4ae2692e7eb893e1b1a0c39e56a6dd20ce391db52815fe245664b29a9",
+          "reviewer": "/root/final_review",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-4-622e89c.md",
+          "evidence_digest": "b9aed688294e0b943477910a01b4bbd3b7c49e2c413a156d6da555ae79562e5a",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        }
+      },
       "attempt_number": 1,
       "attempt_id": "CR-4:attempt-1",
       "accepted_plan_ref": "e5a42ad9d76564cbca77ecba5e2eeb9ec02b6903",

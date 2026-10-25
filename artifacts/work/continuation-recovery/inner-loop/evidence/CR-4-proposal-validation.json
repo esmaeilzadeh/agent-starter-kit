@@ -1,0 +1,14 @@
+{
+  "authority_mutated": false,
+  "errors": [
+    "task 2: TaskResult base differs from legacy state",
+    "task 2: TaskResult exists outside the state result_path",
+    "task 3: TaskResult exists outside the state result_path",
+    "task 4: TaskResult exists outside the state result_path",
+    "task 5: TaskResult exists outside the state result_path",
+    "tracked accepted pin differs from accepted-tests authority: contract_sha, plan_digest"
+  ],
+  "product_mutated": false,
+  "status": "refused",
+  "tasks_scheduled": false
+}

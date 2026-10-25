@@ -1,0 +1,8 @@
+sync-runtime-agents: wrote /tmp/tmp.3gjhjzLMpX/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.3gjhjzLMpX/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.3gjhjzLMpX/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.3gjhjzLMpX/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.3gjhjzLMpX
+status: no live agent/* branches; no archived work/* on master
+PASS: first-run askit gates on git + confirm, then overlays

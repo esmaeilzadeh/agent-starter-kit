@@ -1,0 +1,7 @@
+test_legacy_red_green_adoption (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_workstream_recovery_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 2.554s
+
+OK

@@ -1,0 +1,138 @@
+{
+  "schema": "ask-test-review/v2",
+  "reviewer": "/root/final_review",
+  "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+  "base_sha": "cae9913d99abb5b174988e50d8e9ee2d8f829cfc",
+  "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+  "plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539",
+  "scope": "task",
+  "task_id": "CR-4",
+  "test_ids": [
+    "CR-T15",
+    "CR-T16"
+  ],
+  "criterion_ids": [
+    "CR-02",
+    "CR-04",
+    "CR-06",
+    "CR-08"
+  ],
+  "source_digests": {
+    ".agents/ask/verification/traceability/coverage.py": "fe521f948b5da48f9d5ddff016f2dbab8c504a87ae8755ea69bf519f1dfca249",
+    ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
+    "_ask/scripts/inner_loop/__main__.py": "a04046e8a20ed0015ad6ec18174e6836dce50c87fdd7e42af09b9f13c84b57ae",
+    "_ask/scripts/inner_loop/checkpoint.py": "2a78cf39563bbfdb4decab642d923cb3695bb73808caf831cc389286dd716e17",
+    "_ask/scripts/inner_loop/driver.py": "0733cbbbb7068f16101a07b329a05716afea2ee5979719b41d6dec118f152709",
+    "_ask/scripts/inner_loop/evidence.py": "3a3872b56c10baf4d0b25076077e79bc585b9ce8ca9d0507f58ff1bc6d4ed63e",
+    "_ask/scripts/inner_loop/recovery.py": "f0062f4451fb17793d67d225119f4f4216efb674649870563516faca92d6e962",
+    "_ask/scripts/inner_loop/state.py": "cab531c2f84d2a6173bcd8d34640d644f927059a18367cb63f8cc93a8652e452",
+    "_ask/tests/inner_loop_recovery.py": "83df48c0945703cb3d7519c953bceb6555fbef8660bf3c794d9191f6268c5bca",
+    "_ask/tests/inner_loop_recovery_fixture.py": "b3f4530c59a595969f4e7ec9d5fe88f67706de2c5db87f650b693899cb96b2b8"
+  },
+  "inspected_sources": [
+    "_ask/scripts/inner_loop/__main__.py",
+    "_ask/scripts/inner_loop/driver.py",
+    "_ask/scripts/inner_loop/evidence.py",
+    "_ask/scripts/inner_loop/recovery.py",
+    "_ask/tests/inner_loop_recovery.py",
+    "_ask/tests/inner_loop_recovery_fixture.py"
+  ],
+  "changed_cases": [
+    "CR-T01",
+    "CR-T02",
+    "CR-T03",
+    "CR-T04",
+    "CR-T05",
+    "CR-T06",
+    "CR-T07",
+    "CR-T08",
+    "CR-T09",
+    "CR-T10",
+    "CR-T11",
+    "CR-T12",
+    "CR-T13",
+    "CR-T14",
+    "CR-T15",
+    "CR-T16",
+    "CR-T17",
+    "CR-T18",
+    "CR-T19",
+    "CR-T20",
+    "CR-T21",
+    "CR-T51",
+    "CR-T52",
+    "CR-T55",
+    "CR-T56",
+    "CR-T57",
+    "CR-T58",
+    "CR-T59",
+    "CR-T60",
+    "CR-T61"
+  ],
+  "inventory_exclusions": {
+    "_ask/tests/inner_loop_recovery.py.RecoveryTests.test_setup_error_case_requires_nonzero_bound_execution": "Unmapped legacy CR-3 setup-error guard; outside the CR-4 owned case scope and unchanged by the CR-4 implementation diff.",
+    "_ask/tests/inner_loop_recovery.py.RecoveryTests.test_taskresult_pinned_verification_report_avoids_a_second_test_run": "Unmapped legacy CR-3 pinned-report guard; outside the CR-4 owned case scope and unchanged by the CR-4 implementation diff."
+  },
+  "criteria": [
+    {
+      "id": "CR-02",
+      "coverage_decision": "APPROVED",
+      "assessment": "For CR-4, T15/T16 assert the legacy audit retains task identity/milestones and leaves tasks 6\u201310 pending; T15 also confirms the separate repair queue starts at CR-1 then CR-2 while legacy state/authority remain untouched. Checkpoint closure and transfer mechanics remain evidence from earlier task scope, not claims made by this CR-4 review.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The selected integration cases exercise real disposable Git refs, CLI audit/proposal paths, task-state setup, exact ref movement, and validation side-effect checks."
+        }
+      }
+    },
+    {
+      "id": "CR-04",
+      "coverage_decision": "APPROVED",
+      "assessment": "T15 checks per-task Red/Green provenance, missing/unverifiable review and integration milestones, and that an integrated status without a receipt is not accepted. T16 checks preimage, decision, moved-ref, active-writer, and unsupported-verifier refusal without rewriting task history.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Assertions directly inspect milestone statuses, state/result/ledger bytes, refs, authority, and validation outcomes in disposable repositories."
+        }
+      }
+    },
+    {
+      "id": "CR-06",
+      "coverage_decision": "APPROVED",
+      "assessment": "T15 generates a proposal bound to the read-only audit, validates its reviewed binding, and snapshots legacy state/result/authority to prove no mutation. T16 confirms stale preimages, a changed decision despite recomputed review digest, moved refs, active writers, and unsupported verifier capability are refused. Missing and checkout-only evidence remains explicitly labeled.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "The selected cases use independent disposable Git state and exercise audit, proposal, review-binding, precondition, and no-mutation behavior through functions and CLI."
+        }
+      }
+    },
+    {
+      "id": "CR-08",
+      "coverage_decision": "APPROVED",
+      "assessment": "T15 verifies normal initialization/admission of the separate CR-1\u2192CR-2 repair queue while the shorter-hashes legacy state and authority are byte-identical. T16 preserves tasks 6\u201310 as pending and proves proposal validation does not schedule product work. No product adoption or integration is claimed.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Disposable integration assertions bind the exact legacy branch/authority refs and verify queue admission and no-write boundaries."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "CR-T15",
+      "decision": "APPROVED",
+      "assertion_assessment": "Builds exact disposable legacy refs, runs the read-only CLI audit and proposal flow, checks five task rows and Red/Green source classifications, missing/unverifiable review and integration milestones, and verifies legacy product files and accepted authority remain unchanged while the separate queue admits CR-1 then CR-2. The added path-guard assertions reject traversal, absolute, and symlink escapes.",
+      "counterexample": "Counting checkout-only or missing reports as durable verified evidence, accepting the legacy integrated status without a receipt, reading outside the checkout, mutating legacy files/authority, or skipping normal queue ordering would fail the assertions.",
+      "tdd_continuity_assessment": "The exact candidate Green run 828faea9006a42c1b618d49f4906a79d passed CR-T15. The focused path escape reproduction failed on pre-fix candidate a2b7522; this is retained as focused evidence, not represented as an accepted mapped Red. The human-authorized one-time CR-4 waiver means no synthetic Red requirement is asserted."
+    },
+    {
+      "id": "CR-T16",
+      "decision": "APPROVED",
+      "assertion_assessment": "Round-trips the audit report, asserts tasks 6\u201310 remain pending, validates the unchanged proposal without changing state/results/ledger/branch, and rejects changed task preimages, a re-bound modified decision, a moved product ref, an active writer, and an unsupported verifier capability while checking product/authority bytes and refs.",
+      "counterexample": "Accepting a changed proposal decision or stale/mutated preimage, continuing with active writers or unknown verifier capability, or writing product state/authority/task scheduling during validation would fail the assertions.",
+      "tdd_continuity_assessment": "The exact candidate Green run 828faea9006a42c1b618d49f4906a79d passed CR-T16. No historical mapped Red is claimed; the one-time human waiver permits passing tests without manufacturing Red evidence."
+    }
+  ]
+}
