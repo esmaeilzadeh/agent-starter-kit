@@ -1,0 +1,35 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "start-work-access-preflight",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "ACC-001",
+      "given": "Git metadata and workspace locations are writable",
+      "when": "access-check runs",
+      "then": ["It succeeds", "It leaves no probe files"],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "ACC-002",
+      "given": "A Git metadata or workspace write is denied",
+      "when": "access-check runs",
+      "then": ["It exits non-zero", "It names the blocked location and next step"],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "ACC-003",
+      "given": "A required access probe fails",
+      "when": "start-work runs",
+      "then": ["It fails before branch or workstream mutation"],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "ACC-004",
+      "given": "A supported runtime starts or resumes a project session",
+      "when": "The session enters project work",
+      "then": ["The shared access check runs before work proceeds"],
+      "verification_mode": "review"
+    }
+  ]
+}
