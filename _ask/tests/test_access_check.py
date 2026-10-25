@@ -58,7 +58,7 @@ class AccessCheckTests(unittest.TestCase):
         self.assertEqual(nested.returncode, 0, nested.stderr)
         clone = self.root / "clone"
         linked = self.root / "linked"
-        subprocess.run(["git", "clone", "-q", "--local", str(ROOT), str(clone)], check=True)
+        subprocess.run(["git", "clone", "-q", "--no-hardlinks", str(ROOT), str(clone)], check=True)
         subprocess.run(["git", "-C", str(clone), "worktree", "add", "-q", "-b",
                         "access-check-linked", str(linked), "HEAD"], check=True)
         linked_result = subprocess.run([str(linked / "ask"), "access-check"],
