@@ -1,0 +1,27 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "candidate_sha": "7523fd211df4575c0666d06c8e5b505c937cd217",
+  "contract_sha": "cae9913d99abb5b174988e50d8e9ee2d8f829cfc",
+  "tdd": {
+    "seam": "Distinguish an accepted source-only review rebind with unchanged semantic plan digest from an identical review reaccept, while preserving prior interrupted-attempt history.",
+    "red": {
+      "command": "PYTHONPATH=_ask/scripts:.agents/ask python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_guard_rollback_and_explicit_attempts",
+      "output": "Pre-fix focused regression failed at the reopen guard: accept the reviewed plan amendment before reopening this task",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "ASK_INNER_LOOP_ROLE=worker ./ask traceability run continuation-recovery --candidate-sha 7523fd211df4575c0666d06c8e5b505c937cd217 --scope task --task-id CR-3 --phase final_green",
+      "output": "test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_interrupted_preflight_is_read_only_and_derived (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\ntest_t21_exception_requires_exact_p1_decision (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 196.362s\n\nOK\n",
+      "exit_code": 0
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "Reviewed the focused plan-rebind guard and regression; no independent cleanup was useful without broadening CR-3."
+  },
+  "exemption": null,
+  "notes": "Attempt 7 under the accepted corrected P1 source-review binding. The semantic plan digest is unchanged. Attempts 1\u20136 remain preserved, including the archived attempt 6 TaskResult. The exact current Green is retained as run d7000192c7ff4ffdbb61648071fec28f and passed all 12 mapped CR-3 cases."
+}
