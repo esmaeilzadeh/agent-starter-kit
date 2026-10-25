@@ -590,6 +590,54 @@ def snapshot_runner(root: Path, base_sha: str, destination: Path) -> tuple[Path,
     return runner, digest(json.dumps(hashes, sort_keys=True).encode())
 
 
+def _pinned_cr3_verifier_sources(root: Path, work_id: str) -> dict:
+    """Read the accepted verifier pin from Git before importing verifier code."""
+    authority_ref = f'refs/ask/accepted-tests/{work_id}'
+    try:
+        authority_commit = git(root, 'rev-parse', '--verify', authority_ref)
+        pin = json.loads(git(root, 'show', f'{authority_commit}:accepted.json'))
+    except (NotIntegrable, ValueError) as exc:
+        raise NotIntegrable('accepted verifier authority is unavailable before import') from exc
+    review = pin.get('plan_review') if isinstance(pin, dict) else None
+    migration = review.get('coordinator_migration') if isinstance(review, dict) else None
+    if (not isinstance(pin, dict)
+            or pin.get('schema') != 'ask-accepted-tests/v1'
+            or pin.get('work_id') != work_id
+            or pin.get('plan_review_digest') != canonical_digest(review)
+            or not isinstance(migration, dict)):
+        raise NotIntegrable('accepted verifier authority is invalid before import')
+    try:
+        review_raw = subprocess.run(
+            ['git', 'show', f"{pin['contract_sha']}:{migration['source_review_artifact']}"],
+            cwd=root, check=True, capture_output=True).stdout
+        source_review = json.loads(review_raw)
+    except (KeyError, OSError, subprocess.CalledProcessError, ValueError) as exc:
+        raise NotIntegrable('accepted verifier source review is unavailable before import') from exc
+    verifier_sources = source_review.get('verifier_source_digests')
+    if (hashlib.sha256(review_raw).hexdigest() != migration.get('source_review_digest')
+            or source_review.get('decision') != 'APPROVED'
+            or not str(source_review.get('reviewer') or '').strip()
+            or source_review.get('verifier_sha') != migration.get('verifier_sha')
+            or source_review.get('verifier_tree') != migration.get('verifier_tree')
+            or not isinstance(verifier_sources, dict) or not verifier_sources):
+        raise NotIntegrable('accepted verifier source review is invalid before import')
+    verifier_root = root / '.agents' / 'ask' / 'verification'
+    current_sources = {
+        str(path.relative_to(root)) for path in verifier_root.rglob('*.py')
+    } if verifier_root.is_dir() else set()
+    if current_sources != set(verifier_sources):
+        raise NotIntegrable('current verifier source inventory differs from the accepted pin')
+    verifier_sha = migration['verifier_sha']
+    for name, expected in verifier_sources.items():
+        current = (root / name).read_bytes()
+        pinned = subprocess.run(['git', 'show', f'{verifier_sha}:{name}'], cwd=root,
+                                capture_output=True)
+        if (hashlib.sha256(current).hexdigest() != expected or pinned.returncode
+                or hashlib.sha256(pinned.stdout).hexdigest() != expected):
+            raise NotIntegrable(f'current verifier source differs from the accepted pin: {name}')
+    return migration
+
+
 def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
     """Resolve only the reviewed P1 coordinator/verifier pair for CR-3."""
     identity=candidate.identity
@@ -597,6 +645,7 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
         or identity.get('task_id')!='CR-3'
         or identity.get('base_sha')!='2c508ff4248f16a3e3121d33a0fae7297c9b378e'):
         raise NotIntegrable('coordinator migration is limited to the approved CR-3 base and scope')
+    pinned_migration = _pinned_cr3_verifier_sources(root, identity['work_id'])
     sys.path.insert(0,str(root/'.agents'/'ask'))
     try:
         from verification.traceability.evidence import load_accepted
@@ -606,6 +655,8 @@ def _authorized_cr3_migration(root: Path, candidate: Candidate) -> dict:
     except Exception as exc:
         raise NotIntegrable(f'accepted P1 migration authority is unavailable: {exc}') from exc
     migration=(pin.get('plan_review') or {}).get('coordinator_migration')
+    if migration != pinned_migration:
+        raise NotIntegrable('accepted migration binding changed during verifier import')
     required=('coordinator_sha','coordinator_tree','verifier_sha','verifier_tree',
               'original_base_sha','p1_spec_digest','p1_plan_digest','p0_plan_digest',
               'p0_review_identity','p0_review_digest','scope_decision_artifact',
