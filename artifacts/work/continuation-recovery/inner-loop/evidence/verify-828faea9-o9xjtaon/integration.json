@@ -41,5 +41,21 @@
   "runner_sha": "bf8696707293700a384850710490432420cadfce",
   "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
   "traceability_plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539",
-  "record_path": "work/continuation-recovery/inner-loop/evidence/verify-828faea9-o9xjtaon/integration.json"
+  "record_path": "work/continuation-recovery/inner-loop/evidence/verify-828faea9-o9xjtaon/integration.json",
+  "resulting_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+  "review": {
+    "work_id": "continuation-recovery",
+    "task_id": "CR-4",
+    "base_sha": "bf8696707293700a384850710490432420cadfce",
+    "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+    "result_digest": "91220cf4ae2692e7eb893e1b1a0c39e56a6dd20ce391db52815fe245664b29a9",
+    "reviewer": "/root/final_review",
+    "policy": "_ask/policies/delegation.md",
+    "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+    "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-4-622e89c.md",
+    "evidence_digest": "b9aed688294e0b943477910a01b4bbd3b7c49e2c413a156d6da555ae79562e5a",
+    "verdict": "APPROVED",
+    "boundary": "ok",
+    "exemption_reason": null
+  }
 }
