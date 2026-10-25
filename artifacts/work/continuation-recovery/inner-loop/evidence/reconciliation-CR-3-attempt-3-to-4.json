@@ -1,0 +1,68 @@
+{
+  "accepted_plan_digest": "bba7034eb1a562c779748991cdf190be406217d3f081667472f01b88531e6e4a",
+  "accepted_plan_ref": "a75d57d89b0b92aa810bed09d54616ed364d5b2a",
+  "candidate_sha": "fc5f312565af3a80ac5aa0122fc7336de8d0dc80",
+  "decision": "Preserve all three interrupted CR-3 attempts and their retained run histories. Reopen CR-3 as attempt 4 under the currently accepted P1 plan, using coordinator base 2c508ff. The checked-out candidate descends from interrupted candidate 16baab3 and contains overlapping CR-3/CR-4-owned changes in recovery.py and inner_loop_recovery.py; retain these exact postimages while CR-3 owns the dependency overlap. Do not resume CR-4 or relabel prior runs.",
+  "green_run": {
+    "candidate_sha": "fc5f312565af3a80ac5aa0122fc7336de8d0dc80",
+    "phase": "final_green",
+    "plan_digest": "bba7034eb1a562c779748991cdf190be406217d3f081667472f01b88531e6e4a",
+    "report_digest": "d9d3946b49028445ceafd65e95bca89cd0de7d3a040badfb7d384a1b4d94b368",
+    "run_id": "6e7868bd24e440eb9db7e35370eee240",
+    "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+    "task_id": "CR-3"
+  },
+  "interrupted_candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+  "new_attempt_base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "new_attempt_id": "CR-3:attempt-4",
+  "preflight": {
+    "checkpoint_sha": "2f40f3c97e521611c617e21331dcd8ca654abd5b",
+    "plan_digest": "bba7034eb1a562c779748991cdf190be406217d3f081667472f01b88531e6e4a",
+    "read_only": true,
+    "run_id": "6e7868bd24e440eb9db7e35370eee240",
+    "status": "valid"
+  },
+  "previous_attempt_id": "CR-3:attempt-3",
+  "previous_checkpoint_sha": "2f40f3c97e521611c617e21331dcd8ca654abd5b",
+  "previous_revision": 29,
+  "prior_attempts_preserved": [
+    {
+      "accepted_plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+      "accepted_plan_ref": "14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
+      "attempt_id": "CR-3:attempt-1",
+      "attempt_number": 1,
+      "interrupted_candidate_sha": "346249e491b4b47ca1b94b5656b1cf1ae3d88fab",
+      "status": "interrupted"
+    },
+    {
+      "accepted_plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025",
+      "accepted_plan_ref": "4ad1d2de2591a672aab211df1ce019d97cb13fad",
+      "attempt_id": "CR-3:attempt-2",
+      "attempt_number": 2,
+      "interrupted_candidate_sha": "08339eb5bf9802cf815819bf3168f13c5296d9bd",
+      "status": "interrupted"
+    },
+    {
+      "accepted_plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+      "accepted_plan_ref": "01ab63265bd0adfb2b6bc0aadde86ba46eccbeb8",
+      "attempt_id": "CR-3:attempt-3",
+      "attempt_number": 3,
+      "interrupted_candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+      "status": "interrupted"
+    }
+  ],
+  "recorded_by": "/root",
+  "review": {
+    "candidate_sha": "fc5f312565af3a80ac5aa0122fc7336de8d0dc80",
+    "decision": "APPROVED",
+    "payload_sha256": "056661debf77423e5ce34c79dcb7c63370df3dc99784a7ef862f89403330e8f0",
+    "reviewer": "/root/cr3_attempt_reconciliation_review"
+  },
+  "schema": "ask-inner-loop-reconciliation/v1",
+  "source_postimage": {
+    "_ask/scripts/inner_loop/recovery.py": "7a6f5ba02b47e62a8d559a78ce3a45f924e88e97432dedd6b6fe59caabd6fa68",
+    "_ask/tests/inner_loop_recovery.py": "898b567183bc443e57ab02d3abf127a1c6f7d2933cc1585376e2e6b0c34c905f"
+  },
+  "task_id": "CR-3",
+  "work_id": "continuation-recovery"
+}

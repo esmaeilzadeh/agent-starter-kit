@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 29,
+  "revision": 30,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,19 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 3,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 4,
+      "attempt_id": "CR-3:attempt-4",
+      "accepted_plan_ref": "a75d57d89b0b92aa810bed09d54616ed364d5b2a",
+      "accepted_plan_digest": "bba7034eb1a562c779748991cdf190be406217d3f081667472f01b88531e6e4a",
+      "attempt_started_revision": 30,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1290,14 +1290,13 @@
           "interrupted_revision": 29
         }
       ],
-      "reopened_from_attempt": "CR-3:attempt-2",
-      "reopen_reason": "Resume CR-3 after reviewed attempt-2-to-3 source and evidence reconciliation",
+      "reopened_from_attempt": "CR-3:attempt-3",
+      "reopen_reason": "Resume authorized CR-3 attempt after independent review of attempt-3-to-4 reconciliation and current Green preflight.",
       "source_reconciliation": {
-        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-2-to-3.json",
-        "digest": "6c874965393f281efa8424bbbbf7d16917349e11ad64ad41c677f923caac298e",
-        "candidate_sha": "16baab34a8ed8892df5f7846e907b469e11bbc73",
+        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-3-to-4.json",
+        "digest": "ac829a398cc526e085e819600709d2e7503f5f5c076090b21582036b244462bb",
+        "candidate_sha": "fc5f312565af3a80ac5aa0122fc7336de8d0dc80",
         "paths": [
-          "_ask/scripts/inner_loop/__main__.py",
           "_ask/scripts/inner_loop/recovery.py",
           "_ask/tests/inner_loop_recovery.py"
         ]

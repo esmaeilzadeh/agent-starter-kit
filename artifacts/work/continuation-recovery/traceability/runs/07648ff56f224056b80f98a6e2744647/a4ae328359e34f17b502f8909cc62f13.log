@@ -1,0 +1,31 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_consumed_receipt_selection_is_atomic (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests) ... ERROR
+test_interrupted_preflight_is_read_only_and_derived (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_t21_exception_requires_exact_p1_decision (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+ERROR: test_historical_red_continuity_through_checkpoint_and_integration (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-as9cdxh3/candidate/_ask/tests/inner_loop_recovery.py", line 2235, in test_historical_red_continuity_through_checkpoint_and_integration
+    self._cr3_normal_integration_fixture()
+  File "/tmp/ask-cases-as9cdxh3/candidate/_ask/tests/inner_loop_recovery.py", line 2474, in _cr3_normal_integration_fixture
+    integrated_sha = integrate_ready(root, work_id, task_id)
+  File "/tmp/ask-cases-as9cdxh3/candidate/_ask/scripts/inner_loop/driver.py", line 121, in integrate_ready
+    evidence = verify_candidate(root, candidate)
+  File "/tmp/ask-cases-as9cdxh3/candidate/_ask/scripts/inner_loop/evidence.py", line 788, in verify_candidate
+    raise NotIntegrable('required candidate verification failed or mismatched its CheckPlan: ' + str(executed.get('error', '')))
+inner_loop.evidence.NotIntegrable: required candidate verification failed or mismatched its CheckPlan: spec-to-test completion failed: {"errors": ["migration_required: missing/invalid JSON /tmp/tmp4_antajo/cr3-integration/work/continuation-recovery/traceability/runs/dab908b39596441086d57106b8c816ec/results.json: [Errno 2] No such file or directory: '/tmp/tmp4_antajo/cr3-integration/work/continuation-recovery/traceability/runs/dab908b39596441086d57106b8c816ec/results.json'"], "missing_evidence": [], "report": "work/continuation-recovery/traceability/completion.json"}
+
+----------------------------------------------------------------------
+Ran 12 tests in 99.092s
+
+FAILED (errors=1)
