@@ -13,7 +13,8 @@ from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
     NotIntegrable, _checkpoint_run_locked, check_integrable, git, read_candidate, result_path,
-    reuse_checkpointed_verification, runtime_exclusions, source_changes, validate_review, verify_candidate,
+    reuse_checkpointed_verification, runtime_exclusions, source_changes, validate_review,
+    validate_task_verification_report, verification_report_receipt, verify_candidate,
 )
 from inner_loop.graph import _task_map, load_graph, validate_graph
 from inner_loop.integrate import Escalate, resume as git_resume
@@ -118,7 +119,12 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         evidence = reuse_checkpointed_verification(root, work_id, task, candidate)
         verification_reused = evidence is not None
         if evidence is None:
-            evidence = verify_candidate(root, candidate)
+            report_reference = candidate.result.get('verification_report')
+            if report_reference is not None:
+                evidence = verification_report_receipt(root, work_id, task_id,
+                                                       candidate, doc)
+            else:
+                evidence = verify_candidate(root, candidate)
         # Checks can take time: ref/result/review or coordinator source drift
         # invalidates their applicability before any FF/state advancement.
         current = read_candidate(root, work_id, task_id, doc)
@@ -130,6 +136,12 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         # coordinator transaction already owns state.lock.
         for run_id in evidence.get('traceability_run_ids', []):
             _checkpoint_run_locked(root, work_id, task_id, run_id, doc)
+        if isinstance(evidence.get('task_verification_report'), dict):
+            _report, row, reference = validate_task_verification_report(
+                root, work_id, task_id, candidate, doc)
+            if (reference != evidence['task_verification_report']
+                    or row.get('digest') != evidence.get('task_report_digest')):
+                raise NotIntegrable('TaskResult verification report changed during integration')
         task.setdefault('evidence', {})['verification'] = evidence
         record_path = evidence.get('record_path')
         try:

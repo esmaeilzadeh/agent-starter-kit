@@ -2805,6 +2805,60 @@ class test_b(unittest.TestCase):
         self.assertEqual(read_checkpoint(self.root, "w")[0], checkpoint_sha)
         state_path.write_bytes(cache)
 
+    def test_taskresult_pinned_verification_report_avoids_a_second_test_run(self):
+        from inner_loop import driver
+        from inner_loop.evidence import (
+            NotIntegrable, read_candidate, record_review, validate_task_verification_report,
+        )
+        from unittest import mock
+
+        _red, green = self._real_traceability_pair()
+        report_path = (self.root / "work/w/traceability/runs" /
+                       green["run_id"] / "results.json")
+        report_raw = report_path.read_bytes()
+        reference = {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": green["candidate_sha"],
+            "run_id": green["run_id"],
+            "report_path": str(report_path.relative_to(self.root)),
+            "sha256": hashlib.sha256(report_raw).hexdigest(),
+        }
+        accepted = json.loads((self.root / "work/w/traceability-accepted.json").read_text())
+        result = {
+            "schema": "ask-task-result/v2", "work_id": "w", "task_id": "a",
+            "base_sha": self.anchor_commit, "candidate_sha": green["candidate_sha"],
+            "contract_sha": accepted["contract_sha"],
+            "tdd": {"seam": "pinned test report",
+                    "red": {"command": "fixture", "output": "failed", "exit_code": 1},
+                    "green": {"command": "fixture", "output": "passed", "exit_code": 0}},
+            "verification_report": reference, "exemption": None,
+        }
+        result_path = self.root / "work/w/inner-loop/results/a.json"
+        result_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path.write_text(json.dumps(result, indent=2) + "\n")
+        candidate = read_candidate(self.root, "w", "a", load_state(self.root, "w"))
+        report_path.write_bytes(report_raw + b" ")
+        with self.assertRaisesRegex(NotIntegrable, "report digest mismatch"):
+            validate_task_verification_report(
+                self.root, "w", "a", candidate, load_state(self.root, "w"))
+        report_path.write_bytes(report_raw)
+        review_path = "work/w/inner-loop/evidence/review-a.md"
+        self.write(review_path, "Reviewer: fixture-independent; APPROVED\n")
+        record_review(self.root, "w", "a", "fixture-independent",
+                      "_ask/policies/delegation.md", review_path)
+
+        with mock.patch.object(driver, "verify_candidate",
+                               side_effect=AssertionError("coordinator reran the tests")):
+            integrated = driver.integrate_ready(self.root, "w", "a")
+        self.assertEqual(integrated, green["candidate_sha"])
+        self.assertEqual(report_path.read_bytes(), report_raw,
+                         "the coordinator must preserve the immutable runner report")
+        task = load_state(self.root, "w")["tasks"]["a"]
+        self.assertEqual(task["status"], "integrated")
+        receipt = task["evidence"]["verification"]
+        self.assertEqual(receipt["task_verification_report"], reference)
+        self.assertEqual(receipt["traceability_run_ids"], [green["run_id"]])
+
 
 if __name__ == "__main__":
     unittest.main()

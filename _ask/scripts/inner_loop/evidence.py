@@ -389,6 +389,98 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
     return report, ledger_row
 
 
+def validate_task_verification_report(root: Path, work_id: str, task_id: str,
+                                      candidate: Candidate, state: dict) -> tuple[dict, dict, dict]:
+    """Validate the exact immutable test-run report named by TaskResult."""
+    import re
+
+    reference = candidate.result.get('verification_report')
+    if (not isinstance(reference, dict)
+            or reference.get('schema') != 'ask-task-verification-report/v1'
+            or reference.get('candidate_sha') != candidate.identity['candidate_sha']):
+        raise NotIntegrable('TaskResult verification_report identity/schema mismatch')
+    run_id = reference.get('run_id')
+    if not isinstance(run_id, str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,128}', run_id):
+        raise NotIntegrable('TaskResult verification_report run_id is invalid')
+    expected_path = f'work/{work_id}/traceability/runs/{run_id}/results.json'
+    if reference.get('report_path') != expected_path:
+        raise NotIntegrable('TaskResult verification_report path does not match its run_id')
+    unresolved = root / expected_path
+    report_path = unresolved.resolve()
+    if unresolved.is_symlink() or not report_path.is_relative_to(root.resolve()):
+        raise NotIntegrable('TaskResult verification_report path escapes the repository')
+    try:
+        raw = report_path.read_bytes()
+    except OSError as exc:
+        raise NotIntegrable(f'TaskResult verification_report is unavailable: {exc}') from exc
+    if digest(raw) != reference.get('sha256'):
+        raise NotIntegrable('TaskResult verification_report digest mismatch')
+    report, row = _execution_row(root, work_id, task_id, run_id, state=state)
+    if (row.get('phase') != 'final_green'
+            or row.get('candidate_sha') != candidate.identity['candidate_sha']
+            or report.get('candidate_sha') != candidate.identity['candidate_sha']):
+        raise NotIntegrable('TaskResult verification_report is not a final Green for this candidate')
+    return report, row, {
+        'schema': 'ask-task-verification-report/v1',
+        'candidate_sha': candidate.identity['candidate_sha'],
+        'run_id': run_id,
+        'report_path': expected_path,
+        'sha256': reference['sha256'],
+    }
+
+
+def verification_report_receipt(root: Path, work_id: str, task_id: str,
+                                candidate: Candidate, state: dict) -> dict:
+    """Record a validated run report as integration evidence without rerunning it."""
+    report, row, reference = validate_task_verification_report(
+        root, work_id, task_id, candidate, state)
+    if work_id == 'continuation-recovery' and task_id == 'CR-3':
+        migration = _authorized_cr3_migration(root, candidate)
+    else:
+        migration = None
+    executions = {item['id']: item for item in report['executions']}
+    checks = []
+    for case in report['cases']:
+        execution = executions[case['execution_id']]
+        checks.append({
+            'id': case['test_id'], 'tier': 'mandatory',
+            'command': ' '.join(execution['argv']), 'status': 'pass',
+            'exit_code': execution['exit_code'],
+            'evidence': execution['output_artifact'],
+            'output_digest': execution['output_digest'],
+        })
+    evidence = dict(candidate.identity, schema='ask-integration-evidence/v1',
+                    result='pass', result_digest=candidate.result_digest,
+                    checks=checks, tree_sha=git(root, 'rev-parse',
+                                                f"{candidate.identity['candidate_sha']}^{{tree}}"),
+                    traceability_run_ids=[reference['run_id']],
+                    task_verification_report=reference,
+                    task_report_digest=row['digest'],
+                    runner_sha=candidate.identity['base_sha'],
+                    runner_digest=(report.get('runner_identity') or {}).get('adapter_digest'),
+                    traceability_plan_digest=row['plan_digest'])
+    if migration:
+        evidence.update({
+            'coordinator_sha': migration['coordinator_sha'],
+            'coordinator_tree': migration['coordinator_tree'],
+            'verifier_sha': migration['verifier_sha'],
+            'verifier_tree': migration['verifier_tree'],
+            'p1_spec_digest': migration['p1_spec_digest'],
+            'p1_plan_digest': migration['p1_plan_digest'],
+            'p1_contract_sha': candidate.result.get('contract_sha'),
+            'migration_binding_digest': canonical_digest(migration),
+        })
+    from tempfile import mkdtemp
+    evidence_dir = root / 'work' / work_id / 'inner-loop' / 'evidence'
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+    record_dir = Path(mkdtemp(prefix=f'verify-{reference["run_id"][:8]}-',
+                              dir=evidence_dir))
+    record_path = record_dir / 'integration.json'
+    evidence['record_path'] = str(record_path.relative_to(root))
+    record_path.write_text(json.dumps(evidence, indent=2) + '\n')
+    return evidence
+
+
 def _checkpoint_run_locked(root: Path, work_id: str, task_id: str, run_id: str,
                            state: dict) -> dict:
     """Finalize a validated report under an already-held coordinator state lock."""
@@ -952,12 +1044,37 @@ def reuse_checkpointed_verification(root: Path, work_id: str, task: dict,
     try:
         raw = path.read_bytes()
         recorded = json.loads(raw)
-        completion_raw = (root / 'work' / work_id / 'traceability' / 'completion.json').read_bytes()
     except (OSError, ValueError):
         return None
     if (not isinstance(expected_digest, str) or digest(raw) != expected_digest
-            or recorded != evidence
-            or digest(completion_raw) != evidence.get('completion_digest')):
+            or recorded != evidence):
+        return None
+    if isinstance(evidence.get('task_verification_report'), dict):
+        try:
+            from inner_loop.state import load_state
+            state = load_state(root, work_id)
+            if evidence.get('task_verification_report') != candidate.result.get('verification_report'):
+                return None
+            _report, row, reference = validate_task_verification_report(
+                root, work_id, candidate.identity['task_id'], candidate, state)
+            tree_sha = git(root, 'rev-parse', f"{candidate.identity['candidate_sha']}^{{tree}}")
+        except (NotIntegrable, OSError, ValueError):
+            return None
+        task_state = (state.get('tasks') or {}).get(candidate.identity['task_id']) or {}
+        recorded_runs = (task_state.get('evidence') or {}).get('traceability_runs') or []
+        summary = {key: row[key] for key in ('run_id', 'digest', 'phase', 'task_id',
+                                             'candidate_sha', 'spec_digest', 'plan_digest')}
+        if (reference != evidence['task_verification_report']
+                or row.get('digest') != evidence.get('task_report_digest')
+                or evidence.get('traceability_run_ids') != [reference['run_id']]
+                or tree_sha != evidence.get('tree_sha') or summary not in recorded_runs):
+            return None
+        return evidence
+    try:
+        completion_raw = (root / 'work' / work_id / 'traceability' / 'completion.json').read_bytes()
+    except OSError:
+        return None
+    if digest(completion_raw) != evidence.get('completion_digest'):
         return None
     try:
         tree_sha = git(root, 'rev-parse', f"{candidate.identity['candidate_sha']}^{{tree}}")

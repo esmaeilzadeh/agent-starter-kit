@@ -34,13 +34,28 @@ The worker commits its source changes, then writes
 Behavior changes use `tdd: {seam, red: {command, output, exit_code}, green:
 {command, output, exit_code}}` and `exemption: null`. Red is an integer nonzero
 exit; green is integer zero; both carry captured output. This records TDD
-history. It does not substitute for candidate verification. Exemption kinds:
+history. For behavior tasks, also include the report from the pinned task
+runner:
+
+```json
+"verification_report": {
+  "schema": "ask-task-verification-report/v1",
+  "candidate_sha": "<same full task candidate commit>",
+  "run_id": "<pinned runner run ID>",
+  "report_path": "work/example/traceability/runs/<run-id>/results.json",
+  "sha256": "<SHA-256 of report bytes>"
+}
+```
+
+The report reference does not replace the TDD history. Exemption kinds:
 `documentation-only`, `generated-projections`, `non-behavioral-config`.
 
 The candidate must descend from the task's recorded base. Use the coordinator
 checkout by default, or a task branch recorded in state and eligible for FF.
-Prepare TaskResult after committing the candidate: its own full SHA cannot be
-embedded in that same commit. State, results and execution/review evidence are
+Run the accepted task-scoped test runner after committing the candidate, then
+place its report reference in TaskResult before requesting review. The
+candidate SHA already exists, so TaskResult can bind the immutable report
+without a digest cycle. State, results and execution/review evidence are
 runtime paths; keep source/TaskGraph/intent changes committed. These runtime
 exceptions apply only to `work/<work-id>/inner-loop/{state.json,state.lock,
 .state-*.tmp,results/**,evidence/**}`. They do not exempt the whole workstream.
@@ -80,21 +95,16 @@ No new human acknowledgment is required for each delegated exemption.
 
 ## Candidate execution and integration
 
-The coordinator snapshots its CheckPlan runner and Python imports from the recorded
-coordinator base commit, then runs them against a clean detached worktree at the
-immutable candidate SHA. Candidate changes to the verification implementation
-do not replace the gate checking that candidate. The committed candidate CheckPlan and expanded
-presets identify required commands. Worker-reported green codes and preexisting
-VerifyResult files are not consumed as executed verification.
-
-Outputs go into `inner-loop/evidence/verify-*/`: `output.log`,
-`verification.json` and `integration.json`. Evidence includes candidate/base,
-result digest, effective CheckPlan digest, runner base/digest, tree SHA, commands, exit codes and
-paths. Failed checks, an empty mandatory plan, changed source or stale inputs
-leave the task unintegrated. The coordinator revalidates inputs after checks,
-then fast-forwards to the pinned candidate SHA and records the resulting SHA
-and evidence in state. FF yields the exact tested tree, so no redundant second
-run is required. Outer `09 Verify` and `10 Accept` still apply.
+The run report is the output of the accepted task-scoped runner at the
+committed candidate SHA. Add its run ID, path, candidate SHA and SHA-256 to
+TaskResult before recording the independent review. During integration, the
+coordinator validates the report against the task base runner, accepted test
+plan, source digests and complete case inventory. It records that report in
+state and writes a separate integration receipt without running the test
+commands again. TaskResults without a report reference retain the compatibility
+verifier path. Verifier upgrades remain checked by the previously accepted
+verifier and their separate upgrade tests. Outer `09 Verify` and `10 Accept`
+still apply.
 
 The `integrate --task-ref` primitive only performs Git FF; it does not verify
 or mark a task integrated. Use `run`/`resume` for the normal evidence-gated flow.
