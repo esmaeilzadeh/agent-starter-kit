@@ -2533,6 +2533,35 @@ class test_b(unittest.TestCase):
         except Exception as exc:
             self.fail(f"normal coordinator review admission refused the fixture: "
                       f"{getattr(exc, 'report', exc)}")
+        verifier = root / ".agents/ask/verification/traceability/evidence.py"
+        verifier_before = verifier.read_bytes()
+        import_marker = root / "current-verifier-imported-before-pin-check"
+        verifier.write_bytes(verifier_before + (
+            f"\nfrom pathlib import Path as _P; _P({str(import_marker)!r}).write_text('imported')\n"
+        ).encode())
+        probe = (
+            "from pathlib import Path\n"
+            "from inner_loop.evidence import Candidate, _authorized_cr3_migration\n"
+            f"candidate = Candidate({{}}, {{'work_id': {work_id!r}, 'task_id': {task_id!r}, "
+            f"'base_sha': {original_base!r}, 'candidate_sha': {candidate_sha!r}}}, 'probe')\n"
+            "try:\n"
+            "    _authorized_cr3_migration(Path.cwd(), candidate)\n"
+            "except Exception as exc:\n"
+            "    print(type(exc).__name__, exc)\n"
+            "else:\n"
+            "    print('accepted')\n"
+        )
+        env = dict(os.environ, PYTHONPATH=os.pathsep.join(
+            (str(root / "_ask/scripts"), str(root / ".agents/ask"))))
+        try:
+            probe_result = subprocess.run([sys.executable, "-c", probe], cwd=root,
+                                          env=env, capture_output=True, text=True)
+        finally:
+            verifier.write_bytes(verifier_before)
+        self.assertEqual(probe_result.returncode, 0, probe_result.stderr)
+        self.assertNotIn("accepted", probe_result.stdout)
+        self.assertFalse(import_marker.exists(),
+                         "current verifier code ran before the accepted verifier pin was checked")
         from inner_loop.driver import integrate_ready
         integrated_sha = integrate_ready(root, work_id, task_id)
         self.assertEqual(integrated_sha, candidate_sha)
