@@ -126,6 +126,9 @@ class AccessCheckTests(unittest.TestCase):
     def test_runtime_hook_surfaces_failure_as_stop_condition(self):
         hook_source = ROOT / ".cursor/hooks/access-preflight.sh"
         self.assertTrue(hook_source.is_file(), "Cursor session-start hook is missing")
+        hooks = json.loads((ROOT / ".cursor/hooks.json").read_text(encoding="utf-8"))
+        self.assertTrue(any(entry.get("command") == ".cursor/hooks/access-preflight.sh"
+                            for entry in hooks.get("hooks", {}).get("sessionStart", [])))
         self.root.joinpath(".cursor/hooks").mkdir(parents=True)
         shutil.copy2(hook_source, self.root / ".cursor/hooks/access-preflight.sh")
         fake_ask = self.root / "ask"
