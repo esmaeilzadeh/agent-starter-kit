@@ -625,6 +625,12 @@
       "sha256": "917f6322c6c8bd87cc85122746fb5c5408c006bf6dd5778e80efdeac669d3438",
       "size": 3355
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-3-0a08444.md": {
+      "blob": "2f7a434e7f4b3d602d08fd89d6319eeef79c73bb",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-0a08444.md",
+      "sha256": "4b8faaedc56f3d5fa2cebc49fc071e66004d16a4ed285753b9a9e0b1ffa7f76a",
+      "size": 2054
+    },
     "work/continuation-recovery/inner-loop/evidence/review-CR-3-50b92a0.md": {
       "blob": "143ab1b7e72fe2a15e2b58d09b0f76be6d915bd3",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-50b92a0.md",
@@ -884,9 +890,9 @@
       "size": 2739
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "2e1d93560b5d0df4accf191778601923e03cb200",
+      "blob": "ca4e42452616bb767f7015a8396a41abb9463df4",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "c1bdd85adef583cccea5ecbc18be8bb56c85502378f7aa37f70d1c06a7258083",
+      "sha256": "8e6f7900c00160884070064ba4fd399140b30c699eef58985258e41c210d0ac4",
       "size": 78299
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
@@ -1026,6 +1032,12 @@
       "path": "artifacts/work/continuation-recovery/traceability/plan-review.json",
       "sha256": "3fb8ed81184fd46fc82641f81ac4fd262e398d89aa7600b352dac9d03db67020",
       "size": 4318
+    },
+    "work/continuation-recovery/traceability/review-input-0a08444.json": {
+      "blob": "c695871cba087bd585ee1b31a197d31529db9b0a",
+      "path": "artifacts/work/continuation-recovery/traceability/review-input-0a08444.json",
+      "sha256": "d485fe8d6896e460abca6623bb3517a2a27795b11624143cbff7a42752e1e5a9",
+      "size": 15749
     },
     "work/continuation-recovery/traceability/review-input-50b92a0.json": {
       "blob": "e19d9b8b5a6afe6be9d84733a0ce65c9884eff16",
@@ -9033,8 +9045,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 43,
-  "previous_checkpoint": "53766cbf40f4b09a1af628ae9c0bbc2f85fbb229",
+  "generation": 44,
+  "previous_checkpoint": "3c8f246979c196f398f07aa326a444f9653f0253",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",
