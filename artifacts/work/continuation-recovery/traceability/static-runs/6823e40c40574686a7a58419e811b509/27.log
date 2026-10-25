@@ -1,0 +1,7 @@
+check-clean-worktree: clean
+access-check: Git metadata and workspace are writable
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=b7f0103ed1b9a9d5b5b52961c796c777d7ca7847
+start-work: workstream=work/demo
+PASS: start-work from develop or fail closed

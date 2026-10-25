@@ -1,0 +1,20 @@
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.8ixmoG6BXY
+install-kit: skip existing .gitignore (use --force)
+install-kit: skip existing AGENTS.md (use --force)
+install-kit: skip existing ask (use --force)
+install-kit: skip existing ai-agent-engineering-guide.md (use --force)
+install-kit: skip existing ai-agent-starter-kit-spec.md (use --force)
+install-kit: skip existing .ask.env.example (use --force)
+install-kit: skip existing .ask/README.md (use --force)
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.claude/agents
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.codex/agents
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.cursor/agents
+sync-runtime-agents: wrote /tmp/tmp.8ixmoG6BXY/.opencode/agents
+sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
+install-kit: applied to /tmp/tmp.8ixmoG6BXY
+PASS: install-kit does not clobber consumer bindings/models.yaml

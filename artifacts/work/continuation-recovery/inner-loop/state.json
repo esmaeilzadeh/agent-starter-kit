@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 39,
+  "revision": 40,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -884,6 +884,15 @@
             "phase": "final_green",
             "task_id": "CR-3",
             "candidate_sha": "50b92a07f6517cac82a400b2161085f576cc7d12",
+            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+            "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+          },
+          {
+            "run_id": "b59272f4d2eb41758bb31b6f074d3a2b",
+            "digest": "3d5f0e8603dbfb3f695e8e9f6de6a2c8fedc7d250e831164aa19fc45b2adde42",
+            "phase": "final_green",
+            "task_id": "CR-3",
+            "candidate_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
             "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
             "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
           }
