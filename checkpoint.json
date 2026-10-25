@@ -553,6 +553,12 @@
       "sha256": "3d8e5baa5d10b234bbf5dc8689a40c864a6c758ca0d8c983a676b75a440d5a67",
       "size": 6126
     },
+    "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-6-checkpoint-refresh.json": {
+      "blob": "835acece529ceb42953c769751f199dd8eb6f0b1",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-6-checkpoint-refresh.json",
+      "sha256": "d76722d8e2a680ab220250b7bf4d131b44f34c182c66c164932f75965b891aba",
+      "size": 2351
+    },
     "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3.json": {
       "blob": "e9c2e3c9ab3081cc9073eaa6cc40da6c829d6ace",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3.json",
@@ -655,6 +661,12 @@
       "sha256": "627bd3e588ef67f2ec481546f3ef1795b1e5e68ce00640c5ab569c31a2fde361",
       "size": 1799
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-3-82e14d9.md": {
+      "blob": "b0d9c32d03a9bb309d6b88602093048a55b2d155",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-82e14d9.md",
+      "sha256": "bd4d7b2b0f4bee7a78e521d1f2a48166b8b95716e1449b85f81dbd0ca9668dfd",
+      "size": 3494
+    },
     "work/continuation-recovery/inner-loop/evidence/review-CR-3-9001b62.md": {
       "blob": "0bd3fb5d2c87f7f34066d2e674ae6ddc7c5fea31",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-9001b62.md",
@@ -667,11 +679,23 @@
       "sha256": "a9219deb723e67e8e547a7b85b86ae70e19a78d0e418e4a0e00312580ab697d8",
       "size": 1014
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-3-checkpoint-refresh.md": {
+      "blob": "b7af149835391c2744add25d00a9ee299f000caf",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-checkpoint-refresh.md",
+      "sha256": "02fedde1cfe3e96ec57313cba0907b8e535dfe1e28801f4d91b769cf1ac6a91b",
+      "size": 1608
+    },
     "work/continuation-recovery/inner-loop/evidence/review-CR-3-d74f83a.md": {
       "blob": "f6638f70cfa74c85bb6b92a970ea65d880a9f279",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-d74f83a.md",
       "sha256": "ee443f5f4499ee17ba90c36d6e9b1d977ab8a11717d05e409256487be40c78bb",
       "size": 477
+    },
+    "work/continuation-recovery/inner-loop/evidence/traceability-review-CR-3-82e14d9.json": {
+      "blob": "eb3615822342bc7acb9d5aa39c9be5ea0f637ab8",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/traceability-review-CR-3-82e14d9.json",
+      "sha256": "110a398ff35f9493331f7d5bfa46bec05467f862c8c1c801043e0017739c8844",
+      "size": 15705
     },
     "work/continuation-recovery/inner-loop/evidence/user-green-only-2026-10-25.md": {
       "blob": "b41c264fa41f3eb9776b303e1c8cd83f2589e7c6",
@@ -901,6 +925,12 @@
       "sha256": "03c4541a17c490caaef8ff86c4adec3d5bf32080fd9aac87b6bd8d04df55991b",
       "size": 2881
     },
+    "work/continuation-recovery/inner-loop/results/CR-3.json": {
+      "blob": "008adb18393db94e0aedea6284ec6bd788cd1f00",
+      "path": "artifacts/work/continuation-recovery/inner-loop/results/CR-3.json",
+      "sha256": "3196fd5af977ae684335c80ce2a04266feb9bf64d0326eec783a5ddbf9146abc",
+      "size": 2815
+    },
     "work/continuation-recovery/inner-loop/state.json": {
       "blob": "44058fc3ad6690066a5a34f666906db350720958",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
@@ -970,6 +1000,12 @@
     "work/continuation-recovery/traceability/executions.lock": {
       "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
       "path": "artifacts/work/continuation-recovery/traceability/executions.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "work/continuation-recovery/traceability/model-state/writer.lock": {
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "artifacts/work/continuation-recovery/traceability/model-state/writer.lock",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "size": 0
     },
@@ -9082,7 +9118,7 @@
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "generation": 47,
-  "previous_checkpoint": "f45b00b875c1fc1df883598fe97d9572e7224518",
+  "previous_checkpoint": "6e0c08ea577bf867d371b5d418e6222b3b5a9cc2",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",

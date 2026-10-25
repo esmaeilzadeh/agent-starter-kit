@@ -1,0 +1,44 @@
+{
+  "schema": "ask-inner-loop-checkpoint-reconciliation/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "recorded_by": "/root",
+  "candidate_sha": "82e14d9ab3b904ccbcb6348bcdaebaf8eb8160e7",
+  "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "state_revision": 47,
+  "state_sha256": "48675e9d639518f95bd3c834f3ef597f469fed965ec712276219d09f3f242e57",
+  "active_attempt_id": "CR-3:attempt-6",
+  "prior_attempt_ids_preserved": [
+    "CR-3:attempt-1",
+    "CR-3:attempt-2",
+    "CR-3:attempt-3",
+    "CR-3:attempt-4",
+    "CR-3:attempt-5"
+  ],
+  "previous_checkpoint_sha": "6e0c08ea577bf867d371b5d418e6222b3b5a9cc2",
+  "observed_conflicts": [
+    "runtime traceability evidence differs from the retained checkpoint",
+    "work/continuation-recovery/inner-loop/results/CR-1.json: TaskResult contract identity mismatch",
+    "work/continuation-recovery/inner-loop/results/CR-2.json: TaskResult contract identity mismatch"
+  ],
+  "checkpoint_artifact_delta": {
+    "path": "work/continuation-recovery/traceability/model-state/writer.lock",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "classification": "runtime lock artifact created by guarded model validation"
+  },
+  "read_only_diagnosis": {
+    "only_live_traceability_path_missing_from_checkpoint": "work/continuation-recovery/traceability/model-state/writer.lock",
+    "traceability_matches_checkpoint_before": false,
+    "traceability_matches_checkpoint_with_exact_artifact_retained": true,
+    "CR-1_scope_compatible_with_current_contract_with_exact_artifact_retained": true,
+    "CR-2_scope_compatible_with_current_contract_with_exact_artifact_retained": true
+  },
+  "decision": "Publish the exact unchanged state revision 47 under the coordinator state lock so the retained checkpoint captures the existing zero-byte writer.lock artifact. Do not change task state, attempt history, TaskResults, execution ledger, candidate source, accepted contract, or CR-4 status.",
+  "postconditions": [
+    "New retained checkpoint state equals the live state byte-for-byte and remains revision 47.",
+    "Read-only reconciliation reports no conflicts.",
+    "CR-1 and CR-2 historical TaskResults pass their existing scope-compatibility checks.",
+    "CR-3 remains active as attempt 6; no CR-4 writer is started."
+  ]
+}
