@@ -1,5 +1,5 @@
 {
-  "accepted_contract_sha": "d436bc7c849088f25b61ee67e2e79f281cad625c",
+  "accepted_contract_sha": "1f865b410399c5d5fea7546de9ffd764cc8357b5",
   "artifacts": {
     "work/continuation-recovery/inner-loop/evidence/CR-1-review-c1b5ca0.md": {
       "blob": "73458b386d5c892c580d6b1edd5c7afff40f9036",
@@ -794,10 +794,10 @@
       "size": 2881
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "ed6142045a5223fba4da7d29569500026e4c186b",
+      "blob": "4a6409d47e3e45d0a5818eb3fda11863e2e1de49",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "a1e5cd1b31785ffe913259b1ab9c762c6c2595e5d241d09ab4d4074aeec49ca5",
-      "size": 74792
+      "sha256": "611201818f9b19afa7b56809bbeaf730738b2063d41b61b10140deddb676b63a",
+      "size": 74926
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2f31c3287064582458b310e0660cfdba15e41482",
@@ -8073,8 +8073,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 34,
-  "previous_checkpoint": "4189583ee3a01e3fffecab5fd9180f0d982725bb",
+  "generation": 35,
+  "previous_checkpoint": "023c791be76dd3a4c0e00a807b19d1dce87b588c",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",
@@ -8091,6 +8091,7 @@
     "16baab34a8ed8892df5f7846e907b469e11bbc73",
     "17eef16461bc2a259ed2020a8f55cf1dcf5c0c80",
     "1d9ed2f347cfc7734ae429edb9b65f9c4e3b804b",
+    "1f865b410399c5d5fea7546de9ffd764cc8357b5",
     "222477f8374354277acf480d7eed4d1162e7bf74",
     "22a94836a63faf3393c990e9a3eed9e1cbce31f4",
     "2c508ff4248f16a3e3121d33a0fae7297c9b378e",

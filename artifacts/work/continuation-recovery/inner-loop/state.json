@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 34,
+  "revision": 35,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,19 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 4,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 5,
+      "attempt_id": "CR-3:attempt-5",
+      "accepted_plan_ref": "cfc58202926c2e250a4f65d6593bb53eadc0675b",
+      "accepted_plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
+      "attempt_started_revision": 35,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1374,8 +1374,8 @@
           "interrupted_revision": 34
         }
       ],
-      "reopened_from_attempt": "CR-3:attempt-3",
-      "reopen_reason": "Resume authorized CR-3 attempt after independent review of attempt-3-to-4 reconciliation and current Green preflight.",
+      "reopened_from_attempt": "CR-3:attempt-4",
+      "reopen_reason": "Resume authorized CR-3 under independently reviewed refreshed P1 plan and exact C/V source binding.",
       "source_reconciliation": {
         "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-3-to-4.json",
         "digest": "ac829a398cc526e085e819600709d2e7503f5f5c076090b21582036b244462bb",
