@@ -34,8 +34,9 @@ class AccessCheckTests(unittest.TestCase):
         return target
 
     def failing_mktemp(self, marker):
-        bindir = self.root / "bin"
+        bindir = self.root.parent / (self.root.name + "-bin")
         bindir.mkdir(exist_ok=True)
+        self.addCleanup(shutil.rmtree, bindir, ignore_errors=True)
         real_mktemp = shutil.which("mktemp")
         wrapper = bindir / "mktemp"
         wrapper.write_text(
