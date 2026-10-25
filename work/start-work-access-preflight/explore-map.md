@@ -26,6 +26,11 @@ creates or switches to an `agent/<work-id>` branch or writes workstream files.
   `work/<work-id>/`.
 - Current behavior has no explicit write-access preflight for Git metadata or
   the workstream destination.
+- An earlier Git write in this session failed with `Read-only file system` at
+  `.git/index.lock`, while `test -w .git` now reports writable. Permission-bit
+  checks alone can miss access restrictions enforced by the execution
+  environment; the preflight needs to attempt and clean up a real temporary
+  write at each required location.
 
 ## Not yet specified
 
