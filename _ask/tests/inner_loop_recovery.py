@@ -2559,7 +2559,8 @@ class test_b(unittest.TestCase):
         finally:
             verifier.write_bytes(verifier_before)
         self.assertEqual(probe_result.returncode, 0, probe_result.stderr)
-        self.assertNotIn("accepted", probe_result.stdout)
+        self.assertIn("current verifier source differs from the accepted pin",
+                      probe_result.stdout)
         self.assertFalse(import_marker.exists(),
                          "current verifier code ran before the accepted verifier pin was checked")
         from inner_loop.driver import integrate_ready
