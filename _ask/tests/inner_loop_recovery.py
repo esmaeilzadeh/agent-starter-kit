@@ -2271,6 +2271,29 @@ class test_b(unittest.TestCase):
 
         self._cr3_normal_integration_fixture()
 
+    def test_setup_error_case_requires_nonzero_bound_execution(self):
+        from inner_loop import evidence
+
+        red, _green = self._real_traceability_pair(
+            runner_count=2, setup_error_sibling=True,
+        )
+        report_path = (self.root / "work/w/traceability/runs"
+                       / red["run_id"] / "results.json")
+        report = json.loads(report_path.read_text())
+        setup_case = next(case for case in report["cases"] if case["test_id"] == "T-B")
+        execution = next(item for item in report["executions"]
+                         if item["id"] == setup_case["execution_id"])
+        self.assertEqual(setup_case["failure_kind"], "setup_or_runtime_error")
+        self.assertNotEqual(execution["exit_code"], 0)
+        execution["exit_code"] = 0
+        report_path.write_text(json.dumps(report, indent=2) + "\n")
+
+        with self.assertRaisesRegex(evidence.NotIntegrable, "setup/runtime error"):
+            evidence._execution_row(
+                self.root, "w", "a", red["run_id"],
+                state=load_state(self.root, "w"),
+            )
+
     def _cr3_normal_integration_fixture(self):
         """Run the accepted P1 C/V boundary through the normal coordinator integration."""
         import shutil
