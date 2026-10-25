@@ -2284,6 +2284,13 @@ class test_b(unittest.TestCase):
             "expected object", " ".join(completion.get("errors", [])),
             "completion must read the append-only execution ledger as a list",
         )
+        criterion = next(row for row in completion["criterion_evidence"]
+                         if row["criterion_id"] == "C1")
+        test_a = next(row for row in criterion["tests"] if row["test_id"] == "T-A")
+        self.assertEqual([case["test_id"] for case in test_a["red"]], ["T-A"])
+        self.assertEqual(test_a["final_execution"]["outcome"], "passed")
+        self.assertNotIn("original ledger identity is missing or duplicated",
+                         completion["errors"])
 
         self._cr3_normal_integration_fixture()
 
