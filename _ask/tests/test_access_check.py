@@ -140,11 +140,10 @@ class AccessCheckTests(unittest.TestCase):
 
     def test_project_instructions_require_check_on_start_and_resume(self):
         agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").lower()
-        self.assertTrue((ROOT / "CLAUDE.md").is_file(), "Claude project instructions are missing")
-        claude = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
         self.assertIn("access-check", agents)
         self.assertIn("resume", agents)
-        self.assertIn("access-check", claude)
+        for bundle in ("codex", "cursor", "opencode"):
+            self.assertIn(bundle, agents)
 
 
 if __name__ == "__main__":
