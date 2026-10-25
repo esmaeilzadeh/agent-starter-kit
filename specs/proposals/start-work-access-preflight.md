@@ -19,7 +19,8 @@ branch-base rules.
   worktree metadata directory, shared Git metadata directory, and nearest
   existing workspace directory.
 - A failed probe exits non-zero, identifies the blocked location, and gives a
-  next step. It removes any probes it created.
+  next step. It attempts cleanup and reports the exact path if cleanup fails.
+- A successful check leaves no probe files.
 - Project startup and resume instructions for Codex, Cursor, Claude, and
   OpenCode invoke the shared check; native lifecycle hooks invoke it where the
   runtime supports them. `start-work` runs it before checkout/branch creation.
@@ -41,19 +42,20 @@ Success leaves no probe files. Failure occurs before `start-work` changes
 
 ## Failure cases
 
-Git metadata or workspace probe cannot create, write, or clean up its temporary
-file. Report the location and stop.
+Git metadata or workspace probe cannot create or write its temporary file.
+Report the location and stop. If cleanup fails, report the leftover path.
 
 ## Acceptance criteria
 
 - ACC-001: Writable Git and workspace paths pass and leave no probe files.
 - ACC-002: Denied Git metadata or workspace writes fail with a location and
-  actionable message.
+  actionable message; cleanup failures report leftover paths.
 - ACC-003: `start-work` fails before branch or workstream mutation when a probe
   fails.
-- ACC-004: Session start and resume run the same check for each supported
-  bundle, using native lifecycle hooks where available and portable project
-  instructions otherwise.
+- ACC-004: Tests verify native session-start/resume hook wiring where available.
+- ACC-005: Portable project instructions require the check when a runtime has
+  no usable lifecycle hook (review evidence; rationale: no executable hook
+  exists for that runtime).
 
 ## Open questions
 
