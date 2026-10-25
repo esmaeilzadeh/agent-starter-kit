@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 57,
+  "revision": 58,
   "coordinator_sha": "bf8696707293700a384850710490432420cadfce",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -2112,7 +2112,64 @@
           "verdict": "APPROVED",
           "boundary": "ok",
           "exemption_reason": null
-        }
+        },
+        "traceability_runs": [
+          {
+            "run_id": "828faea9006a42c1b618d49f4906a79d",
+            "digest": "cc3bca59cb58e99f31846162cb26c0252b1430a1e6f86335c412bc30d69abcf0",
+            "phase": "final_green",
+            "task_id": "CR-4",
+            "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+            "plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539"
+          }
+        ],
+        "verification": {
+          "work_id": "continuation-recovery",
+          "task_id": "CR-4",
+          "base_sha": "bf8696707293700a384850710490432420cadfce",
+          "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "91220cf4ae2692e7eb893e1b1a0c39e56a6dd20ce391db52815fe245664b29a9",
+          "checks": [
+            {
+              "id": "CR-T15",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.inner_loop_recovery",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+              "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+            },
+            {
+              "id": "CR-T16",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.inner_loop_recovery",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/3db24efc3cf447e4bf9a5b0b7abb4035.log",
+              "output_digest": "330521154b49c2c0d3a9622c89ec7d48a5fe82ecdb0ddd5f23100cec39699b52"
+            }
+          ],
+          "tree_sha": "150e1cb98ec01fd6a689283a793300362b3e6042",
+          "traceability_run_ids": [
+            "828faea9006a42c1b618d49f4906a79d"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
+            "run_id": "828faea9006a42c1b618d49f4906a79d",
+            "report_path": "work/continuation-recovery/traceability/runs/828faea9006a42c1b618d49f4906a79d/results.json",
+            "sha256": "7b83b5a55ba5be2ac8ae39a65ee0f4fa302e63b4435b58ee9dd681ac841f0a26"
+          },
+          "task_report_digest": "cc3bca59cb58e99f31846162cb26c0252b1430a1e6f86335c412bc30d69abcf0",
+          "runner_sha": "bf8696707293700a384850710490432420cadfce",
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "traceability_plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539",
+          "record_path": "work/continuation-recovery/inner-loop/evidence/verify-828faea9-o9xjtaon/integration.json"
+        },
+        "verification_record_digest": "89e6882bef42da1f8f472d0a26cb6f611be5ab16c0788430549ae0d970a3aaf5"
       },
       "attempt_number": 1,
       "attempt_id": "CR-4:attempt-1",
