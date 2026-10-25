@@ -2223,9 +2223,8 @@ class test_b(unittest.TestCase):
             link = self.root / "outside-review.json"
             link.symlink_to(outside_path)
             for path in (traversal, str(outside_path), link.name):
-                with self.subTest(legacy_artifact_path=path):
-                    self.assertEqual(_legacy_artifact(self.root, "HEAD", path),
-                                     (None, "missing"))
+                self.assertEqual(_legacy_artifact(self.root, "HEAD", path),
+                                 (None, "missing"), path)
             link.unlink()
 
         self.prepare_legacy_audit_fixture(missing_review_tasks={"5"})
