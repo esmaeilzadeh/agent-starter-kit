@@ -28,7 +28,7 @@
       "id": "ACC-004",
       "given": "A supported runtime starts or resumes a project session",
       "when": "A supported native lifecycle hook runs",
-      "then": ["The hook invokes the shared access check"],
+      "then": ["The hook invokes the shared check", "A failed check is surfaced as a stop condition before project work"],
       "verification_mode": "tests"
     },
     {

@@ -52,7 +52,10 @@ Report the location and stop. If cleanup fails, report the leftover path.
   actionable message; cleanup failures report leftover paths.
 - ACC-003: `start-work` fails before branch or workstream mutation when a probe
   fails.
-- ACC-004: Tests verify native session-start/resume hook wiring where available.
+- ACC-004: Tests verify native session-start/resume wiring runs the check and
+  surfaces failure as a stop condition before project work. If a runtime hook
+  cannot block, it must expose the failure to the agent with an instruction to
+  stop.
 - ACC-005: Portable project instructions require the check when a runtime has
   no usable lifecycle hook (review evidence; rationale: no executable hook
   exists for that runtime).
