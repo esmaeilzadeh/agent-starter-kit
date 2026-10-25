@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 54,
-  "coordinator_sha": "7523fd211df4575c0666d06c8e5b505c937cd217",
+  "revision": 55,
+  "coordinator_sha": "bf8696707293700a384850710490432420cadfce",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
     "CR-1": {
