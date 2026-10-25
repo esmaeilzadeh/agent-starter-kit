@@ -1,0 +1,15 @@
+{
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "candidate_sha": "9001b62f37ea4e4ad032cf909c16b1923d3602aa",
+  "schema": "ask-integration-evidence/v1",
+  "result": "fail",
+  "result_digest": "a787525990f89e771cfbcbf3e0b43b778bd0911635a460dc3ee89880f9336cb4",
+  "checks": [],
+  "traceability_run_ids": [],
+  "evidence_path": "work/continuation-recovery/inner-loop/evidence/verify-bfn6bsdx/verification.json",
+  "log_path": "work/continuation-recovery/inner-loop/evidence/verify-bfn6bsdx/output.log",
+  "error": "current verifier source differs from the accepted pin: .agents/ask/verification/traceability/completion.py",
+  "record_path": "work/continuation-recovery/inner-loop/evidence/verify-bfn6bsdx/integration.json"
+}
