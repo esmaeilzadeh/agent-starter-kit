@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 45,
+  "revision": 46,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,19 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 5,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 6,
+      "attempt_id": "CR-3:attempt-6",
+      "accepted_plan_ref": "fb6b673668e3cd7d2aa1dc3750807f801a098f54",
+      "accepted_plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539",
+      "attempt_started_revision": 46,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1545,14 +1545,13 @@
           "interrupted_revision": 45
         }
       ],
-      "reopened_from_attempt": "CR-3:attempt-4",
-      "reopen_reason": "Resume authorized CR-3 under independently reviewed refreshed P1 plan and exact C/V source binding.",
+      "reopened_from_attempt": "CR-3:attempt-5",
+      "reopen_reason": "Resume authorized CR-3 after approved P1 source and continuity rebind, current Green, and historical/current preflight.",
       "source_reconciliation": {
-        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-3-to-4.json",
-        "digest": "ac829a398cc526e085e819600709d2e7503f5f5c076090b21582036b244462bb",
-        "candidate_sha": "fc5f312565af3a80ac5aa0122fc7336de8d0dc80",
+        "path": "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-5-to-6.json",
+        "digest": "3d8e5baa5d10b234bbf5dc8689a40c864a6c758ca0d8c983a676b75a440d5a67",
+        "candidate_sha": "82e14d9ab3b904ccbcb6348bcdaebaf8eb8160e7",
         "paths": [
-          "_ask/scripts/inner_loop/recovery.py",
           "_ask/tests/inner_loop_recovery.py"
         ]
       }
