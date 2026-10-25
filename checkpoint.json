@@ -625,6 +625,12 @@
       "sha256": "917f6322c6c8bd87cc85122746fb5c5408c006bf6dd5778e80efdeac669d3438",
       "size": 3355
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-3-50b92a0.md": {
+      "blob": "143ab1b7e72fe2a15e2b58d09b0f76be6d915bd3",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-50b92a0.md",
+      "sha256": "627bd3e588ef67f2ec481546f3ef1795b1e5e68ce00640c5ab569c31a2fde361",
+      "size": 1799
+    },
     "work/continuation-recovery/inner-loop/evidence/review-CR-3-a876edc.md": {
       "blob": "d667b2ac0809ff867c904ad52fbb34bc15c2e5d3",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-a876edc.md",
@@ -848,9 +854,9 @@
       "size": 2112
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "0c6724e7a75f443441386fff6a3e43ffd0d25037",
+      "blob": "c7bd19206c283144c89988a0b0186bf74b726ef3",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "aa5afa064e9887402fc5e63306f9bbfb8eb650988f1006bd6d355d1532ab1950",
+      "sha256": "e9733a262b66707f6290613604a250450740d552946a548759bcd6f0a512eab4",
       "size": 76793
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
@@ -8637,8 +8643,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 38,
-  "previous_checkpoint": "21cee6232c22bd2b8b21f80c962cd0165cc81f29",
+  "generation": 39,
+  "previous_checkpoint": "79986128bdfd0b07ea136276d840da237979e53a",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",
