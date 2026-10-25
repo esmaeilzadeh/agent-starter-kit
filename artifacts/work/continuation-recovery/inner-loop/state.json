@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 55,
+  "revision": 56,
   "coordinator_sha": "bf8696707293700a384850710490432420cadfce",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -2090,14 +2090,19 @@
       }
     },
     "CR-4": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "bf8696707293700a384850710490432420cadfce",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {},
+      "attempt_number": 1,
+      "attempt_id": "CR-4:attempt-1",
+      "accepted_plan_ref": "e5a42ad9d76564cbca77ecba5e2eeb9ec02b6903",
+      "accepted_plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539",
+      "attempt_started_revision": 56
     }
   }
 }
