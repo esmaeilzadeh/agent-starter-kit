@@ -1,13 +1,13 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "start-work-access-preflight",
-  "spec_digest": "24544653ff1f761a763015c0b8edd822b399d901ad025188d746ee30d5acdd02",
+  "spec_digest": "b157d0bd02a8cb8aacad8ef3bb6c3b96ae465fe73d7fda5259c39a1f42348b1f",
   "obligations": [
     {"criterion_id": "ACC-001", "required_types": ["unit"]},
     {"criterion_id": "ACC-002", "required_types": ["unit"]},
     {"criterion_id": "ACC-003", "required_types": ["integration"]},
     {"criterion_id": "ACC-004", "required_types": ["integration"]},
-    {"criterion_id": "ACC-005", "required_types": []}
+    {"criterion_id": "ACC-005", "required_types": ["unit"]}
   ],
   "runners": [
     {
@@ -60,9 +60,20 @@
       "runner_id": "access-check-tests",
       "case_id": "test_access_check.AccessCheckTests.test_runtime_hook_surfaces_failure_as_stop_condition",
       "source_paths": ["_ask/tests/test_access_check.py"]
+    },
+    {
+      "id": "ACC-T5",
+      "criterion_ids": ["ACC-005"],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {"given": "Project agent instructions for supported runtimes", "when": "the startup/resume rule is inspected", "then": ["the shared access check is required before work proceeds"]},
+      "expected_assertions": [{"criterion_id": "ACC-005", "checks": ["startup and resume both require access-check", "the rule applies across supported runtime bundles"]}],
+      "runner_id": "access-check-tests",
+      "case_id": "test_access_check.AccessCheckTests.test_project_instructions_require_check_on_start_and_resume",
+      "source_paths": ["_ask/tests/test_access_check.py"]
     }
   ],
   "task_scopes": [
-    {"task_id": "ACCESS-1", "test_ids": ["ACC-T1", "ACC-T2", "ACC-T3", "ACC-T4"]}
+    {"task_id": "ACCESS-1", "test_ids": ["ACC-T1", "ACC-T2", "ACC-T3", "ACC-T4", "ACC-T5"]}
   ]
 }

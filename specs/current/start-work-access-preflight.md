@@ -56,9 +56,8 @@ Report the location and stop. If cleanup fails, report the leftover path.
   surfaces failure as a stop condition before project work. If a runtime hook
   cannot block, it must expose the failure to the agent with an instruction to
   stop.
-- ACC-005: Portable project instructions require the check when a runtime has
-  no usable lifecycle hook (review evidence; rationale: no executable hook
-  exists for that runtime).
+- ACC-005: Project instructions require the check at session start and resume
+  for supported runtimes, including those without a usable lifecycle hook.
 
 ## Open questions
 

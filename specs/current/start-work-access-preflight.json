@@ -33,10 +33,10 @@
     },
     {
       "id": "ACC-005",
-      "given": "A supported runtime has no usable lifecycle hook",
-      "when": "The agent follows project startup/resume instructions",
+      "given": "A supported runtime starts or resumes a project session",
+      "when": "The agent follows project instructions",
       "then": ["The shared access check is required before work proceeds"],
-      "verification_mode": "review"
+      "verification_mode": "tests"
     }
   ]
 }

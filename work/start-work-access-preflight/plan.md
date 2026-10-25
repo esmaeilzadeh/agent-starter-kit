@@ -19,7 +19,7 @@ the reason recorded. Keep IDs aligned with `inner-loop/tasks.yaml` and
 
 | Task ID | Outcome / deliverable | Depends on | Owned paths | Test IDs | Completion evidence |
 | --- | --- | --- | --- | --- | --- |
-| ACCESS-1 | Shared local write preflight and start/session wiring | none | `_ask/scripts/access-check.sh`, `_ask/scripts/start-work.sh`, `./ask`, `.cursor/**`, `.codex/**`, `.claude/**`, `.opencode/**`, `AGENTS.md`, `_ask/tests/test_access_check.py` | ACC-T1, ACC-T2, ACC-T3, ACC-T4 | focused Red → Green → Refactor, independent review, `./ask verify` |
+| ACCESS-1 | Shared local write preflight and start/session wiring | none | `_ask/scripts/access-check.sh`, `_ask/scripts/start-work.sh`, `./ask`, `.cursor/**`, `.codex/**`, `.claude/**`, `.opencode/**`, `AGENTS.md`, `_ask/tests/test_access_check.py` | ACC-T1, ACC-T2, ACC-T3, ACC-T4, ACC-T5 | focused Red → Green → Refactor, independent review, `./ask verify` |
 
 One task is appropriate because the command and its entrypoint adapters form
 one user-visible guard; splitting them would leave the check unavailable or
@@ -36,7 +36,7 @@ failure as a clear stop condition, with portable instructions as fallback.
 
 ## Verification approach
 
-Run the four mapped unittest cases through the public CLI/runtime config seams,
+Run the five mapped unittest cases through the public CLI/runtime config seams,
 then run `./ask verify`.
 
 ## Out of scope for this plan
