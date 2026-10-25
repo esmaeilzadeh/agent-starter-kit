@@ -53,6 +53,17 @@ class AccessCheckTests(unittest.TestCase):
                        *ROOT.joinpath(".git").glob(".ask-access-check.*"),
                        *ROOT.joinpath("work").glob(".ask-access-check.*")]
         self.assertEqual(probe_files, [])
+        nested = subprocess.run([str(ROOT / "ask"), "access-check"],
+                                cwd=ROOT / "_ask/scripts", capture_output=True, text=True)
+        self.assertEqual(nested.returncode, 0, nested.stderr)
+        clone = self.root / "clone"
+        linked = self.root / "linked"
+        subprocess.run(["git", "clone", "-q", "--local", str(ROOT), str(clone)], check=True)
+        subprocess.run(["git", "-C", str(clone), "worktree", "add", "-q", "-b",
+                        "access-check-linked", str(linked), "HEAD"], check=True)
+        linked_result = subprocess.run([str(linked / "ask"), "access-check"],
+                                       cwd=linked / "_ask/scripts", capture_output=True, text=True)
+        self.assertEqual(linked_result.returncode, 0, linked_result.stderr)
 
     def test_denied_write_and_cleanup_failure_report_paths(self):
         denied = subprocess.run([str(ROOT / "ask"), "access-check"], cwd=ROOT,
