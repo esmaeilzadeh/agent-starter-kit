@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 50,
+  "revision": 51,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -867,7 +867,19 @@
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "d7000192c7ff4ffdbb61648071fec28f",
+            "digest": "f7c2ec6bcf20e9d4d8d598990dc5ede4f2dffed566949d27fa34d5d8d923bac2",
+            "phase": "final_green",
+            "task_id": "CR-3",
+            "candidate_sha": "7523fd211df4575c0666d06c8e5b505c937cd217",
+            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+            "plan_digest": "e334ce63502cfcd1f730db283697745d9d6ed89bfe44b45fdf33fedcc3ed5539"
+          }
+        ]
+      },
       "attempt_number": 7,
       "attempt_id": "CR-3:attempt-7",
       "accepted_plan_ref": "e5a42ad9d76564cbca77ecba5e2eeb9ec02b6903",
