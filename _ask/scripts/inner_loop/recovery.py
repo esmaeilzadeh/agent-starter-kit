@@ -6,6 +6,7 @@ import fnmatch
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 
 
@@ -978,3 +979,481 @@ def require_safe(root: Path, work_id: str, graph: dict, state: dict | None = Non
     report = inspect(root, work_id, graph, state, allowed_source_paths=allowed_source_paths)
     if report is not None:
         raise RecoveryRequired(report)
+
+
+def _legacy_digest(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def _legacy_ref_bytes(root: Path, commit: str, path: str) -> bytes | None:
+    if (not path or "\\" in path or Path(path).is_absolute()
+            or ".." in Path(path).parts):
+        return None
+    return _git_bytes(root, "show", f"{commit}:{path}")
+
+
+def _legacy_artifact(root: Path, commit: str, path: str) -> tuple[bytes | None, str]:
+    """Read a pinned artifact first, then expose a checkout-only copy as such."""
+    pinned = _legacy_ref_bytes(root, commit, path)
+    if pinned is not None:
+        return pinned, "product_ref"
+    try:
+        return (root / path).read_bytes(), "checkout_only"
+    except OSError:
+        return None, "missing"
+
+
+def _legacy_json(raw: bytes | None) -> dict | None:
+    if raw is None:
+        return None
+    try:
+        value = json.loads(raw)
+    except (UnicodeDecodeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _legacy_run_id(record: dict | None) -> str | None:
+    if not isinstance(record, dict):
+        return None
+    run_id = record.get("run_id")
+    if isinstance(run_id, str) and re.fullmatch(r"[A-Za-z0-9_-]{8,64}", run_id):
+        return run_id
+    command = record.get("command")
+    match = re.search(r"\brun_id=([A-Za-z0-9_-]{8,64})\b", command) if isinstance(command, str) else None
+    return match.group(1) if match else None
+
+
+def _legacy_run_candidate(record: dict | None, fallback: str) -> str:
+    if not isinstance(record, dict):
+        return fallback
+    candidate = record.get("candidate_sha")
+    if isinstance(candidate, str) and candidate:
+        return candidate
+    command = record.get("command")
+    match = re.search(r"--candidate-sha\s+([0-9a-f]{40,64})", command) if isinstance(command, str) else None
+    return match.group(1) if match else fallback
+
+
+def _legacy_run_evidence(root: Path, commit: str, work_id: str, task_id: str,
+                          phase: str, candidate_sha: str, run_id: str | None,
+                          result_source: str) -> dict:
+    if not run_id:
+        return {"status": "missing", "run_id": None}
+    ledger_path = f"work/{work_id}/traceability/executions.json"
+    report_path = f"work/{work_id}/traceability/runs/{run_id}/results.json"
+    ledger_raw, ledger_source = _legacy_artifact(root, commit, ledger_path)
+    report_raw, report_source = _legacy_artifact(root, commit, report_path)
+    ledger = None
+    if ledger_raw is not None:
+        try:
+            ledger = json.loads(ledger_raw)
+        except (UnicodeDecodeError, ValueError):
+            ledger = None
+    rows = [row for row in ledger if isinstance(row, dict) and row.get("run_id") == run_id] \
+        if isinstance(ledger, list) else []
+    row = rows[0] if len(rows) == 1 else None
+    report = _legacy_json(report_raw)
+    identity_ok = bool(
+        row and report
+        and row.get("task_id") == task_id
+        and row.get("phase") == phase
+        and row.get("candidate_sha") == candidate_sha
+        and row.get("digest") == _legacy_digest(report)
+        and report.get("run_id") == run_id
+        and report.get("task_id") == task_id
+        and report.get("candidate_sha") == candidate_sha
+        and isinstance(report.get("cases"), list)
+    )
+    cases = report.get("cases") if report else []
+    if phase == "red":
+        outcome_ok = any(case.get("outcome") == "failed"
+                         and case.get("failure_kind") == "behavior_assertion"
+                         for case in cases if isinstance(case, dict))
+    else:
+        outcome_ok = bool(cases) and all(
+            case.get("outcome") in {"passed", "pass"}
+            for case in cases if isinstance(case, dict)
+        ) and all(isinstance(case, dict) for case in cases)
+    if not identity_ok or not outcome_ok:
+        status = "unverified" if row is not None or report_raw is not None else "missing"
+    elif result_source == ledger_source == report_source == "product_ref":
+        status = "verified"
+    else:
+        status = "available_checkout_only"
+    return {
+        "status": status,
+        "run_id": run_id,
+        "candidate_sha": candidate_sha,
+        "ledger_path": ledger_path,
+        "ledger_source": ledger_source,
+        "ledger_sha256": hashlib.sha256(ledger_raw).hexdigest() if ledger_raw is not None else None,
+        "report_path": report_path,
+        "report_source": report_source,
+        "report_sha256": hashlib.sha256(report_raw).hexdigest() if report_raw is not None else None,
+        "identity_matches": identity_ok,
+        "outcome_matches": outcome_ok,
+    }
+
+
+def _legacy_verifier_snapshot(root: Path, commit_sha: str | None) -> dict:
+    paths = (
+        ".agents/ask/verification/traceability/__init__.py",
+        ".agents/ask/verification/traceability/unittest_runner.py",
+        ".agents/ask/verification/traceability/adapters.py",
+        ".agents/ask/verification/traceability/contracts.py",
+        ".agents/ask/verification/traceability/coverage.py",
+        ".agents/ask/verification/traceability/evidence.py",
+        ".agents/ask/verification/traceability/service.py",
+        ".agents/ask/verification/traceability/completion.py",
+        ".agents/ask/verification/traceability/cli.py",
+        ".agents/ask/verification/run.py",
+    )
+    if not commit_sha or not _commit_exists(root, commit_sha):
+        return {"commit": commit_sha, "status": "missing_commit", "files": {},
+                "missing": list(paths), "source_sha256": None}
+    files = {}
+    missing = []
+    for path in paths:
+        raw = _legacy_ref_bytes(root, commit_sha, path)
+        if raw is None:
+            missing.append(path)
+        else:
+            files[path] = hashlib.sha256(raw).hexdigest()
+    identity = _historical_runner_identity(root, commit_sha)
+    return {
+        "commit": commit_sha,
+        "status": "complete" if not missing else "incomplete",
+        "capability": identity.get("capability") if identity else None,
+        "unittest_adapter_sha256": identity.get("adapter_digest") if identity else None,
+        "files": files,
+        "missing": missing,
+        "source_sha256": _legacy_digest(files) if files else None,
+    }
+
+
+def audit_legacy_workstream(root: Path, work_id: str, product_ref: str) -> dict:
+    """Inventory a pre-checkpoint workstream without changing it or admitting work."""
+    root = Path(root).resolve()
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", work_id):
+        raise ValueError("legacy work_id has an unsupported form")
+    if not (re.fullmatch(r"refs/(?:heads|tags)/[A-Za-z0-9._/-]+", product_ref)
+            or re.fullmatch(r"[0-9a-f]{40,64}", product_ref)):
+        raise ValueError("product ref must be a full branch/tag ref or commit SHA")
+    if product_ref.startswith("refs/") and _git(root, "check-ref-format", product_ref).returncode:
+        raise ValueError("product ref has an invalid Git ref format")
+    ref = _git(root, "rev-parse", "--verify", product_ref + "^{commit}")
+    if ref.returncode:
+        raise ValueError(f"product ref is unavailable: {product_ref}")
+    commit = ref.stdout.strip()
+    state_path = f"work/{work_id}/inner-loop/state.json"
+    state_raw = _legacy_ref_bytes(root, commit, state_path)
+    state = _legacy_json(state_raw)
+    if state_raw is None or state is None or state.get("work_id") != work_id:
+        raise ValueError(f"{state_path} is missing or invalid at {product_ref}")
+
+    pin_path = f"work/{work_id}/traceability-accepted.json"
+    pin_raw = _legacy_ref_bytes(root, commit, pin_path)
+    pin = _legacy_json(pin_raw)
+    authority_ref = f"refs/ask/accepted-tests/{work_id}"
+    authority_proc = _git(root, "rev-parse", "--verify", authority_ref)
+    authority_sha = authority_proc.stdout.strip() if authority_proc.returncode == 0 else ""
+    authority_raw = _git_bytes(root, "show", f"{authority_sha}:accepted.json") if authority_sha else None
+    authority = _legacy_json(authority_raw)
+    identity_keys = ("contract_sha", "spec_digest", "plan_digest", "graph_digest")
+    identity_differences = [key for key in identity_keys
+                            if (pin or {}).get(key) != (authority or {}).get(key)]
+    authority_review = (authority or {}).get("plan_review") or {}
+    model_policy_path = f"work/{work_id}/models.yaml"
+    model_policy_raw = _legacy_ref_bytes(root, commit, model_policy_path)
+    verifier_snapshots = {
+        "tracked_pin_contract": _legacy_verifier_snapshot(root, (pin or {}).get("contract_sha")),
+        "accepted_authority_contract": _legacy_verifier_snapshot(
+            root, (authority or {}).get("contract_sha")),
+    }
+    conflicts: list[str] = []
+    active_tasks = [task_id for task_id, task in (state.get("tasks") or {}).items()
+                    if isinstance(task, dict) and task.get("status") == "running"]
+    if active_tasks:
+        conflicts.append("legacy state has active writers: " + ", ".join(sorted(active_tasks)))
+    if not pin or pin.get("schema") != "ask-accepted-tests/v1":
+        conflicts.append("tracked accepted pin has an unsupported or missing schema")
+    if state.get("schema") != "ask-inner-loop-state/v1":
+        conflicts.append("legacy state has an unsupported or missing schema")
+    if not authority or authority.get("schema") != "ask-accepted-tests/v1":
+        conflicts.append("accepted-tests authority has an unsupported or missing schema")
+    if authority and authority.get("capability") != "ask-traceability/v1":
+        conflicts.append("accepted-tests authority names an unsupported verifier capability")
+    if identity_differences:
+        conflicts.append("tracked accepted pin differs from accepted-tests authority: "
+                         + ", ".join(identity_differences))
+
+    ledger_path = f"work/{work_id}/traceability/executions.json"
+    ledger_raw, ledger_source = _legacy_artifact(root, commit, ledger_path)
+    try:
+        ledger = json.loads(ledger_raw) if ledger_raw is not None else []
+    except (UnicodeDecodeError, ValueError):
+        ledger = None
+    ledger_rows = ledger if isinstance(ledger, list) else []
+    tasks: list[dict] = []
+    for number in range(1, 6):
+        task_id = str(number)
+        task_state = (state.get("tasks") or {}).get(task_id)
+        if not isinstance(task_state, dict):
+            task_state = None
+        result_path = f"work/{work_id}/inner-loop/results/{task_id}.json"
+        result_raw, result_source = _legacy_artifact(root, commit, result_path)
+        result = _legacy_json(result_raw)
+        result_sha = hashlib.sha256(result_raw).hexdigest() if result_raw is not None else None
+        result_valid = bool(result and result.get("schema") == "ask-task-result/v2"
+                            and result.get("work_id") == work_id
+                            and result.get("task_id") == task_id)
+        base_sha = result.get("base_sha") if result_valid else (task_state or {}).get("base_sha")
+        candidate_sha = result.get("candidate_sha") if result_valid else None
+        ancestry_ok = bool(base_sha and candidate_sha
+                           and _commit_exists(root, base_sha)
+                           and _commit_exists(root, candidate_sha)
+                           and _is_ancestor(root, base_sha, candidate_sha))
+        task_conflicts: list[str] = []
+        if result_valid and task_state and task_state.get("base_sha") and task_state["base_sha"] != base_sha:
+            task_conflicts.append("TaskResult base differs from legacy state")
+        if result_valid and task_state and task_state.get("result_path") != result_path:
+            task_conflicts.append("TaskResult exists outside the state result_path")
+        if result_valid and not ancestry_ok:
+            task_conflicts.append("TaskResult base/candidate ancestry is unavailable")
+        candidate_in_product_ref = bool(candidate_sha and _is_ancestor(root, candidate_sha, commit))
+        if result_valid and not candidate_in_product_ref:
+            task_conflicts.append("TaskResult candidate is not in the product ref ancestry")
+        tdd = (result.get("tdd") or {}) if result_valid else {}
+        red_candidate = _legacy_run_candidate(tdd.get("red"), candidate_sha or "")
+        green_candidate = _legacy_run_candidate(tdd.get("green"), candidate_sha or "")
+        red = _legacy_run_evidence(root, commit, work_id, task_id, "red", red_candidate,
+                                   _legacy_run_id(tdd.get("red")), result_source)
+        green = _legacy_run_evidence(root, commit, work_id, task_id, "final_green", green_candidate,
+                                     _legacy_run_id(tdd.get("green")), result_source)
+        refactor = result.get("refactor") if result_valid else None
+        refactor_ok = bool(isinstance(refactor, dict)
+                           and refactor.get("status") in {"pass", "passed"}
+                           and refactor.get("candidate_sha") == candidate_sha)
+        state_evidence = (task_state or {}).get("evidence") or {}
+        review = state_evidence.get("review") or {}
+        review_path = review.get("evidence") if isinstance(review, dict) else None
+        review_raw, review_source = (
+            _legacy_artifact(root, commit, review_path)
+            if isinstance(review_path, str) and review_path.startswith(
+                f"work/{work_id}/inner-loop/evidence/"
+            ) else (None, "missing")
+        )
+        review_doc = _legacy_json(review_raw)
+        review_digest = hashlib.sha256(review_raw).hexdigest() if review_raw is not None else None
+        review_evidence_ok = bool(
+            result_valid and review_doc
+            and review.get("work_id") == work_id
+            and review.get("task_id") == task_id
+            and review.get("base_sha") == base_sha
+            and review.get("candidate_sha") == candidate_sha
+            and review.get("result_digest") == result_sha
+            and review.get("verdict") == "APPROVED"
+            and isinstance(review.get("reviewer"), str)
+            and bool(review["reviewer"].strip())
+            and review.get("evidence_digest") == review_digest
+            and review_doc.get("reviewer") == review.get("reviewer")
+            and review_doc.get("decision") == "APPROVED"
+            and review_doc.get("base_sha") == base_sha
+            and review_doc.get("candidate_sha") == candidate_sha
+        )
+        if review_evidence_ok and result_source == review_source == "product_ref":
+            review_status = "independence_unverifiable"
+        elif review_evidence_ok:
+            review_status = "available_checkout_only"
+        elif review_raw is not None or review:
+            review_status = "unverified"
+        else:
+            review_status = "missing"
+        integration = state_evidence.get("integration") or {}
+        integration_ok = bool(integration and integration.get("candidate_sha") == candidate_sha
+                              and integration.get("result_digest") == result_sha
+                              and integration.get("result") == "pass")
+        integration_status = "verified" if integration_ok else "missing"
+        milestones = {
+            "red": red["status"],
+            "green": green["status"],
+            "refactor": ("verified" if refactor_ok and result_source == "product_ref"
+                         else "available_checkout_only" if refactor_ok else "missing"),
+            "review": review_status,
+            "integration": integration_status,
+        }
+        ordered = ("red", "green", "refactor", "review", "integration")
+        first_unmet = next((name for name in ordered if milestones[name] != "verified"), None)
+        attempt_rows = [
+            {key: row.get(key) for key in ("run_id", "phase", "candidate_sha", "digest", "plan_digest")}
+            for row in ledger_rows if isinstance(row, dict) and row.get("task_id") == task_id
+        ]
+        graph_changes: list[str] = []
+        if ancestry_ok:
+            changed = _git(root, "diff", "--name-only", "-z", base_sha + ".." + candidate_sha)
+            if changed.returncode == 0:
+                graph_changes = sorted(name for name in changed.stdout.split("\0") if name)
+        tasks.append({
+            "task_id": task_id,
+            "state_status": (task_state or {}).get("status", "missing"),
+            "state_record_sha256": _legacy_digest(task_state) if task_state else None,
+            "result": {
+                "path": result_path,
+                "source": result_source,
+                "sha256": result_sha,
+                "schema_valid": result_valid,
+                "base_sha": base_sha,
+                "candidate_sha": candidate_sha,
+                "base_candidate_ancestry_valid": ancestry_ok,
+                "candidate_in_product_ref": candidate_in_product_ref,
+                "changed_paths": graph_changes,
+                "tdd_red": red,
+                "tdd_green": green,
+                "refactor_is_structured": refactor_ok,
+                "review_evidence": {
+                    "path": review_path,
+                    "source": review_source,
+                    "sha256": review_digest,
+                    "identity_matches": review_evidence_ok,
+                    "recorded_by": review.get("recorded_by") if isinstance(review, dict) else None,
+                    "status": review_status,
+                },
+            },
+            "milestones": milestones,
+            "first_unmet_milestone": first_unmet,
+            "state_claims_integration_without_receipt": (
+                (task_state or {}).get("status") == "integrated" and not integration_ok
+            ),
+            "conflicts": task_conflicts,
+            "attempt_rows": attempt_rows,
+        })
+        conflicts.extend(f"task {task_id}: {message}" for message in task_conflicts)
+
+    pending = {
+        task_id: task.get("status")
+        for task_id, task in (state.get("tasks") or {}).items()
+        if task_id in {str(i) for i in range(6, 11)} and isinstance(task, dict)
+    }
+    return {
+        "schema": "ask-legacy-reconciliation/v1",
+        "work_id": work_id,
+        "product": {"ref": product_ref, "commit": commit,
+                    "state_path": state_path,
+                    "state_sha256": hashlib.sha256(state_raw).hexdigest(),
+                    "state_revision": state.get("revision")},
+        "accepted_authority": {
+            "tracked_pin_path": pin_path,
+            "tracked_pin_sha256": hashlib.sha256(pin_raw).hexdigest() if pin_raw else None,
+            "tracked_pin": {key: (pin or {}).get(key) for key in (*identity_keys, "schema", "capability")},
+            "authority_ref": authority_ref,
+            "authority_commit": authority_sha or None,
+            "authority_document_sha256": hashlib.sha256(authority_raw).hexdigest() if authority_raw else None,
+            "authority": {key: (authority or {}).get(key) for key in (*identity_keys, "schema", "capability")},
+            "independent_plan_review": {key: authority_review.get(key) for key in (
+                "reviewer", "runtime", "model", "reasoning_effort", "parent_model",
+                "reviewed_commit", "plan_digest")},
+            "reviewed_input_digests": authority_review.get("file_digests", {}),
+            "identity_differences": identity_differences,
+        },
+        "model_and_verifier": {
+            "model_policy_path": model_policy_path,
+            "model_policy_sha256": hashlib.sha256(model_policy_raw).hexdigest() if model_policy_raw else None,
+            "accepted_plan_model": authority_review.get("model"),
+            "accepted_plan_runtime": authority_review.get("runtime"),
+            "verifier_snapshots": verifier_snapshots,
+        },
+        "task_audit": tasks,
+        "tasks_6_to_10": pending,
+        "legacy_ledger": {
+            "path": ledger_path,
+            "source": ledger_source,
+            "sha256": hashlib.sha256(ledger_raw).hexdigest() if ledger_raw is not None else None,
+            "rows_for_tasks_1_to_5": len([row for row in ledger_rows if isinstance(row, dict)
+                                          and row.get("task_id") in {"1", "2", "3", "4", "5"}]),
+        },
+        "preflight": {"active_tasks": active_tasks,
+                      "conflicts": conflicts,
+                      "read_only": True,
+                      "task_scheduling": False},
+        "limitations": [
+            "Legacy state has no attempt-history collection.",
+            "TaskResult notes do not bind Refactor as a structured milestone.",
+            "A task status of integrated is not accepted as integration proof without a receipt.",
+            "Checkout-only artifacts are inventoried but are not durable product-ref evidence.",
+            "Legacy run reports do not consistently retain the verifier source identity; accepted contract snapshots are recorded separately.",
+            "Legacy task review state does not record who persisted the review, so reviewer independence cannot be established from the retained record.",
+        ],
+    }
+
+
+def legacy_adoption_proposal(audit: dict) -> dict:
+    """Prepare a reviewable proposal only; this function never adopts or schedules."""
+    if audit.get("schema") != "ask-legacy-reconciliation/v1":
+        raise ValueError("unsupported legacy reconciliation report")
+    tasks = audit.get("task_audit") or []
+    return {
+        "schema": "ask-legacy-adoption-proposal/v1",
+        "audit_sha256": _legacy_digest(audit),
+        "product_preimage": audit.get("product"),
+        "authority_preimage": audit.get("accepted_authority"),
+        "task_preimages": [
+            {"task_id": task["task_id"], "state_status": task["state_status"],
+             "state_record_sha256": task["state_record_sha256"],
+             "result": task["result"], "milestones": task["milestones"],
+             "first_unmet_milestone": task["first_unmet_milestone"],
+             "state_claims_integration_without_receipt": task["state_claims_integration_without_receipt"],
+             "conflicts": task["conflicts"], "attempt_rows": task["attempt_rows"]}
+            for task in tasks
+        ],
+        "tasks_6_to_10": audit.get("tasks_6_to_10"),
+        "decision": "proposal_only_review_required",
+        "preserve_original_attempts": True,
+        "rewrite_product_state": False,
+        "change_authority": False,
+        "reclassify_tests": False,
+        "schedule_product_tasks": False,
+        "review": {"decision": "PENDING", "reviewer": None,
+                   "recorded_by": None, "proposal_sha256": None},
+    }
+
+
+def validate_legacy_adoption_proposal(root: Path, audit: dict, proposal: dict) -> dict:
+    """Validate exact preimages and independent review without performing adoption."""
+    errors: list[str] = []
+    if proposal.get("schema") != "ask-legacy-adoption-proposal/v1":
+        errors.append("unsupported proposal schema")
+    if proposal.get("audit_sha256") != _legacy_digest(audit):
+        errors.append("proposal does not bind the exact reconciliation report")
+    expected = legacy_adoption_proposal(audit)
+    if any(proposal.get(key) != expected.get(key) for key in (
+        "product_preimage", "authority_preimage", "task_preimages", "tasks_6_to_10",
+        "preserve_original_attempts", "rewrite_product_state", "change_authority",
+        "reclassify_tests", "schedule_product_tasks", "decision",
+    )):
+        errors.append("proposal changes a captured product, authority, or task preimage")
+    product = audit.get("product") or {}
+    current = _git(Path(root), "rev-parse", "--verify", str(product.get("ref", "")) + "^{commit}")
+    if current.returncode or current.stdout.strip() != product.get("commit"):
+        errors.append("product ref moved since the audit")
+    authority = audit.get("accepted_authority") or {}
+    authority_now = _git(Path(root), "rev-parse", "--verify", str(authority.get("authority_ref", "")))
+    if authority_now.returncode or authority_now.stdout.strip() != authority.get("authority_commit"):
+        errors.append("accepted-tests authority moved since the audit")
+    if audit.get("preflight", {}).get("active_tasks"):
+        errors.append("legacy state has an active task writer")
+    if audit.get("preflight", {}).get("conflicts"):
+        errors.extend(audit["preflight"]["conflicts"])
+    review = proposal.get("review") or {}
+    payload = {key: value for key, value in proposal.items() if key != "review"}
+    if (review.get("decision") != "APPROVED"
+            or not isinstance(review.get("reviewer"), str) or not review["reviewer"].strip()
+            or not isinstance(review.get("recorded_by"), str) or not review["recorded_by"].strip()
+            or review.get("reviewer") == review.get("recorded_by")
+            or review.get("proposal_sha256") != _legacy_digest(payload)):
+        errors.append("proposal lacks an exact independent review")
+    return {"status": "refused" if errors else "preconditions_validated",
+            "errors": sorted(set(errors)), "product_mutated": False,
+            "authority_mutated": False, "tasks_scheduled": False}

@@ -20,11 +20,17 @@ sys.path.insert(0, str(REPO / ".agents" / "ask"))
 from _ask.tests.inner_loop_recovery_fixture import (
     LEGACY_AUTHORITY_SHA,
     LEGACY_STATE_SHA256,
+    legacy_provenance_files,
     write_legacy_fixture,
 )
 from inner_loop.graph import load_graph
 from inner_loop.checkpoint import CheckpointError, publish, read_checkpoint, _read_tree
-from inner_loop.recovery import inspect as inspect_recovery
+from inner_loop.recovery import (
+    audit_legacy_workstream,
+    inspect as inspect_recovery,
+    legacy_adoption_proposal,
+    validate_legacy_adoption_proposal,
+)
 from inner_loop.state import load_state
 
 TASKS = """schema: ask-inner-loop-tasks/v1
@@ -167,6 +173,31 @@ class RecoveryTests(unittest.TestCase):
             capture_output=True,
             text=True,
         )
+
+    def prepare_legacy_audit_fixture(self, *, active_task=None, capability="ask-traceability/v1",
+                                     missing_review_tasks=None):
+        candidate = self.git("rev-parse", "HEAD")
+        files = legacy_provenance_files(
+            candidate, active_task=active_task, capability=capability,
+            missing_review_tasks=missing_review_tasks,
+        )
+        for name, raw in files.items():
+            self.write(name, raw)
+        self.git("add", "-f", *files.keys())
+        self.commit("disposable legacy provenance fixture")
+        product_commit = self.git("rev-parse", "HEAD")
+        self.git("update-ref", "refs/heads/agent/shorter-hashes", product_commit)
+        self.git("update-ref", "refs/ask/accepted-tests/shorter-hashes", product_commit)
+        return product_commit
+
+    def approve_legacy_proposal(self, proposal):
+        payload = {key: value for key, value in proposal.items() if key != "review"}
+        proposal["review"] = {
+            "decision": "APPROVED", "reviewer": "independent-reviewer",
+            "recorded_by": "coordinator",
+            "proposal_sha256": self.json_digest(payload),
+        }
+        return proposal
 
     def start_candidate(self):
         started = self.run_cli("run", "w")
@@ -2179,6 +2210,159 @@ class test_b(unittest.TestCase):
         self.assertIn("running=CR-2", second.stdout)
         self.assertEqual({name: (self.root / name).read_bytes() for name in legacy_files}, state_before)
         self.assertEqual(self.git("rev-parse", authority_ref), authority_before)
+
+    def test_legacy_red_green_adoption(self):
+        from inner_loop.recovery import audit_legacy_workstream, legacy_adoption_proposal
+
+        self.prepare_legacy_audit_fixture(missing_review_tasks={"5"})
+        self.write("checkout-only-noise.txt", "not part of either historical commit\n")
+        report = audit_legacy_workstream(
+            self.root, "shorter-hashes", "refs/heads/agent/shorter-hashes",
+        )
+        cli_report = self.run_cli(
+            "legacy-audit", "shorter-hashes", "--ref", "refs/heads/agent/shorter-hashes",
+        )
+        self.assertEqual(cli_report.returncode, 0, cli_report.stderr + cli_report.stdout)
+        self.assertEqual(json.loads(cli_report.stdout), report)
+        self.assertTrue(report["preflight"]["read_only"])
+        self.assertFalse(report["preflight"]["task_scheduling"])
+        self.assertEqual(len(report["task_audit"]), 5)
+        for task in report["task_audit"]:
+            self.assertEqual(task["result"]["tdd_red"]["status"], "verified")
+            self.assertEqual(task["result"]["tdd_green"]["status"], "verified")
+            self.assertEqual(task["milestones"]["integration"], "missing")
+            self.assertEqual(task["result"]["refactor_is_structured"], False)
+        self.assertEqual(report["task_audit"][0]["state_status"], "integrated")
+        self.assertTrue(report["task_audit"][0]["state_claims_integration_without_receipt"])
+        self.assertEqual(
+            report["task_audit"][0]["result"]["review_evidence"]["status"],
+            "independence_unverifiable",
+        )
+        self.assertEqual(report["task_audit"][0]["milestones"]["review"],
+                         "independence_unverifiable")
+        self.assertEqual(report["task_audit"][4]["milestones"]["review"], "missing")
+        self.assertEqual(report["task_audit"][0]["result"]["changed_paths"], [])
+        self.assertEqual(
+            report["task_audit"][0]["result"]["base_sha"],
+            report["task_audit"][0]["result"]["candidate_sha"],
+        )
+
+        proposal = legacy_adoption_proposal(report)
+        audit_path = self.write(
+            "work/continuation-recovery/adoption/test-audit.json",
+            json.dumps(report, sort_keys=True),
+        )
+        prepared = self.run_cli("legacy-proposal", "--audit", str(audit_path))
+        self.assertEqual(prepared.returncode, 0, prepared.stderr + prepared.stdout)
+        self.assertEqual(json.loads(prepared.stdout), proposal)
+        self.assertEqual(proposal["decision"], "proposal_only_review_required")
+        self.assertFalse(proposal["rewrite_product_state"])
+        self.assertFalse(proposal["change_authority"])
+        self.assertFalse(proposal["schedule_product_tasks"])
+        self.approve_legacy_proposal(proposal)
+        proposal_path = self.write(
+            "work/continuation-recovery/adoption/test-proposal.json",
+            json.dumps(proposal, sort_keys=True),
+        )
+        checked = self.run_cli(
+            "legacy-validate-adoption", "--audit", str(audit_path),
+            "--proposal", str(proposal_path),
+        )
+        self.assertEqual(checked.returncode, 0, checked.stderr + checked.stdout)
+        self.assertEqual(json.loads(checked.stdout)["status"], "preconditions_validated")
+        state_before = (self.root / "work/shorter-hashes/inner-loop/state.json").read_bytes()
+        result_before = (self.root / "work/shorter-hashes/inner-loop/results/1.json").read_bytes()
+        authority_before = self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes")
+        validation = validate_legacy_adoption_proposal(self.root, report, proposal)
+        self.assertEqual(validation["status"], "preconditions_validated", validation["errors"])
+        self.assertFalse(validation["product_mutated"])
+        self.assertFalse(validation["authority_mutated"])
+        self.assertFalse(validation["tasks_scheduled"])
+        self.assertEqual((self.root / "work/shorter-hashes/inner-loop/state.json").read_bytes(), state_before)
+        self.assertEqual((self.root / "work/shorter-hashes/inner-loop/results/1.json").read_bytes(), result_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes"), authority_before)
+
+    def test_workstream_recovery_handoff(self):
+        from inner_loop.recovery import audit_legacy_workstream, legacy_adoption_proposal
+
+        self.prepare_legacy_audit_fixture()
+        report = audit_legacy_workstream(
+            self.root, "shorter-hashes", "refs/heads/agent/shorter-hashes",
+        )
+        reloaded = json.loads(json.dumps(report, sort_keys=True))
+        self.assertEqual(reloaded, report)
+        self.assertEqual(report["tasks_6_to_10"], {str(i): "pending" for i in range(6, 11)})
+        proposal = self.approve_legacy_proposal(legacy_adoption_proposal(report))
+
+        state_path = self.root / "work/shorter-hashes/inner-loop/state.json"
+        state_before = state_path.read_bytes()
+        ledger_before = (self.root / "work/shorter-hashes/traceability/executions.json").read_bytes()
+        result_before = {
+            task_id: (self.root / f"work/shorter-hashes/inner-loop/results/{task_id}.json").read_bytes()
+            for task_id in map(str, range(1, 6))
+        }
+        original_ref = self.git("rev-parse", "refs/heads/agent/shorter-hashes")
+        original_authority = self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes")
+        valid = validate_legacy_adoption_proposal(self.root, report, proposal)
+        self.assertEqual(valid["status"], "preconditions_validated", valid["errors"])
+        self.assertEqual(state_path.read_bytes(), state_before)
+        self.assertEqual({
+            task_id: (self.root / f"work/shorter-hashes/inner-loop/results/{task_id}.json").read_bytes()
+            for task_id in map(str, range(1, 6))
+        }, result_before)
+        self.assertEqual((self.root / "work/shorter-hashes/traceability/executions.json").read_bytes(), ledger_before)
+        self.assertEqual(self.git("rev-parse", "refs/heads/agent/shorter-hashes"), original_ref)
+
+        tampered = copy.deepcopy(proposal)
+        tampered["task_preimages"][0]["result"]["candidate_sha"] = "f" * 40
+        refused = validate_legacy_adoption_proposal(self.root, report, tampered)
+        self.assertEqual(refused["status"], "refused")
+        self.assertTrue(any("preimage" in error for error in refused["errors"]))
+
+        # A moved exact product ref invalidates the previously reviewed proposal.
+        self.git("commit", "--allow-empty", "-qm", "advance disposable product ref")
+        moved = self.git("rev-parse", "HEAD")
+        self.git("update-ref", "refs/heads/agent/shorter-hashes", moved)
+        stale = validate_legacy_adoption_proposal(self.root, report, proposal)
+        self.assertEqual(stale["status"], "refused")
+        self.assertTrue(any("product ref moved" in error for error in stale["errors"]))
+        self.assertEqual(state_path.read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes"), original_authority)
+
+        # Active writers and unknown verifier capabilities are explicit refusal boundaries.
+        self.prepare_legacy_audit_fixture(active_task="3")
+        active_audit = audit_legacy_workstream(
+            self.root, "shorter-hashes", "refs/heads/agent/shorter-hashes",
+        )
+        active_proposal = self.approve_legacy_proposal(legacy_adoption_proposal(active_audit))
+        active_state = state_path.read_bytes()
+        active = validate_legacy_adoption_proposal(self.root, active_audit, active_proposal)
+        self.assertEqual(active["status"], "refused")
+        self.assertTrue(any("active" in error for error in active["errors"]))
+        self.assertEqual(state_path.read_bytes(), active_state)
+
+        self.prepare_legacy_audit_fixture(capability="ask-traceability/future")
+        unknown_audit = audit_legacy_workstream(
+            self.root, "shorter-hashes", "refs/heads/agent/shorter-hashes",
+        )
+        unknown_proposal = self.approve_legacy_proposal(legacy_adoption_proposal(unknown_audit))
+        unsupported_state = state_path.read_bytes()
+        unsupported_ref = self.git("rev-parse", "refs/heads/agent/shorter-hashes")
+        unsupported_authority = self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes")
+        unsupported_results = {
+            task_id: (self.root / f"work/shorter-hashes/inner-loop/results/{task_id}.json").read_bytes()
+            for task_id in map(str, range(1, 6))
+        }
+        unknown = validate_legacy_adoption_proposal(self.root, unknown_audit, unknown_proposal)
+        self.assertEqual(unknown["status"], "refused")
+        self.assertTrue(any("unsupported verifier" in error for error in unknown["errors"]))
+        self.assertEqual(state_path.read_bytes(), unsupported_state)
+        self.assertEqual(self.git("rev-parse", "refs/heads/agent/shorter-hashes"), unsupported_ref)
+        self.assertEqual(self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes"), unsupported_authority)
+        self.assertEqual(
+            {task_id: (self.root / f"work/shorter-hashes/inner-loop/results/{task_id}.json").read_bytes()
+             for task_id in map(str, range(1, 6))}, unsupported_results,
+        )
 
     def test_t21_exception_requires_exact_p1_decision(self):
         from inner_loop.graph import load_graph

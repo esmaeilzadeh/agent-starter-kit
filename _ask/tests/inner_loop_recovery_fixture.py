@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
 from pathlib import Path
 
 # Exact captured bytes from the interrupted shorter-hashes state and its
@@ -40,4 +41,110 @@ def write_legacy_fixture(root: Path) -> dict[str, bytes]:
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
+    return files
+
+
+def legacy_provenance_files(candidate_sha: str, *, active_task: str | None = None,
+                            capability: str = "ask-traceability/v1",
+                            missing_review_tasks: set[str] | None = None) -> dict[str, bytes]:
+    """Small immutable-shape fixture for legacy audit and proposal checks."""
+    work_id = "shorter-hashes"
+    missing_review_tasks = missing_review_tasks or set()
+    tasks = {}
+    results: dict[str, dict] = {}
+    files: dict[str, bytes] = {}
+    execution_rows = []
+    for number in range(1, 11):
+        task_id = str(number)
+        status = ("integrated" if number == 1 else "blocked" if number == 2
+                  else "pending")
+        if task_id == active_task:
+            status = "running"
+        tasks[task_id] = {
+            "status": status,
+            "base_sha": candidate_sha if number <= 5 else "",
+            "task_branch": "",
+            "result_path": f"work/{work_id}/inner-loop/results/{task_id}.json" if number <= 5 else "",
+            "boundary_reject": None,
+            "review_round": 0,
+            "debug_round": 0,
+            "evidence": {},
+        }
+        if number > 5:
+            continue
+        red_id = f"legacy-red-run-{number:02d}"
+        green_id = f"legacy-green-run-{number:02d}"
+        result = {
+            "schema": "ask-task-result/v2", "work_id": work_id, "task_id": task_id,
+            "base_sha": candidate_sha, "candidate_sha": candidate_sha,
+            "tdd": {
+                "red": {"run_id": red_id, "candidate_sha": candidate_sha},
+                "green": {"run_id": green_id, "candidate_sha": candidate_sha},
+            },
+            "notes": "Refactor pass was recorded in prose only.",
+        }
+        results[task_id] = result
+        for phase, run_id, outcome in (
+            ("red", red_id, "failed"), ("final_green", green_id, "passed"),
+        ):
+            report = {
+                "schema": "ask-test-results/v1", "run_id": run_id,
+                "scope": "task", "task_id": task_id,
+                "candidate_sha": candidate_sha,
+                "cases": [{"outcome": outcome,
+                           "failure_kind": "behavior_assertion" if outcome == "failed" else None}],
+            }
+            report_raw = (json.dumps(report, sort_keys=True, indent=2) + "\n").encode()
+            files[f"work/{work_id}/traceability/runs/{run_id}/results.json"] = report_raw
+            execution_rows.append({
+                "run_id": run_id, "digest": hashlib.sha256(
+                    json.dumps(report, sort_keys=True, separators=(",", ":")).encode()
+                ).hexdigest(),
+                "phase": phase, "scope": "task", "task_id": task_id,
+                "candidate_sha": candidate_sha, "spec_digest": "a" * 64,
+                "plan_digest": "b" * 64,
+            })
+    for task_id, result in results.items():
+        raw = (json.dumps(result, sort_keys=True, indent=2) + "\n").encode()
+        result_path = f"work/{work_id}/inner-loop/results/{task_id}.json"
+        files[result_path] = raw
+        if task_id not in missing_review_tasks:
+            review_path = f"work/{work_id}/inner-loop/evidence/review-task-{task_id}.json"
+            review_doc = {
+                "reviewer": "independent-reviewer",
+                "decision": "APPROVED",
+                "base_sha": candidate_sha,
+                "candidate_sha": candidate_sha,
+            }
+            review_raw = (json.dumps(review_doc, sort_keys=True, indent=2) + "\n").encode()
+            files[review_path] = review_raw
+            tasks[task_id]["evidence"]["review"] = {
+                "work_id": work_id, "task_id": task_id,
+                "base_sha": candidate_sha, "candidate_sha": candidate_sha,
+                "result_digest": hashlib.sha256(raw).hexdigest(),
+                "reviewer": "independent-reviewer",
+                "verdict": "APPROVED", "evidence": review_path,
+                "evidence_digest": hashlib.sha256(review_raw).hexdigest(),
+            }
+    state = {
+        "schema": "ask-inner-loop-state/v1", "work_id": work_id,
+        "revision": 11, "coordinator_sha": candidate_sha,
+        "coordinator_branch": "agent/shorter-hashes", "tasks": tasks,
+    }
+    pin = {
+        "schema": "ask-accepted-tests/v1", "capability": capability,
+        "work_id": work_id, "contract_sha": candidate_sha,
+        "spec_digest": "a" * 64, "plan_digest": "b" * 64,
+        "graph_digest": "c" * 64,
+    }
+    files[f"work/{work_id}/inner-loop/state.json"] = (
+        json.dumps(state, sort_keys=True, indent=2) + "\n"
+    ).encode()
+    files[f"work/{work_id}/traceability-accepted.json"] = (
+        json.dumps(pin, sort_keys=True, indent=2) + "\n"
+    ).encode()
+    files[f"work/{work_id}/traceability/executions.json"] = (
+        json.dumps(execution_rows, sort_keys=True, indent=2) + "\n"
+    ).encode()
+    files["accepted.json"] = (json.dumps(pin, sort_keys=True, indent=2) + "\n").encode()
     return files

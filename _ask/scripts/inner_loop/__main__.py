@@ -31,7 +31,13 @@ from inner_loop.state import (  # noqa: E402
     load_state,
     spawn_writer,
 )
-from inner_loop.recovery import RecoveryRequired, inspect as inspect_recovery  # noqa: E402
+from inner_loop.recovery import (  # noqa: E402
+    RecoveryRequired,
+    audit_legacy_workstream,
+    inspect as inspect_recovery,
+    legacy_adoption_proposal,
+    validate_legacy_adoption_proposal,
+)
 from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle  # noqa: E402
 from inner_loop.attempts import interrupt_task, reopen_task  # noqa: E402
 from engineering_model.actions import Refused
@@ -222,6 +228,17 @@ def main(argv: list[str] | None = None) -> int:
     pf.add_argument("task_id")
     pf.add_argument("--run-id", required=True)
 
+    la = sub.add_parser("legacy-audit", help="read-only audit of a pre-checkpoint workstream")
+    la.add_argument("work_id")
+    la.add_argument("--ref", required=True, help="exact product branch or commit to audit")
+
+    lp = sub.add_parser("legacy-proposal", help="prepare a non-mutating legacy adoption proposal")
+    lp.add_argument("--audit", required=True, help="JSON produced by legacy-audit")
+
+    lv = sub.add_parser("legacy-validate-adoption", help="validate reviewed proposal preconditions without adopting")
+    lv.add_argument("--audit", required=True)
+    lv.add_argument("--proposal", required=True)
+
     args = p.parse_args(argv)
     root = repo_root(args.root)
     try:
@@ -309,6 +326,20 @@ def main(argv: list[str] | None = None) -> int:
             result = preflight_run(root, args.work_id, args.task_id, args.run_id)
             print(json.dumps(result, indent=2))
             return 0
+        if args.cmd == "legacy-audit":
+            report = audit_legacy_workstream(root, args.work_id, args.ref)
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.cmd == "legacy-proposal":
+            audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
+            print(json.dumps(legacy_adoption_proposal(audit), indent=2, sort_keys=True))
+            return 0
+        if args.cmd == "legacy-validate-adoption":
+            audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
+            proposal = json.loads(Path(args.proposal).read_text(encoding="utf-8"))
+            result = validate_legacy_adoption_proposal(root, audit, proposal)
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0 if result["status"] == "preconditions_validated" else 2
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2
     except ProtocolViolation as e:

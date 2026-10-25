@@ -141,3 +141,34 @@ must support `ask-traceability/v1`; otherwise integration reports `migration_req
 Candidate-bound traceability records live under `work/<work-id>/traceability/`
 and are preserved with other runtime paths on recovery. Task success cannot
 substitute for final workstream completion. Existing R1/R2 history stays archived.
+
+## Legacy reconciliation proposal
+
+The legacy audit reads the selected product commit from Git and records runtime
+artifacts found only in the current checkout as `checkout_only`. It does not
+rewrite the legacy state, accepted-tests authority, test classifications, or
+task schedule. A proposal binds the audit and exact preimages; validation refuses
+a moved product ref or authority, an active task, an unsupported verifier, or
+an independent review that does not bind the proposal bytes.
+
+Task review evidence is checked against its retained file digest and candidate.
+Older state does not record who persisted the review, so the audit reports
+`independence_unverifiable` instead of treating a reviewer name as proof of
+independence. Candidate changed paths come from the exact Git base-to-candidate
+diff; unrelated checkout changes are excluded.
+
+```sh
+mkdir -p work/continuation-recovery/adoption
+./ask inner-loop legacy-audit shorter-hashes \
+  --ref refs/heads/agent/shorter-hashes \
+  > work/continuation-recovery/adoption/audit.json
+./ask inner-loop legacy-proposal \
+  --audit work/continuation-recovery/adoption/audit.json \
+  > work/continuation-recovery/adoption/proposal.json
+./ask inner-loop legacy-validate-adoption \
+  --audit work/continuation-recovery/adoption/audit.json \
+  --proposal work/continuation-recovery/adoption/proposal.json
+```
+
+Validation only checks whether a separately reviewed proposal still matches its
+preimages. It does not apply the proposal or start product work.
