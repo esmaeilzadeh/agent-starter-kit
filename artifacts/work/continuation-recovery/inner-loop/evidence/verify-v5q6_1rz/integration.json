@@ -1,0 +1,15 @@
+{
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "candidate_sha": "82e14d9ab3b904ccbcb6348bcdaebaf8eb8160e7",
+  "schema": "ask-integration-evidence/v1",
+  "result": "fail",
+  "result_digest": "3196fd5af977ae684335c80ce2a04266feb9bf64d0326eec783a5ddbf9146abc",
+  "checks": [],
+  "traceability_run_ids": [],
+  "evidence_path": "work/continuation-recovery/inner-loop/evidence/verify-v5q6_1rz/verification.json",
+  "log_path": "work/continuation-recovery/inner-loop/evidence/verify-v5q6_1rz/output.log",
+  "error": "independent source review does not approve the exact C/V identities",
+  "record_path": "work/continuation-recovery/inner-loop/evidence/verify-v5q6_1rz/integration.json"
+}

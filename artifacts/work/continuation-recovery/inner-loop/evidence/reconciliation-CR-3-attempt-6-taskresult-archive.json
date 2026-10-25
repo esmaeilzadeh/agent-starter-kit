@@ -1,0 +1,15 @@
+{
+  "accepted_plan_ref": "fb6b673668e3cd7d2aa1dc3750807f801a098f54",
+  "archive_path": "work/continuation-recovery/inner-loop/evidence/TaskResult-CR-3-attempt-6.json",
+  "attempt_id": "CR-3:attempt-6",
+  "candidate_sha": "82e14d9ab3b904ccbcb6348bcdaebaf8eb8160e7",
+  "contract_sha": "577d7e2f6a168a06d833b47f14d84a3be643bbb9",
+  "current_head_before_interrupt": "cae9913d99abb5b174988e50d8e9ee2d8f829cfc",
+  "green_run_id": "949535c2dd234fe29190806991d0f2d1",
+  "original_path": "work/continuation-recovery/inner-loop/results/CR-3.json",
+  "reason": "Preserve the reviewed TaskResult outside the active result slot so the attempt can be interrupted before reaccepting the corrected P1 review binding.",
+  "schema": "ask-attempt-taskresult-archive/v1",
+  "task_id": "CR-3",
+  "task_result_sha256": "3196fd5af977ae684335c80ce2a04266feb9bf64d0326eec783a5ddbf9146abc",
+  "work_id": "continuation-recovery"
+}

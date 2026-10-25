@@ -373,6 +373,12 @@
       "sha256": "973f617d69b2e0a60547f09a1801bbf820ecd6570e5b2f358306ac388c4a13c8",
       "size": 2739
     },
+    "work/continuation-recovery/inner-loop/evidence/TaskResult-CR-3-attempt-6.json": {
+      "blob": "008adb18393db94e0aedea6284ec6bd788cd1f00",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/TaskResult-CR-3-attempt-6.json",
+      "sha256": "3196fd5af977ae684335c80ce2a04266feb9bf64d0326eec783a5ddbf9146abc",
+      "size": 2815
+    },
     "work/continuation-recovery/inner-loop/evidence/archived-static-cb1736e7466ac19c47639d1daa4e82d56f2a3214.txt": {
       "blob": "64149493a863b9c2d478433220199fd40af284a0",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/archived-static-cb1736e7466ac19c47639d1daa4e82d56f2a3214.txt",
@@ -558,6 +564,12 @@
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-6-checkpoint-refresh.json",
       "sha256": "d76722d8e2a680ab220250b7bf4d131b44f34c182c66c164932f75965b891aba",
       "size": 2351
+    },
+    "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-6-taskresult-archive.json": {
+      "blob": "b489f1ed6cbc4949a07f8bd9690f7562edf58506",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3-attempt-6-taskresult-archive.json",
+      "sha256": "215972c4d38a2af022fa34b040f9c786873280e248afe2e87f6aeaaa5a0b6de5",
+      "size": 904
     },
     "work/continuation-recovery/inner-loop/evidence/reconciliation-CR-3.json": {
       "blob": "e9c2e3c9ab3081cc9073eaa6cc40da6c829d6ace",
@@ -913,6 +925,12 @@
       "sha256": "ee23491826b47d2566286bcbf76b0061dcc184074fa011c2d67659a90416b315",
       "size": 16622
     },
+    "work/continuation-recovery/inner-loop/evidence/verify-v5q6_1rz/integration.json": {
+      "blob": "3dd379af829457613d6bec4b2d32465e982107cd",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/verify-v5q6_1rz/integration.json",
+      "sha256": "6a4383d5ffb0fa581cc61c8d8230c12c8086ef8ae4008432586b37b76e2b6958",
+      "size": 755
+    },
     "work/continuation-recovery/inner-loop/results/CR-1.json": {
       "blob": "300c2f05df4e2a83124718b653c55aa54289d3d3",
       "path": "artifacts/work/continuation-recovery/inner-loop/results/CR-1.json",
@@ -925,17 +943,11 @@
       "sha256": "03c4541a17c490caaef8ff86c4adec3d5bf32080fd9aac87b6bd8d04df55991b",
       "size": 2881
     },
-    "work/continuation-recovery/inner-loop/results/CR-3.json": {
-      "blob": "008adb18393db94e0aedea6284ec6bd788cd1f00",
-      "path": "artifacts/work/continuation-recovery/inner-loop/results/CR-3.json",
-      "sha256": "3196fd5af977ae684335c80ce2a04266feb9bf64d0326eec783a5ddbf9146abc",
-      "size": 2815
-    },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "da7e7b692d7183f7a23124112ef747dddad36328",
+      "blob": "5a0a7da7712b56fc2229d3f10ea27b04d4f1d224",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "6d8ab63e9c3053118df392275763182c9cdf9c9b093bac842a6d7b42885fa4cc",
-      "size": 85931
+      "sha256": "323f7de67f059c6865e136132fafca781f204c8a759c7bba8dac584118bf6f13",
+      "size": 87423
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2f31c3287064582458b310e0660cfdba15e41482",
@@ -1182,6 +1194,12 @@
       "path": "artifacts/work/continuation-recovery/traceability/reviews/50b92a07f6517cac82a400b2161085f576cc7d12.json",
       "sha256": "1cc07cb9f8204edf69f353cc0dd1dbc863072b07fc6f6a27e672c6113e2b0862",
       "size": 15445
+    },
+    "work/continuation-recovery/traceability/reviews/82e14d9ab3b904ccbcb6348bcdaebaf8eb8160e7.json": {
+      "blob": "8f36571c64e0d8649c149d67bf4369749caad600",
+      "path": "artifacts/work/continuation-recovery/traceability/reviews/82e14d9ab3b904ccbcb6348bcdaebaf8eb8160e7.json",
+      "sha256": "208b3aaa9577aafdf5c9292aaee566f11d83afd041da0e663a10f7459ad39839",
+      "size": 16685
     },
     "work/continuation-recovery/traceability/reviews/9001b62f37ea4e4ad032cf909c16b1923d3602aa.json": {
       "blob": "ac6089d2e19181209f626854c9ff9dc798d9d6f9",
@@ -9117,8 +9135,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 48,
-  "previous_checkpoint": "3c385f8631221e9e00a3a621b495530fa954aa4a",
+  "generation": 49,
+  "previous_checkpoint": "90bad4edc26d621333b8b144e614e456f355ab82",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",
@@ -9195,6 +9213,7 @@
     "c2262d11216f3142a75a994cd88a14801c9a86a6",
     "c562a1983cd25ae6aa12b1655dc3eb3d3141dc06",
     "c64af9b99738953f801af03189fabac82989041c",
+    "cae9913d99abb5b174988e50d8e9ee2d8f829cfc",
     "cc2245fee05f2fe283b1da37f5ef1d5326b1ec90",
     "d436bc7c849088f25b61ee67e2e79f281cad625c",
     "d4b42df74ebf27a3e9044f89897f4c35a09dd12f",
