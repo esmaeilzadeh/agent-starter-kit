@@ -1,0 +1,13 @@
+{
+  "schema": "ask-task-result-archive/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "attempt_id": "CR-3:attempt-5",
+  "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+  "task_result_archive": "work/continuation-recovery/inner-loop/evidence/TaskResult-CR-3-attempt-5.json.archived",
+  "task_result_sha256": "973f617d69b2e0a60547f09a1801bbf820ecd6570e5b2f358306ac388c4a13c8",
+  "traceability_run_id": "19327f4f3e9f4f109f14fd1d8baca5c4",
+  "reviewer": "/root/final_review",
+  "review_candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+  "review_evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-3-0a08444.md"
+}

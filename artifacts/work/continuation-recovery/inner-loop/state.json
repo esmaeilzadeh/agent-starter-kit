@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "continuation-recovery",
-  "revision": 44,
+  "revision": 45,
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
   "coordinator_branch": "agent/continuation-recovery",
   "tasks": {
@@ -860,82 +860,19 @@
       "reopen_reason": "accepted Revision 10; continue after explicit candidate-boundary reconciliation"
     },
     "CR-3": {
-      "status": "running",
-      "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+      "status": "interrupted",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "d986ac2d13a74db98882a4c11f5b3ab4",
-            "digest": "2a1e249a1d4071e774422298036b97f295db1d49b7a52f02ec9e1afbb7491a8c",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "a876edc9bccc89f29ba097cfc21b7e0277563002",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
-          },
-          {
-            "run_id": "258cf6fd5c194b6fb8c4a7cc07035fe5",
-            "digest": "f9a08edc4d9a96eda3af8ecaea50be5f0f33e67c443a61f0b5fd9dd185901ff0",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "50b92a07f6517cac82a400b2161085f576cc7d12",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
-          },
-          {
-            "run_id": "b59272f4d2eb41758bb31b6f074d3a2b",
-            "digest": "3d5f0e8603dbfb3f695e8e9f6de6a2c8fedc7d250e831164aa19fc45b2adde42",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
-          },
-          {
-            "run_id": "398c5286cfb845ccbfb7817cb7697abb",
-            "digest": "4850d5cca754efdb33fef0ce7671f71a537a7138a8f51cd1d77b65c0c5f75133",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "9001b62f37ea4e4ad032cf909c16b1923d3602aa",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
-          },
-          {
-            "run_id": "19327f4f3e9f4f109f14fd1d8baca5c4",
-            "digest": "a09c560d0fbe202e23bb4adfe8ee456010b3c1a59989ce768325bc8b88246eba",
-            "phase": "final_green",
-            "task_id": "CR-3",
-            "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
-            "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
-            "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
-          }
-        ],
-        "review": {
-          "work_id": "continuation-recovery",
-          "task_id": "CR-3",
-          "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-          "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
-          "result_digest": "973f617d69b2e0a60547f09a1801bbf820ecd6570e5b2f358306ac388c4a13c8",
-          "reviewer": "/root/final_review",
-          "policy": "_ask/policies/delegation.md",
-          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-          "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-3-0a08444.md",
-          "evidence_digest": "4b8faaedc56f3d5fa2cebc49fc071e66004d16a4ed285753b9a9e0b1ffa7f76a",
-          "verdict": "APPROVED",
-          "boundary": "ok",
-          "exemption_reason": null
-        }
-      },
+      "evidence": {},
       "attempt_number": 5,
-      "attempt_id": "CR-3:attempt-5",
-      "accepted_plan_ref": "cfc58202926c2e250a4f65d6593bb53eadc0675b",
-      "accepted_plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
-      "attempt_started_revision": 35,
+      "attempt_id": "",
+      "accepted_plan_ref": "",
+      "accepted_plan_digest": "",
+      "attempt_started_revision": null,
       "attempt_history": [
         {
           "attempt_id": "CR-3:attempt-1",
@@ -1435,6 +1372,177 @@
           ],
           "started_revision": 30,
           "interrupted_revision": 34
+        },
+        {
+          "attempt_id": "CR-3:attempt-5",
+          "attempt_number": 5,
+          "status": "interrupted",
+          "reason": "Preserve approved attempt 5 before the authorized P1 verifier rebind. Exact TaskResult bytes archived at work/continuation-recovery/inner-loop/evidence/TaskResult-CR-3-attempt-5.json.archived (sha256 from archive receipt); Green run 19327f4f3e9f4f109f14fd1d8baca5c4 and approved candidate review at 0a08444c09ae07ac2c950cc278120ebbba9e4eda are retained.",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+          "interrupted_candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {
+            "traceability_runs": [
+              {
+                "run_id": "d986ac2d13a74db98882a4c11f5b3ab4",
+                "digest": "2a1e249a1d4071e774422298036b97f295db1d49b7a52f02ec9e1afbb7491a8c",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "a876edc9bccc89f29ba097cfc21b7e0277563002",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+              },
+              {
+                "run_id": "258cf6fd5c194b6fb8c4a7cc07035fe5",
+                "digest": "f9a08edc4d9a96eda3af8ecaea50be5f0f33e67c443a61f0b5fd9dd185901ff0",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "50b92a07f6517cac82a400b2161085f576cc7d12",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+              },
+              {
+                "run_id": "b59272f4d2eb41758bb31b6f074d3a2b",
+                "digest": "3d5f0e8603dbfb3f695e8e9f6de6a2c8fedc7d250e831164aa19fc45b2adde42",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+              },
+              {
+                "run_id": "398c5286cfb845ccbfb7817cb7697abb",
+                "digest": "4850d5cca754efdb33fef0ce7671f71a537a7138a8f51cd1d77b65c0c5f75133",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "9001b62f37ea4e4ad032cf909c16b1923d3602aa",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+              },
+              {
+                "run_id": "19327f4f3e9f4f109f14fd1d8baca5c4",
+                "digest": "a09c560d0fbe202e23bb4adfe8ee456010b3c1a59989ce768325bc8b88246eba",
+                "phase": "final_green",
+                "task_id": "CR-3",
+                "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+                "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+                "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+              }
+            ],
+            "review": {
+              "work_id": "continuation-recovery",
+              "task_id": "CR-3",
+              "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+              "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+              "result_digest": "973f617d69b2e0a60547f09a1801bbf820ecd6570e5b2f358306ac388c4a13c8",
+              "reviewer": "/root/final_review",
+              "policy": "_ask/policies/delegation.md",
+              "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+              "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-3-0a08444.md",
+              "evidence_digest": "4b8faaedc56f3d5fa2cebc49fc071e66004d16a4ed285753b9a9e0b1ffa7f76a",
+              "verdict": "APPROVED",
+              "boundary": "ok",
+              "exemption_reason": null
+            }
+          },
+          "accepted_plan_ref": "cfc58202926c2e250a4f65d6593bb53eadc0675b",
+          "accepted_plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae",
+          "execution_runs": [
+            {
+              "run_id": "d986ac2d13a74db98882a4c11f5b3ab4",
+              "digest": "2a1e249a1d4071e774422298036b97f295db1d49b7a52f02ec9e1afbb7491a8c",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "a876edc9bccc89f29ba097cfc21b7e0277563002",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "c125d10533b24c9f82b4e0f4f8d6c725",
+              "digest": "ad6acaabaf4259f50c978c7c1be4158b1e85df2cd0d2ae653549e11d9bd01916",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "a876edc9bccc89f29ba097cfc21b7e0277563002",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "c65c8d09f2114ebdada4c2be5912dfff",
+              "digest": "28ea778331136f7cc1f1ecf60923fc34ad8c78f9315af7a2202aa1383a733d49",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "a876edc9bccc89f29ba097cfc21b7e0277563002",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "258cf6fd5c194b6fb8c4a7cc07035fe5",
+              "digest": "f9a08edc4d9a96eda3af8ecaea50be5f0f33e67c443a61f0b5fd9dd185901ff0",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "50b92a07f6517cac82a400b2161085f576cc7d12",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "996258acad244f11ad5a7ec890b5407f",
+              "digest": "1570c49e52aa755a72ca445aee3d50b5544c3ba898d57b2b5c62b3c49d906e45",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "50b92a07f6517cac82a400b2161085f576cc7d12",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "b59272f4d2eb41758bb31b6f074d3a2b",
+              "digest": "3d5f0e8603dbfb3f695e8e9f6de6a2c8fedc7d250e831164aa19fc45b2adde42",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "4865cd42159c14c337f2b20a3958055a6a22a777",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "398c5286cfb845ccbfb7817cb7697abb",
+              "digest": "4850d5cca754efdb33fef0ce7671f71a537a7138a8f51cd1d77b65c0c5f75133",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "9001b62f37ea4e4ad032cf909c16b1923d3602aa",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "2fef2f2ac42e4821a46c141c487cc96b",
+              "digest": "e1209c109030666a6149fc41d229a991aa79b9d05ace2fc105bb26e90f57e240",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            },
+            {
+              "run_id": "19327f4f3e9f4f109f14fd1d8baca5c4",
+              "digest": "a09c560d0fbe202e23bb4adfe8ee456010b3c1a59989ce768325bc8b88246eba",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CR-3",
+              "candidate_sha": "0a08444c09ae07ac2c950cc278120ebbba9e4eda",
+              "spec_digest": "02dcf36a73bbaf4c100e413854e823518f14d3dcbed34fe47a333d8e65790cf1",
+              "plan_digest": "a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae"
+            }
+          ],
+          "started_revision": 35,
+          "interrupted_revision": 45
         }
       ],
       "reopened_from_attempt": "CR-3:attempt-4",
