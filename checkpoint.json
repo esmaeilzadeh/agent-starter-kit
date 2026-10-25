@@ -619,6 +619,12 @@
       "sha256": "917f6322c6c8bd87cc85122746fb5c5408c006bf6dd5778e80efdeac669d3438",
       "size": 3355
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-3-d74f83a.md": {
+      "blob": "f6638f70cfa74c85bb6b92a970ea65d880a9f279",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-d74f83a.md",
+      "sha256": "ee443f5f4499ee17ba90c36d6e9b1d977ab8a11717d05e409256487be40c78bb",
+      "size": 477
+    },
     "work/continuation-recovery/inner-loop/evidence/verify-0cj1d9km/integration.json": {
       "blob": "0b4edc604385cb6cb34ebf592a7e4b1ae9200003",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/verify-0cj1d9km/integration.json",
@@ -775,11 +781,17 @@
       "sha256": "03c4541a17c490caaef8ff86c4adec3d5bf32080fd9aac87b6bd8d04df55991b",
       "size": 2881
     },
+    "work/continuation-recovery/inner-loop/results/CR-3.json": {
+      "blob": "31634fdc6bedf5f5b6c90beafa42fdcd25266977",
+      "path": "artifacts/work/continuation-recovery/inner-loop/results/CR-3.json",
+      "sha256": "9159f6713c06d03de899eaf355938df00ed266a2e90864f7a144e211eadb28e6",
+      "size": 2080
+    },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "df251b7b23bb5197a8b163732bfc13f8e70dde9f",
+      "blob": "36ebd230edac74cafa99d80fb65f76154031d477",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "e2d78635278ee2108ab89aeefcc289e2694fc7fd5e67e55a71be01a7f621d5eb",
-      "size": 71462
+      "sha256": "2e0f81583eb00b8d91659629fb3239a9eab91e2feb6236c6a0500aacdac51a94",
+      "size": 72278
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2f31c3287064582458b310e0660cfdba15e41482",
@@ -8055,8 +8067,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 32,
-  "previous_checkpoint": "19af4265fee970f1cbfdb6fd362772f59e24cc86",
+  "generation": 33,
+  "previous_checkpoint": "95656c7520bed00156e8f98a206394a385238af3",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",

@@ -1,0 +1,27 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "candidate_sha": "d74f83a71ab856424a93825cc595b31a89d5151c",
+  "contract_sha": "d436bc7c849088f25b61ee67e2e79f281cad625c",
+  "tdd": {
+    "seam": "A setup/runtime-error case in a Red report must be bound to a failing execution; a passing execution cannot be classified as a setup/runtime error.",
+    "red": {
+      "command": "PYTHONPATH=_ask/scripts:.agents/ask python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_setup_error_case_requires_nonzero_bound_execution",
+      "output": "Focused regression failed before the fix: AssertionError: NotIntegrable not raised after changing the setup-error execution exit code to 0.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "PYTHONPATH=_ask/scripts:.agents/ask python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_setup_error_case_requires_nonzero_bound_execution",
+      "output": "Focused regression passed after the fix. Registered CR-3 final_green run c37465f2699c4646a749a0d24f7d4f12 also passed all 12 accepted cases on this candidate and was checkpointed.",
+      "exit_code": 0
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "The focused validation guard is direct and self-contained; no structural cleanup was identified in the exact-candidate review."
+  },
+  "exemption": null,
+  "notes": "CR-3 was reopened as attempt 4 after independently reviewed attempt-3-to-4 reconciliation. All three earlier interrupted attempts and their retained execution histories remain preserved. Current P1 accepted plan digest is bba7034eb1a562c779748991cdf190be406217d3f081667472a333d8e65790cf1. Current final_green run c37465f2699c4646a749a0d24f7d4f12 is checkpointed with report digest f22dfe1acf0cfc719abf57591855bd6f95443aa8ee84cf580a8545b54bb4ac2f. Exact-candidate review approved by /root/final_review; review evidence: work/continuation-recovery/inner-loop/evidence/review-CR-3-d74f83a.md."
+}
