@@ -45,6 +45,10 @@ recorded as `completed-under-scoped-exception`, not formal workstream acceptance
 These broader gate interactions remain parked in
 `../../.later/self-hosted-kit-change-boundary.md`.
 
+The human subsequently approved the completed repair branch and its parent
+integration on 2026-10-26; see [acceptance.md](acceptance.md). The approval keeps
+the disclosed gate exceptions and does not change their recorded outcomes.
+
 ## Legacy audit outcome and endpoint
 
 The audited product ref remains `agent/shorter-hashes` at

@@ -1,5 +1,11 @@
 # Continuation recovery endpoint
 
+The human subsequently approved this branch on 2026-10-26 and explicitly
+authorized merging back into its parent, `agent/shorter-hashes`.
+See [acceptance.md](acceptance.md) for the exact approval, accepted commit and
+integration scope. This supersedes the earlier merge-authorization restriction
+below; the repair remains complete and product scheduling remains stopped.
+
 CR-4 is complete under the explicit one-time CR-3/CR-4 human exception. The user
 asked to finish, push, then stand by. Stop at this endpoint; a generic continue
 reports completion rather than reopening CR-3 or inventing another task.
