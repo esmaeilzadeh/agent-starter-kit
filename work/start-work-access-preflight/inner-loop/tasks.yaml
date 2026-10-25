@@ -9,7 +9,11 @@ tasks:
       - ask
       - .cursor/**
       - .codex/**
-      - .claude/**
       - .opencode/**
       - AGENTS.md
+      - CLAUDE.md
       - _ask/tests/test_access_check.py
+      - _ask/tests/test-start-work-*.sh
+      - specs/current/start-work-access-preflight.md
+      - work/start-work-access-preflight/plan.md
+      - work/start-work-access-preflight/acceptance.md
