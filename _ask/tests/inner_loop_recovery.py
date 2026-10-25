@@ -1390,22 +1390,17 @@ class test_b(unittest.TestCase):
         self.write("work/w/test-plan.json", json.dumps(amended, sort_keys=True))
         self.commit("move an unrelated obligation to task b")
         contract_source = self.git("rev-parse", "HEAD")
-        # Accepted authority commits are deliberately parentless. Their
-        # contract source retains the source ancestry, while the authority
-        # itself must not be used as an ancestry checkpoint.
-        contract_tree = self.git("rev-parse", f"{contract_source}^{{tree}}")
-        current_contract = self.git(
-            "commit-tree", contract_tree, "-m", "parentless accepted authority"
-        )
         current_plan_digest = self.json_digest(amended)
         plan_review = {
             "decision": "APPROVED", "reviewer": "independent-reviewer",
             "spec_digest": self.old_spec_digest, "plan_digest": current_plan_digest,
-            "contract_source_sha": contract_source,
         }
         current_pin = {
             "schema": "ask-accepted-tests/v1", "work_id": "w",
-            "contract_sha": current_contract, "spec_digest": self.old_spec_digest,
+            # Normal accept-plan pins the reviewed source commit as
+            # contract_sha; plan_review need not duplicate it as a separate
+            # contract_source_sha field.
+            "contract_sha": contract_source, "spec_digest": self.old_spec_digest,
             "plan_digest": current_plan_digest, "graph_digest": self.old_graph_digest,
             "reviewer": "independent-reviewer", "recorded_by": "coordinator",
             "plan_review": plan_review, "plan_review_digest": self.json_digest(plan_review),
