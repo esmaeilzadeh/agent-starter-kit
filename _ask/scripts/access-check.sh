@@ -39,8 +39,8 @@ probe_dir() {
   fi
 }
 
-git_dir="$(resolve_from_root "$(git rev-parse --git-dir)")"
-common_dir="$(resolve_from_root "$(git rev-parse --git-common-dir)")"
+git_dir="$(resolve_from_root "$(git -C "$ROOT" rev-parse --git-dir)")"
+common_dir="$(resolve_from_root "$(git -C "$ROOT" rev-parse --git-common-dir)")"
 
 for item in "worktree Git metadata:$git_dir" "shared Git metadata:$common_dir"; do
   label="${item%%:*}"
