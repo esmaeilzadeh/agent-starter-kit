@@ -1,0 +1,27 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "candidate_sha": "a876edc9bccc89f29ba097cfc21b7e0277563002",
+  "contract_sha": "1f865b410399c5d5fea7546de9ffd764cc8357b5",
+  "tdd": {
+    "seam": "CR-3 evidence validation must reject setup/runtime errors bound to passing executions and must validate the accepted verifier source before importing it during migration.",
+    "red": {
+      "command": "Focused regressions for CR-3: test_setup_error_case_requires_nonzero_bound_execution and the altered-verifier-source import-marker regression.",
+      "output": "Both regressions were first run against the pre-fix behavior and failed as intended: the passing setup-error execution was accepted, and altered unpinned verifier code executed before rejection.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run continuation-recovery --candidate-sha a876edc9bccc89f29ba097cfc21b7e0277563002 --anchor-sha a876edc9bccc89f29ba097cfc21b7e0277563002 --scope task --task-id CR-3 --phase final_green",
+      "output": "Run d986ac2d13a74db98882a4c11f5b3ab4; all 12 accepted CR-3 cases passed. Coordinator checkpoint digest 2a1e249a1d4071e774422298036b97f295db1d49b7a52f02ec9e1afbb7491a8c.",
+      "exit_code": 0
+    }
+  },
+  "refactor": {
+    "decision": "no-applicable-cleanup",
+    "notes": "The scoped validation changes are direct guards; no additional structural cleanup was identified in the independent exact-candidate review."
+  },
+  "exemption": null,
+  "notes": "CR-3 reopened as attempt 5 after independent approval of the refreshed P1 plan. Accepted plan digest a198ce598680e99997b0e6687fbcc649634344fb49c3792f5f45143676ee98ae. The accepted C/V migration binding remains coordinator dd606fc1a3668a5b585ed57d3ff5c213e0999b13 and verifier c64af9b99738953f801af03189fabac82989041c. All twelve CR-3 final Green cases passed and the exact candidate was independently approved by /root/final_review; see inner-loop/evidence/review-CR-3-a876edc.md."
+}
