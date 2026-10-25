@@ -996,12 +996,18 @@ def _legacy_ref_bytes(root: Path, commit: str, path: str) -> bytes | None:
 
 def _legacy_artifact(root: Path, commit: str, path: str) -> tuple[bytes | None, str]:
     """Read a pinned artifact first, then expose a checkout-only copy as such."""
+    if (not path or "\\" in path or Path(path).is_absolute()
+            or ".." in Path(path).parts):
+        return None, "missing"
     pinned = _legacy_ref_bytes(root, commit, path)
     if pinned is not None:
         return pinned, "product_ref"
     try:
-        return (root / path).read_bytes(), "checkout_only"
-    except OSError:
+        checkout_path = (root / path).resolve()
+        if not checkout_path.is_relative_to(root.resolve()):
+            return None, "missing"
+        return checkout_path.read_bytes(), "checkout_only"
+    except (OSError, RuntimeError):
         return None, "missing"
 
 

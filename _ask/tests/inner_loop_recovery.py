@@ -2214,6 +2214,20 @@ class test_b(unittest.TestCase):
     def test_legacy_red_green_adoption(self):
         from inner_loop.recovery import audit_legacy_workstream, legacy_adoption_proposal
 
+        # A legacy review path must never expose files outside the checkout.
+        from inner_loop.recovery import _legacy_artifact
+        with tempfile.TemporaryDirectory() as outside:
+            outside_path = Path(outside) / "review.json"
+            outside_path.write_text('{"outside": true}\n')
+            traversal = os.path.relpath(outside_path, self.root)
+            link = self.root / "outside-review.json"
+            link.symlink_to(outside_path)
+            for path in (traversal, str(outside_path), link.name):
+                with self.subTest(legacy_artifact_path=path):
+                    self.assertEqual(_legacy_artifact(self.root, "HEAD", path),
+                                     (None, "missing"))
+            link.unlink()
+
         self.prepare_legacy_audit_fixture(missing_review_tasks={"5"})
         self.write("checkout-only-noise.txt", "not part of either historical commit\n")
         report = audit_legacy_workstream(
