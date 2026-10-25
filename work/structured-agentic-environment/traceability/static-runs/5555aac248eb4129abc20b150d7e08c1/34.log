@@ -1,6 +1,0 @@
-/home/mohammadesmailzade/.profile: line 31: /home/mohammadesmailzade/.deno/env___MY_VMOPTIONS_SHELL_FILE=/home/mohammadesmailzade/.jetbrains.vmoptions.sh: No such file or directory
-verify-scaffold: wrote /tmp/tmp.pdnrovwqUq/.agents/verification.yaml
-rollback ok
-verify-scaffold: /tmp/tmp.pdnrovwqUq/.agents/verification.yaml exists; left in place (use --re-scaffold for a candidate)
-verify-scaffold: wrote /tmp/tmp.pdnrovwqUq/.agents/verification.yaml.candidate
-PASS: scaffold yaml only if absent; re-scaffold candidate; mixed-stack stops
