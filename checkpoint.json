@@ -884,10 +884,10 @@
       "size": 17720
     },
     "work/continuation-recovery/inner-loop/evidence/verify-p5z1abf0/integration.json": {
-      "blob": "444ab67b0082a2fdfd8ca80821fe8cacb495a298",
+      "blob": "e607078d8521fa1c0c1df5564747828f968a6c75",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/verify-p5z1abf0/integration.json",
-      "sha256": "f1aef51abe29086d141a2c804fccf610bd588efa17d2e594c5d0f611a6a0ead3",
-      "size": 18122
+      "sha256": "3a8bdf05bd55f62d97bed40ada5987ef6cc43c967575c67188efbd26278fad77",
+      "size": 18911
     },
     "work/continuation-recovery/inner-loop/evidence/verify-p5z1abf0/output.log": {
       "blob": "272a641c7a78e6895d61e16406c229d67d718b9b",
@@ -980,10 +980,10 @@
       "size": 2893
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "797c1e8b175d0dc391d4f7f705beb062b3b0497b",
+      "blob": "c708a89f575a7dfded302913686c524d1ab9f070",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "8a40c634e7bc0ea69974785fd8f93751719c3f94b4721333e898f354323b2ca0",
-      "size": 113224
+      "sha256": "91439c24b4a3503343e9b6cf957dbe7343087b835e7c16a916e866c080454e2d",
+      "size": 114199
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
       "blob": "2f31c3287064582458b310e0660cfdba15e41482",
@@ -9452,9 +9452,9 @@
       "size": 16622
     }
   },
-  "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 53,
-  "previous_checkpoint": "a9dd5d6747f5233a72f796d960bbd4cfbffb3ae5",
+  "coordinator_sha": "7523fd211df4575c0666d06c8e5b505c937cd217",
+  "generation": 54,
+  "previous_checkpoint": "00b3a24a05b7b432ac68a636b5171601fae2f74a",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",

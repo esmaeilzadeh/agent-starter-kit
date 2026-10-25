@@ -376,5 +376,21 @@
   "checkplan_digest": "29c24dc4445a04a6accd04889377267dd1d52a65ae1c71de0d9a49d7468a1357",
   "static_receipt_digest": "63328a72dc7272285ad42cfa9ce4efc14281382382b21046961148f8f6142468",
   "completion_digest": "3e27a138118993574ec3ae6f23ddb42130d36237368a82ce251440468d60755c",
-  "record_path": "work/continuation-recovery/inner-loop/evidence/verify-p5z1abf0/integration.json"
+  "record_path": "work/continuation-recovery/inner-loop/evidence/verify-p5z1abf0/integration.json",
+  "resulting_sha": "7523fd211df4575c0666d06c8e5b505c937cd217",
+  "review": {
+    "work_id": "continuation-recovery",
+    "task_id": "CR-3",
+    "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+    "candidate_sha": "7523fd211df4575c0666d06c8e5b505c937cd217",
+    "result_digest": "14885e63bc68678e0bc0cc8af59bb50833276ce617a4fc8b4e19f96a609e6c99",
+    "reviewer": "/root/final_review",
+    "policy": "_ask/policies/delegation.md",
+    "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+    "evidence": "work/continuation-recovery/inner-loop/evidence/review-CR-3-7523fd2.md",
+    "evidence_digest": "6d20c778608cb422750c901d87863b2020f840ebf750ce3fbbd1804ea9daf1e2",
+    "verdict": "APPROVED",
+    "boundary": "ok",
+    "exemption_reason": null
+  }
 }
