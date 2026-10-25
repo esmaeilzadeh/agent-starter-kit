@@ -2319,6 +2319,17 @@ class test_b(unittest.TestCase):
         self.assertEqual(refused["status"], "refused")
         self.assertTrue(any("preimage" in error for error in refused["errors"]))
 
+        changed_decision = copy.deepcopy(proposal)
+        changed_decision["decision"] = "adopt_and_schedule"
+        changed_payload = {key: value for key, value in changed_decision.items()
+                           if key != "review"}
+        changed_decision["review"]["proposal_sha256"] = self.json_digest(changed_payload)
+        decision_refused = validate_legacy_adoption_proposal(
+            self.root, report, changed_decision,
+        )
+        self.assertEqual(decision_refused["status"], "refused")
+        self.assertTrue(any("preimage" in error for error in decision_refused["errors"]))
+
         # A moved exact product ref invalidates the previously reviewed proposal.
         self.git("commit", "--allow-empty", "-qm", "advance disposable product ref")
         moved = self.git("rev-parse", "HEAD")
