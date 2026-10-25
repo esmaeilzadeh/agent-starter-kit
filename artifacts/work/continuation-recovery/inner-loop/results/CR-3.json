@@ -13,8 +13,8 @@
       "exit_code": 1
     },
     "green": {
-      "command": "Pinned traceability runner for exact candidate 9001b62",
-      "output": "Awaiting the exact-candidate 12-case final Green run.",
+      "command": "./ask traceability run continuation-recovery --candidate-sha 9001b62 --anchor-sha 9001b62 --scope task --task-id CR-3 --phase final_green",
+      "output": "Run 398c5286cfb845ccbfb7817cb7697abb completed with runner exit_code=0 and collection_status=ok; all 12 mapped CR-3 cases passed. Coordinator checkpoint recorded the same candidate, spec, plan, and task.",
       "exit_code": 0
     }
   },

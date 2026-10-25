@@ -631,6 +631,12 @@
       "sha256": "627bd3e588ef67f2ec481546f3ef1795b1e5e68ce00640c5ab569c31a2fde361",
       "size": 1799
     },
+    "work/continuation-recovery/inner-loop/evidence/review-CR-3-9001b62.md": {
+      "blob": "0bd3fb5d2c87f7f34066d2e674ae6ddc7c5fea31",
+      "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-9001b62.md",
+      "sha256": "960932b24d452e69bfb843a21151e2984d7d5c7618eb05be0920f600775d5766",
+      "size": 2206
+    },
     "work/continuation-recovery/inner-loop/evidence/review-CR-3-a876edc.md": {
       "blob": "d667b2ac0809ff867c904ad52fbb34bc15c2e5d3",
       "path": "artifacts/work/continuation-recovery/inner-loop/evidence/review-CR-3-a876edc.md",
@@ -866,15 +872,15 @@
       "size": 2881
     },
     "work/continuation-recovery/inner-loop/results/CR-3.json": {
-      "blob": "d1b04f14efa59ac34cf359f10facbdc0b5ffabc0",
+      "blob": "e9edb854a4a97fbb1d1307e0a97bc96e8f88b621",
       "path": "artifacts/work/continuation-recovery/inner-loop/results/CR-3.json",
-      "sha256": "12fce4454be4261504a15303c05a350503f1653a31c0070452b27bcae28fba03",
-      "size": 2277
+      "sha256": "a787525990f89e771cfbcbf3e0b43b778bd0911635a460dc3ee89880f9336cb4",
+      "size": 2510
     },
     "work/continuation-recovery/inner-loop/state.json": {
-      "blob": "dd3edc67123387f0890dbfc01f5da28641e91544",
+      "blob": "409c7f28e8578ce7191c3fb8c07fc33ec54293af",
       "path": "artifacts/work/continuation-recovery/inner-loop/state.json",
-      "sha256": "a956edfab4366648c9edf39359aa1c6e8026b6aaebdfba9256f5a8d0aeed1212",
+      "sha256": "e91766627a524bc4d9a886f5557fd5e38cf18e12b712f0e0a9d6a03e6b5122cb",
       "size": 77797
     },
     "work/continuation-recovery/inner-loop/tasks.yaml": {
@@ -1020,6 +1026,12 @@
       "path": "artifacts/work/continuation-recovery/traceability/review-input-50b92a0.json",
       "sha256": "b4d315025964e5a515af265f980b02b3e5527533beca19fac9c6a79418e458ef",
       "size": 14465
+    },
+    "work/continuation-recovery/traceability/review-input-9001b62-final.json": {
+      "blob": "2b127a867789e428b82c7ee218935b8a3aec601d",
+      "path": "artifacts/work/continuation-recovery/traceability/review-input-9001b62-final.json",
+      "sha256": "731f1482fe137bc7c79f733fc402837ff140a25fa5ddfe3dd3d72ff54f4c8a65",
+      "size": 15770
     },
     "work/continuation-recovery/traceability/review-input-9001b62.json": {
       "blob": "64265321c493afa33e91ea60140ac36353f9637c",
@@ -8973,8 +8985,8 @@
     }
   },
   "coordinator_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
-  "generation": 41,
-  "previous_checkpoint": "cf495818a77aaa6324fb5c55e17bf1ed28a77d83",
+  "generation": 42,
+  "previous_checkpoint": "bef86957765e9e61d2ad9b110973f978a2fac18b",
   "retained_commits": [
     "01abc53755a86405ee814684f7b31f80440a4000",
     "029e3f95735aa607ef00605116f29865898787b8",
