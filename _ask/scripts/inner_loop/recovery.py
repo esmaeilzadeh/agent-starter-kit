@@ -304,6 +304,10 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
     contract_source = current_pin.get("contract_source_sha")
     if not isinstance(contract_source, str) and isinstance(review, dict):
         contract_source = review.get("contract_source_sha")
+    if not isinstance(contract_source, str):
+        # The normal accept-plan record pins the reviewed contract source in
+        # contract_sha. Older authority formats may keep it in the review.
+        contract_source = current_pin.get("contract_sha")
     review_digest = hashlib.sha256(json.dumps(
         review, sort_keys=True, separators=(",", ":")
     ).encode()).hexdigest() if isinstance(review, dict) else None
