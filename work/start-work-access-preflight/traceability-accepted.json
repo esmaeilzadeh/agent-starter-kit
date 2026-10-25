@@ -1,0 +1,20 @@
+{
+  "schema": "ask-accepted-tests/v1",
+  "capability": "ask-traceability/v1",
+  "contract_sha": "ef5b787391684b60d401a12efbaaee7125b2556f",
+  "work_id": "start-work-access-preflight",
+  "reviewer": "access_preflight_spec_challenge (codex/gpt-6-astra)",
+  "recorded_by": "coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "plan_review": {
+    "decision": "APPROVED",
+    "reviewer": "access_preflight_spec_challenge (codex/gpt-6-astra)",
+    "spec_digest": "b157d0bd02a8cb8aacad8ef3bb6c3b96ae465fe73d7fda5259c39a1f42348b1f",
+    "plan_digest": "48ed95a905ce53366bcaf99a10e6651a93454a25909becfe4435cc7a32cfc146"
+  },
+  "plan_review_digest": "cc292d7ae2e6f5626f20d97fe8211199466160abc47ef709c67d3faff340d920",
+  "spec_digest": "b157d0bd02a8cb8aacad8ef3bb6c3b96ae465fe73d7fda5259c39a1f42348b1f",
+  "plan_digest": "48ed95a905ce53366bcaf99a10e6651a93454a25909becfe4435cc7a32cfc146",
+  "graph_digest": "ad022c75803618a1b83a18e362c57a6aed3f832205131071b1956867c37543d7"
+}
