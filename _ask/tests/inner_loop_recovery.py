@@ -2269,6 +2269,22 @@ class test_b(unittest.TestCase):
         self.assertIn(red["run_id"], {item["run_id"] for item in workstream_selected})
         self.assertNotIn(red["run_id"], {item["run_id"] for item in workstream_rejected})
 
+        # Completion consumes the same list-shaped coordinator ledger as
+        # reports(). A retained historical Red must not make completion treat
+        # that ledger as an object-only contract file.
+        from verification.traceability.service import check_completion
+        review_path = self.root / "work/w/traceability/reviews" / (current_sha + ".json")
+        review_path.parent.mkdir(parents=True, exist_ok=True)
+        review_path.write_text("{}\n")
+        completion = check_completion(
+            self.root, "w", current_sha, current_sha, "task", "a",
+            static={"result": "pass", "candidate_sha": current_sha},
+        )
+        self.assertNotIn(
+            "expected object", " ".join(completion.get("errors", [])),
+            "completion must read the append-only execution ledger as a list",
+        )
+
         self._cr3_normal_integration_fixture()
 
     def test_setup_error_case_requires_nonzero_bound_execution(self):

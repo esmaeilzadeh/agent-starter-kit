@@ -1,6 +1,7 @@
 """One policy evaluator for Verify, integration, acceptance and result recording."""
 from __future__ import annotations
 from pathlib import Path
+import json
 import subprocess
 from . import CAPABILITY
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
@@ -94,7 +95,14 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             report_adapter=expected_adapter
             if historical_decision:
                 original=load_historical_accepted(root,work_id,execution_report['candidate_sha'])
-                ledger_rows=load(root/'work'/work_id/'traceability'/'executions.json')
+                try:
+                    ledger_rows=json.loads((root/'work'/work_id/'traceability'/'executions.json').read_text())
+                except OSError as exc:
+                    raise Invalid('no coordinator-executed case evidence') from exc
+                except ValueError as exc:
+                    raise Invalid('invalid coordinator-executed case evidence') from exc
+                if not isinstance(ledger_rows,list) or any(not isinstance(entry,dict) for entry in ledger_rows):
+                    raise Invalid('invalid coordinator-executed case evidence')
                 original_rows=[entry for entry in ledger_rows if entry.get('run_id')==run_id]
                 if len(original_rows)!=1:
                     errors.append(f'{run_id}: original ledger identity is missing or duplicated')
