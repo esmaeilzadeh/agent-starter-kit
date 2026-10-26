@@ -1310,14 +1310,8 @@ def audit_legacy_workstream(root: Path, work_id: str, product_ref: str) -> dict:
                     and check.get("exit_code") == 0 for check in checks)
             and (record_digest is None or record_digest == hashlib.sha256(record_raw).hexdigest())
         )
-        legacy_integration_ok = bool(
-            not verification and isinstance(integration, dict)
-            and integration.get("candidate_sha") == candidate_sha
-            and integration.get("result_digest") == result_sha
-            and integration.get("result") == "pass"
-        )
-        integration_ok = verification_ok or legacy_integration_ok
-        if integration_ok and (legacy_integration_ok or record_source == "product_ref"):
+        integration_ok = verification_ok
+        if integration_ok and record_source == "product_ref":
             integration_status = "verified"
         elif integration_ok:
             integration_status = "available_checkout_only"
