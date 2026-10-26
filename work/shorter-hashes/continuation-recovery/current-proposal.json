@@ -1,5 +1,5 @@
 {
-  "audit_sha256": "ddd93bbe5a3f5fc03dcd3bb6e33d37563adaf68b9ee222285d3a782c317fb7ce",
+  "audit_sha256": "51841359c09c3ef92996a10adeba5d2d3d094df9f467205e7455b86cc9ff7cf8",
   "authority_preimage": {
     "authority": {
       "capability": "ask-traceability/v1",
@@ -60,8 +60,8 @@
   "decision": "proposal_only_review_required",
   "preserve_original_attempts": true,
   "product_preimage": {
-    "commit": "60d314d60dccfeb1ab335c49596be97738ec15af",
-    "ref": "60d314d60dccfeb1ab335c49596be97738ec15af",
+    "commit": "c45f3582ef1a02c2f2cf897feeda42ca2dfdf335",
+    "ref": "c45f3582ef1a02c2f2cf897feeda42ca2dfdf335",
     "state_path": "work/shorter-hashes/inner-loop/state.json",
     "state_revision": 11,
     "state_sha256": "b5fad609842013a1ca11017ec60e4ae45c042f92828cbf040c795129525b17e6"
@@ -69,7 +69,7 @@
   "reclassify_tests": false,
   "review": {
     "decision": "APPROVED",
-    "proposal_sha256": "5f95de228afaaae552a8e95b0bbc65eed79d3f8b968bc4e1573fe0142e262e25",
+    "proposal_sha256": "955f59649ddf587442bc3af1621d4b30f1592616fc82ac34c9f6be473c79b384",
     "recorded_by": "/root",
     "reviewer": "/root/reconciliation_review"
   },
@@ -182,7 +182,7 @@
       "first_unmet_milestone": "red",
       "milestones": {
         "green": "available_checkout_only",
-        "integration": "missing",
+        "integration": "verified",
         "red": "available_checkout_only",
         "refactor": "missing",
         "review": "unverified"
@@ -233,7 +233,7 @@
           "status": "available_checkout_only"
         }
       },
-      "state_claims_integration_without_receipt": true,
+      "state_claims_integration_without_receipt": false,
       "state_record_sha256": "cf17aec17b31f7d395829a241518e0e18db470c57c22bd43e2b34733a895024d",
       "state_status": "integrated",
       "task_id": "1"

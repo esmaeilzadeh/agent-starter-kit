@@ -6,7 +6,7 @@ rewrite `state.json`, claim missing milestones, or schedule a task.
 
 ## Product and authority preimages
 
-- Product commit: `60d314d60dccfeb1ab335c49596be97738ec15af`.
+- Product commit: `c45f3582ef1a02c2f2cf897feeda42ca2dfdf335`.
 - Runtime state: revision 11, SHA-256
   `b5fad609842013a1ca11017ec60e4ae45c042f92828cbf040c795129525b17e6`.
 - Live accepted-tests ref: `refs/ask/accepted-tests/shorter-hashes` at
@@ -19,7 +19,7 @@ rewrite `state.json`, claim missing milestones, or schedule a task.
 
 | Task | Recorded state | Reconciliation |
 | --- | --- | --- |
-| 1 | `integrated` | Red and Green are available only from checkout artifacts; Refactor is missing, review is unverified, and no integration receipt exists. The integrated label is unsupported by current evidence. |
+| 1 | `integrated` | The product-ref integration receipt matches the state and TaskResult, including base/candidate/result digest, passing checks, and resulting SHA. Red and Green remain checkout-only; Refactor is missing and review is unverified. The older accepted-contract binding still requires reconciliation. |
 | 2 | `blocked` | Historical baseline and final-Green rows exist in the checkout ledger, but no task result, Refactor, candidate review, or integration receipt is bound in current product state. Treat the nine cases as regressions; the user waived failing Red only. |
 | 3–5 | `pending` | The current 17-row checkout ledger does not expose complete task evidence. The prior CR-4 audit referenced a different checkout ledger digest, so those rows remain historical observations until their exact artifacts are revalidated against the current contract and candidate. |
 | 6–10 | `pending` | No task completion evidence is adopted. |
@@ -29,20 +29,28 @@ and 8. It identifies post-coordinator changes to task-owned source for Tasks
 5, 6, and 8, plus Task 1's result bound to an older accepted contract. The
 exact output is `current-scheduler-check.json`.
 
+The audit defect is fixed in `c45f3582ef1a02c2f2cf897feeda42ca2dfdf335`:
+canonical receipts are read from `evidence.verification` and verified against
+their product-ref record. A matching `evidence.integration` summary without a
+receipt is now `unverified`. Focused positive and negative regression tests
+cover both cases.
+
 ## Reconciliation outcome
 
-Keep the original state and every prior attempt unchanged. Do not mark Task 1
-integrated from its status label, do not mark Task 2 integrated from passing
-regressions, and do not schedule Tasks 3–10 while the coordinator reports
-`recovery_required`. The current adoption proposal remains non-mutating and
-requires independent review; it does not authorize product-state adoption.
+Keep the original state and every prior attempt unchanged. Preserve Task 1's
+receipt-backed integration milestone without treating it as full task
+completion, do not mark Task 2 integrated from passing regressions, and do not
+schedule Tasks 3–10 while the coordinator reports `recovery_required`. The
+current adoption proposal is independently approved and remains non-mutating;
+that review does not authorize product-state adoption.
 
-The next safe step is to review this exact report and proposal, then resolve
-each missing milestone from attributable source/run/review/integration records
-or leave it explicitly incomplete. A task may advance only after its ordinary
-accepted evidence and coordinator checks pass.
+The next safe step is to resolve each missing milestone from attributable
+source/run/review/integration records or leave it explicitly incomplete. A
+task may advance only after its ordinary accepted evidence and coordinator
+checks pass.
 
-The independent review approved the exact report/proposal payload. The
-coordinator then ran `legacy-validate-adoption`; it returned
-`preconditions_validated` with no errors and confirmed that product state,
-authority, and task scheduling were unchanged.
+The earlier reconciliation review and validation applied to a superseded audit
+payload and are not evidence for this version. The regenerated proposal was
+independently approved against its payload digest in `current-proposal.json`.
+`legacy-validate-adoption` has not been run on this payload; it remains a
+non-mutating proposal and does not authorize product-state adoption.

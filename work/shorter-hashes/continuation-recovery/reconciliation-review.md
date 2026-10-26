@@ -1,34 +1,35 @@
-# Independent reconciliation review
+# Independent review record
 
-- Verdict: **APPROVED**, no findings.
-- Reviewer: `/root/reconciliation_review` (independent, read-only).
-- Candidate: `c4f9f3bb914d05ad4ecde884920d55c48ed68479`.
-- Scope: supersession of the R1–R4 planning draft; current audit and proposal
-  preimages; distinction between checkout-only evidence and verified task
-  milestones; preservation of the Task 2 no-failing-Red direction; no state
-  mutation or product scheduling.
+## Audit fix
 
-The reviewer confirmed that the referenced recovery plan is accepted and its
-result records CR-1–CR-4 integrated. That workstream still excluded product
-adoption and scheduling. The current audit and proposal bind the same product
-and authority preimages. The reconciliation preserves unsupported milestones
-as incomplete and does not treat passing regression rows as task completion.
+- Candidate `9df460cf642210abbc5a28f1f494c95fba0d2b43` received REQUEST CHANGES:
+  a matching legacy integration summary could still be reported as verified
+  without a receipt.
+- Candidate `c45f3582ef1a02c2f2cf897feeda42ca2dfdf335` was approved after that
+  bypass was removed. The reviewer confirmed canonical receipt validation,
+  checkout-only labeling, path protections, and positive/negative regression
+  coverage.
 
-The coordinator recorded this review in `current-proposal.json` against payload
-SHA-256 `5f95de228afaaae552a8e95b0bbc65eed79d3f8b968bc4e1573fe0142e262e25`.
-`./ask inner-loop legacy-validate-adoption` returned
-`preconditions_validated` with no errors; product state, authority and task
-scheduling were not mutated.
+## Reconciliation package
 
-## Reviewed SHA-256 identities
+- Verdict: **APPROVED**, reviewer `/root/reconciliation_review`, recorded by
+  `/root` in `current-proposal.json` against payload SHA-256
+  `955f59649ddf587442bc3af1621d4b30f1592616fc82ac34c9f6be473c79b384`.
+- Product and audit ref are the immutable candidate above. Task 1 integration
+  is receipt-backed and verified; its other milestones and accepted-contract
+  conflict remain unresolved. Task 2 is not adopted as complete; its nine
+  regression cases do not require a manufactured failing Red.
+- Scheduler remains `recovery_required` for Tasks 1, 5, 6, and 8. Proposal
+  flags preserve product state, authority, and scheduling.
+- The current proposal has not been passed to `legacy-validate-adoption`;
+  product-state adoption is outside this bug fix.
 
-| Artifact | SHA-256 |
-| --- | --- |
-| `plan.md` | `12a9de76837d75f37df153056012bc9583224468f72f61d05d335dd844b443a1` |
-| `execution-authorization.md` | `b07b8c33e6163f00052704d3707b10d414ea53f414bd5236b88ba0d258337378` |
-| `current-audit.json` | `85341c52b0885dc5073b9d2ee4df50a929f4f23add8362e233b80b1a159e7c7b` |
-| `current-proposal.json` | `7a596e1004dc5ed087c440caf0fa1b7459088502b17dcdc250860e0400bf32b9` |
-| `current-scheduler-check.json` | `5fd107b153993cb2cfcce8e00a62232fe252fd556a5fe4d48a7bd7b907b75d87` |
-| `reconciliation.md` | `0e1c8b05f6dbbd5d2317f3f22ea5ead2494169036b4213aada7c8043705499e0` |
+## Evidence
 
-No product tests were run. The reviewer did not mutate files or runtime state.
+The four focused recovery tests pass. The full `inner_loop_recovery` suite ran
+33 tests but had two unrelated errors because this checkout lacks
+`refs/ask/accepted-tests/continuation-recovery`.
+
+The initially regenerated package review found a stale paragraph that claimed
+approval of a superseded proposal. That claim and its obsolete approval record
+were replaced; the corrected package was approved.

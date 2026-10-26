@@ -124,8 +124,8 @@
     "task_scheduling": false
   },
   "product": {
-    "commit": "60d314d60dccfeb1ab335c49596be97738ec15af",
-    "ref": "60d314d60dccfeb1ab335c49596be97738ec15af",
+    "commit": "c45f3582ef1a02c2f2cf897feeda42ca2dfdf335",
+    "ref": "c45f3582ef1a02c2f2cf897feeda42ca2dfdf335",
     "state_path": "work/shorter-hashes/inner-loop/state.json",
     "state_revision": 11,
     "state_sha256": "b5fad609842013a1ca11017ec60e4ae45c042f92828cbf040c795129525b17e6"
@@ -237,7 +237,7 @@
       "first_unmet_milestone": "red",
       "milestones": {
         "green": "available_checkout_only",
-        "integration": "missing",
+        "integration": "verified",
         "red": "available_checkout_only",
         "refactor": "missing",
         "review": "unverified"
@@ -288,7 +288,7 @@
           "status": "available_checkout_only"
         }
       },
-      "state_claims_integration_without_receipt": true,
+      "state_claims_integration_without_receipt": false,
       "state_record_sha256": "cf17aec17b31f7d395829a241518e0e18db470c57c22bd43e2b34733a895024d",
       "state_status": "integrated",
       "task_id": "1"
