@@ -41,3 +41,8 @@ The next safe step is to review this exact report and proposal, then resolve
 each missing milestone from attributable source/run/review/integration records
 or leave it explicitly incomplete. A task may advance only after its ordinary
 accepted evidence and coordinator checks pass.
+
+The independent review approved the exact report/proposal payload. The
+coordinator then ran `legacy-validate-adoption`; it returned
+`preconditions_validated` with no errors and confirmed that product state,
+authority, and task scheduling were unchanged.

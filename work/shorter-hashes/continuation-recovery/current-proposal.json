@@ -68,10 +68,10 @@
   },
   "reclassify_tests": false,
   "review": {
-    "decision": "PENDING",
-    "proposal_sha256": null,
-    "recorded_by": null,
-    "reviewer": null
+    "decision": "APPROVED",
+    "proposal_sha256": "5f95de228afaaae552a8e95b0bbc65eed79d3f8b968bc4e1573fe0142e262e25",
+    "recorded_by": "/root",
+    "reviewer": "/root/reconciliation_review"
   },
   "rewrite_product_state": false,
   "schedule_product_tasks": false,

@@ -14,6 +14,12 @@ adoption and scheduling. The current audit and proposal bind the same product
 and authority preimages. The reconciliation preserves unsupported milestones
 as incomplete and does not treat passing regression rows as task completion.
 
+The coordinator recorded this review in `current-proposal.json` against payload
+SHA-256 `5f95de228afaaae552a8e95b0bbc65eed79d3f8b968bc4e1573fe0142e262e25`.
+`./ask inner-loop legacy-validate-adoption` returned
+`preconditions_validated` with no errors; product state, authority and task
+scheduling were not mutated.
+
 ## Reviewed SHA-256 identities
 
 | Artifact | SHA-256 |
