@@ -38,4 +38,16 @@ The recovery audit named these paths as changed after the prior coordinator. SHA
 
 ## Application result
 
-Pending application through a state transaction whose validator permits exactly the paths above. After application, record the resulting state revision and checkpoint ref here. If any listed postimage changes before application, abort and regenerate this record and its review.
+Applied on 2026-10-26 through a state transaction whose validator permitted
+exactly the 17 paths above. The transaction advanced `coordinator_sha` to
+`b008400c6bbbc4d41ff60b59b4a5f393b4568e7a` and `coordinator_tree` to
+`462c8cf0c63d5c8cab1d9dfef1dd36ce6cb6d974`. State revision is 13, with SHA-256
+`2db0e18fa2934f6dc550a43b1279dc7ce64c3f4c14cca98440b33cfc84aa69f3`; its
+checkpoint is `refs/ask/inner-loop/shorter-hashes` at
+`c6a83a88cd413745e58900d0ca3bebe7dadf2a48`.
+
+Task states remain unchanged: Task 1 is integrated; Task 2 is blocked; Tasks 3
+through 10 are pending. No task result, attempt, blocker, or verification receipt
+was rewritten. `./ask inner-loop status shorter-hashes` now passes its recovery
+guard and reports the same statuses. The exception remains active only for the
+Task 2 baseline-pass Red gate until the normal run can resume.
