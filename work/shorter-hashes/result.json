@@ -1,6 +1,6 @@
 {
   "work_id": "shorter-hashes",
-  "commit_sha": "75623043bb917a13d6c792447d14a7c10a7a030b",
-  "result": "plan-sealed",
-  "notes": "Sealed specification revision 7 and consolidated plan; independent spec gaps G1/G2/G3 and planning findings P1/P2 are closed. Exact coordinator accepted-tests authority pins reviewed source 02ad31b6e5ef5130986a920f943788cbbe970631. Ten ordered tasks, 39 planned cases, 14 runners, all 18 criterion/type obligations; frozen three-journey/14-file benchmark. Structural validation, exact source/fixture/corpus bindings, independent reviews and authority reload passed. User-authorized endpoint reached: stop before production/test implementation or task-loop execution. No runtime test pass or savings claim; complete-intent confirmation still required before implementation."
+  "commit_sha": "9917aacdcfef0e99063d4c7efb1896d198c6ad59",
+  "result": "fail",
+  "notes": "./ask verify failed: inner_loop_recovery has two errors due missing refs/ask/accepted-tests/continuation-recovery; inner_loop and start-work checks fail on branch fixture setup. Focused integration-receipt regressions and traceability suite passed."
 }
