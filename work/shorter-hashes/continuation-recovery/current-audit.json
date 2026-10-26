@@ -1,0 +1,503 @@
+{
+  "accepted_authority": {
+    "authority": {
+      "capability": "ask-traceability/v1",
+      "contract_sha": "8d2ac720bf970b0571a774556a82f80d729e0929",
+      "graph_digest": "e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb",
+      "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "schema": "ask-accepted-tests/v1",
+      "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e"
+    },
+    "authority_commit": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+    "authority_document_sha256": "0984ea74b63248ba1ff60071d91c62f27f80c3fd0bab23199ba18da82ca7bbd8",
+    "authority_ref": "refs/ask/accepted-tests/shorter-hashes",
+    "identity_differences": [],
+    "independent_plan_review": {
+      "model": "gpt-6.1-sol",
+      "parent_model": "not exposed",
+      "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "reasoning_effort": "high",
+      "reviewed_commit": "8d2ac720bf970b0571a774556a82f80d729e0929",
+      "reviewer": "/root/task5_plan_review",
+      "runtime": "Codex"
+    },
+    "reviewed_input_digests": {
+      ".agents/ask/stages/06-implement.md": "0be2425ecb40e4a4f829888a9eac2848ab059b713c634274af46214745b9f261",
+      ".agents/skills/kit-06-implement/SKILL.md": "72bc09dfce76ff544ad84d8af2110e19395abaaffa0269784405ae3ff6c5e5a9",
+      ".cursor/commands/06-implement.md": "8c7781f5c8b446e2b3ee4d43ced5c18f93205662c9e594ba463fab4752d7c726",
+      ".cursor/skills/kit-06-implement/SKILL.md": "72bc09dfce76ff544ad84d8af2110e19395abaaffa0269784405ae3ff6c5e5a9",
+      "AGENTS.md": "d31e0a0374987f77121328ecd823df79f386e14292c2f1745e909877589c04c4",
+      "_ask/policies/workflow.md": "91eec8c5896c26b71d8479c81b3904c2e5337a29b0858b31d2b82aa42cff90e6",
+      "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
+      "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f",
+      "work/shorter-hashes/continuation-authorization.md": "6079ff73218fdfd544b30dc523ac9e256ff21d2a9e4a45de3d1a05b733e8d96b",
+      "work/shorter-hashes/continuation-reconfirmation.md": "bf9604796d6a32770851699b2bbc4c6cb2f121cf2aefc11efe12533bd3a108e6",
+      "work/shorter-hashes/inner-loop/tasks.yaml": "a4384e1ea72d59cdf7dc5791e3fb0ec0f3231b2b9271f4e17be23d4baec7df22",
+      "work/shorter-hashes/intent-confirmation.json": "bc253b577c6ca40074b51989b089f8e9f71a5f2f1d9a27661218fb5fed89cd2a",
+      "work/shorter-hashes/intent.md": "8784f3748505fe0ac51ccb9a7dfe78de0c04f79cd26dac58689fdee10cb084e6",
+      "work/shorter-hashes/plan-seal.md": "af9da15fffc068e0d2965da4f9f5566bdb20a771d79e044730d971fd239c4c7a",
+      "work/shorter-hashes/plan.md": "3dffa8f6c038466a5bab0d7fdb529069269084340cb210f1a541aea4a9f40c9c",
+      "work/shorter-hashes/spec-change-task1-classification.md": "af15d21a95a8e767202befaf302ac55494ff0d87ac972b33bc4e7d42395cb57a",
+      "work/shorter-hashes/spec-change-task2-classification.md": "85375fd36be415f1878334182b5adc79df3204fffc60834286b0b2bc20fb2242",
+      "work/shorter-hashes/spec-change-task5-classification.md": "1100f200dddff8fbb8d29dbc3cf5b19bff6766256a871cfa218f13555bc29420",
+      "work/shorter-hashes/spec-seal.md": "997d87201a25a258f08dab72e8c5854a15738ac4145d5b9bfdcddc992b9de1c6",
+      "work/shorter-hashes/surface-inventory.md": "b3dbe90066eec74775dec9e7fcf815893627b62930ed4e2bd4e3265bf7a57426",
+      "work/shorter-hashes/test-plan.json": "d0b07279f771d73e994fb481c6fe59fabe7a4e9e5f72fd5a03f9dd886614cd83"
+    },
+    "tracked_pin": {
+      "capability": "ask-traceability/v1",
+      "contract_sha": "8d2ac720bf970b0571a774556a82f80d729e0929",
+      "graph_digest": "e40e35263b303fc5926fa4ac96a29480614febd5b0679f2f88a269088d7f9ccb",
+      "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "schema": "ask-accepted-tests/v1",
+      "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e"
+    },
+    "tracked_pin_path": "work/shorter-hashes/traceability-accepted.json",
+    "tracked_pin_sha256": "94525b0d0f4cd92cb7e84ac52b3ef5d3a8358c53d9e883f30030b247ca176064"
+  },
+  "legacy_ledger": {
+    "path": "work/shorter-hashes/traceability/executions.json",
+    "rows_for_tasks_1_to_5": 17,
+    "sha256": "1baabba9c83451364daa2ca4b70648631641a5bfd29e35043bdb6b73c3f1e50d",
+    "source": "checkout_only"
+  },
+  "limitations": [
+    "Legacy state has no attempt-history collection.",
+    "TaskResult notes do not bind Refactor as a structured milestone.",
+    "A task status of integrated is not accepted as integration proof without a receipt.",
+    "Checkout-only artifacts are inventoried but are not durable product-ref evidence.",
+    "Legacy run reports do not consistently retain the verifier source identity; accepted contract snapshots are recorded separately.",
+    "Legacy task review state does not record who persisted the review, so reviewer independence cannot be established from the retained record."
+  ],
+  "model_and_verifier": {
+    "accepted_plan_model": "gpt-6.1-sol",
+    "accepted_plan_runtime": "Codex",
+    "model_policy_path": "work/shorter-hashes/models.yaml",
+    "model_policy_sha256": "852bb94ce4db972948a03e8e482e84a2d8daee3480c611eabdfd2a34343d9c20",
+    "verifier_snapshots": {
+      "accepted_authority_contract": {
+        "capability": "ask-traceability/v1",
+        "commit": "8d2ac720bf970b0571a774556a82f80d729e0929",
+        "files": {
+          ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
+          ".agents/ask/verification/traceability/__init__.py": "919398d62e8e23bdcb84d39a4fc47c7159c6715d37e33677a24ca4ffcaacc962",
+          ".agents/ask/verification/traceability/adapters.py": "9cf37f5460caec23c244fb0d53a969f78022c2e14f2d34d0bf571840f37ae45f",
+          ".agents/ask/verification/traceability/cli.py": "7e720f1a33ebc7129b295394ab41ee38b55ca8edaa12ed35a73cd8c4a4b0c7c5",
+          ".agents/ask/verification/traceability/completion.py": "99534407076b99cca37cfd0d7e5e5fb1f43810c56e0fa29536d9e976736fb5bb",
+          ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
+          ".agents/ask/verification/traceability/coverage.py": "85bebfb0007be67ec70307b9a5c5616413730ce81d2e35ab352a1587b1475da7",
+          ".agents/ask/verification/traceability/evidence.py": "f64135a33082d05095bbcd6a3d1a43cb835b3e4f3cd6a8ce37aa3ac46ca92884",
+          ".agents/ask/verification/traceability/service.py": "cf8e7333e84e35840f14b52830d3f13c57afeaab97b58d4f19ba849097493138",
+          ".agents/ask/verification/traceability/unittest_runner.py": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+        },
+        "missing": [],
+        "source_sha256": "d0c8425aa483d8c5668b14aecb7ca0c6ad4b86b2f9971fff3def8656023d70d7",
+        "status": "complete",
+        "unittest_adapter_sha256": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+      },
+      "tracked_pin_contract": {
+        "capability": "ask-traceability/v1",
+        "commit": "8d2ac720bf970b0571a774556a82f80d729e0929",
+        "files": {
+          ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
+          ".agents/ask/verification/traceability/__init__.py": "919398d62e8e23bdcb84d39a4fc47c7159c6715d37e33677a24ca4ffcaacc962",
+          ".agents/ask/verification/traceability/adapters.py": "9cf37f5460caec23c244fb0d53a969f78022c2e14f2d34d0bf571840f37ae45f",
+          ".agents/ask/verification/traceability/cli.py": "7e720f1a33ebc7129b295394ab41ee38b55ca8edaa12ed35a73cd8c4a4b0c7c5",
+          ".agents/ask/verification/traceability/completion.py": "99534407076b99cca37cfd0d7e5e5fb1f43810c56e0fa29536d9e976736fb5bb",
+          ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
+          ".agents/ask/verification/traceability/coverage.py": "85bebfb0007be67ec70307b9a5c5616413730ce81d2e35ab352a1587b1475da7",
+          ".agents/ask/verification/traceability/evidence.py": "f64135a33082d05095bbcd6a3d1a43cb835b3e4f3cd6a8ce37aa3ac46ca92884",
+          ".agents/ask/verification/traceability/service.py": "cf8e7333e84e35840f14b52830d3f13c57afeaab97b58d4f19ba849097493138",
+          ".agents/ask/verification/traceability/unittest_runner.py": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+        },
+        "missing": [],
+        "source_sha256": "d0c8425aa483d8c5668b14aecb7ca0c6ad4b86b2f9971fff3def8656023d70d7",
+        "status": "complete",
+        "unittest_adapter_sha256": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+      }
+    }
+  },
+  "preflight": {
+    "active_tasks": [],
+    "conflicts": [],
+    "read_only": true,
+    "task_scheduling": false
+  },
+  "product": {
+    "commit": "60d314d60dccfeb1ab335c49596be97738ec15af",
+    "ref": "60d314d60dccfeb1ab335c49596be97738ec15af",
+    "state_path": "work/shorter-hashes/inner-loop/state.json",
+    "state_revision": 11,
+    "state_sha256": "b5fad609842013a1ca11017ec60e4ae45c042f92828cbf040c795129525b17e6"
+  },
+  "schema": "ask-legacy-reconciliation/v1",
+  "task_audit": [
+    {
+      "attempt_rows": [
+        {
+          "candidate_sha": "f6d6791cbdfe985c89df38226808ebb86968bc3b",
+          "digest": "77e44431c05e700762b955570208915c19ea952d96f7903ad1f3dd156ca63961",
+          "phase": "red",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "186cc05d0e7c433e8fc63e2bb619994d"
+        },
+        {
+          "candidate_sha": "f6d6791cbdfe985c89df38226808ebb86968bc3b",
+          "digest": "1a74c1f3e8eff4f62067cfea178425d8f878830a346f7e1ff47236965f3eccd3",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "088d3be48b00405a8794de293f963a91"
+        },
+        {
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "digest": "42054ae253651495ac24f4b0b9c155fbb157e030c87e0102071ee56893977d4c",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "eb3d7ba983d1445c9c34d8f038194633"
+        },
+        {
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "digest": "7c0862c89f2dd3ab47668d8ee79dd8ef805823c29531ebef33cc84ce1c2b7bb8",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "94b6999b95e1410c90ae238119e1a662"
+        },
+        {
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "digest": "14a4320c44a6e3c414bb15147e337a406882822d8240352629be6ccf2334eb63",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "998115c8e0e24a5da1042b0efb34e92f"
+        },
+        {
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "digest": "9df928b135907fdd526311e4f6badebe6b8ec36f2f1cc15de78d5c50be212fd5",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "961f0b19e1294b059fc75bbe6a95f132"
+        },
+        {
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "digest": "2d73502fa52682df412c5e2c660fd6c0f03db71a75290a47eec1af4c75d67e89",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "ee946e0d242344cf9946b9e9d8365c1b"
+        },
+        {
+          "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+          "digest": "b9a1846f78e0b712429fcc935a09062e561bcdf7e0dc4b32d14e9950287062ea",
+          "phase": "final_green",
+          "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+          "run_id": "464d8d27436a430497b43f5e1802d06b"
+        },
+        {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "digest": "24c2a80a024bd9479d7cd2a8035ecd0a6b788d13498e5b7cb1c805402d41f37e",
+          "phase": "final_green",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "e6186f0aa9ee4196a66b0e5c45e5966a"
+        },
+        {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "digest": "969b34b29145a0a1a91b955efc6add0f93eb4634b967561fef5f3d7bc6a1afc4",
+          "phase": "final_green",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "c155626ec1074ee3a0dd82124e1605f0"
+        },
+        {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "digest": "a517e4c1c7f8d95fdd9323746ff9effc2505d5fc7790819c26170d3025e49594",
+          "phase": "final_green",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "f867eccc64c4486388b97e00938469fb"
+        },
+        {
+          "candidate_sha": "f6d6791cbdfe985c89df38226808ebb86968bc3b",
+          "digest": "14b3dd0d3cca626f4fcf1cba7a4322c2a335e7151f3b15b210d539aa05ccf2a4",
+          "phase": "red",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "0596b1e2696c429da0ca511fa248a302"
+        },
+        {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "digest": "3882c6cdee816534058d3530a66e25ba89ce30e081ca13897278f0da2973eb8d",
+          "phase": "final_green",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "83ad2f42bd5e43018d18da00cfac4eb4"
+        },
+        {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "digest": "0859921813ef77d58c89a8143654a740fc56851aff3fe4d5e74fff71b2299957",
+          "phase": "final_green",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "445e11149ac5443aba149581b6f6f1fe"
+        }
+      ],
+      "conflicts": [],
+      "first_unmet_milestone": "red",
+      "milestones": {
+        "green": "available_checkout_only",
+        "integration": "missing",
+        "red": "available_checkout_only",
+        "refactor": "missing",
+        "review": "unverified"
+      },
+      "result": {
+        "base_candidate_ancestry_valid": true,
+        "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+        "candidate_in_product_ref": true,
+        "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+        "changed_paths": [],
+        "path": "work/shorter-hashes/inner-loop/results/1.json",
+        "refactor_is_structured": false,
+        "review_evidence": {
+          "identity_matches": false,
+          "path": "work/shorter-hashes/inner-loop/evidence/review-task-1-current.json",
+          "recorded_by": null,
+          "sha256": "3353af9c1a64ed2b761d8428c97ad30826212ac1267d6b3f62f22df6f597d5ed",
+          "source": "product_ref",
+          "status": "unverified"
+        },
+        "schema_valid": true,
+        "sha256": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
+        "source": "product_ref",
+        "tdd_green": {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "identity_matches": true,
+          "ledger_path": "work/shorter-hashes/traceability/executions.json",
+          "ledger_sha256": "1baabba9c83451364daa2ca4b70648631641a5bfd29e35043bdb6b73c3f1e50d",
+          "ledger_source": "checkout_only",
+          "outcome_matches": true,
+          "report_path": "work/shorter-hashes/traceability/runs/83ad2f42bd5e43018d18da00cfac4eb4/results.json",
+          "report_sha256": "ba5070afdcfdeea3b1948433415a1ce32df432bd82d2d84250f3a062301135ce",
+          "report_source": "checkout_only",
+          "run_id": "83ad2f42bd5e43018d18da00cfac4eb4",
+          "status": "available_checkout_only"
+        },
+        "tdd_red": {
+          "candidate_sha": "f6d6791cbdfe985c89df38226808ebb86968bc3b",
+          "identity_matches": true,
+          "ledger_path": "work/shorter-hashes/traceability/executions.json",
+          "ledger_sha256": "1baabba9c83451364daa2ca4b70648631641a5bfd29e35043bdb6b73c3f1e50d",
+          "ledger_source": "checkout_only",
+          "outcome_matches": true,
+          "report_path": "work/shorter-hashes/traceability/runs/0596b1e2696c429da0ca511fa248a302/results.json",
+          "report_sha256": "2ca65c354635a279df1b00d027179e9383de32563ef4d4c5e2e0852b712328d5",
+          "report_source": "checkout_only",
+          "run_id": "0596b1e2696c429da0ca511fa248a302",
+          "status": "available_checkout_only"
+        }
+      },
+      "state_claims_integration_without_receipt": true,
+      "state_record_sha256": "cf17aec17b31f7d395829a241518e0e18db470c57c22bd43e2b34733a895024d",
+      "state_status": "integrated",
+      "task_id": "1"
+    },
+    {
+      "attempt_rows": [
+        {
+          "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "digest": "45dd93212a478e79abe7b5bc73b48413afc22d9801bd69bf76404abcdebbeb74",
+          "phase": "red",
+          "plan_digest": "cc24b686bf3f0de55e6644ceb47ffe583511e0aefdb521448da5dd7828e62d5a",
+          "run_id": "05de91f7c0144d358c609ec49988adfd"
+        },
+        {
+          "candidate_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
+          "digest": "fdffa81296b4582ec9eaf75e5db67e2c507b1d08da9e09f30de9e33ae49d7fb0",
+          "phase": "final_green",
+          "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+          "run_id": "7d3d585a63424090b1666cab6a8a5211"
+        },
+        {
+          "candidate_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
+          "digest": "9248b61738f954a05cd374613cc73dbe954bf0d3f409807a60306144ca118729",
+          "phase": "red",
+          "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+          "run_id": "ef625c2ea0de42b7a013130084a67f95"
+        }
+      ],
+      "conflicts": [],
+      "first_unmet_milestone": "red",
+      "milestones": {
+        "green": "missing",
+        "integration": "missing",
+        "red": "missing",
+        "refactor": "missing",
+        "review": "missing"
+      },
+      "result": {
+        "base_candidate_ancestry_valid": false,
+        "base_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
+        "candidate_in_product_ref": false,
+        "candidate_sha": null,
+        "changed_paths": [],
+        "path": "work/shorter-hashes/inner-loop/results/2.json",
+        "refactor_is_structured": false,
+        "review_evidence": {
+          "identity_matches": false,
+          "path": null,
+          "recorded_by": null,
+          "sha256": null,
+          "source": "missing",
+          "status": "missing"
+        },
+        "schema_valid": false,
+        "sha256": null,
+        "source": "missing",
+        "tdd_green": {
+          "run_id": null,
+          "status": "missing"
+        },
+        "tdd_red": {
+          "run_id": null,
+          "status": "missing"
+        }
+      },
+      "state_claims_integration_without_receipt": false,
+      "state_record_sha256": "23f17b77cd35a6305edae8f8bae48bc0534caf626ed173ceb86919246b73185f",
+      "state_status": "blocked",
+      "task_id": "2"
+    },
+    {
+      "attempt_rows": [],
+      "conflicts": [],
+      "first_unmet_milestone": "red",
+      "milestones": {
+        "green": "missing",
+        "integration": "missing",
+        "red": "missing",
+        "refactor": "missing",
+        "review": "missing"
+      },
+      "result": {
+        "base_candidate_ancestry_valid": false,
+        "base_sha": "",
+        "candidate_in_product_ref": false,
+        "candidate_sha": null,
+        "changed_paths": [],
+        "path": "work/shorter-hashes/inner-loop/results/3.json",
+        "refactor_is_structured": false,
+        "review_evidence": {
+          "identity_matches": false,
+          "path": null,
+          "recorded_by": null,
+          "sha256": null,
+          "source": "missing",
+          "status": "missing"
+        },
+        "schema_valid": false,
+        "sha256": null,
+        "source": "missing",
+        "tdd_green": {
+          "run_id": null,
+          "status": "missing"
+        },
+        "tdd_red": {
+          "run_id": null,
+          "status": "missing"
+        }
+      },
+      "state_claims_integration_without_receipt": false,
+      "state_record_sha256": "683f459870fb7506500c872bd296e8acf9a658e8162b81f017584a5e6d8a7c8b",
+      "state_status": "pending",
+      "task_id": "3"
+    },
+    {
+      "attempt_rows": [],
+      "conflicts": [],
+      "first_unmet_milestone": "red",
+      "milestones": {
+        "green": "missing",
+        "integration": "missing",
+        "red": "missing",
+        "refactor": "missing",
+        "review": "missing"
+      },
+      "result": {
+        "base_candidate_ancestry_valid": false,
+        "base_sha": "",
+        "candidate_in_product_ref": false,
+        "candidate_sha": null,
+        "changed_paths": [],
+        "path": "work/shorter-hashes/inner-loop/results/4.json",
+        "refactor_is_structured": false,
+        "review_evidence": {
+          "identity_matches": false,
+          "path": null,
+          "recorded_by": null,
+          "sha256": null,
+          "source": "missing",
+          "status": "missing"
+        },
+        "schema_valid": false,
+        "sha256": null,
+        "source": "missing",
+        "tdd_green": {
+          "run_id": null,
+          "status": "missing"
+        },
+        "tdd_red": {
+          "run_id": null,
+          "status": "missing"
+        }
+      },
+      "state_claims_integration_without_receipt": false,
+      "state_record_sha256": "683f459870fb7506500c872bd296e8acf9a658e8162b81f017584a5e6d8a7c8b",
+      "state_status": "pending",
+      "task_id": "4"
+    },
+    {
+      "attempt_rows": [],
+      "conflicts": [],
+      "first_unmet_milestone": "red",
+      "milestones": {
+        "green": "missing",
+        "integration": "missing",
+        "red": "missing",
+        "refactor": "missing",
+        "review": "missing"
+      },
+      "result": {
+        "base_candidate_ancestry_valid": false,
+        "base_sha": "",
+        "candidate_in_product_ref": false,
+        "candidate_sha": null,
+        "changed_paths": [],
+        "path": "work/shorter-hashes/inner-loop/results/5.json",
+        "refactor_is_structured": false,
+        "review_evidence": {
+          "identity_matches": false,
+          "path": null,
+          "recorded_by": null,
+          "sha256": null,
+          "source": "missing",
+          "status": "missing"
+        },
+        "schema_valid": false,
+        "sha256": null,
+        "source": "missing",
+        "tdd_green": {
+          "run_id": null,
+          "status": "missing"
+        },
+        "tdd_red": {
+          "run_id": null,
+          "status": "missing"
+        }
+      },
+      "state_claims_integration_without_receipt": false,
+      "state_record_sha256": "683f459870fb7506500c872bd296e8acf9a658e8162b81f017584a5e6d8a7c8b",
+      "state_status": "pending",
+      "task_id": "5"
+    }
+  ],
+  "tasks_6_to_10": {
+    "10": "pending",
+    "6": "pending",
+    "7": "pending",
+    "8": "pending",
+    "9": "pending"
+  },
+  "work_id": "shorter-hashes"
+}

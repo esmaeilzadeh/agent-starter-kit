@@ -1,6 +1,16 @@
 # Plan: durable continuation and task evidence recovery
 
-Status: proposed planning artifact; implementation has not started.
+Status: **SUPERSEDED AS A PLANNING DRAFT**. This draft's R1–R4 design gaps
+were resolved in the separately reviewed and accepted
+`work/continuation-recovery/plan.md` (revision 13); its result records CR-1
+through CR-4 integrated. That workstream stopped before product adoption or
+scheduling. Keep this draft and its original review findings as history.
+
+The newly authorized product-history reconciliation is scoped by
+`execution-authorization.md`; its current product preimage and non-mutating
+adoption proposal are `current-audit.json` and `current-proposal.json`. This
+step records evidence only and does not advance product task state.
+
 Requirements baseline: `spec-change.md` in this directory, criteria CR-01–CR-08.
 Authorization and explicit stop: `../continuation-recovery-authorization.md`.
 
