@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 13,
+  "revision": 14,
   "coordinator_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -399,7 +399,7 @@
       }
     },
     "2": {
-      "status": "blocked",
+      "status": "pending",
       "base_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
       "task_branch": "",
       "result_path": "",
@@ -411,6 +411,14 @@
           "path": "work/shorter-hashes/inner-loop/evidence/task-2-blocker.json",
           "sha256": "fdd0bdb53786de16758a6b65347552798055580c2ee0f2fd07f0273fbd46feb2",
           "reason": "The accepted task contains only regression cases; all nine pass at the immutable baseline and final Green, but the validator unconditionally requires a nonzero Red exit code. The user directed this out-of-scope defect be recorded as a later inbox card, not brought into Task 2."
+        },
+        "red_gate_authorization": {
+          "path": "work/shorter-hashes/task-2-execution-authorization.md",
+          "sha256": "570bf7cd70b14ce3b00a6396392184048c94f87140c4061a78fd6168563b69c2",
+          "accepted_plan_ref": "refs/ask/accepted-tests/shorter-hashes",
+          "accepted_plan_commit": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+          "plan_review_digest": "bc09cbd7f7ac28b668e49bd218fb39933a0d90012d2405ad5bb6fb7c24fce671",
+          "decision": "continue with registered regression baseline; do not manufacture Red"
         }
       }
     },
