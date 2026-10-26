@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 14,
+  "revision": 16,
   "coordinator_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -399,8 +399,8 @@
       }
     },
     "2": {
-      "status": "pending",
-      "base_sha": "a8c598967e44bcabf12c38ef486d57059d2d23b5",
+      "status": "running",
+      "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": "red did not fail",
@@ -419,8 +419,24 @@
           "accepted_plan_commit": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
           "plan_review_digest": "bc09cbd7f7ac28b668e49bd218fb39933a0d90012d2405ad5bb6fb7c24fce671",
           "decision": "continue with registered regression baseline; do not manufacture Red"
-        }
-      }
+        },
+        "traceability_runs": [
+          {
+            "run_id": "12cade8339964427ac6ba56a5b754b7d",
+            "digest": "a3408c84d49a568df3155370c217e092985a927d293a49401f31b19480e897fb",
+            "phase": "final_green",
+            "task_id": "2",
+            "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          }
+        ]
+      },
+      "attempt_number": 1,
+      "attempt_id": "2:attempt-1",
+      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "attempt_started_revision": 15
     },
     "3": {
       "status": "pending",
