@@ -2295,6 +2295,45 @@ class test_b(unittest.TestCase):
         self.assertEqual((self.root / "work/shorter-hashes/inner-loop/results/1.json").read_bytes(), result_before)
         self.assertEqual(self.git("rev-parse", "refs/ask/accepted-tests/shorter-hashes"), authority_before)
 
+    def test_legacy_audit_verifies_canonical_integration_receipt(self):
+        from inner_loop.recovery import audit_legacy_workstream
+
+        self.prepare_legacy_audit_fixture()
+        state_path = self.root / "work/shorter-hashes/inner-loop/state.json"
+        result_path = self.root / "work/shorter-hashes/inner-loop/results/1.json"
+        state = json.loads(state_path.read_text())
+        result_raw = result_path.read_bytes()
+        result = json.loads(result_raw)
+        receipt_path = "work/shorter-hashes/inner-loop/evidence/verify-legacy/integration.json"
+        receipt = {
+            "schema": "ask-integration-evidence/v1",
+            "work_id": "shorter-hashes",
+            "task_id": "1",
+            "base_sha": state["tasks"]["1"]["base_sha"],
+            "candidate_sha": result["candidate_sha"],
+            "result_digest": hashlib.sha256(result_raw).hexdigest(),
+            "result": "pass",
+            "checks": [{"id": "required", "status": "pass", "exit_code": 0}],
+            "record_path": receipt_path,
+            "resulting_sha": result["candidate_sha"],
+        }
+        state["tasks"]["1"]["evidence"]["verification"] = receipt
+        self.write(receipt_path, json.dumps(receipt, sort_keys=True, indent=2) + "\n")
+        state_relative = str(state_path.relative_to(self.root))
+        self.write(state_relative, json.dumps(state, sort_keys=True, indent=2) + "\n")
+        self.git("add", "-f", receipt_path, state_relative)
+        self.git("commit", "-qm", "canonical integration receipt fixture")
+        product_commit = self.git("rev-parse", "HEAD")
+        self.git("update-ref", "refs/heads/agent/shorter-hashes", product_commit)
+        self.git("update-ref", "refs/ask/accepted-tests/shorter-hashes", product_commit)
+
+        report = audit_legacy_workstream(
+            self.root, "shorter-hashes", "refs/heads/agent/shorter-hashes",
+        )
+        task = next(task for task in report["task_audit"] if task["task_id"] == "1")
+        self.assertEqual(task["milestones"]["integration"], "verified")
+        self.assertFalse(task["state_claims_integration_without_receipt"])
+
     def test_workstream_recovery_handoff(self):
         from inner_loop.recovery import audit_legacy_workstream, legacy_adoption_proposal
 

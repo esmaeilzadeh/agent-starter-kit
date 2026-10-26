@@ -1278,11 +1278,53 @@ def audit_legacy_workstream(root: Path, work_id: str, product_ref: str) -> dict:
             review_status = "unverified"
         else:
             review_status = "missing"
-        integration = state_evidence.get("integration") or {}
-        integration_ok = bool(integration and integration.get("candidate_sha") == candidate_sha
-                              and integration.get("result_digest") == result_sha
-                              and integration.get("result") == "pass")
-        integration_status = "verified" if integration_ok else "missing"
+        verification = state_evidence.get("verification")
+        integration = verification if isinstance(verification, dict) else (
+            state_evidence.get("integration") or {}
+        )
+        record_path = integration.get("record_path") if isinstance(integration, dict) else None
+        record_raw, record_source = (
+            _legacy_artifact(root, commit, record_path)
+            if isinstance(record_path, str)
+            and record_path.startswith(f"work/{work_id}/inner-loop/evidence/")
+            and record_path.endswith("/integration.json")
+            else (None, "missing")
+        )
+        record = _legacy_json(record_raw)
+        record_digest = state_evidence.get("verification_record_digest")
+        checks = integration.get("checks") if isinstance(integration, dict) else None
+        verification_ok = bool(
+            verification and result_valid and record
+            and integration.get("schema") == "ask-integration-evidence/v1"
+            and integration.get("work_id") == work_id
+            and integration.get("task_id") == task_id
+            and integration.get("base_sha") == base_sha
+            and integration.get("candidate_sha") == candidate_sha
+            and integration.get("result_digest") == result_sha
+            and integration.get("result") == "pass"
+            and integration.get("resulting_sha") == candidate_sha
+            and integration.get("record_path") == record_path
+            and record == integration
+            and isinstance(checks, list) and bool(checks)
+            and all(isinstance(check, dict) and check.get("status") == "pass"
+                    and check.get("exit_code") == 0 for check in checks)
+            and (record_digest is None or record_digest == hashlib.sha256(record_raw).hexdigest())
+        )
+        legacy_integration_ok = bool(
+            not verification and isinstance(integration, dict)
+            and integration.get("candidate_sha") == candidate_sha
+            and integration.get("result_digest") == result_sha
+            and integration.get("result") == "pass"
+        )
+        integration_ok = verification_ok or legacy_integration_ok
+        if integration_ok and (legacy_integration_ok or record_source == "product_ref"):
+            integration_status = "verified"
+        elif integration_ok:
+            integration_status = "available_checkout_only"
+        elif verification or record_raw is not None or integration:
+            integration_status = "unverified"
+        else:
+            integration_status = "missing"
         milestones = {
             "red": red["status"],
             "green": green["status"],
