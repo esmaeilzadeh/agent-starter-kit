@@ -21,8 +21,9 @@
   regression cases do not require a manufactured failing Red.
 - Scheduler remains `recovery_required` for Tasks 1, 5, 6, and 8. Proposal
   flags preserve product state, authority, and scheduling.
-- The current proposal has not been passed to `legacy-validate-adoption`;
-  product-state adoption is outside this bug fix.
+- `current-adoption-validation.json` records `preconditions_validated` with no
+  errors and all mutation/scheduling flags false. Product-state adoption is
+  outside this bug fix.
 
 ## Evidence
 

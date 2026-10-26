@@ -52,5 +52,7 @@ checks pass.
 The earlier reconciliation review and validation applied to a superseded audit
 payload and are not evidence for this version. The regenerated proposal was
 independently approved against its payload digest in `current-proposal.json`.
-`legacy-validate-adoption` has not been run on this payload; it remains a
-non-mutating proposal and does not authorize product-state adoption.
+`current-adoption-validation.json` records `preconditions_validated` with no
+errors. It confirms product state, authority, and scheduling were unchanged;
+the scheduler still requires recovery, and the proposal does not authorize
+product-state adoption.
