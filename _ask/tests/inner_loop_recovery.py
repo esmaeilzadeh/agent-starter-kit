@@ -1445,6 +1445,8 @@ class test_b(unittest.TestCase):
         # must remain tied to this contract even when the base-time pin differs.
         self.git("reset", "--hard", self.anchor_commit)
         historical_plan = copy.deepcopy(self.old_plan)
+        for test in historical_plan["tests"]:
+            test.pop("task_id", None)
         historical_plan["tests"][1]["change_kind"] = "regression"
         self.write("work/w/test-plan.json", json.dumps(historical_plan, sort_keys=True))
         self.commit("accept a metadata-only plan amendment during the attempt")
@@ -1461,12 +1463,18 @@ class test_b(unittest.TestCase):
         self.commit("candidate under amended historical contract")
         self.candidate = self.git("rev-parse", "HEAD")
         task_result = json.loads(self.result_path.read_text(encoding="utf-8"))
-        task_result.update(candidate_sha=self.candidate, contract_sha=historical_contract)
+        task_result.update(candidate_sha=self.candidate)
+        task_result.pop("contract_sha", None)
         self.result_path.write_text(json.dumps(task_result, indent=2) + "\n", encoding="utf-8")
         original_result = self.result_path.read_bytes()
         state_path = self.root / "work/w/inner-loop/state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         task = state["tasks"]["a"]
+        task["evidence"].pop("verification_record_digest", None)
+        legacy_verification = task["evidence"].get("verification")
+        if isinstance(legacy_verification, dict):
+            legacy_verification.pop("completion_digest", None)
+            legacy_verification.pop("static_receipt_digest", None)
         task.update(status="integrated", result_path="work/w/inner-loop/results/a.json")
         state["coordinator_sha"] = self.candidate
         state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
@@ -1541,7 +1549,7 @@ class test_b(unittest.TestCase):
         result = inspect_recovery(self.root, "w", load_graph(self.root, "w"), state)
         self.assertIsNone(result, result)
         self.assertEqual(self.result_path.read_bytes(), original_result)
-        self.assertEqual(json.loads(self.result_path.read_text())["contract_sha"], historical_contract)
+        self.assertNotIn("contract_sha", json.loads(self.result_path.read_text()))
 
         # A reviewed source pointer must contain the exact documents sealed by
         # the parentless authority. A self-consistent review digest alone is

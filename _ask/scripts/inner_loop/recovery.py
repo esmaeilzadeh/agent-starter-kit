@@ -240,8 +240,12 @@ def _checkpointed_verification(root: Path, work_id: str, state: dict | None,
             continue
         try:
             raw = retained_or_live(record_path)
-            if (not isinstance(record_digest, str)
-                    or hashlib.sha256(raw).hexdigest() != record_digest
+            retained_record = retained.get("artifacts/" + record_path)
+            if ((record_digest is None and retained_record != raw)
+                    or (record_digest is not None and (
+                        not isinstance(record_digest, str)
+                        or hashlib.sha256(raw).hexdigest() != record_digest
+                    ))
                     or json.loads(raw) != verification):
                 continue
             completion_path = f"work/{work_id}/traceability/completion.json"
@@ -258,8 +262,22 @@ def _checkpointed_verification(root: Path, work_id: str, state: dict | None,
                 f"work/{work_id}/traceability/static-{verification['candidate_sha']}.json")
         except (KeyError, OSError, ValueError):
             continue
-        if (hashlib.sha256(completion).hexdigest() == verification.get("completion_digest")
-                and hashlib.sha256(static).hexdigest() == verification.get("static_receipt_digest")):
+        completion_digest = verification.get("completion_digest")
+        static_digest = verification.get("static_receipt_digest")
+        if completion_digest is None and static_digest is None and checkpoint is not None:
+            completion_path = f"work/{work_id}/traceability/completion.json"
+            static_path = f"work/{work_id}/traceability/static-{verification['candidate_sha']}.json"
+            retained_completion = retained.get("artifacts/" + completion_path)
+            retained_static = retained.get("artifacts/" + static_path)
+            if retained_completion is not None and retained_static is not None:
+                completion_digest = hashlib.sha256(retained_completion).hexdigest()
+                static_digest = hashlib.sha256(retained_static).hexdigest()
+                verification = dict(
+                    verification, completion_digest=completion_digest,
+                    static_receipt_digest=static_digest,
+                )
+        if (hashlib.sha256(completion).hexdigest() == completion_digest
+                and hashlib.sha256(static).hexdigest() == static_digest):
             return verification
     return None
 
@@ -422,7 +440,8 @@ def _valid_final_green_scope(root: Path, work_id: str, report: dict, plan: dict,
     if not required_ids or not required_ids.issubset(tests):
         return False
     expected = {test_id: tests[test_id] for test_id in required_ids}
-    if any(test.get("task_id") != task_id or not isinstance(test.get("case_id"), str)
+    if any((test.get("task_id") is not None and test.get("task_id") != task_id)
+           or not isinstance(test.get("case_id"), str)
            or not isinstance(test.get("runner_id"), str) for test in expected.values()):
         return False
     runner_configs = {}
@@ -861,7 +880,22 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None,
             if base_error:
                 conflicts.append(f"{relative}: contract identity cannot be proven: {base_error}")
             elif base_anchor != anchor:
-                conflicts.append(f"{relative}: accepted contract changed since TaskResult base_sha")
+                candidate_pin = _json_at(
+                    root, result.get("candidate_sha"),
+                    f"work/{work_id}/traceability-accepted.json",
+                )
+                candidate_contract = (candidate_pin.get("contract_sha")
+                                      if isinstance(candidate_pin, dict) else None)
+                legacy_result = dict(result, contract_sha=candidate_contract)
+                if (not candidate_contract or not anchor or not _scope_compatible_result(
+                    root, work_id, task_id, legacy_result, anchor, state
+                )):
+                    conflicts.append(f"{relative}: TaskResult contract identity mismatch")
+                    if checkpoint is not None and not _traceability_matches_checkpoint(
+                        root, work_id, checkpoint
+                    ):
+                        conflicts.append("runtime traceability evidence differs from the retained checkpoint")
+                        paths.add(str((root / "work" / work_id / "traceability").relative_to(root)))
         else:
             conflicts.append(f"{relative}: contract identity cannot be proven without contract_sha")
 
