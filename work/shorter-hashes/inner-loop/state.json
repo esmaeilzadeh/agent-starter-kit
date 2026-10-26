@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 11,
-  "coordinator_sha": "0c4dfcbbfa4d68e1ce2c0b6cd6c8b879c4a9b610",
+  "revision": 13,
+  "coordinator_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
     "1": {
@@ -494,5 +494,6 @@
       "debug_round": 0,
       "evidence": {}
     }
-  }
+  },
+  "coordinator_tree": "462c8cf0c63d5c8cab1d9dfef1dd36ce6cb6d974"
 }
