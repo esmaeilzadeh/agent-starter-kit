@@ -1470,11 +1470,6 @@ class test_b(unittest.TestCase):
         state_path = self.root / "work/w/inner-loop/state.json"
         state = json.loads(state_path.read_text(encoding="utf-8"))
         task = state["tasks"]["a"]
-        task["evidence"].pop("verification_record_digest", None)
-        legacy_verification = task["evidence"].get("verification")
-        if isinstance(legacy_verification, dict):
-            legacy_verification.pop("completion_digest", None)
-            legacy_verification.pop("static_receipt_digest", None)
         task.update(status="integrated", result_path="work/w/inner-loop/results/a.json")
         state["coordinator_sha"] = self.candidate
         state_path.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
@@ -1702,6 +1697,44 @@ class test_b(unittest.TestCase):
         self.assert_recovery_required(
             subprocess.CompletedProcess([], 1, stdout=json.dumps(rejected_spec), stderr=""),
             "TaskResult contract identity mismatch",
+        )
+
+    def test_checkpointed_legacy_verification_derives_missing_digests(self):
+        self.start_candidate()
+        from inner_loop.checkpoint import publish, read_checkpoint
+        from inner_loop.recovery import _checkpointed_verification
+
+        candidate = self.git("rev-parse", "HEAD")
+        result_raw = self.result_path.read_bytes()
+        result = json.loads(result_raw)
+        verification = {
+            "schema": "ask-integration-evidence/v1", "result": "pass",
+            "work_id": "w", "task_id": "a", "base_sha": result["base_sha"],
+            "candidate_sha": candidate,
+            "result_digest": hashlib.sha256(result_raw).hexdigest(),
+            "record_path": "work/w/inner-loop/evidence/integration-a.json",
+        }
+        completion = {"candidate_sha": candidate, "status": "pass"}
+        static = {"candidate_sha": candidate, "result": "pass"}
+        self.write(verification["record_path"], json.dumps(verification) + "\n")
+        self.write("work/w/traceability/completion.json", json.dumps(completion) + "\n")
+        self.write(f"work/w/traceability/static-{candidate}.json", json.dumps(static) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": candidate,
+            "tasks": {"a": {"evidence": {"verification": verification}}},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        recovered = _checkpointed_verification(self.root, "w", state, checkpoint)
+        self.assertIsNotNone(recovered)
+        self.assertEqual(
+            recovered["completion_digest"],
+            hashlib.sha256((self.root / "work/w/traceability/completion.json").read_bytes()).hexdigest(),
+        )
+        self.assertEqual(
+            recovered["static_receipt_digest"],
+            hashlib.sha256((self.root / f"work/w/traceability/static-{candidate}.json").read_bytes()).hexdigest(),
         )
 
     def test_interrupted_candidate_paths_do_not_block_dependent_tasks(self):
