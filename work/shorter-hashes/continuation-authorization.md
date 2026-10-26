@@ -20,3 +20,17 @@ The approved `intent.md` is preserved byte-for-byte at SHA-256
 existing complete-intent confirmation remains bound to that exact digest. The
 execution endpoint is recorded here and in `plan.md`, rather than by rewriting
 the approved intent.
+
+## Temporary self-recovery authorization
+
+On 2026-10-26, the user authorized temporarily bypassing a kit rule that blocks
+work on the kit's own recovery mechanism, provided the resulting system is
+consistent. This permits a narrowly scoped, recorded reconciliation of the
+accepted continuation-recovery integration and continuation under Task 2's
+registered regression classification without manufacturing a failing Red run.
+
+Preserve all existing attempt and receipt bytes. Keep Task 2's Green, Refactor,
+review, and integration milestones incomplete until their evidence is recorded.
+Keep every other pending task pending, and preserve the approved `intent.md`
+bytes. End the exception only after ordinary coordinator recovery and status
+checks pass against the reconciled state.
