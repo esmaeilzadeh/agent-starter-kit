@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 18,
+  "revision": 22,
   "coordinator_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -445,6 +445,42 @@
             "phase": "final_green",
             "task_id": "2",
             "candidate_sha": "89344819326594e46de5e3b63e6ca615a4d265d1",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "15dba65cc36549bdb619605f6889f8bf",
+            "digest": "abdc10d11dc2794b0da36c00f2917c0e7f1873adfd5039821b0a3985c04cd3a1",
+            "phase": "red",
+            "task_id": "2",
+            "candidate_sha": "6fa99f6cb242f8310aa68741fc57c32d56c822af",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "8ad7738a400944fda264a1518b97d6b2",
+            "digest": "2be7401229496366d8223e34ddc7c369432f16f7f4807bf638de2da93a6a51b5",
+            "phase": "red",
+            "task_id": "2",
+            "candidate_sha": "447994e6d0ff14356f4e010219e693615a4ec2fb",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "4d4188c9d06b4e72b01a811e36ba28fc",
+            "digest": "a768f4c7aeb53741f2d9fbe115f351717c532f3274828bf133f5e4fc8adbbbcb",
+            "phase": "red",
+            "task_id": "2",
+            "candidate_sha": "5f66d6304b88337b8ff0f9070d514f081d435be0",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "6ba237689b764f6bb06efdec89ed217f",
+            "digest": "4db58e5431224b6ed82853efee693e0a31b3706557c79420c4ad3c12ea117d58",
+            "phase": "final_green",
+            "task_id": "2",
+            "candidate_sha": "5ae661e3eceec2af2eda7d55b97b6881f4e64aa1",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
             "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
           }
