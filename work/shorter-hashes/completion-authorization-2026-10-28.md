@@ -21,3 +21,14 @@ threshold. Open blockers or incomplete required evidence prevent that action.
 This extends execution and integration authority; it does not change What,
 Why, or the approved assumptions. Keep `intent.md` and its confirmation
 byte-identical.
+
+## Red-history direction
+
+The user subsequently directed: “ignore failing reds part this is a workflow
+issue.” For this execution, absence of a failing Red run is not a blocker by
+itself. Preserve actual run outcomes and distinguish this human waiver from
+normal runner approval; never turn a passing guard or a setup error into a
+behavior failure. Current Green evidence, independent review, integrity and
+authority checks, remaining integration checks, and the conditional merge
+confidence requirement still apply. Leave the broader Red-policy proposal
+parked.
