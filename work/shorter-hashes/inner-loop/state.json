@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 27,
-  "coordinator_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+  "revision": 36,
+  "coordinator_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
     "1": {
@@ -642,14 +642,148 @@
       "attempt_started_revision": 15
     },
     "3": {
-      "status": "running",
+      "status": "integrated",
       "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
       "task_branch": "",
-      "result_path": "",
+      "result_path": "work/shorter-hashes/inner-loop/results/3.json",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "d7b7f43721ca4a248b67d71578e50fdd",
+            "digest": "de4ff07bfe52bae0ef01eb1574b78fad80af77981c16e15278b1dcc70131d09c",
+            "phase": "final_green",
+            "task_id": "3",
+            "candidate_sha": "b4e48abd40bf322f7e41badb23dab627958c2fb0",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "b72831e428c34640bf95f2b30b98e41b",
+            "digest": "c9371a0fbc15f62c388e91c29c5c8a5c6f8baa7681206867b11a743b42e0fac0",
+            "phase": "red",
+            "task_id": "3",
+            "candidate_sha": "42fd6a25dcdf1f9d4def562b4f358d8654e79ac0",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "6af400a9bb8c4c6882e587cca24bdb6f",
+            "digest": "f82d8e991f6c9627aa7ae356a2d3e0d89527902a16bb001adc3adc19f4b8d2a2",
+            "phase": "final_green",
+            "task_id": "3",
+            "candidate_sha": "fb2d365e4a00d0de784306f2f96ba803c8680388",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "8309adf0377f4047a8f69ded0532b2ca",
+            "digest": "5dc0551744abff74142cfe9a2f7e48ae3a8fe27774df2316eefe9686bc68e2e3",
+            "phase": "red",
+            "task_id": "3",
+            "candidate_sha": "6cb47e3e952825da21a49f08a1d9c87041c74d26",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "dd0749ede87b4cb889cbfe2d2a5eb68a",
+            "digest": "f7fa18b516a57371ce134a27d08b2a4965ac40a097ce916d01b8345215143386",
+            "phase": "final_green",
+            "task_id": "3",
+            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          }
+        ],
+        "review": {
+          "work_id": "shorter-hashes",
+          "task_id": "3",
+          "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+          "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
+          "reviewer": "/root/task2_reviewer_d4",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-3-decfb1b.json",
+          "evidence_digest": "2c0ca8b68c20e48ad5bc8fb0d3fa5ba91728986b4da6ea2a89680f498a511018",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "shorter-hashes",
+          "task_id": "3",
+          "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
+          "checks": [
+            {
+              "id": "3/1",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
+              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee"
+            },
+            {
+              "id": "3/3",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
+              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee"
+            },
+            {
+              "id": "3/2",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
+              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee"
+            }
+          ],
+          "tree_sha": "ed0610cfe954892dc1bebb22b44b183baad72b0d",
+          "traceability_run_ids": [
+            "dd0749ede87b4cb889cbfe2d2a5eb68a"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "run_id": "dd0749ede87b4cb889cbfe2d2a5eb68a",
+            "report_path": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/results.json",
+            "sha256": "04fe681971a4d219714b38d83bbec7094fe707ff414becebadf5662046f4002e"
+          },
+          "task_report_digest": "f7fa18b516a57371ce134a27d08b2a4965ac40a097ce916d01b8345215143386",
+          "runner_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-dd0749ed-ukznkvz7/integration.json",
+          "resulting_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+          "review": {
+            "work_id": "shorter-hashes",
+            "task_id": "3",
+            "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
+            "reviewer": "/root/task2_reviewer_d4",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-3-decfb1b.json",
+            "evidence_digest": "2c0ca8b68c20e48ad5bc8fb0d3fa5ba91728986b4da6ea2a89680f498a511018",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        },
+        "verification_record_digest": "5d0c4529dc888c7d22156693551776bb4bd947ccf6bd1339448d6c26e97b8cb0"
+      },
       "attempt_number": 1,
       "attempt_id": "3:attempt-1",
       "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
@@ -657,14 +791,19 @@
       "attempt_started_revision": 27
     },
     "4": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {},
+      "attempt_number": 1,
+      "attempt_id": "4:attempt-1",
+      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "attempt_started_revision": 36
     },
     "5": {
       "status": "pending",
