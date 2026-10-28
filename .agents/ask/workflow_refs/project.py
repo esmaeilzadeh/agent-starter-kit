@@ -284,6 +284,10 @@ def load_project_graph(repository_root, capture):
             unresolved.append({"owner": owner, "reason": "catalog_invalid"})
             continue
         for entry in catalog["entries"]:
+            if not isinstance(entry, dict):
+                unresolved.append({"owner": owner, "reference": None,
+                                   "reason": "catalog_entry_invalid", "detail": "entry must be an object"})
+                continue
             try:
                 parsed = parse_reference(entry.get("reference"))
                 if parsed["owner"] != owner or entry.get("profile") is None:
