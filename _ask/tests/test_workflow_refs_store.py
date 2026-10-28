@@ -189,6 +189,7 @@ class ReferenceTests(unittest.TestCase):
                 b'{"items":[{"id":"y","value":1}]}\n',
                 b'{"items":[{"id":"x","value":1},{"id":"x","value":2}]}\n',
                 b'{"items":[{"id":"x","id":"x","value":1}]}\n',
+                b'{"items":[{"id":"x","value":0e99999999999999999999999999999999999999}]}\n',
             )
             for invalid_source in invalid_sources:
                 with self.subTest(initial_source=invalid_source):
@@ -197,10 +198,16 @@ class ReferenceTests(unittest.TestCase):
                         invalid_commit = make_git_repo(invalid_root, invalid_source)
                         invalid_catalog = invalid_root / "integrity.json"
                         initialize_catalog(invalid_catalog, "alpha")
-                        with self.assertRaises(CatalogError):
+                        try:
                             register_revision(invalid_catalog, "alpha", "alpha/spec/1", {
                                 "commit": invalid_commit, "path": "items.json",
                             }, "x", "structured-item/1", invalid_source)
+                        except CatalogError:
+                            pass
+                        except Exception as exc:
+                            self.fail(f"invalid initial item must refuse with CatalogError, not {type(exc).__name__}: {exc}")
+                        else:
+                            self.fail("invalid initial structured item must not publish")
 
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"items":[{"id":"SH-01","value":[1,2]}]}\n'
