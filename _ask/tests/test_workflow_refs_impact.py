@@ -56,7 +56,7 @@ class ReferenceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
-        git(self.root, "init", "-q")
+        git(self.root, "init", "-q", "--initial-branch=taskfixture")
         git(self.root, "config", "user.email", "test@example.com")
         git(self.root, "config", "user.name", "Test")
         owner_items = {
