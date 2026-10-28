@@ -59,6 +59,9 @@ class ReferenceTests(unittest.TestCase):
                                        '{"value":1.00000000000000002}', "structured-item/1",
                                        before_inputs=[], after_inputs=[])
         self.assertEqual(precise_change["status"], "changed", "high precision numbers cannot collapse through float parsing")
+        zero_same = compare_items('{"value":0}', '{"value":0.00}', "structured-item/1",
+                                  before_inputs=[], after_inputs=[])
+        self.assertEqual(zero_same["status"], "unchanged", "equivalent zero spellings retain the same numeric value")
         try:
             huge_exponent = compare_items('{"value":1e99999999999999999999999999999999999999}',
                                           '{"value":1}', "structured-item/1",
