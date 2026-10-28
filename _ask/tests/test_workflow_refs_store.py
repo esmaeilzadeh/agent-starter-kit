@@ -151,6 +151,12 @@ class ReferenceTests(unittest.TestCase):
             next_x = publish_x(changed_x, "change x content")
             self.assertEqual(next_x["reference"], "alpha/spec/2@2",
                              "a meaningful change to x must append an item revision")
+            boolean_x = b'{"items":[{"id":"x","value":true,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            bool_revision = publish_x(boolean_x, "change x value to boolean")
+            numeric_x = b'{"items":[{"id":"x","value":1,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            number_revision = publish_x(numeric_x, "change x value to number")
+            self.assertNotEqual(bool_revision["reference"], number_revision["reference"],
+                                "JSON true and number 1 have distinct item meanings")
 
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"id":"SH-01","value":[1,2]}\n'
