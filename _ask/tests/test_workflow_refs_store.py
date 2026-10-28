@@ -66,6 +66,15 @@ class ReferenceTests(unittest.TestCase):
             first = register_revision(catalog, "alpha", "alpha/spec/1", {
                 "commit": commit, "path": "items.json",
             }, "SH-01", "structured-item/1", payload, expected_generation=0)
+            subprocess.run(["git", "commit", "--allow-empty", "-qm", "unrelated source commit"],
+                           cwd=root, check=True)
+            unrelated_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            repeated = register_revision(catalog, "alpha", "alpha/spec/1", {
+                "commit": unrelated_commit, "path": "items.json",
+            }, "SH-01", "structured-item/1", payload, expected_generation=1)
+            self.assertEqual(repeated, first, "an unrelated Git commit must not publish a new item revision")
             next_payload = b'{"id":"SH-01","then":["next"]}\n'
             (root / "items.json").write_bytes(next_payload)
             subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
@@ -211,9 +220,8 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(resolve_version(catalog, entry["reference"], root)["payload"], payload)
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, "alpha/spec/1@9", root)
-            # Publish a source snapshot that is not in the checkout's history,
-            # then make that exact object unavailable. Resolution must refuse;
-            # it cannot substitute the current HEAD file.
+            # A registered off-HEAD source stays reachable through the trusted
+            # catalog even after reflogs are expired and unreachable objects pruned.
             external_payload = b'{"id":"SH-02","then":["external"]}\n'
             blob = subprocess.check_output(["git", "hash-object", "-w", "--stdin"],
                                            cwd=root, input=external_payload, text=False).decode().strip()
@@ -228,8 +236,33 @@ class ReferenceTests(unittest.TestCase):
             subprocess.run(["git", "update-ref", "-d", "refs/heads/pinned-source"], cwd=root, check=True)
             subprocess.run(["git", "reflog", "expire", "--expire=now", "--all"], cwd=root, check=True)
             subprocess.run(["git", "gc", "--prune=now"], cwd=root, check=True)
+            self.assertEqual(resolve_version(catalog, external_entry["reference"], root)["payload"],
+                             external_payload, "catalog history must retain required source objects")
+            missing_payload = b'{"id":"SH-03","then":["unavailable"]}\n'
+            missing_blob = subprocess.check_output(
+                ["git", "hash-object", "-w", "--stdin"], cwd=root, input=missing_payload
+            ).decode().strip()
+            missing_tree = subprocess.check_output(
+                ["git", "mktree"], cwd=root,
+                input=f"100644 blob {missing_blob}\titems.json\n", text=True
+            ).strip()
+            missing_commit = subprocess.check_output(
+                ["git", "commit-tree", missing_tree, "-m", "source object loss"],
+                cwd=root, text=True
+            ).strip()
+            missing_entry = register_revision(catalog, "alpha", "alpha/spec/3", {
+                "commit": missing_commit, "path": "items.json",
+            }, "SH-03", "structured-item/1", missing_payload)
+            objects = Path(subprocess.check_output(
+                ["git", "rev-parse", "--git-path", "objects"], cwd=root, text=True
+            ).strip())
+            if not objects.is_absolute():
+                objects = root / objects
+            commit_object = objects / missing_commit[:2] / missing_commit[2:]
+            self.assertTrue(commit_object.exists(), "the fixture source commit should be loose before corruption")
+            commit_object.unlink()
             with self.assertRaises(CatalogError):
-                resolve_version(catalog, external_entry["reference"], root)
+                resolve_version(catalog, missing_entry["reference"], root)
             doc = json.loads(catalog.read_text())
             snapshot_id = doc["entries"][0]["snapshot_id"]
             doc["snapshots"][snapshot_id]["path"] = "missing.json"
