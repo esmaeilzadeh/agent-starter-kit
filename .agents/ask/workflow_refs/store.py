@@ -15,7 +15,7 @@ import re
 import subprocess
 import tempfile
 import uuid
-from decimal import Decimal
+from decimal import Decimal, DecimalException
 
 from .identity import ReferenceError, parse_reference
 
@@ -77,7 +77,7 @@ def _structured_item_digest(raw: bytes, item_id: str) -> tuple[str, str | None]:
         document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs,
                               parse_int=Decimal, parse_float=Decimal,
                               parse_constant=_reject_json_constant)
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError):
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, DecimalException, RecursionError):
         return "incomplete", None
     if not isinstance(document, dict) or not isinstance(document.get("items"), list):
         return "incomplete", None
@@ -91,7 +91,7 @@ def _structured_item_digest(raw: bytes, item_id: str) -> tuple[str, str | None]:
         canonical = json.dumps(_canonical_structured_value(matches[0]), ensure_ascii=False,
                                separators=(",", ":")).encode("utf-8")
         return "found", hashlib.sha256(canonical).hexdigest()
-    except (TypeError, ValueError, RecursionError):
+    except (TypeError, ValueError, DecimalException, RecursionError):
         return "incomplete", None
 
 
