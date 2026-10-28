@@ -236,8 +236,12 @@ class ReferenceTests(unittest.TestCase):
             subprocess.run(["git", "update-ref", "-d", "refs/heads/pinned-source"], cwd=root, check=True)
             subprocess.run(["git", "reflog", "expire", "--expire=now", "--all"], cwd=root, check=True)
             subprocess.run(["git", "gc", "--prune=now"], cwd=root, check=True)
-            self.assertEqual(resolve_version(catalog, external_entry["reference"], root)["payload"],
-                             external_payload, "catalog history must retain required source objects")
+            try:
+                resolved_external = resolve_version(catalog, external_entry["reference"], root)
+            except CatalogError as exc:
+                self.fail(f"catalog history must retain required source objects: {exc}")
+            self.assertEqual(resolved_external["payload"], external_payload,
+                             "catalog history must retain required source objects")
             missing_payload = b'{"id":"SH-03","then":["unavailable"]}\n'
             missing_blob = subprocess.check_output(
                 ["git", "hash-object", "-w", "--stdin"], cwd=root, input=missing_payload
