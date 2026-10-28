@@ -16,6 +16,7 @@ import subprocess
 import tempfile
 import uuid
 
+from .compare import extract_git_item
 from .identity import ReferenceError, parse_reference
 
 
@@ -359,17 +360,36 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
         # entry; an older matching revision must not erase a later change.
         if latest_entry is not None:
             existing_snapshot = catalog["snapshots"].get(latest_entry.get("snapshot_id"))
-            if (set(latest_entry) == {"reference", "logical_id", "revision", "snapshot_id", "item_id",
+            same_bindings = (
+                set(latest_entry) == {"reference", "logical_id", "revision", "snapshot_id", "item_id",
                                       "profile", "digest_algorithm", "digests", "digest_semantics", "generation"}
-                    and isinstance(existing_snapshot, dict)
-                    and existing_snapshot.get("path") == source_path
-                    and latest_entry.get("item_id") == item_id
-                    and latest_entry.get("profile") == profile
-                    and latest_entry.get("digest_algorithm") == "sha256"
-                    and latest_entry.get("digests") == digests
-                    and latest_entry.get("digest_semantics") == sorted(digests)
-                    and (revision is None or latest_revision == revision)):
+                and isinstance(existing_snapshot, dict)
+                and existing_snapshot.get("path") == source_path
+                and latest_entry.get("item_id") == item_id
+                and latest_entry.get("profile") == profile
+                and latest_entry.get("digest_algorithm") == "sha256"
+                and latest_entry.get("digest_semantics") == sorted(latest_entry.get("digests", {}))
+                and (revision is None or latest_revision == revision)
+            )
+            if same_bindings and latest_entry.get("digests") == digests:
                 return latest_entry
+            if same_bindings and profile == "structured-item/1":
+                previous_commit, _ = _safe_snapshot(existing_snapshot)
+                try:
+                    previous_raw = subprocess.run(
+                        ["git", "show", f"{previous_commit}:{source_path}"], cwd=root,
+                        check=True, capture_output=True,
+                    ).stdout
+                except (OSError, subprocess.CalledProcessError) as exc:
+                    raise CatalogError("missing_source", "existing catalog source is unavailable") from exc
+                previous_digests = payload_digests(previous_raw)
+                if previous_digests != latest_entry.get("digests"):
+                    raise CatalogError("integrity_mismatch", "existing catalog source failed digest verification")
+                previous_item = extract_git_item(root, previous_commit, source_path, item_id, profile)
+                current_item = extract_git_item(root, commit, source_path, item_id, profile)
+                if (previous_item.get("status") == "found" and current_item.get("status") == "found"
+                        and previous_item.get("canonical_digest") == current_item.get("canonical_digest")):
+                    return latest_entry
         next_revision = latest_revision + 1
         if revision is not None:
             if type(revision) is not int or revision != next_revision:
