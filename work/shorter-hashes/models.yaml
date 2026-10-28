@@ -4,4 +4,4 @@ codex:
 reasoning_effort:
   codex:
     03-spec-challenge: medium
-    06-implement: medium
+    06-implement: high
