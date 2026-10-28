@@ -16,7 +16,6 @@ import subprocess
 import tempfile
 import uuid
 
-from .compare import extract_git_item
 from .identity import ReferenceError, parse_reference
 
 
@@ -70,6 +69,23 @@ def _payload_bytes(payload) -> bytes:
                            allow_nan=False) + "\n").encode("utf-8")
     except (TypeError, ValueError) as exc:
         raise CatalogError("invalid_payload", "catalog payload must be bytes, UTF-8 text, or JSON value") from exc
+
+
+def _structured_item_digest(raw: bytes, item_id: str) -> str | None:
+    try:
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+        return None
+    if not isinstance(document, dict) or not isinstance(document.get("items"), list):
+        return None
+    matches = [item for item in document["items"]
+               if isinstance(item, dict) and item.get("id") == item_id]
+    if len(matches) != 1:
+        return None
+    try:
+        return payload_digests(matches[0], semantics="canonical-json/1")["canonical-json/1"]
+    except CatalogError:
+        return None
 
 
 def _atomic_json(path: Path, value: dict) -> None:
@@ -389,10 +405,10 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
                 if previous_digests == digests:
                     return latest_entry
                 if profile == "structured-item/1":
-                    previous_item = extract_git_item(root, previous_commit, source_path, item_id, profile)
-                    current_item = extract_git_item(root, commit, source_path, item_id, profile)
-                    if (previous_item.get("status") == "found" and current_item.get("status") == "found"
-                            and previous_item.get("canonical_digest") == current_item.get("canonical_digest")):
+                    previous_item_digest = _structured_item_digest(previous_raw, item_id)
+                    current_item_digest = _structured_item_digest(raw, item_id)
+                    if (previous_item_digest is not None
+                            and previous_item_digest == current_item_digest):
                         return latest_entry
         next_revision = latest_revision + 1
         if revision is not None:
