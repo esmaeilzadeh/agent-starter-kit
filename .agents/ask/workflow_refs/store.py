@@ -72,24 +72,31 @@ def _payload_bytes(payload) -> bytes:
         raise CatalogError("invalid_payload", "catalog payload must be bytes, UTF-8 text, or JSON value") from exc
 
 
-def _structured_item_digest(raw: bytes, item_id: str) -> str | None:
+def _structured_item_digest(raw: bytes, item_id: str) -> tuple[str, str | None]:
     try:
         document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs,
-                              parse_int=Decimal, parse_float=Decimal)
-    except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
-        return None
+                              parse_int=Decimal, parse_float=Decimal,
+                              parse_constant=_reject_json_constant)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError):
+        return "incomplete", None
     if not isinstance(document, dict) or not isinstance(document.get("items"), list):
-        return None
+        return "incomplete", None
     matches = [item for item in document["items"]
                if isinstance(item, dict) and item.get("id") == item_id]
-    if len(matches) != 1:
-        return None
+    if len(matches) > 1:
+        return "ambiguous", None
+    if not matches:
+        return "absent", None
     try:
         canonical = json.dumps(_canonical_structured_value(matches[0]), ensure_ascii=False,
                                separators=(",", ":")).encode("utf-8")
-        return hashlib.sha256(canonical).hexdigest()
-    except (TypeError, ValueError):
-        return None
+        return "found", hashlib.sha256(canonical).hexdigest()
+    except (TypeError, ValueError, RecursionError):
+        return "incomplete", None
+
+
+def _reject_json_constant(value):
+    raise ValueError(f"non-finite JSON number: {value}")
 
 
 def _canonical_structured_value(value):
@@ -104,6 +111,8 @@ def _canonical_structured_value(value):
             raise ValueError("non-finite JSON number")
         sign, digits, exponent = value.as_tuple()
         digits = list(digits)
+        if not any(digits):
+            return ("number", 0, "0", 0)
         while len(digits) > 1 and digits[-1] == 0:
             digits.pop()
             exponent += 1
@@ -429,14 +438,18 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
                 )
                 if previous_digests != latest_entry.get("digests"):
                     raise CatalogError("integrity_mismatch", "existing catalog source failed digest verification")
-                if previous_digests == digests:
-                    return latest_entry
                 if profile == "structured-item/1":
-                    previous_item_digest = _structured_item_digest(previous_raw, item_id)
-                    current_item_digest = _structured_item_digest(raw, item_id)
-                    if (previous_item_digest is not None
+                    previous_status, previous_item_digest = _structured_item_digest(previous_raw, item_id)
+                    current_status, current_item_digest = _structured_item_digest(raw, item_id)
+                    if previous_status in {"incomplete", "ambiguous"} or current_status in {"incomplete", "ambiguous"}:
+                        raise CatalogError("comparison_incomplete", "structured item comparison is invalid or ambiguous")
+                    if previous_status == current_status == "absent":
+                        return latest_entry
+                    if (previous_status == current_status == "found"
                             and previous_item_digest == current_item_digest):
                         return latest_entry
+                elif previous_digests == digests:
+                    return latest_entry
         next_revision = latest_revision + 1
         if revision is not None:
             if type(revision) is not int or revision != next_revision:
