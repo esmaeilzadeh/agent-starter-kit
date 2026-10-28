@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 16,
+  "revision": 18,
   "coordinator_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -427,6 +427,24 @@
             "phase": "final_green",
             "task_id": "2",
             "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "e119db3747864518b1065f6e7c782bc6",
+            "digest": "8cdffddad0c489b5ddf29d7582c5c7faa8c3b5acaceee86a4e61a5525ef6c98b",
+            "phase": "final_green",
+            "task_id": "2",
+            "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+          },
+          {
+            "run_id": "365575e834094848b7eb8c2baf336738",
+            "digest": "6cb5eb65b3f174ce7d31e6c2ad5647eac90e4190172ac7261fef70ceda331d00",
+            "phase": "final_green",
+            "task_id": "2",
+            "candidate_sha": "89344819326594e46de5e3b63e6ca615a4d265d1",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
             "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
           }
