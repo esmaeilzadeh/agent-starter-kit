@@ -133,6 +133,18 @@ class ReferenceTests(unittest.TestCase):
         self.assertTrue(any(entry["reason"] == "discovery_incomplete"
                             for entry in unavailable["unresolved"]))
 
+        shared_path = self.root / "work/shared/references/integrity.json"
+        shared_catalog = json.loads(shared_path.read_text())
+        shared_catalog["entries"].append(None)
+        shared_path.write_text(json.dumps(shared_catalog, separators=(",", ":")) + "\n")
+        git(self.root, "add", "work/shared/references/integrity.json")
+        git(self.root, "commit", "-qm", "authority contains a malformed catalog entry")
+        git(self.root, "update-ref", "refs/ask/references/shared", git(self.root, "rev-parse", "HEAD"))
+        malformed = load_project_graph(self.root, capture_project(self.root, shared_owners={"shared"}))
+        self.assertEqual(malformed["status"], "incomplete")
+        self.assertTrue(any(entry["owner"] == "shared" and entry["reason"] == "catalog_entry_invalid"
+                            for entry in malformed["unresolved"]))
+
     def test_coherent_capture_new_owner_and_aba(self):
         calls = []
         def shared_owner_aba(attempt, before):
