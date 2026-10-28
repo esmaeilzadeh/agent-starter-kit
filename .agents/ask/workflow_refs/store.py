@@ -387,6 +387,16 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
         raise CatalogError("missing_source", "cannot publish an unavailable Git source") from exc
     if pinned != raw:
         raise CatalogError("integrity_mismatch", "catalog payload must exactly match its pinned Git source")
+    if profile == "structured-item/1":
+        current_status, current_item_digest = _structured_item_digest(raw, item_id)
+        if current_status == "absent":
+            raise CatalogError("comparison_incomplete", "selected structured item is absent")
+        if current_status == "ambiguous":
+            raise CatalogError("ambiguous", "selected structured item ID is duplicated")
+        if current_status != "found":
+            raise CatalogError("comparison_incomplete", "selected structured item cannot be extracted")
+    else:
+        current_status, current_item_digest = None, None
     stream = _lock(path)
     try:
         _recover_pending(path, owner, root, relative)
@@ -440,13 +450,13 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
                     raise CatalogError("integrity_mismatch", "existing catalog source failed digest verification")
                 if profile == "structured-item/1":
                     previous_status, previous_item_digest = _structured_item_digest(previous_raw, item_id)
-                    current_status, current_item_digest = _structured_item_digest(raw, item_id)
-                    if previous_status in {"incomplete", "ambiguous"} or current_status in {"incomplete", "ambiguous"}:
-                        raise CatalogError("comparison_incomplete", "structured item comparison is invalid or ambiguous")
-                    if previous_status == current_status == "absent":
-                        return latest_entry
-                    if (previous_status == current_status == "found"
-                            and previous_item_digest == current_item_digest):
+                    if previous_status == "absent":
+                        raise CatalogError("comparison_incomplete", "existing selected structured item is absent")
+                    if previous_status == "ambiguous":
+                        raise CatalogError("ambiguous", "existing selected structured item ID is duplicated")
+                    if previous_status != "found":
+                        raise CatalogError("comparison_incomplete", "existing structured item cannot be extracted")
+                    if previous_item_digest == current_item_digest:
                         return latest_entry
                 elif previous_digests == digests:
                     return latest_entry
