@@ -66,6 +66,15 @@ class ReferenceTests(unittest.TestCase):
         except DecimalException as exc:
             self.fail(f"invalid numeric range must return incomplete, not raise: {exc}")
         self.assertEqual(huge_exponent["status"], "incomplete")
+        deeply_nested = 0
+        for _ in range(500):
+            deeply_nested = {"child": deeply_nested}
+        try:
+            deep_result = compare_items(deeply_nested, deeply_nested, "structured-item/1",
+                                        before_inputs=[], after_inputs=[])
+        except RecursionError as exc:
+            self.fail(f"deep item comparison must return incomplete, not raise: {exc}")
+        self.assertEqual(deep_result["status"], "incomplete")
         incomplete_inputs = compare_items({"id": "x"}, {"id": "x"}, "structured-item/1",
                                           before_inputs=None, after_inputs=[])
         self.assertEqual(incomplete_inputs["status"], "incomplete")
@@ -143,6 +152,19 @@ class ReferenceTests(unittest.TestCase):
             except DecimalException as exc:
                 self.fail(f"unsupported document number must return incomplete, not raise: {exc}")
             self.assertEqual(huge_extraction["status"], "incomplete")
+            deep_value = 0
+            for _ in range(500):
+                deep_value = {"child": deep_value}
+            (root / "deep.json").write_text(json.dumps({"items": [{"id": "deep", "value": deep_value}]}),
+                                            encoding="utf-8")
+            subprocess.run(["git", "add", "deep.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "deep item source"], cwd=root, check=True)
+            deep_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            try:
+                deep_extraction = extract_git_item(root, deep_commit, "deep.json", "deep", "structured-item/1")
+            except RecursionError as exc:
+                self.fail(f"deep source extraction must return incomplete, not raise: {exc}")
+            self.assertEqual(deep_extraction["status"], "incomplete")
             for commit, path in (("f" * 40, "items.json"), (second, "../items.json"), (second, "missing.json")):
                 result = extract_git_item(root, commit, path, "alpha", "structured-item/1")
                 self.assertEqual(result["status"], "incomplete")
