@@ -124,6 +124,34 @@ class ReferenceTests(unittest.TestCase):
             ).strip()
             self.assertEqual(accepted_after, accepted_before, "catalog publication must not change accepted-tests authority")
 
+            def publish_x(source, message):
+                (root / "items.json").write_bytes(source)
+                subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
+                subprocess.run(["git", "commit", "-qm", message], cwd=root, check=True)
+                source_commit = subprocess.check_output(
+                    ["git", "rev-parse", "HEAD"], cwd=root, text=True
+                ).strip()
+                generation = json.loads(catalog.read_text())["generation"]
+                return register_revision(catalog, "alpha", "alpha/spec/2", {
+                    "commit": source_commit, "path": "items.json",
+                }, "x", "structured-item/1", source,
+                   expected_generation=generation)
+
+            first_items = b'{"items":[{"id":"x","value":1,"extra":{"k":"v"}},{"id":"y","value":1}]}\n'
+            item_x = publish_x(first_items, "register x and sibling y")
+            whitespace_only = b'{\n  "items": [ {"extra":{"k":"v"}, "value":1, "id":"x"}, {"value":1,"id":"y"} ]\n}\n'
+            same_x = publish_x(whitespace_only, "reformat items without changing x")
+            with self.subTest(change="whitespace and object key order"):
+                self.assertEqual(same_x["reference"], item_x["reference"])
+            sibling_only = b'{"items":[{"id":"x","value":1,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            unchanged_x = publish_x(sibling_only, "change sibling y only")
+            with self.subTest(change="sibling item only"):
+                self.assertEqual(unchanged_x["reference"], item_x["reference"])
+            changed_x = b'{"items":[{"id":"x","value":2,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            next_x = publish_x(changed_x, "change x content")
+            self.assertEqual(next_x["reference"], "alpha/spec/2@2",
+                             "a meaningful change to x must append an item revision")
+
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"id":"SH-01","value":[1,2]}\n'
         right = b'{\n  "value": [1, 2], "id": "SH-01"\n}\n'
