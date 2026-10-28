@@ -30,7 +30,7 @@ class ReferenceTests(unittest.TestCase):
     def test_immutable_revision_catalog(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            payload = b'{"id":"SH-01","then":["original"]}\n'
+            payload = b'{"items":[{"id":"SH-01","then":["original"]}]}\n'
             commit = make_git_repo(root, payload)
             subprocess.run(["git", "update-ref", "refs/ask/accepted-tests/alpha", commit],
                            cwd=root, check=True)
@@ -75,7 +75,7 @@ class ReferenceTests(unittest.TestCase):
                 "commit": unrelated_commit, "path": "items.json",
             }, "SH-01", "structured-item/1", payload, expected_generation=1)
             self.assertEqual(repeated, first, "an unrelated Git commit must not publish a new item revision")
-            next_payload = b'{"id":"SH-01","then":["next"]}\n'
+            next_payload = b'{"items":[{"id":"SH-01","then":["next"]}]}\n'
             (root / "items.json").write_bytes(next_payload)
             subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "next item"], cwd=root, check=True)
@@ -210,7 +210,7 @@ class ReferenceTests(unittest.TestCase):
     def test_concurrent_and_interrupted_publication(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            payload = b'{"id":"SH-01"}\n'
+            payload = b'{"items":[{"id":"SH-01"}]}\n'
             commit = make_git_repo(root, payload)
             catalog = root / "integrity.json"
             initialize_catalog(catalog, "alpha")
