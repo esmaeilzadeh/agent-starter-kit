@@ -313,6 +313,35 @@ class ReferenceTests(unittest.TestCase):
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, entry["reference"], root)
 
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            payload = b'{"id":"SH-04","then":["same"]}\n'
+            old_commit = make_git_repo(root, payload)
+            catalog = root / "integrity.json"
+            initialize_catalog(catalog, "alpha")
+            entry = register_revision(catalog, "alpha", "alpha/spec/1", {
+                "commit": old_commit, "path": "items.json",
+            }, "SH-04", "structured-item/1", payload)
+            subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "--allow-empty", "-qm", "equivalent current source"],
+                           cwd=root, check=True)
+            current_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            self.assertEqual(subprocess.check_output(
+                ["git", "show", f"{current_commit}:items.json"], cwd=root
+            ), payload)
+            objects = Path(subprocess.check_output(
+                ["git", "rev-parse", "--git-path", "objects"], cwd=root, text=True
+            ).strip())
+            if not objects.is_absolute():
+                objects = root / objects
+            (objects / old_commit[:2] / old_commit[2:]).unlink()
+            with self.assertRaises(CatalogError):
+                register_revision(catalog, "alpha", "alpha/spec/1", {
+                    "commit": current_commit, "path": "items.json",
+                }, "SH-04", "structured-item/1", payload)
+
     def test_snapshot_identity_requires_full_object_id(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
