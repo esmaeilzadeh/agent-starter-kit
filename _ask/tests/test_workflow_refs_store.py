@@ -88,21 +88,32 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(second["reference"], "alpha/spec/1@2")
             self.assertEqual(resolve_version(catalog, first["reference"], root)["payload"], payload)
             self.assertEqual(resolve_version(catalog, first["reference"], root)["entry"], first)
+            (root / "items.json").write_bytes(payload)
+            subprocess.run(["git", "add", "items.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "restore prior item content"], cwd=root, check=True)
+            restored_commit = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            third = register_revision(catalog, "alpha", "alpha/spec/1", {
+                "commit": restored_commit, "path": "items.json",
+            }, "SH-01", "structured-item/1", payload, expected_generation=2)
+            self.assertEqual(third["reference"], "alpha/spec/1@3",
+                             "restoring old content after a later revision must keep history append-only")
             with self.assertRaises(CatalogError):
                 register_revision(catalog, "alpha", "alpha/spec/1", {
                     "commit": next_commit, "path": "items.json",
                 }, "SH-01", "structured-item/1", next_payload,
-                   expected_generation=2, revision=1)
+                   expected_generation=3, revision=1)
             run = register_revision(catalog, "alpha", "alpha/run/1", {
                 "commit": next_commit, "path": "items.json",
-            }, "run-1", "run-evidence/1", next_payload, expected_generation=2)
+            }, "run-1", "run-evidence/1", next_payload, expected_generation=3)
             self.assertEqual(run["reference"], "alpha/run/1@1")
             doc = json.loads(catalog.read_text())
             self.assertEqual(doc["schema"], "ask-reference-catalog/v1")
-            self.assertEqual(len(doc["entries"]), 3)
-            self.assertEqual(len(doc.get("snapshots", {})), 2)
+            self.assertEqual(len(doc["entries"]), 4)
+            self.assertEqual(len(doc.get("snapshots", {})), 3)
             snapshot_ids = [entry.get("snapshot_id") for entry in doc["entries"]]
-            self.assertEqual(snapshot_ids[1], snapshot_ids[2], "repeated immutable source snapshots must be shared")
+            self.assertEqual(snapshot_ids[1], snapshot_ids[3], "repeated immutable source snapshots must be shared")
             self.assertEqual([entry["reference"] for entry in doc["entries"][:2]],
                              ["alpha/spec/1@1", "alpha/spec/1@2"],
                              "adding run evidence must preserve contract history")
