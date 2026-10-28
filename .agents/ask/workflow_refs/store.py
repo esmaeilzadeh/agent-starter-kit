@@ -15,6 +15,7 @@ import re
 import subprocess
 import tempfile
 import uuid
+from decimal import Decimal
 
 from .identity import ReferenceError, parse_reference
 
@@ -73,7 +74,8 @@ def _payload_bytes(payload) -> bytes:
 
 def _structured_item_digest(raw: bytes, item_id: str) -> str | None:
     try:
-        document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs)
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs,
+                              parse_int=Decimal, parse_float=Decimal)
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return None
     if not isinstance(document, dict) or not isinstance(document.get("items"), list):
@@ -83,9 +85,34 @@ def _structured_item_digest(raw: bytes, item_id: str) -> str | None:
     if len(matches) != 1:
         return None
     try:
-        return payload_digests(matches[0], semantics="canonical-json/1")["canonical-json/1"]
-    except CatalogError:
+        canonical = json.dumps(_canonical_structured_value(matches[0]), ensure_ascii=False,
+                               separators=(",", ":")).encode("utf-8")
+        return hashlib.sha256(canonical).hexdigest()
+    except (TypeError, ValueError):
         return None
+
+
+def _canonical_structured_value(value):
+    if value is None:
+        return ("null",)
+    if isinstance(value, bool):
+        return ("boolean", value)
+    if isinstance(value, str):
+        return ("string", value)
+    if isinstance(value, Decimal):
+        if not value.is_finite():
+            raise ValueError("non-finite JSON number")
+        sign, digits, exponent = value.as_tuple()
+        digits = list(digits)
+        while len(digits) > 1 and digits[-1] == 0:
+            digits.pop()
+            exponent += 1
+        return ("number", sign, "".join(str(digit) for digit in digits), exponent)
+    if isinstance(value, list):
+        return ("array", tuple(_canonical_structured_value(item) for item in value))
+    if isinstance(value, dict):
+        return ("object", tuple((key, _canonical_structured_value(value[key])) for key in sorted(value)))
+    raise ValueError(f"unsupported JSON value type: {type(value).__name__}")
 
 
 def _atomic_json(path: Path, value: dict) -> None:
