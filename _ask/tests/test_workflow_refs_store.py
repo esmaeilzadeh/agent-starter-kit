@@ -157,6 +157,12 @@ class ReferenceTests(unittest.TestCase):
             number_revision = publish_x(numeric_x, "change x value to number")
             self.assertNotEqual(bool_revision["reference"], number_revision["reference"],
                                 "JSON true and number 1 have distinct item meanings")
+            close_decimal_a = b'{"items":[{"id":"x","value":1.0000000000000000000000000000000001,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            first_decimal = publish_x(close_decimal_a, "change x to close decimal a")
+            close_decimal_b = b'{"items":[{"id":"x","value":1.0000000000000000000000000000000002,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            second_decimal = publish_x(close_decimal_b, "change x to close decimal b")
+            self.assertNotEqual(first_decimal["reference"], second_decimal["reference"],
+                                "distinct JSON decimals must not collapse through binary float parsing")
 
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"id":"SH-01","value":[1,2]}\n'
