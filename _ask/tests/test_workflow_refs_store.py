@@ -163,6 +163,27 @@ class ReferenceTests(unittest.TestCase):
             second_decimal = publish_x(close_decimal_b, "change x to close decimal b")
             self.assertNotEqual(first_decimal["reference"], second_decimal["reference"],
                                 "distinct JSON decimals must not collapse through binary float parsing")
+            zero = b'{"items":[{"id":"x","value":0,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            zero_revision = publish_x(zero, "change x value to zero")
+            zero_with_scale = b'{"items":[{"id":"x","value":0.00,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
+            scaled_zero_revision = publish_x(zero_with_scale, "reformat zero value")
+            with self.subTest(change="zero exponent"):
+                self.assertEqual(zero_revision["reference"], scaled_zero_revision["reference"],
+                                 "zero values with different decimal exponents are numerically equal")
+            nested = 1
+            for _ in range(500):
+                nested = {"child": nested}
+            deep_item = {"id": "x", "value": nested, "extra": {"k": "v"}}
+            deep_source = json.dumps({"items": [deep_item, {"id": "y", "value": 2}]},
+                                     separators=(",", ":")).encode() + b"\n"
+            try:
+                publish_x(deep_source, "publish too-deep structured item")
+            except CatalogError as exc:
+                self.assertEqual(exc.code, "comparison_incomplete")
+            except Exception as exc:
+                self.fail(f"deep item comparison must refuse as incomplete, not raise {type(exc).__name__}: {exc}")
+            else:
+                self.fail("deep item comparison must refuse as incomplete instead of publishing a revision")
 
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"id":"SH-01","value":[1,2]}\n'
