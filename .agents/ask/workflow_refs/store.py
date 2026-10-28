@@ -371,10 +371,9 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
                 and latest_entry.get("digest_semantics") == sorted(latest_entry.get("digests", {}))
                 and (revision is None or latest_revision == revision)
             )
-            if same_bindings and latest_entry.get("digests") == digests:
-                return latest_entry
-            if same_bindings and profile == "structured-item/1":
+            if same_bindings:
                 previous_commit, _ = _safe_snapshot(existing_snapshot)
+                _validate_commit(root, previous_commit)
                 try:
                     previous_raw = subprocess.run(
                         ["git", "show", f"{previous_commit}:{source_path}"], cwd=root,
@@ -382,14 +381,19 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
                     ).stdout
                 except (OSError, subprocess.CalledProcessError) as exc:
                     raise CatalogError("missing_source", "existing catalog source is unavailable") from exc
-                previous_digests = payload_digests(previous_raw)
+                previous_digests = payload_digests(
+                    previous_raw, semantics="exact-bytes/1" if profile == "prose-item/1" else None
+                )
                 if previous_digests != latest_entry.get("digests"):
                     raise CatalogError("integrity_mismatch", "existing catalog source failed digest verification")
-                previous_item = extract_git_item(root, previous_commit, source_path, item_id, profile)
-                current_item = extract_git_item(root, commit, source_path, item_id, profile)
-                if (previous_item.get("status") == "found" and current_item.get("status") == "found"
-                        and previous_item.get("canonical_digest") == current_item.get("canonical_digest")):
+                if previous_digests == digests:
                     return latest_entry
+                if profile == "structured-item/1":
+                    previous_item = extract_git_item(root, previous_commit, source_path, item_id, profile)
+                    current_item = extract_git_item(root, commit, source_path, item_id, profile)
+                    if (previous_item.get("status") == "found" and current_item.get("status") == "found"
+                            and previous_item.get("canonical_digest") == current_item.get("canonical_digest")):
+                        return latest_entry
         next_revision = latest_revision + 1
         if revision is not None:
             if type(revision) is not int or revision != next_revision:
