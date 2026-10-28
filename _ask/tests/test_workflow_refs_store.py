@@ -185,9 +185,26 @@ class ReferenceTests(unittest.TestCase):
             else:
                 self.fail("deep item comparison must refuse as incomplete instead of publishing a revision")
 
+            invalid_sources = (
+                b'{"items":[{"id":"y","value":1}]}\n',
+                b'{"items":[{"id":"x","value":1},{"id":"x","value":2}]}\n',
+                b'{"items":[{"id":"x","id":"x","value":1}]}\n',
+            )
+            for invalid_source in invalid_sources:
+                with self.subTest(initial_source=invalid_source):
+                    with tempfile.TemporaryDirectory() as invalid_directory:
+                        invalid_root = Path(invalid_directory)
+                        invalid_commit = make_git_repo(invalid_root, invalid_source)
+                        invalid_catalog = invalid_root / "integrity.json"
+                        initialize_catalog(invalid_catalog, "alpha")
+                        with self.assertRaises(CatalogError):
+                            register_revision(invalid_catalog, "alpha", "alpha/spec/1", {
+                                "commit": invalid_commit, "path": "items.json",
+                            }, "x", "structured-item/1", invalid_source)
+
     def test_canonical_and_byte_digest_semantics(self):
-        left = b'{"id":"SH-01","value":[1,2]}\n'
-        right = b'{\n  "value": [1, 2], "id": "SH-01"\n}\n'
+        left = b'{"items":[{"id":"SH-01","value":[1,2]}]}\n'
+        right = b'{\n  "items": [{"value": [1, 2], "id": "SH-01"}]\n}\n'
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             commit = make_git_repo(root, left)
@@ -243,12 +260,12 @@ class ReferenceTests(unittest.TestCase):
                 with self.assertRaises(CatalogError):
                     register_revision(catalog, "alpha", "alpha/spec/2", {
                         "commit": commit, "path": "items.json",
-                    }, "SH-02", "structured-item/1", payload)
+                    }, "SH-02", "run-evidence/1", payload)
             with self.assertRaises(CatalogError):
                 resolve_version(catalog, "alpha/spec/2@1", root)
             recovered_before = register_revision(catalog, "alpha", "alpha/spec/2", {
                 "commit": commit, "path": "items.json",
-            }, "SH-02", "structured-item/1", payload)
+            }, "SH-02", "run-evidence/1", payload)
             self.assertEqual(recovered_before["reference"], "alpha/spec/2@1")
 
             original_atomic_bytes = store._atomic_bytes
@@ -262,21 +279,21 @@ class ReferenceTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     register_revision(catalog, "alpha", "alpha/spec/3", {
                         "commit": commit, "path": "items.json",
-                    }, "SH-03", "structured-item/1", payload)
+                    }, "SH-03", "run-evidence/1", payload)
             # A reader at the authority-advanced cut must recover the exact
             # committed catalog bytes and observe one complete new entry.
             observed = resolve_version(catalog, "alpha/spec/3@1", root)
             self.assertEqual(observed["payload"], payload)
             recovered = register_revision(catalog, "alpha", "alpha/spec/3", {
                 "commit": commit, "path": "items.json",
-            }, "SH-03", "structured-item/1", payload)
+            }, "SH-03", "run-evidence/1", payload)
             self.assertEqual(recovered["reference"], "alpha/spec/3@1")
             self.assertEqual(resolve_version(catalog, recovered["reference"], root)["payload"], payload)
 
     def test_history_and_missing_integrity(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            payload = b'{"id":"SH-01","then":["kept"]}\n'
+            payload = b'{"items":[{"id":"SH-01","then":["kept"]}]}\n'
             commit = make_git_repo(root, payload)
             catalog = root / "integrity.json"
             initialize_catalog(catalog, "alpha")
@@ -294,7 +311,7 @@ class ReferenceTests(unittest.TestCase):
                 resolve_version(catalog, "alpha/spec/1@9", root)
             # A registered off-HEAD source stays reachable through the trusted
             # catalog even after reflogs are expired and unreachable objects pruned.
-            external_payload = b'{"id":"SH-02","then":["external"]}\n'
+            external_payload = b'{"items":[{"id":"SH-02","then":["external"]}]}\n'
             blob = subprocess.check_output(["git", "hash-object", "-w", "--stdin"],
                                            cwd=root, input=external_payload, text=False).decode().strip()
             tree = subprocess.check_output(["git", "mktree"], cwd=root,
@@ -314,7 +331,7 @@ class ReferenceTests(unittest.TestCase):
                 self.fail(f"catalog history must retain required source objects: {exc}")
             self.assertEqual(resolved_external["payload"], external_payload,
                              "catalog history must retain required source objects")
-            missing_payload = b'{"id":"SH-03","then":["unavailable"]}\n'
+            missing_payload = b'{"items":[{"id":"SH-03","then":["unavailable"]}]}\n'
             missing_blob = subprocess.check_output(
                 ["git", "hash-object", "-w", "--stdin"], cwd=root, input=missing_payload
             ).decode().strip()
@@ -348,7 +365,7 @@ class ReferenceTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            payload = b'{"id":"SH-04","then":["same"]}\n'
+            payload = b'{"items":[{"id":"SH-04","then":["same"]}]}\n'
             old_commit = make_git_repo(root, payload)
             catalog = root / "integrity.json"
             initialize_catalog(catalog, "alpha")
