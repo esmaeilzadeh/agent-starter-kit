@@ -90,6 +90,8 @@ def _canonical_value(value):
             raise ValueError("non-finite JSON number")
         sign, digits, exponent = number.as_tuple()
         digits = list(digits)
+        if not any(digits):
+            return ("number", 0, "0", 0)
         while len(digits) > 1 and digits[-1] == 0:
             digits.pop()
             exponent += 1
