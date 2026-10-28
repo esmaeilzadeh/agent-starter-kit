@@ -141,12 +141,10 @@ class ReferenceTests(unittest.TestCase):
             item_x = publish_x(first_items, "register x and sibling y")
             whitespace_only = b'{\n  "items": [ {"extra":{"k":"v"}, "value":1, "id":"x"}, {"value":1,"id":"y"} ]\n}\n'
             same_x = publish_x(whitespace_only, "reformat items without changing x")
-            with self.subTest(change="whitespace and object key order"):
-                self.assertEqual(same_x["reference"], item_x["reference"])
+            self.assertEqual(same_x["reference"], item_x["reference"])
             sibling_only = b'{"items":[{"id":"x","value":1,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
             unchanged_x = publish_x(sibling_only, "change sibling y only")
-            with self.subTest(change="sibling item only"):
-                self.assertEqual(unchanged_x["reference"], item_x["reference"])
+            self.assertEqual(unchanged_x["reference"], item_x["reference"])
             changed_x = b'{"items":[{"id":"x","value":2,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
             next_x = publish_x(changed_x, "change x content")
             self.assertEqual(next_x["reference"], "alpha/spec/2@2",
@@ -167,9 +165,8 @@ class ReferenceTests(unittest.TestCase):
             zero_revision = publish_x(zero, "change x value to zero")
             zero_with_scale = b'{"items":[{"id":"x","value":0.00,"extra":{"k":"v"}},{"id":"y","value":2}]}\n'
             scaled_zero_revision = publish_x(zero_with_scale, "reformat zero value")
-            with self.subTest(change="zero exponent"):
-                self.assertEqual(zero_revision["reference"], scaled_zero_revision["reference"],
-                                 "zero values with different decimal exponents are numerically equal")
+            self.assertEqual(zero_revision["reference"], scaled_zero_revision["reference"],
+                             "zero values with different decimal exponents are numerically equal")
             nested = 1
             for _ in range(500):
                 nested = {"child": nested}
@@ -192,22 +189,21 @@ class ReferenceTests(unittest.TestCase):
                 b'{"items":[{"id":"x","value":0e99999999999999999999999999999999999999}]}\n',
             )
             for invalid_source in invalid_sources:
-                with self.subTest(initial_source=invalid_source):
-                    with tempfile.TemporaryDirectory() as invalid_directory:
-                        invalid_root = Path(invalid_directory)
-                        invalid_commit = make_git_repo(invalid_root, invalid_source)
-                        invalid_catalog = invalid_root / "integrity.json"
-                        initialize_catalog(invalid_catalog, "alpha")
-                        try:
-                            register_revision(invalid_catalog, "alpha", "alpha/spec/1", {
-                                "commit": invalid_commit, "path": "items.json",
-                            }, "x", "structured-item/1", invalid_source)
-                        except CatalogError:
-                            pass
-                        except Exception as exc:
-                            self.fail(f"invalid initial item must refuse with CatalogError, not {type(exc).__name__}: {exc}")
-                        else:
-                            self.fail("invalid initial structured item must not publish")
+                with tempfile.TemporaryDirectory() as invalid_directory:
+                    invalid_root = Path(invalid_directory)
+                    invalid_commit = make_git_repo(invalid_root, invalid_source)
+                    invalid_catalog = invalid_root / "integrity.json"
+                    initialize_catalog(invalid_catalog, "alpha")
+                    try:
+                        register_revision(invalid_catalog, "alpha", "alpha/spec/1", {
+                            "commit": invalid_commit, "path": "items.json",
+                        }, "x", "structured-item/1", invalid_source)
+                    except CatalogError:
+                        pass
+                    except Exception as exc:
+                        self.fail(f"invalid initial item must refuse with CatalogError, not {type(exc).__name__}: {exc}")
+                    else:
+                        self.fail("invalid initial structured item must not publish")
 
     def test_canonical_and_byte_digest_semantics(self):
         left = b'{"items":[{"id":"SH-01","value":[1,2]}]}\n'
