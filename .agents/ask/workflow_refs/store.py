@@ -237,7 +237,16 @@ def _publish_catalog(path: Path, owner: str, root: Path, common: Path,
         _git(root, "read-tree", head, env=env)
         _git(root, "update-index", "--add", "--cacheinfo", f"100644,{blob},{relative}", env=env)
         tree = _git(root, "write-tree", env=env).decode().strip()
-        commit = _git(root, "commit-tree", tree, "-p", head,
+        parents = [head]
+        if old_ref and old_ref not in parents:
+            parents.append(old_ref)
+        for snapshot in catalog.get("snapshots", {}).values():
+            snapshot_commit, _ = _safe_snapshot(snapshot)
+            _validate_commit(root, snapshot_commit)
+            if snapshot_commit not in parents:
+                parents.append(snapshot_commit)
+        parent_args = [arg for parent in parents for arg in ("-p", parent)]
+        commit = _git(root, "commit-tree", tree, *parent_args,
                       input_bytes=b"Publish immutable workflow reference catalog\n").decode().strip()
     finally:
         index_path.unlink(missing_ok=True)
@@ -335,24 +344,33 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
         if expected_generation is not None and expected_generation != generation:
             raise CatalogError("conflict", f"stale catalog generation: expected {expected_generation}, found {generation}")
         entries = catalog["entries"]
-        # A retry after a crash immediately after atomic replacement returns the
-        # already-published entry instead of allocating a duplicate revision.
-        for entry in entries:
-            if (entry.get("logical_id") == identity["logical_id"]
-                    and catalog["snapshots"].get(entry.get("snapshot_id")) == {"commit": commit, "path": source_path}
-                    and entry.get("item_id") == item_id and entry.get("profile") == profile
-                    and entry.get("digests") == digests
-                    and (revision is None or entry.get("revision") == revision)):
-                return entry
-        prior_revisions = []
+        latest_revision = 0
+        latest_entry = None
         for entry in entries:
             try:
                 parsed = parse_reference(entry.get("reference"))
             except (ReferenceError, TypeError):
                 raise CatalogError("invalid_catalog", "existing catalog entry has malformed reference")
-            if parsed["logical_id"] == identity["logical_id"]:
-                prior_revisions.append(parsed["revision"])
-        next_revision = max(prior_revisions, default=0) + 1
+            if (parsed["logical_id"] == identity["logical_id"]
+                    and parsed["revision"] > latest_revision):
+                latest_revision = parsed["revision"]
+                latest_entry = entry
+        # A retry after atomic replacement returns only the latest equivalent
+        # entry; an older matching revision must not erase a later change.
+        if latest_entry is not None:
+            existing_snapshot = catalog["snapshots"].get(latest_entry.get("snapshot_id"))
+            if (set(latest_entry) == {"reference", "logical_id", "revision", "snapshot_id", "item_id",
+                                      "profile", "digest_algorithm", "digests", "digest_semantics", "generation"}
+                    and isinstance(existing_snapshot, dict)
+                    and existing_snapshot.get("path") == source_path
+                    and latest_entry.get("item_id") == item_id
+                    and latest_entry.get("profile") == profile
+                    and latest_entry.get("digest_algorithm") == "sha256"
+                    and latest_entry.get("digests") == digests
+                    and latest_entry.get("digest_semantics") == sorted(digests)
+                    and (revision is None or latest_revision == revision)):
+                return latest_entry
+        next_revision = latest_revision + 1
         if revision is not None:
             if type(revision) is not int or revision != next_revision:
                 raise CatalogError("immutable", "revision is already published or is not the next numeric revision")
