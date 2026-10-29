@@ -111,7 +111,9 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         if len(running) != 1 or task_id not in running:
             raise Escalate("explicit selected task is not the unique running task")
         candidate = read_candidate(root, work_id, task_id, doc)
-        check_integrable(candidate.result)
+        check_integrable(candidate.result, root=root,
+                         candidate_sha=candidate.identity['candidate_sha'],
+                         accepted_plan_digest=doc['tasks'][task_id].get('accepted_plan_digest'))
         task = doc['tasks'][task_id]
         review = validate_review(root, task, candidate)
         if source_changes(root, work_id):

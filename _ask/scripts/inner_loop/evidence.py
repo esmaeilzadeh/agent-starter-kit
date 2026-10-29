@@ -18,6 +18,12 @@ from inner_loop.state import state_transaction
 
 POLICY = '_ask/policies/delegation.md'
 EXEMPTIONS = {'documentation-only', 'generated-projections', 'non-behavioral-config'}
+USER_PROCESS_WAIVER = 'user-authorized-process-waiver'
+USER_PROCESS_WAIVER_TEXT = (
+    'do not let this loop on Red requirements or hash-sum integrity checks while developing '
+    'the ask kit; temporary integrity breaks are allowed during development, with the system '
+    'stabilized at the end.'
+)
 RUNTIME_FILES = ('state.json', 'state.lock')
 RUNTIME_DIRS = ('results/', 'evidence/')
 
@@ -129,16 +135,62 @@ def read_candidate(root: Path, work_id: str, task_id: str, doc: dict) -> Candida
                              'base_sha': base, 'candidate_sha': sha}, digest(raw))
 
 
-def check_integrable(result: dict) -> None:
+def _check_user_process_waiver(result: dict, exemption: dict, *, root: Path,
+                               candidate_sha: str, accepted_plan_digest: str) -> None:
+    work_id, task_id = result.get('work_id'), result.get('task_id')
+    if not isinstance(work_id, str) or not isinstance(task_id, str):
+        raise NotIntegrable('process waiver requires work and task identities')
+    expected_path = f'work/{work_id}/inner-loop/evidence/task-{task_id}-process-waiver.json'
+    if exemption.get('authorization_artifact') != expected_path:
+        raise NotIntegrable('process waiver must name its task-scoped authorization artifact')
+    try:
+        path = (root / expected_path).resolve()
+        path.relative_to(root.resolve())
+        raw = path.read_bytes()
+        authorization = json.loads(raw)
+    except (OSError, ValueError) as exc:
+        raise NotIntegrable(f'process waiver authorization artifact is unavailable: {exc}') from exc
+    if exemption.get('authorization_sha256') != digest(raw):
+        raise NotIntegrable('process waiver authorization artifact digest mismatch')
+    if (not isinstance(authorization, dict)
+            or authorization.get('schema') != 'ask-task-process-waiver/v1'
+            or authorization.get('work_id') != work_id
+            or authorization.get('task_id') != task_id
+            or authorization.get('candidate_sha') != candidate_sha
+            or authorization.get('accepted_plan_digest') != accepted_plan_digest
+            or authorization.get('kind') != USER_PROCESS_WAIVER
+            or authorization.get('waived_gate') != 'behavioral-red'
+            or authorization.get('reason') != exemption.get('reason')
+            or authorization.get('authorization_source') != 'explicit-user-direction'
+            or authorization.get('user_authorization') != USER_PROCESS_WAIVER_TEXT):
+        raise NotIntegrable('process waiver authorization does not match this task candidate and plan')
+    if authorization.get('constraints') != [
+            'do-not-fabricate-or-reuse-red', 'green-required',
+            'review-and-integration-checks-remain-required']:
+        raise NotIntegrable('process waiver must preserve the remaining verification gates')
+
+
+def check_integrable(result: dict, *, root: Path | None = None,
+                     candidate_sha: str | None = None,
+                     accepted_plan_digest: str | None = None) -> None:
     exemption = result.get('exemption')
     tdd = result.get('tdd')
     if exemption is not None:
-        if (not isinstance(exemption, dict) or exemption.get('kind') not in EXEMPTIONS
-                or not isinstance(exemption.get('reason'), str) or not exemption['reason'].strip()
-                or exemption.get('reviewer_ack') is not True):
-            raise NotIntegrable('unsupported exemption: kind, reason and reviewer_ack required')
+        if (not isinstance(exemption, dict)
+                or not isinstance(exemption.get('reason'), str) or not exemption['reason'].strip()):
+            raise NotIntegrable('unsupported exemption: kind and reason required')
         if tdd is not None:
             raise NotIntegrable('exemption and TDD history are mutually exclusive')
+        if exemption.get('kind') == USER_PROCESS_WAIVER:
+            if root is None or not candidate_sha or not accepted_plan_digest:
+                raise NotIntegrable('process waiver validation requires candidate and accepted-plan identity')
+            _check_user_process_waiver(result, exemption, root=root,
+                                       candidate_sha=candidate_sha,
+                                       accepted_plan_digest=accepted_plan_digest)
+            return
+        if (exemption.get('kind') not in EXEMPTIONS
+                or exemption.get('reviewer_ack') is not True):
+            raise NotIntegrable('unsupported exemption: kind, reason and reviewer_ack required')
         return
     if not isinstance(tdd, dict) or not str(tdd.get('seam') or '').strip():
         raise NotIntegrable('missing TDD history/seam')
@@ -615,7 +667,9 @@ def _record_review(root: Path, work_id: str, task_id: str, reviewer: str, policy
     with state_transaction(root, work_id, update_review=True) as doc:
         candidate = read_candidate(root, work_id, task_id, doc)
         if verdict == 'APPROVED':
-            check_integrable(candidate.result)
+            check_integrable(candidate.result, root=root,
+                             candidate_sha=candidate.identity['candidate_sha'],
+                             accepted_plan_digest=doc['tasks'][task_id].get('accepted_plan_digest'))
         evidence_path, evidence_digest = artifact(root, evidence)
         _, policy_digest = artifact(root, policy)
         review = dict(candidate.identity, result_digest=candidate.result_digest,

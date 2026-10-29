@@ -62,6 +62,55 @@ class ReferenceCliTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertEqual(missing["reason"], "missing")
 
+    def test_task_process_waiver_is_hash_and_candidate_bound(self):
+        from inner_loop.evidence import NotIntegrable, check_integrable, digest
+
+        candidate = "a" * 40
+        plan_digest = "b" * 64
+        reason = "Task 8 may omit an unwarranted Red under the explicit user direction."
+        artifact_path = "work/demo/inner-loop/evidence/task-8-process-waiver.json"
+        path = self.root / artifact_path
+        path.parent.mkdir(parents=True)
+        authorization = {
+            "schema": "ask-task-process-waiver/v1",
+            "work_id": "demo",
+            "task_id": "8",
+            "candidate_sha": candidate,
+            "accepted_plan_digest": plan_digest,
+            "kind": "user-authorized-process-waiver",
+            "waived_gate": "behavioral-red",
+            "reason": reason,
+            "authorization_source": "explicit-user-direction",
+            "user_authorization": (
+                "do not let this loop on Red requirements or hash-sum integrity checks while developing "
+                "the ask kit; temporary integrity breaks are allowed during development, with the system "
+                "stabilized at the end."
+            ),
+            "constraints": ["do-not-fabricate-or-reuse-red", "green-required",
+                            "review-and-integration-checks-remain-required"],
+        }
+        raw = json.dumps(authorization, sort_keys=True).encode()
+        path.write_bytes(raw)
+        result = {
+            "work_id": "demo", "task_id": "8",
+            "exemption": {"kind": authorization["kind"], "reason": reason,
+                          "authorization_artifact": artifact_path,
+                          "authorization_sha256": digest(raw)},
+        }
+        check_integrable(result, root=self.root, candidate_sha=candidate,
+                         accepted_plan_digest=plan_digest)
+
+        for kwargs in (
+                {"candidate_sha": "c" * 40, "accepted_plan_digest": plan_digest},
+                {"candidate_sha": candidate, "accepted_plan_digest": "d" * 64}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(NotIntegrable):
+                check_integrable(result, root=self.root, **kwargs)
+
+        path.write_bytes(raw + b" ")
+        with self.assertRaisesRegex(NotIntegrable, "digest mismatch"):
+            check_integrable(result, root=self.root, candidate_sha=candidate,
+                             accepted_plan_digest=plan_digest)
+
     def test_record_run_numeric_provenance(self):
         repo = self.root / "run-fixture"
         repo.mkdir()
