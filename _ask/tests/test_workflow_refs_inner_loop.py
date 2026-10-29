@@ -12,6 +12,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
+sys.path.insert(0, str(ROOT / ".agents/ask"))
 
 from inner_loop.checkpoint import publish, read_checkpoint
 from inner_loop.state import load_state
@@ -29,6 +30,9 @@ class ReferenceTests(unittest.TestCase):
         self.git("init", "-q")
         self.git("config", "user.email", "test@example.com")
         self.git("config", "user.name", "Test")
+        policy = self.root / "_ask/policies/delegation.md"
+        policy.parent.mkdir(parents=True)
+        policy.write_text("Coordinator delegates reviews to an identified independent reviewer.\n")
         (self.root / "seed.txt").write_text("seed\n")
         self.git("add", "seed.txt")
         self.git("commit", "-qm", "fixture base")
@@ -121,7 +125,7 @@ class ReferenceTests(unittest.TestCase):
         )
         self.git("add", ".agents/ask/verification", "task_cases.py")
         graph_path = self.root / "work/fixture-work/inner-loop/tasks.yaml"
-        graph_path.parent.mkdir(parents=True)
+        graph_path.parent.mkdir(parents=True, exist_ok=True)
         graph_path.write_text(
             "schema: ask-inner-loop-tasks/v1\nwork_id: fixture-work\ntasks:\n"
             "  - id: '6'\n    depends_on: []\n    owned_paths: [task_cases.py]\n"
@@ -157,7 +161,8 @@ class ReferenceTests(unittest.TestCase):
         (self.root / "specs/current/fixture-work.json").parent.mkdir(parents=True)
         write_json(self.root / "specs/current/fixture-work.json", spec)
         write_json(self.root / "work/fixture-work/test-plan.json", plan)
-        self.git("add", "specs/current/fixture-work.json", "work/fixture-work")
+        self.git("add", "_ask/policies/delegation.md", "specs/current/fixture-work.json",
+                 "work/fixture-work")
         self.git("commit", "-qm", "task-scoped contract fixture")
         contract_base = self.git("rev-parse", "HEAD")
         review_path = "work/fixture-work/traceability/plan-review.json"
