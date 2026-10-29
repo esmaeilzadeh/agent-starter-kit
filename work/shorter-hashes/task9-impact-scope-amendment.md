@@ -24,10 +24,15 @@ the recorded ADR behavior.
 
 Add `.agents/ask/workflow_refs/impact.py` to Task 9's owned paths and amend its
 outcome to include the correction exercised by existing case 9/3. For a
-`revise` decision, impact assessment must validate required input paths across
-the registered old and replacement dependent revisions. Any missing or
-unresolved path remains blocking. Retain the existing authority, generation,
-profile, exact-reference, candidate registration, and incomplete-input checks.
+`revise` decision, derive required paths from the actual declared dependencies
+of both registered dependent revisions, including added, removed, retained,
+and shared inputs. Validate the complete transition assessment once against
+those paths and the existing context, authority, profile, registration, and
+exact-reference requirements. Apply that one assessment to both named
+endpoints, including when traversal encounters the replacement, without
+requiring duplicate approval. Missing or unresolved required evidence remains
+blocking. Consumer retention remains separately assessed; the transition
+decision grants no general retention permission or historical execution reuse.
 
 The path is already included in case 9/3's `source_paths`; no test case,
 assertion, source binding, spec, intent, authority rule, or acceptance criterion
@@ -47,3 +52,19 @@ gates.
 
 The test-only projection/import corrections for 9/2 and 9/4 are committed at
 `6aa126d`. This amendment does not claim those cases passed on that commit.
+
+## Runtime preservation required after approval
+
+At state revision 85, Task 9 is running as attempt `9:attempt-1` from base
+`a955fb036694f034cfb6b7969a09639cb5645b5f`. The live
+`work/shorter-hashes/inner-loop/results/9.json` has SHA-256
+`cdc2e19534c2db831219cee78d728b0b76b8a54bbce3b2c2da897c0dec816f41`; native
+interruption refuses while that TaskResult file exists. After approval, first
+preserve its exact bytes and references through an attributable, reviewed
+runtime archival/reconciliation and checkpoint the consistent state. Then
+interrupt through the supported operation, register the independently reviewed
+amended contract, advance/reconcile the coordinator base through supported
+state operations, and reopen Task 9 with attempt 1 and its actual outcomes
+retained. The failed final Green remains a behavior assertion failure; carry the
+existing Red waiver forward without relabeling it. Do not interrupt, register,
+or reopen while preservation/reconciliation is incomplete.
