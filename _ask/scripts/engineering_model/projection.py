@@ -14,13 +14,7 @@ from .workbench import build_workbench
 
 
 def _captured_json(snapshot, path):
-    raw = snapshot.files.get(path)
-    if raw is None:
-        return None
-    try:
-        return decode(raw)
-    except (UnicodeError, ValueError, TypeError):
-        return None
+    return snapshot.documents.get(path)
 
 
 def _reference_text(reference):

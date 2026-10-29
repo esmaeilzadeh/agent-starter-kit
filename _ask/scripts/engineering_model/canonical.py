@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / ".agents/ask/verifi
 from traceability.contracts import indexed, scenario
 from traceability.coverage import validate_plan
 
-from .snapshot import decode, safe_relative
+from .snapshot import safe_relative
 from .validation import SLUG
 
 
@@ -23,12 +23,8 @@ def diagnostics(snapshot):
             reference = node.get("reference")
             if isinstance(reference, dict) and isinstance(reference.get("path"), str):
                 required_specs.add(reference["path"])
-    for path, raw in snapshot.files.items():
-        if path.endswith("/test-plan.json") and raw is not None:
-            try:
-                plan = decode(raw)
-            except (UnicodeError, ValueError):
-                continue
+    for path, plan in snapshot.documents.items():
+        if path.endswith("/test-plan.json"):
             if isinstance(plan, dict) and isinstance(plan.get("work_id"), str):
                 required_specs.add(f"specs/current/{plan['work_id']}.json")
 
@@ -39,12 +35,8 @@ def diagnostics(snapshot):
         if snapshot.statuses.get(target) != "present":
             error(path, f"linked definition is unavailable or unsafe: {target}")
 
-    for path, raw in sorted(snapshot.files.items()):
-        if not path.endswith(".json") or raw is None:
-            continue
-        try:
-            value = decode(raw)
-        except (UnicodeError, ValueError):
+    for path, value in sorted(snapshot.documents.items()):
+        if not path.endswith(".json"):
             continue
         if isinstance(value, dict) and value.get("schema") == "ask-spec/v1":
             feature = value.get("feature_specification")
@@ -91,10 +83,7 @@ def diagnostics(snapshot):
                    and SLUG.fullmatch(parts[1]))
         if not is_spec and not is_plan and path not in feature_paths:
             continue
-        try:
-            value = decode(raw) if raw is not None else None
-        except (UnicodeError, ValueError):
-            value = None
+        value = snapshot.documents.get(path) if raw is not None else None
         if not isinstance(value, dict):
             error(path, "canonical definition must be an available JSON object")
             continue

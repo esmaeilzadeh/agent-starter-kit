@@ -199,7 +199,9 @@ def _resolve_captured_flow(snapshot, task_node_id):
     raw_plan = snapshot.files.get(f"work/{case['work_id']}/test-plan.json")
     if raw_plan is None:
         raise ValueError("selected canonical test plan was not captured")
-    plan = json.loads(raw_plan.decode("utf-8"))
+    plan = snapshot.documents.get(f"work/{case['work_id']}/test-plan.json")
+    if not isinstance(plan, dict):
+        raise ValueError("selected canonical test plan is invalid")
     plan_digest = _canonical_digest(plan)
     if plan_digest != case["plan_digest"] or plan.get("work_id") != case["work_id"]:
         raise ValueError("selected canonical test plan is stale")
