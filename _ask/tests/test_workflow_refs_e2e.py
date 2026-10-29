@@ -74,8 +74,9 @@ class ReferenceTests(unittest.TestCase):
                 ("demo/spec/1/plan/1/item/2@1", "task-item", "current")):
             code, projection = repo.cli("show", reference)
             self.assertEqual(code, 0)
-            self.assertEqual(projection["payload"]["items"][0]["id"], item_id)
-            self.assertEqual(projection["payload"]["items"][0]["value"], value)
+            selected = next(payload for payload in projection["payload"]["items"]
+                            if payload["id"] == item_id)
+            self.assertEqual(selected["value"], value)
 
         bundle = repo.root / "transfer.refs"
         code, exported = repo.cli("export", "demo", "--out", str(bundle))

@@ -90,7 +90,7 @@ class CompletionRepository:
         policy = self.root / POLICY
         policy.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source / POLICY, policy)
-        self.write(".agents/verification.yaml", "schema: ask-checkplan/v1\nchecks:\n  - id: syntax\n    tier: mandatory\n    command: python3 -m py_compile app.py\n")
+        self.write(".agents/verification.yaml", "schema: ask-checkplan/v1\nchecks:\n  - id: syntax\n    tier: mandatory\n    command: python3 -c 'import ast; ast.parse(open(\"app.py\").read())'\n")
         self.write("app.py", "def value(): return 'ready'\n")
         self.write("test_app.py", "import unittest\nfrom app import value\nclass Cases(unittest.TestCase):\n def test_value(self): self.assertEqual(value(), 'ready')\n")
         self.spec = {"schema": "ask-spec/v1", "work_id": "e2e", "revision": 1,
