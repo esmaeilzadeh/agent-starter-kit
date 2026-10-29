@@ -182,6 +182,75 @@ def _scenario_views(snapshot, model, evidence_by_reference):
     return result
 
 
+def _selected_references(snapshot, root):
+    """Resolve only the selected workstream plan's typed references."""
+    relative = f"work/{snapshot.work_id}/test-plan.json"
+    references = snapshot.references.get(relative, {})
+    if not isinstance(references, dict) or not references:
+        return None
+
+    import sys
+    workflow_refs_root = Path(__file__).resolve().parents[3] / ".agents" / "ask"
+    if (workflow_refs_root / "workflow_refs").is_dir() and str(workflow_refs_root) not in sys.path:
+        sys.path.insert(0, str(workflow_refs_root))
+    try:
+        from workflow_refs.identity import ReferenceError, parse_reference
+        from workflow_refs.store import CatalogError, resolve_version
+    except ImportError as exc:
+        return {"status": "incomplete", "items": {}, "errors": [
+            {"scope": "references", "code": "resolver_unavailable", "message": str(exc)}]}
+
+    expected_kinds = {"task": "task", "test": "test", "review": "review"}
+    items = {}
+    errors = []
+    for name, reference in sorted(references.items()):
+        try:
+            parsed = parse_reference(reference)
+            if name in expected_kinds and parsed["kind"] != expected_kinds[name]:
+                raise ReferenceError("wrong_type", f"{name} reference has type {parsed['kind']}")
+            if parsed["owner"] != snapshot.work_id:
+                raise ReferenceError("owner_mismatch", "reference owner differs from selected workstream")
+            if name == "test" and isinstance(references.get("task"), str):
+                task_reference = parse_reference(references["task"])
+                if task_reference["kind"] != "task" or (
+                        parsed["owner"] != task_reference["owner"]
+                        or parsed["ids"][:-1] != task_reference["ids"]):
+                    raise ReferenceError("parent_mismatch", "test reference is outside the selected task context")
+            catalog = Path(root) / "work" / parsed["owner"] / "references" / "integrity.json"
+            resolved = resolve_version(catalog, parsed["canonical"], Path(root))
+            entry = resolved["entry"]
+            if entry.get("profile") != "structured-item/1":
+                raise CatalogError("unsupported", "selected projection requires a structured item reference")
+            source = json.loads(resolved["payload"].decode("utf-8"))
+            source_items = source.get("items") if isinstance(source, dict) else None
+            matches = ([item for item in source_items
+                        if isinstance(item, dict) and item.get("id") == entry.get("item_id")]
+                       if isinstance(source_items, list) else [])
+            if len(matches) != 1:
+                code = "ambiguous" if len(matches) > 1 else "missing_item"
+                raise CatalogError(code, "selected source does not contain one unique registered item")
+            # The trusted resolver verifies the exact pinned source and digest;
+            # expose its compact snapshot identity without loading the catalog.
+            items[name] = {"reference": parsed["canonical"], "status": "resolved",
+                           "item_id": entry["item_id"], "item": matches[0],
+                           "source": {"snapshot_id": entry["snapshot_id"]},
+                           "integrity": {"algorithm": entry["digest_algorithm"],
+                                         "digests": resolved["digests"]}}
+        except ReferenceError as exc:
+            items[name] = {"reference": reference, "status": "unavailable",
+                           "error": {"code": exc.code, "message": str(exc)}}
+            errors.append({"scope": name, "code": exc.code, "message": str(exc)})
+        except CatalogError as exc:
+            items[name] = {"reference": reference, "status": "unavailable",
+                           "error": {"code": exc.code, "message": str(exc)}}
+            errors.append({"scope": name, "code": exc.code, "message": str(exc)})
+        except (OSError, UnicodeError, ValueError, TypeError, KeyError) as exc:
+            items[name] = {"reference": reference, "status": "unavailable",
+                           "error": {"code": "resolution_incomplete", "message": str(exc)}}
+            errors.append({"scope": name, "code": "resolution_incomplete", "message": str(exc)})
+    return {"status": "incomplete" if errors else "complete", "items": items, "errors": errors}
+
+
 def _task_context(snapshot, node_id):
     selected = {"spec": [], "plan": []}
     for record in snapshot.passages.values():
@@ -308,6 +377,10 @@ def project(snapshot, root, *, node_id=None, candidate_sha=None, include_evidenc
     }
     if node_id is not None:
         projection["selected_node"] = nodes[node_id]
+        if nodes[node_id].get("type") in {"task", "test"}:
+            selected_references = _selected_references(snapshot, root)
+            if selected_references is not None:
+                projection["references"] = selected_references
     return projection
 
 

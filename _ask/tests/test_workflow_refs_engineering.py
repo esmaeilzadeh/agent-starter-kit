@@ -93,15 +93,18 @@ class ReferenceTests(unittest.TestCase):
                               for name, value in resolved["items"].items()},
                              {"task": "task-1", "test": "test-1", "review": "review-1"})
             self.assertEqual({call.args[1] for call in resolve.call_args_list},
-                             set(snapshot.references["work/pilot/test-plan.json"]),
+                             set(snapshot.references["work/pilot/test-plan.json"].values()),
                              "selection resolves only the three requested qualified references")
             self.assertNotIn("references", unselected,
                              "unselected projections do not expose or resolve workflow references")
+            selected_test = project(snapshot, root, node_id="case", include_evidence=False)
+            self.assertEqual(selected_test["references"]["status"], "complete")
+            self.assertEqual(set(selected_test["references"]["items"]), {"task", "test", "review"})
 
             original_references = dict(envelope["references"])
             for bad_reference, expected_code in (
                 ("pilot/review/2@1", "missing"),
-                ("other/review/1@1", "missing_authority"),
+                ("other/review/1@1", "owner_mismatch"),
             ):
                 broken = dict(envelope)
                 broken["references"] = {**original_references, "review": bad_reference}
@@ -116,9 +119,20 @@ class ReferenceTests(unittest.TestCase):
                                  "a bad review link remains scoped to that reference")
 
             broken = dict(envelope)
+            broken["references"] = {**original_references,
+                                     "test": "pilot/spec/1/plan/1/task/2/test/1@1"}
+            plan_path.write_text(json.dumps(broken, separators=(",", ":")), encoding="utf-8")
+            wrong_parent = project(capture(root, "pilot"), root,
+                                   node_id="build", include_evidence=False)["references"]
+            self.assertEqual(wrong_parent["items"]["test"]["error"]["code"], "parent_mismatch")
+            self.assertEqual(wrong_parent["items"]["task"]["status"], "resolved")
+
+            broken = dict(envelope)
             broken["references"] = original_references
             plan_path.write_text(json.dumps(broken, separators=(",", ":")), encoding="utf-8")
             original_resolve = reference_store.resolve_version
+            # The trusted store rejects duplicate catalog entries at publication;
+            # inject its stable ambiguity error to verify projection scoping.
             def ambiguous_review(catalog_path, reference, repository_root=None):
                 if reference == "pilot/review/1@1":
                     raise reference_store.CatalogError("ambiguous", "duplicate trusted target")
