@@ -70,6 +70,7 @@ tasks:
   - id: "9"
     depends_on: ["8"]
     owned_paths:
+      - ".agents/ask/workflow_refs/impact.py"
       - "_ask/tests/workflow_refs_fixture.py"
       - "_ask/tests/test_workflow_refs_e2e.py"
       - "_ask/tests/test-workflow-references.sh"
