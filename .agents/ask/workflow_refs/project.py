@@ -160,6 +160,43 @@ def _inventory(root, integration_ref, archive_ref, shared_owners):
     return refs, owners
 
 
+def _context_generation(root, vector):
+    """Hash dependency context while ignoring decision-only catalog publication.
+
+    The exact catalog refs remain in ``vector['refs']`` and still select all
+    graph data. A decision record is metadata about the captured graph, though,
+    and publishing that record must not invalidate the generation it names.
+    Catalog item entries and every other selected ref remain generation-bound.
+    """
+    refs = {}
+    for name, sha in vector["refs"].items():
+        if not name.startswith("refs/ask/references/"):
+            refs[name] = sha
+            continue
+        owner = name.rsplit("/", 1)[-1]
+        catalog_path = ("results/references/integrity.json" if owner == "repository-runs"
+                        else f"work/{owner}/references/integrity.json")
+        try:
+            catalog = json.loads(_regular_file_at(root, sha, catalog_path).decode("utf-8"))
+        except (ProjectError, UnicodeDecodeError, json.JSONDecodeError):
+            refs[name] = sha
+            continue
+        if (not isinstance(catalog, dict) or catalog.get("schema") != "ask-reference-catalog/v1"
+                or catalog.get("owner") != owner or not isinstance(catalog.get("decisions", []), list)):
+            refs[name] = sha
+            continue
+        context_catalog = dict(catalog)
+        context_catalog.pop("generation", None)
+        context_catalog.pop("decisions", None)
+        canonical = json.dumps(context_catalog, sort_keys=True, separators=(",", ":")).encode()
+        refs[name] = hashlib.sha256(canonical).hexdigest()
+    stable = {key: value for key, value in vector.items()
+              if key not in {"movement_generation", "storage_generation", "generation", "status"}}
+    stable["refs"] = refs
+    encoded = json.dumps(stable, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def capture_project(repository_root, integration_ref="refs/heads/develop",
                     archive_ref="refs/heads/main", retries=2, during_scan=None,
                     shared_owners=None):
@@ -206,8 +243,7 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
                           "movement_generation": after_movement,
                           "storage_generation": after_storage,
                           "scope": "local-cooperating-repository"}
-                encoded = json.dumps(vector, sort_keys=True, separators=(",", ":")).encode()
-                vector["generation"] = hashlib.sha256(encoded).hexdigest()
+                vector["generation"] = _context_generation(root, vector)
                 vector["status"] = "complete"
                 return vector
             except ProjectError as exc:

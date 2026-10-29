@@ -239,7 +239,8 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
                         edge["reference"] == consumer for edge in nodes[_reference(candidate)]["inputs"])
                         and nodes[_reference(candidate)].get("active", True)
                         for candidate in eligible)
-                    if (parsed_upstream != upstream or _reference(decision.get("dependent")) != consumer
+                    if (upstream not in {parsed_upstream, new_upstream}
+                            or _reference(decision.get("dependent")) != consumer
                             or not valid_eligible or new_upstream not in nodes
                             or not nodes[new_upstream].get("active", True) or not valid_upstream_revision
                             or decision.get("profile") != nodes[consumer].get("profile")):
@@ -275,15 +276,17 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
                 item["status"] = "retired"
             elif decision_result and decision_result.get("status") == "revised":
                 item["status"] = "revised"
+            elif decision_result and decision_result.get("status") == "retained":
+                item["status"] = "retained"
             item["paths"].append(path + [consumer])
             if consumer not in path:
                 stopped_consumers = (frozenset(decision_result["decision"]["eligible_consumers"])
                                      if stopped else frozenset())
                 queue.append((consumer, path + [consumer], stopped_consumers))
     incomplete = [ref for ref, item in impacted.items()
-                  if item["status"] == "incomplete"
+                  if item["status"] in {"incomplete", "reassess"}
                   or any(not edge["resolved"] for edge in item["inputs"])
-                  or (item["decision"] and item["decision"].get("status") == "incomplete")]
+                  or (item["decision"] and item["decision"].get("status") in {"incomplete", "reassess"})]
     for ref in incomplete:
         impacted[ref]["status"] = "incomplete"
     unregistered_candidates = graph.get("unregistered_candidates", [])

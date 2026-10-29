@@ -21,6 +21,7 @@ class ReferenceRepository:
         self.git("config", "user.name", "E2E Fixture")
         self.git("config", "user.email", "fixture@example.test")
         self.owners = owners
+        self.owner_items = {owner: list(items) for owner, items in owners.items()}
         for owner, items in owners.items():
             path = self.root / "work" / owner / "items.json"
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -69,6 +70,70 @@ class ReferenceRepository:
         except json.JSONDecodeError:
             value = output.getvalue()
         return code, value
+
+    def cli_at(self, root, *args):
+        from workflow_refs.cli import main
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(list(args), root=Path(root))
+        try:
+            value = json.loads(output.getvalue())
+        except json.JSONDecodeError:
+            value = output.getvalue()
+        return code, value
+
+    def publish_items(self, owner, items, *, register=True):
+        """Publish a candidate owner document and any changed immutable revisions."""
+        from workflow_refs.store import register_revision
+
+        path = self.root / "work" / owner / "items.json"
+        raw = (json.dumps({"items": payloads(items)}, separators=(",", ":")) + "\n").encode()
+        path.write_bytes(raw)
+        relative = path.relative_to(self.root).as_posix()
+        self.git("add", relative)
+        self.git("commit", "-qm", f"publish {owner} candidate items")
+        source_sha = self.git("rev-parse", "HEAD")
+        self.git("update-ref", f"refs/heads/agent/{owner}", source_sha)
+
+        if register:
+            catalog = self.root / "work" / owner / "references" / "integrity.json"
+            for entry in items:
+                register_revision(catalog, owner, entry["logical_id"],
+                                  {"commit": source_sha, "path": relative},
+                                  entry["id"], "structured-item/1", raw)
+            catalog_relative = catalog.relative_to(self.root).as_posix()
+            self.git("add", catalog_relative)
+            self.git("commit", "-qm", f"publish {owner} numeric revisions")
+        self.owner_items[owner] = list(items)
+        return source_sha
+
+    def register_execution(self, record, logical_id="repository-runs/run/1", artifacts=None):
+        """Store a real execution projection under the public repository-runs owner."""
+        from workflow_refs.store import initialize_catalog, register_revision
+
+        path = self.root / "results" / "runs" / "executions.json"
+        existing = json.loads(path.read_text()) if path.exists() else {"items": []}
+        existing["items"].append(record)
+        raw = (json.dumps(existing, separators=(",", ":")) + "\n").encode()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        for relative, content in (artifacts or {}).items():
+            artifact = self.root / relative
+            artifact.parent.mkdir(parents=True, exist_ok=True)
+            artifact.write_bytes(content)
+        path.write_bytes(raw)
+        relative = path.relative_to(self.root).as_posix()
+        self.git("add", "results/runs")
+        self.git("commit", "-qm", "retain exact execution projection")
+        source_sha = self.git("rev-parse", "HEAD")
+        catalog = self.root / "results" / "references" / "integrity.json"
+        initialize_catalog(catalog, "repository-runs")
+        entry = register_revision(catalog, "repository-runs", logical_id,
+                                 {"commit": source_sha, "path": relative},
+                                 record["id"], "structured-item/1", raw)
+        catalog_relative = catalog.relative_to(self.root).as_posix()
+        self.git("add", catalog_relative)
+        self.git("commit", "-qm", "retain trusted execution reference")
+        return entry["reference"]
 
 
 class CompletionRepository:

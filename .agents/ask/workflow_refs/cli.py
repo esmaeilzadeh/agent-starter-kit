@@ -69,6 +69,8 @@ def build_parser():
     impact.add_argument("--shared-owner", action="append", default=[])
     impact.add_argument("--integration-ref", default="refs/heads/develop")
     impact.add_argument("--archive-ref", default="refs/heads/main")
+    impact.add_argument("--decision", action="append", default=[],
+                        help="apply one trusted, owner-qualified reviewed decision reference")
     decide = sub.add_parser("decide", help="assess an explicit reviewed impact decision")
     decide.add_argument("--evidence", required=True, type=Path)
     decide.add_argument("--recorded-by", required=True)
@@ -115,8 +117,32 @@ def main(argv=None, *, root=None):
             graph = load_project_graph(repository_root, capture)
             changed = [reference for reference, node in graph.get("nodes", {}).items()
                        if node.get("owner") in changed_owners]
-            result = assess_impact(graph, changed, capture=capture,
-                                   repository_root=repository_root)
+            decisions = {}
+            trusted_decisions = {}
+            for decision_reference in args.decision:
+                identity = parse_reference(decision_reference)
+                if identity["kind"] != "review":
+                    raise ImpactError("malformed", "impact decisions require qualified review references")
+                projection = show_reference(repository_root, identity["canonical"])
+                decision = projection.get("payload", {}).get("decision")
+                if not isinstance(decision, dict):
+                    raise ImpactError("invalid_decision", "selected reference is not a trusted impact decision")
+                if decision.get("context_generation") != capture.get("generation"):
+                    raise ImpactError("stale_context", "decision does not bind the selected project generation")
+                dependent = parse_reference(decision.get("dependent"))["canonical"]
+                if dependent in decisions:
+                    raise ImpactError("ambiguous", f"multiple selected decisions cover {dependent}")
+                decisions[dependent] = decision
+                trusted_decisions[dependent] = decision
+
+            def authority_check(decision, _capture):
+                stored = trusted_decisions.get(decision.get("dependent"))
+                return (stored == decision and bool(decision.get("review_evidence"))
+                        and decision.get("reviewer") != decision.get("coordinator"))
+
+            result = assess_impact(graph, changed, decisions=decisions, capture=capture,
+                                   repository_root=repository_root,
+                                   authority_check=authority_check if decisions else None)
             _json(result)
             return 0 if result.get("status") == "complete" else 1
         elif args.command == "decide":
