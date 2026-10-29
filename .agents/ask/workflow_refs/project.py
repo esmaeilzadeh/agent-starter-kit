@@ -193,6 +193,21 @@ def _context_generation(root, vector):
     stable = {key: value for key, value in vector.items()
               if key not in {"movement_generation", "storage_generation", "generation", "status"}}
     stable["refs"] = refs
+    # ``owners`` repeats the same ref/object mapping for scoped lookup. Keep it
+    # on the same normalized identities as ``refs`` so publishing decision-only
+    # catalog metadata does not change the context through this second path.
+    owners = {}
+    for owner, details in vector.get("owners", {}).items():
+        if not isinstance(details, dict):
+            owners[owner] = details
+            continue
+        normalized = dict(details)
+        owner_refs = details.get("refs")
+        if isinstance(owner_refs, dict):
+            normalized["refs"] = {name: refs.get(name, sha)
+                                  for name, sha in owner_refs.items()}
+        owners[owner] = normalized
+    stable["owners"] = owners
     encoded = json.dumps(stable, sort_keys=True, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
 

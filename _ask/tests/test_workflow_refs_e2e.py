@@ -30,31 +30,12 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
         completion_path = consumer.root / "work/e2e/traceability/completion.json"
         self.assertEqual(json.loads(completion_path.read_text())["status"], "pass")
-
-        # A new accepted source candidate cannot reuse the old execution record.
-        source_path = consumer.root / "app.py"
-        source_path.write_text(source_path.read_text() + "\ndef newer_value(): return 'new'\n")
-        consumer.git("add", "app.py")
-        consumer.git("commit", "-qm", "publish a new candidate")
-        new_candidate = consumer.git("rev-parse", "HEAD")
-        consumer.candidate = new_candidate
-        consumer.create_semantic_review()
-        stale = consumer.command("traceability", "check-completion", "e2e",
-                                 "--candidate-sha", new_candidate,
-                                 "--anchor-sha", new_candidate)
-        self.assertNotEqual(stale.returncode, 0, stale.stdout + stale.stderr)
-        refreshed = consumer.command("verify")
-        self.assertEqual(refreshed.returncode, 0, refreshed.stdout + refreshed.stderr)
-        checked = consumer.command("traceability", "check-completion", "e2e",
-                                  "--candidate-sha", new_candidate,
-                                  "--anchor-sha", new_candidate)
-        self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
-        self.assertEqual(json.loads(completion_path.read_text())["status"], "pass")
+        candidate = consumer.candidate
 
         def refused(label):
             result = consumer.command("traceability", "check-completion", "e2e",
-                                      "--candidate-sha", new_candidate,
-                                      "--anchor-sha", new_candidate)
+                                      "--candidate-sha", candidate,
+                                      "--anchor-sha", candidate)
             self.assertNotEqual(result.returncode, 0, label)
             self.assertIn("fail", result.stdout + result.stderr, label)
             return result
@@ -66,7 +47,7 @@ class ReferenceTests(unittest.TestCase):
         refused("changed execution log")
         log.write_bytes(log_bytes)
 
-        review_path = consumer.root / "work/e2e/traceability/reviews" / f"{new_candidate}.json"
+        review_path = consumer.root / "work/e2e/traceability/reviews" / f"{candidate}.json"
         review_bytes = review_path.read_bytes()
         review_path.write_text("{}\n")
         refused("invalid independent review")
@@ -158,7 +139,9 @@ class ReferenceTests(unittest.TestCase):
             artifacts={"results/runs/run-17.log": b"run-17: pass\n"})
         code, run_projection = repo.cli("show", run_ref)
         self.assertEqual(code, 0, run_projection)
-        self.assertEqual(run_projection["payload"]["candidate_sha"], repo.source_sha)
+        run_record = next(entry for entry in run_projection["payload"]["items"]
+                          if entry["id"] == "run-17")
+        self.assertEqual(run_record["candidate_sha"], repo.source_sha)
         self.assertEqual((repo.root / "results/runs/run-17.log").read_bytes(), b"run-17: pass\n")
         run_bundle = repo.root / "runs.refs"
         self.assertEqual(repo.cli("export", "repository-runs", "--out", str(run_bundle))[0], 0)
@@ -268,6 +251,8 @@ class ReferenceTests(unittest.TestCase):
                                       "--shared-owner", "shared")
             self.assertEqual(code, 0, recorded)
             decision_refs.append(recorded["reference"])
+            current = capture_project(repo.root, shared_owners={"shared"})
+            self.assertEqual(current["generation"], candidate["generation"])
             code, resolved = repo.cli("show", recorded["reference"])
             self.assertEqual(code, 0, resolved)
             self.assertEqual(resolved["payload"]["decision"], recorded["decision"]["decision"])
@@ -321,6 +306,8 @@ class ReferenceTests(unittest.TestCase):
                                  "--candidate-sha", new_candidate,
                                  "--anchor-sha", new_candidate)
         self.assertNotEqual(stale.returncode, 0, stale.stdout + stale.stderr)
+        stale_result = json.loads(stale.stdout)
+        self.assertIn("stale final candidate", stale_result.get("errors", []))
 
     def test_shared_deletion_and_retirement(self):
         r1 = item("req-a/spec/1", "req-one")
