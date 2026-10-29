@@ -1,0 +1,27 @@
+test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests) ... FAIL
+test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kzhcyh6d/candidate/_ask/tests/test_workflow_refs_project.py", line 101, in test_authoritative_inventory_and_cycles
+    self.assertEqual(graph.get("candidate_inputs", {}).get("live/spec/1@1", [{}])[0].get("reference"),
+AssertionError: None != 'archived/spec/1@1'
+
+======================================================================
+FAIL: test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kzhcyh6d/candidate/_ask/tests/test_workflow_refs_project.py", line 154, in test_coherent_capture_new_owner_and_aba
+    self.assertEqual(capture_project(self.root, retries=1, during_scan=develop_move_and_return,
+AssertionError: 'complete' != 'incomplete'
+- complete
++ incomplete
+? ++
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.765s
+
+FAILED (failures=2)

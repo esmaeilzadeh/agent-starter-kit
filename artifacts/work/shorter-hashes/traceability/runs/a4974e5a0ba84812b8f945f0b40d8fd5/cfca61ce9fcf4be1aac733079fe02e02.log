@@ -1,0 +1,17 @@
+test_canonical_and_byte_digest_semantics (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_concurrent_and_interrupted_publication (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-a3g36k4i/candidate/_ask/tests/test_workflow_refs_store.py", line 62, in test_immutable_revision_catalog
+    with self.assertRaises(CatalogError):
+AssertionError: CatalogError not raised
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.408s
+
+FAILED (failures=1)

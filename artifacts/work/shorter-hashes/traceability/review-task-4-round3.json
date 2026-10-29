@@ -1,0 +1,208 @@
+{
+  "schema": "ask-test-review/v2",
+  "reviewer": "/root/task4_review_round3 (independent Sol reviewer; fresh exact-candidate review pending)",
+  "verdict": "APPROVED",
+  "scope": "task",
+  "task_id": "4",
+  "test_ids": [
+    "4/1",
+    "4/2",
+    "4/3",
+    "4/4",
+    "4/5",
+    "4/6",
+    "4/7"
+  ],
+  "criterion_ids": [
+    "SH-07",
+    "SH-15",
+    "SH-16",
+    "SH-17",
+    "SH-18"
+  ],
+  "candidate_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "base_sha": "02ad31b6e5ef5130986a920f943788cbbe970631",
+  "implementation_base_sha": "16b699cbcc253d0873cd58aee6e773ab373a6f28",
+  "source_digests": {
+    ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+    ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+    ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+    ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+    ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953",
+    ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+    ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+    ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+    "_ask/tests/test_workflow_refs_impact.py": "b56f50ec29da3c0bc3d25b75791c6b68aa70fb2ebfb350b8863ce1bbcf4f7297",
+    "_ask/tests/test_workflow_refs_project.py": "772fe80a4bf6bb906186de157e53f3970f8464d23806f17717b406b3bc54919c"
+  },
+  "inspected_sources": [
+    ".agents/ask/workflow_refs/__init__.py",
+    ".agents/ask/workflow_refs/benchmark.py",
+    ".agents/ask/workflow_refs/codec.py",
+    ".agents/ask/workflow_refs/compare.py",
+    ".agents/ask/workflow_refs/identity.py",
+    ".agents/ask/workflow_refs/impact.py",
+    ".agents/ask/workflow_refs/profiles.py",
+    ".agents/ask/workflow_refs/project.py",
+    ".agents/ask/workflow_refs/store.py",
+    "_ask/tests/test_workflow_refs_baseline.py",
+    "_ask/tests/test_workflow_refs_codec.py",
+    "_ask/tests/test_workflow_refs_compare.py",
+    "_ask/tests/test_workflow_refs_identity.py",
+    "_ask/tests/test_workflow_refs_impact.py",
+    "_ask/tests/test_workflow_refs_project.py",
+    "_ask/tests/test_workflow_refs_store.py"
+  ],
+  "changed_cases": [
+    "1/1",
+    "1/2",
+    "2/1",
+    "2/2",
+    "2/3",
+    "2/4",
+    "2/5",
+    "2/6",
+    "2/7",
+    "2/8",
+    "2/9",
+    "3/1",
+    "3/2",
+    "3/3",
+    "4/1",
+    "4/2",
+    "4/3",
+    "4/4",
+    "4/5",
+    "4/6",
+    "4/7"
+  ],
+  "inventory_exclusions": {
+    "_ask/tests/test_workflow_refs_store.py.ReferenceTests.test_snapshot_identity_requires_full_object_id": "Retained Task 2 redundant malformed-snapshot-length regression; accepted case 2/4 covers equivalent checks plus SHA-256 prefix handling. It is outside Task 4 responsibilities."
+  },
+  "criteria": [
+    {
+      "id": "SH-07",
+      "coverage_decision": "APPROVED",
+      "assessment": "Available-source deletion and unavailable-source/object states are distinct; pinned history remains retrievable and a missing pinned object returns incomplete discovery.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Available-source deletion and unavailable-source/object states are distinct; pinned history remains retrievable and a missing pinned object returns incomplete discovery. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        }
+      }
+    },
+    {
+      "id": "SH-15",
+      "coverage_decision": "APPROVED",
+      "assessment": "Impact decisions bind exact graph-derived input paths and source context; candidate-only inputs are traversed while immutable catalog pins remain unchanged.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Impact decisions bind exact graph-derived input paths and source context; candidate-only inputs are traversed while immutable catalog pins remain unchanged. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        },
+        "unit": {
+          "decision": "APPROVED",
+          "assessment": "Impact decisions bind exact graph-derived input paths and source context; candidate-only inputs are traversed while immutable catalog pins remain unchanged. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        }
+      }
+    },
+    {
+      "id": "SH-16",
+      "coverage_decision": "APPROVED",
+      "assessment": "Retain decisions require independent attributed review and stop only named eligible consumer edges; converging roots preserve each path.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Retain decisions require independent attributed review and stop only named eligible consumer edges; converging roots preserve each path. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        },
+        "unit": {
+          "decision": "APPROVED",
+          "assessment": "Retain decisions require independent attributed review and stop only named eligible consumer edges; converging roots preserve each path. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        }
+      }
+    },
+    {
+      "id": "SH-17",
+      "coverage_decision": "APPROVED",
+      "assessment": "Retire/revise outcomes preserve historical pins; explicit inactive lifecycle state is not reactivated by latest-version inference or active consumers.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Retire/revise outcomes preserve historical pins; explicit inactive lifecycle state is not reactivated by latest-version inference or active consumers. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        },
+        "unit": {
+          "decision": "APPROVED",
+          "assessment": "Retire/revise outcomes preserve historical pins; explicit inactive lifecycle state is not reactivated by latest-version inference or active consumers. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        }
+      }
+    },
+    {
+      "id": "SH-18",
+      "coverage_decision": "APPROVED",
+      "assessment": "Capture inventories live/archive/shared owners from authoritative refs, detects logged and unlogged ABA movement for selected refs, and rejects incomplete source declarations.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Capture inventories live/archive/shared owners from authoritative refs, detects logged and unlogged ABA movement for selected refs, and rejects incomplete source declarations. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        },
+        "unit": {
+          "decision": "APPROVED",
+          "assessment": "Capture inventories live/archive/shared owners from authoritative refs, detects logged and unlogged ABA movement for selected refs, and rejects incomplete source declarations. Adequate for Task 4 assigned cases; no later task obligations are claimed."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "4/1",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    },
+    {
+      "id": "4/2",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    },
+    {
+      "id": "4/3",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    },
+    {
+      "id": "4/4",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    },
+    {
+      "id": "4/5",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    },
+    {
+      "id": "4/6",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    },
+    {
+      "id": "4/7",
+      "decision": "APPROVED",
+      "assertion_assessment": "Assertions exercise the accepted scenario against real committed catalogs, captured refs, and cross-owner dependency paths. The mapped assertions cover the specified refusal and preservation behavior.",
+      "counterexample": "Considered missing declarations/objects, unregistered candidate revisions, omitted downstream consumers, converging paths, explicit inactive targets, and unlogged advance-and-return; each remains incomplete or continues propagation as required.",
+      "tdd_continuity_assessment": "Behavior Red run 0b30a4495a4145dfbc8e47bf4e6973a8 has assertion failures against pre-fix behavior where applicable; exact-candidate Green run a60d388bf4784f4ca22a885cfe933133 passes all seven mapped cases with both runners collected."
+    }
+  ]
+}

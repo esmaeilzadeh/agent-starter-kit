@@ -1,0 +1,17 @@
+test_contract_run_lifetimes_and_source_identity (_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_contract_run_lifetimes_and_source_identity) ... FAIL
+
+======================================================================
+FAIL: test_contract_run_lifetimes_and_source_identity (_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_contract_run_lifetimes_and_source_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-task5-plan-review-itw3a97b/candidate/_ask/tests/test_workflow_refs_traceability.py", line 138, in test_contract_run_lifetimes_and_source_identity
+    self.assertEqual(report["cases"][0]["outcome"], "passed")
+AssertionError: 'failed' != 'passed'
+- failed
++ passed
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.099s
+
+FAILED (failures=1)

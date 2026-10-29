@@ -1,0 +1,68 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "e0a83761b908435583eec8d312a34c98",
+  "scope": "task",
+  "task_id": "4",
+  "candidate_sha": "27dd8ac9194bead5dc927971cac58c6b6ee55fc6",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "8de3ef049f7045d8b300ef6f36c66d4f",
+      "runner_id": "refs-project",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_project"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/ask-candidate-9s2pw2by/trusted/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/shorter-hashes/traceability/runs/e0a83761b908435583eec8d312a34c98/8de3ef049f7045d8b300ef6f36c66d4f.json",
+        "[\"_ask.tests.test_workflow_refs_project.ReferenceTests.test_authoritative_inventory_and_cycles\", \"_ask.tests.test_workflow_refs_project.ReferenceTests.test_coherent_capture_new_owner_and_aba\"]",
+        "_ask.tests.test_workflow_refs_project"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "27dd8ac9194bead5dc927971cac58c6b6ee55fc6",
+      "exit_code": 1,
+      "collection_status": "error",
+      "output_artifact": "work/shorter-hashes/traceability/runs/e0a83761b908435583eec8d312a34c98/8de3ef049f7045d8b300ef6f36c66d4f.log",
+      "output_digest": "0022ee81eaae586301bd919619db568337b011018f4f635ccdae17bcdd457edb"
+    },
+    {
+      "id": "9a9b90377e7548478bd13f0e24b27ff9",
+      "runner_id": "refs-impact",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_impact"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/ask-candidate-9s2pw2by/trusted/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/shorter-hashes/traceability/runs/e0a83761b908435583eec8d312a34c98/9a9b90377e7548478bd13f0e24b27ff9.json",
+        "[\"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_direct_and_potential_impact\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_reviewed_stop_old_pin_or_new_revision\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_retirement_preserves_shared_obligations\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_attributed_multiple_input_revalidation\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_deletion_vs_unavailability_and_history\"]",
+        "_ask.tests.test_workflow_refs_impact"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "27dd8ac9194bead5dc927971cac58c6b6ee55fc6",
+      "exit_code": 1,
+      "collection_status": "error",
+      "output_artifact": "work/shorter-hashes/traceability/runs/e0a83761b908435583eec8d312a34c98/9a9b90377e7548478bd13f0e24b27ff9.log",
+      "output_digest": "0022ee81eaae586301bd919619db568337b011018f4f635ccdae17bcdd457edb"
+    }
+  ],
+  "cases": []
+}

@@ -1,0 +1,10 @@
+askit: kit /tmp/ask-candidate-icc14orl/checkout @ HEAD
+askit: cache /tmp/tmp.HbYl3xZMPU/.cache/askit/kit
+Cloning into '/tmp/tmp.HbYl3xZMPU/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/shorter-hashes'.
+askit: /tmp/tmp.HbYl3xZMPU/.local/bin/askit -> /tmp/tmp.HbYl3xZMPU/.cache/askit/kit/askit
+askit: /tmp/tmp.HbYl3xZMPU/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.HbYl3xZMPU/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)

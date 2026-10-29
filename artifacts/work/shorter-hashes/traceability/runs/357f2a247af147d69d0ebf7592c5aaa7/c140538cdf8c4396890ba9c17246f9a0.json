@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_equivalent_questions_and_lookup_accounting", "outcome": "error", "failure_kind": "setup_or_runtime_error"}, {"case_id": "_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_frozen_corpus_and_tokenizer", "outcome": "failed", "failure_kind": "behavior_assertion"}], "collection_status": "ok"}

@@ -1,0 +1,76 @@
+{
+  "schema": "ask-test-review/v2",
+  "reviewer": "/root/cont_review (independent Codex Sol reviewer)",
+  "scope": "task",
+  "task_id": "1",
+  "test_ids": [
+    "1/1",
+    "1/2"
+  ],
+  "criterion_ids": [
+    "SH-11",
+    "SH-12"
+  ],
+  "candidate_sha": "eb39360ebe9d6609991a11b92981c62df3f8d62e",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "base_sha": "02ad31b6e5ef5130986a920f943788cbbe970631",
+  "implementation_base_sha": "813b971e387547248037ee972bbafd26e2110188",
+  "source_digests": {
+    ".agents/ask/workflow_refs/benchmark.py": "920153734e5064ea9735c4a08815ecfb253434b7b964336379e8711f8ecd02c9",
+    "_ask/tests/test_workflow_refs_baseline.py": "ebda11f341289a3f1d0682f44903ad70cbb845ccc756d71407700a13d5de00d4",
+    "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
+    "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f"
+  },
+  "inspected_sources": [
+    ".agents/ask/workflow_refs/benchmark.py",
+    "_ask/tests/test_workflow_refs_baseline.py"
+  ],
+  "changed_cases": [
+    "1/1",
+    "1/2"
+  ],
+  "inventory_exclusions": {},
+  "criteria": [
+    {
+      "id": "SH-11",
+      "coverage_decision": "APPROVED",
+      "assessment": "For Task 1, the frozen resume and review projections preserve complete first-task tests, obligations, runners, authority and historical evidence while excluding unrelated task context. This is task-scoped baseline foundation coverage, not completion of future selective-reference APIs or E2E obligations.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Case 1/2 joins real frozen Git corpus inputs, task scopes, test contracts, authority records, historical run/log inputs and serialized projections; complete selected objects are independently compared with immutable originals. Other task E2E coverage is not claimed."
+        }
+      }
+    },
+    {
+      "id": "SH-12",
+      "coverage_decision": "APPROVED",
+      "assessment": "Task 1 establishes the pinned corpus, source, workload and tokenizer, deterministic labeled input transcripts, source integrity refusals and unique metadata totals. Strict baseline/candidate aggregate savings and candidate generated outputs remain Task 10 obligations.",
+      "type_adequacy": {
+        "integration": {
+          "decision": "APPROVED",
+          "assessment": "Cases 1/1 and 1/2 exercise frozen Git reads, exact hashing and byte sizes, pinned tokenizer operation/version, repeated capture, complete selective evidence, per-journey counts, summed input tokens and deduplicated JSON metadata bytes."
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "id": "1/1",
+      "decision": "APPROVED",
+      "assertion_assessment": "Repeated captures compare equal; schema/source/tokenizer/journey identities and unique metadata bytes are checked. Per-transcript tokens are recomputed independently. Wrong tokenizer, changed sealed inputs/workload and direct corrupt/missing source reads must refuse a report.",
+      "counterexample": "A wrong tokenizer version, corrupted frozen blob, missing source, changed workload or nondeterministic capture causes explicit refusal/equality assertions to fail rather than silently producing comparable measurements.",
+      "tdd_continuity_assessment": "Initial executed Red e72f158 failed this case as behavior_assertion for absent frozen source identity, not setup/import failure. Subsequent R1 correction Red c97d997 keeps this case passing; final Green at eb39360 passes with strengthened corrupt/missing read assertions. No behavior assertion was weakened and no exemption is used."
+    },
+    {
+      "id": "1/2",
+      "decision": "APPROVED",
+      "assertion_assessment": "Resume and review complete first scopes/tests/obligations/runners and selected review spec criteria are compared with frozen Git objects. Unrelated WB-002 and approval-checkpoint material must be absent. Source hashes/sizes, labeled question/context inclusion, resume approval/accepted identities, complete historical run records and selected log inclusion remain checked; total tokens equal per-journey sum and unique metadata deduplicates paths.",
+      "counterexample": "Including unrelated task definitions fails negative assertions; dropping a selected test, expected_assertions, scenario, source_paths, obligation or runner fails complete-record equalities against frozen originals. Altering historical run content fails frozen-result equality. Incorrect aggregate counts fail independent sum checks.",
+      "tdd_continuity_assessment": "Initial Red e72f158 failed on zero journeys. R1 regression Red c97d997/run 997aae92aba3461a95d9bf085bea0025 fails as behavior_assertion for unrelated whole-file projection. Candidate eb39360/run 349aa070578a47b986ac49746557c627 passes both cases with exact candidate and verified log digest. Later test changes strengthen full-record comparisons for already-correct projection behavior without weakening the Red assertions; no invented extra Red or exemption is used."
+    }
+  ],
+  "evidence": "work/shorter-hashes/inner-loop/evidence/1-review-round4.md",
+  "inventory_assessment": "Both changed Python sources were inspected in full. Exactly two mapped new test methods are present; no unmapped case requires exclusion. R1 and R2 are resolved; no broader refactor or unresolved finding."
+}

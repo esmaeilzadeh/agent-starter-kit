@@ -1,0 +1,6 @@
+check-clean-worktree: clean
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=ca4dc32d8630327928f1cb11bcc15491a0df5787
+start-work: workstream=work/demo
+PASS: start-work from develop or fail closed

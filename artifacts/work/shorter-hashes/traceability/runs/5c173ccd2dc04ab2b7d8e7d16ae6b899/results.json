@@ -1,0 +1,42 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "5c173ccd2dc04ab2b7d8e7d16ae6b899",
+  "scope": "task",
+  "task_id": "5",
+  "candidate_sha": "56e629afa3025afa6dcc3b302d4e185754a6dab0",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "7fcaf35f3157474cb27813021300bfce",
+      "runner_id": "refs-traceability",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_traceability"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/shorter-hashes/traceability/runs/5c173ccd2dc04ab2b7d8e7d16ae6b899/7fcaf35f3157474cb27813021300bfce.json",
+        "[\"_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_authority_rejects_candidate_substitution\", \"_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_exact_intent_and_canonical_contracts\", \"_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_contract_run_lifetimes_and_source_identity\"]",
+        "_ask.tests.test_workflow_refs_traceability"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "56e629afa3025afa6dcc3b302d4e185754a6dab0",
+      "exit_code": 1,
+      "collection_status": "error",
+      "output_artifact": "work/shorter-hashes/traceability/runs/5c173ccd2dc04ab2b7d8e7d16ae6b899/7fcaf35f3157474cb27813021300bfce.log",
+      "output_digest": "0022ee81eaae586301bd919619db568337b011018f4f635ccdae17bcdd457edb"
+    }
+  ],
+  "cases": []
+}

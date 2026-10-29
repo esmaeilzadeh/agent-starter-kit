@@ -1,0 +1,47 @@
+test_equivalent_questions_and_lookup_accounting (_ask.tests.test_workflow_refs_baseline.ReferenceTests) ... FAIL
+test_frozen_corpus_and_tokenizer (_ask.tests.test_workflow_refs_baseline.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_equivalent_questions_and_lookup_accounting (_ask.tests.test_workflow_refs_baseline.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-ulnxkl9t/candidate/_ask/tests/test_workflow_refs_baseline.py", line 119, in test_equivalent_questions_and_lookup_accounting
+    self.assertEqual({test["id"] for test in task_plan["tests"]}, selected_ids)
+AssertionError: Items in the first set but not the second:
+'UI-empty'
+'WB-overview'
+'UI-inspect'
+'WB-decision-choice'
+'WB-completed-tasks'
+'UI-gitless'
+'WB-test-panel'
+'WB-browser-journey'
+'UI-overview-results'
+'WB-latency-budget'
+'UI-persist'
+'WB-navigation'
+'UI-overview-hierarchy'
+'WB-attention'
+'WB-snapshot'
+'WB-performance'
+'WB-summary-links'
+'UI-decision-object'
+'WB-browser-accessibility'
+'WB-task-detail'
+'WB-debug'
+'UI-expander-ids'
+'WB-source-version'
+'WB-evidence-states'
+'WB-source-errors'
+'UI-conflict'
+'WB-evidence-identity'
+'UI-browser'
+'UI-test-source'
+'WB-inventory'
+'WB-form-context'
+'UI-browser-gitless'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.649s
+
+FAILED (failures=1)

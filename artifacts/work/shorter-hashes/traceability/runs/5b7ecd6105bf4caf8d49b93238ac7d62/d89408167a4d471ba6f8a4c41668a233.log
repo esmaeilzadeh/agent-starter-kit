@@ -1,0 +1,18 @@
+test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ERROR
+
+======================================================================
+ERROR: test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_project.py", line 31, in setUp
+    git(self.root, "update-ref", "refs/heads/agent/live/task/4", self.sha)
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_project.py", line 13, in git
+    return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True).stdout.strip()
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'update-ref', 'refs/heads/agent/live/task/4', '871b4ab5da80f1390f8118d2724c369625c2e612']' returned non-zero exit status 128.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.201s
+
+FAILED (errors=1)

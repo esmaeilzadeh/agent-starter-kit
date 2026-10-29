@@ -1,0 +1,10 @@
+test_attributed_multiple_input_revalidation (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_direct_and_potential_impact (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 11.493s
+
+OK

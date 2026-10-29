@@ -1,0 +1,19 @@
+test_authority_rejects_candidate_substitution (_ask.tests.test_workflow_refs_traceability.ReferenceTests) ... ok
+test_contract_run_lifetimes_and_source_identity (_ask.tests.test_workflow_refs_traceability.ReferenceTests) ... FAIL
+test_exact_intent_and_canonical_contracts (_ask.tests.test_workflow_refs_traceability.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_contract_run_lifetimes_and_source_identity (_ask.tests.test_workflow_refs_traceability.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-jtb__hu7/candidate/_ask/tests/test_workflow_refs_traceability.py", line 137, in test_contract_run_lifetimes_and_source_identity
+    self.assertEqual(report["cases"][0]["outcome"], "passed")
+AssertionError: 'failed' != 'passed'
+- failed
++ passed
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.763s
+
+FAILED (failures=1)

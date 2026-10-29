@@ -1,0 +1,56 @@
+test_complete_item_and_binding_equivalence (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... ok
+test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-vn028g3_/candidate/_ask/tests/test_workflow_refs_compare.py", line 142, in test_git_items_moves_and_unrelated_sections
+    huge_extraction = extract_git_item(root, huge_commit, "huge.json", "huge", "structured-item/1")
+  File "/tmp/ask-cases-vn028g3_/candidate/.agents/ask/workflow_refs/compare.py", line 171, in extract_git_item
+    document = json.loads(raw.decode("utf-8"), object_pairs_hook=_unique_pairs,
+  File "/usr/lib/python3.10/json/__init__.py", line 359, in loads
+    return cls(**kw).decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+decimal.InvalidOperation: [<class 'decimal.InvalidOperation'>]
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/ask-cases-vn028g3_/candidate/_ask/tests/test_workflow_refs_compare.py", line 144, in test_git_items_moves_and_unrelated_sections
+    self.fail(f"unsupported document number must return incomplete, not raise: {exc}")
+AssertionError: unsupported document number must return incomplete, not raise: [<class 'decimal.InvalidOperation'>]
+
+======================================================================
+FAIL: test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-vn028g3_/candidate/_ask/tests/test_workflow_refs_compare.py", line 63, in test_profile_exclusions_and_unavailability
+    huge_exponent = compare_items('{"value":1e99999999999999999999999999999999999999}',
+  File "/tmp/ask-cases-vn028g3_/candidate/.agents/ask/workflow_refs/compare.py", line 35, in compare_items
+    before_value = _normalize_payload(before, profile["format"])
+  File "/tmp/ask-cases-vn028g3_/candidate/.agents/ask/workflow_refs/compare.py", line 73, in _normalize_payload
+    value = json.loads(value, object_pairs_hook=_unique_pairs,
+  File "/usr/lib/python3.10/json/__init__.py", line 359, in loads
+    return cls(**kw).decode(s)
+  File "/usr/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.10/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+decimal.InvalidOperation: [<class 'decimal.InvalidOperation'>]
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/ask-cases-vn028g3_/candidate/_ask/tests/test_workflow_refs_compare.py", line 67, in test_profile_exclusions_and_unavailability
+    self.fail(f"invalid numeric range must return incomplete, not raise: {exc}")
+AssertionError: invalid numeric range must return incomplete, not raise: [<class 'decimal.InvalidOperation'>]
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.452s
+
+FAILED (failures=2)

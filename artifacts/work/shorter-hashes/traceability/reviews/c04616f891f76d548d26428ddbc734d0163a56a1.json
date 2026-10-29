@@ -1,0 +1,198 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "befaf2ebc27936dd04492c8d9cfe99b306f431ed0483518d1bc03e7059f90860",
+  "review_digest": "a6d72aacda7b0ae176637e5fb4439ba8be692a0dd559cd6591002325f4210fef",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "reviewer": "/root/task4_review_round3 (independent Sol reviewer; exact-candidate review pending)",
+    "verdict": "APPROVED",
+    "scope": "task",
+    "task_id": "5",
+    "test_ids": [
+      "5/1",
+      "5/2",
+      "5/3"
+    ],
+    "criterion_ids": [
+      "SH-03",
+      "SH-04",
+      "SH-05",
+      "SH-06",
+      "SH-09",
+      "SH-15"
+    ],
+    "candidate_sha": "c04616f891f76d548d26428ddbc734d0163a56a1",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+    "base_sha": "02ad31b6e5ef5130986a920f943788cbbe970631",
+    "implementation_base_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+    "source_digests": {
+      ".agents/ask/verification/run.py": "c0bc25515ccdfdbe50fb889e547d3807172da1458d2287ce39d8cb721ee9972c",
+      ".agents/ask/verification/traceability/__init__.py": "919398d62e8e23bdcb84d39a4fc47c7159c6715d37e33677a24ca4ffcaacc962",
+      ".agents/ask/verification/traceability/adapters.py": "9cf37f5460caec23c244fb0d53a969f78022c2e14f2d34d0bf571840f37ae45f",
+      ".agents/ask/verification/traceability/cli.py": "7e720f1a33ebc7129b295394ab41ee38b55ca8edaa12ed35a73cd8c4a4b0c7c5",
+      ".agents/ask/verification/traceability/completion.py": "99534407076b99cca37cfd0d7e5e5fb1f43810c56e0fa29536d9e976736fb5bb",
+      ".agents/ask/verification/traceability/contracts.py": "9dc6fd827c6f715f9aee0d0301855a31ca2a5cc2576f2fed3ce17e1d40e92d21",
+      ".agents/ask/verification/traceability/coverage.py": "85bebfb0007be67ec70307b9a5c5616413730ce81d2e35ab352a1587b1475da7",
+      ".agents/ask/verification/traceability/evidence.py": "f64135a33082d05095bbcd6a3d1a43cb835b3e4f3cd6a8ce37aa3ac46ca92884",
+      ".agents/ask/verification/traceability/service.py": "cf8e7333e84e35840f14b52830d3f13c57afeaab97b58d4f19ba849097493138",
+      ".agents/ask/verification/traceability/unittest_runner.py": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+      ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+      ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+      ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+      ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+      ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953",
+      ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+      ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+      ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+      "_ask/scripts/intent-confirmation.py": "bad759d37b5997428ed8cca439e0539e3fa2b5152ab3d9f1704a31bcd8b739bf",
+      "_ask/tests/test_workflow_refs_traceability.py": "5becdcef8dff7a1282ca02d6f6843207bf9247226dc357c292b99805d596cf36"
+    },
+    "inspected_sources": [
+      ".agents/ask/verification/traceability/adapters.py",
+      ".agents/ask/workflow_refs/__init__.py",
+      ".agents/ask/workflow_refs/benchmark.py",
+      ".agents/ask/workflow_refs/codec.py",
+      ".agents/ask/workflow_refs/compare.py",
+      ".agents/ask/workflow_refs/identity.py",
+      ".agents/ask/workflow_refs/impact.py",
+      ".agents/ask/workflow_refs/profiles.py",
+      ".agents/ask/workflow_refs/project.py",
+      ".agents/ask/workflow_refs/store.py",
+      "_ask/tests/test_workflow_refs_baseline.py",
+      "_ask/tests/test_workflow_refs_codec.py",
+      "_ask/tests/test_workflow_refs_compare.py",
+      "_ask/tests/test_workflow_refs_identity.py",
+      "_ask/tests/test_workflow_refs_impact.py",
+      "_ask/tests/test_workflow_refs_project.py",
+      "_ask/tests/test_workflow_refs_store.py",
+      "_ask/tests/test_workflow_refs_traceability.py"
+    ],
+    "changed_cases": [
+      "1/1",
+      "1/2",
+      "2/1",
+      "2/2",
+      "2/3",
+      "2/4",
+      "2/5",
+      "2/6",
+      "2/7",
+      "2/8",
+      "2/9",
+      "3/1",
+      "3/2",
+      "3/3",
+      "4/1",
+      "4/2",
+      "4/3",
+      "4/4",
+      "4/5",
+      "4/6",
+      "4/7",
+      "5/1",
+      "5/2",
+      "5/3"
+    ],
+    "inventory_exclusions": {
+      "_ask/tests/test_workflow_refs_store.py.ReferenceTests.test_snapshot_identity_requires_full_object_id": "Existing Task 2 redundant full object-id regression; it is outside Task 5 responsibilities."
+    },
+    "criteria": [
+      {
+        "id": "SH-03",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned cases exercise the accepted authority and binding requirements: ['A separate integrity file maps each qualified numeric item/revision reference to immutable full integrity data; ordinary spec/plan/task/test/report records use numeric references rather than embedded hashes', 'Committed item revisions resolve exact Git snapshots, repository-relative paths, and stable item IDs; shared source identities are stored once and Git content identity may avoid redundant generated item checksums', 'Required exact-byte and canonical-JSON checks retain full authoritative digests with explicit algorithm and semantics in the separate file', 'Evidence outside Git retains retrievable artifacts and full authoritative digests registered once per workstream, algorithm, and semantics where safely reusable; edited output invalidates its evidence', 'Missing or changed integrity entries cannot verify or rebind a published revision; numeric references alone confer no verification or acceptance authority']",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Task 5 integration assertions cover the assigned accepted behavior with coordinator-pinned contracts and immutable candidate executions."
+          }
+        }
+      },
+      {
+        "id": "SH-04",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned cases exercise the accepted authority and binding requirements: ['Resolution remains anchored to coordinator-owned accepted-tests authority and registered review/run records', 'Candidate-only modifications cannot authorize changed obligations or independent decisions', 'The existing exact intent approval and attributable independent review requirements remain enforced']",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Task 5 integration assertions cover the assigned accepted behavior with coordinator-pinned contracts and immutable candidate executions."
+          }
+        }
+      },
+      {
+        "id": "SH-05",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned cases exercise the accepted authority and binding requirements: ['Adding run evidence leaves published contract entries unchanged', 'Contract pins and run/evidence records have separate immutable lifetimes', 'Historical references retain their original meaning; evidence for stale obligations cannot satisfy a different accepted contract']",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Task 5 integration assertions cover the assigned accepted behavior with coordinator-pinned contracts and immutable candidate executions."
+          }
+        }
+      },
+      {
+        "id": "SH-06",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned cases exercise the accepted authority and binding requirements: ['Structured content comparisons preserve declared canonical JSON equivalence, while artifact-item impact follows SH-07 and SH-16', 'Intent approval and byte-bound log verification preserve exact-byte invalidation', 'Where checksums are retained, algorithm and digest semantics remain explicit; display prefixes and different semantics cannot be substituted']",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Task 5 integration assertions cover the assigned accepted behavior with coordinator-pinned contracts and immutable candidate executions."
+          }
+        }
+      },
+      {
+        "id": "SH-09",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned cases exercise the accepted authority and binding requirements: ['Generated workflow JSON uses compact versioned serialization with shared context recorded once per group', 'Values and required evidence survive normalization; only schema-declared defaults permit field omission', 'Canonical validation is deterministic and absent, null, and empty remain distinguishable where required']",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Task 5 integration assertions cover the assigned accepted behavior with coordinator-pinned contracts and immutable candidate executions."
+          }
+        }
+      },
+      {
+        "id": "SH-15",
+        "coverage_decision": "APPROVED",
+        "assessment": "The assigned cases exercise the accepted authority and binding requirements: ['Each edge pins a qualified numeric source item and exact numeric revision, resolving through the separate integrity file to its exact source snapshot, path, and stable item ID; Git preserves source history', 'Deterministic versioned comparison covers the complete item payload and actual exact input identities/revisions/roles, including declarations and shared constraints outside its file; ownership and ordinary lookup links do not invent dependencies', 'Revalidation records exact old/new numeric revisions and resolved contexts, decision, and attribution under the artifact type existing review/coordinator authority requirements', 'A meaningful content or dependency-binding change publishes a fresh consumer item revision; unchanged content and bindings retain their revision and unrelated snapshot changes alone cause no revision churn', 'Pointer or checksum edits cannot establish derivation or transfer approval; original historical bindings are preserved', 'Execution records retain exact original test/source/runner/contract bindings; reuse obeys existing eligibility rules and otherwise requires new execution']",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Task 5 integration assertions cover the assigned accepted behavior with coordinator-pinned contracts and immutable candidate executions."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "5/1",
+        "decision": "APPROVED",
+        "assertion_assessment": "Checks the assigned scenario with exact persisted values and captured execution outcomes: Only coordinator-owned accepted obligations and registered reviews can authorize completion; Changing a numeric reference, catalog or copied accepted pin cannot transfer authority or satisfy new obligations; Only coordinator-owned accepted obligations and registered reviews can authorize completion; Changing a numeric reference, catalog or copied accepted pin cannot transfer authority or satisfy new obligations",
+        "counterexample": "Considered candidate substitution, byte edits after approval, semantically incomplete envelopes, tampered execution logs, hostile import paths, unregistered or unavailable numeric bindings, stale historical runs, and unreviewed contract changes; the assertions reject the applicable counterexamples.",
+        "tdd_continuity_assessment": "Behavior Red run 8c3d1f315a214617bd73532673856064 fails 5/3 by assertion against the old adapter; exact-candidate Green run 64b93bde55cd44b2a5e9b494c94c6f33 passes all three mapped cases."
+      },
+      {
+        "id": "5/2",
+        "decision": "APPROVED",
+        "assertion_assessment": "Checks the assigned scenario with exact persisted values and captured execution outcomes: Intent edit invalidates the exact recorded approval even if text looks equivalent; Allowed canonical JSON equivalence preserves values/obligations; missing semantics or a byte-bound log edit fails; Intent edit invalidates the exact recorded approval even if text looks equivalent; Allowed canonical JSON equivalence preserves values/obligations; missing semantics or a byte-bound log edit fails",
+        "counterexample": "Considered candidate substitution, byte edits after approval, semantically incomplete envelopes, tampered execution logs, hostile import paths, unregistered or unavailable numeric bindings, stale historical runs, and unreviewed contract changes; the assertions reject the applicable counterexamples.",
+        "tdd_continuity_assessment": "Behavior Red run 8c3d1f315a214617bd73532673856064 fails 5/3 by assertion against the old adapter; exact-candidate Green run 64b93bde55cd44b2a5e9b494c94c6f33 passes all three mapped cases."
+      },
+      {
+        "id": "5/3",
+        "decision": "APPROVED",
+        "assertion_assessment": "Checks the assigned scenario with exact persisted values and captured execution outcomes: Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive; Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks; Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive; Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks; Published accepted entries remain immutable; exact original test/source/runner/contract bindings survive; Retain cannot convert historical final green into current execution or bypass exact candidate and accepted-contract checks",
+        "counterexample": "Considered candidate substitution, byte edits after approval, semantically incomplete envelopes, tampered execution logs, hostile import paths, unregistered or unavailable numeric bindings, stale historical runs, and unreviewed contract changes; the assertions reject the applicable counterexamples.",
+        "tdd_continuity_assessment": "Behavior Red run 8c3d1f315a214617bd73532673856064 fails 5/3 by assertion against the old adapter; exact-candidate Green run 64b93bde55cd44b2a5e9b494c94c6f33 passes all three mapped cases."
+      }
+    ]
+  },
+  "candidate_sha": "c04616f891f76d548d26428ddbc734d0163a56a1",
+  "scope": "task",
+  "task_id": "5"
+}

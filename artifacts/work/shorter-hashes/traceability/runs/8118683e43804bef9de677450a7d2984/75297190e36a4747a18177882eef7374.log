@@ -1,0 +1,41 @@
+test_complete_item_and_binding_equivalence (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_complete_item_and_binding_equivalence (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-9j7l1gs8/candidate/_ask/tests/test_workflow_refs_compare.py", line 22, in test_complete_item_and_binding_equivalence
+    self.assertEqual(same["status"], "unchanged")
+AssertionError: 'incomplete' != 'unchanged'
+- incomplete
++ unchanged
+
+
+======================================================================
+FAIL: test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-9j7l1gs8/candidate/_ask/tests/test_workflow_refs_compare.py", line 77, in test_git_items_moves_and_unrelated_sections
+    self.assertEqual(old_alpha["status"], "found")
+AssertionError: 'incomplete' != 'found'
+- incomplete
++ found
+
+
+======================================================================
+FAIL: test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-9j7l1gs8/candidate/_ask/tests/test_workflow_refs_compare.py", line 41, in test_profile_exclusions_and_unavailability
+    self.assertEqual(json_same["status"], "unchanged")
+AssertionError: 'incomplete' != 'unchanged'
+- incomplete
++ unchanged
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.046s
+
+FAILED (failures=3)

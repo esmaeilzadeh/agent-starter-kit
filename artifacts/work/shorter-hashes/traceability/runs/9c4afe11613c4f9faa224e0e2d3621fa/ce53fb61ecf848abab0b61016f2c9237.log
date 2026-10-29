@@ -1,0 +1,40 @@
+test_attributed_multiple_input_revalidation (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ERROR
+test_direct_and_potential_impact (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+
+======================================================================
+ERROR: test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kzhcyh6d/candidate/_ask/tests/test_workflow_refs_impact.py", line 280, in test_deletion_vs_unavailability_and_history
+    unavailable_object = load_project_graph(self.root, capture_project(self.root))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/workflow_refs/project.py", line 284, in load_project_graph
+    source = _regular_file_at(root, commit, source_path)
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/workflow_refs/project.py", line 227, in _regular_file_at
+    entry = subprocess.run(["git", "ls-tree", "-z", commit, "--", path], cwd=root,
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'ls-tree', '-z', 'ffffffffffffffffffffffffffffffffffffffff', '--', 'work/b/items.json']' returned non-zero exit status 128.
+
+======================================================================
+FAIL: test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kzhcyh6d/candidate/_ask/tests/test_workflow_refs_impact.py", line 225, in test_retirement_preserves_shared_obligations
+    self.assertFalse(graph_value["nodes"][V]["active"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kzhcyh6d/candidate/_ask/tests/test_workflow_refs_impact.py", line 186, in test_reviewed_stop_old_pin_or_new_revision
+    self.assertIn(Y, impact["items"])
+AssertionError: 'b/spec/1/plan/1/task/3/test/1@1' not found in {'b/spec/1/plan/1/task/1@1': {'owner': 'b', 'status': 'reassess', 'paths': [['a/spec/1/plan/1/item/1@1', 'b/spec/1/plan/1/task/1@1']], 'inputs': [{'reference': 'a/spec/1/plan/1/item/1@1', 'role': 'plan', 'resolved': True, 'deleted': False}, {'reference': 'c/spec/1@1', 'role': 'shared-policy', 'resolved': True, 'deleted': False}], 'decision': {'status': 'retained', 'active_status': 'active', 'decision': {'action': 'retain', 'old_upstream': 'a/spec/1/plan/1/item/1@1', 'new_upstream': 'a/spec/1/plan/1/item/1@2', 'dependent': 'b/spec/1/plan/1/task/1@1', 'profile': 'structured-item/1', 'context_generation': '9d11543ad8f4415d3306f899b7bc93cab3ecf373559313363465452ec0a8f447', 'examined_paths': {'a/spec/1/plan/1/item/1@1|plan': 'resolved', 'c/spec/1@1|shared-policy': 'resolved'}, 'required_paths': ['a/spec/1/plan/1/item/1@1|plan', 'c/spec/1@1|shared-policy'], 'eligible_consumers': ['b/spec/1/plan/1/task/2/test/1@1'], 'new_dependent': 'b/spec/1/plan/1/task/1@1', 'retirement_safe': False, 'review_evidence': 'review-1', 'reviewer': 'owner-b-reviewer', 'coordinator': 'owner-b-coordinator', 'outward_equal': True, 'satisfies_new_inputs': True, 'reuse_allowed': True}, 'propagation_stopped': True}}}
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.336s
+
+FAILED (failures=2, errors=1)

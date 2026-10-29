@@ -1,0 +1,29 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "shorter-hashes",
+  "task_id": "2",
+  "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+  "candidate_sha": "89344819326594e46de5e3b63e6ca615a4d265d1",
+  "tdd": {
+    "seam": "_ask/tests/test_workflow_refs_identity.py + _ask/tests/test_workflow_refs_store.py + _ask/tests/test_workflow_refs_codec.py",
+    "red": {
+      "command": "./ask traceability run shorter-hashes --candidate-sha a8c598967e44bcabf12c38ef486d57059d2d23b5 --phase red --scope task --task-id 2; run_id=ef625c2ea0de42b7a013130084a67f95",
+      "output": "All nine accepted regression cases 2/1\u20132/9 passed at the immutable baseline. Captured output: work/shorter-hashes/traceability/runs/ef625c2ea0de42b7a013130084a67f95/",
+      "exit_code": 0
+    },
+    "green": {
+      "command": "./ask traceability run shorter-hashes --candidate-sha 89344819326594e46de5e3b63e6ca615a4d265d1 --anchor-sha b008400c6bbbc4d41ff60b59b4a5f393b4568e7a --phase final_green --scope task --task-id 2; run_id=365575e834094848b7eb8c2baf336738",
+      "output": "All nine accepted regression cases 2/1\u20132/9 passed at the current candidate. Full output: work/shorter-hashes/traceability/runs/365575e834094848b7eb8c2baf336738/results.json",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "89344819326594e46de5e3b63e6ca615a4d265d1",
+    "run_id": "365575e834094848b7eb8c2baf336738",
+    "report_path": "work/shorter-hashes/traceability/runs/365575e834094848b7eb8c2baf336738/results.json",
+    "sha256": "1e8d534e19ba77e1395402b1a02cbe722196d28488d40bbeab2208e4c51240e5"
+  },
+  "notes": "Refactor: no applicable structural cleanup; Task 2 source is unchanged and all nine cases are accepted regressions. The recorded baseline run passed (exit 0), so no behavior Red exists. This is truthful evidence and is expected to fail the current check_integrable red-nonzero gate."
+}

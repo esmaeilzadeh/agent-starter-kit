@@ -1,0 +1,41 @@
+test_canonical_and_byte_digest_semantics (_ask.tests.test_workflow_refs_store.ReferenceTests) ... FAIL
+test_concurrent_and_interrupted_publication (_ask.tests.test_workflow_refs_store.ReferenceTests) ... FAIL
+test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests) ... FAIL
+test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_canonical_and_byte_digest_semantics (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2m4srp97/candidate/_ask/tests/test_workflow_refs_store.py", line 83, in test_canonical_and_byte_digest_semantics
+    self.assertIsNotNone(entry, "integrity publication must return its immutable revision")
+AssertionError: unexpectedly None : integrity publication must return its immutable revision
+
+======================================================================
+FAIL: test_concurrent_and_interrupted_publication (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2m4srp97/candidate/_ask/tests/test_workflow_refs_store.py", line 114, in test_concurrent_and_interrupted_publication
+    self.assertEqual(sum(isinstance(value, dict) for value in results), 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2m4srp97/candidate/_ask/tests/test_workflow_refs_store.py", line 162, in test_history_and_missing_integrity
+    self.assertIsNotNone(entry, "history must be published before it is resolved")
+AssertionError: unexpectedly None : history must be published before it is resolved
+
+======================================================================
+FAIL: test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-2m4srp97/candidate/_ask/tests/test_workflow_refs_store.py", line 53, in test_immutable_revision_catalog
+    self.assertIsNotNone(first, "a committed catalog entry must be returned")
+AssertionError: unexpectedly None : a committed catalog entry must be returned
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.293s
+
+FAILED (failures=4)

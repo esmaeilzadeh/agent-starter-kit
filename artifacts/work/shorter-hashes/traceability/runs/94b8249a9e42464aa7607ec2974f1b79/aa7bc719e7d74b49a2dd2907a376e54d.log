@@ -1,0 +1,25 @@
+test_canonical_and_byte_digest_semantics (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_concurrent_and_interrupted_publication (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ERROR
+test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests) ... FAIL
+
+======================================================================
+ERROR: test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xz5f1m4m/candidate/_ask/tests/test_workflow_refs_store.py", line 185, in test_history_and_missing_integrity
+    snapshot_id = doc["entries"][0]["snapshot_id"]
+KeyError: 'snapshot_id'
+
+======================================================================
+FAIL: test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xz5f1m4m/candidate/_ask/tests/test_workflow_refs_store.py", line 58, in test_immutable_revision_catalog
+    with self.assertRaises(CatalogError):
+AssertionError: CatalogError not raised
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.242s
+
+FAILED (failures=1, errors=1)

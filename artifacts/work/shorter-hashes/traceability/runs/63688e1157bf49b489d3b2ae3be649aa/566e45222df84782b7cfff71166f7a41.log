@@ -1,0 +1,31 @@
+test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests) ... FAIL
+test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-w62nhsld/candidate/_ask/tests/test_workflow_refs_project.py", line 43, in test_authoritative_inventory_and_cycles
+    self.assertEqual(capture["status"], "complete")
+AssertionError: 'incomplete' != 'complete'
+- incomplete
+? --
++ complete
+
+
+======================================================================
+FAIL: test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-w62nhsld/candidate/_ask/tests/test_workflow_refs_project.py", line 68, in test_coherent_capture_new_owner_and_aba
+    self.assertEqual(capture["status"], "complete")
+AssertionError: 'incomplete' != 'complete'
+- incomplete
+? --
++ complete
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.213s
+
+FAILED (failures=2)

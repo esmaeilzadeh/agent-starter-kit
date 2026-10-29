@@ -1,0 +1,50 @@
+test_attributed_multiple_input_revalidation (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ok
+test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ERROR
+test_direct_and_potential_impact (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ERROR
+test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ERROR
+
+======================================================================
+ERROR: test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-w62nhsld/candidate/_ask/tests/test_workflow_refs_impact.py", line 76, in test_deletion_vs_unavailability_and_history
+    self.assertEqual(result["items"][T]["status"], "incomplete")
+KeyError: 'b/spec/1/plan/1/task/1@1'
+
+======================================================================
+ERROR: test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-w62nhsld/candidate/_ask/tests/test_workflow_refs_impact.py", line 57, in test_retirement_preserves_shared_obligations
+    retired = record_decision(decision("retire"))
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/workflow_refs/impact.py", line 107, in record_decision
+    raise ImpactError("authority_missing", "decision lacks exact context, evidence, or authority")
+workflow_refs.impact.ImpactError: decision lacks exact context, evidence, or authority
+
+======================================================================
+ERROR: test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-w62nhsld/candidate/_ask/tests/test_workflow_refs_impact.py", line 47, in test_reviewed_stop_old_pin_or_new_revision
+    result = record_decision(decision(), capture)
+  File "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/workflow_refs/impact.py", line 107, in record_decision
+    raise ImpactError("authority_missing", "decision lacks exact context, evidence, or authority")
+workflow_refs.impact.ImpactError: decision lacks exact context, evidence, or authority
+
+======================================================================
+FAIL: test_direct_and_potential_impact (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-w62nhsld/candidate/_ask/tests/test_workflow_refs_impact.py", line 39, in test_direct_and_potential_impact
+    self.assertEqual(result["status"], "complete")
+AssertionError: 'incomplete' != 'complete'
+- incomplete
+? --
++ complete
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (failures=1, errors=3)

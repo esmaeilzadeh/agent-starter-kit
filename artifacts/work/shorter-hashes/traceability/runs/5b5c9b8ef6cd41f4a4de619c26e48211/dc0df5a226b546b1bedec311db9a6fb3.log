@@ -1,0 +1,30 @@
+test_complete_item_and_binding_equivalence (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... ok
+test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-e_821t19/candidate/_ask/tests/test_workflow_refs_compare.py", line 115, in test_git_items_moves_and_unrelated_sections
+    self.assertEqual(extract_git_item(root, first, "folder", "whole-file",
+AssertionError: 'found' != 'incomplete'
+- found
++ incomplete
+
+
+======================================================================
+FAIL: test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-e_821t19/candidate/_ask/tests/test_workflow_refs_compare.py", line 56, in test_profile_exclusions_and_unavailability
+    self.assertEqual(empty_profile["status"], "incomplete")
+AssertionError: 'unchanged' != 'incomplete'
+- unchanged
++ incomplete
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.163s
+
+FAILED (failures=2)

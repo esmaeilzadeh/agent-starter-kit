@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "_ask.tests.test_workflow_refs_project.ReferenceTests.test_authoritative_inventory_and_cycles", "outcome": "failed", "failure_kind": "behavior_assertion"}, {"case_id": "_ask.tests.test_workflow_refs_project.ReferenceTests.test_coherent_capture_new_owner_and_aba", "outcome": "failed", "failure_kind": "behavior_assertion"}], "collection_status": "ok"}

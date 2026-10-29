@@ -1,0 +1,15 @@
+test_compact_lossless_versioned_envelopes (_ask.tests.test_workflow_refs_codec.ReferenceTests) ... FAIL
+test_persisted_producer_roundtrip (_ask.tests.test_workflow_refs_codec.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_compact_lossless_versioned_envelopes (_ask.tests.test_workflow_refs_codec.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-wrg_7ho2/candidate/_ask/tests/test_workflow_refs_codec.py", line 45, in test_compact_lossless_versioned_envelopes
+    with self.assertRaises(EnvelopeError):
+AssertionError: EnvelopeError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.007s
+
+FAILED (failures=1)

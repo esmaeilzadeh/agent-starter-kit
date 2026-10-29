@@ -1,0 +1,60 @@
+test_attributed_multiple_input_revalidation (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... ERROR
+test_direct_and_potential_impact (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests) ... FAIL
+
+======================================================================
+ERROR: test_deletion_vs_unavailability_and_history (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_impact.py", line 73, in test_deletion_vs_unavailability_and_history
+    self.assertEqual(result["items"][T]["status"], "incomplete")
+KeyError: 'b/spec/1/plan/1/task/1@1'
+
+======================================================================
+FAIL: test_attributed_multiple_input_revalidation (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_impact.py", line 66, in test_attributed_multiple_input_revalidation
+    self.assertEqual(record_decision(missing_authority)["status"], "reassess")
+AssertionError: 'incomplete' != 'reassess'
+- incomplete
++ reassess
+
+
+======================================================================
+FAIL: test_direct_and_potential_impact (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_impact.py", line 38, in test_direct_and_potential_impact
+    self.assertEqual(result["status"], "complete")
+AssertionError: 'incomplete' != 'complete'
+- incomplete
+? --
++ complete
+
+
+======================================================================
+FAIL: test_retirement_preserves_shared_obligations (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_impact.py", line 56, in test_retirement_preserves_shared_obligations
+    self.assertEqual(retired["status"], "reassess")
+AssertionError: 'incomplete' != 'reassess'
+- incomplete
++ reassess
+
+
+======================================================================
+FAIL: test_reviewed_stop_old_pin_or_new_revision (_ask.tests.test_workflow_refs_impact.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-lja3xgn2/candidate/_ask/tests/test_workflow_refs_impact.py", line 47, in test_reviewed_stop_old_pin_or_new_revision
+    self.assertTrue(result["propagation_stopped"])
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (failures=4, errors=1)

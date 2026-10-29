@@ -1,0 +1,230 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "054c84cf49e0409380c675b0b75e710a",
+  "scope": "task",
+  "task_id": "4",
+  "candidate_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "e109ecb420664b6b8a9f7c787a0bd56a",
+      "runner_id": "refs-project",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_project"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/ask-candidate-ru24qddj/trusted/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/e109ecb420664b6b8a9f7c787a0bd56a.json",
+        "[\"_ask.tests.test_workflow_refs_project.ReferenceTests.test_authoritative_inventory_and_cycles\", \"_ask.tests.test_workflow_refs_project.ReferenceTests.test_coherent_capture_new_owner_and_aba\"]",
+        "_ask.tests.test_workflow_refs_project"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/e109ecb420664b6b8a9f7c787a0bd56a.log",
+      "output_digest": "c533ec237282e96eb37aaf567304d59dce42074c81cfff794806c3bcdf791cf2"
+    },
+    {
+      "id": "0db311e3f11a448a82e56cf48a4b5230",
+      "runner_id": "refs-impact",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_impact"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/ask-candidate-ru24qddj/trusted/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.json",
+        "[\"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_direct_and_potential_impact\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_reviewed_stop_old_pin_or_new_revision\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_retirement_preserves_shared_obligations\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_attributed_multiple_input_revalidation\", \"_ask.tests.test_workflow_refs_impact.ReferenceTests.test_deletion_vs_unavailability_and_history\"]",
+        "_ask.tests.test_workflow_refs_impact"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.log",
+      "output_digest": "545345ef81cbcbe8ac251928f09e341f069e73f4c4adebefa2e5b10497c913e2"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "_ask.tests.test_workflow_refs_project.ReferenceTests.test_authoritative_inventory_and_cycles",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/1",
+      "runner_id": "refs-project",
+      "execution_id": "e109ecb420664b6b8a9f7c787a0bd56a",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_project.py": "772fe80a4bf6bb906186de157e53f3970f8464d23806f17717b406b3bc54919c",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/e109ecb420664b6b8a9f7c787a0bd56a.log",
+      "output_digest": "c533ec237282e96eb37aaf567304d59dce42074c81cfff794806c3bcdf791cf2"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_project.ReferenceTests.test_coherent_capture_new_owner_and_aba",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/5",
+      "runner_id": "refs-project",
+      "execution_id": "e109ecb420664b6b8a9f7c787a0bd56a",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_project.py": "772fe80a4bf6bb906186de157e53f3970f8464d23806f17717b406b3bc54919c",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/e109ecb420664b6b8a9f7c787a0bd56a.log",
+      "output_digest": "c533ec237282e96eb37aaf567304d59dce42074c81cfff794806c3bcdf791cf2"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_attributed_multiple_input_revalidation",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/6",
+      "runner_id": "refs-impact",
+      "execution_id": "0db311e3f11a448a82e56cf48a4b5230",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_impact.py": "b56f50ec29da3c0bc3d25b75791c6b68aa70fb2ebfb350b8863ce1bbcf4f7297",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.log",
+      "output_digest": "545345ef81cbcbe8ac251928f09e341f069e73f4c4adebefa2e5b10497c913e2"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_deletion_vs_unavailability_and_history",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/7",
+      "runner_id": "refs-impact",
+      "execution_id": "0db311e3f11a448a82e56cf48a4b5230",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_impact.py": "b56f50ec29da3c0bc3d25b75791c6b68aa70fb2ebfb350b8863ce1bbcf4f7297",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.log",
+      "output_digest": "545345ef81cbcbe8ac251928f09e341f069e73f4c4adebefa2e5b10497c913e2"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_direct_and_potential_impact",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/2",
+      "runner_id": "refs-impact",
+      "execution_id": "0db311e3f11a448a82e56cf48a4b5230",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_impact.py": "b56f50ec29da3c0bc3d25b75791c6b68aa70fb2ebfb350b8863ce1bbcf4f7297",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.log",
+      "output_digest": "545345ef81cbcbe8ac251928f09e341f069e73f4c4adebefa2e5b10497c913e2"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_retirement_preserves_shared_obligations",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/4",
+      "runner_id": "refs-impact",
+      "execution_id": "0db311e3f11a448a82e56cf48a4b5230",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_impact.py": "b56f50ec29da3c0bc3d25b75791c6b68aa70fb2ebfb350b8863ce1bbcf4f7297",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.log",
+      "output_digest": "545345ef81cbcbe8ac251928f09e341f069e73f4c4adebefa2e5b10497c913e2"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_impact.ReferenceTests.test_reviewed_stop_old_pin_or_new_revision",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "4/3",
+      "runner_id": "refs-impact",
+      "execution_id": "0db311e3f11a448a82e56cf48a4b5230",
+      "phase": "final_green",
+      "source_sha": "d5b8b002796830e33115dac394ad071d08165e9e",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_impact.py": "b56f50ec29da3c0bc3d25b75791c6b68aa70fb2ebfb350b8863ce1bbcf4f7297",
+        ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+        ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+        ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+        ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+        ".agents/ask/workflow_refs/compare.py": "d4fa70deea4d44d18da9d4bae3bb46a8ca63d3e283f8a5f49942ca0bde6ade1c",
+        ".agents/ask/workflow_refs/profiles.py": "953ecc8b06a555670e3291bfba85ace81bcb01d4fb4721ba7da9f869ed87ef90",
+        ".agents/ask/workflow_refs/project.py": "dc640bd2b24ef23dbc8d8548a0453b6d890201587a7b810bced3d75ecd9208d8",
+        ".agents/ask/workflow_refs/impact.py": "3e40e921bf6ce9ee07f3603882d702c3e423f370980b0bbd6f1cc020e18e9953"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.log",
+      "output_digest": "545345ef81cbcbe8ac251928f09e341f069e73f4c4adebefa2e5b10497c913e2"
+    }
+  ]
+}

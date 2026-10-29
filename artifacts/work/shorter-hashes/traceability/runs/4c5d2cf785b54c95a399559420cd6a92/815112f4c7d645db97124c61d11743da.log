@@ -1,0 +1,32 @@
+test_parents_moves_and_multiple_inputs (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... FAIL
+test_qualified_numeric_context (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... FAIL
+test_raw_git_collision_resolution (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... FAIL
+
+======================================================================
+FAIL: test_parents_moves_and_multiple_inputs (_ask.tests.test_workflow_refs_identity.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-hs70s6u6/candidate/_ask/tests/test_workflow_refs_identity.py", line 47, in test_parents_moves_and_multiple_inputs
+    self.assertEqual(len(refs), 2, "all declared input edges must be retained")
+AssertionError: 0 != 2 : all declared input edges must be retained
+
+======================================================================
+FAIL: test_qualified_numeric_context (_ask.tests.test_workflow_refs_identity.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-hs70s6u6/candidate/_ask/tests/test_workflow_refs_identity.py", line 24, in test_qualified_numeric_context
+    self.assertIsNotNone(parsed[0], "qualified references must parse into numeric identities")
+AssertionError: unexpectedly None : qualified references must parse into numeric identities
+
+======================================================================
+FAIL: test_raw_git_collision_resolution (_ask.tests.test_workflow_refs_identity.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-hs70s6u6/candidate/_ask/tests/test_workflow_refs_identity.py", line 63, in test_raw_git_collision_resolution
+    self.assertEqual(display_git_id(first, known), first)
+AssertionError: None != 'a1b2c3d400000000000000000000000000000000'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=3)

@@ -1,0 +1,79 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "20cdea6e38f4408c8abddd37d609f870",
+  "scope": "task",
+  "task_id": "1",
+  "candidate_sha": "8d6b3d9729b772c31557ebebae61a0b237704f3d",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "fdeaccba2fc5486b8d835f8288e53550",
+      "runner_id": "refs-baseline",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "_ask.tests.test_workflow_refs_baseline"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/tmp/shorter-hashes-venv/bin/python3",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/shorter-hashes/traceability/runs/20cdea6e38f4408c8abddd37d609f870/fdeaccba2fc5486b8d835f8288e53550.json",
+        "[\"_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_frozen_corpus_and_tokenizer\", \"_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_equivalent_questions_and_lookup_accounting\"]",
+        "_ask.tests.test_workflow_refs_baseline"
+      ],
+      "interpreter": "/tmp/shorter-hashes-venv/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "8d6b3d9729b772c31557ebebae61a0b237704f3d",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/shorter-hashes/traceability/runs/20cdea6e38f4408c8abddd37d609f870/fdeaccba2fc5486b8d835f8288e53550.log",
+      "output_digest": "675f20ffacd8d29bae6075e5de3c3dccb40d456ce34cc0015849ad990d26adbb"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_equivalent_questions_and_lookup_accounting",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "1/2",
+      "runner_id": "refs-baseline",
+      "execution_id": "fdeaccba2fc5486b8d835f8288e53550",
+      "phase": "final_green",
+      "source_sha": "8d6b3d9729b772c31557ebebae61a0b237704f3d",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_baseline.py": "69a38bdc492d37adcf8f9e4721df4a0509d6f7930170014108c1e6f781b2a422",
+        ".agents/ask/workflow_refs/benchmark.py": "920153734e5064ea9735c4a08815ecfb253434b7b964336379e8711f8ecd02c9",
+        "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
+        "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/20cdea6e38f4408c8abddd37d609f870/fdeaccba2fc5486b8d835f8288e53550.log",
+      "output_digest": "675f20ffacd8d29bae6075e5de3c3dccb40d456ce34cc0015849ad990d26adbb"
+    },
+    {
+      "case_id": "_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_frozen_corpus_and_tokenizer",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "1/1",
+      "runner_id": "refs-baseline",
+      "execution_id": "fdeaccba2fc5486b8d835f8288e53550",
+      "phase": "final_green",
+      "source_sha": "8d6b3d9729b772c31557ebebae61a0b237704f3d",
+      "source_digests": {
+        "_ask/tests/test_workflow_refs_baseline.py": "69a38bdc492d37adcf8f9e4721df4a0509d6f7930170014108c1e6f781b2a422",
+        ".agents/ask/workflow_refs/benchmark.py": "920153734e5064ea9735c4a08815ecfb253434b7b964336379e8711f8ecd02c9",
+        "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
+        "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f"
+      },
+      "output_artifact": "work/shorter-hashes/traceability/runs/20cdea6e38f4408c8abddd37d609f870/fdeaccba2fc5486b8d835f8288e53550.log",
+      "output_digest": "675f20ffacd8d29bae6075e5de3c3dccb40d456ce34cc0015849ad990d26adbb"
+    }
+  ]
+}

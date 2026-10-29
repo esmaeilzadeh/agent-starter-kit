@@ -1,0 +1,8 @@
+test_complete_item_and_binding_equivalence (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... ok
+test_git_items_moves_and_unrelated_sections (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... ok
+test_profile_exclusions_and_unavailability (_ask.tests.test_workflow_refs_compare.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.179s
+
+OK

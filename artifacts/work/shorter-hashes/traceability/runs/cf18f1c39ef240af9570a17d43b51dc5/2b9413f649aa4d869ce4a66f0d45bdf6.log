@@ -1,0 +1,31 @@
+test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ERROR
+test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ERROR
+
+======================================================================
+ERROR: test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-rfwmwjb3/candidate/_ask/tests/test_workflow_refs_project.py", line 31, in setUp
+    git(self.root, "update-ref", "refs/heads/agent/live/task/4", self.sha)
+  File "/tmp/ask-cases-rfwmwjb3/candidate/_ask/tests/test_workflow_refs_project.py", line 13, in git
+    return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True).stdout.strip()
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'update-ref', 'refs/heads/agent/live/task/4', '5381ed993a9c57f849f27087fa7fa10452cbce3d']' returned non-zero exit status 128.
+
+======================================================================
+ERROR: test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-rfwmwjb3/candidate/_ask/tests/test_workflow_refs_project.py", line 31, in setUp
+    git(self.root, "update-ref", "refs/heads/agent/live/task/4", self.sha)
+  File "/tmp/ask-cases-rfwmwjb3/candidate/_ask/tests/test_workflow_refs_project.py", line 13, in git
+    return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True).stdout.strip()
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'update-ref', 'refs/heads/agent/live/task/4', '5381ed993a9c57f849f27087fa7fa10452cbce3d']' returned non-zero exit status 128.
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.076s
+
+FAILED (errors=2)

@@ -1,0 +1,16 @@
+test_parents_moves_and_multiple_inputs (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... FAIL
+test_qualified_numeric_context (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... ok
+test_raw_git_collision_resolution (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_parents_moves_and_multiple_inputs (_ask.tests.test_workflow_refs_identity.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-xz5f1m4m/candidate/_ask/tests/test_workflow_refs_identity.py", line 63, in test_parents_moves_and_multiple_inputs
+    self.fail(f"hierarchical reference bypassed required parents: {malformed}")
+AssertionError: hierarchical reference bypassed required parents: alpha/task/1@1
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1)

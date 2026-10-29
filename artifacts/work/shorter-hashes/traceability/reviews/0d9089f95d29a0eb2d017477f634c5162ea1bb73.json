@@ -1,0 +1,257 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "befaf2ebc27936dd04492c8d9cfe99b306f431ed0483518d1bc03e7059f90860",
+  "review_digest": "000d7f717e3cdeeeda61c80a66022330735ae44dc799807db009485d39f35598",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "reviewer": "/root/cont_review (independent Codex Sol reviewer)",
+    "verdict": "APPROVED",
+    "scope": "task",
+    "task_id": "2",
+    "test_ids": [
+      "2/1",
+      "2/2",
+      "2/3",
+      "2/4",
+      "2/5",
+      "2/6",
+      "2/7",
+      "2/8",
+      "2/9"
+    ],
+    "criterion_ids": [
+      "SH-01",
+      "SH-02",
+      "SH-03",
+      "SH-05",
+      "SH-06",
+      "SH-08",
+      "SH-09",
+      "SH-13"
+    ],
+    "candidate_sha": "0d9089f95d29a0eb2d017477f634c5162ea1bb73",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "40e2258c48f5e9dcfcaa55f0aa09808b8c2d3232b850db4752e852abaca3680b",
+    "base_sha": "02ad31b6e5ef5130986a920f943788cbbe970631",
+    "implementation_base_sha": "eb39360ebe9d6609991a11b92981c62df3f8d62e",
+    "source_digests": {
+      ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+      ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+      ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+      ".agents/ask/workflow_refs/store.py": "2d766d91697bd7fc82e998909759f70d46482dc1257ead2fa7ca9c998a902685",
+      "_ask/tests/test_workflow_refs_codec.py": "a7255d7f9df017a3975857596c5fd1abec5d61382f4e6c8b3b7109c036a4957c",
+      "_ask/tests/test_workflow_refs_identity.py": "b90abf2b93880855629c8622549989c00eb74ae8c8b4b60990b47504696f3161",
+      "_ask/tests/test_workflow_refs_store.py": "82ba4ffacc18621d0b5a557a589e228248c54bbd3cbbc56e464520f26f69a76d"
+    },
+    "inspected_sources": [
+      ".agents/ask/workflow_refs/__init__.py",
+      ".agents/ask/workflow_refs/benchmark.py",
+      ".agents/ask/workflow_refs/codec.py",
+      ".agents/ask/workflow_refs/identity.py",
+      ".agents/ask/workflow_refs/store.py",
+      "_ask/tests/test_workflow_refs_baseline.py",
+      "_ask/tests/test_workflow_refs_codec.py",
+      "_ask/tests/test_workflow_refs_identity.py",
+      "_ask/tests/test_workflow_refs_store.py"
+    ],
+    "changed_cases": [
+      "1/1",
+      "1/2",
+      "2/1",
+      "2/2",
+      "2/3",
+      "2/4",
+      "2/5",
+      "2/6",
+      "2/7",
+      "2/8",
+      "2/9"
+    ],
+    "inventory_exclusions": {
+      "_ask/tests/test_workflow_refs_store.py.ReferenceTests.test_snapshot_identity_requires_full_object_id": "Redundant malformed-snapshot-length direct-suite regression; mapped case 2/4 already contains equivalent assertions and the SHA-256 prefix regression. Not a separate accepted obligation or TDD claim."
+    },
+    "criteria": [
+      {
+        "id": "SH-01",
+        "coverage_decision": "APPROVED",
+        "assessment": "Numeric grammar and raw-prefix collision helper are sound within task scope; full snapshots are now checked against repository object format and exact commit resolution.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Numeric grammar and raw-prefix collision helper are sound within task scope; full snapshots are now checked against repository object format and exact commit resolution. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Numeric grammar and raw-prefix collision helper are sound within task scope; full snapshots are now checked against repository object format and exact commit resolution. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-02",
+        "coverage_decision": "APPROVED",
+        "assessment": "Reserved hierarchy bypasses reject, complete contextual numeric forms preserve ownership/dependencies, and explicit move mapping retains source/destination historical qualified forms.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Reserved hierarchy bypasses reject, complete contextual numeric forms preserve ownership/dependencies, and explicit move mapping retains source/destination historical qualified forms. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Reserved hierarchy bypasses reject, complete contextual numeric forms preserve ownership/dependencies, and explicit move mapping retains source/destination historical qualified forms. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-03",
+        "coverage_decision": "APPROVED",
+        "assessment": "Trusted authority, full semantic digests, shared immutable snapshots, old-target preservation and missing pinned-source refusal are implemented and exercised.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Trusted authority, full semantic digests, shared immutable snapshots, old-target preservation and missing pinned-source refusal are implemented and exercised. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Trusted authority, full semantic digests, shared immutable snapshots, old-target preservation and missing pinned-source refusal are implemented and exercised. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-05",
+        "coverage_decision": "APPROVED",
+        "assessment": "Independent run append preserves old contract entries and separate accepted-tests authority; historical objects resolve exact pinned source without checkout fallback.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Independent run append preserves old contract entries and separate accepted-tests authority; historical objects resolve exact pinned source without checkout fallback. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-06",
+        "coverage_decision": "APPROVED",
+        "assessment": "Canonical equivalence, differing exact bytes, non-UTF-8 exact-byte payload and unsupported semantics refusal remain tested.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Canonical equivalence, differing exact bytes, non-UTF-8 exact-byte payload and unsupported semantics refusal remain tested. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-08",
+        "coverage_decision": "APPROVED",
+        "assessment": "Missing parent context refuses, allocation is serialized with generation/CAS, old revisions cannot be overwritten using valid pinned replacement bytes, and full source IDs are repository-validated.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Missing parent context refuses, allocation is serialized with generation/CAS, old revisions cannot be overwritten using valid pinned replacement bytes, and full source IDs are repository-validated. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Missing parent context refuses, allocation is serialized with generation/CAS, old revisions cannot be overwritten using valid pinned replacement bytes, and full source IDs are repository-validated. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-09",
+        "coverage_decision": "APPROVED",
+        "assessment": "Supported JSON values and absent/null/empty distinctions survive compact typed-envelope persisted roundtrips. Text and dict readers now consistently reject duplicate keys, unsupported wrapper versions, blank payload schemas, nonfinite constants and overflowing floats. All six core identity families have persisted-byte coverage.",
+        "type_adequacy": {
+          "unit": {
+            "decision": "APPROVED",
+            "assessment": "Supported JSON values and absent/null/empty distinctions survive compact typed-envelope persisted roundtrips. Text and dict readers now consistently reject duplicate keys, unsupported wrapper versions, blank payload schemas, nonfinite constants and overflowing floats. All six core identity families have persisted-byte coverage. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Supported JSON values and absent/null/empty distinctions survive compact typed-envelope persisted roundtrips. Text and dict readers now consistently reject duplicate keys, unsupported wrapper versions, blank payload schemas, nonfinite constants and overflowing floats. All six core identity families have persisted-byte coverage. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      },
+      {
+        "id": "SH-13",
+        "coverage_decision": "APPROVED",
+        "assessment": "Readers are now invoked at both authority cut points; prepublication missing entry refuses and postpublication read recovers complete bytes before idempotent retry.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Readers are now invoked at both authority cut points; prepublication missing entry refuses and postpublication read recovers complete bytes before idempotent retry. Scoped to Task 2 assigned cases; later consumer/CLI and final savings obligations are not claimed."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "2/1",
+        "decision": "APPROVED",
+        "assertion_assessment": "Qualified identities and explicit short context work; parentless reserved kinds now fail.",
+        "counterexample": "Allowing alpha/task/1@1 now fails explicit required-parent assertions.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/2",
+        "decision": "APPROVED",
+        "assertion_assessment": "Explicit dependency preservation and reparent mapping are checked against distinct qualified parent identities; old form remains unchanged.",
+        "counterexample": "Collapsing independent input edges or retargeting the old identity fails exact edge/move mapping equality.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/3",
+        "decision": "APPROVED",
+        "assertion_assessment": "Scoped raw collision expansion, ambiguous/missing refusal and full resolution remain verified.",
+        "counterexample": "Rebinding ambiguous prefixes or expanding unrelated displays fails existing assertions.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/4",
+        "decision": "APPROVED",
+        "assertion_assessment": "Valid pinned replacement bytes cannot reuse revision 1; old entries and accepted authority survive run append; snapshots share identity. Actual SHA-256 40-character-prefix rejection is asserted.",
+        "counterexample": "Accepting SHA-256 prefixes, rewriting contract entries, or repeating snapshot identities fails the strengthened mapped case.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/5",
+        "decision": "APPROVED",
+        "assertion_assessment": "Full canonical and byte digests remain separate with non-UTF-8 exact bytes and semantics refusal.",
+        "counterexample": "Treating formatting changes as exact equivalence or accepting unsupported semantics fails current checks.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/6",
+        "decision": "APPROVED",
+        "assertion_assessment": "Null/empty/absent/Unicode payload values and typed/cross-owner references roundtrip; duplicate keys, unsupported versions, blank schemas, NaN/Infinity and overflowing 1e999 text refuse. Shared finite parse_float validation also rejects negative exponent overflow, independently probed.",
+        "counterexample": "Decoding 1e999 to inf fails the new raises assertion. Returning finite JSON after dropping null/empty fields fails complete payload equality. Rebinding cross-owner references fails exact normalized reference comparison.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/7",
+        "decision": "APPROVED",
+        "assertion_assessment": "Real writer race, reader refusal before authority advancement and reader recovery after advancement are exercised before writer retry.",
+        "counterexample": "Successful dangling read before publication or incomplete new-state read after publication fails the cut-point assertions.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/8",
+        "decision": "APPROVED",
+        "assertion_assessment": "Exact historical source beats divergent checkout; an unreachable pinned commit is garbage-collected and resolution refuses without fallback; local authority mismatch refuses.",
+        "counterexample": "Returning current HEAD when the registered object disappears fails the raises assertion.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      },
+      {
+        "id": "2/9",
+        "decision": "APPROVED",
+        "assertion_assessment": "Persisted compact byte write/read roundtrips now cover all six core reference families and retain complete payload values, with same-serialization typed/full-reference byte comparison.",
+        "counterexample": "Broken part/item context, persisted JSON reload or loss of null/payload content fails the persisted equality assertions.",
+        "tdd_continuity_assessment": "Initial nine-case assertion Red retained. Broad correction Red 508b5e1013ac4a30aa9b43105981ed94 fails 2/1,2/2,2/4,2/6; targeted SHA-256 Red a4974e5a0ba84812b8f945f0b40d8fd5 fails 2/4; overflow Red 51aefbf6f2ad41be93653cbf95d77005 at 235bc5f fails 2/6 as behavior_assertion. Exact final Green 152bde3b6a7e431d807ce353e59e866c at 0d9089f passes all nine. Collection and log digest evidence verified. Assertions strengthened without weakening prior behavior contracts; no exemption used."
+      }
+    ],
+    "evidence": "work/shorter-hashes/inner-loop/evidence/2-review-round3.md",
+    "inventory_assessment": "All changed accepted-base Python sources inspected, including previously approved Task 1 baseline sources. Duplicate unmapped malformed-length test explicitly excluded with reason. Task 2 implementation is within ownership. All prior findings are resolved; no unresolved semantic rejection."
+  },
+  "candidate_sha": "0d9089f95d29a0eb2d017477f634c5162ea1bb73",
+  "scope": "task",
+  "task_id": "2"
+}

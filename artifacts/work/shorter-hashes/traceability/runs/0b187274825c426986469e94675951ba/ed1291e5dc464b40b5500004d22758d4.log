@@ -1,0 +1,9 @@
+test_canonical_and_byte_digest_semantics (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_concurrent_and_interrupted_publication (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.943s
+
+OK
