@@ -1,0 +1,111 @@
+"""Public command facade for numeric workflow references."""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+import sys
+
+from .identity import ReferenceError
+from .impact import ImpactError, assess_impact, record_decision
+from .project import capture_project, load_project_graph
+from .projection import project_status, show_reference
+from .store import CatalogError
+from .migration import export_bundle, import_bundle, migrate
+
+
+def _json(value):
+    print(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="ask references")
+    sub = parser.add_subparsers(dest="command", required=True)
+    show = sub.add_parser("show", help="resolve one exact numeric item revision")
+    show.add_argument("reference")
+    show.add_argument("--integrity", action="store_true")
+    status = sub.add_parser("status", help="show one version or compact owner inventory")
+    status.add_argument("reference", nargs="?")
+    status.add_argument("--shared-owner", action="append", default=[])
+    impact = sub.add_parser("impact", help="assess changes between two coherent project captures")
+    impact.add_argument("--source", required=True, type=Path)
+    impact.add_argument("--candidate", required=True, type=Path)
+    impact.add_argument("--shared-owner", action="append", default=[])
+    impact.add_argument("--integration-ref", default="refs/heads/develop")
+    impact.add_argument("--archive-ref", default="refs/heads/main")
+    decide = sub.add_parser("decide", help="assess an explicit reviewed impact decision")
+    decide.add_argument("--evidence", required=True, type=Path)
+    decide.add_argument("--recorded-by", required=True)
+    decide.add_argument("--shared-owner", action="append", default=[])
+    migration = sub.add_parser("migrate", help="apply explicitly declared legacy mappings")
+    migration.add_argument("owner")
+    export = sub.add_parser("export", help="export trusted records and Git object closure")
+    export.add_argument("owner")
+    export.add_argument("--out", required=True, type=Path)
+    imp = sub.add_parser("import", help="verify an export against local trusted authority")
+    imp.add_argument("bundle", type=Path)
+    return parser
+
+
+def main(argv=None, *, root=None):
+    args = build_parser().parse_args(argv)
+    repository_root = Path(root or Path.cwd()).resolve()
+    try:
+        if args.command == "show":
+            _json(show_reference(repository_root, args.reference, integrity=args.integrity))
+        elif args.command == "status":
+            result = (show_reference(repository_root, args.reference) if args.reference else
+                      project_status(repository_root, shared_owners=args.shared_owner))
+            _json(result)
+            return 0 if result.get("status") == "resolved" or result.get("status") == "complete" else 1
+        elif args.command == "impact":
+            source = json.loads(args.source.read_text(encoding="utf-8"))
+            capture = json.loads(args.candidate.read_text(encoding="utf-8"))
+            if (not isinstance(source, dict) or source.get("status") != "complete"
+                    or not isinstance(source.get("refs"), dict)
+                    or not isinstance(capture, dict) or capture.get("status") != "complete"
+                    or not isinstance(capture.get("refs"), dict)):
+                raise ValueError("source and candidate must be complete project captures")
+            changed_owners = set()
+            for ref in set(source["refs"]) | set(capture["refs"]):
+                if source["refs"].get(ref) != capture["refs"].get(ref):
+                    fields = ref.split("/")
+                    if len(fields) >= 4 and fields[:2] == ["refs", "heads"] and fields[2] == "agent":
+                        changed_owners.add(fields[3])
+                    elif ref.startswith("refs/ask/references/"):
+                        changed_owners.add(ref.rsplit("/", 1)[-1])
+                    elif ref in {capture.get("integration_ref"), capture.get("archive_ref")}:
+                        changed_owners.update(capture.get("owners", {}))
+            graph = load_project_graph(repository_root, capture)
+            changed = [reference for reference, node in graph.get("nodes", {}).items()
+                       if node.get("owner") in changed_owners]
+            result = assess_impact(graph, changed, capture=capture,
+                                   repository_root=repository_root)
+            _json(result)
+            return 0 if result.get("status") == "complete" else 1
+        elif args.command == "decide":
+            decision = json.loads(args.evidence.read_text(encoding="utf-8"))
+            capture = capture_project(repository_root, shared_owners=args.shared_owner)
+            result = record_decision(decision, capture=capture,
+                                     required_paths=decision.get("required_paths"),
+                                     authority_check=lambda value, _capture:
+                                     value.get("coordinator") == args.recorded_by)
+            _json({"status": result["status"], "decision": result})
+            return 0 if result["status"] in {"retained", "revised", "retired"} else 1
+        elif args.command == "migrate":
+            _json(migrate(repository_root, args.owner))
+        elif args.command == "export":
+            _json(export_bundle(repository_root, args.owner, args.out))
+        elif args.command == "import":
+            _json(import_bundle(repository_root, args.bundle))
+        return 0
+    except (ReferenceError, CatalogError, ImpactError, OSError, UnicodeDecodeError,
+            json.JSONDecodeError, ValueError) as exc:
+        code = getattr(exc, "code", "invalid_request")
+        _json({"status": "unavailable", "scope": "requested-reference",
+               "reason": code, "detail": str(exc)})
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
