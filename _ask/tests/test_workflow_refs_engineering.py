@@ -332,7 +332,11 @@ class ReferenceTests(unittest.TestCase):
             shared_path.parent.mkdir(parents=True)
             shared_path.write_text(json.dumps({"items": [{"id": "shared-item", "inputs": []}]},
                                               separators=(",", ":")), encoding="utf-8")
-            subprocess.run(["git", "add", "specs/shared.json"], cwd=root, check=True)
+            live_context = root / "work/live/context.txt"
+            live_context.parent.mkdir(parents=True, exist_ok=True)
+            live_context.write_text("live owner inventory\n", encoding="utf-8")
+            subprocess.run(["git", "add", "specs/shared.json", "work/live/context.txt"],
+                           cwd=root, check=True)
             subprocess.run(["git", "commit", "-qm", "shared source"], cwd=root, check=True)
             shared_source = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
                                            capture_output=True, text=True).stdout.strip()
