@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / ".agents/ask"))
 from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle, publish, read_checkpoint
 from inner_loop.state import CasConflict, SecondWriter, cas_apply, load_state, spawn_writer
 from inner_loop.attempts import interrupt_task
-from inner_loop.evidence import NotIntegrable, _execution_row
+from inner_loop.evidence import NotIntegrable, _execution_row, source_changes as inner_loop_source_changes
 from verification.traceability.contracts import digest
 from verification.traceability.evidence import accept_plan, load_accepted, source_changes, write_json
 from verification.traceability.adapters import run_tests
@@ -255,10 +255,18 @@ class ReferenceTests(unittest.TestCase):
         references = self.root / "work/fixture-work/references"
         (references / "integrity.json.pending").write_text("pending\n")
         (references / "other.json").write_text("other\n")
+        catalog = references / "integrity.json"
+        if subprocess.run(["git", "ls-files", "--error-unmatch", str(catalog.relative_to(self.root))],
+                          cwd=self.root, capture_output=True).returncode == 0:
+            self.git("rm", "--cached", "--quiet", str(catalog.relative_to(self.root)))
         foreign = self.root / "work/other-work/references/integrity.json"
         foreign.parent.mkdir(parents=True)
         foreign.write_text("foreign\n")
         self.assertEqual(source_changes(self.root, "fixture-work"), [
+            "work/fixture-work/references/other.json",
+            "work/other-work/references/integrity.json",
+        ])
+        self.assertEqual(inner_loop_source_changes(self.root, "fixture-work"), [
             "work/fixture-work/references/other.json",
             "work/other-work/references/integrity.json",
         ])
