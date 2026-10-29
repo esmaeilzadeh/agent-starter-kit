@@ -968,5 +968,15 @@
     "candidate_sha": "9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
     "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "0d8f94087f1d43b28f8dd2285d43db2e",
+    "digest": "004c2cec60a869e502c719862a63c162987e9c05bd9baf285483d666ab1eec3f",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "905c1aca97c2532db048e79df08fbdb4e3f0fc06",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
   }
 ]

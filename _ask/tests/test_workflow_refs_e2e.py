@@ -294,6 +294,7 @@ class ReferenceTests(unittest.TestCase):
         self.addCleanup(consumer.close)
         verified = consumer.command("verify")
         self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        (consumer.root / "verification-result.json").unlink(missing_ok=True)
         consumer.source_path = consumer.root / "app.py"
         consumer.source_path.write_text(
             consumer.source_path.read_text() + "\ndef newer_value(): return 'new'\n")
