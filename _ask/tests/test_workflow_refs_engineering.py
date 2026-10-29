@@ -82,16 +82,55 @@ class ReferenceTests(unittest.TestCase):
             resolved = selected.get("references")
             self.assertIsInstance(resolved, dict,
                                   "selected projection exposes its compact task/test/review references")
-            self.assertEqual(set(resolved), {"task", "test", "review"})
-            self.assertTrue(all(value.get("status") == "resolved" for value in resolved.values()), resolved)
-            self.assertEqual({name: value.get("reference") for name, value in resolved.items()},
+            self.assertEqual(resolved.get("status"), "complete", resolved)
+            self.assertEqual(set(resolved.get("items", {})), {"task", "test", "review"})
+            self.assertTrue(all(value.get("status") == "resolved"
+                                for value in resolved["items"].values()), resolved)
+            self.assertEqual({name: value.get("reference")
+                              for name, value in resolved["items"].items()},
                              snapshot.references["work/pilot/test-plan.json"])
-            self.assertEqual({name: value.get("item_id") for name, value in resolved.items()},
+            self.assertEqual({name: value.get("item_id")
+                              for name, value in resolved["items"].items()},
                              {"task": "task-1", "test": "test-1", "review": "review-1"})
             self.assertEqual({call.args[1] for call in resolve.call_args_list},
                              set(snapshot.references["work/pilot/test-plan.json"]),
                              "selection resolves only the three requested qualified references")
-            self.assertEqual(unselected.get("references"), {})
+            self.assertNotIn("references", unselected,
+                             "unselected projections do not expose or resolve workflow references")
+
+            original_references = dict(envelope["references"])
+            for bad_reference, expected_code in (
+                ("pilot/review/2@1", "missing"),
+                ("other/review/1@1", "missing_authority"),
+            ):
+                broken = dict(envelope)
+                broken["references"] = {**original_references, "review": bad_reference}
+                plan_path.write_text(json.dumps(broken, separators=(",", ":")), encoding="utf-8")
+                broken_projection = project(capture(root, "pilot"), root,
+                                            node_id="build", include_evidence=False)
+                reference_result = broken_projection["references"]
+                self.assertEqual(reference_result["status"], "incomplete", reference_result)
+                self.assertEqual(reference_result["items"]["review"]["status"], "unavailable")
+                self.assertEqual(reference_result["items"]["review"]["error"]["code"], expected_code)
+                self.assertEqual(reference_result["items"]["task"]["status"], "resolved",
+                                 "a bad review link remains scoped to that reference")
+
+            broken = dict(envelope)
+            broken["references"] = original_references
+            plan_path.write_text(json.dumps(broken, separators=(",", ":")), encoding="utf-8")
+            original_resolve = reference_store.resolve_version
+            def ambiguous_review(catalog_path, reference, repository_root=None):
+                if reference == "pilot/review/1@1":
+                    raise reference_store.CatalogError("ambiguous", "duplicate trusted target")
+                return original_resolve(catalog_path, reference, repository_root)
+            with patch.object(reference_store, "resolve_version", side_effect=ambiguous_review):
+                ambiguous_projection = project(capture(root, "pilot"), root,
+                                               node_id="build", include_evidence=False)
+            reference_result = ambiguous_projection["references"]
+            self.assertEqual(reference_result["status"], "incomplete", reference_result)
+            self.assertEqual(reference_result["items"]["review"]["error"]["code"], "ambiguous")
+            self.assertEqual(reference_result["items"]["task"]["status"], "resolved",
+                             "an ambiguous link cannot poison unrelated selected references")
 
     def test_snapshots_context_and_legacy_reads(self):
         with tempfile.TemporaryDirectory() as directory:
