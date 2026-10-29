@@ -292,6 +292,12 @@ class ReferenceTests(unittest.TestCase):
         # source candidate, even when the impact review itself is complete.
         consumer = CompletionRepository()
         self.addCleanup(consumer.close)
+        old_candidate = consumer.candidate
+        verified = consumer.command("verify")
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        ledger_path = consumer.root / "work/e2e/traceability/executions.json"
+        old_execution_ledger = ledger_path.read_bytes()
+        (consumer.root / "verification-result.json").unlink(missing_ok=True)
         consumer.source_path = consumer.root / "app.py"
         consumer.source_path.write_text(
             consumer.source_path.read_text() + "\ndef newer_value(): return 'new'\n")
@@ -307,7 +313,14 @@ class ReferenceTests(unittest.TestCase):
         stale_result = json.loads(stale.stdout)
         self.assertEqual(stale_result.get("status"), "fail")
         self.assertEqual(stale_result.get("candidate_sha"), new_candidate)
-        self.assertTrue(stale_result.get("errors"))
+        self.assertTrue(any("static-" + new_candidate in error
+                            for error in stale_result.get("errors", [])))
+        self.assertEqual(ledger_path.read_bytes(), old_execution_ledger)
+        ledger = json.loads(old_execution_ledger)
+        self.assertTrue(any(row.get("candidate_sha") == old_candidate
+                            and row.get("phase") == "final_green" for row in ledger))
+        self.assertFalse(any(row.get("candidate_sha") == new_candidate
+                             and row.get("phase") == "final_green" for row in ledger))
 
     def test_shared_deletion_and_retirement(self):
         r1 = item("req-a/spec/1", "req-one")

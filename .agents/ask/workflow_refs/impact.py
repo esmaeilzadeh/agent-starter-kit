@@ -271,7 +271,7 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
                             or decisions.get(dependent) != decision
                             or not valid_eligible or new_upstream not in nodes
                             or not nodes[new_upstream].get("active", True) or not valid_upstream_revision
-                            or any(endpoint not in nodes or not nodes[endpoint].get("active", True)
+                            or any(endpoint not in nodes
                                    or decision.get("profile") != nodes[endpoint].get("profile")
                                    for endpoint in endpoints)):
                         decision_result = {"status": "incomplete", "reason": "decision_scope_mismatch"}
