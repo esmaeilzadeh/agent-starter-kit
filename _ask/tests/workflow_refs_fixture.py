@@ -168,7 +168,10 @@ class CompletionRepository:
         record_test_review(self.root, "e2e", self.candidate, self.candidate, path, "coordinator")
 
     def command(self, *args):
-        env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        env = {key: value for key, value in os.environ.items()
+               if not key.startswith(("ASK_TRACEABILITY_", "VERIFY_"))
+               and key not in {"ASK_ROOT", "ASK_WORK_ID"}}
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
         return subprocess.run([str(self.root / "ask"), *args], cwd=self.root,
                               capture_output=True, text=True, env=env)
 

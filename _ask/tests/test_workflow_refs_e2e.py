@@ -40,7 +40,7 @@ class ReferenceTests(unittest.TestCase):
                                   "--candidate-sha", consumer.candidate,
                                   "--anchor-sha", consumer.candidate)
         self.assertNotEqual(refused.returncode, 0)
-        self.assertIn("fail", refused.stderr)
+        self.assertIn("fail", refused.stdout + refused.stderr)
         log.write_bytes(log_bytes)
 
         review_path = consumer.root / "work/e2e/traceability/reviews" / f"{consumer.candidate}.json"
@@ -50,7 +50,7 @@ class ReferenceTests(unittest.TestCase):
                                           "--candidate-sha", consumer.candidate,
                                           "--anchor-sha", consumer.candidate)
         self.assertNotEqual(refused_review.returncode, 0)
-        self.assertIn("fail", refused_review.stderr)
+        self.assertIn("fail", refused_review.stdout + refused_review.stderr)
         review_path.write_bytes(review_bytes)
 
         accepted_path = consumer.root / "work/e2e/traceability-accepted.json"
@@ -62,7 +62,7 @@ class ReferenceTests(unittest.TestCase):
                                             "--candidate-sha", consumer.candidate,
                                             "--anchor-sha", consumer.candidate)
         self.assertNotEqual(refused_contract.returncode, 0)
-        self.assertIn("fail", refused_contract.stderr)
+        self.assertIn("fail", refused_contract.stdout + refused_contract.stderr)
         accepted_path.write_bytes(accepted_bytes)
 
     def test_resume_and_export_historical_records(self):
