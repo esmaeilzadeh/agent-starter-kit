@@ -41,6 +41,7 @@ tasks:
     owned_paths:
       - "_ask/scripts/inner_loop/**"
       - "_ask/tests/test_workflow_refs_inner_loop.py"
+      - ".agents/ask/verification/traceability/evidence.py"
   - id: "7"
     depends_on: ["6"]
     owned_paths:
