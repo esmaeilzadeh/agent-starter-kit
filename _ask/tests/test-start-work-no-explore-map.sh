@@ -18,6 +18,9 @@ cp "$ROOT/_ask/templates/"*.md "$ROOT/_ask/templates/"*.json _ask/templates/ 2>/
 git add _ask && git commit -q -m kit
 git branch develop
 ./_ask/scripts/start-work.sh demo
+common="$(git rev-parse --git-common-dir)"
+[[ "$common" == /* ]] || common="$PWD/$common"
+test -f "$common/ask-locks/references.lock"
 if [[ -e work/demo/explore-map.md ]]; then
   echo "FAIL: start-work must not seed explore-map.md" >&2
   exit 1

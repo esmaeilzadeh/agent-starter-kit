@@ -23,9 +23,13 @@ def _git(root, *args, check=True):
     return result
 
 
-def _atomic_replace(source: Path, target: Path):
-    target.parent.mkdir(parents=True, exist_ok=True)
-    os.replace(source, target)
+def _validate_owner(owner):
+    try:
+        parsed = parse_reference(f"{owner}/review/1@1")
+    except (TypeError, ReferenceError) as exc:
+        raise CatalogError(getattr(exc, "code", "invalid_owner"), "owner must be a canonical lowercase slug") from exc
+    if parsed["owner"] != owner:
+        raise CatalogError("invalid_owner", "owner must be a canonical lowercase slug")
 
 
 def migrate(repository_root, owner):
@@ -35,6 +39,7 @@ def migrate(repository_root, owner):
     ``ask-reference-migration/v1``. Original source files are never rewritten.
     """
     root = Path(repository_root).resolve()
+    _validate_owner(owner)
     declaration = root / "work" / owner / "references" / "migration.json"
     try:
         value = json.loads(declaration.read_text(encoding="utf-8"))
@@ -105,6 +110,7 @@ def migrate(repository_root, owner):
 def export_bundle(repository_root, owner, output_path):
     """Export a trusted owner catalog and the Git object closure it names."""
     root = Path(repository_root).resolve()
+    _validate_owner(owner)
     catalog_path = root / ("results/references/integrity.json" if owner == "repository-runs"
                            else f"work/{owner}/references/integrity.json")
     _root, _common, relative = _repo_info(catalog_path)
@@ -162,15 +168,26 @@ def import_bundle(repository_root, bundle_path):
             or hashlib.sha256(bundle_bytes).hexdigest() != manifest.get("bundle_sha256")):
         raise CatalogError("integrity_mismatch", "bundle payload does not match its manifest")
     owner, ref = manifest.get("owner"), manifest.get("authority_ref")
+    _validate_owner(owner)
     if ref != _ref(owner):
         raise CatalogError("invalid_bundle", "bundle authority ref does not match its owner")
     catalog = _read_catalog_bytes(catalog_bytes, owner)
+    with tempfile.TemporaryDirectory(prefix="ask-refs-import-") as temp:
+        bundle = Path(temp) / "objects.bundle"
+        bundle.write_bytes(bundle_bytes)
+        _git(root, "bundle", "verify", str(bundle))
+        heads = _git(root, "bundle", "list-heads", str(bundle)).decode().splitlines()
+        declared = {line.split()[1]: line.split()[0] for line in heads if len(line.split()) == 2}
+        if declared != {ref: manifest.get("authority_commit")}:
+            raise CatalogError("invalid_bundle", "bundle does not contain the declared authority ref")
     if _ref_value(root, ref) != manifest.get("authority_commit"):
         raise CatalogError("missing_authority", "bundle cannot establish or replace local catalog authority")
     trusted = _git(root, "show", f"{manifest['authority_commit']}:{'results/references/integrity.json' if owner == 'repository-runs' else f'work/{owner}/references/integrity.json'}").stdout
     if trusted != catalog_bytes:
         raise CatalogError("integrity_mismatch", "bundle catalog differs from trusted local authority")
     for entry in catalog["entries"]:
+        if not isinstance(entry, dict) or not isinstance(entry.get("reference"), str):
+            raise CatalogError("invalid_catalog", "bundle contains a malformed catalog entry")
         resolve_version(root / ("results/references/integrity.json" if owner == "repository-runs"
                                 else f"work/{owner}/references/integrity.json"), entry["reference"], root)
     # An exact retry is intentionally a no-op; conflicting authority is refused.

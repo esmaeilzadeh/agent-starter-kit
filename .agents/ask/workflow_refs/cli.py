@@ -2,20 +2,62 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 from pathlib import Path
 import sys
 
-from .identity import ReferenceError
+from .identity import ReferenceError, parse_reference
 from .impact import ImpactError, assess_impact, record_decision
 from .project import capture_project, load_project_graph
 from .projection import project_status, show_reference
-from .store import CatalogError
+from .store import (CatalogError, _lock, _publish_catalog, _recover_pending,
+                    _repo_info, _trusted_catalog)
 from .migration import export_bundle, import_bundle, migrate
 
 
 def _json(value):
     print(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+
+
+def _persist_decision(repository_root, result):
+    decision = result["decision"]
+    owner = parse_reference(decision["dependent"])["owner"]
+    catalog_path = repository_root / "work" / owner / "references" / "integrity.json"
+    lock = _lock(catalog_path)
+    try:
+        root, common, relative = _repo_info(catalog_path)
+        _recover_pending(catalog_path, owner, root, relative)
+        catalog, old_ref = _trusted_catalog(catalog_path, owner, root, relative)
+        if catalog is None or old_ref is None:
+            raise CatalogError("missing_authority", "decision owner has no trusted catalog")
+        raw_decisions = catalog.get("decisions", [])
+        if not isinstance(raw_decisions, list):
+            raise CatalogError("invalid_catalog", "trusted decision records are not a list")
+        decisions = list(raw_decisions)
+        for existing in decisions:
+            if existing.get("decision") == decision and existing.get("status") == result["status"]:
+                return existing["reference"]
+        sequence = 0
+        for item in decisions:
+            try:
+                parsed = parse_reference(item.get("reference"))
+            except (TypeError, AttributeError, ReferenceError) as exc:
+                raise CatalogError("invalid_catalog", "trusted decision reference is malformed") from exc
+            if parsed["owner"] != owner or parsed["kind"] != "review":
+                raise CatalogError("invalid_catalog", "trusted decision reference has wrong owner or type")
+            sequence = max(sequence, parsed["ids"][-1])
+        sequence += 1
+        reference = f"{owner}/review/{sequence}@1"
+        decisions.append({"reference": reference, "status": result["status"],
+                          "decision": decision})
+        catalog["decisions"] = decisions
+        catalog["generation"] += 1
+        _publish_catalog(catalog_path, owner, root, common, relative, catalog, old_ref)
+        return reference
+    finally:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+        lock.close()
 
 
 def build_parser():
@@ -86,12 +128,15 @@ def main(argv=None, *, root=None):
         elif args.command == "decide":
             decision = json.loads(args.evidence.read_text(encoding="utf-8"))
             capture = capture_project(repository_root, shared_owners=args.shared_owner)
+            if decision.get("coordinator") != args.recorded_by:
+                raise ImpactError("authority_missing", "--recorded-by must match the attributed coordinator")
             result = record_decision(decision, capture=capture,
                                      required_paths=decision.get("required_paths"),
                                      authority_check=lambda value, _capture:
                                      value.get("coordinator") == args.recorded_by)
-            _json({"status": result["status"], "decision": result})
-            return 0 if result["status"] in {"retained", "revised", "retired"} else 1
+            reference = _persist_decision(repository_root, result)
+            _json({"status": "recorded", "reference": reference, "decision": result})
+            return 0
         elif args.command == "migrate":
             _json(migrate(repository_root, args.owner))
         elif args.command == "export":

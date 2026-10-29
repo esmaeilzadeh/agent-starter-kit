@@ -10,7 +10,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
 from workflow_refs.migration import export_bundle, import_bundle, migrate
-from workflow_refs.store import CatalogError, resolve_version
+from workflow_refs.store import CatalogError, initialize_catalog, resolve_version
 
 
 class ReferenceMigrationTests(unittest.TestCase):
@@ -54,7 +54,7 @@ class ReferenceMigrationTests(unittest.TestCase):
         self.assertTrue(imported["idempotent"])
         self.assertEqual(imported["entries_verified"], 1)
 
-    def test_bundle_manifest_cannot_create_authority(self):
+    def test_missing_import_and_atomic_retry(self):
         declaration = {"schema": "ask-reference-migration/v1", "owner": "demo", "mappings": [{
             "legacy_reference": "old-plan:abc123", "logical_id": "demo/spec/1/plan/1/item/1",
             "snapshot": {"commit": self.commit, "path": "work/demo/source.json"},
@@ -64,11 +64,21 @@ class ReferenceMigrationTests(unittest.TestCase):
         migrate(self.root, "demo")
         bundle = self.root / "transfer.refs"
         export_bundle(self.root, "demo", bundle)
+        before = json.loads((self.references / "integrity.json").read_text())
+        self.assertTrue(import_bundle(self.root, bundle)["idempotent"])
+        self.assertTrue(import_bundle(self.root, bundle)["idempotent"])
+        after = json.loads((self.references / "integrity.json").read_text())
+        self.assertEqual(after, before)
 
         other = self.root / "other"
         subprocess.run(["git", "clone", "-q", str(self.root), str(other)], check=True)
         subprocess.run(["git", "config", "user.name", "Fixture"], cwd=other, check=True)
         subprocess.run(["git", "config", "user.email", "fixture@example.test"], cwd=other, check=True)
+        with self.assertRaisesRegex(CatalogError, "cannot establish or replace"):
+            import_bundle(other, bundle)
+
+        conflicting_catalog = other / "work/demo/references/integrity.json"
+        initialize_catalog(conflicting_catalog, "demo")
         with self.assertRaisesRegex(CatalogError, "cannot establish or replace"):
             import_bundle(other, bundle)
 
