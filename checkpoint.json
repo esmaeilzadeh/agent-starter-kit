@@ -674,10 +674,10 @@
       "size": 2193
     },
     "work/shorter-hashes/inner-loop/state.json": {
-      "blob": "75ea8994621744b4c020d2640c6ac837aefb197c",
+      "blob": "d7b1503f670b8cbaf9a478fb897fbe003e5ab1c6",
       "path": "artifacts/work/shorter-hashes/inner-loop/state.json",
-      "sha256": "c84b48c781a7aae30939036051e130821d4f8086d01a612228fede739cd6ba75",
-      "size": 58277
+      "sha256": "91d4faf32f5d857603d7534cc26dff8bd48dc018056d05ab528bc829db8ff341",
+      "size": 58627
     },
     "work/shorter-hashes/inner-loop/tasks.yaml": {
       "blob": "32d8608b8b9459d1d2b8506178dd0abf17e2533b",
@@ -5541,8 +5541,8 @@
     }
   },
   "coordinator_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
-  "generation": 48,
-  "previous_checkpoint": "0e97ff721e847b5a9898614bad68c54fc36d0ec3",
+  "generation": 49,
+  "previous_checkpoint": "753c453d8b5f6c7a19d7cb8ade8260b0d4e74617",
   "retained_commits": [
     "01eaba25c768de392749860935cbedf528e398c3",
     "028d6d1a62b559577bde26e28aec3668de04f329",

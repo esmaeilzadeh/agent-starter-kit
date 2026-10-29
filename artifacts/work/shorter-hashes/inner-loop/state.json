@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 48,
+  "revision": 49,
   "coordinator_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -1053,19 +1053,19 @@
       "attempt_started_revision": 41
     },
     "6": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 1,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 2,
+      "attempt_id": "6:attempt-2",
+      "accepted_plan_ref": "876094655bb8074493eea9faeff0bcb1f60d37de",
+      "accepted_plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+      "attempt_started_revision": 49,
       "attempt_history": [
         {
           "attempt_id": "6:attempt-1",
@@ -1084,7 +1084,9 @@
           "started_revision": 46,
           "interrupted_revision": 47
         }
-      ]
+      ],
+      "reopened_from_attempt": "6:attempt-1",
+      "reopen_reason": "Resume reviewed Task 6 source-binding amendment after user-authorized current-state reconstruction and genuine historical reruns"
     },
     "7": {
       "status": "pending",
