@@ -1,10 +1,10 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "9ca83ed8ace0410339ea67880bebb27601f52fd6",
+  "contract_sha": "5c853ee3212564bcaa3c71bfd9595a41c01c0602",
   "work_id": "shorter-hashes",
   "reviewer": "/root/task6_plan_review",
-  "recorded_by": "/root/task6_implementer",
+  "recorded_by": "/root",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
   "plan_review": {
@@ -14,23 +14,18 @@
     "runtime": "Codex",
     "model": "gpt-6.1-sol",
     "reasoning_effort": "high",
-    "confidence": 0.97,
-    "reviewed_commit": "9ca83ed8ace0410339ea67880bebb27601f52fd6",
-    "comparison_commit": "f71db0c1144e6f067c9a5ca13db3c8842a02266e",
+    "confidence": 0.96,
+    "reviewed_commit": "5c853ee3212564bcaa3c71bfd9595a41c01c0602",
+    "comparison_commit": "32d6e861ebc97c5c7628d80c199c59691f5a4b53",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
     "graph_digest": "3c8e40f7501dffc72feec3a476e9dcbfabfdce11726d93fdde08487792ad942f",
-    "source_digests": {
-      ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
-      ".agents/ask/workflow_refs/store.py": "864faa52485f44dea19f946c68bc5d0e8462fcc5c1bcbfd11c5a8e9292fcd239"
-    },
-    "source_digest": "c3bd55d3f695b80f195c3781a38e3ac2fff585a039fc0f10309b55a084a19847",
     "file_digests": {
       "specs/current/shorter-hashes.json": "af0aeb77f3a156b087d64f0e3f621a6a6eb52964ac234dcd1d6d608bce3a43c2",
       "work/shorter-hashes/plan.md": "472d010d580c5c1cdacf909ccb1c7ab2d1e2b0c45b24699cc82ceab0dd565159",
       "work/shorter-hashes/plan-seal.md": "9ec08774f0f6f6a063058ee5827f04fc8b6b23d7b2bf10e44e27fe42dc5de981",
       "work/shorter-hashes/inner-loop/tasks.yaml": "a4937baaf8b24db2fc7ff43a0d58acaae8070bfb534151c664d516a1bd1167fe",
-      "work/shorter-hashes/test-plan.json": "2b5379119dd4605b41fbb0c2814a4bf73b61e0ea6ffef88a4ae7d2b4f85134c0",
+      "work/shorter-hashes/test-plan.json": "d7c2d67f1438ccedc6e2bce54cf26c199836b55a8ce9bdaaec0b4f009dbb58be",
       "work/shorter-hashes/intent.md": "8784f3748505fe0ac51ccb9a7dfe78de0c04f79cd26dac58689fdee10cb084e6",
       "work/shorter-hashes/intent-confirmation.json": "bc253b577c6ca40074b51989b089f8e9f71a5f2f1d9a27661218fb5fed89cd2a",
       "work/shorter-hashes/spec-seal.md": "997d87201a25a258f08dab72e8c5854a15738ac4145d5b9bfdcddc992b9de1c6",
@@ -42,28 +37,32 @@
       "work/shorter-hashes/continuation-authorization.md": "4274af621f5f4d56654f9264fd82ac904e0574295cb967b9f11a425e0bcbfa4e",
       "work/shorter-hashes/continuation-reconfirmation.md": "bf9604796d6a32770851699b2bbc4c6cb2f121cf2aefc11efe12533bd3a108e6",
       "_ask/policies/delegation.md": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-      ".agents/ask/verification/traceability/evidence.py": "8a8c928c01f25445d60d9d174cf9259572816495ecd4a988b26e672ccf6d8275",
-      ".agents/ask/workflow_refs/store.py": "864faa52485f44dea19f946c68bc5d0e8462fcc5c1bcbfd11c5a8e9292fcd239"
+      "work/shorter-hashes/task7-test-plan-classification-authorization.md": "c52db4c190a8816585d5a1304155a2c39505501a065d4272baad75974d87079e",
+      "_ask/tests/test_workflow_refs_engineering.py": "e58574359d4a33b34161d1e42937f4f263924fe2bf7a8e644e37f785b5b79f2b"
     },
     "evidence_digests": {
-      "work/shorter-hashes/traceability/runs/6dc8863d8a5b456eafff0f40a1ee0df0/results.json": "ab5b745c033d6f6703e84f30d1f6a7523033f04bc53a5bb0e0d47ca7b8f86d24",
-      "work/shorter-hashes/traceability/runs/6dc8863d8a5b456eafff0f40a1ee0df0/30a20e71131840068bd5e5074e236bc5.log": "15c4b3c39033daa371e7e2080f1ff93347a776edae7b166eeeb159a7f8fbbbbb"
+      "work/shorter-hashes/traceability/runs/b8ff04a0b6504ddfa335eefd6bea786d/results.json": "7d0ff75f1318780b89dfbd6f0c5c813d273726383f03e919b05108832dc1e604",
+      "work/shorter-hashes/traceability/runs/b8ff04a0b6504ddfa335eefd6bea786d/092f770377df40228eb1ed6dff000c61.log": "db37701e55d358f616f2fa8757ed242932f622639b05950168a1850be689897e",
+      "work/shorter-hashes/traceability/runs/d9bd564bfc484338b090c7e638c6d76b/results.json": "5b623f134334ffba972f77c4195512e5b5e99735f639fc61cbfa1e9ec446fa77",
+      "work/shorter-hashes/traceability/runs/d9bd564bfc484338b090c7e638c6d76b/de98122e5491458297b4c1257abb81e4.log": "a56e75cbcb5b337bb017d14b0733566de5b20bb8895f2af090c46f8fa2627e9e",
+      "work/shorter-hashes/traceability/runs/28bbb29afa4941318eba3c263d7239fa/results.json": "4a9e815166f3fef46830a958d935efa4ab7ea7a9ed6505903a5cd962aa387566",
+      "work/shorter-hashes/traceability/runs/28bbb29afa4941318eba3c263d7239fa/6bd3af96c82848889d0da9bba4b38bc8.log": "086609e8c563babdb093c0840aa2d2a6bb19b5952ae59b4d43612085cf0440d6"
     },
     "findings": [],
     "open_blockers": [],
     "notes": [
-      "Review is limited to the committed Task6 ownership/planning correction. Candidate changes only plan.md and tasks.yaml: Task6 adds traceability/evidence.py ownership and limits edits there to source_changes runtime classification of exactly work/<current-owner>/references/integrity.json and integrity.json.pending.",
-      "Canonical spec and test-plan remain identical to the parent. Graph is identical after removing the one added ownership path. The source is already bound to both Task6 mapped cases. No criteria, scenarios, expected assertions, runner configuration, classifications, intent bytes or confirmation bytes change.",
-      "The existing source_changes function enumerates staged, unstaged and untracked paths before excluding a narrow set of current-owner runtime files. Catalog publication uses the exact integrity file and pending journal as generated working copies of coordinator-ref-bound immutable publication state. Classifying these two files as runtime avoids rejecting the publication side effects needed by the approved inner-loop integration.",
-      "Implementation must use exact current-owner path membership. It must continue to report foreign-owner catalogs, other references files, arbitrary .pending files, accepted contract/intent changes and every unrelated source change. This approval grants no directory-wide references exemption or global cleanliness bypass.",
-      "store._trusted_catalog compares local bytes to trusted Git authority and refuses unregistered/modified catalogs; _recover_pending reconciles the journal against old/new authority and full digest. Those checks and accepted-tests authority remain mandatory. Runtime classification supplies no integrity, approval or acceptance authority.",
-      "Task5 is integrated and Task6 depends on it in the linear graph; adding this narrow existing traceability seam introduces no concurrent writer or dependency ambiguity. Current Task6 Red history remains real: run6dc8863d8a5b456eafff0f40a1ee0df0 at9637cfec3d967d7d71ca5ef3c760b1947cd59d18 records both mapped cases as behavior_assertion failures, with unchanged canonical test-plan digest and authenticated retained log bytes.",
-      "No tests were added or executed for this metadata-only review, and no full recovery scan was rerun. Implementation still requires its applicable Green checks and exact candidate independent review; validate the narrow exclusion and retained dirt/trust checks at that boundary. Preserve existing Red source/assertion continuity and original outcomes.",
-      "Renewed accepted-plan registration of this exact amended graph is required before implementation continues. This is a scoped ownership correction under delegated confidence, with no changed What/Why, domain invariant, accepted behavior or final acceptance."
+      "Independent exact-revision review is limited to case7/2 new-to-regression classification and its scoped authorization note. Candidate changes only those two files. The entire canonical test plan equals its parent after restoring this single change_kind value; canonical spec, TaskGraph, all scenarios/assertions/criteria/runners/source bindings and case7/1 classification remain unchanged.",
+      "Canonical plan_digest is6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d. The provided d7c2d67f1438ccedc6e2bce54cf26c199836b55a8ce9bdaaec0b4f009dbb58be is the distinct file-byte SHA-256 and is correctly recorded under file_digests. Authorization note byte digest matches c52db4c190a8816585d5a1304155a2c39505501a065d4272baad75974d87079e.",
+      "Authenticated runb8ff04a0b6504ddfa335eefd6bea786d on test-only candidatea2d352c665a238d0e6fbe1c1faa1bc1d27df750b records case7/2 passed and case7/1 failed with behavior_assertion. Ledger digests and retained log bytes match. Existing passing case7/2 remains a Green guard; its enclosing run phase red does not make its passing case a Red result.",
+      "Case7/2 exercises previously implemented extract/compare/impact behavior. The actual compare.py, impact.py and profiles.py production bytes are unchanged from the baseline through the reviewed candidate. SH07, SH15 and SH16 retain their item-equivalence, exact external-binding and impact-completeness requirements; classification is not a product behavior change or an acceptance-criteria exemption.",
+      "Precision caveat: later test-only commite6044fa88a06a0274537441dd8916fd1f5ba5fd4 added explicit item revision fields and two preservation assertions before production commit4c4f786f98053fa9845b185de4aa33b130234a91. Thus the latest case method is not byte-identical to the authenticated baseline method. These assertions reinforce existing unchanged helper behavior; later Green runsd9bd564bfc484338b090c7e638c6d76b and28bbb29afa4941318eba3c263d7239fa execute the strengthened case and pass with authenticated report/log bindings.",
+      "Preserve all historical runs under their original candidate/contract/phase/outcome. Do not relabel case7/2 as failed, manufacture a Red, erase case7/1 genuine Red or substitute historical Green for current exact-candidate evidence under the amended accepted plan. Existing Red/assertion continuity for new case7/1 remains subject to normal independent implementation review.",
+      "The case alone is not a complete proof of SH07/SH15/SH16: its changed embedded input reference also changes local JSON bytes. This classification approval does not certify identical-local-blob external-binding coverage or broader semantic completeness; independent implementation/coverage review still applies.",
+      "Authorization is confined to this classification correction, preserving approved intent and What/Why. Renewed supported accepted-plan registration is required before Task7 resumes. No implementation edits, new tests, test execution, state mutations, acceptance registration or full recovery scans were performed by this reviewer."
     ]
   },
-  "plan_review_digest": "5de1b6f8bda9057016b4c4d0b562b99c772756dd7ea8d63f741b91a853643ca9",
+  "plan_review_digest": "9850a614a1c0971e174a1164e9ab354847f3633dc1e2c6de5bbcf097a4805078",
   "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-  "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+  "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
   "graph_digest": "3c8e40f7501dffc72feec3a476e9dcbfabfdce11726d93fdde08487792ad942f"
 }
