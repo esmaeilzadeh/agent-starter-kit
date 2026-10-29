@@ -3,15 +3,53 @@
   "work_id": "shorter-hashes",
   "task_id": "7",
   "base_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
-  "candidate_sha": "18acdb9b387597562669e093dd059ea7c6889818",
+  "candidate_sha": "bb25633cb52e0bf12ce1a6fb386a77802652eea6",
   "tdd": {
-    "seam": "_ask/scripts/engineering_model/snapshot.py::capture; _ask/tests/test_workflow_refs_engineering.py::ReferenceTests.test_snapshots_context_and_legacy_reads",
+    "seam": "Selected compact task/test/review references resolve through the trusted catalog only for a selected task/test projection; unresolved references remain scoped.",
     "red": {
-      "command": "python3 -m unittest -v _ask.tests.test_workflow_refs_engineering",
-      "output": "Actual focused Red: 7/1 failed by behavior assertion because the captured compact plan did not expand work/shared/test-plan.json into its source closure; 7/2 passed as an existing comparison/impact Green guard. No setup/runtime errors.",
+      "kind": "local_direct",
+      "candidate_sha": "163ac581ab65e0ebcdd82e2af1679e3e05352ddf",
+      "command": "PYTHONPATH=_ask/tests:. python3 -m unittest test_workflow_refs_engineering.ReferenceTests.test_selected_projection_resolves_only_requested_compact_references -v",
+      "output": "Actual direct unittest Red: the registered-catalog fixture reached the behavior assertion and failed because selected projection returned references=None (AssertionError: selected projection exposes its compact task/test/review references). Ran 1 test; FAILED (failures=1). This is a local correction Red, not a native mapped run.",
       "exit_code": 1
+    },
+    "green": {
+      "kind": "local_direct",
+      "candidate_sha": "32d6e861ebc97c5c7628d80c199c59691f5a4b53",
+      "command": "PYTHONPATH=_ask/tests:. python3 -m unittest test_workflow_refs_engineering -v && PYTHONPATH=_ask/tests:. python3 -m unittest test_engineering_model test_engineering_workbench_evidence test_workflow_refs_store -v && python3 -m py_compile _ask/scripts/engineering_model/projection.py _ask/tests/test_workflow_refs_engineering.py && git diff --check",
+      "output": "Actual direct Green: test_workflow_refs_engineering passed 3/3; test_engineering_model, test_engineering_workbench_evidence, and test_workflow_refs_store passed 17/17; py_compile and git diff --check passed. No checkout-root benchmark was run.",
+      "exit_code": 0
+    },
+    "native_history": {
+      "red": {
+        "kind": "native_mapped",
+        "run_id": "b8ff04a0b6504ddfa335eefd6bea786d",
+        "candidate_sha": "a2d352c665a238d0e6fbe1c1faa1bc1d27df750b",
+        "digest": "4d10b97585b430543b31f45b41d19923915fae5e8421db2a27d9d3e5884f9722",
+        "phase": "red",
+        "exit_code": 1,
+        "note": "7/1 behavior assertion failed and 7/2 passed; validated/checkpointed through direct core after outer CLI recovery_required."
+      },
+      "green": {
+        "kind": "native_mapped",
+        "run_id": "4747bb9ba19541a1bf689f2db687797a",
+        "candidate_sha": "bb25633cb52e0bf12ce1a6fb386a77802652eea6",
+        "digest": "c7364c87a57912929da0f1e520d85826d72dc2c656e04ba4bbdc11cdd26490af",
+        "phase": "final_green",
+        "exit_code": 0,
+        "note": "Exact-candidate final Green passed 7/1 and 7/2 under accepted plan; native coordinator finalized the run."
+      }
     }
   },
   "exemption": null,
-  "notes": "Interim result records the committed test-only candidate and focused local Red. Native task-scoped Red is pending coordinator checkpoint; no Green or verification is claimed."
+  "notes": "Attempt 2 is bound to exact candidate bb25633cb52e0bf12ce1a6fb386a77802652eea6 under accepted plan 6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d. T7-S1 coverage asserts identical local consumer payloads with changed external bindings, and blocks real new-context completion on an unregistered candidate dependency. The accepted Red waiver is explicit: preserve native Red b8ff04a0b6504ddfa335eefd6bea786d (7/1 assertion failed; 7/2 regression guard passed) and do not rerun Red. The first candidate Green attempt bfc2f4076cac4a29ab6ba0adcad35c11 is preserved as a setup diagnostic: 7/1 passed, 7/2 could not capture because the temporary Git fixture lacked work/. The corrected exact-candidate final Green 4747bb9ba19541a1bf689f2db687797a passed both mapped cases and was finalized by the native coordinator. Earlier local/native runs remain historical under their original candidates.",
+  "accepted_plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
+  "contract_sha": "5c853ee3212564bcaa3c71bfd9595a41c01c0602",
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "bb25633cb52e0bf12ce1a6fb386a77802652eea6",
+    "run_id": "4747bb9ba19541a1bf689f2db687797a",
+    "report_path": "work/shorter-hashes/traceability/runs/4747bb9ba19541a1bf689f2db687797a/results.json",
+    "sha256": "86a16ea31b436bedd58e37a093a9ad9ad90194009e203d7f719f3d09b2dabf0a"
+  }
 }

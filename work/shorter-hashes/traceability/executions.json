@@ -748,5 +748,225 @@
     "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
     "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "106478a5aa144d5eb71d726050b6e979",
+    "digest": "2779a69f0f9cc2a9a543650aab18ec905d7c2e3f79a3732cab12100080fc85f1",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "5e293eacafc588098fb837a50da5a4f83bff3584",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "94ffac193b574fae8ef31a299888e3fe",
+    "digest": "ca584711667590dfb6f4da52383033239f8cdb72d9d6fa1dcdf481cca38d5732",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "c0d3a9f3a1322ca4bf4b4048bcca3774cb0435e2",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "b8ff04a0b6504ddfa335eefd6bea786d",
+    "digest": "4d10b97585b430543b31f45b41d19923915fae5e8421db2a27d9d3e5884f9722",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "a2d352c665a238d0e6fbe1c1faa1bc1d27df750b",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "d9bd564bfc484338b090c7e638c6d76b",
+    "digest": "0178cf4f0d49000f01921587f26097781014c0675012a639ebadc47f0c47b3f5",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "4c4f786f98053fa9845b185de4aa33b130234a91",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "a823d838693040e5bec903b9eff795d6",
+    "digest": "f0cb0e3134ddee836f82574e122188e712c06f18082d870cb80a6ec509ec009e",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "32d6e861ebc97c5c7628d80c199c59691f5a4b53",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "28bbb29afa4941318eba3c263d7239fa",
+    "digest": "edcad28a3e86b6be233fdd885a1c5f02a2d79d6288af1fa4bfecf568bfb28efa",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "32d6e861ebc97c5c7628d80c199c59691f5a4b53",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "d8a06ee2edcf4ea0929f1ee9e2fc72ec",
+    "digest": "362ccc3188c8674bce499109b42842ca98b847d992a3712631ee5af885c38771",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "51e687c408402a7c533e31649aaa2500635e8d7f",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "bfc2f4076cac4a29ab6ba0adcad35c11",
+    "digest": "00bf97612bc132a80d44c3789091dd08b31abb46c0d0e1586d85bd745c210f14",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "2fdcbe7d6e9dc12156cf9b462b50fc51ab6efba9",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "4747bb9ba19541a1bf689f2db687797a",
+    "digest": "c7364c87a57912929da0f1e520d85826d72dc2c656e04ba4bbdc11cdd26490af",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "7",
+    "candidate_sha": "bb25633cb52e0bf12ce1a6fb386a77802652eea6",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "dba1c346b85e4f43ac451d29ef5edd99",
+    "digest": "3d054cb3ccf89a056f4c7bc6b59f5eb8aa60b6299f13b43dd50d2e4e21d73c8b",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "e6a92710b8a62a9213134fc73e944daa0c9ed6f9",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "f53f2383c14f414993f0aaf7d9499f3b",
+    "digest": "2fe90fc969b7652ea787212ab82471844f9ccd9f97031847a4914bcd1120cd31",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "2501252328fd1515f50e76f192d515ea5d7cc42e",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "d0ef577ce0a24e37aba3ac90984089e2",
+    "digest": "8bc5567b8b8da51681b06804253307b3692d78b2da0db0deabf60c780205624b",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "4b63d7898482c5ad4ddd9be44642366cd9b735af",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "32a9d2c1fd914150807bd1a2d987e5f0",
+    "digest": "70ce91dd82b67025ce358d8bc161139cdf5760b1e74178f4d8be8e773941dea4",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "f9f57e9c51d4c6b9a6f1147c67f6b02b00cca1e3",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "1d0805cfd643479e872b324a1d908f56",
+    "digest": "5e3908f1b95a189b794a4e24ab9809c0699fc5b3678162c9ce0e011b5574e01b",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "a99b1bb467d417c88d73d5e0115636e33d6e2339",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "06114eec7cbf42479546ae50e988377d",
+    "digest": "a0f10501446ede1bb61f51fa95cf943e8c79b06c8ac2b1e6659d33bd4c37a0af",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "a9b7f24c4c28bab8bc8fdd3d01e173377027c418",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "f74fb2783fc74c459389d19c3e3eec9c",
+    "digest": "e04072b21a1d5be5ea3e212f10450a07363c3b84038ee0ac63af7c4754ea6b0f",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "8",
+    "candidate_sha": "a955fb036694f034cfb6b7969a09639cb5645b5f",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "1d18fda302ed46f9a2f2afe759862496",
+    "digest": "5dc2258a6c3185b7016f6e6096f4d9bbbc7aad78b8ea11575645a9ea6d70772a",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "2557504855bb8f7d20ab698e7ccef525a0087eea",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "9446a1625ba34eaca665d872415de8a1",
+    "digest": "fb72cc8b821407289c11ad400ce8a015d976078aa4f6a4ba72e9a5860fd4917d",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "3824fc41771158ec63a78523e1fd9621d3ee7425",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "c08de33f6c5846b3b2b182cf00f8632f",
+    "digest": "dac2b02811d97bd517308e22105c2c37d76bb891794df2f6414e820da4c8e078",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "51e3e87c01a9cafdd5994a1952f6051c2570e7bc",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "655c1937b7594d48a3f3fae62ef54749",
+    "digest": "d4ee517498a537d27e2d40e61de0b0797613a5e4392fa10c3a99167c00e38a26",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "eccf4c0b486572da4f6a436eb7f0bbc1a053ab1b",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "fb458e0f08794afcae8b7686f911aa99",
+    "digest": "124ee52a4bbd3092be568ae52d355e15342563d768fcdf77d4729ad05c6fe488",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "ffce1e91d6d8bf6330d5e04a2af4103ded1ad386",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "cf5d501d1a904f4a9c53a238f272de64",
+    "digest": "89d59fa6db8973bc5bc82b7ebf37b54d4c20d8d451c0dac91b3e91472a1e1168",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
   }
 ]
