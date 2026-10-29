@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import copy
 from pathlib import Path
 import shutil
 import subprocess
@@ -14,11 +15,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask/scripts"))
 sys.path.insert(0, str(ROOT / ".agents/ask"))
 
-from inner_loop.checkpoint import publish, read_checkpoint
-from inner_loop.state import load_state
+from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle, publish, read_checkpoint
+from inner_loop.state import CasConflict, SecondWriter, cas_apply, load_state, spawn_writer
+from inner_loop.attempts import interrupt_task
 from inner_loop.evidence import NotIntegrable, _execution_row
 from verification.traceability.contracts import digest
-from verification.traceability.evidence import accept_plan, load_accepted, write_json
+from verification.traceability.evidence import accept_plan, load_accepted, source_changes, write_json
 from verification.traceability.adapters import run_tests
 
 
@@ -93,6 +95,58 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(persisted.get("payload_schema"), "ask-inner-loop-state/v1")
         self.assertEqual(persisted.get("references", {}).get("task:6"),
                          {"id": 6, "revision": 1})
+        self.assertEqual(persisted.get("references", {}).get("test:6/1"),
+                         "fixture-work/spec/1/plan/1/task/6/test/1@1")
+
+        retry = publish(self.root, "fixture-work", state)
+        _, _, retry_artifacts = read_checkpoint(self.root, "fixture-work", retry)
+        retry_envelope = json.loads(retry_artifacts[
+            "artifacts/work/fixture-work/inner-loop/state.json"
+        ])
+        self.assertEqual(retry_envelope["references"], persisted["references"])
+
+        catalog = self.root / "work/fixture-work/references/integrity.json"
+        trusted_catalog = catalog.read_bytes()
+        catalog.write_bytes(trusted_catalog + b"tampered\n")
+        with self.assertRaisesRegex(CheckpointError, "catalog"):
+            read_checkpoint(self.root, "fixture-work", checkpoint)
+        catalog.write_bytes(trusted_catalog)
+
+        bundle = self.root / "checkpoint.bundle"
+        export_bundle(self.root, "fixture-work", bundle)
+        imported_root = self.root.parent / (self.root.name + "-imported")
+        self.addCleanup(shutil.rmtree, imported_root, ignore_errors=True)
+        subprocess.run(["git", "clone", "--no-local", str(self.root), str(imported_root)],
+                       check=True, capture_output=True)
+        imported = import_bundle(imported_root, "fixture-work", bundle)
+        _imported_sha, imported_state, _imported_files = read_checkpoint(
+            imported_root, "fixture-work", imported
+        )
+        self.assertEqual(imported_state, state)
+        self.assertTrue(subprocess.run(
+            ["git", "show-ref", "--verify", "--quiet", "refs/ask/references/fixture-work"],
+            cwd=imported_root,
+        ).returncode == 0)
+
+        transactional = self.state()
+        transactional["tasks"]["6"]["evidence"] = {}
+        transactional["tasks"]["7"] = copy.deepcopy(transactional["tasks"]["6"])
+        state_path = self.root / "work/fixture-work/inner-loop/state.json"
+        state_path.write_text(json.dumps(transactional, indent=2) + "\n")
+        publish(self.root, "fixture-work", transactional)
+        cas_apply(self.root, "fixture-work", 4,
+                  lambda doc: doc["tasks"]["7"].update(debug_round=1))
+        with self.assertRaises(CasConflict):
+            cas_apply(self.root, "fixture-work", 4, lambda doc: None)
+        spawn_writer(self.root, "fixture-work", "6")
+        with self.assertRaises(SecondWriter):
+            spawn_writer(self.root, "fixture-work", "7")
+        interrupt_task(self.root, "fixture-work", "6", "exercise retained recovery")
+        state_path.unlink()
+        recovered = load_state(self.root, "fixture-work")
+        self.assertEqual(recovered["tasks"]["6"]["status"], "interrupted")
+        self.assertEqual(recovered["tasks"]["6"]["attempt_history"][-1]["status"], "interrupted")
+        self.assertEqual(json.loads(state_path.read_text())["schema"], "ask-inner-loop-state/v1")
 
     def test_evidence_projection_and_exact_runner(self):
         state = self.state()
@@ -197,6 +251,17 @@ class ReferenceTests(unittest.TestCase):
         with self.assertRaisesRegex(NotIntegrable, "output log digest/binding is invalid"):
             _execution_row(self.root, "fixture-work", "6", report["run_id"],
                            state={"tasks": {"6": task_state}})
+
+        references = self.root / "work/fixture-work/references"
+        (references / "integrity.json.pending").write_text("pending\n")
+        (references / "other.json").write_text("other\n")
+        foreign = self.root / "work/other-work/references/integrity.json"
+        foreign.parent.mkdir(parents=True)
+        foreign.write_text("foreign\n")
+        self.assertEqual(source_changes(self.root, "fixture-work"), [
+            "work/fixture-work/references/other.json",
+            "work/other-work/references/integrity.json",
+        ])
 
 
 if __name__ == "__main__":

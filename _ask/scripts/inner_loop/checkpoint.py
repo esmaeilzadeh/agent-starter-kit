@@ -5,12 +5,18 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import re
 import subprocess
+import sys
 import tempfile
 
 
 SCHEMA = "ask-inner-loop-checkpoint/v1"
+STATE_SCHEMA = "ask-inner-loop-state/v1"
 REF_PREFIX = "refs/ask/inner-loop/"
+REFERENCE_PREFIX = "refs/ask/references/"
+ENVELOPE_SCHEMA = "ask-workflow-envelope/v1"
+RECORDS_PATH = "inner-loop/integrity-records.json"
 
 
 class CheckpointError(RuntimeError):
@@ -238,7 +244,7 @@ def publish(root: Path, work_id: str, state: dict) -> str:
     ref = _ref(work_id)
     previous = _resolve_ref(root, work_id)
     runtime = _runtime_files(root, work_id)
-    state_bytes = (json.dumps(state, indent=2) + "\n").encode()
+    state_bytes, integrity_authority, integrity_generation = _compact_state(root, work_id, state)
     runtime[f"work/{work_id}/inner-loop/state.json"] = state_bytes
     artifact_entries = {}
     objects = {}
@@ -251,6 +257,10 @@ def publish(root: Path, work_id: str, state: dict) -> str:
                                   "sha256": hashlib.sha256(content).hexdigest(),
                                   "size": len(content)}
     required = _required_commits(root, work_id, state)
+    if integrity_authority:
+        if not _commit_exists(root, integrity_authority):
+            raise CheckpointError("trusted workflow reference catalog commit is unavailable")
+        required = sorted(set(required) | {integrity_authority})
     manifest = {
         "schema": SCHEMA,
         "work_id": work_id,
@@ -258,6 +268,8 @@ def publish(root: Path, work_id: str, state: dict) -> str:
         "previous_checkpoint": previous,
         "coordinator_sha": state.get("coordinator_sha", ""),
         "accepted_contract_sha": _contract_sha(root, work_id),
+        "integrity_authority": integrity_authority,
+        "integrity_generation": integrity_generation,
         "retained_commits": required,
         "artifacts": artifact_entries,
         "state_path": f"artifacts/work/{work_id}/inner-loop/state.json",
@@ -333,7 +345,7 @@ def read_checkpoint(root: Path, work_id: str, commit: str | None = None) -> tupl
             raise CheckpointError(f"checkpoint commit closure is incomplete: {sha}")
     state_path = _safe_path(manifest.get("state_path", ""))
     try:
-        state = json.loads(files[state_path])
+        state = _resolve_state(Path(root), work_id, files[state_path], commit, manifest)
     except (KeyError, ValueError) as exc:
         raise CheckpointError("checkpoint has no valid state snapshot") from exc
     generation = manifest.get("generation")
@@ -374,7 +386,8 @@ def is_checkpoint_state_ancestor(root: Path, work_id: str, state: dict,
         if manifest.get("work_id") != work_id:
             raise CheckpointError("checkpoint history work_id mismatch")
         try:
-            historical = json.loads(files[manifest["state_path"]])
+            historical = _resolve_state(Path(root), work_id,
+                                        files[manifest["state_path"]], cursor, manifest)
         except (KeyError, ValueError, TypeError) as exc:
             raise CheckpointError("checkpoint history has no valid state snapshot") from exc
         if historical == state:
@@ -394,6 +407,230 @@ def _blob_type(root: Path, sha: str) -> str:
 
 def _blob_id(root: Path, content: bytes) -> str:
     return _git(root, "hash-object", "--stdin", input=content).decode().strip()
+
+
+def _workflow_refs(root: Path):
+    package_root = str(Path(root) / ".agents" / "ask")
+    if package_root not in sys.path:
+        sys.path.insert(0, package_root)
+    from workflow_refs import codec, identity, store
+    return codec, identity, store
+
+
+def _numeric(value: str) -> bool:
+    return bool(re.fullmatch(r"[1-9][0-9]*", value))
+
+
+def _run_rows(task: dict) -> list[dict]:
+    rows = []
+    current = (task.get("evidence") or {}).get("traceability_runs") or []
+    for run in current:
+        if isinstance(run, dict):
+            rows.append({"attempt": "current", "run": run})
+    for index, attempt in enumerate(task.get("attempt_history") or [], start=1):
+        evidence = (attempt.get("evidence") or {}) if isinstance(attempt, dict) else {}
+        for run in evidence.get("traceability_runs") or []:
+            if isinstance(run, dict):
+                rows.append({"attempt": index, "run": run})
+    return rows
+
+
+def _state_items(state: dict) -> tuple[list[dict], dict[str, str]]:
+    """Build stable structured task/test items using only declared evidence fields."""
+    items: list[dict] = []
+    logical_ids: dict[str, str] = {}
+    work_id = state.get("work_id")
+    for task_id, task in sorted((state.get("tasks") or {}).items()):
+        if not _numeric(str(task_id)) or not isinstance(task, dict):
+            continue
+        task_num = int(task_id)
+        task_item = f"task-{task_id}"
+        items.append({"id": task_item, "value": task})
+        key = f"task:{task_id}"
+        logical_ids[key] = f"{work_id}/spec/1/plan/1/task/{task_num}"
+        by_test: dict[str, list[dict]] = {}
+        for row in _run_rows(task):
+            run = row["run"]
+            for test_id in run.get("test_ids") or []:
+                if not isinstance(test_id, str):
+                    continue
+                parts = test_id.split("/")
+                if (len(parts) != 2 or parts[0] != str(task_id)
+                        or not _numeric(parts[0]) or not _numeric(parts[1])):
+                    continue
+                by_test.setdefault(test_id, []).append(row)
+        for test_id, rows in sorted(by_test.items()):
+            _task, test_num = test_id.split("/")
+            test_item = "test-" + test_id.replace("/", "-")
+            items.append({"id": test_item, "value": {
+                "task_id": str(task_id), "test_id": test_id, "runs": rows,
+            }})
+            logical_ids[f"test:{test_id}"] = (
+                f"{work_id}/spec/1/plan/1/task/{task_num}/test/{int(test_num)}"
+            )
+    return items, logical_ids
+
+
+def _commit_record_source(root: Path, work_id: str, items: list[dict]) -> tuple[str, str, bytes]:
+    source_path = f"work/{work_id}/{RECORDS_PATH}"
+    content = (json.dumps({"schema": "ask-inner-loop-records/v1", "items": items},
+                          ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    blob = _blob(root, content)
+    tree = _tree(root, {source_path: blob})
+    head = _git(root, "rev-parse", "HEAD").decode().strip()
+    commit = _git(root, "commit-tree", tree, "-p", head,
+                  input=b"Retain immutable inner-loop workflow records\n").decode().strip()
+    return commit, source_path, content
+
+
+def _catalog_state_refs(root: Path, work_id: str, state: dict) -> tuple[dict[str, str], str | None, int | None]:
+    items, logical_ids = _state_items(state)
+    if not items:
+        return {}, None, None
+    codec, _identity, store = _workflow_refs(root)
+    catalog_path = root / "work" / work_id / "references" / "integrity.json"
+    try:
+        catalog = store.initialize_catalog(catalog_path, work_id)
+        source_commit, source_path, content = _commit_record_source(root, work_id, items)
+        refs = {}
+        generation = catalog["generation"]
+        for item in items:
+            # Item IDs are mapped by stable logical identity, not by searching prose.
+            key = next((name for name, logical in logical_ids.items()
+                        if ((name.startswith("task:") and item["id"] == "task-" + name[5:])
+                            or (name.startswith("test:") and item["id"] == "test-" + name[5:].replace("/", "-")))), None)
+            if key is None:
+                raise CheckpointError("inner-loop catalog item has no numeric reference")
+            entry = store.register_revision(
+                catalog_path, work_id, logical_ids[key],
+                {"commit": source_commit, "path": source_path}, item["id"],
+                "structured-item/1", content, expected_generation=generation,
+            )
+            catalog = store.initialize_catalog(catalog_path, work_id)
+            generation = catalog["generation"]
+            refs[key] = entry["reference"]
+        authority = _git(root, "rev-parse", "--verify", REFERENCE_PREFIX + work_id).decode().strip()
+        return refs, authority, generation
+    except (store.CatalogError, OSError, ValueError) as exc:
+        raise CheckpointError(f"cannot publish trusted inner-loop references: {exc}") from exc
+
+
+def _compact_state(root: Path, work_id: str, state: dict) -> tuple[bytes, str | None, int | None]:
+    items, _logical = _state_items(state)
+    if not items:
+        return (json.dumps(state, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode(), None, None
+    refs, authority, generation = _catalog_state_refs(root, work_id, state)
+    payload = json.loads(json.dumps(state, ensure_ascii=False, allow_nan=False))
+    payload["tasks"] = {task_id: task for task_id, task in (state.get("tasks") or {}).items()
+                         if f"task:{task_id}" not in refs}
+    codec, identity, _store = _workflow_refs(root)
+    references = dict(refs)
+    context = {"owner": work_id, "type": "task", "spec": 1, "plan": 1}
+    try:
+        envelope = codec.encode_envelope(payload, STATE_SCHEMA, context, references)
+        return (json.dumps(envelope, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode(), authority, generation
+    except (codec.EnvelopeError, identity.ReferenceError, ValueError) as exc:
+        raise CheckpointError(f"cannot encode compact inner-loop state: {exc}") from exc
+
+
+def _resolve_state(root: Path, work_id: str, raw: bytes, checkpoint_sha: str,
+                   manifest: dict) -> dict:
+    try:
+        stored = json.loads(raw)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise CheckpointError("checkpoint has no valid state snapshot") from exc
+    if not isinstance(stored, dict) or stored.get("schema") != ENVELOPE_SCHEMA:
+        return stored
+    authority = manifest.get("integrity_authority")
+    if (not isinstance(authority, str) or not _commit_exists(root, authority)
+            or not _is_ancestor(root, authority, checkpoint_sha)):
+        raise CheckpointError("compact checkpoint has no retained catalog authority")
+    current_authority = subprocess.run(
+        ["git", "rev-parse", "--verify", REFERENCE_PREFIX + work_id],
+        cwd=root, capture_output=True, text=True,
+    )
+    if current_authority.returncode:
+        raise CheckpointError("trusted workflow reference catalog is unavailable")
+    if not _is_ancestor(root, authority, current_authority.stdout.strip()):
+        raise CheckpointError("trusted workflow reference catalog diverges from checkpoint authority")
+    try:
+        pinned = json.loads(_git(root, "show", f"{authority}:work/{work_id}/references/integrity.json"))
+    except (CheckpointError, ValueError) as exc:
+        raise CheckpointError("checkpoint authority has no valid integrity catalog") from exc
+    if (not isinstance(pinned, dict) or pinned.get("schema") != "ask-reference-catalog/v1"
+            or pinned.get("owner") != work_id
+            or pinned.get("generation") != manifest.get("integrity_generation")
+            or not isinstance(pinned.get("entries"), list)):
+        raise CheckpointError("checkpoint integrity catalog generation or owner is invalid")
+    codec, identity, store = _workflow_refs(root)
+    try:
+        normalized = codec.normalize_envelope(stored)
+        context = normalized["context"]
+        if (context != {"owner": work_id, "type": "task", "spec": 1, "plan": 1}
+                or normalized["schema"] != STATE_SCHEMA):
+            raise CheckpointError("compact checkpoint context does not match its owner")
+        state = normalized["payload"]
+        if not isinstance(state, dict) or state.get("work_id") != work_id:
+            raise CheckpointError("compact checkpoint payload has an invalid owner")
+        tasks = dict(state.get("tasks") or {})
+        resolved_tasks: dict[str, dict] = {}
+        test_refs = []
+        for name, reference in normalized["references"].items():
+            parsed = identity.parse_reference(reference)
+            if parsed["owner"] != work_id or parsed["ids"][:2] != (1, 1):
+                raise CheckpointError("compact checkpoint contains a foreign or mis-parented reference")
+            if not any(isinstance(entry, dict) and entry.get("reference") == reference
+                       for entry in pinned["entries"]):
+                raise CheckpointError("checkpoint reference was not present in its pinned catalog generation")
+            if name.startswith("task:"):
+                task_id = str(parsed["ids"][2]) if parsed["kind"] == "task" and len(parsed["ids"]) == 3 else ""
+                if task_id != name[5:] or task_id in resolved_tasks:
+                    raise CheckpointError("compact task reference key does not match its identity")
+                result = store.resolve_version(root / "work" / work_id / "references" / "integrity.json",
+                                               reference, repository_root=root)
+                entry = result["entry"]
+                document = json.loads(result["payload"])
+                matches = [item for item in document.get("items", [])
+                           if isinstance(item, dict) and item.get("id") == entry.get("item_id")]
+                if len(matches) != 1 or entry.get("item_id") != "task-" + task_id:
+                    raise CheckpointError("catalog task item does not match its numeric reference")
+                value = matches[0].get("value")
+                if not isinstance(value, dict):
+                    raise CheckpointError("catalog task value is invalid")
+                resolved_tasks[task_id] = value
+            elif name.startswith("test:"):
+                if parsed["kind"] != "test" or len(parsed["ids"]) != 4:
+                    raise CheckpointError("compact test reference has invalid type or parents")
+                expected_id = f"{parsed['ids'][2]}/{parsed['ids'][3]}"
+                if name != "test:" + expected_id:
+                    raise CheckpointError("compact test reference key does not match its identity")
+                test_refs.append((reference, expected_id, parsed["ids"][2]))
+            else:
+                raise CheckpointError("compact checkpoint contains an unsupported reference kind")
+        for reference, test_id, task_num in test_refs:
+            if str(task_num) not in resolved_tasks:
+                raise CheckpointError("catalog test reference has no matching task record")
+            result = store.resolve_version(root / "work" / work_id / "references" / "integrity.json",
+                                           reference, repository_root=root)
+            entry = result["entry"]
+            document = json.loads(result["payload"])
+            matches = [item for item in document.get("items", [])
+                       if isinstance(item, dict) and item.get("id") == entry.get("item_id")]
+            expected_rows = [row for row in _run_rows(resolved_tasks[str(task_num)])
+                             if test_id in (row["run"].get("test_ids") or [])]
+            expected_value = {"task_id": str(task_num), "test_id": test_id,
+                              "runs": expected_rows}
+            if (len(matches) != 1 or entry.get("item_id") != "test-" + test_id.replace("/", "-")
+                    or matches[0].get("value") != expected_value):
+                raise CheckpointError("catalog test item does not match its numeric reference")
+        tasks.update(resolved_tasks)
+        state["tasks"] = tasks
+        return state
+    except (store.CatalogError, codec.EnvelopeError, identity.ReferenceError,
+            OSError, ValueError, KeyError, TypeError) as exc:
+        if isinstance(exc, CheckpointError):
+            raise
+        raise CheckpointError(f"compact checkpoint reference resolution failed: {exc}") from exc
 
 
 def restore_cache(root: Path, work_id: str, cached: dict | None = None) -> dict | None:
@@ -417,7 +654,9 @@ def restore_cache(root: Path, work_id: str, cached: dict | None = None) -> dict 
         while previous:
             prior_manifest, prior_files = _read_tree(Path(root), previous)
             try:
-                prior = json.loads(prior_files[prior_manifest["state_path"]])
+                prior = _resolve_state(Path(root), work_id,
+                                       prior_files[prior_manifest["state_path"]],
+                                       previous, prior_manifest)
             except (KeyError, ValueError):
                 raise CheckpointError("previous checkpoint has invalid state")
             if prior == cached:
@@ -454,25 +693,68 @@ def export_bundle(root: Path, work_id: str, destination: Path) -> None:
     checkpoint = read_checkpoint(root, work_id)
     if checkpoint is None:
         raise CheckpointError("no checkpoint is available for export")
-    _git(Path(root), "bundle", "create", str(destination), _ref(work_id))
+    refs = [_ref(work_id)]
+    catalog_ref = REFERENCE_PREFIX + work_id
+    if subprocess.run(["git", "show-ref", "--verify", "--quiet", catalog_ref],
+                      cwd=root).returncode == 0:
+        refs.append(catalog_ref)
+    _git(Path(root), "bundle", "create", str(destination), *refs)
 
 
 def import_bundle(root: Path, work_id: str, source: Path) -> str:
     root = Path(root).resolve()
     _git(root, "bundle", "verify", str(source))
     ref = _ref(work_id)
+    catalog_ref = REFERENCE_PREFIX + work_id
+    checkpoint_quarantine = f"refs/ask/quarantine/{work_id}-checkpoint"
+    catalog_quarantine = f"refs/ask/quarantine/{work_id}-catalog"
     with tempfile.TemporaryDirectory(prefix="ask-checkpoint-") as temp:
-        quarantine = f"refs/ask/quarantine/{work_id}"
-        fetched = _git(root, "fetch", str(source), f"{ref}:{quarantine}")
-        del fetched
-        candidate = _git(root, "rev-parse", quarantine).decode().strip()
+        heads = _git(root, "bundle", "list-heads", str(source)).decode().splitlines()
+        available_refs = {line.split()[-1] for line in heads if len(line.split()) >= 2}
+        fetch_args = ["fetch", str(source), f"{ref}:{checkpoint_quarantine}"]
+        has_catalog = catalog_ref in available_refs
+        if has_catalog:
+            fetch_args.append(f"{catalog_ref}:{catalog_quarantine}")
+        _git(root, *fetch_args)
+        candidate = _git(root, "rev-parse", checkpoint_quarantine).decode().strip()
+        current_catalog = subprocess.run(["git", "rev-parse", "--verify", catalog_ref],
+                                         cwd=root, capture_output=True, text=True)
+        old_catalog = current_catalog.stdout.strip() if current_catalog.returncode == 0 else None
+        imported_catalog = (_git(root, "rev-parse", catalog_quarantine).decode().strip()
+                            if has_catalog else None)
+        catalog_changed = False
         try:
+            if imported_catalog:
+                manifest, _files = _read_tree(root, candidate)
+                expected_authority = manifest.get("integrity_authority")
+                if (not isinstance(expected_authority, str)
+                        or not _is_ancestor(root, expected_authority, imported_catalog)):
+                    raise CheckpointError("bundle catalog ref does not contain checkpoint authority")
+                if old_catalog and not (_is_ancestor(root, old_catalog, imported_catalog)
+                                        or _is_ancestor(root, imported_catalog, old_catalog)):
+                    raise CheckpointError("imported workflow catalog diverges from local authority")
+                if not old_catalog or _is_ancestor(root, old_catalog, imported_catalog):
+                    _git(root, "update-ref", catalog_ref, imported_catalog,
+                         old_catalog or "0" * len(imported_catalog))
+                    catalog_changed = True
+            elif _read_tree(root, candidate)[0].get("integrity_authority"):
+                raise CheckpointError("bundle omits the trusted workflow catalog ref")
             read_checkpoint(root, work_id, candidate)
             current = _resolve_ref(root, work_id)
             if current and not _is_ancestor(root, current, candidate):
                 raise CheckpointError("imported checkpoint diverges from current checkpoint")
             _git(root, "update-ref", ref, candidate, current or "0" * len(candidate))
+        except Exception:
+            if catalog_changed:
+                if old_catalog:
+                    _git(root, "update-ref", catalog_ref, old_catalog, imported_catalog)
+                else:
+                    subprocess.run(["git", "update-ref", "-d", catalog_ref, imported_catalog],
+                                   cwd=root, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            raise
         finally:
-            subprocess.run(["git", "update-ref", "-d", quarantine], cwd=root,
+            subprocess.run(["git", "update-ref", "-d", checkpoint_quarantine], cwd=root,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(["git", "update-ref", "-d", catalog_quarantine], cwd=root,
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return candidate

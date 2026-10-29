@@ -400,8 +400,11 @@ def source_changes(root,work_id):
         raw=subprocess.run(['git',*args],cwd=root,check=True,capture_output=True,text=True).stdout
         names.update(raw.split('\0'))
     prefix=f'work/{work_id}/inner-loop/'
+    catalog_paths={f'work/{work_id}/references/integrity.json',
+                   f'work/{work_id}/references/integrity.json.pending'}
     return sorted(n for n in names if n and not n.startswith(f'work/{work_id}/traceability/')
                   and n not in {prefix+'state.json',prefix+'state.lock',f'work/{work_id}/result.json'}
+                  and n not in catalog_paths
                   and not n.startswith((prefix+'evidence/',prefix+'results/',prefix+'.state-')))
 
 
