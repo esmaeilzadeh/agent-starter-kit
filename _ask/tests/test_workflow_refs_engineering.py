@@ -21,11 +21,78 @@ from workflow_refs.codec import encode_envelope
 from workflow_refs.compare import compare_items
 from workflow_refs.compare import extract_git_item
 from workflow_refs.impact import assess_impact
+from workflow_refs import store as reference_store
 
 from _ask.tests.engineering_fixture import workbench_model
 
 
 class ReferenceTests(unittest.TestCase):
+    def test_selected_projection_resolves_only_requested_compact_references(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workbench_model(root)
+            plan_path = root / "work/pilot/test-plan.json"
+            plan = json.loads(plan_path.read_text(encoding="utf-8"))
+            envelope = encode_envelope(plan, "ask-test-plan/v1", {
+                "owner": "pilot", "type": "plan", "spec": 1,
+            }, {
+                "task": "pilot/spec/1/plan/1/task/1@1",
+                "test": "pilot/spec/1/plan/1/task/1/test/1@1",
+                "review": "pilot/review/1@1",
+            })
+            plan_path.write_text(json.dumps(envelope, separators=(",", ":")), encoding="utf-8")
+
+            reference_items = {"items": [
+                {"id": "task-1", "kind": "task"},
+                {"id": "test-1", "kind": "test"},
+                {"id": "review-1", "kind": "review"},
+            ]}
+            source_path = "work/pilot/reference-items.json"
+            source = root / source_path
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text(json.dumps(reference_items, separators=(",", ":")), encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+            subprocess.run(["git", "add", source_path], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "publish reference source"], cwd=root, check=True)
+            commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root,
+                                             text=True).strip()
+            catalog = root / "work/pilot/references/integrity.json"
+            reference_store.initialize_catalog(catalog, "pilot")
+            for generation, (logical_id, item_id) in enumerate((
+                ("pilot/spec/1/plan/1/task/1", "task-1"),
+                ("pilot/spec/1/plan/1/task/1/test/1", "test-1"),
+                ("pilot/review/1", "review-1"),
+            )):
+                reference_store.register_revision(
+                    catalog, "pilot", logical_id, {"commit": commit, "path": source_path},
+                    item_id, "structured-item/1", source.read_bytes(),
+                    expected_generation=generation,
+                )
+
+            snapshot = capture(root, "pilot")
+            original_resolve = reference_store.resolve_version
+            with patch.object(reference_store, "resolve_version", wraps=original_resolve) as resolve:
+                unselected = project(snapshot, root, include_evidence=False)
+                self.assertEqual(resolve.call_count, 0,
+                                 "ordinary projections do not load reference catalog entries")
+                selected = project(snapshot, root, node_id="build", include_evidence=False)
+
+            resolved = selected.get("references")
+            self.assertIsInstance(resolved, dict,
+                                  "selected projection exposes its compact task/test/review references")
+            self.assertEqual(set(resolved), {"task", "test", "review"})
+            self.assertTrue(all(value.get("status") == "resolved" for value in resolved.values()), resolved)
+            self.assertEqual({name: value.get("reference") for name, value in resolved.items()},
+                             snapshot.references["work/pilot/test-plan.json"])
+            self.assertEqual({name: value.get("item_id") for name, value in resolved.items()},
+                             {"task": "task-1", "test": "test-1", "review": "review-1"})
+            self.assertEqual({call.args[1] for call in resolve.call_args_list},
+                             set(snapshot.references["work/pilot/test-plan.json"]),
+                             "selection resolves only the three requested qualified references")
+            self.assertEqual(unselected.get("references"), {})
+
     def test_snapshots_context_and_legacy_reads(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
