@@ -79,7 +79,9 @@ def source_changes(root: Path, work_id: str) -> list[str]:
                 or (name.startswith(prefix + '.state-') and name.endswith('.tmp'))
                 or name.startswith(f'work/{work_id}/traceability/')
                 or name == f'work/{work_id}/result.json')
-    return sorted(n for n in names if n and not operational(n))
+    catalog = f'work/{work_id}/references/'
+    integrity_runtime = {catalog + 'integrity.json', catalog + 'integrity.json.pending'}
+    return sorted(n for n in names if n and not operational(n) and n not in integrity_runtime)
 
 
 def runtime_exclusions(work_id: str) -> list[str]:
