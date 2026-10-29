@@ -309,18 +309,75 @@ class ReferenceTests(unittest.TestCase):
                                                capture_output=True, text=True).stdout.strip()
             new_consumer = extract_git_item(root, constraint_change, "items.json", "consumer", "structured-item/1")
             changed_binding = compare_items(
-                old_consumer["payload"], new_consumer["payload"], "structured-item/1",
+                {key: value for key, value in old_consumer["payload"].items() if key != "inputs"},
+                {key: value for key, value in new_consumer["payload"].items() if key != "inputs"},
+                "structured-item/1",
                 before_inputs=old_consumer["payload"]["inputs"],
                 after_inputs=new_consumer["payload"]["inputs"],
             )
-            self.assertEqual(old_consumer["payload"]["assertions"], new_consumer["payload"]["assertions"])
+            old_local_payload = {key: value for key, value in old_consumer["payload"].items()
+                                 if key != "inputs"}
+            new_local_payload = {key: value for key, value in new_consumer["payload"].items()
+                                 if key != "inputs"}
+            self.assertEqual(old_local_payload, new_local_payload,
+                             "the external binding changes while the consumer's local payload stays identical")
             self.assertEqual(changed_binding["status"], "changed",
                              "equal local payload cannot hide a changed external constraint")
+            self.assertEqual(changed_binding["reason"], "input_bindings_changed")
 
-        reference = "shared/spec/2/plan/1/item/4@2"
-        blocked = assess_impact({"nodes": {}}, [reference])
-        self.assertEqual(blocked["status"], "incomplete",
-                         "new-context impact cannot complete without a captured project context")
+            # Build trusted catalogs over the committed baseline, then move the
+            # live candidate to the changed binding. Impact must refuse to
+            # complete while that new dependency lacks a registered revision.
+            shared_path = root / "specs/shared.json"
+            shared_path.parent.mkdir(parents=True)
+            shared_path.write_text(json.dumps({"items": [{"id": "shared-item", "inputs": []}]},
+                                              separators=(",", ":")), encoding="utf-8")
+            subprocess.run(["git", "add", "specs/shared.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "shared source"], cwd=root, check=True)
+            shared_source = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                           capture_output=True, text=True).stdout.strip()
+            for ref in ("refs/heads/develop", "refs/heads/main"):
+                subprocess.run(["git", "update-ref", ref, shared_source], cwd=root, check=True)
+
+            def catalog(owner, reference, source_commit, source_path, item_id):
+                from workflow_refs.store import payload_digests
+                raw = subprocess.run(["git", "show", f"{source_commit}:{source_path}"], cwd=root,
+                                     check=True, capture_output=True).stdout
+                entry = {"reference": reference, "logical_id": reference.rsplit("@", 1)[0],
+                         "revision": 1, "snapshot_id": owner + "-snapshot", "item_id": item_id,
+                         "profile": "structured-item/1", "digest_algorithm": "sha256",
+                         "digests": payload_digests(raw),
+                         "digest_semantics": sorted(payload_digests(raw)), "generation": 1}
+                value = {"schema": "ask-reference-catalog/v1", "owner": owner,
+                         "generation": 1, "entries": [entry], "snapshots": {
+                             owner + "-snapshot": {"commit": source_commit, "path": source_path}}}
+                target = root / "work" / owner / "references/integrity.json"
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(json.dumps(value, separators=(",", ":")) + "\n",
+                                  encoding="utf-8")
+
+            catalog("live", "live/spec/1@1", baseline, "items.json", "consumer")
+            catalog("shared", "shared/spec/2/plan/1/item/4@1", shared_source,
+                    "specs/shared.json", "shared-item")
+            subprocess.run(["git", "add", "work"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "trusted reference catalogs"], cwd=root, check=True)
+            catalog_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                                            capture_output=True, text=True).stdout.strip()
+            subprocess.run(["git", "update-ref", "refs/heads/agent/live", catalog_commit],
+                           cwd=root, check=True)
+            for owner in ("live", "shared"):
+                subprocess.run(["git", "update-ref", f"refs/ask/references/{owner}", catalog_commit],
+                               cwd=root, check=True)
+
+            from workflow_refs.project import capture_project
+            captured = capture_project(root, shared_owners={"shared"})
+            self.assertEqual(captured["status"], "complete", captured)
+            blocked = assess_impact(None, ["shared/spec/2/plan/1/item/4@1"],
+                                    capture=captured, repository_root=root)
+            self.assertEqual(blocked["status"], "incomplete", blocked)
+            self.assertEqual(blocked["reason"], "discovery_incomplete", blocked)
+            self.assertTrue(blocked.get("unresolved"),
+                            "new-context completion stays blocked by the unregistered candidate dependency")
 
 
 if __name__ == "__main__":
