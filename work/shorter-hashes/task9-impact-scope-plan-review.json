@@ -1,0 +1,24 @@
+{
+  "schema": "ask-independent-plan-review/v1",
+  "decision": "APPROVED",
+  "reviewer": "/root/review_task9_amendment",
+  "runtime": "Codex",
+  "confidence": 0.98,
+  "reviewed_commit": "79281ac02d8da6fb9837e64902ff860655925cc6",
+  "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+  "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
+  "graph_digest": "f3e69d797e74d663dd2a4523d1dee4524af6bef319dc7f917120fab111df6072",
+  "file_digests": {
+    "work/shorter-hashes/plan.md": "04f2f8f7e014cdfcd16e82715c935a3bccd3f7f1e6d133a08209c82657ea5bc6",
+    "work/shorter-hashes/inner-loop/tasks.yaml": "accce58832a35dd216f8b5e8f44f5feb898656b952e0a17c7dacb865e985a86c",
+    "work/shorter-hashes/task9-impact-scope-amendment.md": "c9f19672b5f0b4eb84651c95f2a4421346644733f8fef137c6b4328864641768"
+  },
+  "evidence": "work/shorter-hashes/task9-impact-scope-review.md",
+  "findings": [],
+  "open_blockers": [],
+  "notes": [
+    "Independent approval of the bounded Task 9 ownership and transition-assessment amendment. The accepted specification, test plan, intent, test cases, source bindings, authority rules, trust requirements, and acceptance criteria remain unchanged.",
+    "The reviewer confirmed required paths derive from both registered dependent revisions; one complete transition assessment applies to both named endpoints; unresolved inputs remain blocking; consumer retention and historical execution reuse remain separate.",
+    "Task 4 and Task 9 shared ownership of impact.py is serialized by the dependency chain. The user subsequently approved the amendment under delegated decision authority; see task9-impact-scope-authorization.md."
+  ]
+}

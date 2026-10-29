@@ -1,10 +1,11 @@
 # Task 9 scope amendment: transition-wide impact decisions
 
-Status: **INDEPENDENTLY REVIEWED; HUMAN DECISION PENDING**. The exact proposal
+Status: **INDEPENDENTLY REVIEWED; APPROVED BY DELEGATED USER DECISION**. The exact proposal
 at `79281ac02d8da6fb9837e64902ff860655925cc6` was approved by reviewer
 `/root/review_task9_amendment` at 98% confidence. Review evidence is in
-`task9-impact-scope-review.md`. It does not authorize production implementation
-by itself.
+`task9-impact-scope-review.md`. The user approved this scope under delegated
+authority at 97% confidence; the decision is recorded in
+`task9-impact-scope-authorization.md`.
 
 ## Evidence
 
