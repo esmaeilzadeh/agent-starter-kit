@@ -1,0 +1,61 @@
+{
+  "schema": "ask-task9-runtime-reconciliation/v1",
+  "status": "proposed_pending_independent_review",
+  "work_id": "shorter-hashes",
+  "task_id": "9",
+  "attempt": {
+    "attempt_id": "9:attempt-1",
+    "attempt_number": 1,
+    "status": "running",
+    "state_revision": 85,
+    "state_sha256": "e6802e400ed3ca8343f525046b9ebef9760485344127006562f42783a5c0136f",
+    "base_sha": "a955fb036694f034cfb6b7969a09639cb5645b5f",
+    "coordinator_sha": "a955fb036694f034cfb6b7969a09639cb5645b5f",
+    "accepted_plan_ref": "5ebbdbbab4638d693bb0c6da342cb3f4a21b37b8",
+    "accepted_plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
+    "checkpoint_ref": "31bf4ab81a8b0ddf44522d29df3bdbcacb913f57"
+  },
+  "task_result": {
+    "live_path": "work/shorter-hashes/inner-loop/results/9.json",
+    "sha256": "cdc2e19534c2db831219cee78d728b0b76b8a54bbce3b2c2da897c0dec816f41",
+    "archive_path": "work/shorter-hashes/inner-loop/evidence/preserved-task9-attempt1-cf5d501d/task-result-9.json",
+    "archive_sha256": "cdc2e19534c2db831219cee78d728b0b76b8a54bbce3b2c2da897c0dec816f41"
+  },
+  "execution": {
+    "run_id": "cf5d501d1a904f4a9c53a238f272de64",
+    "execution_id": "b5ca8fdf66fb4841aae28dc9908ca5e6",
+    "candidate_sha": "9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2",
+    "source_sha": "9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2",
+    "collection_status": "ok",
+    "exit_code": 1,
+    "report_path": "work/shorter-hashes/inner-loop/evidence/preserved-task9-attempt1-cf5d501d/execution-report.json",
+    "report_sha256": "df8dca012b15e5ecda6918b49bad7532020b6cb10b7c1c786ac08e7dc47abd0c",
+    "execution_path": "work/shorter-hashes/inner-loop/evidence/preserved-task9-attempt1-cf5d501d/execution-b5ca8fdf66fb4841aae28dc9908ca5e6.json",
+    "execution_sha256": "c69553a43e4102ed48ba49931eacc2749767fc9fb8253b64b6ef1b6d4739f650",
+    "log_path": "work/shorter-hashes/inner-loop/evidence/preserved-task9-attempt1-cf5d501d/execution-b5ca8fdf66fb4841aae28dc9908ca5e6.log",
+    "log_sha256": "1f4d52b1fefcb438e3a300f809e929a239079294b0c25b07be90bc4f72ac6778",
+    "ledger_path": "work/shorter-hashes/traceability/executions.json",
+    "ledger_sha256": "a90f7e8baa08d7d39c6993f4648cb64b9e258f5a3a8d69994a09ba9cd8046754",
+    "outcomes": {
+      "9/1": "passed",
+      "9/2": "setup_or_runtime_error",
+      "9/3": "behavior_assertion: comparison_incomplete",
+      "9/4": "setup_or_runtime_error",
+      "9/5": "passed"
+    },
+    "disposition": "failed final Green; preserve actual outcomes; not Red and not passing completion evidence"
+  },
+  "process_waiver": {
+    "path": "work/shorter-hashes/inner-loop/evidence/task-9-process-waiver.json",
+    "sha256": "5b75b36681cf78fc41a6e2646271db974fc93479feed9a4642994f27f2d1bded"
+  },
+  "proposed_operations": [
+    "Recheck the live TaskResult bytes against the reviewed archive preimage while holding the workstream state lock.",
+    "Remove only the obstructing live TaskResult path after that hash matches; the byte-identical reviewed archive and all linked execution files remain retained.",
+    "Use the supported state CAS API to publish a coherent checkpoint containing the archived TaskResult, execution ledger, report, log, waiver, and unchanged attempt-1 state.",
+    "Use supported interrupt; its attempt history must retain attempt-1 base, candidate, original plan authority, ledger execution rows, and a reason linking run cf5d501d1a904f4a9c53a238f272de64 and the exact archive paths/digests.",
+    "Register the reviewed and user-approved TaskGraph amendment with traceability accept-plan.",
+    "Advance coordinator base to the current committed candidate with the supported state CAS API, then reopen Task 9 as attempt 2 under the renewed authority."
+  ],
+  "independent_review": "work/shorter-hashes/inner-loop/evidence/task9-attempt1-preservation-review.md"
+}
