@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 import subprocess
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "_ask" / "scripts"))
@@ -15,6 +16,7 @@ sys.path.insert(0, str(ROOT / ".agents" / "ask"))
 from engineering_model.snapshot import capture
 from engineering_model.admission import admit
 from engineering_model.projection import project
+from engineering_model.readability import _resolve_captured_flow
 from workflow_refs.codec import encode_envelope
 from workflow_refs.compare import compare_items
 from workflow_refs.compare import extract_git_item
@@ -61,9 +63,82 @@ class ReferenceTests(unittest.TestCase):
             admitted, admission_errors = admit(root, "pilot")
             self.assertEqual(admission_errors, [], admission_errors)
             self.assertEqual(getattr(admitted, "documents", {}).get("work/pilot/test-plan.json"), legacy_plan)
-            compact_projection = project(snapshot, root, node_id="build", include_evidence=False)
+            with patch("engineering_model.projection.inspect_evidence",
+                       side_effect=AssertionError("selected projection must not read evidence catalog")):
+                compact_projection = project(snapshot, root, node_id="build", include_evidence=False)
             self.assertEqual(compact_projection["workbench"], legacy_projection["workbench"],
                              "on-demand task projection is equivalent without loading the evidence catalog")
+
+            # A selected Task resolves its own canonical case from captured bytes;
+            # another Task in the same snapshot remains independently selectable.
+            case_plan = {
+                "schema": "ask-test-plan/v1", "work_id": "pilot",
+                "tests": [
+                    {"id": "HIST-1", "scenario": {"given": "Historical input"}},
+                    {"id": "CURR-1", "scenario": {"given": "Current input"}},
+                ],
+            }
+            case_plan_raw = json.dumps(case_plan, separators=(",", ":")).encode()
+            case_plan_path = root / "work/pilot/test-plan.json"
+            case_plan_path.write_bytes(case_plan_raw)
+            import hashlib
+            case_plan_digest = hashlib.sha256(json.dumps(
+                case_plan, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+            selected_model = {
+                "schema": "ask-engineering-model/v2", "work_id": "pilot", "revision": 1,
+                "nodes": [
+                    {"id": "historical-task", "type": "task", "title": "Historical task",
+                     "lifecycle": "planned", "execution": {"work_id": "pilot", "task_id": "old"}},
+                    {"id": "current-task", "type": "task", "title": "Current task",
+                     "lifecycle": "planned", "execution": {"work_id": "pilot", "task_id": "current"}},
+                    {"id": "historical-scenario", "type": "scenario", "title": "Historical scenario",
+                     "lifecycle": "active", "case": {"work_id": "pilot", "plan_digest": case_plan_digest,
+                                                           "case_id": "HIST-1"}},
+                    {"id": "current-scenario", "type": "scenario", "title": "Current scenario",
+                     "lifecycle": "active", "case": {"work_id": "pilot", "plan_digest": case_plan_digest,
+                                                           "case_id": "CURR-1"}},
+                    {"id": "historical-test", "type": "test", "title": "Historical test",
+                     "lifecycle": "active", "reference": {"path": "work/pilot/test-plan.json",
+                        "id": "HIST-1", "work_id": "pilot", "plan_digest": case_plan_digest}},
+                    {"id": "current-test", "type": "test", "title": "Current test",
+                     "lifecycle": "active", "reference": {"path": "work/pilot/test-plan.json",
+                        "id": "CURR-1", "work_id": "pilot", "plan_digest": case_plan_digest}},
+                ],
+                "edges": [
+                    {"type": "contributes_to", "source": "historical-task", "target": "historical-scenario"},
+                    {"type": "contributes_to", "source": "current-task", "target": "current-scenario"},
+                    {"type": "covers", "source": "historical-test", "target": "historical-scenario"},
+                    {"type": "covers", "source": "current-test", "target": "current-scenario"},
+                ],
+            }
+            selected_model_raw = json.dumps(selected_model, separators=(",", ":")).encode()
+            (root / "work/pilot/engineering-model.json").write_bytes(selected_model_raw)
+            captured = capture(root, "pilot")
+            old_task, old_case, old_row, old_digest, old_source = _resolve_captured_flow(
+                captured, "historical-task")
+            current_task, current_case, current_row, current_digest, current_source = _resolve_captured_flow(
+                captured, "current-task")
+            self.assertEqual((old_task["id"], old_case["case_id"], old_row["id"]),
+                             ("historical-task", "HIST-1", "HIST-1"))
+            self.assertEqual((current_task["id"], current_case["case_id"], current_row["id"]),
+                             ("current-task", "CURR-1", "CURR-1"))
+            self.assertEqual(old_digest, current_digest)
+            self.assertEqual(old_source, case_plan_raw)
+            self.assertEqual(current_source, case_plan_raw,
+                             "both selected contexts bind the exact captured plan source")
+
+            ambiguous_plan = dict(case_plan, tests=case_plan["tests"] + [case_plan["tests"][1]])
+            ambiguous_raw = json.dumps(ambiguous_plan, separators=(",", ":")).encode()
+            case_plan_path.write_bytes(ambiguous_raw)
+            ambiguous_digest = hashlib.sha256(json.dumps(
+                ambiguous_plan, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+            selected_model["nodes"][3]["case"]["plan_digest"] = ambiguous_digest
+            selected_model["nodes"][5]["reference"]["plan_digest"] = ambiguous_digest
+            (root / "work/pilot/engineering-model.json").write_text(
+                json.dumps(selected_model, separators=(",", ":")), encoding="utf-8")
+            ambiguous = capture(root, "pilot")
+            with self.assertRaisesRegex(ValueError, "missing or ambiguous"):
+                _resolve_captured_flow(ambiguous, "current-task")
 
     def test_unrelated_item_and_external_constraint(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -73,8 +148,8 @@ class ReferenceTests(unittest.TestCase):
             subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
             path = root / "items.json"
             first = {"items": [
-                {"id": "independent", "value": "unchanged", "inputs": []},
-                {"id": "consumer", "assertions": ["keeps the accepted output"],
+                {"id": "independent", "revision": 7, "value": "unchanged", "inputs": []},
+                {"id": "consumer", "revision": 3, "assertions": ["keeps the accepted output"],
                  "inputs": [{"reference": "shared/spec/2/plan/1/item/4@1",
                              "role": "shared-constraint"}]},
             ], "unrelated": {"revision": 1}}
@@ -100,6 +175,9 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(independent["status"], "unchanged",
                              "unrelated source edits preserve independent item eligibility")
             self.assertEqual(old_independent["canonical_digest"], new_independent["canonical_digest"])
+            self.assertEqual(old_independent["payload"]["revision"], new_independent["payload"]["revision"])
+            self.assertEqual(new_independent["payload"]["revision"], 7,
+                             "unrelated document edits preserve the selected item's own revision")
 
             old_consumer = extract_git_item(root, baseline, "items.json", "consumer", "structured-item/1")
             changed = json.loads(path.read_text(encoding="utf-8"))
