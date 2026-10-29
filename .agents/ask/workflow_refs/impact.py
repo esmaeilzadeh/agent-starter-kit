@@ -197,6 +197,22 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
         return {"status": "incomplete", "reason": getattr(exc, "code", "invalid_graph"),
                 "detail": str(exc), "items": {}}
     decisions = decisions or {}
+    decisions_by_endpoint = {}
+    conflicting_decisions = set()
+    for decision in decisions.values():
+        if not isinstance(decision, dict):
+            continue
+        try:
+            endpoints = [_reference(decision.get("dependent"))]
+            if decision.get("action") == "revise":
+                endpoints.append(_reference(decision.get("new_dependent")))
+        except (ImpactError, TypeError, AttributeError):
+            continue
+        for endpoint in endpoints:
+            if endpoint in decisions_by_endpoint and decisions_by_endpoint[endpoint] != decision:
+                conflicting_decisions.add(endpoint)
+            decisions_by_endpoint[endpoint] = decision
+    assessed_decisions = {}
     deletions = {_reference(ref): value for ref, value in graph.get("deletions", {}).items()}
     unavailable = {_reference(ref) for ref in graph.get("unavailable", {})}
     missing_roots = sorted(ref for ref in roots if ref not in nodes and ref not in deletions)
@@ -221,15 +237,22 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
             if marker in traversed:
                 continue
             traversed.add(marker)
-            decision = decisions.get(consumer)
+            decision = decisions_by_endpoint.get(consumer)
             decision_result = None
             if decision is not None:
                 try:
                     parsed_upstream = _reference(decision.get("old_upstream")) if isinstance(decision, dict) else None
-                    input_edges = nodes[consumer]["inputs"] + graph.get("candidate_inputs", {}).get(consumer, [])
-                    input_paths = sorted({f"{item['reference']}|{item['role']}" for item in input_edges})
                     eligible = decision.get("eligible_consumers", []) if isinstance(decision, dict) else []
                     new_upstream = _reference(decision.get("new_upstream")) if isinstance(decision, dict) else None
+                    dependent = _reference(decision.get("dependent"))
+                    new_dependent = (_reference(decision.get("new_dependent"))
+                                     if decision.get("action") == "revise" else None)
+                    endpoints = [dependent, new_dependent] if new_dependent else [dependent]
+                    required_edges = [edge for endpoint in endpoints if endpoint in nodes
+                                      for edge in nodes[endpoint]["inputs"] +
+                                      graph.get("candidate_inputs", {}).get(endpoint, [])]
+                    input_paths = sorted({f"{item['reference']}|{item['role']}"
+                                          for item in required_edges})
                     old_upstream_identity = parse_reference(upstream)
                     new_upstream_identity = parse_reference(new_upstream)
                     valid_upstream_revision = (decision.get("action") != "retain" or
@@ -239,20 +262,26 @@ def assess_impact(graph, changed, decisions=None, capture=None, repository_root=
                         edge["reference"] == consumer for edge in nodes[_reference(candidate)]["inputs"])
                         and nodes[_reference(candidate)].get("active", True)
                         for candidate in eligible)
-                    if (upstream not in {parsed_upstream, new_upstream}
-                            or _reference(decision.get("dependent")) != consumer
+                    if (decision.get("action") == "revise" and
+                            (new_dependent not in nodes or not nodes[new_dependent].get("active", True))):
+                        decision_result = {"status": "incomplete", "reason": "new_dependent_unregistered"}
+                    elif (consumer in conflicting_decisions
+                            or upstream not in {parsed_upstream, new_upstream}
+                            or consumer not in endpoints
+                            or decisions.get(dependent) != decision
                             or not valid_eligible or new_upstream not in nodes
                             or not nodes[new_upstream].get("active", True) or not valid_upstream_revision
-                            or decision.get("profile") != nodes[consumer].get("profile")):
+                            or any(endpoint not in nodes or not nodes[endpoint].get("active", True)
+                                   or decision.get("profile") != nodes[endpoint].get("profile")
+                                   for endpoint in endpoints)):
                         decision_result = {"status": "incomplete", "reason": "decision_scope_mismatch"}
                     else:
-                        if decision.get("action") == "revise" and (
-                                _reference(decision.get("new_dependent")) not in nodes
-                                or not nodes[_reference(decision.get("new_dependent"))].get("active", True)):
-                            decision_result = {"status": "incomplete", "reason": "new_dependent_unregistered"}
-                            raise ImpactError("new_dependent_unregistered", "revised item version is not in the captured catalog")
-                        decision_result = record_decision(decision, capture,
-                            required_paths=input_paths, authority_check=authority_check)
+                        if dependent in assessed_decisions:
+                            decision_result = assessed_decisions[dependent]
+                        else:
+                            decision_result = record_decision(decision, capture,
+                                required_paths=input_paths, authority_check=authority_check)
+                            assessed_decisions[dependent] = decision_result
                         if (decision_result.get("status") == "retired"
                                 and any(nodes.get(downstream, {}).get("active", True)
                                         for downstream, _edge in reverse.get(consumer, []))):
