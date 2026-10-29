@@ -62,6 +62,71 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertEqual(missing["reason"], "missing")
 
+    def test_decide_allocates_after_existing_review_and_public_show_resolves_it(self):
+        from workflow_refs.cli import main
+        from workflow_refs.project import capture_project
+
+        source = json.loads(self.source.read_text())
+        source["items"].append({"id": "review-one", "summary": "existing review"})
+        self.source.write_text(json.dumps(source))
+        index = self.root / "work/INDEX.md"
+        index.parent.mkdir(parents=True, exist_ok=True)
+        index.write_text("# Workstreams\n")
+        subprocess.run(["git", "add", "work/demo/source.json", "work/INDEX.md"],
+                       cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "add existing review and inventory"],
+                       cwd=self.root, check=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root,
+                                         text=True).strip()
+        catalog = self.root / "work/demo/references/integrity.json"
+        register_revision(catalog, "demo", "demo/review/1",
+                          {"commit": commit, "path": "work/demo/source.json"},
+                          "review-one", "structured-item/1", self.source.read_bytes())
+        subprocess.run(["git", "branch", "develop"], cwd=self.root, check=True)
+        subprocess.run(["git", "branch", "agent/demo"], cwd=self.root, check=True)
+        capture = capture_project(self.root)
+        self.assertEqual(capture["status"], "complete")
+
+        evidence = {
+            "action": "retain",
+            "old_upstream": "demo/spec/1/plan/1/task/1@1",
+            "new_upstream": "demo/spec/1/plan/1/task/1@2",
+            "dependent": "demo/spec/1/plan/1/task/2@1",
+            "profile": "structured-item/1",
+            "context_generation": capture["generation"],
+            "examined_paths": {"work/demo/source.json": "unchanged"},
+            "review_evidence": "reviewed against the captured source",
+            "reviewer": "independent-reviewer",
+            "coordinator": "coordinator",
+            "outward_equal": True,
+            "satisfies_new_inputs": True,
+            "reuse_allowed": True,
+            "required_paths": ["work/demo/source.json"],
+            "eligible_consumers": ["demo/spec/1/plan/1/task/2@1"],
+            "new_dependent": "demo/spec/1/plan/1/task/2@1",
+            "retirement_safe": False,
+        }
+        evidence_path = self.root / "decision.json"
+        evidence_path.write_text(json.dumps(evidence))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["decide", "--evidence", str(evidence_path),
+                         "--recorded-by", "coordinator"], root=self.root)
+        decided = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(decided["reference"], "demo/review/2@1")
+
+        for reference in ("demo/review/1@1", decided["reference"]):
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = main(["show", reference], root=self.root)
+            shown = json.loads(output.getvalue())
+            self.assertEqual(code, 0)
+            self.assertEqual(shown["reference"], reference)
+            self.assertEqual(shown["status"], "resolved")
+        self.assertEqual(shown["payload"]["status"], "retained")
+        self.assertEqual(shown["payload"]["decision"]["coordinator"], "coordinator")
+
     def test_task_process_waiver_is_hash_and_candidate_bound(self):
         from inner_loop.evidence import NotIntegrable, check_integrable, digest
 
