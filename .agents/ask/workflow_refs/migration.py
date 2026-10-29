@@ -176,7 +176,7 @@ def import_bundle(repository_root, bundle_path):
         bundle = Path(temp) / "objects.bundle"
         bundle.write_bytes(bundle_bytes)
         _git(root, "bundle", "verify", str(bundle))
-        heads = _git(root, "bundle", "list-heads", str(bundle)).decode().splitlines()
+        heads = _git(root, "bundle", "list-heads", str(bundle)).stdout.decode().splitlines()
         declared = {line.split()[1]: line.split()[0] for line in heads if len(line.split()) == 2}
         if declared != {ref: manifest.get("authority_commit")}:
             raise CatalogError("invalid_bundle", "bundle does not contain the declared authority ref")

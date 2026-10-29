@@ -175,7 +175,9 @@ class ReferenceTests(unittest.TestCase):
         shutil.copy(kit_root / "_ask/scripts/access-check.sh", repo / "_ask/scripts/")
         shutil.copy(kit_root / "_ask/scripts/start-work.sh", repo / "_ask/scripts/")
         shutil.copytree(kit_root / "_ask/templates", repo / "_ask/templates")
-        subprocess.run(["git", "add", "_ask"], cwd=repo, check=True)
+        (repo / "work").mkdir()
+        (repo / "work/INDEX.md").write_text("# Workstreams\n")
+        subprocess.run(["git", "add", "_ask", "work/INDEX.md"], cwd=repo, check=True)
         subprocess.run(["git", "commit", "-qm", "fixture kit"], cwd=repo, check=True)
         subprocess.run(["git", "branch", "develop"], cwd=repo, check=True)
         subprocess.run(["bash", "_ask/scripts/start-work.sh", "fresh-owner"], cwd=repo,
