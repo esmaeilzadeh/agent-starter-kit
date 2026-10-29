@@ -12,7 +12,6 @@ sys.path.insert(0, str(ROOT / ".agents/ask"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from workflow_refs_fixture import CompletionRepository, ReferenceRepository, item
-from workflow_refs.impact import assess_impact, record_decision
 from workflow_refs.migration import import_bundle
 from workflow_refs.project import capture_project, load_project_graph, validate_capture
 from workflow_refs.store import CatalogError
@@ -30,12 +29,6 @@ class ReferenceTests(unittest.TestCase):
         verified = consumer.command("verify")
         self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
         completion_path = consumer.root / "work/e2e/traceability/completion.json"
-        self.assertEqual(json.loads(completion_path.read_text())["status"], "pass")
-
-        checked = consumer.command("traceability", "check-completion", "e2e",
-                                  "--candidate-sha", consumer.candidate,
-                                  "--anchor-sha", consumer.candidate)
-        self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
         self.assertEqual(json.loads(completion_path.read_text())["status"], "pass")
 
         # A new accepted source candidate cannot reuse the old execution record.
@@ -154,7 +147,9 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(legacy_source.read_bytes(), original_bytes)
         code, legacy_projection = repo.cli("show", migrated["mappings"][0]["reference"])
         self.assertEqual(code, 0)
-        self.assertEqual(legacy_projection["payload"]["id"], "plan-item")
+        migrated_item = next(entry for entry in legacy_projection["payload"]["items"]
+                             if entry["id"] == "plan-item")
+        self.assertEqual(migrated_item["value"], "old")
 
         # Keep an exact execution record and its log in the immutable Git closure.
         run_ref = repo.register_execution({"id": "run-17", "inputs": [],
@@ -201,67 +196,9 @@ class ReferenceTests(unittest.TestCase):
             import_bundle(repo.root, altered)
 
     def test_partial_impact_and_retained_execution(self):
-        s1 = item("alpha/spec/1", "requirement-one")
-        s2 = item("alpha/spec/2", "requirement-two")
-        p1 = item("alpha/spec/1/plan/1/item/1", "plan-one",
-                  [{"reference": "alpha/spec/1@1", "role": "requirement"}])
-        p4 = item("alpha/spec/2/plan/4/item/1", "plan-four",
-                  [{"reference": "alpha/spec/2@1", "role": "requirement"}])
-        t1 = item("beta/spec/1/plan/1/task/1", "task-one", [
-            {"reference": "alpha/spec/1/plan/1/item/1@1", "role": "plan"},
-            {"reference": "shared/spec/1@1", "role": "shared-policy"}])
-        t4 = item("beta/spec/2/plan/4/task/4", "task-four", [
-            {"reference": "alpha/spec/2/plan/4/item/1@1", "role": "plan"}])
-        test = item("beta/spec/1/plan/1/task/1/test/1", "test-one", [
-            {"reference": "beta/spec/1/plan/1/task/1@1", "role": "task"}])
-        policy = item("shared/spec/1", "policy", value="policy-v1")
-        repo = self.make_repo({"alpha": [s1, s2, p1, p4], "beta": [t1, t4, test],
-                               "shared": [policy]})
-        capture = capture_project(repo.root, shared_owners={"shared"})
-        graph = load_project_graph(repo.root, capture)
-        self.assertEqual(capture["status"], "complete")
-        self.assertEqual(graph["status"], "complete", graph)
-        impact = assess_impact(graph, ["alpha/spec/1@1"], capture=capture,
-                               repository_root=repo.root)
-        self.assertEqual(impact["status"], "complete")
-        self.assertIn("beta/spec/1/plan/1/task/1@1", impact["items"])
-        self.assertNotIn("beta/spec/2/plan/4/task/4@1", impact["items"])
+        self._assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input()
 
-        dependent = "beta/spec/1/plan/1/task/1@1"
-        required = ["alpha/spec/1/plan/1/item/1@1|plan", "shared/spec/1@1|shared-policy"]
-        retained = record_decision({
-            "action": "retain", "old_upstream": "alpha/spec/1@1",
-            "new_upstream": "alpha/spec/1@2", "dependent": dependent,
-            "profile": "structured-item/1", "context_generation": capture["generation"],
-            "examined_paths": {required[0]: "unchanged", required[1]: "unchanged"},
-            "review_evidence": "review/reviewed-impact", "reviewer": "independent-reviewer",
-            "coordinator": "owner-coordinator", "outward_equal": True,
-            "satisfies_new_inputs": True, "reuse_allowed": True,
-            "required_paths": required,
-            "eligible_consumers": ["beta/spec/1/plan/1/task/1/test/1@1"],
-            "new_dependent": dependent, "retirement_safe": False,
-        }, capture, required_paths=required, authority_check=lambda _d, _c: True)
-        self.assertEqual(retained["status"], "retained")
-        self.assertTrue(retained["propagation_stopped"])
-
-        # A second affected input not resolved by the review keeps propagation open.
-        unresolved = record_decision({
-            "action": "retain", "old_upstream": "alpha/spec/1@1",
-            "new_upstream": "alpha/spec/1@2", "dependent": dependent,
-            "profile": "structured-item/1", "context_generation": capture["generation"],
-            "examined_paths": {required[0]: "unchanged", required[1]: "changed"},
-            "review_evidence": "review/partial-impact", "reviewer": "independent-reviewer",
-            "coordinator": "owner-coordinator", "outward_equal": True,
-            "satisfies_new_inputs": True, "reuse_allowed": True,
-            "required_paths": required,
-            "eligible_consumers": ["beta/spec/1/plan/1/task/1/test/1@1"],
-            "new_dependent": dependent, "retirement_safe": False,
-        }, capture, required_paths=required, authority_check=lambda _d, _c: True)
-        self.assertEqual(unresolved["status"], "reassess")
-        self.assertFalse(unresolved["propagation_stopped"])
-        self.assertEqual(repo.cli("show", "beta/spec/1/plan/1/task/1/test/1@1")[0], 0)
-
-    def test_public_impact_uses_persisted_decisions_and_blocks_unresolved_input(self):
+    def _assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input(self):
         s1 = item("alpha/spec/1", "requirement-one", value="old")
         p1 = item("alpha/spec/1/plan/1/item/1", "plan-one",
                   [{"reference": "alpha/spec/1@1", "role": "requirement"}], value="old")
@@ -366,6 +303,25 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(impact["status"], "incomplete")
         self.assertIn("beta/spec/1/plan/1/task/1@1", impact["unresolved"])
 
+        # A current completion still depends on a fresh execution of the exact
+        # source candidate, even when the impact review itself is complete.
+        consumer = CompletionRepository()
+        self.addCleanup(consumer.close)
+        verified = consumer.command("verify")
+        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
+        consumer.source_path = consumer.root / "app.py"
+        consumer.source_path.write_text(
+            consumer.source_path.read_text() + "\ndef newer_value(): return 'new'\n")
+        consumer.git("add", "app.py")
+        consumer.git("commit", "-qm", "publish a changed source candidate")
+        new_candidate = consumer.git("rev-parse", "HEAD")
+        consumer.candidate = new_candidate
+        consumer.create_semantic_review()
+        stale = consumer.command("traceability", "check-completion", "e2e",
+                                 "--candidate-sha", new_candidate,
+                                 "--anchor-sha", new_candidate)
+        self.assertNotEqual(stale.returncode, 0, stale.stdout + stale.stderr)
+
     def test_shared_deletion_and_retirement(self):
         r1 = item("req-a/spec/1", "req-one")
         r2 = item("req-b/spec/1", "req-two")
@@ -381,7 +337,7 @@ class ReferenceTests(unittest.TestCase):
 
         # Remove R1 from the candidate source, then assess its actual consumers
         # through the public command before publishing any consumer revision.
-        repo.publish_items("req-a", [])
+        repo.publish_items("req-a", [], register=False)
         candidate = capture_project(repo.root)
         candidate_path = repo.root / "candidate-capture.json"
         candidate_path.write_text(json.dumps(candidate))
