@@ -50,10 +50,10 @@
     "sha256": "5b75b36681cf78fc41a6e2646271db974fc93479feed9a4642994f27f2d1bded"
   },
   "proposed_operations": [
-    "Recheck the live TaskResult bytes against the reviewed archive preimage while holding the workstream state lock.",
-    "Remove only the obstructing live TaskResult path after that hash matches; the byte-identical reviewed archive and all linked execution files remain retained.",
-    "Use the supported state CAS API to publish a coherent checkpoint containing the archived TaskResult, execution ledger, report, log, waiver, and unchanged attempt-1 state.",
-    "Use supported interrupt; its attempt history must retain attempt-1 base, candidate, original plan authority, ledger execution rows, and a reason linking run cf5d501d1a904f4a9c53a238f272de64 and the exact archive paths/digests.",
+    "Under the workstream state lock, recheck every recorded file preimage (state, TaskResult, archived copies, execution report/JSON/log, execution ledger, and waiver) and the accepted-plan and checkpoint refs; abort if any identity or digest differs.",
+    "While still holding that lock, remove only the obstructing live TaskResult path after its hash matches the reviewed archive; the byte-identical archive and all linked execution files remain retained.",
+    "Release the manually acquired state lock before calling the supported state CAS API; CAS acquires that lock itself. Call it with observed revision 85 so any intervening state change aborts, and publish a coherent checkpoint containing the archived TaskResult, execution ledger, report, log, waiver, and unchanged attempt-1 state.",
+    "Use supported interrupt; its attempt history must retain attempt-1 base, original plan authority, ledger execution rows, and a reason linking run cf5d501d1a904f4a9c53a238f272de64 and the exact archive paths/digests. Native interrupt records then-current checkout HEAD as interrupted_candidate_sha; this is separate from failed execution candidate 9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2, which remains bound by the archived TaskResult and run files.",
     "Register the reviewed and user-approved TaskGraph amendment with traceability accept-plan.",
     "Advance coordinator base to the current committed candidate with the supported state CAS API, then reopen Task 9 as attempt 2 under the renewed authority."
   ],
