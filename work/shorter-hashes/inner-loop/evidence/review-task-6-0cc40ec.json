@@ -1,0 +1,19 @@
+{
+  "schema": "ask-task-review/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "6",
+  "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+  "red_sha": "043c6940e43e122312e2f34eac1ca53c4c18641d",
+  "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+  "reviewer": "/root/task6_code_review",
+  "decision": "APPROVED",
+  "findings": [],
+  "confidence_percent": 95,
+  "summary": "Approved exact Task 6 candidate with no findings. The compact checkpoint resolves qualified task/test revisions through the trusted catalog while preserving exact artifact integrity, authority closure, export/import, and the v1 state projection and recovery semantics. The final source-dirt change excludes only this owner's references/integrity.json and references/integrity.json.pending in both source-change checks; regression assertions retain unrelated owner files and a foreign catalog as source changes. The supplied native final Green passed 6/1 and 6/2; focused tests passed 2/2, reliability 29/29, recovery 35/35, and py_compile/diff-check passed.",
+  "candidate_file_digests": {
+    ".agents/ask/verification/traceability/evidence.py": "3ffd942a337012e55c38deef6dec6bd0a46df0897abce7a02f6def686e8bb392",
+    "_ask/scripts/inner_loop/checkpoint.py": "85414d50445084d39b264f58f1878f7635263c7f1fcafd643d4e9f4f12eb64a2",
+    "_ask/scripts/inner_loop/evidence.py": "5b20f8e23da3fa05260f658c237d261ec9e71e06bcb7c135cae89ebe838d72f2",
+    "_ask/tests/test_workflow_refs_inner_loop.py": "6720be6d12239d85a7beec8cb5a714f891b7c9163cf46e1ecef307f7bc446ee4"
+  }
+}

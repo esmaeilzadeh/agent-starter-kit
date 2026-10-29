@@ -1,1162 +1,1317 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 52,
-  "coordinator_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
+  "revision": 62,
+  "coordinator_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
     "1": {
-      "status": "integrated",
       "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
-      "task_branch": "",
-      "result_path": "work/shorter-hashes/inner-loop/results/1.json",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
       "evidence": {
         "review": {
-          "work_id": "shorter-hashes",
-          "task_id": "1",
           "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "boundary": "ok",
           "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
-          "result_digest": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
-          "reviewer": "/root/review_task1",
-          "policy": "_ask/policies/delegation.md",
-          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
           "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-1-current.json",
           "evidence_digest": "3353af9c1a64ed2b761d8428c97ad30826212ac1267d6b3f62f22df6f597d5ed",
+          "exemption_reason": null,
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "result_digest": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
+          "reviewer": "/root/review_task1",
+          "task_id": "1",
           "verdict": "APPROVED",
-          "boundary": "ok",
-          "exemption_reason": null
+          "work_id": "shorter-hashes"
         },
         "verification": {
-          "work_id": "shorter-hashes",
-          "task_id": "1",
           "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
           "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
-          "schema": "ask-integration-evidence/v1",
-          "result": "pass",
-          "result_digest": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
+          "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
           "checks": [
             {
-              "id": "kit-shell-tests:_ask/tests/test-ask.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-ask.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/0.log",
-              "output_digest": "e1c6e6247094cffbbe3928c2c0c579e42300288df0d6cec87ec2bff7473241a7"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-ask.sh",
+              "output_digest": "e1c6e6247094cffbbe3928c2c0c579e42300288df0d6cec87ec2bff7473241a7",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-askit-complete.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/1.log",
-              "output_digest": "efa293615aa68716f429c21f4c03bda8d6130b275eb2764bf2d34645bb2ecaa3"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-askit-complete.sh",
+              "output_digest": "efa293615aa68716f429c21f4c03bda8d6130b275eb2764bf2d34645bb2ecaa3",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-askit-first-run.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/2.log",
-              "output_digest": "08fac436b453a57e22d6e56b14b1ea9bb1d4fd725b8f18abe5f582462bf08dcb"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-askit-first-run.sh",
+              "output_digest": "08fac436b453a57e22d6e56b14b1ea9bb1d4fd725b8f18abe5f582462bf08dcb",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-askit-self-install.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/3.log",
-              "output_digest": "725e86f82bf45fd5526d34f7cbd044197b6e605e6c2fd863612bf9838239020a"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-askit-self-install.sh",
+              "output_digest": "725e86f82bf45fd5526d34f7cbd044197b6e605e6c2fd863612bf9838239020a",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-bindings-consumer-overlay.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/4.log",
-              "output_digest": "aa2dfdeb018337f6135e31a533976f8f4c2acef5309ce868320bf6827e6af445"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-bindings-consumer-overlay.sh",
+              "output_digest": "aa2dfdeb018337f6135e31a533976f8f4c2acef5309ce868320bf6827e6af445",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-check-clean-worktree.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/5.log",
-              "output_digest": "b2e8533016dbcceb644ddce86aa502bce14da7a7ba3eb82d72bdacb211bfdbf3"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-check-clean-worktree.sh",
+              "output_digest": "b2e8533016dbcceb644ddce86aa502bce14da7a7ba3eb82d72bdacb211bfdbf3",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-check-workstream-confirmation.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/6.log",
-              "output_digest": "d147ebdfa2a89b99e61273fb7e845738062ddcf6ee86fe258ca3d5a976917081"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-confirmation.sh",
+              "output_digest": "d147ebdfa2a89b99e61273fb7e845738062ddcf6ee86fe258ca3d5a976917081",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-check-workstream-guidance.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/7.log",
-              "output_digest": "8ac52b3329cafe14204ad77f3aadf1d30af5a271d68c5c7681f5f52cad0407bd"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-check-workstream-guidance.sh",
+              "output_digest": "8ac52b3329cafe14204ad77f3aadf1d30af5a271d68c5c7681f5f52cad0407bd",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-codex-skill-parity.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/8.log",
-              "output_digest": "e820770d70a0ac4f82e98d05a823fb735fc499bffe40f365e1280bc75b4e62b1"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-codex-skill-parity.sh",
+              "output_digest": "e820770d70a0ac4f82e98d05a823fb735fc499bffe40f365e1280bc75b4e62b1",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-e2e-contract-sections.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/9.log",
-              "output_digest": "fc386834f62fc118ca75abba8d8488a3b8f8a9aac81ff0a46f925ef5dca4c4b4"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-e2e-contract-sections.sh",
+              "output_digest": "fc386834f62fc118ca75abba8d8488a3b8f8a9aac81ff0a46f925ef5dca4c4b4",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-grilling-skip-trivia-contracts.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/10.log",
-              "output_digest": "6d2bd4b27a5f63ae97aff392f10c5abb03fce029afb40d188a4edc4d38517394"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-grilling-skip-trivia-contracts.sh",
+              "output_digest": "6d2bd4b27a5f63ae97aff392f10c5abb03fce029afb40d188a4edc4d38517394",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-humanizer-docs-specs.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/11.log",
-              "output_digest": "bb7153497ae0b00c0dea075c1717db643fb2704a4dd9bd5b00a49b5dcbd15566"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-humanizer-docs-specs.sh",
+              "output_digest": "bb7153497ae0b00c0dea075c1717db643fb2704a4dd9bd5b00a49b5dcbd15566",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-inner-loop-reliability.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/12.log",
-              "output_digest": "b260770b1cc9cc36c15b0798aaef8fbb3c27420baafda477a1b2ff5bad53c8c3"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop-reliability.sh",
+              "output_digest": "b260770b1cc9cc36c15b0798aaef8fbb3c27420baafda477a1b2ff5bad53c8c3",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-inner-loop.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/13.log",
-              "output_digest": "196d7a65694f31564c4bd1bf9e145c4d192d440f1fcab1cb870f41cd247236e6"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-inner-loop.sh",
+              "output_digest": "196d7a65694f31564c4bd1bf9e145c4d192d440f1fcab1cb870f41cd247236e6",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-install-kit-apply.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/14.log",
-              "output_digest": "fb2f13e949f1833df00429c804a44e951f28e4241ab5f344f2fdcc9c584539ac"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-apply.sh",
+              "output_digest": "fb2f13e949f1833df00429c804a44e951f28e4241ab5f344f2fdcc9c584539ac",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-install-kit-dry-run.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/15.log",
-              "output_digest": "ab0ca063865256206ba7b5f29ef0abe2d5010395f81c5df52b58194bbede7fe5"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-install-kit-dry-run.sh",
+              "output_digest": "ab0ca063865256206ba7b5f29ef0abe2d5010395f81c5df52b58194bbede7fe5",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-install-user-completion.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/16.log",
-              "output_digest": "261d72ab640cfc32c4dd8d3e22793f083aa42e6e66d4b4e1b370cbcb29cd91d9"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-install-user-completion.sh",
+              "output_digest": "261d72ab640cfc32c4dd8d3e22793f083aa42e6e66d4b4e1b370cbcb29cd91d9",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-later-inbox-gitignore.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/17.log",
-              "output_digest": "f1a32ac8f2dcbdf7e50144b9bb5a1e26a7190ada292a7de2ecdd2b3c7aeedd5e"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-later-inbox-gitignore.sh",
+              "output_digest": "f1a32ac8f2dcbdf7e50144b9bb5a1e26a7190ada292a7de2ecdd2b3c7aeedd5e",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-prepare-skills-refuses-latest.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/18.log",
-              "output_digest": "a181bce40961ab1087396476d0fab48e16d5705d6affa6238e461917c30c9d49"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-prepare-skills-refuses-latest.sh",
+              "output_digest": "a181bce40961ab1087396476d0fab48e16d5705d6affa6238e461917c30c9d49",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-record-result-refuses-missing-sha.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/19.log",
-              "output_digest": "8f5c9121d8e4e19a07bb7b4c33a7aae90ae57a266b2bc35adbcb139206abc6cc"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-record-result-refuses-missing-sha.sh",
+              "output_digest": "8f5c9121d8e4e19a07bb7b4c33a7aae90ae57a266b2bc35adbcb139206abc6cc",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-record-run-refuses-dirty.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/20.log",
-              "output_digest": "0b796c2b08fbb36dcc62c00f3a4cdc3c8c803c17fab923aa2fa9ff0701191db5"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-dirty.sh",
+              "output_digest": "0b796c2b08fbb36dcc62c00f3a4cdc3c8c803c17fab923aa2fa9ff0701191db5",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-record-run-refuses-missing-sha.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/21.log",
-              "output_digest": "899dc9c2a53edb1f4b374b1dbf7b6cbcfb73e17f785b6175e1b0c53e72fb87c2"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-record-run-refuses-missing-sha.sh",
+              "output_digest": "899dc9c2a53edb1f4b374b1dbf7b6cbcfb73e17f785b6175e1b0c53e72fb87c2",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-record-run-writes-manifest.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/22.log",
-              "output_digest": "e6fcbb2327746b4369768ec53b0ddd6e3b7652e39f1d6dde5e121a11e3560ff6"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-record-run-writes-manifest.sh",
+              "output_digest": "e6fcbb2327746b4369768ec53b0ddd6e3b7652e39f1d6dde5e121a11e3560ff6",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-setup-env-gitignore.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/23.log",
-              "output_digest": "f156179a815195ecb949ab29dfea0c978126d6b41f3a2c834fb78cf377265f0a"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-setup-env-gitignore.sh",
+              "output_digest": "f156179a815195ecb949ab29dfea0c978126d6b41f3a2c834fb78cf377265f0a",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-setup-human-only.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/24.log",
-              "output_digest": "dba1b64b66e449baf0dcb4b38a56f6bd32b7b623c55f8c07ff8be78609d91b74"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-setup-human-only.sh",
+              "output_digest": "dba1b64b66e449baf0dcb4b38a56f6bd32b7b623c55f8c07ff8be78609d91b74",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-stages-inner-loop.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/25.log",
-              "output_digest": "28caad8b0a55cb93060bd789cf8ff49eb84e2606991b97c20e986d1513de1d14"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-stages-inner-loop.sh",
+              "output_digest": "28caad8b0a55cb93060bd789cf8ff49eb84e2606991b97c20e986d1513de1d14",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-start-work-from-develop.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/26.log",
-              "output_digest": "5fdae396ebac1e1680dfcfa80b4c89ef500c606b4edd866a7fe6f49fd67bd2dd"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-start-work-from-develop.sh",
+              "output_digest": "5fdae396ebac1e1680dfcfa80b4c89ef500c606b4edd866a7fe6f49fd67bd2dd",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-start-work-no-explore-map.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/27.log",
-              "output_digest": "65f41c170c7dda0080de552043aa251e18f64a3aa400d53b5dcbd3b986c0038b"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-start-work-no-explore-map.sh",
+              "output_digest": "65f41c170c7dda0080de552043aa251e18f64a3aa400d53b5dcbd3b986c0038b",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-start-work-refuses-dirty.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/28.log",
-              "output_digest": "5300ce25bbd30eb4c48e6fa197e63839412f0cb4b0ba61140509e14ccd0ad30d"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-start-work-refuses-dirty.sh",
+              "output_digest": "5300ce25bbd30eb4c48e6fa197e63839412f0cb4b0ba61140509e14ccd0ad30d",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-status.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-status.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/29.log",
-              "output_digest": "d8895d2245276c90eaf2b2ac430f0116a08c63f4cf78002fea4d0c90bb1c5dd8"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-status.sh",
+              "output_digest": "d8895d2245276c90eaf2b2ac430f0116a08c63f4cf78002fea4d0c90bb1c5dd8",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-sync-canonical-ask.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/30.log",
-              "output_digest": "e184deb2ae74a50b1d4f4b940d00ee2e520e507b52635d9b88e0920b2f7800ec"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-sync-canonical-ask.sh",
+              "output_digest": "e184deb2ae74a50b1d4f4b940d00ee2e520e507b52635d9b88e0920b2f7800ec",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-sync-off-path-command.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/31.log",
-              "output_digest": "a06448d6ccb0ff8b496b65eca8de8890735202c636f2c0b4aeaf311ff789ee47"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-sync-off-path-command.sh",
+              "output_digest": "a06448d6ccb0ff8b496b65eca8de8890735202c636f2c0b4aeaf311ff789ee47",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-sync-runtime-agents.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/32.log",
-              "output_digest": "eaa8fa9c171c5e2d2aa13905cbb54fb8bc69deed1e7d9850e22d3251c82421f0"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-sync-runtime-agents.sh",
+              "output_digest": "eaa8fa9c171c5e2d2aa13905cbb54fb8bc69deed1e7d9850e22d3251c82421f0",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-verify-fail-closed.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/33.log",
-              "output_digest": "4f9a829166f2dd55d46a62a9dcd8a5b4caae528daeb6018770347b703ea1c0d0"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-verify-fail-closed.sh",
+              "output_digest": "4f9a829166f2dd55d46a62a9dcd8a5b4caae528daeb6018770347b703ea1c0d0",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-verify-scaffold.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/34.log",
-              "output_digest": "31b9a600f2f96fa60ddb7f382e7c300f95e1423c1e4c8c20a5c0931df9dde7ac"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-verify-scaffold.sh",
+              "output_digest": "31b9a600f2f96fa60ddb7f382e7c300f95e1423c1e4c8c20a5c0931df9dde7ac",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
-              "tier": "mandatory",
               "command": "_ask/tests/test-workstream-smoke.sh",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/35.log",
-              "output_digest": "9a6a521fe3d0c8748b0000d537cbcd15ddc4ff292c1a985d5d5e731fadeb978a"
+              "exit_code": 0,
+              "id": "kit-shell-tests:_ask/tests/test-workstream-smoke.sh",
+              "output_digest": "9a6a521fe3d0c8748b0000d537cbcd15ddc4ff292c1a985d5d5e731fadeb978a",
+              "status": "pass",
+              "tier": "mandatory"
             },
             {
-              "id": "traceability-cases",
-              "tier": "mandatory",
               "command": "python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/static-runs/82f5965738594d578a0944b285877606/36.log",
-              "output_digest": "b5050c7c17a3cea3d482f244ae99c5e64f8ecec5e9014a068118485410cf933e"
+              "exit_code": 0,
+              "id": "traceability-cases",
+              "output_digest": "b5050c7c17a3cea3d482f244ae99c5e64f8ecec5e9014a068118485410cf933e",
+              "status": "pass",
+              "tier": "mandatory"
             }
           ],
           "evidence_path": "work/shorter-hashes/inner-loop/evidence/verify-rye4k1hs/verification.json",
           "log_path": "work/shorter-hashes/inner-loop/evidence/verify-rye4k1hs/output.log",
-          "runner_digest": "2616430d30f0ecd9656f61c86386769b3db10d8156d6c8b068b677e7597c3dd4",
-          "runner_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
-          "tree_sha": "da5417310ad10e19e45dc0a5d2f4a00fc0f6207d",
-          "checkplan_digest": "79a6e9afb084f02a18b9e83d2c2ffe996b5cf3a598143d6818021576708b80f0",
           "record_path": "work/shorter-hashes/inner-loop/evidence/verify-rye4k1hs/integration.json",
+          "result": "pass",
+          "result_digest": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
           "resulting_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
           "review": {
-            "work_id": "shorter-hashes",
-            "task_id": "1",
             "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+            "boundary": "ok",
             "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
-            "result_digest": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
-            "reviewer": "/root/review_task1",
-            "policy": "_ask/policies/delegation.md",
-            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
             "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-1-current.json",
             "evidence_digest": "3353af9c1a64ed2b761d8428c97ad30826212ac1267d6b3f62f22df6f597d5ed",
+            "exemption_reason": null,
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "result_digest": "c28a2796bbf25d74416fb1c63935b677a852e10ea23b3b2d52d1110a79519687",
+            "reviewer": "/root/review_task1",
+            "task_id": "1",
             "verdict": "APPROVED",
-            "boundary": "ok",
-            "exemption_reason": null
-          }
+            "work_id": "shorter-hashes"
+          },
+          "runner_digest": "2616430d30f0ecd9656f61c86386769b3db10d8156d6c8b068b677e7597c3dd4",
+          "runner_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+          "schema": "ask-integration-evidence/v1",
+          "task_id": "1",
+          "tree_sha": "da5417310ad10e19e45dc0a5d2f4a00fc0f6207d",
+          "work_id": "shorter-hashes"
         }
-      }
+      },
+      "result_path": "work/shorter-hashes/inner-loop/results/1.json",
+      "review_round": 0,
+      "status": "integrated",
+      "task_branch": ""
+    },
+    "10": {
+      "base_sha": "",
+      "boundary_reject": null,
+      "debug_round": 0,
+      "evidence": {},
+      "result_path": "",
+      "review_round": 0,
+      "status": "pending",
+      "task_branch": ""
     },
     "2": {
-      "status": "integrated",
+      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+      "attempt_id": "2:attempt-1",
+      "attempt_number": 1,
+      "attempt_started_revision": 15,
       "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
-      "task_branch": "",
-      "result_path": "work/shorter-hashes/inner-loop/results/2.json",
       "boundary_reject": "red did not fail",
-      "review_round": 0,
       "debug_round": 0,
       "evidence": {
         "blocker": {
           "path": "work/shorter-hashes/inner-loop/evidence/task-2-blocker.json",
-          "sha256": "fdd0bdb53786de16758a6b65347552798055580c2ee0f2fd07f0273fbd46feb2",
-          "reason": "The accepted task contains only regression cases; all nine pass at the immutable baseline and final Green, but the validator unconditionally requires a nonzero Red exit code. The user directed this out-of-scope defect be recorded as a later inbox card, not brought into Task 2."
+          "reason": "The accepted task contains only regression cases; all nine pass at the immutable baseline and final Green, but the validator unconditionally requires a nonzero Red exit code. The user directed this out-of-scope defect be recorded as a later inbox card, not brought into Task 2.",
+          "sha256": "fdd0bdb53786de16758a6b65347552798055580c2ee0f2fd07f0273fbd46feb2"
         },
         "red_gate_authorization": {
-          "path": "work/shorter-hashes/task-2-execution-authorization.md",
-          "sha256": "570bf7cd70b14ce3b00a6396392184048c94f87140c4061a78fd6168563b69c2",
-          "accepted_plan_ref": "refs/ask/accepted-tests/shorter-hashes",
           "accepted_plan_commit": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+          "accepted_plan_ref": "refs/ask/accepted-tests/shorter-hashes",
+          "decision": "continue with registered regression baseline; do not manufacture Red",
+          "path": "work/shorter-hashes/task-2-execution-authorization.md",
           "plan_review_digest": "bc09cbd7f7ac28b668e49bd218fb39933a0d90012d2405ad5bb6fb7c24fce671",
-          "decision": "continue with registered regression baseline; do not manufacture Red"
+          "sha256": "570bf7cd70b14ce3b00a6396392184048c94f87140c4061a78fd6168563b69c2"
+        },
+        "review": {
+          "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+          "boundary": "ok",
+          "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-2-5e03a7c.json",
+          "evidence_digest": "dc5474f3539b88534f1d9c70671c87dca1f58bee46a25d95850147ae4899485d",
+          "exemption_reason": null,
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "result_digest": "4767734141fd39f0b7906850ec0c7ea2624c189aa9ae79378d653210de0bfaf0",
+          "reviewer": "/root/task2_reviewer_d4",
+          "task_id": "2",
+          "verdict": "APPROVED",
+          "work_id": "shorter-hashes"
         },
         "traceability_runs": [
           {
-            "run_id": "12cade8339964427ac6ba56a5b754b7d",
+            "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
             "digest": "a3408c84d49a568df3155370c217e092985a927d293a49401f31b19480e897fb",
             "phase": "final_green",
-            "task_id": "2",
-            "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "12cade8339964427ac6ba56a5b754b7d",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "e119db3747864518b1065f6e7c782bc6",
+            "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
             "digest": "8cdffddad0c489b5ddf29d7582c5c7faa8c3b5acaceee86a4e61a5525ef6c98b",
             "phase": "final_green",
-            "task_id": "2",
-            "candidate_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "e119db3747864518b1065f6e7c782bc6",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "365575e834094848b7eb8c2baf336738",
+            "candidate_sha": "89344819326594e46de5e3b63e6ca615a4d265d1",
             "digest": "6cb5eb65b3f174ce7d31e6c2ad5647eac90e4190172ac7261fef70ceda331d00",
             "phase": "final_green",
-            "task_id": "2",
-            "candidate_sha": "89344819326594e46de5e3b63e6ca615a4d265d1",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "365575e834094848b7eb8c2baf336738",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "15dba65cc36549bdb619605f6889f8bf",
+            "candidate_sha": "6fa99f6cb242f8310aa68741fc57c32d56c822af",
             "digest": "abdc10d11dc2794b0da36c00f2917c0e7f1873adfd5039821b0a3985c04cd3a1",
             "phase": "red",
-            "task_id": "2",
-            "candidate_sha": "6fa99f6cb242f8310aa68741fc57c32d56c822af",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "15dba65cc36549bdb619605f6889f8bf",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "8ad7738a400944fda264a1518b97d6b2",
+            "candidate_sha": "447994e6d0ff14356f4e010219e693615a4ec2fb",
             "digest": "2be7401229496366d8223e34ddc7c369432f16f7f4807bf638de2da93a6a51b5",
             "phase": "red",
-            "task_id": "2",
-            "candidate_sha": "447994e6d0ff14356f4e010219e693615a4ec2fb",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "8ad7738a400944fda264a1518b97d6b2",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "4d4188c9d06b4e72b01a811e36ba28fc",
+            "candidate_sha": "5f66d6304b88337b8ff0f9070d514f081d435be0",
             "digest": "a768f4c7aeb53741f2d9fbe115f351717c532f3274828bf133f5e4fc8adbbbcb",
             "phase": "red",
-            "task_id": "2",
-            "candidate_sha": "5f66d6304b88337b8ff0f9070d514f081d435be0",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "4d4188c9d06b4e72b01a811e36ba28fc",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "6ba237689b764f6bb06efdec89ed217f",
+            "candidate_sha": "5ae661e3eceec2af2eda7d55b97b6881f4e64aa1",
             "digest": "4db58e5431224b6ed82853efee693e0a31b3706557c79420c4ad3c12ea117d58",
             "phase": "final_green",
-            "task_id": "2",
-            "candidate_sha": "5ae661e3eceec2af2eda7d55b97b6881f4e64aa1",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "6ba237689b764f6bb06efdec89ed217f",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           },
           {
-            "run_id": "1c5fcb77199540dfb0cb80ae9a5765ba",
+            "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
             "digest": "17407916ad959ff5bf55b51bd909c5567321ea1b8b91ac7dfbea6ffc9a1aa9e4",
             "phase": "final_green",
-            "task_id": "2",
-            "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "1c5fcb77199540dfb0cb80ae9a5765ba",
             "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+            "task_id": "2"
           }
         ],
-        "review": {
-          "work_id": "shorter-hashes",
-          "task_id": "2",
-          "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
-          "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-          "result_digest": "4767734141fd39f0b7906850ec0c7ea2624c189aa9ae79378d653210de0bfaf0",
-          "reviewer": "/root/task2_reviewer_d4",
-          "policy": "_ask/policies/delegation.md",
-          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-          "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-2-5e03a7c.json",
-          "evidence_digest": "dc5474f3539b88534f1d9c70671c87dca1f58bee46a25d95850147ae4899485d",
-          "verdict": "APPROVED",
-          "boundary": "ok",
-          "exemption_reason": null
-        },
         "verification": {
-          "work_id": "shorter-hashes",
-          "task_id": "2",
           "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
           "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-          "schema": "ask-integration-evidence/v1",
-          "result": "pass",
-          "result_digest": "4767734141fd39f0b7906850ec0c7ea2624c189aa9ae79378d653210de0bfaf0",
           "checks": [
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_identity",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/4d9af2b97be748f2af922cb6dc27da1e.log",
+              "exit_code": 0,
               "id": "2/2",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_identity",
+              "output_digest": "a761219da8a33c69ad803f0d42d30ce27b947d4dc494d28d86c8cf2524b9e7a2",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/4d9af2b97be748f2af922cb6dc27da1e.log",
-              "output_digest": "a761219da8a33c69ad803f0d42d30ce27b947d4dc494d28d86c8cf2524b9e7a2"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_identity",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/4d9af2b97be748f2af922cb6dc27da1e.log",
+              "exit_code": 0,
               "id": "2/1",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_identity",
+              "output_digest": "a761219da8a33c69ad803f0d42d30ce27b947d4dc494d28d86c8cf2524b9e7a2",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/4d9af2b97be748f2af922cb6dc27da1e.log",
-              "output_digest": "a761219da8a33c69ad803f0d42d30ce27b947d4dc494d28d86c8cf2524b9e7a2"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_identity",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/4d9af2b97be748f2af922cb6dc27da1e.log",
+              "exit_code": 0,
               "id": "2/3",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_identity",
+              "output_digest": "a761219da8a33c69ad803f0d42d30ce27b947d4dc494d28d86c8cf2524b9e7a2",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/4d9af2b97be748f2af922cb6dc27da1e.log",
-              "output_digest": "a761219da8a33c69ad803f0d42d30ce27b947d4dc494d28d86c8cf2524b9e7a2"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
+              "exit_code": 0,
               "id": "2/5",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
-              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
+              "exit_code": 0,
               "id": "2/7",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
-              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
+              "exit_code": 0,
               "id": "2/8",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
-              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
+              "exit_code": 0,
               "id": "2/4",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_store",
+              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/768d4bc50eb94c93a1ee1f5f4bf72ae0.log",
-              "output_digest": "3e2783a5d01f3d7cc115ca3c8b983511007e6a3fe142ce635fa309dabbf1e986"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_codec",
+              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/002a3a6652df45918c19ed6f34b02ec5.log",
+              "exit_code": 0,
               "id": "2/6",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_codec",
+              "output_digest": "390be04e98b974a964a7d5f14756e70c41cae173c5505b00a48596369b585a12",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/002a3a6652df45918c19ed6f34b02ec5.log",
-              "output_digest": "390be04e98b974a964a7d5f14756e70c41cae173c5505b00a48596369b585a12"
+              "tier": "mandatory"
             },
             {
-              "id": "2/9",
-              "tier": "mandatory",
               "command": "python3 -m unittest _ask.tests.test_workflow_refs_codec",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/002a3a6652df45918c19ed6f34b02ec5.log",
-              "output_digest": "390be04e98b974a964a7d5f14756e70c41cae173c5505b00a48596369b585a12"
+              "exit_code": 0,
+              "id": "2/9",
+              "output_digest": "390be04e98b974a964a7d5f14756e70c41cae173c5505b00a48596369b585a12",
+              "status": "pass",
+              "tier": "mandatory"
             }
           ],
-          "tree_sha": "7a2f4790fb5013c61dd23e490cc6a142fc314b0a",
+          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-1c5fcb77-4d1hosk7/integration.json",
+          "result": "pass",
+          "result_digest": "4767734141fd39f0b7906850ec0c7ea2624c189aa9ae79378d653210de0bfaf0",
+          "resulting_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "review": {
+            "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+            "boundary": "ok",
+            "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-2-5e03a7c.json",
+            "evidence_digest": "dc5474f3539b88534f1d9c70671c87dca1f58bee46a25d95850147ae4899485d",
+            "exemption_reason": null,
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "result_digest": "4767734141fd39f0b7906850ec0c7ea2624c189aa9ae79378d653210de0bfaf0",
+            "reviewer": "/root/task2_reviewer_d4",
+            "task_id": "2",
+            "verdict": "APPROVED",
+            "work_id": "shorter-hashes"
+          },
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "runner_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+          "schema": "ask-integration-evidence/v1",
+          "task_id": "2",
+          "task_report_digest": "17407916ad959ff5bf55b51bd909c5567321ea1b8b91ac7dfbea6ffc9a1aa9e4",
+          "task_verification_report": {
+            "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+            "report_path": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/results.json",
+            "run_id": "1c5fcb77199540dfb0cb80ae9a5765ba",
+            "schema": "ask-task-verification-report/v1",
+            "sha256": "a40d0467e019197ac2015b33d6217d2ccab368c43930c6047c29601e342ddac6"
+          },
+          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
           "traceability_run_ids": [
             "1c5fcb77199540dfb0cb80ae9a5765ba"
           ],
-          "task_verification_report": {
-            "schema": "ask-task-verification-report/v1",
-            "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-            "run_id": "1c5fcb77199540dfb0cb80ae9a5765ba",
-            "report_path": "work/shorter-hashes/traceability/runs/1c5fcb77199540dfb0cb80ae9a5765ba/results.json",
-            "sha256": "a40d0467e019197ac2015b33d6217d2ccab368c43930c6047c29601e342ddac6"
-          },
-          "task_report_digest": "17407916ad959ff5bf55b51bd909c5567321ea1b8b91ac7dfbea6ffc9a1aa9e4",
-          "runner_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
-          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
-          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-1c5fcb77-4d1hosk7/integration.json",
-          "resulting_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-          "review": {
-            "work_id": "shorter-hashes",
-            "task_id": "2",
-            "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
-            "candidate_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-            "result_digest": "4767734141fd39f0b7906850ec0c7ea2624c189aa9ae79378d653210de0bfaf0",
-            "reviewer": "/root/task2_reviewer_d4",
-            "policy": "_ask/policies/delegation.md",
-            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-2-5e03a7c.json",
-            "evidence_digest": "dc5474f3539b88534f1d9c70671c87dca1f58bee46a25d95850147ae4899485d",
-            "verdict": "APPROVED",
-            "boundary": "ok",
-            "exemption_reason": null
-          }
+          "tree_sha": "7a2f4790fb5013c61dd23e490cc6a142fc314b0a",
+          "work_id": "shorter-hashes"
         },
         "verification_record_digest": "ad5bab88648329c77e3b47d3c3b8dbdb03561c909c95a0f4fd6ac20e32973cc7"
       },
-      "attempt_number": 1,
-      "attempt_id": "2:attempt-1",
-      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
-      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-      "attempt_started_revision": 15
+      "result_path": "work/shorter-hashes/inner-loop/results/2.json",
+      "review_round": 0,
+      "status": "integrated",
+      "task_branch": ""
     },
     "3": {
-      "status": "integrated",
+      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+      "attempt_id": "3:attempt-1",
+      "attempt_number": 1,
+      "attempt_started_revision": 27,
       "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-      "task_branch": "",
-      "result_path": "work/shorter-hashes/inner-loop/results/3.json",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
       "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "d7b7f43721ca4a248b67d71578e50fdd",
-            "digest": "de4ff07bfe52bae0ef01eb1574b78fad80af77981c16e15278b1dcc70131d09c",
-            "phase": "final_green",
-            "task_id": "3",
-            "candidate_sha": "b4e48abd40bf322f7e41badb23dab627958c2fb0",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          },
-          {
-            "run_id": "b72831e428c34640bf95f2b30b98e41b",
-            "digest": "c9371a0fbc15f62c388e91c29c5c8a5c6f8baa7681206867b11a743b42e0fac0",
-            "phase": "red",
-            "task_id": "3",
-            "candidate_sha": "42fd6a25dcdf1f9d4def562b4f358d8654e79ac0",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          },
-          {
-            "run_id": "6af400a9bb8c4c6882e587cca24bdb6f",
-            "digest": "f82d8e991f6c9627aa7ae356a2d3e0d89527902a16bb001adc3adc19f4b8d2a2",
-            "phase": "final_green",
-            "task_id": "3",
-            "candidate_sha": "fb2d365e4a00d0de784306f2f96ba803c8680388",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          },
-          {
-            "run_id": "8309adf0377f4047a8f69ded0532b2ca",
-            "digest": "5dc0551744abff74142cfe9a2f7e48ae3a8fe27774df2316eefe9686bc68e2e3",
-            "phase": "red",
-            "task_id": "3",
-            "candidate_sha": "6cb47e3e952825da21a49f08a1d9c87041c74d26",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          },
-          {
-            "run_id": "dd0749ede87b4cb889cbfe2d2a5eb68a",
-            "digest": "f7fa18b516a57371ce134a27d08b2a4965ac40a097ce916d01b8345215143386",
-            "phase": "final_green",
-            "task_id": "3",
-            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          }
-        ],
         "review": {
-          "work_id": "shorter-hashes",
-          "task_id": "3",
           "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "boundary": "ok",
           "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-          "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
-          "reviewer": "/root/task2_reviewer_d4",
-          "policy": "_ask/policies/delegation.md",
-          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
           "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-3-decfb1b.json",
           "evidence_digest": "2c0ca8b68c20e48ad5bc8fb0d3fa5ba91728986b4da6ea2a89680f498a511018",
-          "verdict": "APPROVED",
-          "boundary": "ok",
-          "exemption_reason": null
-        },
-        "verification": {
-          "work_id": "shorter-hashes",
+          "exemption_reason": null,
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
+          "reviewer": "/root/task2_reviewer_d4",
           "task_id": "3",
+          "verdict": "APPROVED",
+          "work_id": "shorter-hashes"
+        },
+        "traceability_runs": [
+          {
+            "candidate_sha": "b4e48abd40bf322f7e41badb23dab627958c2fb0",
+            "digest": "de4ff07bfe52bae0ef01eb1574b78fad80af77981c16e15278b1dcc70131d09c",
+            "phase": "final_green",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "d7b7f43721ca4a248b67d71578e50fdd",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "3"
+          },
+          {
+            "candidate_sha": "42fd6a25dcdf1f9d4def562b4f358d8654e79ac0",
+            "digest": "c9371a0fbc15f62c388e91c29c5c8a5c6f8baa7681206867b11a743b42e0fac0",
+            "phase": "red",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "b72831e428c34640bf95f2b30b98e41b",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "3"
+          },
+          {
+            "candidate_sha": "fb2d365e4a00d0de784306f2f96ba803c8680388",
+            "digest": "f82d8e991f6c9627aa7ae356a2d3e0d89527902a16bb001adc3adc19f4b8d2a2",
+            "phase": "final_green",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "6af400a9bb8c4c6882e587cca24bdb6f",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "3"
+          },
+          {
+            "candidate_sha": "6cb47e3e952825da21a49f08a1d9c87041c74d26",
+            "digest": "5dc0551744abff74142cfe9a2f7e48ae3a8fe27774df2316eefe9686bc68e2e3",
+            "phase": "red",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "8309adf0377f4047a8f69ded0532b2ca",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "3"
+          },
+          {
+            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "digest": "f7fa18b516a57371ce134a27d08b2a4965ac40a097ce916d01b8345215143386",
+            "phase": "final_green",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "dd0749ede87b4cb889cbfe2d2a5eb68a",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "3"
+          }
+        ],
+        "verification": {
           "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
           "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-          "schema": "ask-integration-evidence/v1",
-          "result": "pass",
-          "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
           "checks": [
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
+              "exit_code": 0,
               "id": "3/1",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
-              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
+              "exit_code": 0,
               "id": "3/3",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
+              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
-              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee"
+              "tier": "mandatory"
             },
             {
-              "id": "3/2",
-              "tier": "mandatory",
               "command": "python3 -m unittest _ask.tests.test_workflow_refs_compare",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/bcda2c437e344bf0a83dc6c264f5daf9.log",
-              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee"
+              "exit_code": 0,
+              "id": "3/2",
+              "output_digest": "843fd427440753f502b75e5071d1ad42c481db9b49b9bfb2c14952f8be2d47ee",
+              "status": "pass",
+              "tier": "mandatory"
             }
           ],
-          "tree_sha": "ed0610cfe954892dc1bebb22b44b183baad72b0d",
+          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-dd0749ed-ukznkvz7/integration.json",
+          "result": "pass",
+          "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
+          "resulting_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+          "review": {
+            "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+            "boundary": "ok",
+            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-3-decfb1b.json",
+            "evidence_digest": "2c0ca8b68c20e48ad5bc8fb0d3fa5ba91728986b4da6ea2a89680f498a511018",
+            "exemption_reason": null,
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
+            "reviewer": "/root/task2_reviewer_d4",
+            "task_id": "3",
+            "verdict": "APPROVED",
+            "work_id": "shorter-hashes"
+          },
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "runner_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
+          "schema": "ask-integration-evidence/v1",
+          "task_id": "3",
+          "task_report_digest": "f7fa18b516a57371ce134a27d08b2a4965ac40a097ce916d01b8345215143386",
+          "task_verification_report": {
+            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "report_path": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/results.json",
+            "run_id": "dd0749ede87b4cb889cbfe2d2a5eb68a",
+            "schema": "ask-task-verification-report/v1",
+            "sha256": "04fe681971a4d219714b38d83bbec7094fe707ff414becebadf5662046f4002e"
+          },
+          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
           "traceability_run_ids": [
             "dd0749ede87b4cb889cbfe2d2a5eb68a"
           ],
-          "task_verification_report": {
-            "schema": "ask-task-verification-report/v1",
-            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-            "run_id": "dd0749ede87b4cb889cbfe2d2a5eb68a",
-            "report_path": "work/shorter-hashes/traceability/runs/dd0749ede87b4cb889cbfe2d2a5eb68a/results.json",
-            "sha256": "04fe681971a4d219714b38d83bbec7094fe707ff414becebadf5662046f4002e"
-          },
-          "task_report_digest": "f7fa18b516a57371ce134a27d08b2a4965ac40a097ce916d01b8345215143386",
-          "runner_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
-          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-dd0749ed-ukznkvz7/integration.json",
-          "resulting_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-          "review": {
-            "work_id": "shorter-hashes",
-            "task_id": "3",
-            "base_sha": "d4a7576c6e1256b3b93509d4bf0bb456c4e11f00",
-            "candidate_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-            "result_digest": "a3d263c844142b13d20568fac207c525ce8c92694c0e6dde2dbb55b18ba857d8",
-            "reviewer": "/root/task2_reviewer_d4",
-            "policy": "_ask/policies/delegation.md",
-            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-3-decfb1b.json",
-            "evidence_digest": "2c0ca8b68c20e48ad5bc8fb0d3fa5ba91728986b4da6ea2a89680f498a511018",
-            "verdict": "APPROVED",
-            "boundary": "ok",
-            "exemption_reason": null
-          }
+          "tree_sha": "ed0610cfe954892dc1bebb22b44b183baad72b0d",
+          "work_id": "shorter-hashes"
         },
         "verification_record_digest": "5d0c4529dc888c7d22156693551776bb4bd947ccf6bd1339448d6c26e97b8cb0"
       },
-      "attempt_number": 1,
-      "attempt_id": "3:attempt-1",
-      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
-      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-      "attempt_started_revision": 27
+      "result_path": "work/shorter-hashes/inner-loop/results/3.json",
+      "review_round": 0,
+      "status": "integrated",
+      "task_branch": ""
     },
     "4": {
-      "status": "integrated",
+      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+      "attempt_id": "4:attempt-1",
+      "attempt_number": 1,
+      "attempt_started_revision": 36,
       "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-      "task_branch": "",
-      "result_path": "work/shorter-hashes/inner-loop/results/4.json",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
       "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "34e9b7568b2a449d974b50af7e662ab9",
-            "digest": "e604a0a5a9905ac5605fb6647e8aa2eed03452672e99ee9cea0885ab26d666ba",
-            "phase": "final_green",
-            "task_id": "4",
-            "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          }
-        ],
         "review": {
-          "work_id": "shorter-hashes",
-          "task_id": "4",
           "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+          "boundary": "ok",
           "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-          "result_digest": "ed81bdc7f90a5a58f8df355d948fa749f35d4d17ece2e5b935caa21d55c92b64",
-          "reviewer": "/root/task2_reviewer_d4",
-          "policy": "_ask/policies/delegation.md",
-          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
           "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-4-dfcad00.json",
           "evidence_digest": "bc4e5a2f8d2eded8f26190ce4fcd8c3d344c9b4dcc3b56c36e609a3eb5a358a9",
-          "verdict": "APPROVED",
-          "boundary": "ok",
-          "exemption_reason": null
-        },
-        "verification": {
-          "work_id": "shorter-hashes",
+          "exemption_reason": null,
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "result_digest": "ed81bdc7f90a5a58f8df355d948fa749f35d4d17ece2e5b935caa21d55c92b64",
+          "reviewer": "/root/task2_reviewer_d4",
           "task_id": "4",
+          "verdict": "APPROVED",
+          "work_id": "shorter-hashes"
+        },
+        "traceability_runs": [
+          {
+            "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+            "digest": "e604a0a5a9905ac5605fb6647e8aa2eed03452672e99ee9cea0885ab26d666ba",
+            "phase": "final_green",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "34e9b7568b2a449d974b50af7e662ab9",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "4"
+          }
+        ],
+        "verification": {
           "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
           "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-          "schema": "ask-integration-evidence/v1",
-          "result": "pass",
-          "result_digest": "ed81bdc7f90a5a58f8df355d948fa749f35d4d17ece2e5b935caa21d55c92b64",
           "checks": [
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_project",
+              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/c8ed02ce43624f17bba6b3acce74f96a.log",
+              "exit_code": 0,
               "id": "4/1",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_project",
+              "output_digest": "695cc50cd67e49aa3a48eeed523316e4bb926beb953d0998c5db4f75339a8780",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/c8ed02ce43624f17bba6b3acce74f96a.log",
-              "output_digest": "695cc50cd67e49aa3a48eeed523316e4bb926beb953d0998c5db4f75339a8780"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_project",
+              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/c8ed02ce43624f17bba6b3acce74f96a.log",
+              "exit_code": 0,
               "id": "4/5",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_project",
+              "output_digest": "695cc50cd67e49aa3a48eeed523316e4bb926beb953d0998c5db4f75339a8780",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/c8ed02ce43624f17bba6b3acce74f96a.log",
-              "output_digest": "695cc50cd67e49aa3a48eeed523316e4bb926beb953d0998c5db4f75339a8780"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
+              "exit_code": 0,
               "id": "4/6",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
-              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
+              "exit_code": 0,
               "id": "4/7",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
-              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
+              "exit_code": 0,
               "id": "4/2",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
-              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
+              "exit_code": 0,
               "id": "4/4",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
+              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
-              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0"
+              "tier": "mandatory"
             },
             {
-              "id": "4/3",
-              "tier": "mandatory",
               "command": "python3 -m unittest _ask.tests.test_workflow_refs_impact",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/52912b743bd04b7cb00a308bc0db1bd8.log",
-              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0"
+              "exit_code": 0,
+              "id": "4/3",
+              "output_digest": "753fb7acca54d6082cbc3a45c2930a94a63da5bcbe6f5219c40b634a3f5e41b0",
+              "status": "pass",
+              "tier": "mandatory"
             }
           ],
-          "tree_sha": "4058df7b468ec2ef1c55c314bc205016eebaba30",
+          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-34e9b756-par7lynn/integration.json",
+          "result": "pass",
+          "result_digest": "ed81bdc7f90a5a58f8df355d948fa749f35d4d17ece2e5b935caa21d55c92b64",
+          "resulting_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+          "review": {
+            "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+            "boundary": "ok",
+            "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-4-dfcad00.json",
+            "evidence_digest": "bc4e5a2f8d2eded8f26190ce4fcd8c3d344c9b4dcc3b56c36e609a3eb5a358a9",
+            "exemption_reason": null,
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "result_digest": "ed81bdc7f90a5a58f8df355d948fa749f35d4d17ece2e5b935caa21d55c92b64",
+            "reviewer": "/root/task2_reviewer_d4",
+            "task_id": "4",
+            "verdict": "APPROVED",
+            "work_id": "shorter-hashes"
+          },
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "runner_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+          "schema": "ask-integration-evidence/v1",
+          "task_id": "4",
+          "task_report_digest": "e604a0a5a9905ac5605fb6647e8aa2eed03452672e99ee9cea0885ab26d666ba",
+          "task_verification_report": {
+            "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+            "report_path": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/results.json",
+            "run_id": "34e9b7568b2a449d974b50af7e662ab9",
+            "schema": "ask-task-verification-report/v1",
+            "sha256": "52e0ca577ccc2f3281b847328ba8fe36937e848d2ecb7fc65c2b36060f6b3e01"
+          },
+          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
           "traceability_run_ids": [
             "34e9b7568b2a449d974b50af7e662ab9"
           ],
-          "task_verification_report": {
-            "schema": "ask-task-verification-report/v1",
-            "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-            "run_id": "34e9b7568b2a449d974b50af7e662ab9",
-            "report_path": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/results.json",
-            "sha256": "52e0ca577ccc2f3281b847328ba8fe36937e848d2ecb7fc65c2b36060f6b3e01"
-          },
-          "task_report_digest": "e604a0a5a9905ac5605fb6647e8aa2eed03452672e99ee9cea0885ab26d666ba",
-          "runner_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
-          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-34e9b756-par7lynn/integration.json",
-          "resulting_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-          "review": {
-            "work_id": "shorter-hashes",
-            "task_id": "4",
-            "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
-            "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-            "result_digest": "ed81bdc7f90a5a58f8df355d948fa749f35d4d17ece2e5b935caa21d55c92b64",
-            "reviewer": "/root/task2_reviewer_d4",
-            "policy": "_ask/policies/delegation.md",
-            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-4-dfcad00.json",
-            "evidence_digest": "bc4e5a2f8d2eded8f26190ce4fcd8c3d344c9b4dcc3b56c36e609a3eb5a358a9",
-            "verdict": "APPROVED",
-            "boundary": "ok",
-            "exemption_reason": null
-          }
+          "tree_sha": "4058df7b468ec2ef1c55c314bc205016eebaba30",
+          "work_id": "shorter-hashes"
         },
         "verification_record_digest": "7e9f932f747d9d9eea3547ea3d6102b1682146aa81cc7a8138a24f03b53195a0"
       },
-      "attempt_number": 1,
-      "attempt_id": "4:attempt-1",
-      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
-      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-      "attempt_started_revision": 36
+      "result_path": "work/shorter-hashes/inner-loop/results/4.json",
+      "review_round": 0,
+      "status": "integrated",
+      "task_branch": ""
     },
     "5": {
-      "status": "integrated",
+      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+      "attempt_id": "5:attempt-1",
+      "attempt_number": 1,
+      "attempt_started_revision": 41,
       "base_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-      "task_branch": "",
-      "result_path": "work/shorter-hashes/inner-loop/results/5.json",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
       "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "df529508c9634f809056d93c7cdc81b4",
-            "digest": "303eea9504d56436d44bf7f39be01082246f582703b47e72d5aa28bc427abd48",
-            "phase": "final_green",
-            "task_id": "5",
-            "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
-          }
-        ],
         "review": {
-          "work_id": "shorter-hashes",
-          "task_id": "5",
           "base_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+          "boundary": "ok",
           "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-          "result_digest": "b9c5a8ed622bea22b6396062b663fdf48fa24ab7c1f6f5eb5892ac65a4deda46",
-          "reviewer": "/root/task2_reviewer_d4",
-          "policy": "_ask/policies/delegation.md",
-          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
           "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-5-7376b07.json",
           "evidence_digest": "2d4b5885e3e730b34d599f05d2f8f2cb201f4fd55b03af79fbb2299194a257fe",
-          "verdict": "APPROVED",
-          "boundary": "ok",
-          "exemption_reason": null
-        },
-        "verification": {
-          "work_id": "shorter-hashes",
+          "exemption_reason": null,
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "result_digest": "b9c5a8ed622bea22b6396062b663fdf48fa24ab7c1f6f5eb5892ac65a4deda46",
+          "reviewer": "/root/task2_reviewer_d4",
           "task_id": "5",
+          "verdict": "APPROVED",
+          "work_id": "shorter-hashes"
+        },
+        "traceability_runs": [
+          {
+            "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+            "digest": "303eea9504d56436d44bf7f39be01082246f582703b47e72d5aa28bc427abd48",
+            "phase": "final_green",
+            "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+            "run_id": "df529508c9634f809056d93c7cdc81b4",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "5"
+          }
+        ],
+        "verification": {
           "base_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
           "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-          "schema": "ask-integration-evidence/v1",
-          "result": "pass",
-          "result_digest": "b9c5a8ed622bea22b6396062b663fdf48fa24ab7c1f6f5eb5892ac65a4deda46",
           "checks": [
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_traceability",
+              "evidence": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/c25f83c9be9c44f8aae3ee8ba6c8e4eb.log",
+              "exit_code": 0,
               "id": "5/1",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_traceability",
+              "output_digest": "f1fda2659fb3d7b251e67cf955650d79a8821c6c964b33ef67e18d9154246d2a",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/c25f83c9be9c44f8aae3ee8ba6c8e4eb.log",
-              "output_digest": "f1fda2659fb3d7b251e67cf955650d79a8821c6c964b33ef67e18d9154246d2a"
+              "tier": "mandatory"
             },
             {
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_traceability",
+              "evidence": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/c25f83c9be9c44f8aae3ee8ba6c8e4eb.log",
+              "exit_code": 0,
               "id": "5/3",
-              "tier": "mandatory",
-              "command": "python3 -m unittest _ask.tests.test_workflow_refs_traceability",
+              "output_digest": "f1fda2659fb3d7b251e67cf955650d79a8821c6c964b33ef67e18d9154246d2a",
               "status": "pass",
-              "exit_code": 0,
-              "evidence": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/c25f83c9be9c44f8aae3ee8ba6c8e4eb.log",
-              "output_digest": "f1fda2659fb3d7b251e67cf955650d79a8821c6c964b33ef67e18d9154246d2a"
+              "tier": "mandatory"
             },
             {
-              "id": "5/2",
-              "tier": "mandatory",
               "command": "python3 -m unittest _ask.tests.test_workflow_refs_traceability",
-              "status": "pass",
-              "exit_code": 0,
               "evidence": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/c25f83c9be9c44f8aae3ee8ba6c8e4eb.log",
-              "output_digest": "f1fda2659fb3d7b251e67cf955650d79a8821c6c964b33ef67e18d9154246d2a"
+              "exit_code": 0,
+              "id": "5/2",
+              "output_digest": "f1fda2659fb3d7b251e67cf955650d79a8821c6c964b33ef67e18d9154246d2a",
+              "status": "pass",
+              "tier": "mandatory"
             }
           ],
-          "tree_sha": "ecfa12e464519aae713915dd4fc448d007fe7b2c",
+          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-df529508-evc29ovc/integration.json",
+          "result": "pass",
+          "result_digest": "b9c5a8ed622bea22b6396062b663fdf48fa24ab7c1f6f5eb5892ac65a4deda46",
+          "resulting_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+          "review": {
+            "base_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+            "boundary": "ok",
+            "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-5-7376b07.json",
+            "evidence_digest": "2d4b5885e3e730b34d599f05d2f8f2cb201f4fd55b03af79fbb2299194a257fe",
+            "exemption_reason": null,
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "result_digest": "b9c5a8ed622bea22b6396062b663fdf48fa24ab7c1f6f5eb5892ac65a4deda46",
+            "reviewer": "/root/task2_reviewer_d4",
+            "task_id": "5",
+            "verdict": "APPROVED",
+            "work_id": "shorter-hashes"
+          },
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "runner_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+          "schema": "ask-integration-evidence/v1",
+          "task_id": "5",
+          "task_report_digest": "303eea9504d56436d44bf7f39be01082246f582703b47e72d5aa28bc427abd48",
+          "task_verification_report": {
+            "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+            "report_path": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/results.json",
+            "run_id": "df529508c9634f809056d93c7cdc81b4",
+            "schema": "ask-task-verification-report/v1",
+            "sha256": "98436463360d6c6490e469ab8e9030f00e07963a7d9f92044f96fb9cf01a70e5"
+          },
+          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
           "traceability_run_ids": [
             "df529508c9634f809056d93c7cdc81b4"
           ],
-          "task_verification_report": {
-            "schema": "ask-task-verification-report/v1",
-            "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-            "run_id": "df529508c9634f809056d93c7cdc81b4",
-            "report_path": "work/shorter-hashes/traceability/runs/df529508c9634f809056d93c7cdc81b4/results.json",
-            "sha256": "98436463360d6c6490e469ab8e9030f00e07963a7d9f92044f96fb9cf01a70e5"
-          },
-          "task_report_digest": "303eea9504d56436d44bf7f39be01082246f582703b47e72d5aa28bc427abd48",
-          "runner_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
-          "traceability_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-df529508-evc29ovc/integration.json",
-          "resulting_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-          "review": {
-            "work_id": "shorter-hashes",
-            "task_id": "5",
-            "base_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
-            "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-            "result_digest": "b9c5a8ed622bea22b6396062b663fdf48fa24ab7c1f6f5eb5892ac65a4deda46",
-            "reviewer": "/root/task2_reviewer_d4",
-            "policy": "_ask/policies/delegation.md",
-            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
-            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-5-7376b07.json",
-            "evidence_digest": "2d4b5885e3e730b34d599f05d2f8f2cb201f4fd55b03af79fbb2299194a257fe",
-            "verdict": "APPROVED",
-            "boundary": "ok",
-            "exemption_reason": null
-          }
+          "tree_sha": "ecfa12e464519aae713915dd4fc448d007fe7b2c",
+          "work_id": "shorter-hashes"
         },
         "verification_record_digest": "483b4475dc9c4458a555c30cf73bdb4e131dc4c92c344a0d9bc92e16326ce536"
       },
-      "attempt_number": 1,
-      "attempt_id": "5:attempt-1",
-      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
-      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-      "attempt_started_revision": 41
+      "result_path": "work/shorter-hashes/inner-loop/results/5.json",
+      "review_round": 0,
+      "status": "integrated",
+      "task_branch": ""
     },
     "6": {
-      "status": "running",
-      "base_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
-      "task_branch": "",
-      "result_path": "",
-      "boundary_reject": null,
-      "review_round": 0,
-      "debug_round": 0,
-      "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "2757727323b44db78565edcc72aff507",
-            "digest": "3a7b63d40597c4fa528b6bac4d74be170709dc6d3ecd646daa2f6f93f287d691",
-            "phase": "red",
-            "task_id": "6",
-            "candidate_sha": "47503bb1befdf546d692bdb2e1696dbd146c8480",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
-          },
-          {
-            "run_id": "7b08742352c941f9a8e940279a815f21",
-            "digest": "22700eb0a663649e772a1803714de11bbbe25ecbd3843b0e5ef82aa4a57da18b",
-            "phase": "red",
-            "task_id": "6",
-            "candidate_sha": "f2dd2bfd821f595a23c1bdf324cf2b731ff05e0c",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
-          },
-          {
-            "run_id": "6dc8863d8a5b456eafff0f40a1ee0df0",
-            "digest": "7ce9150288ad9bea6a998854c3c7ff40ea23cc6104b05b9fb072635fe2de5856",
-            "phase": "red",
-            "task_id": "6",
-            "candidate_sha": "9637cfec3d967d7d71ca5ef3c760b1947cd59d18",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
-          }
-        ]
-      },
-      "attempt_number": 2,
-      "attempt_id": "6:attempt-2",
-      "accepted_plan_ref": "876094655bb8074493eea9faeff0bcb1f60d37de",
       "accepted_plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
-      "attempt_started_revision": 49,
+      "accepted_plan_ref": "775f384a2f6122e6446dc4eb526eac12af828037",
       "attempt_history": [
         {
-          "attempt_id": "6:attempt-1",
-          "attempt_number": 1,
-          "status": "interrupted",
-          "reason": "User-authorized bounded recovery; reopen against independently reviewed Task 6 source-binding amendment",
-          "attempt_id_created_during_interrupt": false,
-          "base_sha": "7376b07e666af973f8e2ea469f68d302da141061",
-          "interrupted_candidate_sha": "c6eda0a1413a6d14c967c94c6ada712692b91489",
-          "task_branch": "",
-          "result_path": "",
-          "evidence": {},
-          "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
           "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+          "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+          "attempt_id": "6:attempt-1",
+          "attempt_id_created_during_interrupt": false,
+          "attempt_number": 1,
+          "base_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+          "evidence": {},
           "execution_runs": [],
+          "interrupted_candidate_sha": "c6eda0a1413a6d14c967c94c6ada712692b91489",
+          "interrupted_revision": 47,
+          "reason": "User-authorized bounded recovery; reopen against independently reviewed Task 6 source-binding amendment",
+          "result_path": "",
           "started_revision": 46,
-          "interrupted_revision": 47
+          "status": "interrupted",
+          "task_branch": ""
+        },
+        {
+          "accepted_plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+          "accepted_plan_ref": "876094655bb8074493eea9faeff0bcb1f60d37de",
+          "attempt_id": "6:attempt-2",
+          "attempt_id_created_during_interrupt": false,
+          "attempt_number": 2,
+          "base_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
+          "evidence": {
+            "traceability_runs": [
+              {
+                "candidate_sha": "47503bb1befdf546d692bdb2e1696dbd146c8480",
+                "digest": "3a7b63d40597c4fa528b6bac4d74be170709dc6d3ecd646daa2f6f93f287d691",
+                "phase": "red",
+                "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+                "run_id": "2757727323b44db78565edcc72aff507",
+                "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+                "task_id": "6"
+              },
+              {
+                "candidate_sha": "f2dd2bfd821f595a23c1bdf324cf2b731ff05e0c",
+                "digest": "22700eb0a663649e772a1803714de11bbbe25ecbd3843b0e5ef82aa4a57da18b",
+                "phase": "red",
+                "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+                "run_id": "7b08742352c941f9a8e940279a815f21",
+                "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+                "task_id": "6"
+              },
+              {
+                "candidate_sha": "9637cfec3d967d7d71ca5ef3c760b1947cd59d18",
+                "digest": "7ce9150288ad9bea6a998854c3c7ff40ea23cc6104b05b9fb072635fe2de5856",
+                "phase": "red",
+                "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+                "run_id": "6dc8863d8a5b456eafff0f40a1ee0df0",
+                "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+                "task_id": "6"
+              }
+            ]
+          },
+          "execution_runs": [
+            {
+              "candidate_sha": "47503bb1befdf546d692bdb2e1696dbd146c8480",
+              "digest": "3a7b63d40597c4fa528b6bac4d74be170709dc6d3ecd646daa2f6f93f287d691",
+              "phase": "red",
+              "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+              "run_id": "2757727323b44db78565edcc72aff507",
+              "scope": "task",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "task_id": "6"
+            },
+            {
+              "candidate_sha": "f2dd2bfd821f595a23c1bdf324cf2b731ff05e0c",
+              "digest": "22700eb0a663649e772a1803714de11bbbe25ecbd3843b0e5ef82aa4a57da18b",
+              "phase": "red",
+              "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+              "run_id": "7b08742352c941f9a8e940279a815f21",
+              "scope": "task",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "task_id": "6"
+            },
+            {
+              "candidate_sha": "9637cfec3d967d7d71ca5ef3c760b1947cd59d18",
+              "digest": "7ce9150288ad9bea6a998854c3c7ff40ea23cc6104b05b9fb072635fe2de5856",
+              "phase": "red",
+              "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+              "run_id": "6dc8863d8a5b456eafff0f40a1ee0df0",
+              "scope": "task",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "task_id": "6"
+            }
+          ],
+          "interrupted_candidate_sha": "1060d458637f2dfcabe2a5ba546db8e7b5ef4a7d",
+          "interrupted_revision": 53,
+          "reason": "Preserve attempt 2 while registering the approved TaskGraph source-ownership amendment.",
+          "result_path": "",
+          "started_revision": 49,
+          "status": "interrupted",
+          "task_branch": ""
         }
       ],
-      "reopened_from_attempt": "6:attempt-1",
-      "reopen_reason": "Resume reviewed Task 6 source-binding amendment after user-authorized current-state reconstruction and genuine historical reruns"
+      "attempt_id": "6:attempt-3",
+      "attempt_number": 3,
+      "attempt_started_revision": 55,
+      "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+      "boundary_reject": null,
+      "debug_round": 0,
+      "evidence": {
+        "review": {
+          "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+          "boundary": "ok",
+          "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+          "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-6-0cc40ec.json",
+          "evidence_digest": "1672af1d8b84a2cb0593fb67f468570c616bebd4986a58238cbebf316964b97b",
+          "exemption_reason": null,
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "result_digest": "39202a035c089124ae776a49f0217fdec9fdf284fe98dc385b95b8eeba067cc0",
+          "reviewer": "/root/task6_code_review",
+          "task_id": "6",
+          "verdict": "APPROVED",
+          "work_id": "shorter-hashes"
+        },
+        "traceability_runs": [
+          {
+            "candidate_sha": "9bd679794d5baf8c84d949be15b92d6b39f6a48d",
+            "digest": "a77d6b6800b6e2766d227216e1ffb99f1829b8eb658d227bf32a8704594d85bd",
+            "phase": "final_green",
+            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+            "run_id": "385992db60ae4cbda8787cf5d7cb2e81",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "6"
+          },
+          {
+            "candidate_sha": "043c6940e43e122312e2f34eac1ca53c4c18641d",
+            "digest": "3f351a205168b4fac5ef31451d152ba0ed2e5219149a12c9ab10183bf0198a39",
+            "phase": "red",
+            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+            "run_id": "e6a923b5ae9745e29976e54e8aaaa343",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "6"
+          },
+          {
+            "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+            "digest": "b3bd32b759e9ee8dc2ac1a5ba5c9be00f4fba2a00aa98282ca19b5c6cd239a25",
+            "phase": "final_green",
+            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+            "run_id": "c5bf0b63cd654e219f07e8fb10676c22",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "task_id": "6"
+          }
+        ],
+        "verification": {
+          "work_id": "shorter-hashes",
+          "task_id": "6",
+          "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+          "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "39202a035c089124ae776a49f0217fdec9fdf284fe98dc385b95b8eeba067cc0",
+          "checks": [
+            {
+              "id": "6/2",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_inner_loop",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/shorter-hashes/traceability/runs/c5bf0b63cd654e219f07e8fb10676c22/03cb3877f78e4f83bba0965bea03dd59.log",
+              "output_digest": "096c82245e61c78fa30e89e324ea7f146b26ee9b23cca7189adeb9fb8df75c29"
+            },
+            {
+              "id": "6/1",
+              "tier": "mandatory",
+              "command": "python3 -m unittest _ask.tests.test_workflow_refs_inner_loop",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/shorter-hashes/traceability/runs/c5bf0b63cd654e219f07e8fb10676c22/03cb3877f78e4f83bba0965bea03dd59.log",
+              "output_digest": "096c82245e61c78fa30e89e324ea7f146b26ee9b23cca7189adeb9fb8df75c29"
+            }
+          ],
+          "tree_sha": "74e3aea162beba780fa7e8ec02ccb894f4112b6b",
+          "traceability_run_ids": [
+            "c5bf0b63cd654e219f07e8fb10676c22"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+            "run_id": "c5bf0b63cd654e219f07e8fb10676c22",
+            "report_path": "work/shorter-hashes/traceability/runs/c5bf0b63cd654e219f07e8fb10676c22/results.json",
+            "sha256": "144d38edadae1d461cd153e5d0ebbb199834ad0af21574a475dd97dbb9e8448a"
+          },
+          "task_report_digest": "b3bd32b759e9ee8dc2ac1a5ba5c9be00f4fba2a00aa98282ca19b5c6cd239a25",
+          "runner_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "traceability_plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+          "record_path": "work/shorter-hashes/inner-loop/evidence/verify-c5bf0b63-v1_3ao5l/integration.json",
+          "resulting_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+          "review": {
+            "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+            "boundary": "ok",
+            "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+            "evidence": "work/shorter-hashes/inner-loop/evidence/review-task-6-0cc40ec.json",
+            "evidence_digest": "1672af1d8b84a2cb0593fb67f468570c616bebd4986a58238cbebf316964b97b",
+            "exemption_reason": null,
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "result_digest": "39202a035c089124ae776a49f0217fdec9fdf284fe98dc385b95b8eeba067cc0",
+            "reviewer": "/root/task6_code_review",
+            "task_id": "6",
+            "verdict": "APPROVED",
+            "work_id": "shorter-hashes"
+          }
+        },
+        "verification_record_digest": "c20a7fa463d67052da2e0ce1814948c985c2d6d4527328a4b3989c660f1e8a79"
+      },
+      "reopen_reason": "Resume Task 6 after registering the reviewed catalog runtime source binding.",
+      "reopened_from_attempt": "6:attempt-2",
+      "result_path": "work/shorter-hashes/inner-loop/results/6.json",
+      "review_round": 0,
+      "status": "integrated",
+      "task_branch": ""
     },
     "7": {
-      "status": "pending",
       "base_sha": "",
-      "task_branch": "",
-      "result_path": "",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {},
+      "result_path": "",
+      "review_round": 0,
+      "status": "pending",
+      "task_branch": ""
     },
     "8": {
-      "status": "pending",
       "base_sha": "",
-      "task_branch": "",
-      "result_path": "",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
+      "evidence": {},
+      "result_path": "",
+      "review_round": 0,
+      "status": "pending",
+      "task_branch": ""
     },
     "9": {
-      "status": "pending",
       "base_sha": "",
-      "task_branch": "",
-      "result_path": "",
       "boundary_reject": null,
-      "review_round": 0,
       "debug_round": 0,
-      "evidence": {}
-    },
-    "10": {
+      "evidence": {},
+      "result_path": "",
+      "review_round": 0,
       "status": "pending",
-      "base_sha": "",
-      "task_branch": "",
-      "result_path": "",
-      "boundary_reject": null,
-      "review_round": 0,
-      "debug_round": 0,
-      "evidence": {}
+      "task_branch": ""
     }
   },
   "coordinator_tree": "462c8cf0c63d5c8cab1d9dfef1dd36ce6cb6d974"

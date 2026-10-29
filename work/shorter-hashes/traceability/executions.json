@@ -708,5 +708,45 @@
     "candidate_sha": "9637cfec3d967d7d71ca5ef3c760b1947cd59d18",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
     "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "385992db60ae4cbda8787cf5d7cb2e81",
+    "digest": "a77d6b6800b6e2766d227216e1ffb99f1829b8eb658d227bf32a8704594d85bd",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "6",
+    "candidate_sha": "9bd679794d5baf8c84d949be15b92d6b39f6a48d",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "b8cdd594d0874750b454b1d3b12c7c35",
+    "digest": "7d606b88f348b46e00be641449e78c750031e5c6f0dc46c83d436f3b60fb3156",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "6",
+    "candidate_sha": "043c6940e43e122312e2f34eac1ca53c4c18641d",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "e6a923b5ae9745e29976e54e8aaaa343",
+    "digest": "3f351a205168b4fac5ef31451d152ba0ed2e5219149a12c9ab10183bf0198a39",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "6",
+    "candidate_sha": "043c6940e43e122312e2f34eac1ca53c4c18641d",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+  },
+  {
+    "run_id": "c5bf0b63cd654e219f07e8fb10676c22",
+    "digest": "b3bd32b759e9ee8dc2ac1a5ba5c9be00f4fba2a00aa98282ca19b5c6cd239a25",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "6",
+    "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
   }
 ]

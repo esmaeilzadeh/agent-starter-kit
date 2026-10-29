@@ -1,0 +1,29 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "shorter-hashes",
+  "task_id": "6",
+  "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+  "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+  "tdd": {
+    "seam": "_ask/scripts/inner_loop/evidence.py::source_changes; _ask/tests/test_workflow_refs_inner_loop.py::test_evidence_projection_and_exact_runner",
+    "red": {
+      "command": "./ask traceability run shorter-hashes --candidate-sha 043c6940e43e122312e2f34eac1ca53c4c18641d --scope task --task-id 6 --phase red; run_id=e6a923b5ae9745e29976e54e8aaaa343",
+      "output": "The actual task-scoped run passed 6/1 and failed 6/2 with behavior_assertion for the owner catalog and pending files. Report: work/shorter-hashes/traceability/runs/e6a923b5ae9745e29976e54e8aaaa343/results.json.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run shorter-hashes --candidate-sha 0cc40ec354a961a8516ccf4937dd575e8dba6cf1 --scope task --task-id 6 --phase final_green; run_id=c5bf0b63cd654e219f07e8fb10676c22",
+      "output": "Both mapped cases 6/1 and 6/2 passed. Report: work/shorter-hashes/traceability/runs/c5bf0b63cd654e219f07e8fb10676c22/results.json.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+    "run_id": "c5bf0b63cd654e219f07e8fb10676c22",
+    "report_path": "work/shorter-hashes/traceability/runs/c5bf0b63cd654e219f07e8fb10676c22/results.json",
+    "sha256": "144d38edadae1d461cd153e5d0ebbb199834ad0af21574a475dd97dbb9e8448a"
+  },
+  "notes": "The checkpointed Red is bound to test-only candidate 043c6940e43e122312e2f34eac1ca53c4c18641d; final Green and verification receipt are bound to 0cc40ec354a961a8516ccf4937dd575e8dba6cf1. Direct focused tests passed 2/2; reliability passed 29/29; recovery passed 35/35. The earlier Task 6 Red and Green remain in attempt history."
+}

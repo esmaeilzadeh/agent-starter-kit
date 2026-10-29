@@ -1,0 +1,347 @@
+{
+  "schema": "ask-reference-catalog/v1",
+  "owner": "shorter-hashes",
+  "generation": 17,
+  "snapshots": {
+    "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9": {
+      "commit": "ca9019217068598ceb50cec1e3cdf2140e21d5e9",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "0312bb70d975b5a77e205b3e7ea4c6ba281fa2970d2797b5e590bc9860c99b66": {
+      "commit": "e34ef7ea887e065895ecc3d0d246d0e047ebe811",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "ccd26bc6595e2219dc5dc36f22c96acad7f31372e2847636be15cbb1f0bbcc5e": {
+      "commit": "98bd99aa6a329300ec4e32f004cba3ed6ded7f55",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "41c732816d62c12c14e779b8b915ea02158bd445da972ae3394543c6dd14e4ae": {
+      "commit": "be1e4a28a012c207483fe78127fd98293f0d9808",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "78c3359afb5e9df022471267700ca11b41497b5716cdce7a7be46750ea7f1b16": {
+      "commit": "b3a214e522c8f4b3b7d389cdac2f34097e77a700",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "3013bdbcd46a8b2d8c47c7685103309ba5df16d96ce80a785dc1cef1e7e020bb": {
+      "commit": "4823b13a6c9e68ce4141830d7df875a9d1848fdc",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "7a66fb5d27e6c5378ad2a97a89c50b525c88a398e1a5f217b99bc70d67066aba": {
+      "commit": "fe00167b3b52a2a677f8531ab3a72c886bdc1337",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "47d620246dd539a95064da87d28e2519d4dd56852451026a8b68505f07360a76": {
+      "commit": "80180159ef913360d4d275ffd661d0ffbc0167da",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    }
+  },
+  "entries": [
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/1@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/1",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-1",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 1
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/10@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/10",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-10",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 2
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/2@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/2",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-2",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 3
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/3@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/3",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-3",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 4
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/4@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/4",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-4",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 5
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/5@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/5",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-5",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 6
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 7
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/7@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/7",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-7",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 8
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/8@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/8",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-8",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 9
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/9@1",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/9",
+      "revision": 1,
+      "snapshot_id": "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9",
+      "item_id": "task-9",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "4e11e6c81590737a3f75c0cd1bd106d9b1916cd575f04aa8235739961e64e67f",
+        "exact-bytes/1": "97d9f31ad1a01ffc24c967dfffcfd5ba02420809087bccb55750f67e392f7a11"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 10
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@2",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 2,
+      "snapshot_id": "0312bb70d975b5a77e205b3e7ea4c6ba281fa2970d2797b5e590bc9860c99b66",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "8cae0c238ae19cfeff863665e2a6d061fab81036d01244f6ae7ef34238962a69",
+        "exact-bytes/1": "f7dfe322e873bc82504a464891a680b7e6dce94482877968228100c9ec0db709"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 11
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@3",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 3,
+      "snapshot_id": "ccd26bc6595e2219dc5dc36f22c96acad7f31372e2847636be15cbb1f0bbcc5e",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "b3cb3be154ba023d57b6ff8f70b8d14fbcd7c73e08f7bd87e2ddb3b2951a002c",
+        "exact-bytes/1": "09f35f695e4eabefc7547521a56cc5cb2ee5f9091f88d2f944fa1c560da7d068"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 12
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@4",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 4,
+      "snapshot_id": "41c732816d62c12c14e779b8b915ea02158bd445da972ae3394543c6dd14e4ae",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "f813faa079c3a451d1db9d269492995b1f6b16e7551a586de35be52db1ebb572",
+        "exact-bytes/1": "bf3d099118a0bed454c616f42ea00edf98097b9b25e676ee51e8e0c19cd80b9b"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 13
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@5",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 5,
+      "snapshot_id": "78c3359afb5e9df022471267700ca11b41497b5716cdce7a7be46750ea7f1b16",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "9f3cce00bdb8ab1e46a128662912cf3394f9d29ffc3400ba0690b9359826ae17",
+        "exact-bytes/1": "ec4b91dc503e7ee8cbed69dea3d3e3163248f821064fe977acc0fa84a093dcd2"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 14
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@6",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 6,
+      "snapshot_id": "3013bdbcd46a8b2d8c47c7685103309ba5df16d96ce80a785dc1cef1e7e020bb",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "9ff89d3812811945a3f7e79cd3f05b67984d140f935776d5a91364f9dc0e86ad",
+        "exact-bytes/1": "5ed23a30260730e1a8dd81f1fb8d58347768f2d0baf0bb4c6282360d43fb746f"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 15
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@7",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 7,
+      "snapshot_id": "7a66fb5d27e6c5378ad2a97a89c50b525c88a398e1a5f217b99bc70d67066aba",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "09c6581e74e120bed43fc3eb6bcf555423fa48bbd93099e612d7b29fe3f1881b",
+        "exact-bytes/1": "8d25e02ee98999eb310b201b09d72a72d73fadcb262d0656c95c022a087ee8ad"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 16
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/6@8",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/6",
+      "revision": 8,
+      "snapshot_id": "47d620246dd539a95064da87d28e2519d4dd56852451026a8b68505f07360a76",
+      "item_id": "task-6",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "2a52ccea06aa67d9b8c91ed07f44a4bf20655018b3d11b99d11db2791b4b9e6e",
+        "exact-bytes/1": "62e3e8bb331a89803d053138fbbd27e65d802ad699f9a3cd9d90228a521e3287"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 17
+    }
+  ]
+}
