@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 49,
+  "revision": 50,
   "coordinator_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -1060,7 +1060,19 @@
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "2757727323b44db78565edcc72aff507",
+            "digest": "3a7b63d40597c4fa528b6bac4d74be170709dc6d3ecd646daa2f6f93f287d691",
+            "phase": "red",
+            "task_id": "6",
+            "candidate_sha": "47503bb1befdf546d692bdb2e1696dbd146c8480",
+            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+            "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
+          }
+        ]
+      },
       "attempt_number": 2,
       "attempt_id": "6:attempt-2",
       "accepted_plan_ref": "876094655bb8074493eea9faeff0bcb1f60d37de",

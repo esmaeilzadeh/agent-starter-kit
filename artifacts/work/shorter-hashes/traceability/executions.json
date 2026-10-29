@@ -678,5 +678,15 @@
     "candidate_sha": "7376b07e666af973f8e2ea469f68d302da141061",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
     "plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9"
+  },
+  {
+    "run_id": "2757727323b44db78565edcc72aff507",
+    "digest": "3a7b63d40597c4fa528b6bac4d74be170709dc6d3ecd646daa2f6f93f287d691",
+    "phase": "red",
+    "scope": "task",
+    "task_id": "6",
+    "candidate_sha": "47503bb1befdf546d692bdb2e1696dbd146c8480",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7"
   }
 ]
