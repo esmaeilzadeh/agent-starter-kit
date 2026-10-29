@@ -27,6 +27,13 @@ the accepted pin, and reopen Task 6 under its new contract before implementation
 The earlier sections below are historical; the pending binding-approval stop
 is superseded by this update.
 
+Session preparation: `./ask sync` passed and `./ask check-clean` passed.
+`./ask prepare` exited 1: the optional frontend-design fetch failed, and the
+required TDD preparation did not produce `.cursor/skills/tdd/SKILL.md` or apply
+the repository override to `.agents/skills/tdd/SKILL.md`. Recheck preparation
+before implementation; no feature implementation or implementation tests ran
+in this continuation. Contract validation and independent binding review passed.
+
 ## Current state
 
 - Branch: `agent/shorter-hashes`; latest source/evidence commit before this note: `03d4013`.
