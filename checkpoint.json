@@ -1,5 +1,5 @@
 {
-  "accepted_contract_sha": "8d2ac720bf970b0571a774556a82f80d729e0929",
+  "accepted_contract_sha": "5911780b48469d1027bc8bcdd3bbb35ebba3694a",
   "artifacts": {
     "work/shorter-hashes/inner-loop/evidence/1-review-round-1.md": {
       "blob": "f46b02741a3e395c6c70851958bb87189e9c684a",
@@ -240,6 +240,30 @@
       "path": "artifacts/work/shorter-hashes/inner-loop/evidence/task1-recovery-rerun-2026-10-29.json",
       "sha256": "e5bd337d02879b9d6b81b7ba5b32e383060ecbfde345d3bb8032de74274f554e",
       "size": 703
+    },
+    "work/shorter-hashes/inner-loop/evidence/task2-recovery-rerun-2026-10-29.json": {
+      "blob": "578b7297350d7011dff404e5ce9d721b3f754e33",
+      "path": "artifacts/work/shorter-hashes/inner-loop/evidence/task2-recovery-rerun-2026-10-29.json",
+      "sha256": "ca00d13ac711e8b169fca1883da472dfb5dbd7ef92959626ef14a8c4045c546c",
+      "size": 1144
+    },
+    "work/shorter-hashes/inner-loop/evidence/task3-recovery-rerun-2026-10-29.json": {
+      "blob": "29baf47b69abad549a11b175d11ca37a054c6526",
+      "path": "artifacts/work/shorter-hashes/inner-loop/evidence/task3-recovery-rerun-2026-10-29.json",
+      "sha256": "b9bf96bcbf9da826ee513b087c261c2e6845988faa28c5cd252e2bfa879682ad",
+      "size": 766
+    },
+    "work/shorter-hashes/inner-loop/evidence/task4-recovery-rerun-2026-10-29.json": {
+      "blob": "ee0d375614c3bbaec7999b571b864bd4f9601789",
+      "path": "artifacts/work/shorter-hashes/inner-loop/evidence/task4-recovery-rerun-2026-10-29.json",
+      "sha256": "1bd01d6ade9903eedc494301673a0baedbc2730081d3b7af79f5aaefeb9b28bc",
+      "size": 1018
+    },
+    "work/shorter-hashes/inner-loop/evidence/task5-recovery-rerun-2026-10-29.json": {
+      "blob": "98f9c7cab7fab6c8ed2156113eb9d81909291bd9",
+      "path": "artifacts/work/shorter-hashes/inner-loop/evidence/task5-recovery-rerun-2026-10-29.json",
+      "sha256": "5c1b74e03ad54635da195102cf3b14ee90f78701a757f697a261d3405806a1c9",
+      "size": 766
     },
     "work/shorter-hashes/inner-loop/evidence/task6-plan-review.json": {
       "blob": "b41415327afd89ded6441bec2b03d29214bcf85f",
@@ -668,10 +692,10 @@
       "size": 71568
     },
     "work/shorter-hashes/traceability/executions.json": {
-      "blob": "68dc2bbcc1e6f0450563126703aa8235193ae7a2",
+      "blob": "cb91f6e3bef51f3ac184e7a035e6f079751705e6",
       "path": "artifacts/work/shorter-hashes/traceability/executions.json",
-      "sha256": "774ecb9a418bd3dc70567e44f120427263528a146f0c2f7b57d54270048f65b4",
-      "size": 28451
+      "sha256": "2bf877ef4658ea5aa23c8c82a63037148d399434a663f9a3e9a2a89c4d5376a1",
+      "size": 30243
     },
     "work/shorter-hashes/traceability/executions.lock": {
       "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -846,6 +870,36 @@
       "path": "artifacts/work/shorter-hashes/traceability/reviews/eb39360ebe9d6609991a11b92981c62df3f8d62e.json",
       "sha256": "b4db0ed095d0ecde52acdceaa6d7d2126a6a954d77ad9c3ed833718896f0a40b",
       "size": 6207
+    },
+    "work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/4846cf6d9c4048a4a24a44bb4e2e4cbd.json": {
+      "blob": "3b362035cc8589e3bd7d8191c34e851df1b82f10",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/4846cf6d9c4048a4a24a44bb4e2e4cbd.json",
+      "sha256": "75387347584d99573dff605140198800804cd999205b1e126c16a802e71f5a58",
+      "size": 342
+    },
+    "work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/4846cf6d9c4048a4a24a44bb4e2e4cbd.log": {
+      "blob": "93256d054fef963a7dfb6750aaecde749eb74e1c",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/4846cf6d9c4048a4a24a44bb4e2e4cbd.log",
+      "sha256": "e1a6bbeedf258df665ac6775445ddbab168d0236357b3574cb2913bb80d2b11a",
+      "size": 302
+    },
+    "work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/6c24d67bc25846169904f3332507d850.json": {
+      "blob": "d571fda31cc909dadc7ade2cd340ab9477e6082d",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/6c24d67bc25846169904f3332507d850.json",
+      "sha256": "787e48e7180545b3d21c7025cd95844cac7beae40ac7da3e1068b739c8ec5c13",
+      "size": 802
+    },
+    "work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/6c24d67bc25846169904f3332507d850.log": {
+      "blob": "5ff96ffcca54a5c78a2cd362423d5d51c308a942",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/6c24d67bc25846169904f3332507d850.log",
+      "sha256": "8daf63a80a3025ebb066b6a64c4162c4c1aeae3b6eea5db9ac760c338c6e1210",
+      "size": 613
+    },
+    "work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/results.json": {
+      "blob": "52b2b57a950f4755c200e5c529174bb2ad559eca",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/results.json",
+      "sha256": "d843517b63215f98e774762c493ad11c64d4f7e85086ebcaad92b2bf6ae1baa6",
+      "size": 15420
     },
     "work/shorter-hashes/traceability/runs/054c84cf49e0409380c675b0b75e710a/0db311e3f11a448a82e56cf48a4b5230.json": {
       "blob": "d571fda31cc909dadc7ade2cd340ab9477e6082d",
@@ -1272,6 +1326,48 @@
       "path": "artifacts/work/shorter-hashes/traceability/runs/2e101ab8026e474283b623736a104e8e/results.json",
       "sha256": "c43cc14840c129d439d2fe012cdc9bd98a3bee4acbb9c76a10ee208ee3344a0b",
       "size": 15420
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/38bee885e6a24ed58961fc6beab34d2e.json": {
+      "blob": "a781ca05061580743b305f101d692e4abf4d133d",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/38bee885e6a24ed58961fc6beab34d2e.json",
+      "sha256": "47d548de6780292f30db562d848f7ace754ebba25cc20793200fef328d467d67",
+      "size": 481
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/38bee885e6a24ed58961fc6beab34d2e.log": {
+      "blob": "2540bfa70b7f23e672a34fb710cbfa99ec15632d",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/38bee885e6a24ed58961fc6beab34d2e.log",
+      "sha256": "265d24d3ab9aa804d02146d36312acaa4360723efca21495bdfdec2f2ccbe4ab",
+      "size": 391
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/abd09db70b644d12bda512415b8d79d4.json": {
+      "blob": "89f295dfd438bc5a678f6edefa6b25c4d1bb8b02",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/abd09db70b644d12bda512415b8d79d4.json",
+      "sha256": "b0d2128ed1d662dd1eadfbbc353f12a37c74b79526b1b887b667b19ba3c7e34b",
+      "size": 334
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/abd09db70b644d12bda512415b8d79d4.log": {
+      "blob": "16d391e06dde337b5724ba874217f4b1995f3fd1",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/abd09db70b644d12bda512415b8d79d4.log",
+      "sha256": "71ea87f3a556990006eff66e666833613ef094df507555a759a6b69380e89481",
+      "size": 294
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/e1d9813dbc1b47c789b1e7abbf210496.json": {
+      "blob": "84cf8131f3d71d7ba763e8eaaf4ee3bdc06666b0",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/e1d9813dbc1b47c789b1e7abbf210496.json",
+      "sha256": "77f98e3b6ec78872f8f08ad723d28ed376d7f72283b5830fffd6c0b9b5908bfe",
+      "size": 630
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/e1d9813dbc1b47c789b1e7abbf210496.log": {
+      "blob": "7d7c8783926f23455b31a5db88d3254ec5f03020",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/e1d9813dbc1b47c789b1e7abbf210496.log",
+      "sha256": "11e2a4d3fff2fe9ae73aca1ab70b04012dc159819abb9ce5ebd466accfad0d2d",
+      "size": 490
+    },
+    "work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/results.json": {
+      "blob": "720b24635b0e912ee69ab8896cf39c421ed6e015",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/317c253f02be450295250460d66dd6be/results.json",
+      "sha256": "e02a108e5ee0459db8b92eef8abadcaccb40441a20ab4136a45adbfe388b9518",
+      "size": 15890
     },
     "work/shorter-hashes/traceability/runs/349aa070578a47b986ac49746557c627/d2e79d4e00e74f27825a87e67b7cda81.json": {
       "blob": "98688d688e1a38bf8059ab04b54891e914ed697e",
@@ -1739,6 +1835,24 @@
       "blob": "1ffa31ad9c3fe389e80dd432dde651feb91672b8",
       "path": "artifacts/work/shorter-hashes/traceability/runs/64b93bde55cd44b2a5e9b494c94c6f33/results.json",
       "sha256": "570f00a8127a6388ac27f0a924b97aa476fd0089ff9e52984913bc0b883cddad",
+      "size": 11371
+    },
+    "work/shorter-hashes/traceability/runs/6b97e5991a7e44ceac4cf9688b266cbb/17442bee52534091933c26ba05f9f493.json": {
+      "blob": "e3c5d9678efd5431e863951bb6351cb211910571",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/6b97e5991a7e44ceac4cf9688b266cbb/17442bee52534091933c26ba05f9f493.json",
+      "sha256": "3b4d8f593c11269135b3b35a6fffa61064f46acc5a2e8393ae20545d6bd2605c",
+      "size": 525
+    },
+    "work/shorter-hashes/traceability/runs/6b97e5991a7e44ceac4cf9688b266cbb/17442bee52534091933c26ba05f9f493.log": {
+      "blob": "ccd9278c3de5e7b146fc24745018029ea4891bfe",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/6b97e5991a7e44ceac4cf9688b266cbb/17442bee52534091933c26ba05f9f493.log",
+      "sha256": "8fcfa22e58228dae791810b9afe572601ef05c601ea0d6069503f8278fb5ecfc",
+      "size": 435
+    },
+    "work/shorter-hashes/traceability/runs/6b97e5991a7e44ceac4cf9688b266cbb/results.json": {
+      "blob": "0435a3b1075342dea12b2b21daf5f259ca17edab",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/6b97e5991a7e44ceac4cf9688b266cbb/results.json",
+      "sha256": "e3166dd3a148eedd2dcea5094372dbffa6389e10d62601797b9d9e11b7642c36",
       "size": 11371
     },
     "work/shorter-hashes/traceability/runs/7108370e6895468d969375c7f976b45f/429f0f4dd13d4acd933f3378d105d3b6.json": {
@@ -2496,6 +2610,24 @@
       "path": "artifacts/work/shorter-hashes/traceability/runs/e0a83761b908435583eec8d312a34c98/results.json",
       "sha256": "5d0975ff6d6750aa41bb3dabbfcefb43c6de67713b09a9cdb9a910658018acde",
       "size": 3500
+    },
+    "work/shorter-hashes/traceability/runs/e1af7cf471e145c1918aed104da303c6/dfbfbb13a3704c6b89a00403123d86c0.json": {
+      "blob": "de39551a7e63bf51327d91f797f08b3b89be0b27",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/e1af7cf471e145c1918aed104da303c6/dfbfbb13a3704c6b89a00403123d86c0.json",
+      "sha256": "ec4c6bf571860bf56e635a0983bf607a16e2419f51d80558d58e02cb48ccfc71",
+      "size": 504
+    },
+    "work/shorter-hashes/traceability/runs/e1af7cf471e145c1918aed104da303c6/dfbfbb13a3704c6b89a00403123d86c0.log": {
+      "blob": "7fe9c9a967ee8fd069c851dfce84e6484b4cb348",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/e1af7cf471e145c1918aed104da303c6/dfbfbb13a3704c6b89a00403123d86c0.log",
+      "sha256": "c234ab5b34ec94b33f5ae2f6a765522da83c1205135dd373da77db5140ecf3b1",
+      "size": 414
+    },
+    "work/shorter-hashes/traceability/runs/e1af7cf471e145c1918aed104da303c6/results.json": {
+      "blob": "90f6cc3e7c9d3eddb15af02390c267c6b0d85266",
+      "path": "artifacts/work/shorter-hashes/traceability/runs/e1af7cf471e145c1918aed104da303c6/results.json",
+      "sha256": "fa704e6f213cfe05d3626d352493af1be177b32386f155e8bdfa8bd8d0fd5122",
+      "size": 6418
     },
     "work/shorter-hashes/traceability/runs/e4fe2a28a4f0474e9c2a9c0ff0f031aa/6398f119847f4deba080f762d8fd7792.json": {
       "blob": "b4729fade04df1ebab12a94c9f6f47133738d89e",
@@ -5410,7 +5542,7 @@
   },
   "coordinator_sha": "7376b07e666af973f8e2ea469f68d302da141061",
   "generation": 47,
-  "previous_checkpoint": "776d59e8338640da775eaed4a7cd5709b1406277",
+  "previous_checkpoint": "4ecbbf081760a79fce0913d6f345c1d4c5b29b53",
   "retained_commits": [
     "01eaba25c768de392749860935cbedf528e398c3",
     "028d6d1a62b559577bde26e28aec3668de04f329",
@@ -5435,6 +5567,7 @@
     "4c6f32f3f4437d042681be0a93fff76a3341d0f3",
     "4fc27c370edf18d9c349867806ce7674f043f8e1",
     "56e629afa3025afa6dcc3b302d4e185754a6dab0",
+    "5911780b48469d1027bc8bcdd3bbb35ebba3694a",
     "5ae661e3eceec2af2eda7d55b97b6881f4e64aa1",
     "5d29c4984259f21a757466a442552f932ecb87e1",
     "5d31fe62335613d160d5f7af70410917e985dcd1",
