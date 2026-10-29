@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 85,
+  "revision": 87,
   "coordinator_sha": "a955fb036694f034cfb6b7969a09639cb5645b5f",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -1682,31 +1682,111 @@
       "task_branch": ""
     },
     "9": {
-      "accepted_plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
-      "accepted_plan_ref": "5ebbdbbab4638d693bb0c6da342cb3f4a21b37b8",
-      "attempt_id": "9:attempt-1",
+      "accepted_plan_digest": "",
+      "accepted_plan_ref": "",
+      "attempt_id": "",
       "attempt_number": 1,
-      "attempt_started_revision": 84,
-      "base_sha": "a955fb036694f034cfb6b7969a09639cb5645b5f",
+      "attempt_started_revision": null,
+      "base_sha": "",
       "boundary_reject": null,
       "debug_round": 0,
-      "evidence": {
-        "traceability_runs": [
-          {
-            "run_id": "c08de33f6c5846b3b2b182cf00f8632f",
-            "digest": "dac2b02811d97bd517308e22105c2c37d76bb891794df2f6414e820da4c8e078",
-            "phase": "final_green",
-            "task_id": "9",
-            "candidate_sha": "51e3e87c01a9cafdd5994a1952f6051c2570e7bc",
-            "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
-            "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
-          }
-        ]
-      },
+      "evidence": {},
       "result_path": "",
       "review_round": 0,
-      "status": "running",
-      "task_branch": ""
+      "status": "interrupted",
+      "task_branch": "",
+      "attempt_history": [
+        {
+          "attempt_id": "9:attempt-1",
+          "attempt_number": 1,
+          "status": "interrupted",
+          "reason": "Reviewed evidence reconciliation: attempt 1 retained as an interrupted attempt after runtime result-path reconciliation. Original failed final-Green run cf5d501d1a904f4a9c53a238f272de64, execution b5ca8fdf66fb4841aae28dc9908ca5e6, execution candidate/source 9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2, exit 1; outcomes 9/1 pass, 9/2 setup/runtime error, 9/3 behavior_assertion comparison_incomplete, 9/4 setup/runtime error, 9/5 pass. Exact TaskResult retained at work/shorter-hashes/inner-loop/evidence/preserved-task9-attempt1-cf5d501d/task-result-9.json sha256 cdc2e19534c2db831219cee78d728b0b76b8a54bbce3b2c2da897c0dec816f41; report, execution JSON, and log are alongside it with digests in task9-attempt1-runtime-reconciliation.json. Process waiver preserved at work/shorter-hashes/inner-loop/evidence/task-9-process-waiver.json sha256 5b75b36681cf78fc41a6e2646271db974fc93479feed9a4642994f27f2d1bded. Native interrupted_candidate_sha records this checkout HEAD and remains distinct from the failed execution candidate.",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "a955fb036694f034cfb6b7969a09639cb5645b5f",
+          "interrupted_candidate_sha": "d4237232dca7dcba9f1f34c112103957980de517",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {
+            "traceability_runs": [
+              {
+                "candidate_sha": "51e3e87c01a9cafdd5994a1952f6051c2570e7bc",
+                "digest": "dac2b02811d97bd517308e22105c2c37d76bb891794df2f6414e820da4c8e078",
+                "phase": "final_green",
+                "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
+                "run_id": "c08de33f6c5846b3b2b182cf00f8632f",
+                "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+                "task_id": "9"
+              }
+            ]
+          },
+          "accepted_plan_ref": "5ebbdbbab4638d693bb0c6da342cb3f4a21b37b8",
+          "accepted_plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
+          "execution_runs": [
+            {
+              "run_id": "1d18fda302ed46f9a2f2afe759862496",
+              "digest": "5dc2258a6c3185b7016f6e6096f4d9bbbc7aad78b8ea11575645a9ea6d70772a",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "9",
+              "candidate_sha": "2557504855bb8f7d20ab698e7ccef525a0087eea",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+            },
+            {
+              "run_id": "9446a1625ba34eaca665d872415de8a1",
+              "digest": "fb72cc8b821407289c11ad400ce8a015d976078aa4f6a4ba72e9a5860fd4917d",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "9",
+              "candidate_sha": "3824fc41771158ec63a78523e1fd9621d3ee7425",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+            },
+            {
+              "run_id": "c08de33f6c5846b3b2b182cf00f8632f",
+              "digest": "dac2b02811d97bd517308e22105c2c37d76bb891794df2f6414e820da4c8e078",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "9",
+              "candidate_sha": "51e3e87c01a9cafdd5994a1952f6051c2570e7bc",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+            },
+            {
+              "run_id": "655c1937b7594d48a3f3fae62ef54749",
+              "digest": "d4ee517498a537d27e2d40e61de0b0797613a5e4392fa10c3a99167c00e38a26",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "9",
+              "candidate_sha": "eccf4c0b486572da4f6a436eb7f0bbc1a053ab1b",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+            },
+            {
+              "run_id": "fb458e0f08794afcae8b7686f911aa99",
+              "digest": "124ee52a4bbd3092be568ae52d355e15342563d768fcdf77d4729ad05c6fe488",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "9",
+              "candidate_sha": "ffce1e91d6d8bf6330d5e04a2af4103ded1ad386",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+            },
+            {
+              "run_id": "cf5d501d1a904f4a9c53a238f272de64",
+              "digest": "89d59fa6db8973bc5bc82b7ebf37b54d4c20d8d451c0dac91b3e91472a1e1168",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "9",
+              "candidate_sha": "9e381599cc11fabe26b8a0a3a8d92d076dcfd9d2",
+              "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+              "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+            }
+          ],
+          "started_revision": 84,
+          "interrupted_revision": 87
+        }
+      ]
     }
   },
   "coordinator_tree": "462c8cf0c63d5c8cab1d9dfef1dd36ce6cb6d974"
