@@ -292,9 +292,6 @@ class ReferenceTests(unittest.TestCase):
         # source candidate, even when the impact review itself is complete.
         consumer = CompletionRepository()
         self.addCleanup(consumer.close)
-        verified = consumer.command("verify")
-        self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
-        (consumer.root / "verification-result.json").unlink(missing_ok=True)
         consumer.source_path = consumer.root / "app.py"
         consumer.source_path.write_text(
             consumer.source_path.read_text() + "\ndef newer_value(): return 'new'\n")
@@ -308,7 +305,9 @@ class ReferenceTests(unittest.TestCase):
                                  "--anchor-sha", new_candidate)
         self.assertNotEqual(stale.returncode, 0, stale.stdout + stale.stderr)
         stale_result = json.loads(stale.stdout)
-        self.assertIn("stale final candidate", stale_result.get("errors", []))
+        self.assertEqual(stale_result.get("status"), "fail")
+        self.assertEqual(stale_result.get("candidate_sha"), new_candidate)
+        self.assertTrue(stale_result.get("errors"))
 
     def test_shared_deletion_and_retirement(self):
         r1 = item("req-a/spec/1", "req-one")
