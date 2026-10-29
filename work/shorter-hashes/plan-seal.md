@@ -2,7 +2,7 @@
 
 ## Task 9 impact correction amendment (2026-10-29)
 
-**PROPOSED — independent review and human decision pending.** The proposal in
+**INDEPENDENTLY REVIEWED — human decision pending.** The proposal in
 `task9-impact-scope-amendment.md` adds the existing, already-bound
 `.agents/ask/workflow_refs/impact.py` source to serialized Task 9 ownership so
 case 9/3 can enforce the accepted transition-wide revision assessment. It
@@ -10,8 +10,9 @@ preserves the sealed spec, intent, case definitions, authority rules, and
 acceptance criteria. The Task 4/Task 9 shared path is explicitly sequential;
 Task 9 runs after Task 8, which depends transitively on Task 4. Do not implement
 the production correction or claim the amended plan accepted until the
-independent exact-revision review and human decision are recorded and the plan
-is registered again.
+human decision is recorded and the plan is registered again. Exact review
+evidence is in `task9-impact-scope-review.md`; the reviewer approved commit
+`79281ac02d8da6fb9837e64902ff860655925cc6` at 98% confidence.
 
 ## Current Task 6 amendment (2026-10-29)
 
