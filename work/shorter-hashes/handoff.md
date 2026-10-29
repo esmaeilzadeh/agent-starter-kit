@@ -26,10 +26,25 @@ at Task 9; do not restart Task 6 or treat this file's archived notes as current.
   `5b75b36681cf78fc41a6e2646271db974fc93479feed9a4642994f27f2d1bded`.
   Candidate-bound TaskResult SHA:
   `cdc2e19534c2db831219cee78d728b0b76b8a54bbce3b2c2da897c0dec816f41`.
-- Current modified runtime artifacts (`results/7.json`, inner-loop
+- The runtime artifacts modified at the original handoff (`results/7.json`, inner-loop
   `state.json`, `references/integrity.json`, and `traceability/executions.json`)
-  are produced by the active workflow. Preserve them; do not reset or clean the
-  worktree.
+  were preserved in commit `48a9486`. The access preflight and clean-tree check
+  passed before recording the interview decisions below. Preserve these runtime
+  records; their commit is not passing execution or task-acceptance evidence.
+
+## Confirmed answer to the Task 9/3 escalation
+
+The human selected the recommended answer in Q1 and confirmed the complete
+understanding in Q2 of the 2026-10-29 interview, responding `rec` to each.
+[ADR 0001](../../docs/adr/0001-revision-assessments.md) records the agreed behavior:
+one assessment covers the P1 → P2 transition and both versions' relevant inputs;
+each consumer's permission to retain an old pin is assessed separately. An
+unresolved second input remains blocking. Use this answer when resolving the
+fixture-versus-implementation question below. The exact code mechanism still
+requires implementation and review evidence.
+
+The interview authorized documentation only. No implementation, test execution,
+candidate approval, integration, or acceptance occurred in this context.
 
 ## Reviewer questions and next evidence
 
@@ -92,14 +107,19 @@ a run without a new code change and named failure.
 
 ## User-authorized process exception
 
-The user explicitly authorized temporarily relaxing kit rules that create loops
-while developing the kit itself, including not requiring a Red that is invalid
-or cannot meaningfully be produced and allowing development-time hash integrity
-to change. The eventual system state must be stable. Preserve actual Green,
-review, and integration evidence; record exceptions. A failed Green is a real
-acceptance/setup result to inspect, not a reason to repeat Red or checksum
-ceremony. If a bounded repair is needed, state the concrete failure, repair it,
-and run one final focused Green.
+For this workstream, the user explicitly waived a true Red prerequisite before
+each test. Preserve actual run outcomes: a passing guard stays passing and a
+setup failure stays a setup failure. The user also permitted temporary checksum,
+checkpoint, and related workflow-state inconsistencies while changing the kit
+itself. Preserve recoverable evidence and record reconciliation; final project
+state must be stable and consistent, with applicable integrity and authority
+checks working normally. Historical evidence retains its original identities.
+
+Preserve actual Green, review, and integration evidence; record exceptions. A
+failed Green is a real acceptance/setup result to inspect, not a reason to repeat
+Red or checksum ceremony. If a bounded repair is needed, state the concrete
+failure, repair it, and run one final focused Green. These exceptions do not
+establish passing behavior or workstream acceptance.
 
 ---
 

@@ -48,6 +48,16 @@ _Avoid_: prompt, user story (unless the project already uses that term for somet
 The explicit engineering contract for a Workstream, with a lifecycle status (`PROPOSED` … `CURRENT`). Lived under `specs/`.
 _Avoid_: plan, acceptance criteria alone (those are parts of it)
 
+**Revision assessment**:
+A reviewed evaluation of the transition between two exact item revisions and
+their relevant dependencies in a specified project context.
+_Avoid_: approval of a replacement alone, blanket permission for consumers
+
+**Retention assessment**:
+A reviewed determination that a named consumer remains eligible with its existing
+dependency pin in a specified project context, with every relevant input resolved.
+_Avoid_: automatic rebinding, blanket evidence reuse
+
 **Cursor Binding**:
 How the Starter Kit is expressed inside Cursor. Includes root `ask`, short `AGENTS.md`, pointing bootstrap rules, mandatory `.cursor/hooks` wrapping kit scripts, prepared Community Skills, and **generated** `.cursor/` projections of stage contracts via `./ask sync` — so Cursor can honor stages without hand-maintained subagent SoT. Stage/binding SoT is `.agents/ask/`; `_ask/` remains the dispatcher/scripts/docs package. Anything Cursor must honor also exists under `.cursor/`.
 _Avoid_: Cursor plugin (unless we later decide that is the distribution form), protocol-only “hope the model opens the file”, hand-maintained eleven Cursor agents as source of truth
