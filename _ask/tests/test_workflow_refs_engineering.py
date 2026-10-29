@@ -48,9 +48,9 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(snapshot.document, model)
             self.assertEqual(snapshot.files["work/pilot/test-plan.json"], plan_path.read_bytes(),
                              "the exact compact source bytes remain bound to the capture")
-            self.assertEqual(snapshot.documents.get("work/pilot/test-plan.json"), legacy_plan,
+            self.assertEqual(getattr(snapshot, "documents", {}).get("work/pilot/test-plan.json"), legacy_plan,
                              "captured compact plan must expose its normalized legacy read projection")
-            self.assertEqual(snapshot.references.get("work/pilot/test-plan.json"), {
+            self.assertEqual(getattr(snapshot, "references", {}).get("work/pilot/test-plan.json"), {
                 "task": "pilot/spec/1/plan/1/task/1@1",
                 "test": "pilot/spec/1/plan/1/task/1/test/1@1",
                 "review": "pilot/review/1@1",
@@ -60,7 +60,7 @@ class ReferenceTests(unittest.TestCase):
                              "compact admission diagnostics must match the legacy source")
             admitted, admission_errors = admit(root, "pilot")
             self.assertEqual(admission_errors, [], admission_errors)
-            self.assertEqual(admitted.documents["work/pilot/test-plan.json"], legacy_plan)
+            self.assertEqual(getattr(admitted, "documents", {}).get("work/pilot/test-plan.json"), legacy_plan)
             compact_projection = project(snapshot, root, node_id="build", include_evidence=False)
             self.assertEqual(compact_projection["workbench"], legacy_projection["workbench"],
                              "on-demand task projection is equivalent without loading the evidence catalog")
