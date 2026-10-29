@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
 from workflow_refs.store import initialize_catalog, register_revision
 
 
-class ReferenceCliTests(unittest.TestCase):
+class ReferenceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="refs-cli-")
         self.root = Path(self.temp.name)

@@ -13,7 +13,7 @@ from workflow_refs.migration import export_bundle, import_bundle, migrate
 from workflow_refs.store import CatalogError, initialize_catalog, resolve_version
 
 
-class ReferenceMigrationTests(unittest.TestCase):
+class ReferenceTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="refs-migration-")
         self.root = Path(self.temp.name)
