@@ -1618,7 +1618,7 @@
         "SH-16"
       ],
       "type": "integration",
-      "change_kind": "new",
+      "change_kind": "regression",
       "scenario": {
         "given": "Two engineering items share a document and one has an external constraint",
         "when": "A candidate updates an unrelated section then the linked constraint",
