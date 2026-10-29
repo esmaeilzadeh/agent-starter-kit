@@ -1429,7 +1429,10 @@
         "_ask/scripts/inner_loop/retry.py",
         "_ask/scripts/inner_loop/yaml_lite.py",
         "_ask/scripts/inner_loop/driver.py",
-        "_ask/scripts/inner_loop/allowlist.py"
+        "_ask/scripts/inner_loop/allowlist.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/recovery.py",
+        "_ask/scripts/inner_loop/attempts.py"
       ]
     },
     {
@@ -1504,7 +1507,9 @@
         "_ask/scripts/inner_loop/retry.py",
         "_ask/scripts/inner_loop/yaml_lite.py",
         "_ask/scripts/inner_loop/driver.py",
-        "_ask/scripts/inner_loop/allowlist.py"
+        "_ask/scripts/inner_loop/allowlist.py",
+        "_ask/scripts/inner_loop/checkpoint.py",
+        "_ask/scripts/inner_loop/recovery.py"
       ]
     },
     {

@@ -1,5 +1,14 @@
 # Consolidated plan seal
 
+## Current Task 6 amendment (2026-10-29)
+
+Task 6's source-binding amendment is authorized under the user's delegated
+confidence threshold, recorded in `task6-binding-authorization.md`. Cases `6/1`
+and `6/2` add checkpoint and recovery readers; `6/1` also adds the attempt
+controller. This changes source coverage only. Independent review and renewed
+registration of this exact test plan are pending; Task 6 implementation must
+wait for them. Historical amendment statuses below describe earlier seals.
+
 Status: **HISTORICAL SEAL; TASK 2 AMENDMENT PENDING REVIEW**. The original
 sealed plan had 0 specification and planning blockers. Task 1's later
 classification amendment is accepted and registered. Task execution is paused
