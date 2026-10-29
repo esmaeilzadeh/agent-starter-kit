@@ -1,0 +1,20 @@
+test_multi_owner_incomplete_and_scope_freshness (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... FAIL
+test_resume_and_export_historical_records (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_shared_deletion_and_retirement (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_valid_and_tampered_completion (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-6c1r8eki/candidate/_ask/tests/test_workflow_refs_e2e.py", line 182, in test_partial_impact_and_retained_execution
+    self._assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input()
+  File "/tmp/ask-cases-6c1r8eki/candidate/_ask/tests/test_workflow_refs_e2e.py", line 311, in _assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input
+    self.assertIn("stale final candidate", stale_result.get("errors", []))
+AssertionError: 'stale final candidate' not found in ["migration_required: missing/invalid JSON /tmp/refs-completion-e2e-m1nnyps9/work/e2e/traceability/static-973f0a1614c31bb3ff06fd92fb908860f6d6a5d0.json: [Errno 2] No such file or directory: '/tmp/refs-completion-e2e-m1nnyps9/work/e2e/traceability/static-973f0a1614c31bb3ff06fd92fb908860f6d6a5d0.json'"]
+
+----------------------------------------------------------------------
+Ran 5 tests in 21.770s
+
+FAILED (failures=1)
