@@ -1,0 +1,17 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "shorter-hashes",
+  "task_id": "7",
+  "base_sha": "0cc40ec354a961a8516ccf4937dd575e8dba6cf1",
+  "candidate_sha": "18acdb9b387597562669e093dd059ea7c6889818",
+  "tdd": {
+    "seam": "_ask/scripts/engineering_model/snapshot.py::capture; _ask/tests/test_workflow_refs_engineering.py::ReferenceTests.test_snapshots_context_and_legacy_reads",
+    "red": {
+      "command": "python3 -m unittest -v _ask.tests.test_workflow_refs_engineering",
+      "output": "Actual focused Red: 7/1 failed by behavior assertion because the captured compact plan did not expand work/shared/test-plan.json into its source closure; 7/2 passed as an existing comparison/impact Green guard. No setup/runtime errors.",
+      "exit_code": 1
+    }
+  },
+  "exemption": null,
+  "notes": "Interim result records the committed test-only candidate and focused local Red. Native task-scoped Red is pending coordinator checkpoint; no Green or verification is claimed."
+}
