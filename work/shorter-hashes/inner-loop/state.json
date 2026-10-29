@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 46,
+  "revision": 47,
   "coordinator_sha": "7376b07e666af973f8e2ea469f68d302da141061",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -1053,8 +1053,8 @@
       "attempt_started_revision": 41
     },
     "6": {
-      "status": "running",
-      "base_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+      "status": "interrupted",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
@@ -1062,10 +1062,29 @@
       "debug_round": 0,
       "evidence": {},
       "attempt_number": 1,
-      "attempt_id": "6:attempt-1",
-      "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
-      "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
-      "attempt_started_revision": 46
+      "attempt_id": "",
+      "accepted_plan_ref": "",
+      "accepted_plan_digest": "",
+      "attempt_started_revision": null,
+      "attempt_history": [
+        {
+          "attempt_id": "6:attempt-1",
+          "attempt_number": 1,
+          "status": "interrupted",
+          "reason": "User-authorized bounded recovery; reopen against independently reviewed Task 6 source-binding amendment",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "7376b07e666af973f8e2ea469f68d302da141061",
+          "interrupted_candidate_sha": "c6eda0a1413a6d14c967c94c6ada712692b91489",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {},
+          "accepted_plan_ref": "4e78fedb58dd3a69ef50a5d96fc8c1d4c46d5c28",
+          "accepted_plan_digest": "ca36de84e44222ae5eab1bfd0e5776ea242ddaf48132efff29e8f4a8f52d90f9",
+          "execution_runs": [],
+          "started_revision": 46,
+          "interrupted_revision": 47
+        }
+      ]
     },
     "7": {
       "status": "pending",
