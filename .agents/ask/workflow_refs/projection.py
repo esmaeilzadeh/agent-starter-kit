@@ -10,7 +10,9 @@ from .store import resolve_version
 def show_reference(repository_root, reference, *, integrity=False):
     """Resolve one exact qualified revision and omit full digests by default."""
     parsed = parse_reference(reference)
-    catalog = repository_root / "work" / parsed["owner"] / "references" / "integrity.json"
+    catalog = (repository_root / "results/references/integrity.json"
+               if parsed["owner"] == "repository-runs" else
+               repository_root / "work" / parsed["owner"] / "references" / "integrity.json")
     resolved = resolve_version(catalog, parsed["canonical"], repository_root)
     entry = resolved["entry"]
     try:

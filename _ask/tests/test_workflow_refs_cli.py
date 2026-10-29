@@ -143,6 +143,16 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(summary["metric"], "0.91")
         self.assertEqual(integrity["source_bindings"][manifest["run_reference"]]["commit"], source_sha)
 
+        from workflow_refs.cli import main
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", manifest["run_reference"]], root=repo)
+        public_run = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(public_run["reference"], "repository-runs/run/1@1")
+        self.assertEqual(public_run["owner"], "repository-runs")
+        self.assertEqual(public_run["payload"]["metric"], "0.91")
+
         dirty = subprocess.run(["bash", "_ask/scripts/record-run.sh", "--run-id", "dirty",
                                 "--commit-sha", source_sha, "--metric", "0.2"], cwd=repo,
                                capture_output=True, text=True)
