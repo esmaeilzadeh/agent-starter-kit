@@ -268,6 +268,23 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(impact["items"]["beta/spec/1/plan/1/task/1@1"]["decision"]["status"], "retained")
         self.assertNotIn("independent/spec/2/plan/4/task/4@1", impact["items"])
 
+        # Registered historical endpoints remain assessable after they become inactive.
+        from unittest.mock import patch
+        from workflow_refs.project import load_project_graph
+        real_load_graph = load_project_graph
+        old_endpoint = decisions[0]["dependent"]
+        def with_inactive_history(root, project_capture):
+            graph = real_load_graph(root, project_capture)
+            graph["nodes"][old_endpoint]["active"] = False
+            return graph
+        with patch("workflow_refs.project.load_project_graph", side_effect=with_inactive_history), \
+             patch("workflow_refs.cli.load_project_graph", side_effect=with_inactive_history):
+            code, historical = repo.cli("impact", "--source", str(source_path), "--candidate",
+                str(candidate_path), "--shared-owner", "shared",
+                "--decision", decision_refs[0], "--decision", decision_refs[1])
+        self.assertEqual(code, 0, historical)
+        self.assertEqual(historical["status"], "complete")
+
         unresolved = decision("retain", "alpha/spec/1/plan/1/item/1@1",
             "alpha/spec/1/plan/1/item/1@2", "beta/spec/1/plan/1/task/1@1",
             ["alpha/spec/1/plan/1/item/1@1|plan", "shared/spec/1@1|policy"],
