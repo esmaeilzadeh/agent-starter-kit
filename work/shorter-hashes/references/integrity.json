@@ -1,7 +1,7 @@
 {
   "schema": "ask-reference-catalog/v1",
   "owner": "shorter-hashes",
-  "generation": 43,
+  "generation": 44,
   "snapshots": {
     "02568beee53a2cefb9dd5b259bc69caddd6996192e47c18c837f15bf47039be9": {
       "commit": "ca9019217068598ceb50cec1e3cdf2140e21d5e9",
@@ -137,6 +137,10 @@
     },
     "b72fd976e58cb65ef3ee3587295840f2bcf1f4de82d9a64f184e6ede6690e9e4": {
       "commit": "250eacde86bbed3276d38c3c56f4f23fb93abbae",
+      "path": "work/shorter-hashes/inner-loop/integrity-records.json"
+    },
+    "5c3c5d7b69bfc7a969df5686e2b2f0dd85d3559a5760a17c5f807981ba4cfece": {
+      "commit": "859375c868c68ef5d2f9ad8d9cc875e2c6abccd5",
       "path": "work/shorter-hashes/inner-loop/integrity-records.json"
     }
   },
@@ -914,6 +918,24 @@
         "exact-bytes/1"
       ],
       "generation": 43
+    },
+    {
+      "reference": "shorter-hashes/spec/1/plan/1/task/9@6",
+      "logical_id": "shorter-hashes/spec/1/plan/1/task/9",
+      "revision": 6,
+      "snapshot_id": "5c3c5d7b69bfc7a969df5686e2b2f0dd85d3559a5760a17c5f807981ba4cfece",
+      "item_id": "task-9",
+      "profile": "structured-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "canonical-json/1": "fc74fb8c6292f3482967558d3a345f6d1276d9e5e945317007b41990536aef85",
+        "exact-bytes/1": "1ffa10a1d50dfcbb0092c5846c59296420dd3c9259b4c2e1afc6081de9dc304f"
+      },
+      "digest_semantics": [
+        "canonical-json/1",
+        "exact-bytes/1"
+      ],
+      "generation": 44
     }
   ]
 }

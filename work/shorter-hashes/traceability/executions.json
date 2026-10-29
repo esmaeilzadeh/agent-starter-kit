@@ -988,5 +988,25 @@
     "candidate_sha": "e821ceaf478542dfdec4e484df88394dac4347a0",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
     "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "bd67aba504fd40cca1a33f8e5b8c5513",
+    "digest": "d42411fa47b3c01617340a42f1e265055dd8d53f3b4795634d64d285d8f28675",
+    "phase": "final_green",
+    "scope": "task",
+    "task_id": "9",
+    "candidate_sha": "581faa290d0d1d1350ec7ab3c162571a2a451958",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "12d39a1ebae94afb9b8ac0616691ec0a",
+    "digest": "eab9c1de09074665493ec7eef33f6e5e4d987f6f9cca689e0ec8465490daf4ce",
+    "phase": "final_green",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "581faa290d0d1d1350ec7ab3c162571a2a451958",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
   }
 ]
