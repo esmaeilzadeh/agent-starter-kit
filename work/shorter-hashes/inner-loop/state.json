@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "shorter-hashes",
-  "revision": 88,
+  "revision": 89,
   "coordinator_sha": "64f2c5fa7867d514bb2bb46edb34221d8bdf26b9",
   "coordinator_branch": "agent/shorter-hashes",
   "tasks": {
@@ -1682,8 +1682,8 @@
       "task_branch": ""
     },
     "9": {
-      "accepted_plan_digest": "",
-      "accepted_plan_ref": "",
+      "accepted_plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
+      "accepted_plan_ref": "ed46e388763c80940b0a74e6bcf8d7b14665d5c9",
       "attempt_history": [
         {
           "accepted_plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d",
@@ -1776,17 +1776,19 @@
           "task_branch": ""
         }
       ],
-      "attempt_id": "",
-      "attempt_number": 1,
-      "attempt_started_revision": null,
-      "base_sha": "",
+      "attempt_id": "9:attempt-2",
+      "attempt_number": 2,
+      "attempt_started_revision": 89,
+      "base_sha": "64f2c5fa7867d514bb2bb46edb34221d8bdf26b9",
       "boundary_reject": null,
       "debug_round": 0,
       "evidence": {},
       "result_path": "",
       "review_round": 0,
-      "status": "interrupted",
-      "task_branch": ""
+      "status": "running",
+      "task_branch": "",
+      "reopened_from_attempt": "9:attempt-1",
+      "reopen_reason": "Resume Task 9 under the reviewed and delegated-approved TaskGraph registered at contract d4237232dca7dcba9f1f34c112103957980de517. Attempt 1 remains interrupted with its original base, coordinator HEAD, six execution ledger rows, exact failed final-Green TaskResult/report/execution/log archive, waiver, and actual case outcomes. Attempt 2 will implement only the approved 9/3 correction in impact.py and retain the 6aa126d public import/projection test corrections."
     }
   },
   "coordinator_tree": "d1f74bc05722fd43650b24e872a53c2221267be2"
