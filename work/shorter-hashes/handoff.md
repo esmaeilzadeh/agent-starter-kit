@@ -1,5 +1,27 @@
 # Handoff: `shorter-hashes`
 
+## Authorized recovery progress (2026-10-29)
+
+The user's temporary kit-process exception now authorizes bounded reconstruction
+from retained evidence; see `recovery-exception-authorization.md`. This supersedes
+the pending recovery choice below. A new current checkpoint was published without
+claiming the missing historical checkpoint chain. Original task results and
+ledger entries are preserved. New real executions at the original immutable
+candidates/contracts passed all 24 mapped cases across Tasks 1–5; their fresh IDs
+and provenance are in `inner-loop/evidence/task*-recovery-rerun-2026-10-29.json`.
+
+Task 6 attempt 1 was interrupted with its history preserved, and the independently
+reviewed amendment is registered against source `5911780`, with authority
+`876094655bb8074493eea9faeff0bcb1f60d37de`. The remaining recovery operation is
+to advance the coordinator over committed recovery artifacts, reopen Task 6, and
+confirm authority/pin/checkpoint consistency through normal recovery. The exact
+outcome is recorded in `inner-loop/evidence/recovery-stable-2026-10-29.json` and
+independently audited in `inner-loop/evidence/reconstruction-review-2026-10-29.json`.
+
+After recovery passes, resume Task 6 under the amended plan with Luna high.
+The temporary process exception ends at stable recovery; no feature intent,
+criterion or test assertion was changed, and no original run was fabricated.
+
 ## Continuation update (2026-10-29)
 
 The user delegated implementor decisions when coordinator confidence exceeds

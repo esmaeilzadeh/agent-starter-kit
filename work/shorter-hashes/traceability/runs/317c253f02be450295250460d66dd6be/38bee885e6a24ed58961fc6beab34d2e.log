@@ -1,0 +1,8 @@
+test_parents_moves_and_multiple_inputs (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... ok
+test_qualified_numeric_context (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... ok
+test_raw_git_collision_resolution (_ask.tests.test_workflow_refs_identity.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
