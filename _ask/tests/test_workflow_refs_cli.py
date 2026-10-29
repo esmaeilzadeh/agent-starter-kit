@@ -151,7 +151,7 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(public_run["reference"], "repository-runs/run/1@1")
         self.assertEqual(public_run["owner"], "repository-runs")
-        self.assertEqual(public_run["payload"]["metric"], "0.91")
+        self.assertEqual(public_run["payload"]["items"][0]["metric"], "0.91")
 
         dirty = subprocess.run(["bash", "_ask/scripts/record-run.sh", "--run-id", "dirty",
                                 "--commit-sha", source_sha, "--metric", "0.2"], cwd=repo,
