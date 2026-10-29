@@ -12,9 +12,7 @@ sys.path.insert(0, str(ROOT / ".agents/ask"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from workflow_refs_fixture import CompletionRepository, ReferenceRepository, item
-from workflow_refs.migration import import_bundle
 from workflow_refs.project import capture_project, load_project_graph, validate_capture
-from workflow_refs.store import CatalogError
 
 
 class ReferenceTests(unittest.TestCase):
@@ -145,26 +143,27 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual((repo.root / "results/runs/run-17.log").read_bytes(), b"run-17: pass\n")
         run_bundle = repo.root / "runs.refs"
         self.assertEqual(repo.cli("export", "repository-runs", "--out", str(run_bundle))[0], 0)
-        self.assertTrue(import_bundle(repo.root, run_bundle)["idempotent"])
-        self.assertEqual(repo.cli("show", run_ref)[1]["payload"]["candidate_sha"], repo.source_sha)
+        self.assertTrue(repo.cli("import", str(run_bundle))[1]["idempotent"])
+        run_projection = repo.cli("show", run_ref)[1]
+        run_record = next(entry for entry in run_projection["payload"]["items"]
+                          if entry["id"] == "run-17")
+        self.assertEqual(run_record["candidate_sha"], repo.source_sha)
 
         bundle = repo.root / "transfer.refs"
         code, exported = repo.cli("export", "demo", "--out", str(bundle))
         self.assertEqual(code, 0)
         self.assertEqual(exported["status"], "exported")
-        self.assertTrue(import_bundle(repo.root, bundle)["idempotent"])
+        self.assertTrue(repo.cli("import", str(bundle))[1]["idempotent"])
 
         clone = repo.root.parent / (repo.root.name + "-clone")
         self.addCleanup(shutil.rmtree, clone, True)
         repo.git("clone", "-q", str(repo.root), str(clone))
-        with self.assertRaisesRegex(CatalogError, "cannot establish or replace"):
-            import_bundle(clone, bundle)
+        self.assertNotEqual(repo.cli_at(clone, "import", str(bundle))[0], 0)
 
         # A clone without authority must not invent either a legacy mapping or
         # historical execution just because a bundle has been offered.
         self.assertNotEqual(repo.cli_at(clone, "show", run_ref)[0], 0)
-        with self.assertRaisesRegex(CatalogError, "cannot establish or replace"):
-            import_bundle(clone, run_bundle)
+        self.assertNotEqual(repo.cli_at(clone, "import", str(run_bundle))[0], 0)
 
         # Tampering with the manifest is rejected before any authority is installed.
         import zipfile
@@ -175,8 +174,9 @@ class ReferenceTests(unittest.TestCase):
                 if name == "catalog.json":
                     data += b" "
                 target.writestr(name, data)
-        with self.assertRaisesRegex(CatalogError, "does not match its manifest"):
-            import_bundle(repo.root, altered)
+        code, refusal = repo.cli("import", str(altered))
+        self.assertNotEqual(code, 0)
+        self.assertIn("does not match its manifest", refusal["detail"])
 
     def test_partial_impact_and_retained_execution(self):
         self._assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input()
@@ -373,7 +373,9 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(repo.cli("show", shared_next_ref)[0], 0)
         retired_code, retired = repo.cli("show", orphan_next_ref)
         self.assertEqual(retired_code, 0, retired)
-        self.assertFalse(retired["payload"]["active"])
+        retired_item = next(entry for entry in retired["payload"]["items"]
+                            if entry["id"] == "orphan-test")
+        self.assertFalse(retired_item["active"])
         # Both original revisions and the retained executable run remain readable.
         self.assertEqual(repo.cli("show", shared_ref + "@1")[0], 0)
         self.assertEqual(repo.cli("show", orphan_ref + "@1")[0], 0)
