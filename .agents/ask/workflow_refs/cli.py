@@ -12,7 +12,7 @@ from .impact import ImpactError, assess_impact, record_decision
 from .project import capture_project, load_project_graph
 from .projection import project_status, show_reference
 from .store import (CatalogError, _lock, _publish_catalog, _recover_pending,
-                    _repo_info, _trusted_catalog)
+                    _repo_info, _review_references, _trusted_catalog)
 from .migration import export_bundle, import_bundle, migrate
 
 
@@ -34,21 +34,12 @@ def _persist_decision(repository_root, result):
         raw_decisions = catalog.get("decisions", [])
         if not isinstance(raw_decisions, list):
             raise CatalogError("invalid_catalog", "trusted decision records are not a list")
-        entries = catalog.get("entries", [])
-        if not isinstance(entries, list):
-            raise CatalogError("invalid_catalog", "trusted catalog entries are not a list")
         decisions = list(raw_decisions)
         for existing in decisions:
             if existing.get("decision") == decision and existing.get("status") == result["status"]:
                 return existing["reference"]
         sequence = 0
-        for item in [*entries, *decisions]:
-            try:
-                parsed = parse_reference(item.get("reference"))
-            except (TypeError, AttributeError, ReferenceError) as exc:
-                raise CatalogError("invalid_catalog", "trusted review reference is malformed") from exc
-            if parsed["owner"] != owner or parsed["kind"] != "review":
-                continue
+        for _section, parsed in _review_references(catalog, owner):
             sequence = max(sequence, parsed["ids"][-1])
         sequence += 1
         reference = f"{owner}/review/{sequence}@1"

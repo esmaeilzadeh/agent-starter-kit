@@ -362,6 +362,25 @@ def initialize_catalog(path, owner):
         stream.close()
 
 
+def _review_references(catalog: dict, owner: str) -> list[tuple[str, dict]]:
+    """Return owner-qualified review identities across both catalog stores."""
+    references = []
+    for section in ("entries", "decisions"):
+        records = catalog.get(section, [])
+        if not isinstance(records, list):
+            raise CatalogError("invalid_catalog", f"trusted {section} are not a list")
+        for record in records:
+            if not isinstance(record, dict):
+                raise CatalogError("invalid_catalog", f"trusted {section} contain a malformed record")
+            try:
+                parsed = parse_reference(record.get("reference"))
+            except (ReferenceError, TypeError) as exc:
+                raise CatalogError("invalid_catalog", f"trusted {section} contain a malformed reference") from exc
+            if parsed["owner"] == owner and parsed["kind"] == "review":
+                references.append((section, parsed))
+    return references
+
+
 def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profile, payload,
                      expected_generation=None, after_publish=None, revision=None):
     path = Path(catalog_path)
@@ -407,6 +426,10 @@ def register_revision(catalog_path, owner, logical_id, snapshot, item_id, profil
         if expected_generation is not None and expected_generation != generation:
             raise CatalogError("conflict", f"stale catalog generation: expected {expected_generation}, found {generation}")
         entries = catalog["entries"]
+        if identity["kind"] == "review" and any(
+                section == "decisions" and parsed["logical_id"] == identity["logical_id"]
+                for section, parsed in _review_references(catalog, owner)):
+            raise CatalogError("conflict", "review identity is already allocated to a decision")
         latest_revision = 0
         latest_entry = None
         for entry in entries:

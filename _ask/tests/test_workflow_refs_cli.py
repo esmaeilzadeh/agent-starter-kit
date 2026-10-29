@@ -11,7 +11,7 @@ import sys
 import shutil
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
-from workflow_refs.store import initialize_catalog, register_revision
+from workflow_refs.store import CatalogError, initialize_catalog, register_revision
 
 
 class ReferenceTests(unittest.TestCase):
@@ -115,6 +115,10 @@ class ReferenceTests(unittest.TestCase):
         decided = json.loads(output.getvalue())
         self.assertEqual(code, 0)
         self.assertEqual(decided["reference"], "demo/review/2@1")
+        with self.assertRaisesRegex(CatalogError, "already allocated to a decision"):
+            register_revision(catalog, "demo", "demo/review/2",
+                              {"commit": commit, "path": "work/demo/source.json"},
+                              "review-one", "structured-item/1", self.source.read_bytes())
 
         for reference in ("demo/review/1@1", decided["reference"]):
             output = io.StringIO()
