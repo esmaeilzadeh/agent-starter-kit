@@ -5,6 +5,9 @@ instructed direct completion without the inner loop, then delegated approval
 when confidence exceeds 90%. Current AGENTS.md disables the kit workflow while
 self-developing AskIt; no frozen dogfooding copy was enabled.
 
+- **Session stopped at the user’s explicit request: “store state and exit”.**
+  Stop record: `session-stop.json`; uncommitted AGENTS.md edit is also preserved
+  as `session-stop-agents.patch`. Await user direction before further work.
 - Reviewed source candidate: `fab05ca5f9455aede8e56ce9b32433111ce236d9`.
 - Source correctness fixes approved independently at **98% confidence**.
 - Direct verification: **44 reference tests + 29 traceability tests passed**;
