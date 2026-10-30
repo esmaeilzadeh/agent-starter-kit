@@ -1,5 +1,20 @@
 # Agent instructions
 
+## Highest-priority kit rule: self-development
+
+When developing AskIt itself, this rule overrides all other kit instructions,
+policies, stage prompts, skills, and workflow gates, including those below.
+
+- Keep the kit disabled while making kit changes unless dogfooding uses a
+  separate, frozen copy pinned to an exact Git commit. With the kit disabled,
+  work directly on the requested changes without kit workflow requirements.
+- Before enabling dogfooding, record the pinned commit and the frozen copy's
+  location. Use that copy's instructions and tooling to guide development; treat
+  the working checkout as the product being changed and tested.
+- Keep the pin unchanged during the work. Resume dogfooding only after the
+  frozen copy is ready; upgrade it deliberately between tasks, never from the
+  changing checkout during a task.
+
 This repository uses the AI Engineering Starter Kit (Cursor-first).
 
 Protocol SoT for stages, bindings, and verification is `.agents/ask/`. `_ask/` holds Guide, Build Spec, policies, skills manifest, and templates. `_ask/agents` and `_ask/bindings` are pointers. Do not treat Cursor config as the source of truth.
