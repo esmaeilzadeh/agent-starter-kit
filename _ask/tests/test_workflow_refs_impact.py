@@ -155,10 +155,10 @@ class ReferenceTests(unittest.TestCase):
 
     def test_direct_and_potential_impact(self):
         result = assess_impact(self.project_graph(), [S], capture=self.capture, repository_root=self.root)
-        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["status"], "incomplete")
         self.assertEqual(set(result["items"]), {P, P2, T, T2, X, Y})
         self.assertNotIn(U, result["items"])
-        self.assertEqual(result["items"][P]["status"], "reassess")
+        self.assertEqual(result["items"][P]["status"], "incomplete")
         self.assertTrue(any(edge["role"] == "shared-policy" for edge in result["items"][T]["inputs"]))
         converged = assess_impact(self.project_graph(), [S, Q], capture=self.capture,
                                   repository_root=self.root)
@@ -196,6 +196,8 @@ class ReferenceTests(unittest.TestCase):
             repository_root=self.root, authority_check=lambda _decision, _capture: True)["items"])
         current = decision(action="revise", generation=self.capture["generation"],
                            new_dependent=T2, eligible_consumers=[])
+        paths = [f"{P}|plan", f"{P2}|plan", f"{Q}|shared-policy"]
+        current.update(required_paths=paths, examined_paths={path: "resolved" for path in paths})
         result = assess_impact(self.project_graph(), [P], {T: current}, capture=self.capture,
             repository_root=self.root, authority_check=lambda _decision, _capture: True)
         self.assertEqual(result["items"][T]["status"], "revised")
@@ -260,7 +262,7 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(self.loaded_graph["status"], "complete", self.loaded_graph)
         self.assertIn(S, self.loaded_graph["deletions"])
         result = assess_impact(self.project_graph(), [S], capture=self.capture, repository_root=self.root)
-        self.assertEqual(result["status"], "complete")
+        self.assertEqual(result["status"], "incomplete")
         self.assertTrue(result["items"][P]["inputs"][0]["deleted"])
         self.assertIn(S, self.loaded_graph["nodes"])
         self.commit_owner_candidate("b", None)

@@ -36,11 +36,12 @@ def _common_dir(root):
     return value.resolve() if value.is_absolute() else (root / value).resolve()
 
 
-def _reflog_generation(common, integration_ref, archive_ref):
+def _reflog_generation(common, integration_ref, archive_ref, *, catalogs=True):
     """Fingerprint ref movement, including advance-and-return ABA changes."""
     digest = hashlib.sha256()
-    roots = [common / "logs" / "refs" / "heads" / "agent",
-             common / "logs" / "refs" / "ask" / "references"]
+    roots = [common / "logs" / "refs" / "heads" / "agent"]
+    if catalogs:
+        roots.append(common / "logs" / "refs" / "ask" / "references")
     roots.extend(common / "logs" / Path(ref) for ref in (integration_ref, archive_ref) if ref)
     paths = set()
     for root in roots:
@@ -57,10 +58,11 @@ def _reflog_generation(common, integration_ref, archive_ref):
     return digest.hexdigest()
 
 
-def _ref_storage_generation(common, integration_ref=None, archive_ref=None):
+def _ref_storage_generation(common, integration_ref=None, archive_ref=None, *, catalogs=True):
     """Observe loose/packed owner-ref storage changes even without reflogs."""
-    roots = [common / "refs" / "heads" / "agent",
-             common / "refs" / "ask" / "references"]
+    roots = [common / "refs" / "heads" / "agent"]
+    if catalogs:
+        roots.append(common / "refs" / "ask" / "references")
     digest = hashlib.sha256()
     paths = set()
     for root in roots:
@@ -257,6 +259,10 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
                           "shared_owners": sorted(shared_owners),
                           "movement_generation": after_movement,
                           "storage_generation": after_storage,
+                          "source_movement_generation": _reflog_generation(
+                              common, integration_ref, archive_ref, catalogs=False),
+                          "source_storage_generation": _ref_storage_generation(
+                              common, integration_ref, archive_ref, catalogs=False),
                           "scope": "local-cooperating-repository"}
                 vector["generation"] = _context_generation(root, vector)
                 vector["status"] = "complete"
@@ -278,7 +284,12 @@ def validate_capture(repository_root, capture):
                               capture.get("archive_ref"), shared_owners=capture.get("shared_owners", []))
     if current.get("status") != "complete":
         return current
-    if current.get("generation") != capture.get("generation"):
+    # Source movement always invalidates context; catalog-only decisions may
+    # advance authority without changing graph inputs. Same-ref ABA is stale.
+    same_refs_moved = (current.get("refs") == capture.get("refs") and any(
+        current.get(key) != capture.get(key)
+        for key in ("movement_generation", "storage_generation")))
+    if current.get("generation") != capture.get("generation") or same_refs_moved:
         return {"status": "incomplete", "reason": "stale_inventory",
                 "expected_generation": capture.get("generation"),
                 "current_generation": current.get("generation")}
