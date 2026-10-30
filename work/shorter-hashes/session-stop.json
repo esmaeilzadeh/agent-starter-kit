@@ -1,9 +1,9 @@
 {
   "status": "stopped-at-user-request",
-  "request": "store state and exit",
-  "saved_at": "2026-10-30T09:46:14.714832+00:00",
+  "request": "store state and commit and push",
+  "saved_at": "2026-10-30T09:47:07.101287+00:00",
   "branch": "agent/shorter-hashes",
-  "evidence_head_before_save": "8f39ecd5f58c9c38def247007c1365c4036052bd",
+  "evidence_head_before_save": "cbe12b6b503db3a595d8495168e548c9e974d77d",
   "reviewed_source_candidate": "fab05ca5f9455aede8e56ce9b32433111ce236d9",
   "source_approval": {
     "decision": "APPROVED",
@@ -17,12 +17,12 @@
     "work/shorter-hashes/final-source-review.md",
     "work/shorter-hashes/benchmark/results/fab05ca/report.json"
   ],
-  "preserved_uncommitted_change": {
-    "path": "AGENTS.md",
-    "sha256": "aed4faa0c03129d432a550c07b8c20be269bf3d1dc24dcb5b8783376420dab4b",
-    "patch": "work/shorter-hashes/session-stop-agents.patch",
-    "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-  },
   "resume_boundary": "Await user direction. Kit self-development workflow remains disabled. Do not restart the inner loop or claim feature acceptance. Any future savings work must preserve the frozen questions, accounting, original evidence and strict thresholds.",
-  "pushed": false
+  "preserved_agents_change": {
+    "path": "AGENTS.md",
+    "status": "committed",
+    "commit": "8f39ecd5f58c9c38def247007c1365c4036052bd",
+    "sha256": "aed4faa0c03129d432a550c07b8c20be269bf3d1dc24dcb5b8783376420dab4b"
+  },
+  "publication": "User requested pushing agent/shorter-hashes after this state commit."
 }

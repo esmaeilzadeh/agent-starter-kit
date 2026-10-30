@@ -6,8 +6,9 @@ when confidence exceeds 90%. Current AGENTS.md disables the kit workflow while
 self-developing AskIt; no frozen dogfooding copy was enabled.
 
 - **Session stopped at the user’s explicit request: “store state and exit”.**
-  Stop record: `session-stop.json`; uncommitted AGENTS.md edit is also preserved
-  as `session-stop-agents.patch`. Await user direction before further work.
+  Stop record: `session-stop.json`. The user’s AGENTS.md self-development rule
+  is committed at `8f39ecd`; the worktree is clean. State commit and work-branch
+  push are authorized. Await user direction before further product work.
 - Reviewed source candidate: `fab05ca5f9455aede8e56ce9b32433111ce236d9`.
 - Source correctness fixes approved independently at **98% confidence**.
 - Direct verification: **44 reference tests + 29 traceability tests passed**;
@@ -28,7 +29,7 @@ self-developing AskIt; no frozen dogfooding copy was enabled.
   loop or manufacture new Red/review/integration evidence. Product tests may
   exercise kit commands in disposable consumer repositories.
 - Approved intent bytes are unchanged. The user's AGENTS.md self-development
-  edit is retained separately and was not committed with product changes.
+  rule is committed separately at `8f39ecd`.
 
 ---
 
