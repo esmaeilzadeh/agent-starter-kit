@@ -1,0 +1,189 @@
+{
+  "schema": "ask-reference-catalog/v1",
+  "owner": "structured-agentic-environment",
+  "generation": 9,
+  "snapshots": {
+    "7cbfe31d6ede95d8aa16e1e320fb0f704d16dcb1bbb1d1719b85acd3dfcaffb4": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "specs/current/structured-agentic-environment.json"
+    },
+    "6b8617566ca6a8628d29920ac34554c56db6dbdfb96513807744afc3e9969da0": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/inner-loop/tasks.yaml"
+    },
+    "fa79bb5bc710c0fda7083a0af90c2060bf288f79684423a7868e4c177cebc5da": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/plan.md"
+    },
+    "06bb1f9e95e543616763e727062a256b11f5ff4608fbfa1f52476da51f30de14": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/test-plan.json"
+    },
+    "852e24d05f2a6fae93c0cfc55fa99cfa29a071aed3b0b08217b2db0cefcfb1bb": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/traceability-accepted.json"
+    },
+    "525c398b8596dc84f9c8d0f042ae2cffaf7e0b674470f42f3280ab6ea9595d94": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/traceability/completion.json"
+    },
+    "e8166bf940109f9fff821ef5aa6ab0100aac020f0c8f9f447cfa10f9d1248e85": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/traceability/plan-review.json"
+    },
+    "c6a1f48ca054d97aa0c63115a97d70b16054fd3e491beda2c81f5fb9d6b8da9e": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log"
+    },
+    "872449166d43f40fb29fd49ec8f11f8650aa1d3508e14d371a833df4ad704738": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json"
+    }
+  },
+  "entries": [
+    {
+      "reference": "structured-agentic-environment/snapshot/1@1",
+      "logical_id": "structured-agentic-environment/snapshot/1",
+      "revision": 1,
+      "snapshot_id": "7cbfe31d6ede95d8aa16e1e320fb0f704d16dcb1bbb1d1719b85acd3dfcaffb4",
+      "item_id": "specs/current/structured-agentic-environment.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "a6f8c64e2f15903ef3dffb4592062d4bf55e72140987298da4a6b419381053eb"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 1
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/7@1",
+      "logical_id": "structured-agentic-environment/snapshot/7",
+      "revision": 1,
+      "snapshot_id": "6b8617566ca6a8628d29920ac34554c56db6dbdfb96513807744afc3e9969da0",
+      "item_id": "work/structured-agentic-environment/inner-loop/tasks.yaml",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "f6c778ba7521166785358ca34cc5f4ff3a5c8c10025f4a0244eff9b93fb4fac2"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 2
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/8@1",
+      "logical_id": "structured-agentic-environment/snapshot/8",
+      "revision": 1,
+      "snapshot_id": "fa79bb5bc710c0fda7083a0af90c2060bf288f79684423a7868e4c177cebc5da",
+      "item_id": "work/structured-agentic-environment/plan.md",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "dc3db2c5843f3ef83f81c9a85ba52bb42304e654b9185ed0f6df5fdf77560e48"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 3
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/9@1",
+      "logical_id": "structured-agentic-environment/snapshot/9",
+      "revision": 1,
+      "snapshot_id": "06bb1f9e95e543616763e727062a256b11f5ff4608fbfa1f52476da51f30de14",
+      "item_id": "work/structured-agentic-environment/test-plan.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "d6761389de988f4e125c5f02ea02a879baa91659f9a3d931db53f98fcb63a90b"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 4
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/10@1",
+      "logical_id": "structured-agentic-environment/snapshot/10",
+      "revision": 1,
+      "snapshot_id": "852e24d05f2a6fae93c0cfc55fa99cfa29a071aed3b0b08217b2db0cefcfb1bb",
+      "item_id": "work/structured-agentic-environment/traceability-accepted.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "df5734caf3c217d1c79c4fea7e53578f9d71c8e5c4b4e78094b90eccfc95bd4f"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 5
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/11@1",
+      "logical_id": "structured-agentic-environment/snapshot/11",
+      "revision": 1,
+      "snapshot_id": "525c398b8596dc84f9c8d0f042ae2cffaf7e0b674470f42f3280ab6ea9595d94",
+      "item_id": "work/structured-agentic-environment/traceability/completion.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "b02965d97a5bb668db3b4c41972469459c15076b8eba7f6acd6d8004b23965f5"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 6
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/12@1",
+      "logical_id": "structured-agentic-environment/snapshot/12",
+      "revision": 1,
+      "snapshot_id": "e8166bf940109f9fff821ef5aa6ab0100aac020f0c8f9f447cfa10f9d1248e85",
+      "item_id": "work/structured-agentic-environment/traceability/plan-review.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "c0617547282d4b347565bded28e55f7c5dfb78a47ab6a1e7bc211059093b49b5"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 7
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/13@1",
+      "logical_id": "structured-agentic-environment/snapshot/13",
+      "revision": 1,
+      "snapshot_id": "c6a1f48ca054d97aa0c63115a97d70b16054fd3e491beda2c81f5fb9d6b8da9e",
+      "item_id": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 8
+    },
+    {
+      "reference": "structured-agentic-environment/snapshot/14@1",
+      "logical_id": "structured-agentic-environment/snapshot/14",
+      "revision": 1,
+      "snapshot_id": "872449166d43f40fb29fd49ec8f11f8650aa1d3508e14d371a833df4ad704738",
+      "item_id": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 9
+    }
+  ]
+}

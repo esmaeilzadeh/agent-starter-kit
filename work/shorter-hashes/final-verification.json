@@ -1,0 +1,74 @@
+{
+  "work_id": "shorter-hashes",
+  "recorded_at": "2026-10-30T07:55:19.083709+00:00",
+  "source_candidate": "fab05ca5f9455aede8e56ce9b32433111ce236d9",
+  "mode": "Direct product verification. Kit workflow disabled under current AGENTS.md self-development rule and user instruction to skip the inner loop.",
+  "authorization": "verify and approve if you are 90 percent confident",
+  "source_approval": {
+    "decision": "APPROVED",
+    "confidence_percent": 98,
+    "reviewer": "/root/review_task9_amendment",
+    "recorded_by": "/root",
+    "scope": "Reviewed correctness fixes, including transition assessments, exact capture validation, semantic decision context, CLI impact normalization, task-ref isolation, and unlogged owner ABA.",
+    "review_record": "work/shorter-hashes/final-source-review.md"
+  },
+  "workstream_approval": {
+    "decision": "NOT_APPROVED",
+    "reason": "Required aggregate savings are not demonstrated. The equivalent-evidence public whole-file replay fails both strict thresholds. This does not establish that selective item projections could never meet the target."
+  },
+  "checks": [
+    {
+      "command": "PYTHONPATH=.agents/ask:_ask/scripts python3 -m unittest discover -s _ask/tests -p 'test_workflow_refs*.py' -v",
+      "cases": 44,
+      "exit_code": 0,
+      "log": "work/shorter-hashes/benchmark/results/fab05ca/verification/references.log",
+      "log_sha256": "b2e45c00fc56e59e4abc34fc2667117ef743b56cb199f34b66fbff56d85b9ea5"
+    },
+    {
+      "command": "PYTHONPATH=.agents/ask:_ask/scripts python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py' -v",
+      "cases": 29,
+      "exit_code": 0,
+      "log": "work/shorter-hashes/benchmark/results/fab05ca/verification/traceability.log",
+      "log_sha256": "12a68bc03b6e16dbd6b369d3109f31a696021f7cc365b9611b2484047d0bd1f2"
+    },
+    {
+      "command": "_ask/tests/test-status.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "_ask/tests/test-record-run-writes-manifest.sh",
+      "exit_code": 0
+    },
+    {
+      "command": "_ask/tests/test-start-work-from-develop.sh",
+      "exit_code": 0
+    }
+  ],
+  "source_sha256": {
+    ".agents/ask/workflow_refs/impact.py": "c8d4e91e8ac18c0b6769240db8e48fc761327dc6368a26d9033f3ac087a94a6a",
+    ".agents/ask/workflow_refs/project.py": "36e2e3094ab3754daf52a0c3d46d56b118fa23c499a84812c67d539816d31f57",
+    ".agents/ask/workflow_refs/cli.py": "e502c1408e4abc4c190d718eabc07d5f7335348d4140f09c0714cde26deb7901",
+    "_ask/tests/test_workflow_refs_e2e.py": "957b9490f6d9d786dea83b6f56d21e86526505f4fffbfaa0ca6b4e8324c73b6a",
+    "_ask/tests/test_workflow_refs_project.py": "108f1e2ffe8a48416046759dd3d9b69c035e246aacee747253339fdf9a0ae980",
+    "_ask/tests/test_workflow_refs_impact.py": "f52f0c60601de221f2c44d742ae7325e0b4284e549933253c9e1c2ab1068d41d",
+    "work/shorter-hashes/benchmark/results/replay.py": "6eaf43ec60babf7d810a931c4453dba9835c2e560d9ae0082fe29370e25c796f"
+  },
+  "savings": {
+    "report": "work/shorter-hashes/benchmark/results/fab05ca/report.json",
+    "report_sha256": "80fa79f3af13b6c6c97355582e40295f64d5e480b2f7fa0bcdf5e05d48a5e211",
+    "status": "fail",
+    "baseline_tokens": 16598,
+    "candidate_tokens": 29023,
+    "baseline_metadata_bytes": 195626,
+    "candidate_metadata_bytes": 235031,
+    "equivalent_evidence": true,
+    "scope": "Three frozen questions using actual public whole-file refs show outputs, complete lookup responses/index/catalogs, and equal immutable legacy archives.",
+    "supplementary_accounting": "work/shorter-hashes/benchmark/results/fab05ca/supplementary-accounting.json",
+    "supplementary_accounting_sha256": "c54c56575b6d974fd2ff4d378b993e9695c9d8442dd3ffeb6eee90de732edb4a"
+  },
+  "limitations": [
+    "No coordinator or inner-loop acceptance performed; actual historical evidence and task states retained.",
+    "No successful selective-item savings experiment or fully converted live-workflow measurement exists.",
+    "User AGENTS.md edit preserved uncommitted."
+  ]
+}

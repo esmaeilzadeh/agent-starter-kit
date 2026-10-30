@@ -1,4 +1,35 @@
-# Current continuation handoff: shorter-hashes
+# Current direct-verification handoff — 2026-10-30
+
+This section supersedes the historical continuation claims below. The user
+instructed direct completion without the inner loop, then delegated approval
+when confidence exceeds 90%. Current AGENTS.md disables the kit workflow while
+self-developing AskIt; no frozen dogfooding copy was enabled.
+
+- Reviewed source candidate: `fab05ca5f9455aede8e56ce9b32433111ce236d9`.
+- Source correctness fixes approved independently at **98% confidence**.
+- Direct verification: **44 reference tests + 29 traceability tests passed**;
+  status, run-manifest, and start-work shell checks also passed.
+- Source approval is recorded in `final-source-review.md` and
+  `final-verification.json`. No whole-workstream acceptance is claimed.
+- The reproducible frozen public whole-file lookup replay preserved equivalent
+  evidence in all three journeys, but **failed both savings thresholds**:
+  **16,598 → 29,023 tokens (+74.86%)** and
+  **195,626 → 235,031 metadata bytes (+20.14%)**. Full transcripts, exact source
+  archives, catalog/lookup outputs and report are retained under
+  `benchmark/results/fab05ca/`; the preceding 69fa458 diagnostic is retained too.
+- This experiment does not measure selective item projections or establish
+  that savings are impossible. A reviewed projection redesign and successful
+  equivalent-evidence measurement are needed before full feature acceptance;
+  the accepted thresholds were not changed.
+- Historical task/coordinator evidence remains intact. Do not reopen the inner
+  loop or manufacture new Red/review/integration evidence. Product tests may
+  exercise kit commands in disposable consumer repositories.
+- Approved intent bytes are unchanged. The user's AGENTS.md self-development
+  edit is retained separately and was not committed with product changes.
+
+---
+
+# Historical continuation handoff: shorter-hashes
 
 Updated 2026-10-29. This section supersedes the Task 6 starting-state and
 pending-work claims in the historical handoff below. Resume the live workstream
