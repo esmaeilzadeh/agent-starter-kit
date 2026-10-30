@@ -243,6 +243,9 @@ class ReferenceTests(unittest.TestCase):
                      "beta/spec/1/plan/1/task/1@1",
                      ["beta/spec/1/plan/1/task/1/test/1@1"], True, True, True)]
         decision_refs = []
+        # A later valid decision publication must not hide an intervening ABA.
+        repo.git("update-ref", "refs/ask/references/transient", repo.source_sha)
+        repo.git("update-ref", "-d", "refs/ask/references/transient")
         for index, value in enumerate(decisions):
             evidence = repo.root / f"decision-{index}.json"
             evidence.write_text(json.dumps(value))
@@ -257,8 +260,11 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(code, 0, resolved)
             self.assertEqual(resolved["payload"]["decision"], recorded["decision"]["decision"])
 
-        # The decision catalog publication itself must not stale the exact graph
-        # generation it names. Public impact follows trusted numeric references.
+        self.assertEqual(validate_capture(repo.root, candidate)["reason"], "stale_inventory")
+        candidate = capture_project(repo.root, shared_owners={"shared"})
+        candidate_path.write_text(json.dumps(candidate))
+        # Refresh inventory after publication; the approved semantic generation
+        # remains unchanged and needs no duplicate decision.
         code, impact = repo.cli("impact", "--source", str(source_path), "--candidate",
                                str(candidate_path), "--shared-owner", "shared",
                                "--decision", decision_refs[0], "--decision", decision_refs[1])
@@ -298,6 +304,8 @@ class ReferenceTests(unittest.TestCase):
                                   "--recorded-by", "owner-coordinator",
                                   "--shared-owner", "shared")
         self.assertEqual(code, 0, recorded)
+        candidate = capture_project(repo.root, shared_owners={"shared"})
+        candidate_path.write_text(json.dumps(candidate))
         code, impact = repo.cli("impact", "--source", str(source_path), "--candidate",
                                str(candidate_path), "--shared-owner", "shared",
                                "--decision", decision_refs[0], "--decision", recorded["reference"])

@@ -9,7 +9,7 @@ import sys
 
 from .identity import ReferenceError, parse_reference
 from .impact import ImpactError, assess_impact, record_decision
-from .project import capture_project, load_project_graph
+from .project import _context_refs, capture_project, load_project_graph
 from .projection import project_status, show_reference
 from .store import (CatalogError, _lock, _publish_catalog, _recover_pending,
                     _repo_info, _review_references, _trusted_catalog)
@@ -105,8 +105,10 @@ def main(argv=None, *, root=None):
                     or not isinstance(capture.get("refs"), dict)):
                 raise ValueError("source and candidate must be complete project captures")
             changed_owners = set()
-            for ref in set(source["refs"]) | set(capture["refs"]):
-                if source["refs"].get(ref) != capture["refs"].get(ref):
+            source_refs = _context_refs(repository_root, source["refs"])
+            candidate_refs = _context_refs(repository_root, capture["refs"])
+            for ref in set(source_refs) | set(candidate_refs):
+                if source_refs.get(ref) != candidate_refs.get(ref):
                     fields = ref.split("/")
                     if len(fields) >= 4 and fields[:2] == ["refs", "heads"] and fields[2] == "agent":
                         changed_owners.add(fields[3])

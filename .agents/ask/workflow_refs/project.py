@@ -36,12 +36,15 @@ def _common_dir(root):
     return value.resolve() if value.is_absolute() else (root / value).resolve()
 
 
-def _reflog_generation(common, integration_ref, archive_ref, *, catalogs=True):
+def _task_ref(name):
+    return re.fullmatch(r"refs/heads/agent/[^/]+/task/[0-9]+", name) is not None
+
+
+def _reflog_generation(common, integration_ref, archive_ref):
     """Fingerprint ref movement, including advance-and-return ABA changes."""
     digest = hashlib.sha256()
-    roots = [common / "logs" / "refs" / "heads" / "agent"]
-    if catalogs:
-        roots.append(common / "logs" / "refs" / "ask" / "references")
+    roots = [common / "logs" / "refs" / "heads" / "agent",
+             common / "logs" / "refs" / "ask" / "references"]
     roots.extend(common / "logs" / Path(ref) for ref in (integration_ref, archive_ref) if ref)
     paths = set()
     for root in roots:
@@ -50,6 +53,8 @@ def _reflog_generation(common, integration_ref, archive_ref, *, catalogs=True):
         elif root.is_file():
             paths.add(root)
     for path in sorted(paths):
+        if _task_ref(path.relative_to(common / "logs").as_posix()):
+            continue
         digest.update(path.relative_to(common / "logs").as_posix().encode())
         try:
             digest.update(path.read_bytes())
@@ -58,18 +63,20 @@ def _reflog_generation(common, integration_ref, archive_ref, *, catalogs=True):
     return digest.hexdigest()
 
 
-def _ref_storage_generation(common, integration_ref=None, archive_ref=None, *, catalogs=True):
+def _ref_storage_generation(common, integration_ref=None, archive_ref=None):
     """Observe loose/packed owner-ref storage changes even without reflogs."""
-    roots = [common / "refs" / "heads" / "agent"]
-    if catalogs:
-        roots.append(common / "refs" / "ask" / "references")
+    agent_root = common / "refs" / "heads" / "agent"
+    catalog_root = common / "refs" / "ask" / "references"
     digest = hashlib.sha256()
     paths = set()
-    for root in roots:
+    for root in (agent_root, catalog_root):
         if root.exists():
-            paths.add(root)
+            if root == catalog_root:
+                paths.add(root)
             if root.is_dir():
-                paths.update(root.rglob("*"))
+                paths.update(path for path in root.rglob("*")
+                             if (root == catalog_root or not path.is_dir())
+                             and not _task_ref(path.relative_to(common).as_posix()))
     packed = common / "packed-refs"
     if packed.exists():
         paths.add(packed)
@@ -79,10 +86,6 @@ def _ref_storage_generation(common, integration_ref=None, archive_ref=None, *, c
         path = common / Path(ref)
         if path.exists():
             paths.add(path)
-        parent = path.parent
-        while parent != common and common in parent.parents:
-            paths.add(parent)
-            parent = parent.parent
     try:
         for path in sorted(paths):
             stat = path.lstat()
@@ -162,16 +165,10 @@ def _inventory(root, integration_ref, archive_ref, shared_owners):
     return refs, owners
 
 
-def _context_generation(root, vector):
-    """Hash dependency context while ignoring decision-only catalog publication.
-
-    The exact catalog refs remain in ``vector['refs']`` and still select all
-    graph data. A decision record is metadata about the captured graph, though,
-    and publishing that record must not invalidate the generation it names.
-    Catalog item entries and every other selected ref remain generation-bound.
-    """
+def _context_refs(root, selected_refs):
+    """Normalize catalog refs to graph content, excluding decision metadata."""
     refs = {}
-    for name, sha in vector["refs"].items():
+    for name, sha in selected_refs.items():
         if not name.startswith("refs/ask/references/"):
             refs[name] = sha
             continue
@@ -192,6 +189,12 @@ def _context_generation(root, vector):
         context_catalog.pop("decisions", None)
         canonical = json.dumps(context_catalog, sort_keys=True, separators=(",", ":")).encode()
         refs[name] = hashlib.sha256(canonical).hexdigest()
+    return refs
+
+
+def _context_generation(root, vector):
+    """Hash graph context independently of decision-only catalog publication."""
+    refs = _context_refs(root, vector["refs"])
     stable = {key: value for key, value in vector.items()
               if key not in {"movement_generation", "storage_generation", "generation", "status"}}
     stable["refs"] = refs
@@ -259,10 +262,6 @@ def capture_project(repository_root, integration_ref="refs/heads/develop",
                           "shared_owners": sorted(shared_owners),
                           "movement_generation": after_movement,
                           "storage_generation": after_storage,
-                          "source_movement_generation": _reflog_generation(
-                              common, integration_ref, archive_ref, catalogs=False),
-                          "source_storage_generation": _ref_storage_generation(
-                              common, integration_ref, archive_ref, catalogs=False),
                           "scope": "local-cooperating-repository"}
                 vector["generation"] = _context_generation(root, vector)
                 vector["status"] = "complete"
@@ -284,12 +283,10 @@ def validate_capture(repository_root, capture):
                               capture.get("archive_ref"), shared_owners=capture.get("shared_owners", []))
     if current.get("status") != "complete":
         return current
-    # Source movement always invalidates context; catalog-only decisions may
-    # advance authority without changing graph inputs. Same-ref ABA is stale.
-    same_refs_moved = (current.get("refs") == capture.get("refs") and any(
-        current.get(key) != capture.get(key)
-        for key in ("movement_generation", "storage_generation")))
-    if current.get("generation") != capture.get("generation") or same_refs_moved:
+    # Decision-only publication preserves semantic approval, but the exact
+    # inventory snapshot must be refreshed after any relevant ref movement.
+    if any(current.get(key) != capture.get(key)
+           for key in ("generation", "refs", "movement_generation", "storage_generation")):
         return {"status": "incomplete", "reason": "stale_inventory",
                 "expected_generation": capture.get("generation"),
                 "current_generation": current.get("generation")}

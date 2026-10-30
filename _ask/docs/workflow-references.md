@@ -20,7 +20,10 @@ inventory generation; an unsupported external ref change or missing owner
 authority yields `incomplete` instead of a partial success.
 
 Impact compares two saved complete capture objects. The candidate must still
-match the live cooperating-repository inventory when assessed:
+match the live cooperating-repository inventory when assessed. Refresh its
+capture after publishing decisions: decision-only metadata preserves the
+approved semantic generation, while the exact ref/movement snapshot changes.
+The existing decisions still apply; a fresh capture requires no new approval.
 
 ```sh
 ./ask refs impact --source /tmp/source-capture.json --candidate /tmp/current-capture.json

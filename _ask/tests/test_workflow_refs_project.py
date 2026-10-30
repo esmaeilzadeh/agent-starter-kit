@@ -66,6 +66,15 @@ class ReferenceTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def test_task_ref_movement_does_not_stale_capture(self):
+        capture = capture_project(self.root, shared_owners={"shared"})
+        git(self.root, "update-ref", "refs/heads/agent/orphan/task/4", self.other)
+        self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
+        git(self.root, "update-ref", "refs/heads/agent/another/task/5", self.other)
+        self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
+        git(self.root, "update-ref", "-d", "refs/heads/agent/another/task/5")
+        self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
+
     def test_authoritative_inventory_and_cycles(self):
         capture = capture_project(self.root, shared_owners={"shared"})
         self.assertEqual(capture["status"], "complete")
