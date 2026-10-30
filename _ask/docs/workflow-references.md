@@ -24,6 +24,9 @@ match the live cooperating-repository inventory when assessed. Refresh its
 capture after publishing decisions: decision-only metadata preserves the
 approved semantic generation, while the exact ref/movement snapshot changes.
 The existing decisions still apply; a fresh capture requires no new approval.
+Updates to existing inner-task refs stay outside project context. Physical
+namespace creation/removal or packed-ref rewrites can conservatively require a
+fresh snapshot even when the approved semantic generation is unchanged.
 
 ```sh
 ./ask refs impact --source /tmp/source-capture.json --candidate /tmp/current-capture.json

@@ -69,10 +69,12 @@ def _ref_storage_generation(common, integration_ref=None, archive_ref=None):
     catalog_root = common / "refs" / "ask" / "references"
     digest = hashlib.sha256()
     paths = set()
+    for parent in (common / "refs", agent_root.parent, catalog_root.parent):
+        if parent.exists():
+            paths.add(parent)
     for root in (agent_root, catalog_root):
         if root.exists():
-            if root == catalog_root:
-                paths.add(root)
+            paths.add(root)
             if root.is_dir():
                 paths.update(path for path in root.rglob("*")
                              if (root == catalog_root or not path.is_dir())

@@ -71,9 +71,24 @@ class ReferenceTests(unittest.TestCase):
         git(self.root, "update-ref", "refs/heads/agent/orphan/task/4", self.other)
         self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
         git(self.root, "update-ref", "refs/heads/agent/another/task/5", self.other)
-        self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
+        refreshed = capture_project(self.root, shared_owners={"shared"})
+        self.assertEqual(refreshed["generation"], capture["generation"])
+        self.assertNotIn("another", refreshed["owners"])
+        self.assertEqual(validate_capture(self.root, capture)["reason"], "stale_inventory")
         git(self.root, "update-ref", "-d", "refs/heads/agent/another/task/5")
-        self.assertEqual(validate_capture(self.root, capture)["status"], "complete")
+        self.assertEqual(validate_capture(self.root, refreshed)["reason"], "stale_inventory")
+
+    def test_unlogged_transient_owner_stales_capture(self):
+        git(self.root, "config", "core.logAllRefUpdates", "false")
+        capture = capture_project(self.root, shared_owners={"shared"})
+        def transient_owner(*_args):
+            git(self.root, "update-ref", "refs/heads/agent/transient-owner", self.sha)
+            git(self.root, "update-ref", "-d", "refs/heads/agent/transient-owner")
+        transient_owner()
+        self.assertEqual(validate_capture(self.root, capture)["reason"], "stale_inventory")
+        during = capture_project(self.root, retries=1, during_scan=transient_owner,
+                                 shared_owners={"shared"})
+        self.assertEqual(during["status"], "incomplete")
 
     def test_authoritative_inventory_and_cycles(self):
         capture = capture_project(self.root, shared_owners={"shared"})
