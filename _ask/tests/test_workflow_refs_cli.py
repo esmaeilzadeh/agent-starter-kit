@@ -114,6 +114,7 @@ class ReferenceTests(unittest.TestCase):
 
     def test_projection_handles_unhashable_rows_and_commented_yaml(self):
         from workflow_refs.cli import main
+        from inner_loop.yaml_lite import parse_yaml
 
         catalog = self.root / "work/demo/references/integrity.json"
 
@@ -138,8 +139,9 @@ class ReferenceTests(unittest.TestCase):
                          {"items": [{"id": "task-two", "value": 7}]})
 
         raw_yaml = (b"# comment\nschema: ask-inner-loop-tasks/v1\nwork_id: demo\n"
+                    b"annotations:\n  - id: note\n    detail: retained\n"
                     b"tasks:\n  - id: one\n    depends_on: []\n  - id: two\n"
-                    b"    depends_on: []\n")
+                    b"    depends_on: []\nnotes: omit from task projection\n")
         register("demo/spec/3@1", raw_yaml, "YAML with leading comment")
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
@@ -148,7 +150,9 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(output.getvalue(),
                          "# comment\nschema: ask-inner-loop-tasks/v1\nwork_id: demo\n"
+                         "annotations:\n  - id: note\n    detail: retained\n"
                          "tasks:\n  - id: two\n    depends_on: []\n")
+        self.assertEqual([task["id"] for task in parse_yaml(output.getvalue())["tasks"]], ["two"])
 
     def test_decide_allocates_after_existing_review_and_public_show_resolves_it(self):
         from workflow_refs.cli import main

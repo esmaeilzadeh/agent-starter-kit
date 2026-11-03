@@ -133,19 +133,26 @@ def _project_text(text, sections, task_rows, yaml_tasks):
         if sections or task_rows:
             raise CatalogError("invalid_projection", "YAML task projection cannot be combined with Markdown")
         lines = text.splitlines()
-        task_starts = [index for index, line in enumerate(lines)
-                       if re.fullmatch(r"  - id: .+", line)]
+        task_fields = [index for index, line in enumerate(lines)
+                       if re.fullmatch(r"tasks:\s*(?:#.*)?", line)]
+        if len(task_fields) != 1:
+            raise CatalogError("invalid_projection", "YAML source has no unique root tasks field")
+        tasks_header = task_fields[0]
+        list_end = next((index for index in range(tasks_header + 1, len(lines))
+                         if re.match(r"^[^#\s][^:]*:", lines[index])), len(lines))
+        task_starts = [index for index in range(tasks_header + 1, list_end)
+                       if re.fullmatch(r"  - id: .+", lines[index])]
         if not task_starts:
             raise CatalogError("invalid_projection", "YAML source has no supported task list")
-        selected = lines[:task_starts[0]]
+        selected = lines[:tasks_header + 1]
         for task_id in yaml_tasks:
             start = [index for index in task_starts if lines[index] == f"  - id: {task_id}"]
             if not start:
                 raise CatalogError("missing", f"YAML task is unavailable: {task_id!r}")
             if len(start) > 1:
                 raise CatalogError("ambiguous", f"YAML task is duplicated: {task_id!r}")
-            end = next((index for index in range(start[0] + 1, len(lines))
-                        if lines[index].startswith("  - id: ")), len(lines))
+            end = next((index for index in range(start[0] + 1, list_end)
+                        if re.fullmatch(r"  - id: .+", lines[index])), list_end)
             selected.extend(lines[start[0]:end])
         return "\n".join(selected) + "\n"
 
