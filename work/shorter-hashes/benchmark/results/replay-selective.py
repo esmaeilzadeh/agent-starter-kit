@@ -178,9 +178,9 @@ def main():
         "workload_version": baseline["workload_version"], "tokenizer": baseline["tokenizer"],
         "journeys": journeys, "totals": totals, "metadata_files": files,
         "non_json_files": non_json_files,
-        "scope": "Three frozen journeys with verified source reads and selective top-level JSON item projections; original outcomes and source identities preserved.",
+        "scope": "Three frozen journeys with verified source reads and selective JSON, Markdown, and YAML projections; original outcomes and source identities preserved.",
         "full_value_exceptions": ["Immutable legacy originals, catalog digests and exact source commits remain full values."],
-        "accounting": "Every public response and lookup-index input is counted. Equal immutable JSON archives are included on both sides; generated catalogs and response JSON are included once per output path. Prose and logs remain in the raw transcripts."}
+        "accounting": "Every public response and lookup-index input is counted. Equal immutable JSON archives are included on both sides; catalogs and JSON responses are counted once per output path. Non-JSON files are listed and totaled separately and cannot offset either acceptance threshold."}
     write(output / "report.json", json_bytes(report))
     print(json.dumps({key: report[key] for key in ("status", "journeys", "totals")}, indent=2))
     return 0 if passed else 1
