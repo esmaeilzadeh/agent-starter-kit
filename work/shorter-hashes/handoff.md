@@ -17,7 +17,8 @@ and frozen workload remain unchanged.
   frozen journeys with equivalent evidence. Using `tiktoken 0.12.0` and
   `cl100k_base`, agent-input tokens fell **16,598 → 14,178** and metadata bytes
   fell **195,626 → 154,054**. Non-JSON bytes are reported separately and do not
-  offset either threshold. The prior `fab05ca` failure remains unchanged.
+  offset either threshold. It binds candidate `abb8e87b3011c7d8431f8e9b3d7a422e44892a44`.
+  The prior `fab05ca` failure remains unchanged.
 - Verification on the candidate: `PYTHONPATH=_ask/scripts python3 -m unittest
   _ask.tests.test_workflow_refs_cli` and
   `python3 -m unittest _ask.tests.test_workflow_refs_savings` both passed.
