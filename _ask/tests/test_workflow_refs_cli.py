@@ -11,6 +11,7 @@ import sys
 import shutil
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_ask/scripts"))
 from workflow_refs.store import CatalogError, initialize_catalog, register_revision
 
 
