@@ -134,8 +134,9 @@ def _project_text(text, sections, task_rows, yaml_tasks):
             raise CatalogError("invalid_projection", "YAML task projection cannot be combined with Markdown")
         lines = text.splitlines()
         task_fields = [index for index, line in enumerate(lines)
-                       if re.fullmatch(r"tasks:\s*(?:#.*)?", line)]
-        if len(task_fields) != 1:
+                       if re.match(r"^tasks:", line)]
+        if (len(task_fields) != 1
+                or not re.fullmatch(r"tasks:\s*(?:#.*)?", lines[task_fields[0]])):
             raise CatalogError("invalid_projection", "YAML source has no unique root tasks field")
         tasks_header = task_fields[0]
         list_end = next((index for index in range(tasks_header + 1, len(lines))
@@ -176,7 +177,7 @@ def _project_text(text, sections, task_rows, yaml_tasks):
         if len(starts) > 1:
             raise CatalogError("ambiguous", f"Markdown task row is duplicated: {task_id!r}")
         end = next((index for index in range(starts[0] + 1, len(lines))
-                    if lines[index].startswith("|") and not lines[index].startswith("|   ")), len(lines))
+                    if not lines[index].startswith("|   ")), len(lines))
         row = "\n".join(lines[starts[0]:end]) + "\n"
         parts.append("## First task row\n" + row)
     if not parts:

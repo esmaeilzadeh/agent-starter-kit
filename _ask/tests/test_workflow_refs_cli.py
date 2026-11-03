@@ -154,6 +154,27 @@ class ReferenceTests(unittest.TestCase):
                          "tasks:\n  - id: two\n    depends_on: []\n")
         self.assertEqual([task["id"] for task in parse_yaml(output.getvalue())["tasks"]], ["two"])
 
+        for number, duplicate in enumerate((
+                b"tasks:\n  - id: two\ntasks: []\n",
+                b"tasks: []\ntasks:\n  - id: two\n"), 4):
+            reference = f"demo/spec/{number}@1"
+            register(reference, duplicate, f"duplicate YAML tasks field {number}")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = main(["show", reference, "--yaml-task", "two"], root=self.root)
+            self.assertEqual(code, 2)
+            self.assertEqual(json.loads(output.getvalue())["reason"], "invalid_projection")
+
+        register("demo/spec/6@1", b"| two | selected |\n|   continuation |\n\n"
+                 b"## Notes\nunrelated\n", "last Markdown table row")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/6@1", "--task-row", "two",
+                         "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(output.getvalue(),
+                         "## First task row\n| two | selected |\n|   continuation |\n")
+
     def test_decide_allocates_after_existing_review_and_public_show_resolves_it(self):
         from workflow_refs.cli import main
         from workflow_refs.project import capture_project
