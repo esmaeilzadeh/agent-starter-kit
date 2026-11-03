@@ -1,0 +1,109 @@
+{
+  "schema": "ask-reference-catalog/v1",
+  "owner": "status-template-stage-detection",
+  "generation": 5,
+  "snapshots": {
+    "ab16e2b2cbe47d097b48ee67c521a334df01a21ca19567cd56a2be61f9b0ff61": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/status-template-stage-detection/intent-confirmation.json"
+    },
+    "69dc49eba2eef34e9eab4193c1a6798290e5588a0a1e59aa234c2068b96ae5bc": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/status-template-stage-detection/intent.md"
+    },
+    "15d405fb96c21ce6580bc349a3e58995585ade1754b2c9cf2f63245ad1a7bbdc": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/status-template-stage-detection/plan.md"
+    },
+    "1ee2f6ee942370fef81d6cee16432642e1cfc650ec0416138b83404aed8bcc5a": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/status-template-stage-detection/test-plan.json"
+    },
+    "ac4da89fd138f5c136ac0dc7f219d037f2ff9314b25d3ce248074d42d7865660": {
+      "commit": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+      "path": "work/status-template-stage-detection/traceability-accepted.json"
+    }
+  },
+  "entries": [
+    {
+      "reference": "status-template-stage-detection/snapshot/2@1",
+      "logical_id": "status-template-stage-detection/snapshot/2",
+      "revision": 1,
+      "snapshot_id": "ab16e2b2cbe47d097b48ee67c521a334df01a21ca19567cd56a2be61f9b0ff61",
+      "item_id": "work/status-template-stage-detection/intent-confirmation.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "b070997b15f953527b07f2bf2203fd12fae28172d091ba5d603f86aafbcb6352"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 1
+    },
+    {
+      "reference": "status-template-stage-detection/snapshot/3@1",
+      "logical_id": "status-template-stage-detection/snapshot/3",
+      "revision": 1,
+      "snapshot_id": "69dc49eba2eef34e9eab4193c1a6798290e5588a0a1e59aa234c2068b96ae5bc",
+      "item_id": "work/status-template-stage-detection/intent.md",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 2
+    },
+    {
+      "reference": "status-template-stage-detection/snapshot/4@1",
+      "logical_id": "status-template-stage-detection/snapshot/4",
+      "revision": 1,
+      "snapshot_id": "15d405fb96c21ce6580bc349a3e58995585ade1754b2c9cf2f63245ad1a7bbdc",
+      "item_id": "work/status-template-stage-detection/plan.md",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "edfc889d58bb587923ebdb556c12b0fa9a59881bb989274ba2c803d791c64a3a"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 3
+    },
+    {
+      "reference": "status-template-stage-detection/snapshot/5@1",
+      "logical_id": "status-template-stage-detection/snapshot/5",
+      "revision": 1,
+      "snapshot_id": "1ee2f6ee942370fef81d6cee16432642e1cfc650ec0416138b83404aed8bcc5a",
+      "item_id": "work/status-template-stage-detection/test-plan.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "f9f96c4dbafac80ec492370e155aaaade7469db2f8b53137313b41561edd1bd4"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 4
+    },
+    {
+      "reference": "status-template-stage-detection/snapshot/6@1",
+      "logical_id": "status-template-stage-detection/snapshot/6",
+      "revision": 1,
+      "snapshot_id": "ac4da89fd138f5c136ac0dc7f219d037f2ff9314b25d3ce248074d42d7865660",
+      "item_id": "work/status-template-stage-detection/traceability-accepted.json",
+      "profile": "prose-item/1",
+      "digest_algorithm": "sha256",
+      "digests": {
+        "exact-bytes/1": "b2f434b2bf14129741ae529c52313b1b93b9095983d7856ded336fc3a75fc294"
+      },
+      "digest_semantics": [
+        "exact-bytes/1"
+      ],
+      "generation": 5
+    }
+  ]
+}

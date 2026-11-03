@@ -1,0 +1,27 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+
+======================================================================
+FAIL: test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-qnofaqak/candidate/_ask/tests/inner_loop_recovery.py", line 443, in test_nested_verifier_coordinator_finalization
+    self.assertEqual(result.errors, [])
+AssertionError: Lists differ: [(<_ask.tests.inner_loop_recovery.Recovery[1295 chars]\n')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+(<_ask.tests.inner_loop_recovery.RecoveryTests.test_nested_verifier_coordinator_finalization.<locals>.NestedFinalizationCase testMethod=test_nested_real_reports_are_finalized_by_parent>, 'Traceback (most recent call last):\n  File "/tmp/ask-cases-qnofaqak/candidate/_ask/tests/inner_loop_recovery.py", line 429, in test_nested_real_reports_are_finalized_by_parent\n    super().test_successful_in_place_integration_records_executed_lineage()\n  File "/tmp/ask-cases-qnofaqak/candidate/_ask/tests/inner_loop_reliability.py", line 172, in test_successful_in_place_integration_records_executed_lineage\n    self.assertEqual(integrate_ready(self.root, "w", "a"), self.candidate)\n  File "/tmp/ask-cases-qnofaqak/candidate/_ask/scripts/inner_loop/driver.py", line 127, in integrate_ready\n    _checkpoint_run_locked(root, work_id, task_id, run_id, doc)\n  File "/tmp/ask-cases-qnofaqak/candidate/_ask/scripts/inner_loop/evidence.py", line 273, in _checkpoint_run_locked\n    report, row = _execution_row(root, work_id, task_id, run_id)\n  File "/tmp/ask-cases-qnofaqak/candidate/_ask/scripts/inner_loop/evidence.py", line 162, in _execution_row\n    raise NotIntegrable(\'traceability report identity does not match the selected task/run\')\ninner_loop.evidence.NotIntegrable: traceability report identity does not match the selected task/run\n')
+
+Diff is 1520 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 8 tests in 27.132s
+
+FAILED (failures=1)

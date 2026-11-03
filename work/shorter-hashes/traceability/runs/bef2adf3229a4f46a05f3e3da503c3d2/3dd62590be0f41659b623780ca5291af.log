@@ -1,0 +1,6 @@
+test_strict_frozen_aggregate_savings (_ask.tests.test_workflow_refs_savings.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 4.969s
+
+OK

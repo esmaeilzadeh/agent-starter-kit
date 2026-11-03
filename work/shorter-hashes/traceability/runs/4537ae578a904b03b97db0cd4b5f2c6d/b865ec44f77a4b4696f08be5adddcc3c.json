@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "_ask.tests.test_workflow_refs_codec.ReferenceTests.test_compact_lossless_versioned_envelopes", "outcome": "passed", "failure_kind": null}, {"case_id": "_ask.tests.test_workflow_refs_codec.ReferenceTests.test_persisted_producer_roundtrip", "outcome": "passed", "failure_kind": null}], "collection_status": "ok"}

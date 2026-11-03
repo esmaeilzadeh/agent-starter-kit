@@ -1,0 +1,15 @@
+{
+  "schema": "ask-completion/v1",
+  "status": "fail",
+  "scope": "workstream",
+  "task_id": null,
+  "candidate_sha": "18997d274302370461bab0ec53a59482b73b1013",
+  "input_digests": {},
+  "criterion_evidence": [],
+  "missing_evidence": [],
+  "errors": [
+    "dirty or non-current candidate source"
+  ],
+  "execution_artifacts": [],
+  "evidence_state": "invalid"
+}

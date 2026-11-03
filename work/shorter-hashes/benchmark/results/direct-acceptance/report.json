@@ -1,0 +1,342 @@
+{
+  "schema": "ask-reference-savings/v1",
+  "status": "pass",
+  "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95",
+  "baseline_source": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+  "workload_version": "references-journeys/1",
+  "tokenizer": {
+    "package": "tiktoken",
+    "version": "0.12.0",
+    "encoding": "cl100k_base",
+    "operation": "encode_ordinary",
+    "text_encoding": "utf-8"
+  },
+  "journeys": [
+    {
+      "id": "resume",
+      "equivalent_evidence": true,
+      "baseline_tokens": 2867,
+      "candidate_tokens": 2558,
+      "token_regression": false
+    },
+    {
+      "id": "review",
+      "equivalent_evidence": true,
+      "baseline_tokens": 10128,
+      "candidate_tokens": 8295,
+      "token_regression": false
+    },
+    {
+      "id": "completion",
+      "equivalent_evidence": true,
+      "baseline_tokens": 3603,
+      "candidate_tokens": 3325,
+      "token_regression": false
+    }
+  ],
+  "totals": {
+    "baseline": {
+      "agent_input_tokens": 16598,
+      "metadata_bytes": 195626,
+      "non_json_bytes": 43219
+    },
+    "candidate": {
+      "agent_input_tokens": 14178,
+      "metadata_bytes": 154054,
+      "non_json_bytes": 53532
+    }
+  },
+  "metadata_files": {
+    "baseline": [
+      {
+        "path": "generated/specs/current/structured-agentic-environment.json",
+        "bytes": 7476,
+        "sha256": "a6f8c64e2f15903ef3dffb4592062d4bf55e72140987298da4a6b419381053eb"
+      },
+      {
+        "path": "generated/work/status-template-stage-detection/intent-confirmation.json",
+        "bytes": 345,
+        "sha256": "b070997b15f953527b07f2bf2203fd12fae28172d091ba5d603f86aafbcb6352"
+      },
+      {
+        "path": "generated/work/status-template-stage-detection/test-plan.json",
+        "bytes": 6676,
+        "sha256": "f9f96c4dbafac80ec492370e155aaaade7469db2f8b53137313b41561edd1bd4"
+      },
+      {
+        "path": "generated/work/status-template-stage-detection/traceability-accepted.json",
+        "bytes": 1022,
+        "sha256": "b2f434b2bf14129741ae529c52313b1b93b9095983d7856ded336fc3a75fc294"
+      },
+      {
+        "path": "generated/work/structured-agentic-environment/test-plan.json",
+        "bytes": 72133,
+        "sha256": "d6761389de988f4e125c5f02ea02a879baa91659f9a3d931db53f98fcb63a90b"
+      },
+      {
+        "path": "generated/work/structured-agentic-environment/traceability/completion.json",
+        "bytes": 349,
+        "sha256": "b02965d97a5bb668db3b4c41972469459c15076b8eba7f6acd6d8004b23965f5"
+      },
+      {
+        "path": "generated/work/structured-agentic-environment/traceability/plan-review.json",
+        "bytes": 295,
+        "sha256": "c0617547282d4b347565bded28e55f7c5dfb78a47ab6a1e7bc211059093b49b5"
+      },
+      {
+        "path": "generated/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+        "bytes": 3719,
+        "sha256": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8"
+      },
+      {
+        "path": "generated/work/structured-agentic-environment/traceability-accepted.json",
+        "bytes": 5798,
+        "sha256": "df5734caf3c217d1c79c4fea7e53578f9d71c8e5c4b4e78094b90eccfc95bd4f"
+      },
+      {
+        "path": "legacy-inputs/specs/current/structured-agentic-environment.json",
+        "bytes": 7476,
+        "sha256": "a6f8c64e2f15903ef3dffb4592062d4bf55e72140987298da4a6b419381053eb"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/intent-confirmation.json",
+        "bytes": 345,
+        "sha256": "b070997b15f953527b07f2bf2203fd12fae28172d091ba5d603f86aafbcb6352"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/test-plan.json",
+        "bytes": 6676,
+        "sha256": "f9f96c4dbafac80ec492370e155aaaade7469db2f8b53137313b41561edd1bd4"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/traceability-accepted.json",
+        "bytes": 1022,
+        "sha256": "b2f434b2bf14129741ae529c52313b1b93b9095983d7856ded336fc3a75fc294"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/test-plan.json",
+        "bytes": 72133,
+        "sha256": "d6761389de988f4e125c5f02ea02a879baa91659f9a3d931db53f98fcb63a90b"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/completion.json",
+        "bytes": 349,
+        "sha256": "b02965d97a5bb668db3b4c41972469459c15076b8eba7f6acd6d8004b23965f5"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/plan-review.json",
+        "bytes": 295,
+        "sha256": "c0617547282d4b347565bded28e55f7c5dfb78a47ab6a1e7bc211059093b49b5"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+        "bytes": 3719,
+        "sha256": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability-accepted.json",
+        "bytes": 5798,
+        "sha256": "df5734caf3c217d1c79c4fea7e53578f9d71c8e5c4b4e78094b90eccfc95bd4f"
+      }
+    ],
+    "candidate": [
+      {
+        "path": "generated/lookup-index.json",
+        "bytes": 4531,
+        "sha256": "1fea2c1914eedb42d2bfb5ca31309b6c5bf38171209a44dc0c45e9715495cc58"
+      },
+      {
+        "path": "generated/responses/specs/current/structured-agentic-environment.json",
+        "bytes": 3832,
+        "sha256": "9ae4ab45f4d8bc5b388292c6f9f5ed9dd6594e93d5b65f93be855630f5a6352d"
+      },
+      {
+        "path": "generated/responses/work/status-template-stage-detection/intent-confirmation.json",
+        "bytes": 320,
+        "sha256": "d98834144f7d72997a8d8977c36533019c35b4a61c1a159e7d9685bab21a939e"
+      },
+      {
+        "path": "generated/responses/work/status-template-stage-detection/test-plan.json",
+        "bytes": 4684,
+        "sha256": "bafd1166dd7f018dc44f6f3fec49bfa78c0ef469c702751c4c921e478bc1f5d3"
+      },
+      {
+        "path": "generated/responses/work/status-template-stage-detection/traceability-accepted.json",
+        "bytes": 942,
+        "sha256": "ff79740742673e72f01a71d05ccb06669ce19bd993b73719e52cee0c1c8b564d"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/test-plan.json",
+        "bytes": 20953,
+        "sha256": "5b8a208b061b8e0c4b2c165bca488fd8001284d7a959641eae0e9e54d3ef70e3"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/traceability/completion.json",
+        "bytes": 300,
+        "sha256": "7831737e2dac2af446dd80a24b32841e7f7fa733729fd28e1613605dc7b8cdb2"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/traceability/plan-review.json",
+        "bytes": 274,
+        "sha256": "99a281bdc915c52f91686755959176830734289c9c5d6b131c48eb3cffb7e4e3"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+        "bytes": 3146,
+        "sha256": "3368d5a9a40e8075a2f40f5626459b6c6f3219393836009bf25c4e71f1846a27"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/traceability-accepted.json",
+        "bytes": 5320,
+        "sha256": "4edd5fad8be4332784ced592a2f250ad8cb4cb15b2b6fdb75037175764538442"
+      },
+      {
+        "path": "generated/work/status-template-stage-detection/references/integrity.json",
+        "bytes": 4213,
+        "sha256": "4da250c707f5f53023021e8f7da8a240765c8a04d93b9af26a9556a5e8b3fb9f"
+      },
+      {
+        "path": "generated/work/structured-agentic-environment/references/integrity.json",
+        "bytes": 7726,
+        "sha256": "14b642374802fdd37210b983526a3940f49cce4ada3529f6aa9d1501c2bcccc9"
+      },
+      {
+        "path": "legacy-inputs/specs/current/structured-agentic-environment.json",
+        "bytes": 7476,
+        "sha256": "a6f8c64e2f15903ef3dffb4592062d4bf55e72140987298da4a6b419381053eb"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/intent-confirmation.json",
+        "bytes": 345,
+        "sha256": "b070997b15f953527b07f2bf2203fd12fae28172d091ba5d603f86aafbcb6352"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/test-plan.json",
+        "bytes": 6676,
+        "sha256": "f9f96c4dbafac80ec492370e155aaaade7469db2f8b53137313b41561edd1bd4"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/traceability-accepted.json",
+        "bytes": 1022,
+        "sha256": "b2f434b2bf14129741ae529c52313b1b93b9095983d7856ded336fc3a75fc294"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/test-plan.json",
+        "bytes": 72133,
+        "sha256": "d6761389de988f4e125c5f02ea02a879baa91659f9a3d931db53f98fcb63a90b"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/completion.json",
+        "bytes": 349,
+        "sha256": "b02965d97a5bb668db3b4c41972469459c15076b8eba7f6acd6d8004b23965f5"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/plan-review.json",
+        "bytes": 295,
+        "sha256": "c0617547282d4b347565bded28e55f7c5dfb78a47ab6a1e7bc211059093b49b5"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+        "bytes": 3719,
+        "sha256": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability-accepted.json",
+        "bytes": 5798,
+        "sha256": "df5734caf3c217d1c79c4fea7e53578f9d71c8e5c4b4e78094b90eccfc95bd4f"
+      }
+    ]
+  },
+  "non_json_files": {
+    "baseline": [
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/intent.md",
+        "bytes": 1914,
+        "sha256": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/plan.md",
+        "bytes": 3565,
+        "sha256": "edfc889d58bb587923ebdb556c12b0fa9a59881bb989274ba2c803d791c64a3a"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/inner-loop/tasks.yaml",
+        "bytes": 8550,
+        "sha256": "f6c778ba7521166785358ca34cc5f4ff3a5c8c10025f4a0244eff9b93fb4fac2"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/plan.md",
+        "bytes": 26827,
+        "sha256": "dc3db2c5843f3ef83f81c9a85ba52bb42304e654b9185ed0f6df5fdf77560e48"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+        "bytes": 2363,
+        "sha256": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3"
+      }
+    ],
+    "candidate": [
+      {
+        "path": "generated/responses/work/status-template-stage-detection/intent.md",
+        "bytes": 1914,
+        "sha256": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb"
+      },
+      {
+        "path": "generated/responses/work/status-template-stage-detection/plan.md",
+        "bytes": 1255,
+        "sha256": "f8bd3e92348836d513d66070b412e9628dad1fdc821e5c22387b01cfa4dd530e"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/inner-loop/tasks.yaml",
+        "bytes": 1671,
+        "sha256": "751ae9e862011b934945fe1cd9a273dd1890f6ca1462be979e72d5611b7e2077"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/plan.md",
+        "bytes": 3110,
+        "sha256": "f4d0eff5ad748474262f32e5ae66f371a576b44aefb02f95b9f1f65900d2eae0"
+      },
+      {
+        "path": "generated/responses/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+        "bytes": 2363,
+        "sha256": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/intent.md",
+        "bytes": 1914,
+        "sha256": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb"
+      },
+      {
+        "path": "legacy-inputs/work/status-template-stage-detection/plan.md",
+        "bytes": 3565,
+        "sha256": "edfc889d58bb587923ebdb556c12b0fa9a59881bb989274ba2c803d791c64a3a"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/inner-loop/tasks.yaml",
+        "bytes": 8550,
+        "sha256": "f6c778ba7521166785358ca34cc5f4ff3a5c8c10025f4a0244eff9b93fb4fac2"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/plan.md",
+        "bytes": 26827,
+        "sha256": "dc3db2c5843f3ef83f81c9a85ba52bb42304e654b9185ed0f6df5fdf77560e48"
+      },
+      {
+        "path": "legacy-inputs/work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+        "bytes": 2363,
+        "sha256": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3"
+      }
+    ]
+  },
+  "scope": "Three frozen journeys with verified source reads and selective JSON, Markdown, and YAML projections; original outcomes and source identities preserved.",
+  "full_value_exceptions": [
+    "Immutable legacy originals, catalog digests and exact source commits remain full values."
+  ],
+  "accounting": "Every public response and lookup-index input is counted. Equal immutable JSON archives are included on both sides; catalogs and JSON responses are counted once per output path. Non-JSON files are listed and totaled separately and cannot offset either acceptance threshold.",
+  "retained_output_root": "work/shorter-hashes/benchmark/results/selective-projection-final",
+  "retention_verification": {
+    "files_compared": 60,
+    "all_byte_identical": true,
+    "description": "Report paths resolve under retained_output_root. Fresh final-candidate outputs were compared byte for byte with every retained output, including transcripts."
+  }
+}

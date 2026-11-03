@@ -1,0 +1,54 @@
+{
+  "authorities": [
+    {
+      "authority_commit": "14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
+      "candidate_shas": [
+        "3196a591e2ee0c75ee0bda1539a9319555273662",
+        "94458d8376a75f052adbf2c4737f4f3c18cef4b6"
+      ],
+      "contract_sha": "588c6cd9f3585eeb77d8a745abfc8d1a96b73cb6",
+      "history_ref": "refs/ask/accepted-tests-history/continuation-recovery/14d8bbe20c5f3d24082c13ef98a29e80ac019b92",
+      "plan_digest": "2ddca16503e68dc640b51b9a4d5ddb8dab79e75b16fd1eec04bc9de012958aa0",
+      "retention": "verified",
+      "run_ids": [
+        "b50dd24e0ef04a2aacff4c4a26db4dd5",
+        "f21a95f6b4c4499aacf37a3ffd27a77d"
+      ]
+    },
+    {
+      "authority_commit": "4ad1d2de2591a672aab211df1ce019d97cb13fad",
+      "candidate_shas": [
+        "8e61c14f6deafb334d3d4cbb8230abfde9358d5f"
+      ],
+      "contract_sha": "681d2bfebc9e07a5901c6cd0b17bf01230e3c9af",
+      "history_ref": "refs/ask/accepted-tests-history/continuation-recovery/4ad1d2de2591a672aab211df1ce019d97cb13fad",
+      "plan_digest": "a8c13188a26489e67173333ca4f69ac572f00836a3f32e77929ee82a1ff99025",
+      "retention": "verified",
+      "run_ids": [
+        "dab908b39596441086d57106b8c816ec"
+      ]
+    },
+    {
+      "authority_commit": "01ab63265bd0adfb2b6bc0aadde86ba46eccbeb8",
+      "candidate_shas": [
+        "ad716fec75e1aae27b198073b6fc6a5442d71780",
+        "5acba992f8cf928007f077451d5c23b1017d5eaa",
+        "fb1a0fc5735f3764d5ad5cf28a8beec22f22cc04"
+      ],
+      "contract_sha": "a147f5c4d3946071f0627c90c037ded2ff287869",
+      "history_ref": "refs/ask/accepted-tests-history/continuation-recovery/01ab63265bd0adfb2b6bc0aadde86ba46eccbeb8",
+      "plan_digest": "bd07e997c4532b686ca09bbb8c32ca4b243b75ef832382e666789b670c6855ec",
+      "retention": "verified",
+      "run_ids": [
+        "b5e4fc3b34c14e5a93312d2744be9adf",
+        "e2a9dc4b3d5e41789117fae0b9623e93",
+        "f8207e36d1794b499e043ba263cacb32"
+      ]
+    }
+  ],
+  "basis": "Each authority commit is taken from the corresponding retained CR-3 attempt_history entry, checked against the original Red candidate accepted pin and exact contract parent, then retained under its immutable history ref.",
+  "coordinator_state_revision": 29,
+  "schema": "ask-cr3-historical-authority-retention/v1",
+  "task_id": "CR-3",
+  "work_id": "continuation-recovery"
+}

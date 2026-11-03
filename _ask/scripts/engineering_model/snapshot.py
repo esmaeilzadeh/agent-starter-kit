@@ -20,7 +20,7 @@ from .passages import (HEADING_DISCOVERY_VERSION, PLAN_TASK_DISCOVERY_VERSION,
                        RULES_VERSION as PASSAGE_RULES_VERSION, resolve)
 
 _COMMIT = re.compile(r"^[0-9a-f]{40,64}$")
-DEPENDENCY_DISCOVERY_VERSION = "engineering-input-closure/v3"
+DEPENDENCY_DISCOVERY_VERSION = "engineering-input-closure/v4"
 _MISSING_REVISION = object()
 
 
@@ -139,6 +139,9 @@ class Snapshot:
     files: Mapping[str, bytes | None]
     statuses: Mapping[str, str]
     passages: Mapping[str, dict] = field(default_factory=lambda: MappingProxyType({}))
+    documents: Mapping[str, object] = field(default_factory=lambda: MappingProxyType({}))
+    references: Mapping[str, dict] = field(default_factory=lambda: MappingProxyType({}))
+    input_errors: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
 
     @property
     def model_path(self):
@@ -146,7 +149,19 @@ class Snapshot:
 
     @property
     def document(self):
+        if self.model_path in self.documents:
+            return self.documents[self.model_path]
         return decode(self.files[self.model_path])
+
+    @property
+    def validation_reference_bytes(self):
+        """Expose normalized JSON to validators while retaining raw capture bytes."""
+        result = dict(self.files)
+        for path, document in self.documents.items():
+            if path.endswith(".json"):
+                result[path] = json.dumps(document, ensure_ascii=False, sort_keys=True,
+                                          separators=(",", ":")).encode("utf-8")
+        return result
 
     @property
     def identity(self):
@@ -187,8 +202,11 @@ class Snapshot:
 
     def diagnostics(self, root):
         from .canonical import diagnostics
-        errors = validate(self.document, root, self.work_id, reference_bytes=self.files)
+        errors = validate(self.document, root, self.work_id,
+                          reference_bytes=self.validation_reference_bytes)
         errors.extend(diagnostics(self))
+        errors.extend({"code": "EM001_COMPACT_INPUT", "path": path,
+                       "message": message} for path, message in self.input_errors.items())
         for key, record in self.passages.items():
             resolution = record.get("resolution", {})
             if record.get("status") in {"unsafe", "outside-repository", "unresolvable", "unreadable"}:
@@ -223,9 +241,12 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
         status, model_bytes = read(model_path)
         if status != "present":
             raise OSError(f"cannot read {model_path}: {status}")
-    document = decode(model_bytes)
+    document, model_references = _normalize_record(model_bytes)
     files = {model_path: model_bytes}
     statuses = {model_path: "present"}
+    documents = {model_path: document}
+    references = {model_path: model_references} if model_references else {}
+    input_errors = {}
     pending = referenced_paths(document)
     while pending:
         relative = min(pending)
@@ -237,9 +258,14 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
         if status != "present" or not relative.endswith(".json"):
             continue
         try:
-            linked = decode(raw)
-        except (UnicodeError, ValueError):
+            linked, linked_references = _normalize_record(raw)
+        except (UnicodeError, ValueError, TypeError) as exc:
+            if _looks_like_envelope(raw):
+                input_errors[relative] = f"compact input could not be normalized: {exc}"
             continue
+        documents[relative] = linked
+        if linked_references:
+            references[relative] = linked_references
         if not isinstance(linked, dict):
             continue
         if linked.get("schema") == "ask-spec/v1":
@@ -270,7 +296,10 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
             # Newly discovered plan or execution-owner dependencies are read in
             # the same deterministic closure loop.
             continue
-    temporary = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses))
+    temporary = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
+                         documents=MappingProxyType(documents),
+                         references=MappingProxyType(references),
+                         input_errors=MappingProxyType(input_errors))
     passage_records = {}
     for node_id, role, index, kind, reference in _context_records(document):
         path, revision, selector = reference.get("path"), reference.get("revision"), reference.get("selector")
@@ -322,7 +351,36 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
                                 "revision": revision, "selector": selector, "status": status,
                                 "sha256": sha, "resolution": resolution}
     return Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
-                    MappingProxyType(passage_records))
+                    MappingProxyType(passage_records), MappingProxyType(documents),
+                    MappingProxyType(references), MappingProxyType(input_errors))
+
+
+def _looks_like_envelope(raw):
+    try:
+        value = decode(raw)
+    except (UnicodeError, ValueError, TypeError):
+        return False
+    return isinstance(value, dict) and value.get("schema") == "ask-workflow-envelope/v1"
+
+
+def _normalize_record(raw):
+    """Decode legacy JSON or normalize one typed compact envelope."""
+    value = decode(raw)
+    if not isinstance(value, dict) or value.get("schema") != "ask-workflow-envelope/v1":
+        return value, {}
+    import sys
+    workflow_refs_root = Path(__file__).resolve().parents[3] / ".agents" / "ask"
+    if (workflow_refs_root / "workflow_refs").is_dir() and str(workflow_refs_root) not in sys.path:
+        sys.path.insert(0, str(workflow_refs_root))
+    try:
+        from workflow_refs.codec import normalize_envelope
+    except ImportError as exc:
+        raise ValueError("compact input codec is unavailable") from exc
+    normalized = normalize_envelope(value)
+    payload = normalized["payload"]
+    if (not isinstance(payload, dict) or payload.get("schema") != normalized["schema"]):
+        raise ValueError("compact payload schema does not match its normalized document")
+    return payload, normalized["references"]
 
 
 def is_current(snapshot, root):

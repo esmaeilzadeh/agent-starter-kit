@@ -1,0 +1,53 @@
+{
+  "candidate_sha": "222477f8374354277acf480d7eed4d1162e7bf74",
+  "requested_task": "CR-3",
+  "selected_runs": [
+    {
+      "run_id": "8a2614bee63b4a8a86477159b40ec004",
+      "task_id": "CR-2",
+      "scope": "task",
+      "candidate_sha": "05b747c8a71cb80c08be352f94b4fbca8c9bce02"
+    },
+    {
+      "run_id": "a84114dad4f14f398c6874537feb9161",
+      "task_id": "CR-2",
+      "scope": "task",
+      "candidate_sha": "0541fac8ad574500f50bbd41054469478feda779"
+    },
+    {
+      "run_id": "03588a50c0c94faf9777c407876ce545",
+      "task_id": "CR-2",
+      "scope": "task",
+      "candidate_sha": "0541fac8ad574500f50bbd41054469478feda779"
+    },
+    {
+      "run_id": "6e821b6aea3a4fcbafee38794177169c",
+      "task_id": "CR-2",
+      "scope": "task",
+      "candidate_sha": "fd67986a46514bfef451e70d8c67b4f42421a56c"
+    },
+    {
+      "run_id": "0bbc05e222d549f1b45841a010601e48",
+      "task_id": "CR-2",
+      "scope": "task",
+      "candidate_sha": "984d379e5cc26db5201cd348897888b4838e0ed7"
+    },
+    {
+      "run_id": "b50dd24e0ef04a2aacff4c4a26db4dd5",
+      "task_id": "CR-3",
+      "scope": "task",
+      "candidate_sha": "3196a591e2ee0c75ee0bda1539a9319555273662"
+    },
+    {
+      "run_id": "ad3db48b349f48bb882af289003d546c",
+      "task_id": "CR-3",
+      "scope": "task",
+      "candidate_sha": "222477f8374354277acf480d7eed4d1162e7bf74"
+    }
+  ],
+  "rejected_historical_count": 2,
+  "confirmed_finalization_rejection": {
+    "run_id": "8a2614bee63b4a8a86477159b40ec004",
+    "error": "traceability report identity does not match the selected task/run"
+  }
+}

@@ -1,0 +1,20 @@
+test_multi_owner_incomplete_and_scope_freshness (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... FAIL
+test_resume_and_export_historical_records (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_shared_deletion_and_retirement (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_valid_and_tampered_completion (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-kalka7h4/candidate/_ask/tests/test_workflow_refs_e2e.py", line 182, in test_partial_impact_and_retained_execution
+    self._assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input()
+  File "/tmp/ask-cases-kalka7h4/candidate/_ask/tests/test_workflow_refs_e2e.py", line 310, in _assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input
+    self.assertIn("stale final candidate", stale_result.get("errors", []))
+AssertionError: 'stale final candidate' not found in ['dirty or non-current candidate source']
+
+----------------------------------------------------------------------
+Ran 5 tests in 18.585s
+
+FAILED (failures=1)

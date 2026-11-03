@@ -1,0 +1,36 @@
+test_multi_owner_incomplete_and_scope_freshness (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... FAIL
+test_resume_and_export_historical_records (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ERROR
+test_shared_deletion_and_retirement (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ERROR
+test_valid_and_tampered_completion (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+
+======================================================================
+ERROR: test_resume_and_export_historical_records (_ask.tests.test_workflow_refs_e2e.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-eft33fxc/candidate/_ask/tests/test_workflow_refs_e2e.py", line 149, in test_resume_and_export_historical_records
+    self.assertEqual(repo.cli("show", run_ref)[1]["payload"]["candidate_sha"], repo.source_sha)
+KeyError: 'candidate_sha'
+
+======================================================================
+ERROR: test_shared_deletion_and_retirement (_ask.tests.test_workflow_refs_e2e.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-eft33fxc/candidate/_ask/tests/test_workflow_refs_e2e.py", line 376, in test_shared_deletion_and_retirement
+    self.assertFalse(retired["payload"]["active"])
+KeyError: 'active'
+
+======================================================================
+FAIL: test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-eft33fxc/candidate/_ask/tests/test_workflow_refs_e2e.py", line 182, in test_partial_impact_and_retained_execution
+    self._assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input()
+  File "/tmp/ask-cases-eft33fxc/candidate/_ask/tests/test_workflow_refs_e2e.py", line 265, in _assert_public_impact_uses_persisted_decisions_and_blocks_unresolved_input
+    self.assertEqual(code, 0, impact)
+AssertionError: 1 != 0 : {'status': 'incomplete', 'capture_generation': '16a5a96d669be33f3806e0111cd6493650fcb37e3e06a7a391b792c81819a2d2', 'roots': ['alpha/spec/1/plan/1/item/1@1', 'alpha/spec/1/plan/1/item/1@2', 'alpha/spec/1@1', 'alpha/spec/1@2'], 'deletions': {}, 'items': {'beta/spec/1/plan/1/task/1@1': {'owner': 'beta', 'status': 'retained', 'paths': [['alpha/spec/1/plan/1/item/1@1', 'beta/spec/1/plan/1/task/1@1'], ['alpha/spec/1@1', 'alpha/spec/1/plan/1/item/1@1', 'beta/spec/1/plan/1/task/1@1']], 'inputs': [{'reference': 'alpha/spec/1/plan/1/item/1@1', 'role': 'plan', 'resolved': True, 'deleted': False}, {'reference': 'shared/spec/1@1', 'role': 'policy', 'resolved': True, 'deleted': False}, {'reference': 'alpha/spec/1/plan/1/item/1@1', 'role': 'plan', 'resolved': True, 'deleted': False}, {'reference': 'shared/spec/1@1', 'role': 'policy', 'resolved': True, 'deleted': False}], 'decision': {'status': 'retained', 'active_status': 'active', 'decision': {'action': 'retain', 'old_upstream': 'alpha/spec/1/plan/1/item/1@1', 'new_upstream': 'alpha/spec/1/plan/1/item/1@2', 'dependent': 'beta/spec/1/plan/1/task/1@1', 'profile': 'structured-item/1', 'context_generation': '16a5a96d669be33f3806e0111cd6493650fcb37e3e06a7a391b792c81819a2d2', 'examined_paths': {'alpha/spec/1/plan/1/item/1@1|plan': 'unchanged', 'shared/spec/1@1|policy': 'unchanged'}, 'review_evidence': 'review/independent-impact-assessment', 'reviewer': 'independent-reviewer', 'coordinator': 'owner-coordinator', 'outward_equal': True, 'satisfies_new_inputs': True, 'reuse_allowed': True, 'required_paths': ['alpha/spec/1/plan/1/item/1@1|plan', 'shared/spec/1@1|policy'], 'eligible_consumers': ['beta/spec/1/plan/1/task/1/test/1@1'], 'new_dependent': 'beta/spec/1/plan/1/task/1@1', 'retirement_safe': False}, 'propagation_stopped': True}}, 'alpha/spec/1/plan/1/item/1@1': {'owner': 'alpha', 'status': 'incomplete', 'paths': [['alpha/spec/1@1', 'alpha/spec/1/plan/1/item/1@1']], 'inputs': [{'reference': 'alpha/spec/1@1', 'role': 'requirement', 'resolved': True, 'deleted': False}], 'decision': {'status': 'incomplete', 'reason': 'comparison_incomplete', 'detail': 'decision does not cover every declared dependent input'}}, 'alpha/spec/1/plan/1/item/1@2': {'owner': 'alpha', 'status': 'incomplete', 'paths': [['alpha/spec/1@2', 'alpha/spec/1/plan/1/item/1@2']], 'inputs': [{'reference': 'alpha/spec/1@2', 'role': 'requirement', 'resolved': True, 'deleted': False}, {'reference': 'alpha/spec/1@2', 'role': 'requirement', 'resolved': True, 'deleted': False}], 'decision': None}}, 'unresolved': ['alpha/spec/1/plan/1/item/1@1', 'alpha/spec/1/plan/1/item/1@2'], 'unregistered_candidates': []}
+
+----------------------------------------------------------------------
+Ran 5 tests in 14.544s
+
+FAILED (failures=1, errors=2)

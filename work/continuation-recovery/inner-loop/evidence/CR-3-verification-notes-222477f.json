@@ -1,0 +1,55 @@
+{
+  "schema": "ask-verification-notes/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "candidate_sha": "222477f8374354277acf480d7eed4d1162e7bf74",
+  "verification_author": "/root",
+  "independent_review": false,
+  "mapped_green_run_id": "ad3db48b349f48bb882af289003d546c",
+  "findings": [
+    {
+      "id": "CR3-V01",
+      "severity": "high",
+      "status": "confirmed",
+      "location": "_ask/scripts/inner_loop/evidence.py:509; _ask/scripts/inner_loop/driver.py:125",
+      "finding": "The completion artifact inventory includes valid historical Red runs belonging to CR-2. verify_candidate forwards every artifact run ID to the CR-3 finalizer. The task-bound finalizer rejects foreign-task runs, preventing integration once earlier gates pass.",
+      "reproduction": "CR-3-cross-task-verification-222477f.json records actual reports() selection and the NotIntegrable rejection from _execution_row(root, work_id, CR-3, foreign_run_id).",
+      "required_followup": "Add an immutable failing cross-task receipt regression, preserve historical proof, and finalize only eligible selected-task run milestones. Rerun applicable verification on the corrected candidate."
+    },
+    {
+      "id": "CR3-V02",
+      "severity": "medium",
+      "status": "coverage_gap",
+      "location": "_ask/tests/inner_loop_recovery.py:332",
+      "finding": "CR-T13 delegates to explicit interrupt/reopen history coverage without exercising the planned generic CAS rollback refusal. CR-T14 delegates to GC/bundle transfer without the planned source-only clone and CLI diagnostic matrix.",
+      "required_followup": "Demonstrate the remaining accepted scenarios with assertions; inspect inherited evidence before deciding whether a new behavior Red is needed. Do not manufacture Red by reverting working production code."
+    },
+    {
+      "id": "CR3-V03",
+      "severity": "medium",
+      "status": "coverage_gap",
+      "location": "_ask/tests/inner_loop_recovery.py:436",
+      "finding": "CR-T20 checks automatic finalization, manual ledger-row deletion and idempotent replay, but does not inject process death at the three planned publication boundaries or assert malformed-report/worker rejection.",
+      "required_followup": "Cover the accepted interruption and rejection scenarios using disposable processes."
+    },
+    {
+      "id": "CR3-V04",
+      "severity": "medium",
+      "status": "coverage_gap",
+      "location": "_ask/tests/inner_loop_recovery.py:470",
+      "finding": "CR-T21 checks only snapshotted old-runner bytes; it never executes the old verifier, consumes its real receipt, or exercises the unsupported-schema migration diagnostic.",
+      "required_followup": "Execute the immutable supported old verifier and test receipt finalization plus explicit unsupported/incomplete evidence diagnostics."
+    }
+  ],
+  "harness_correction": {
+    "commit_sha": "222477f8374354277acf480d7eed4d1162e7bf74",
+    "description": "Bind the standalone fixture child runtime root to its own disposable repository instead of inheriting the enclosing verifier runtime.",
+    "baseline_failed_run_id": "51bc9dee6fb14b6ab38c2711f80d7131",
+    "baseline_failed_case": "CR-T20",
+    "baseline_candidate_sha": "fc431430eacda709824ca586cefcf9f733e9cc31",
+    "regression_command": "ASK_TRACEABILITY_RUNTIME_ROOT=/tmp/enclosing-verifier-runtime python3 -m unittest _ask.tests.inner_loop_recovery.RecoveryTests.test_standalone_run_finalization_interruptions",
+    "regression_result": "pass"
+  },
+  "stop_requested": "User requested verification, commit, and stop. No task integration or scheduling is performed.",
+  "resume_guidance": "Reuse the exact eight-case Green report for this candidate; do not restart CR-3 expecting the already implemented behavior to be Red. Resolve the recorded findings in scope before seeking exact-candidate independent review and integration."
+}

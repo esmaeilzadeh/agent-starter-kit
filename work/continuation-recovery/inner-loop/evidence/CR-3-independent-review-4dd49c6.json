@@ -1,0 +1,113 @@
+{
+  "schema": "ask-independent-review/v1",
+  "work_id": "continuation-recovery",
+  "task_id": "CR-3",
+  "candidate_sha": "4dd49c689509247c6b4372d221cdcbe5a47202f6",
+  "base_sha": "2c508ff4248f16a3e3121d33a0fae7297c9b378e",
+  "verified_source_sha": "c2262d11216f3142a75a994cd88a14801c9a86a6",
+  "review_authority": "User assigned the assistant the independent-review role; separate review contexts assess Standards and Spec.",
+  "coordinator": "/root",
+  "reviewers": {
+    "Standards": "/root/cr3_standards_review",
+    "Spec": "/root/review_continuation_recovery_plan"
+  },
+  "runtime": "Codex",
+  "model": "inherited runtime model; exact model identifier not exposed by tool interface",
+  "parent_model": "inherited runtime model; exact model identifier not exposed by tool interface",
+  "verdict": "REJECTED",
+  "boundary": "ok",
+  "axes": {
+    "Standards": {
+      "verdict": "REJECTED",
+      "finding_ids": [
+        "CR3-R01",
+        "CR3-R02",
+        "CR3-R04"
+      ]
+    },
+    "Spec": {
+      "verdict": "REJECTED",
+      "finding_ids": [
+        "CR3-R01",
+        "CR3-R03",
+        "CR3-R05"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "id": "CR3-R01",
+      "priority": "P1",
+      "axes": [
+        "Standards",
+        "Spec"
+      ],
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/evidence.py:167",
+      "related_location": "_ask/scripts/inner_loop/driver.py:126",
+      "finding": "The finalizer requires report candidate to be an ancestor of coordinator HEAD, but isolated task candidates are ahead of coordinator HEAD and finalization runs before fast-forward. Supported isolated writers cannot integrate.",
+      "evidence": "Two independent reviewers used genuine Red/Green fixture reports, retained Green on a task branch, reset the disposable coordinator to the recorded base/Red and proved HEAD is an ancestor of the candidate. _execution_row rejected with: traceability candidate is outside the active task ancestry.",
+      "required_fix": "Validate the report within the selected task candidate lineage, including supported pre-FF candidates, while retaining base/candidate/attempt bounds. Add a failing isolated-writer regression before correcting production behavior."
+    },
+    {
+      "id": "CR3-R02",
+      "priority": "P2",
+      "axes": [
+        "Standards"
+      ],
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/evidence.py:193",
+      "finding": "The finalizer requires exactly one execution although accepted plans and the adapter support multiple runners.",
+      "evidence": "Independent reviewer split the two accepted fixture cases across two unittest runners. Both real executions exited zero and both cases passed; public checkpoint_run rejected unsupported execution/case shape.",
+      "required_fix": "Validate all expected executions, their accepted runner configurations and their corresponding cases, then aggregate full task coverage and phase/outcomes. Add a genuine two-runner regression."
+    },
+    {
+      "id": "CR3-R03",
+      "priority": "P1",
+      "axes": [
+        "Spec"
+      ],
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/driver.py:126",
+      "requirement": "work/continuation-recovery/checkpoint-design.md:87",
+      "finding": "Verified run milestones remain only in memory until after fast-forward and the final transaction fold. There is no verification-complete checkpoint before fast-forward.",
+      "evidence": "Independent Spec review inspected the transaction. A separate bounded disposable probe replaced only the Git FF operation with a simulated interruption: the retained checkpoint still had task running, no recorded run milestones and no verification evidence, although three local run reports existed.",
+      "required_fix": "Persist the verified milestone under the existing coordinator lock before FF, with correct generation/cache replay semantics; persist the exact integrated state after FF. Add an actual pre-FF interruption/recovery test."
+    },
+    {
+      "id": "CR3-R04",
+      "priority": "P2",
+      "axes": [
+        "Standards"
+      ],
+      "classification": "existing-spec behavior defect",
+      "location": "_ask/scripts/inner_loop/evidence.py:200",
+      "related_location": "_ask/scripts/inner_loop/evidence.py:211",
+      "finding": "Pending report validation omits execution-to-accepted-runner and case-to-execution-phase bindings, so internally inconsistent evidence can become a durable Green milestone.",
+      "evidence": "Primary probe and independent Standards reviewer each changed a complete pending fixture report to use an unplanned execution runner/argv and case phase red while execution phase was final_green, then removed its ledger entry to model interrupted insertion. Public checkpoint_run repaired its ledger and published final_green. Normal completion rejects these bindings at completion.py:92,105,109. This does not demonstrate a bypass of the separate integration completion gate.",
+      "required_fix": "Apply the normal traceability execution, runner, case and phase binding validation before ledger repair or milestone publication. Add pending-report rejection regressions."
+    },
+    {
+      "id": "CR3-R05",
+      "priority": "P2",
+      "axes": [
+        "Spec"
+      ],
+      "classification": "existing-spec behavior defect (assertion coverage)",
+      "location": "_ask/tests/inner_loop_recovery.py:480",
+      "related_location": "_ask/tests/inner_loop_recovery.py:446",
+      "requirement": "work/continuation-recovery/test-plan.json:1088; work/continuation-recovery/test-plan.json:1139",
+      "finding": "CR-T21 snapshots placeholder runner bytes but does not execute a supported old verifier, consume its real receipt or test incomplete/unsupported schemas. CR-T20 checks replay after ledger deletion rather than its specified three process-death boundaries.",
+      "evidence": "Independent Spec reviewer inspected the mapped methods against accepted scenarios. Existing 8/8 passing reports cannot demonstrate assertions absent from those methods.",
+      "required_fix": "Exercise the accepted real old-verifier and interruption scenarios without weakening assertions or creating artificial Red for inherited working behavior. Earlier CR-T13/14 coverage gaps also remain documented in the verification report."
+    }
+  ],
+  "scope_change_required": false,
+  "human_decision_required": false,
+  "implementation_modified": false,
+  "integration_performed": false,
+  "task_result_available": false,
+  "coordinator_review_binding": "No approved runtime review was registered: the task has no TaskResult and the verdict is rejection. This artifact is not an approval token.",
+  "evidence_scope": "Existing canonical 38/38 and mapped 8/8 evidence belongs to c2262d1. Review targets 4dd49c6, which has identical production/assertion source plus archived evidence. No full-suite rerun was claimed on the later SHA. Targeted probes ran in disposable repositories without modifying real workstream state/ref authority.",
+  "next_required_work": "Correct task-local defects through applicable Red/Green/Refactor cycles, strengthen accepted scenario coverage, and obtain fresh exact-candidate independent review. Preserve historical Red/Green proof; do not restart the task expecting already implemented behavior to fail."
+}

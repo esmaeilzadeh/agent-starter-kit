@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "_ask.tests.test_workflow_refs_inner_loop.ReferenceTests.test_evidence_projection_and_exact_runner", "outcome": "passed", "failure_kind": null}, {"case_id": "_ask.tests.test_workflow_refs_inner_loop.ReferenceTests.test_qualified_tasks_and_cas_recovery", "outcome": "failed", "failure_kind": "behavior_assertion"}], "collection_status": "ok"}

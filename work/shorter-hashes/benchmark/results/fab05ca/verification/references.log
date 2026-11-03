@@ -1,0 +1,49 @@
+test_equivalent_questions_and_lookup_accounting (test_workflow_refs_baseline.ReferenceTests) ... ok
+test_frozen_corpus_and_tokenizer (test_workflow_refs_baseline.ReferenceTests) ... ok
+test_decide_allocates_after_existing_review_and_public_show_resolves_it (test_workflow_refs_cli.ReferenceTests) ... ok
+test_public_numeric_show_and_scoped_errors (test_workflow_refs_cli.ReferenceTests) ... ok
+test_record_run_numeric_provenance (test_workflow_refs_cli.ReferenceTests) ... ok
+test_start_work_cooperating_inventory_publication (test_workflow_refs_cli.ReferenceTests) ... ok
+test_task_process_waiver_is_hash_and_candidate_bound (test_workflow_refs_cli.ReferenceTests) ... ok
+test_compact_lossless_versioned_envelopes (test_workflow_refs_codec.ReferenceTests) ... ok
+test_persisted_producer_roundtrip (test_workflow_refs_codec.ReferenceTests) ... ok
+test_complete_item_and_binding_equivalence (test_workflow_refs_compare.ReferenceTests) ... ok
+test_git_items_moves_and_unrelated_sections (test_workflow_refs_compare.ReferenceTests) ... ok
+test_profile_exclusions_and_unavailability (test_workflow_refs_compare.ReferenceTests) ... ok
+test_multi_owner_incomplete_and_scope_freshness (test_workflow_refs_e2e.ReferenceTests) ... ok
+test_partial_impact_and_retained_execution (test_workflow_refs_e2e.ReferenceTests) ... ok
+test_resume_and_export_historical_records (test_workflow_refs_e2e.ReferenceTests) ... ok
+test_shared_deletion_and_retirement (test_workflow_refs_e2e.ReferenceTests) ... ok
+test_valid_and_tampered_completion (test_workflow_refs_e2e.ReferenceTests) ... ok
+test_selected_projection_resolves_only_requested_compact_references (test_workflow_refs_engineering.ReferenceTests) ... ok
+test_snapshots_context_and_legacy_reads (test_workflow_refs_engineering.ReferenceTests) ... ok
+test_unrelated_item_and_external_constraint (test_workflow_refs_engineering.ReferenceTests) ... ok
+test_parents_moves_and_multiple_inputs (test_workflow_refs_identity.ReferenceTests) ... ok
+test_qualified_numeric_context (test_workflow_refs_identity.ReferenceTests) ... ok
+test_raw_git_collision_resolution (test_workflow_refs_identity.ReferenceTests) ... ok
+test_attributed_multiple_input_revalidation (test_workflow_refs_impact.ReferenceTests) ... ok
+test_deletion_vs_unavailability_and_history (test_workflow_refs_impact.ReferenceTests) ... ok
+test_direct_and_potential_impact (test_workflow_refs_impact.ReferenceTests) ... ok
+test_retirement_preserves_shared_obligations (test_workflow_refs_impact.ReferenceTests) ... ok
+test_reviewed_stop_old_pin_or_new_revision (test_workflow_refs_impact.ReferenceTests) ... ok
+test_evidence_projection_and_exact_runner (test_workflow_refs_inner_loop.ReferenceTests) ... ok
+test_qualified_tasks_and_cas_recovery (test_workflow_refs_inner_loop.ReferenceTests) ... ok
+test_legacy_migration_and_bundle_retention (test_workflow_refs_migration.ReferenceTests) ... ok
+test_missing_import_and_atomic_retry (test_workflow_refs_migration.ReferenceTests) ... ok
+test_authoritative_inventory_and_cycles (test_workflow_refs_project.ReferenceTests) ... ok
+test_coherent_capture_new_owner_and_aba (test_workflow_refs_project.ReferenceTests) ... ok
+test_task_ref_movement_does_not_stale_capture (test_workflow_refs_project.ReferenceTests) ... ok
+test_unlogged_transient_owner_stales_capture (test_workflow_refs_project.ReferenceTests) ... ok
+test_canonical_and_byte_digest_semantics (test_workflow_refs_store.ReferenceTests) ... ok
+test_concurrent_and_interrupted_publication (test_workflow_refs_store.ReferenceTests) ... ok
+test_history_and_missing_integrity (test_workflow_refs_store.ReferenceTests) ... ok
+test_immutable_revision_catalog (test_workflow_refs_store.ReferenceTests) ... ok
+test_snapshot_identity_requires_full_object_id (test_workflow_refs_store.ReferenceTests) ... ok
+test_authority_rejects_candidate_substitution (test_workflow_refs_traceability.ReferenceTests) ... ok
+test_contract_run_lifetimes_and_source_identity (test_workflow_refs_traceability.ReferenceTests) ... ok
+test_exact_intent_and_canonical_contracts (test_workflow_refs_traceability.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 103.684s
+
+OK

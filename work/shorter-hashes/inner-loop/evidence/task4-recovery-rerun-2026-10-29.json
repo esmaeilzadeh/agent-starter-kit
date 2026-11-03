@@ -1,0 +1,42 @@
+{
+  "schema": "ask-historical-candidate-rerun/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "4",
+  "executed_during": "2026-10-29 recovery",
+  "provenance": "New real execution of original immutable source and contract; not recreation of missing historical run.",
+  "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+  "contract_sha": "8d2ac720bf970b0571a774556a82f80d729e0929",
+  "run_id": "01e80fa622a54f0896f3d8a620f695b5",
+  "report": "work/shorter-hashes/traceability/runs/01e80fa622a54f0896f3d8a620f695b5/results.json",
+  "result": "pass",
+  "cases": [
+    {
+      "test_id": "4/1",
+      "outcome": "passed"
+    },
+    {
+      "test_id": "4/5",
+      "outcome": "passed"
+    },
+    {
+      "test_id": "4/6",
+      "outcome": "passed"
+    },
+    {
+      "test_id": "4/7",
+      "outcome": "passed"
+    },
+    {
+      "test_id": "4/2",
+      "outcome": "passed"
+    },
+    {
+      "test_id": "4/4",
+      "outcome": "passed"
+    },
+    {
+      "test_id": "4/3",
+      "outcome": "passed"
+    }
+  ]
+}
