@@ -9,6 +9,7 @@ diagnostic.
 ```sh
 ./ask refs show shorter-hashes/spec/1/plan/1/task/8/test/1@1
 ./ask refs show shorter-hashes/spec/1/plan/1/task/8/test/1@1 --integrity
+./ask refs show demo/snapshot/1@1 --include schema --select tests.id=WB-001 --payload-only
 ./ask refs status
 ./ask status --references
 ```
@@ -18,6 +19,16 @@ type, profile, and named numeric parents. `--integrity` adds the verified
 digests and shared snapshot identifier. Status reports a coherent project
 inventory generation; an unsupported external ref change or missing owner
 authority yields `incomplete` instead of a partial success.
+
+For JSON sources, repeat `--include FIELD`, `--select ARRAY.KEY=VALUE`, and
+`--map-entry OBJECT=KEY` to return only the requested top-level fields, array
+records, or map entries. The command verifies the complete pinned source before
+projecting it, preserves JSON number values, and refuses duplicate or missing
+matches. `--section`, `--task-row`, and `--yaml-task` select exact Markdown
+sections/rows or YAML task blocks. `--payload-only` emits the selected JSON or
+text without repeating the response envelope; the reference in the request
+continues to identify the verified source. `--blank-line` adds a blank line to
+text output when needed. Omitting projection options keeps the full payload.
 
 Impact compares two saved complete capture objects. The candidate must still
 match the live cooperating-repository inventory when assessed. Refresh its

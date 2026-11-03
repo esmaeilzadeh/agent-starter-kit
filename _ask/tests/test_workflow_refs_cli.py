@@ -62,6 +62,56 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertEqual(missing["reason"], "missing")
 
+    def test_public_show_projects_only_selected_verified_json(self):
+        from workflow_refs.cli import main
+
+        raw = (b'{"schema":"v1","precision":1.234567890123456789,'
+               b'"tests":[{"id":"selected","value":"kept"},'
+               b'{"id":"other","value":"omitted"}],'
+               b'"exemptions":{"task-a":{"reason":"kept"},'
+               b'"task-b":{"reason":"omitted"}}}')
+        self.source.write_bytes(raw)
+        subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "projectable JSON source"], cwd=self.root, check=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root, text=True).strip()
+        catalog = self.root / "work/demo/references/integrity.json"
+        register_revision(catalog, "demo", "demo/spec/2",
+                          {"commit": commit, "path": "work/demo/source.json"},
+                          "work/demo/source.json", "prose-item/1", raw)
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/2@1", "--include", "schema",
+                         "--include", "precision", "--select", "tests.id=selected",
+                         "--map-entry", "exemptions=task-a"], root=self.root)
+        shown = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(shown["payload"]["tests"], [{"id": "selected", "value": "kept"}])
+        self.assertEqual(shown["payload"]["exemptions"], {"task-a": {"reason": "kept"}})
+        self.assertNotIn("other", output.getvalue())
+        self.assertNotIn("task-b", output.getvalue())
+        self.assertIn("1.234567890123456789", output.getvalue())
+
+        for duplicate, expected in ((False, "missing"), (True, "ambiguous")):
+            value = json.loads(raw)
+            if duplicate:
+                value["tests"].append(dict(value["tests"][0]))
+            replacement = json.dumps(value, separators=(",", ":")).encode()
+            self.source.write_bytes(replacement)
+            subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+            subprocess.run(["git", "commit", "-qm", f"projection {expected}"], cwd=self.root, check=True)
+            commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root, text=True).strip()
+            reference = f"demo/spec/{3 if not duplicate else 4}@1"
+            register_revision(catalog, "demo", reference.rsplit("@", 1)[0],
+                              {"commit": commit, "path": "work/demo/source.json"},
+                              "work/demo/source.json", "prose-item/1", replacement)
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                selector = "tests.id=selected" if duplicate else "tests.id=absent"
+                code = main(["show", reference, "--select", selector], root=self.root)
+            self.assertEqual(code, 2)
+            self.assertEqual(json.loads(output.getvalue())["reason"], expected)
+
     def test_decide_allocates_after_existing_review_and_public_show_resolves_it(self):
         from workflow_refs.cli import main
         from workflow_refs.project import capture_project

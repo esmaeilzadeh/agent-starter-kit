@@ -4,8 +4,10 @@ from __future__ import annotations
 import argparse
 import fcntl
 import json
+import math
 from pathlib import Path
 import sys
+from decimal import Decimal
 
 from .identity import ReferenceError, parse_reference
 from .impact import ImpactError, assess_impact, record_decision
@@ -17,7 +19,21 @@ from .migration import export_bundle, import_bundle, migrate
 
 
 def _json(value):
-    print(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+    def encode(item):
+        if isinstance(item, Decimal):
+            if not item.is_finite():
+                raise ValueError("non-finite JSON number")
+            return str(item)
+        if isinstance(item, float) and not math.isfinite(item):
+            raise ValueError("non-finite JSON number")
+        if isinstance(item, list):
+            return "[" + ",".join(encode(value) for value in item) + "]"
+        if isinstance(item, dict):
+            return "{" + ",".join(json.dumps(key, ensure_ascii=False) + ":" + encode(value)
+                                    for key, value in item.items()) + "}"
+        return json.dumps(item, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+
+    print(encode(value))
 
 
 def _persist_decision(repository_root, result):
@@ -60,6 +76,14 @@ def build_parser():
     show = sub.add_parser("show", help="resolve one exact numeric item revision")
     show.add_argument("reference")
     show.add_argument("--integrity", action="store_true")
+    show.add_argument("--include", action="append", default=[])
+    show.add_argument("--select", action="append", default=[], metavar="FIELD.KEY=VALUE")
+    show.add_argument("--map-entry", action="append", default=[], metavar="FIELD=KEY")
+    show.add_argument("--section", action="append", default=[])
+    show.add_argument("--task-row", action="append", default=[])
+    show.add_argument("--yaml-task", action="append", default=[])
+    show.add_argument("--payload-only", action="store_true")
+    show.add_argument("--blank-line", action="store_true")
     status = sub.add_parser("status", help="show one version or compact owner inventory")
     status.add_argument("reference", nargs="?")
     status.add_argument("--shared-owner", action="append", default=[])
@@ -90,7 +114,23 @@ def main(argv=None, *, root=None):
     repository_root = Path(root or Path.cwd()).resolve()
     try:
         if args.command == "show":
-            _json(show_reference(repository_root, args.reference, integrity=args.integrity))
+            if args.blank_line and not args.payload_only:
+                raise CatalogError("invalid_projection", "--blank-line requires --payload-only")
+            if args.payload_only and args.integrity:
+                raise CatalogError("invalid_projection", "--payload-only cannot include integrity metadata")
+            result = show_reference(repository_root, args.reference, integrity=args.integrity,
+                                    include=args.include, selectors=args.select,
+                                    map_entries=args.map_entry, sections=args.section,
+                                    task_rows=args.task_row, yaml_tasks=args.yaml_task,
+                                    precise=args.payload_only)
+            if args.payload_only and result["payload_format"] == "text":
+                sys.stdout.write(result["payload"])
+                if args.blank_line:
+                    sys.stdout.write("\n")
+            elif args.payload_only:
+                _json(result["payload"])
+            else:
+                _json(result)
         elif args.command == "status":
             result = (show_reference(repository_root, args.reference) if args.reference else
                       project_status(repository_root, shared_owners=args.shared_owner))
