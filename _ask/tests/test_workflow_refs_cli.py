@@ -112,6 +112,44 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(code, 2)
             self.assertEqual(json.loads(output.getvalue())["reason"], expected)
 
+    def test_projection_handles_unhashable_rows_and_commented_yaml(self):
+        from workflow_refs.cli import main
+
+        catalog = self.root / "work/demo/references/integrity.json"
+
+        def register(reference, raw, message):
+            self.source.write_bytes(raw)
+            subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+            subprocess.run(["git", "commit", "-qm", message], cwd=self.root, check=True)
+            commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root,
+                                             text=True).strip()
+            register_revision(catalog, "demo", reference.rsplit("@", 1)[0],
+                              {"commit": commit, "path": "work/demo/source.json"},
+                              "work/demo/source.json", "prose-item/1", raw)
+
+        raw_json = b'{"items":[{"id":"task-two","value":7},{"id":[]}]}'
+        register("demo/spec/2@1", raw_json, "JSON with unrelated non-string id")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/2@1", "--select", "items.id=task-two",
+                         "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output.getvalue()),
+                         {"items": [{"id": "task-two", "value": 7}]})
+
+        raw_yaml = (b"# comment\nschema: ask-inner-loop-tasks/v1\nwork_id: demo\n"
+                    b"tasks:\n  - id: one\n    depends_on: []\n  - id: two\n"
+                    b"    depends_on: []\n")
+        register("demo/spec/3@1", raw_yaml, "YAML with leading comment")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/3@1", "--yaml-task", "two",
+                         "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(output.getvalue(),
+                         "# comment\nschema: ask-inner-loop-tasks/v1\nwork_id: demo\n"
+                         "tasks:\n  - id: two\n    depends_on: []\n")
+
     def test_decide_allocates_after_existing_review_and_public_show_resolves_it(self):
         from workflow_refs.cli import main
         from workflow_refs.project import capture_project
@@ -180,6 +218,18 @@ class ReferenceTests(unittest.TestCase):
             self.assertEqual(shown["status"], "resolved")
         self.assertEqual(shown["payload"]["status"], "retained")
         self.assertEqual(shown["payload"]["decision"]["coordinator"], "coordinator")
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", decided["reference"], "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output.getvalue()), shown["payload"])
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", decided["reference"], "--include", "absent"], root=self.root)
+        self.assertEqual(code, 2)
+        self.assertEqual(json.loads(output.getvalue())["reason"], "invalid_projection")
 
     def test_task_process_waiver_is_hash_and_candidate_bound(self):
         from inner_loop.evidence import NotIntegrable, check_integrable, digest

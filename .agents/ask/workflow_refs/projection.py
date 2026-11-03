@@ -97,8 +97,8 @@ def _project_payload(payload, include, selectors, map_entries):
                 raise CatalogError("missing", f"no {field} record has {key}={value!r}")
             if len(matches) > 1:
                 raise CatalogError("ambiguous", f"multiple {field} records have {key}={value!r}")
-        wanted = set(values)
-        projected[field] = [row for row in rows if isinstance(row, dict) and row.get(key) in wanted]
+        projected[field] = [row for row in rows
+                            if isinstance(row, dict) and row.get(key) in values]
 
     map_selections = {}
     for selection in map_entries:
@@ -133,9 +133,13 @@ def _project_text(text, sections, task_rows, yaml_tasks):
         if sections or task_rows:
             raise CatalogError("invalid_projection", "YAML task projection cannot be combined with Markdown")
         lines = text.splitlines()
-        selected = lines[:3]
+        task_starts = [index for index, line in enumerate(lines)
+                       if re.fullmatch(r"  - id: .+", line)]
+        if not task_starts:
+            raise CatalogError("invalid_projection", "YAML source has no supported task list")
+        selected = lines[:task_starts[0]]
         for task_id in yaml_tasks:
-            start = [index for index, line in enumerate(lines) if line == f"  - id: {task_id}"]
+            start = [index for index in task_starts if lines[index] == f"  - id: {task_id}"]
             if not start:
                 raise CatalogError("missing", f"YAML task is unavailable: {task_id!r}")
             if len(start) > 1:
@@ -182,58 +186,57 @@ def show_reference(repository_root, reference, *, integrity=False, include=(),
     catalog = (repository_root / "results/references/integrity.json"
                if parsed["owner"] == "repository-runs" else
                repository_root / "work" / parsed["owner"] / "references" / "integrity.json")
+    resolved = None
+    decision_record = None
     try:
         resolved = resolve_version(catalog, parsed["canonical"], repository_root)
     except CatalogError as exc:
         if parsed["kind"] != "review" or exc.code != "missing":
             raise
         decision_record = _resolve_decision(repository_root, catalog, parsed)
-        decision_payload = {"status": decision_record["status"],
-                            "decision": decision_record["decision"]}
-        return {
-            "status": "resolved",
-            "reference": parsed["canonical"],
-            "owner": parsed["owner"],
-            "type": parsed["kind"],
-            "parents": {},
-            "id": parsed["ids"][-1],
-            "revision": parsed["revision"],
-            "profile": "impact-decision/1",
-            "item_id": f"review-{parsed['ids'][-1]}",
-            "payload": decision_payload,
-        }
-    entry = resolved["entry"]
+    entry = resolved["entry"] if resolved is not None else {
+        "profile": "impact-decision/1",
+        "item_id": f"review-{parsed['ids'][-1]}",
+    }
     json_projection = bool(include or selectors or map_entries)
     text_projection = bool(sections or task_rows or yaml_tasks)
     if json_projection and text_projection:
         raise CatalogError("invalid_projection", "JSON and text projections cannot be combined")
     payload_format = "json"
-    try:
+    if decision_record is not None:
+        payload = {"status": decision_record["status"],
+                   "decision": decision_record["decision"]}
+        if json_projection:
+            payload = _project_payload(payload, include, selectors, map_entries)
         if text_projection:
-            payload = resolved["payload"].decode("utf-8")
-            payload = _project_text(payload, sections, task_rows, yaml_tasks)
+            raise CatalogError("invalid_projection", "text projection requires a text reference")
+    else:
+        try:
+            if text_projection:
+                payload = resolved["payload"].decode("utf-8")
+                payload = _project_text(payload, sections, task_rows, yaml_tasks)
+                payload_format = "text"
+            elif json_projection or precise:
+                payload = json.loads(resolved["payload"].decode("utf-8"),
+                                     object_pairs_hook=_unique_pairs,
+                                     parse_float=Decimal,
+                                     parse_constant=_reject_json_constant)
+                if json_projection:
+                    payload = _project_payload(payload, include, selectors, map_entries)
+            else:
+                payload = json.loads(resolved["payload"].decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            if json_projection or text_projection:
+                raise CatalogError("invalid_projection", "selected source is not valid UTF-8 JSON") from exc
+            payload = resolved["payload"].decode("utf-8", errors="replace")
             payload_format = "text"
-        elif json_projection or precise:
-            payload = json.loads(resolved["payload"].decode("utf-8"),
-                                 object_pairs_hook=_unique_pairs,
-                                 parse_float=Decimal,
-                                 parse_constant=_reject_json_constant)
-            if json_projection:
-                payload = _project_payload(payload, include, selectors, map_entries)
-        else:
-            payload = json.loads(resolved["payload"].decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        if json_projection or text_projection:
-            raise CatalogError("invalid_projection", "selected source is not valid UTF-8 JSON") from exc
-        payload = resolved["payload"].decode("utf-8", errors="replace")
-        payload_format = "text"
-    except CatalogError:
-        raise
-    except (ValueError, DecimalException, RecursionError) as exc:
-        if json_projection or precise:
-            raise CatalogError("invalid_projection", "selected JSON payload is invalid") from exc
-        payload = resolved["payload"].decode("utf-8", errors="replace")
-        payload_format = "text"
+        except CatalogError:
+            raise
+        except (ValueError, DecimalException, RecursionError) as exc:
+            if json_projection or precise:
+                raise CatalogError("invalid_projection", "selected JSON payload is invalid") from exc
+            payload = resolved["payload"].decode("utf-8", errors="replace")
+            payload_format = "text"
     result = {
         "status": "resolved",
         "reference": parsed["canonical"],
@@ -250,7 +253,7 @@ def show_reference(repository_root, reference, *, integrity=False, include=(),
         "payload_format": payload_format,
         "payload": payload,
     }
-    if integrity:
+    if integrity and resolved is not None:
         result["integrity"] = {
             "algorithm": entry["digest_algorithm"],
             "semantics": entry["digest_semantics"],

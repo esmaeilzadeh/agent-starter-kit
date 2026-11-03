@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 
-class ReferenceSavingsTests(unittest.TestCase):
+class ReferenceTests(unittest.TestCase):
     def test_strict_frozen_aggregate_savings(self):
         root = Path(__file__).resolve().parents[2]
         replay = root / "work/shorter-hashes/benchmark/results/replay-selective.py"
