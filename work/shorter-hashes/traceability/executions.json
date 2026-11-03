@@ -1018,5 +1018,35 @@
     "candidate_sha": "2aba2a816f3912cd1e7c4aa027ec6861e7ef3689",
     "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
     "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "4537ae578a904b03b97db0cd4b5f2c6d",
+    "digest": "abaf8fe3d6a6b329828189792116b098596dbec7ef3de2cad195e62ee7854134",
+    "phase": "final_green",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "50b515bff4a5ec25b992ca28c6fd86ca1f2da202",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "bef2adf3229a4f46a05f3e3da503c3d2",
+    "digest": "654c4288733a53c12ad5e0312efc492cafde8b198072b74b0e13e83bb46811a3",
+    "phase": "final_green",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "18997d274302370461bab0ec53a59482b73b1013",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
+  },
+  {
+    "run_id": "3f2b484f45f64f67b112babbd91f86ee",
+    "digest": "d0c67a067f2114ada21a7a90047e9f2803ce48c0ade3072effdf141d513dc2b0",
+    "phase": "final_green",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "6124e76195b53bf22299a12d8dd06d78ebb3f3d09702a8c596beb3eba11d8a3d"
   }
 ]

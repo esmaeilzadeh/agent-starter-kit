@@ -1,0 +1,10 @@
+test_multi_owner_incomplete_and_scope_freshness (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_partial_impact_and_retained_execution (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_resume_and_export_historical_records (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_shared_deletion_and_retirement (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+test_valid_and_tampered_completion (_ask.tests.test_workflow_refs_e2e.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 32.025s
+
+OK

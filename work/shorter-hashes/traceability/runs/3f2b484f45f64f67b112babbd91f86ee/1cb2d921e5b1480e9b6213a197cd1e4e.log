@@ -1,0 +1,8 @@
+test_selected_projection_resolves_only_requested_compact_references (_ask.tests.test_workflow_refs_engineering.ReferenceTests) ... ok
+test_snapshots_context_and_legacy_reads (_ask.tests.test_workflow_refs_engineering.ReferenceTests) ... ok
+test_unrelated_item_and_external_constraint (_ask.tests.test_workflow_refs_engineering.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.699s
+
+OK

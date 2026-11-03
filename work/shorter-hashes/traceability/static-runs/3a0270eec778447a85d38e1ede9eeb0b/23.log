@@ -1,0 +1,3 @@
+check-clean-worktree: clean
+record-run: wrote repository-runs/run/1@1 -> results/demo
+PASS: record-run writes manifest and refuses SHA ≠ HEAD

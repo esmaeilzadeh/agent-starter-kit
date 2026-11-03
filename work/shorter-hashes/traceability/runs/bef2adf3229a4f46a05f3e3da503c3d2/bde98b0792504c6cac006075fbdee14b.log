@@ -1,0 +1,10 @@
+test_canonical_and_byte_digest_semantics (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_concurrent_and_interrupted_publication (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_history_and_missing_integrity (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_immutable_revision_catalog (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+test_snapshot_identity_requires_full_object_id (_ask.tests.test_workflow_refs_store.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 8.205s
+
+OK

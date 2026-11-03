@@ -1,3 +1,21 @@
+# Current endpoint: directly accepted — 2026-11-03
+
+The user again requested review and acceptance above 90% confidence. The
+coordinator recorded direct acceptance at 95% for `36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95`.
+Independent reviewers `/root/standards_review` and `/root/spec_review` approved
+that candidate at 95% and 96%. See `acceptance.md`, `review.md` and
+`direct-acceptance.json` for exact execution and decision evidence.
+
+All final-candidate reference test methods passed and the frozen savings replay
+passes both thresholds. Broad production checks passed; the raw command's
+legacy completion failure and unsupported-subtest diagnostics are preserved.
+The kit remained disabled under the self-development rule. Historical
+`result.json`, intent bytes, prior failures and task state are not relabeled.
+This is the current accepted endpoint; historical continuation directions below
+remain historical. No integration into another branch is authorized by this record.
+
+---
+
 # Current direct-verification handoff — 2026-11-03
 
 This entry records the scoped resumption after the saved stop. AskIt's kit

@@ -1,0 +1,7 @@
+test_legacy_migration_and_bundle_retention (_ask.tests.test_workflow_refs_migration.ReferenceTests) ... ok
+test_missing_import_and_atomic_retry (_ask.tests.test_workflow_refs_migration.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.564s
+
+OK

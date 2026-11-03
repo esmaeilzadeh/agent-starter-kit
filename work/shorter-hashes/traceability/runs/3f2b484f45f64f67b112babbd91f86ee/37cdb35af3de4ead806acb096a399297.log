@@ -1,0 +1,12 @@
+test_decide_allocates_after_existing_review_and_public_show_resolves_it (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_projection_handles_unhashable_rows_and_commented_yaml (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_public_numeric_show_and_scoped_errors (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_public_show_projects_only_selected_verified_json (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_record_run_numeric_provenance (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_start_work_cooperating_inventory_publication (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_task_process_waiver_is_hash_and_candidate_bound (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 8.222s
+
+OK
