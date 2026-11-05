@@ -48,11 +48,10 @@ Human
   → branch agent/cancel-order
   → commit C1
 
-07 Review
-  → work/cancel-order/review.md
-
-08 Refactor
-  → commit C2
+06 Implement task loop
+  → Red → Green → Refactor
+  → 07 Review → local correction and fresh review
+  → integrate task candidate
 
 09 Verify
   → work/cancel-order/verification.json
@@ -168,7 +167,7 @@ If the destination is foggy:
 - run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
 - prepare Community Skills from _ask/skills/manifest.yaml (do not vendor by default).
 If the destination is already clear: omit 00; do not write explore-map.md; record the skip in intent.md.
-Free on-path chat: announce 00 vs 01 and wait for confirm. `/00-explore` starts Explore immediately.
+Free on-path chat: announce foggy vs clear, then offer **Start Explore** / **Start Grill** as selectable choices. `/00-explore` starts Explore immediately.
 
 Before independent Engineering Pipeline work:
 - invoke kit operations via `./ask` (not a generic root scripts/ folder);

@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "refactor-inner-loop",
+  "task_id": "RF-02",
+  "base_sha": "2f911b7768e27bb4c7af480dcf0b58bef5840755",
+  "candidate_sha": "b16399d3c129e736987b291ad8abc417cc79af9c",
+  "tdd": {
+    "seam": "./ask prepare applies the repository TDD override safely to installed skill views and reports installer/output failures accurately.",
+    "red": {
+      "command": "./ask traceability run refactor-inner-loop --candidate-sha 3cd3193fc090c763efb8f14f2fcc590a26d8f989 --anchor-sha 3cd3193fc090c763efb8f14f2fcc590a26d8f989 --revision 3cd3193fc090c763efb8f14f2fcc590a26d8f989 --scope task --task-id RF-02 --phase red",
+      "output": "work/refactor-inner-loop/traceability/runs/dec2744be22a4be0aa099d46f6173431: PREP-01, PREP-02, and PREP-04 fail as behavior assertions when the override and required-installer failure handling are omitted.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "./ask traceability run refactor-inner-loop --candidate-sha b16399d3c129e736987b291ad8abc417cc79af9c --anchor-sha b16399d3c129e736987b291ad8abc417cc79af9c --revision b16399d3c129e736987b291ad8abc417cc79af9c --scope task --task-id RF-02 --phase final_green",
+      "output": "work/refactor-inner-loop/traceability/runs/7974ab2dc5cc48628f9ad6a2d5a45665: all seven PREP-01..06 and TRACE-01 cases passed.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "Amended accepted-plan Red candidate 3cd3193fc090c763efb8f14f2fcc590a26d8f989 is an ancestor of b16399d and fails PREP-01, PREP-02, PREP-04 with behavior assertions. Restoring the implementation yielded final-green run 7974ab2dc5cc48628f9ad6a2d5a45665, passing all seven RF-02 cases. Earlier independent Red evidence also exists for PREP-01, PREP-02, PREP-04 and TRACE-01."
+}

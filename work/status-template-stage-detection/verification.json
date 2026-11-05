@@ -1,0 +1,23 @@
+{
+  "work_id": "status-template-stage-detection",
+  "commit_sha": "b44cd4395472e620423a46f3560a93b42aec48c9",
+  "checks": [
+    {
+      "id": "ask-verify",
+      "status": "pass",
+      "evidence": "./ask verify passed all mandatory repository checks and traceability completion on the candidate."
+    },
+    {
+      "id": "inner-loop-integration",
+      "status": "pass",
+      "evidence": "Approval-checkpoint and stage-inference tasks are integrated; each candidate passed CheckPlan and independent task review."
+    },
+    {
+      "id": "independent-review",
+      "status": "pass",
+      "evidence": "Standards and Spec reviews approved candidate b44cd4395472e620423a46f3560a93b42aec48c9 against develop."
+    }
+  ],
+  "result": "pass",
+  "notes": "Workstream completion report: work/status-template-stage-detection/traceability/completion.json"
+}

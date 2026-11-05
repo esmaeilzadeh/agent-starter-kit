@@ -110,6 +110,7 @@ printf '# Title here\n\nbody\n' > .later/foo.md
 printf '## Why\n\n# Real\n' > .later/bar.md
 printf '#NoSpace\n' > .later/nospace.md
 printf 'intro\n\n# Late h1\n' > .later/late.md
+git add .later && git commit -q -m 'later fixtures'
 
 out="$("$STATUS")"
 echo "$out" | grep -qE 'live +has-intent'
@@ -202,15 +203,17 @@ echo "$miss" | grep -qv '^later:' || { echo "FAIL: missing --work-id leaked late
 
 # overlapping slug still listed
 printf '# Seeded park\n' > .later/seeded.md
+git add .later/seeded.md && git commit -q -m 'seeded later fixture'
 overlap="$("$STATUS" --later-only)"
 echo "$overlap" | grep -qE '^seeded +Seeded park'
 
 # README-only → no later block
 rm -f .later/foo.md .later/bar.md .later/nospace.md .later/late.md .later/seeded.md
+git add -u .later && git commit -q -m 'remove later fixtures'
 empty_later="$("$STATUS")"
 echo "$empty_later" | grep -qv '^later:' || { echo "FAIL: README-only printed later" >&2; exit 1; }
 lo_empty="$("$STATUS" --later-only)"
-echo "$lo_empty" | grep -qx 'status: no later cards in .later/'
+echo "$lo_empty" | grep -qx 'status: no later cards on the integration branch'
 "$STATUS" --later-only --json | python3 -c '
 import json,sys
 doc=json.load(sys.stdin)
@@ -230,6 +233,7 @@ git init -q "$EMPTY"
   git branch -M main
   mkdir -p .later
   printf '# Park this\n' > .later/park.md
+  git add .later/park.md && git commit -q -m 'park card'
   none="$("$STATUS")"
   echo "$none" | grep -q 'no live agent/\*'
   echo "$none" | grep -q '^later:'
@@ -241,4 +245,32 @@ comp="$("$ROOT/ask" --complete 2 ./ask status)"
 echo "$comp" | grep -q -- '--later-only'
 echo "$comp" | grep -q -- '--work-only'
 
-echo "PASS: status lists live agent/* and archived work/* without checkout; later inbox on checkout"
+
+# Later cards are durable on develop and visible while a feature/work branch is checked out.
+SHARED="$(mktemp -d)"
+(
+  cd "$SHARED"
+  git init -q
+  git config user.email t@e.com
+  git config user.name t
+  echo base > README.md
+  git add README.md && git commit -q -m base
+  git branch -M main
+  git checkout -q -b develop
+  mkdir -p .later
+  printf '# Shared durable card\n' > .later/shared.md
+  git add .later/shared.md && git commit -q -m 'park shared card'
+  git update-ref refs/remotes/origin/develop "$(git rev-parse develop)"
+  git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/develop
+  git checkout -q main
+  git checkout -q -b agent/feature
+  [[ ! -e .later/shared.md ]]
+  shared_out="$($STATUS --later-only)"
+  echo "$shared_out" | grep -qE '^shared +Shared durable card' || { echo "FAIL: later inbox hid develop card from feature branch" >&2; exit 1; }
+  git branch -D develop >/dev/null
+  shared_out="$($STATUS --later-only)"
+  echo "$shared_out" | grep -qE '^shared +Shared durable card' || { echo "FAIL: later inbox could not read origin/develop without local develop" >&2; exit 1; }
+)
+rm -rf "$SHARED"
+
+echo "PASS: status lists shared develop later cards from a feature branch"

@@ -1,0 +1,22 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "shorter-hashes",
+  "task_id": "1",
+  "base_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+  "candidate_sha": "c8a5ea24821b0f984f4e9d7ddee38714d4409d16",
+  "tdd": {
+    "seam": ".agents/ask/workflow_refs/benchmark.py:_tokenizer",
+    "red": {
+      "command": "PATH=\"$PWD/_ask/.venv/bin:$PATH\" ./ask traceability run shorter-hashes --candidate-sha f6d6791cbdfe985c89df38226808ebb86968bc3b --anchor-sha c8a5ea24821b0f984f4e9d7ddee38714d4409d16 --phase red --scope task --task-id 1; run_id=0596b1e2696c429da0ca511fa248a302",
+      "output": "The amended-plan Red run reproduces 1/1 behavior_assertion failure while 1/2 passes. Full output: work/shorter-hashes/traceability/runs/0596b1e2696c429da0ca511fa248a302/b0148feb47c4410397b155e20009ad4f.log",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "PATH=\"$PWD/_ask/.venv/bin:$PATH\" ./ask traceability run shorter-hashes --candidate-sha c8a5ea24821b0f984f4e9d7ddee38714d4409d16 --anchor-sha c8a5ea24821b0f984f4e9d7ddee38714d4409d16 --phase final_green --scope task --task-id 1; run_id=83ad2f42bd5e43018d18da00cfac4eb4",
+      "output": "Both mapped cases 1/1 and 1/2 passed at the current accepted-pin candidate. Full output: work/shorter-hashes/traceability/runs/83ad2f42bd5e43018d18da00cfac4eb4/b11c85420dbf4958bd90b58b14bb2e01.log",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "notes": "Task 1 changes only the scoped handling of OSError while loading pinned tokenizer data. Refactor outcome: no applicable structural cleanup; the fix is a one-line exception tuple expansion. Independent review approved the exact candidate and assigned coverage. Integration is pending."
+}

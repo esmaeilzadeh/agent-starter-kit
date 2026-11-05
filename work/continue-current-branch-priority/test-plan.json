@@ -1,0 +1,14 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "continue-current-branch-priority",
+  "spec_digest": "8ca3b712ef813c3595d6cbf02e340fe3b56e91cb913c6fea5592d75211636e71",
+  "obligations": [],
+  "runners": [],
+  "tests": [],
+  "task_scopes": [
+    {
+      "task_id": "CONT-001",
+      "test_ids": []
+    }
+  ]
+}

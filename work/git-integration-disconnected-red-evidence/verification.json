@@ -1,0 +1,12 @@
+{
+  "work_id": "git-integration-disconnected-red-evidence",
+  "commit_sha": "d6f681c957fc806ff50533d5ce27e5b72be2032f",
+  "checks": [
+    {"command": "PYTHONPATH=_ask/tests python3 -m unittest test_traceability_evidence.EvidenceTests.test_disconnected_red_source_has_actionable_ancestry_error", "result": "pass", "notes": "Test was observed failing with errors[0] empty before the fix; it now names both disconnected source and final candidate commits."},
+    {"command": "PYTHONPATH=_ask/tests python3 -m unittest test_traceability_evidence", "result": "pass", "notes": "13 tests passed."},
+    {"command": "git diff --check", "result": "pass", "notes": "No whitespace errors."},
+    {"command": "./ask verify", "result": "blocked", "notes": "Stopped before checks: migration_required: missing coordinator accepted-tests ref."}
+  ],
+  "result": "pass_with_documented_verification_blocker",
+  "notes": "Diagnostic-only; ancestry requirements and evidence eligibility remain unchanged."
+}

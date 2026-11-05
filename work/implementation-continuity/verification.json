@@ -1,0 +1,10 @@
+{
+  "work_id": "implementation-continuity",
+  "commit_sha": "pending",
+  "checks": [
+    {"command": "instruction projection inspection", "result": "pass", "notes": "All canonical and generated Explore sources contain the merged continuation rule at 4b392e0."},
+    {"command": "git diff --check", "result": "pass", "notes": "No whitespace errors."}
+  ],
+  "result": "pass",
+  "notes": "Duplicate card closure; implementation evidence is recorded in work/continuation-context-loss."
+}

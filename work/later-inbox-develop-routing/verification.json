@@ -1,0 +1,23 @@
+{
+  "work_id": "later-inbox-develop-routing",
+  "commit_sha": "51e644f22b792a12f2d73fb0e6e9fd648c49d850",
+  "checks": [
+    {
+      "command": "bash _ask/tests/test-status.sh",
+      "result": "pass",
+      "notes": "Includes regression for develop-only cards from an agent branch, with local and remote develop refs."
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass",
+      "notes": "No whitespace errors."
+    },
+    {
+      "command": "./ask verify",
+      "result": "blocked",
+      "notes": "Stopped before checks: migration_required: missing coordinator accepted-tests ref. The independent status CLI regression suite passes."
+    }
+  ],
+  "result": "pass_with_documented_verification_blocker",
+  "notes": "Focused regression and formatting checks pass; full verifier is gated by the existing coordinator accepted-tests migration."
+}

@@ -56,6 +56,14 @@ def _accept_plan(root,work_id,revision,reviewer,recorded_by,evidence):
     # cannot advance this ref; only an explicit reviewed accept-plan operation can.
     ref=f'refs/ask/accepted-tests/{work_id}'
     previous=subprocess.run(['git','rev-parse','--verify',ref],cwd=root,capture_output=True,text=True).stdout.strip()
+    if previous:
+        history_ref=f'refs/ask/accepted-tests-history/{work_id}/{previous}'
+        existing=subprocess.run(['git','rev-parse','--verify',history_ref],cwd=root,
+                                capture_output=True,text=True)
+        if existing.returncode:
+            git(root,'update-ref',history_ref,previous,'0'*40)
+        elif existing.stdout.strip()!=previous:
+            raise Invalid('retained accepted authority reference conflicts with its identity')
     def object_command(args,data):
         proc=subprocess.run(['git',*args],input=data,cwd=root,capture_output=True)
         if proc.returncode:raise Invalid(proc.stderr.decode())
@@ -86,12 +94,141 @@ def load_accepted(root,work_id,anchor_sha,candidate_sha=None):
         or pin['plan_review'].get('reviewer')!=pin['reviewer']
         or pin['plan_review'].get('spec_digest')!=pin['spec_digest']
         or pin['plan_review'].get('plan_digest')!=pin['plan_digest']):raise Invalid('stale accepted plan review')
+    _validate_historical_red_exception(root, work_id, pin, contracts)
     git(root,'merge-base','--is-ancestor',pin['contract_sha'],candidate_sha or anchor_sha)
     if candidate_sha:
         actual=contracts_at(root,work_id,candidate_sha)
         if any(digest(actual[k])!=pin[k+'_digest'] for k in actual):raise Invalid('candidate changed accepted obligations; reviewed amendment required')
         if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:raise Invalid('candidate changed delegation policy')
     return dict(contracts,pin=pin)
+
+
+def _validate_historical_red_exception(root, work_id, pin, contracts):
+    declarations=contracts['plan'].get('historical_red_exceptions', [])
+    review=pin.get('plan_review') or {}
+    authorized=review.get('historical_red_exceptions', [])
+    if not declarations:
+        if authorized:
+            raise Invalid('plan review authorizes a historical Red exception absent from its contract')
+        return
+    if declarations!=authorized:
+        raise Invalid('historical Red exception is not bound by the accepted plan review')
+    migration=review.get('coordinator_migration')
+    if (not isinstance(migration,dict) or migration.get('work_id')!=work_id
+        or migration.get('task_id')!='CR-3' or work_id!='continuation-recovery'
+        or not text(migration.get('coordinator_sha')) or not text(migration.get('coordinator_tree'))
+        or not text(migration.get('verifier_sha')) or not text(migration.get('verifier_tree'))
+        or migration.get('scope_decision_digest')!=declarations[0].get('decision_digest')):
+        raise Invalid('historical Red exception requires its exact P1 coordinator migration authorization')
+    for item in declarations:
+        if item.get('work_id')!=work_id or item.get('task_id')!='CR-3' or item.get('test_id')!='CR-T21':
+            raise Invalid('historical Red exception exceeds its approved scope')
+        try:
+            raw=read_at(root,pin['contract_sha'],item['decision_artifact'])
+        except Invalid as exc:
+            raise Invalid('historical Red decision artifact is unavailable') from exc
+        if file_digest_bytes(raw)!=item.get('decision_digest'):
+            raise Invalid('historical Red decision artifact digest mismatch')
+
+
+def load_historical_accepted(root, work_id, candidate_sha):
+    """Load the immutable acceptance embedded in an original run candidate."""
+    pin=json_at(root,candidate_sha,f'work/{work_id}/traceability-accepted.json')
+    if (pin.get('schema')!='ask-accepted-tests/v1' or pin.get('capability')!=CAPABILITY
+        or pin.get('work_id')!=work_id or not text(pin.get('reviewer'))
+        or not text(pin.get('recorded_by')) or pin['reviewer']==pin['recorded_by']
+        or pin.get('policy')!=POLICY):
+        raise Invalid('historical run has no valid original accepted authority')
+    if (pin.get('plan_review_digest')!=digest(pin.get('plan_review'))
+        or pin['plan_review'].get('decision')!='APPROVED'
+        or pin['plan_review'].get('reviewer')!=pin['reviewer']
+        or pin['plan_review'].get('spec_digest')!=pin.get('spec_digest')
+        or pin['plan_review'].get('plan_digest')!=pin.get('plan_digest')):
+        raise Invalid('historical accepted plan review is stale')
+    contracts=contracts_at(root,work_id,pin['contract_sha'])
+    if any(pin.get(key+'_digest')!=digest(value) for key,value in contracts.items()):
+        raise Invalid('historical accepted contract digest mismatch')
+    git(root,'merge-base','--is-ancestor',pin['contract_sha'],candidate_sha)
+    actual=contracts_at(root,work_id,candidate_sha)
+    if any(digest(actual[key])!=pin[key+'_digest'] for key in actual):
+        raise Invalid('historical run candidate changed its accepted contract')
+    if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:
+        raise Invalid('historical run candidate changed its accepted policy')
+    return dict(contracts,pin=pin)
+
+
+def validate_historical_continuity(root, work_id, original, current, report,
+                                  ledger_row, decisions, current_candidate_sha):
+    """Validate per-case historical Red provenance and reviewed applicability."""
+    import hashlib
+    from .coverage import scoped_tests
+
+    run_id=report.get('run_id')
+    original_candidate=report.get('candidate_sha')
+    original_plan_digest=digest(original['plan'])
+    if (report.get('schema')!='ask-test-results/v1' or report.get('work_id',work_id)!=work_id
+        or report.get('task_id') is None or report.get('scope')!='task'
+        or report.get('plan_digest')!=original_plan_digest
+        or report.get('spec_digest')!=digest(original['spec'])):
+        raise Invalid('historical report identity differs from its original accepted contract')
+    calculated_report_digest=hashlib.sha256(json.dumps(
+        report,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    if (ledger_row.get('run_id')!=run_id or ledger_row.get('candidate_sha')!=original_candidate
+        or ledger_row.get('task_id')!=report.get('task_id') or ledger_row.get('phase')!='red'
+        or ledger_row.get('digest')!=calculated_report_digest):
+        raise Invalid('historical report differs from its original ledger identity')
+    ledger_identity=digest(ledger_row)
+    authority_path=f'work/{work_id}/traceability-accepted.json'
+    candidate_pin_object=git(root,'rev-parse',f'{original_candidate}:{authority_path}')
+    original_authority_digest=digest(original['pin'])
+    rows={}
+    for decision in decisions:
+        test_id=decision.get('test_id')
+        if test_id in rows:
+            raise Invalid('duplicate historical continuity decision for one case')
+        rows[test_id]=decision
+    if not rows:
+        raise Invalid('historical run has no per-case continuity decisions')
+    original_tests={t['id']:t for t in scoped_tests(original['plan'],'task',report['task_id'])}
+    current_tests={t['id']:t for t in scoped_tests(current['plan'],'task',report['task_id'])}
+    failures={case.get('test_id'):case for case in report.get('cases',[])
+              if case.get('phase')=='red' and case.get('outcome')=='failed'
+              and case.get('failure_kind')=='behavior_assertion'}
+    expected_reviewer=(current.get('pin') or {}).get('reviewer')
+    for test_id,decision in rows.items():
+        old_test=original_tests.get(test_id);new_test=current_tests.get(test_id)
+        case=failures.get(test_id)
+        if not old_test or not new_test or not case:
+            raise Invalid(f'{test_id}: historical continuity does not identify an original failed case')
+        if (decision.get('work_id')!=work_id or decision.get('task_id')!=report['task_id']
+            or decision.get('run_id')!=run_id or decision.get('candidate_sha')!=original_candidate
+            or decision.get('original_plan_digest')!=original_plan_digest
+            or decision.get('report_digest')!=calculated_report_digest
+            or decision.get('ledger_row_digest')!=ledger_identity
+            or not text(decision.get('original_authority_object'))
+            or decision.get('original_candidate_pin_object')!=candidate_pin_object
+            or decision.get('original_authority_digest')!=original_authority_digest
+            or decision.get('original_contract_digest')!=digest(original['pin'])
+            or decision.get('reviewer')!=expected_reviewer
+            or not text(decision.get('behavioral_continuity'))):
+            raise Invalid(f'{test_id}: historical continuity provenance or reviewer binding is stale')
+        authority_commit=decision['original_authority_object']
+        history_ref=f'refs/ask/accepted-tests-history/{work_id}/{authority_commit}'
+        retained=subprocess.run(['git','rev-parse','--verify',history_ref],cwd=root,
+                                capture_output=True,text=True)
+        authority_pin=json_at(root,authority_commit,'accepted.json')
+        parent=git(root,'rev-parse',f'{authority_commit}^')
+        if (retained.returncode or retained.stdout.strip()!=authority_commit
+            or authority_pin!=original['pin'] or parent!=original['pin'].get('contract_sha')):
+            raise Invalid(f'{test_id}: original coordinator authority is not exactly retained')
+        if not isinstance(current_candidate_sha,str) or not current_candidate_sha:
+            raise Invalid('historical continuity has no current candidate identity')
+        old_sources=source_digests(root,case['source_sha'],original['plan'],[test_id])
+        new_sources=source_digests(root,current_candidate_sha,current['plan'],[test_id])
+        if (decision.get('original_source_digests')!=old_sources
+            or decision.get('current_source_digests')!=new_sources):
+            raise Invalid(f'{test_id}: historical continuity source identities are stale')
+    return rows
 
 
 def file_digest_bytes(raw):
@@ -124,7 +261,8 @@ def inventory(root,base,sha,plan):
                 matches=[t['id'] for t in plan['tests'] if path in t['source_paths'] and t['case_id'].endswith(suffix)]
                 if len(matches)==1:
                     cases.extend(matches)
-                    if old_methods.get(f'{cls.name}.{method.name}')!=ast.dump(method,include_attributes=False):behavior_changes.extend(matches)
+                    previous=old_methods.get(f'{cls.name}.{method.name}')
+                    if previous is not None and previous!=ast.dump(method,include_attributes=False):behavior_changes.extend(matches)
                 else:unmapped.append(path+suffix)
     return {'inspected_sources':inspected,'changed_cases':sorted(set(cases)),'unmapped_cases':sorted(unmapped),'behavior_changes':sorted(set(behavior_changes))}
 
@@ -262,8 +400,11 @@ def source_changes(root,work_id):
         raw=subprocess.run(['git',*args],cwd=root,check=True,capture_output=True,text=True).stdout
         names.update(raw.split('\0'))
     prefix=f'work/{work_id}/inner-loop/'
+    catalog_paths={f'work/{work_id}/references/integrity.json',
+                   f'work/{work_id}/references/integrity.json.pending'}
     return sorted(n for n in names if n and not n.startswith(f'work/{work_id}/traceability/')
                   and n not in {prefix+'state.json',prefix+'state.lock',f'work/{work_id}/result.json'}
+                  and n not in catalog_paths
                   and not n.startswith((prefix+'evidence/',prefix+'results/',prefix+'.state-')))
 
 

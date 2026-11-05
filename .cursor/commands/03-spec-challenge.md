@@ -48,7 +48,7 @@ When the challenge writes prose, read the prepared `writing-for-agents` skill an
 
 ## Model spawn (required)
 
-Spawn the generated Spec Challenge subagent for the current runtime. Present that runtime’s picker list from `_ask/bindings/runtimes/<runtime>.yaml` (default highlighted). The human confirms. If the pick is the same family as Spec on that runtime, warn once; continue after a second confirm. Record `model`, `runtime`, and `parent_model` (or Spec model) on `spec-challenge.md`. Do not author the challenge only in the parent context.
+Spawn the generated Spec Challenge subagent for the current runtime. Present its model picker as selectable choices from the runtime binding (default highlighted). A highlight alone is not consent. If the selected model is the same family as Spec, explain why and offer “Continue with this model” / “Choose another model” as choices; proceed only on the submitted continue choice. If buttons are unavailable, offer numbered choices and accept the number or option label, never a written confirmation sentence. Record model, runtime, and parent_model in spec-challenge.md. Do not author the challenge only in the parent context.
 
 ## Structured test evidence
 

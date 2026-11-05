@@ -22,6 +22,7 @@ These observations support a clarity problem; they do not establish that every r
 - Inventory conflicts and ambiguous instructions across entry prompts, canonical stage contracts, skills, policies, templates, and generated runtime bindings. Include approval, delegation, clean-worktree, branch, and commit rules where their interaction changes the next action.
 - Establish explicit authority and precedence for overlapping instructions. Keep canonical decisions in one place and derive or reference runtime projections without introducing competing rules.
 - Define how the outer workflow contains the task loop. For each state, specify the acting role, required inputs, permitted action, exit condition, next state, and escalation or human-confirmation condition.
+- Before asking the human to confirm or choose, first re-evaluate whether the active authorization, policy, or workflow gate actually requires a human decision. Check prior instructions and available evidence; when the authorized path is clear, use best judgment and continue. Ask once only for a concrete unresolved human-owned choice or required confirmation, and do not repeat a decision already submitted.
 - Distinguish task completion from workstream completion and make review, correction, verification, integration, retry, and resume transitions explicit. Resolve conditional-versus-required behavior consistently across Plan and Implement.
 - Refactor the affected prompts, skills, and rules into direct decision instructions so the agent can identify the current state, next action, and responsible role without assembling an implicit workflow from several documents.
 - Preserve existing safety and acceptance requirements unless a separately approved intent or spec change authorizes changing them.
@@ -32,3 +33,35 @@ These observations support a clarity problem; they do not establish that every r
 The human requested: "add it to latter inbox: refactor to fix such conflicts in prompt,skill and rules and make the decision straitforward for the agent".
 
 An explicit nested task sequence (Implement → Review → Fix as needed → Verify → Integrate, followed by workstream verification and acceptance) is a candidate to investigate, not an approved redesign. This card parks the refactor; it does not start implementation or change the current workflow.
+
+
+## Resolved bug slices (2026-10-18)
+
+- Continuation recovery is implemented in continuation-context-loss: a clear “continue” resumes the uniquely active authorized workstream instead of restarting new-task intake.
+- Every required workflow confirmation now uses selectable choices; written approval sentences are never required. If native controls are unavailable, agents offer numbered choices. Unsolicited concise text approval remains supported, and conditional/negative replies remain rejected. See the active workstream `agent/agent-decision-clarity` for this implementation.
+
+## Additional observed friction (2026-10-18)
+
+The `verify-candidate-source-stability` follow-up supplied a concrete case for this card. The historical mutation reproduced and all 37 checks passed. The user approved the intent and directed merge to `main` plus push, but the agent spent several turns on artifacts before acting. Specific remaining friction to investigate:
+
+- Define a straightforward evidence-only completion route and when structured test provenance applies.
+- Avoid self-created dirty-tree blockers by sequencing state-writing operations so the agent closes its own clean-tree boundary promptly.
+- Prefer the concrete next action and report only real blockers after the user has authorized it.
+
+These examples do not approve removing intent confirmation, clean-worktree protection, evidence requirements, or other safety rules. The broader inventory and workflow nesting review remains open.
+
+## Re-evaluate before asking the human (2026-10-22)
+
+The user requested:
+
+> re-eval the situation and check if it still need human decision if not stop and show your decision with the level of certainty (if it is up to 80%) else ask it as a choice question with consequences.
+
+Before asking for a decision during an active workflow, reassess the evidence, existing authorization, and consequences. If another model is available with stronger reasoning, consult it before increasing the current model's reasoning effort. Ask the human only when the decision is genuinely theirs to make; present one choice question with the consequences of each option, then wait for the submitted choice. Never repeat a decision that has already been submitted.
+
+Treat a model escalation as a temporary consultation. Once the decision is resolved, return to the model and effort that were active when the workflow began and continue from the exact authorized stage and task. Do not leave the workflow on the stronger model or raise its effort after the consultation.
+
+When the agent can decide within existing authorization, stop the decision loop and state the chosen path with its confidence. Preserve the user's requested 80% threshold wording until its boundary is clarified; do not use uncertainty about that wording to ask redundant questions or to bypass a human-only gate.
+
+## Human-selected verification after the inner loop (2026-10-22)
+
+Let the human choose who performs workstream verification after the inner loop: an agent using the human's selected model and reasoning effort, including a stronger model, or the human personally. Record that selection and honor it without repeatedly asking. Define the handoff, required evidence, and completion conditions for each route while preserving verification and acceptance requirements. This is an addition to the parked scope; it does not change the current workflow.

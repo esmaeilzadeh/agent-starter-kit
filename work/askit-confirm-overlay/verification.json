@@ -1,0 +1,11 @@
+{
+  "work_id": "askit-confirm-overlay",
+  "commit_sha": "64f2faae53375b0cf44f65d99217942d8ee8bf27",
+  "checks": [
+    {"command": "git merge-base --is-ancestor 5f38771 develop", "result": "pass", "notes": "The fix commit is included in develop."},
+    {"command": "bash _ask/tests/test-askit-first-run.sh", "result": "pass", "notes": "Confirms first-run gating and overlay behavior."},
+    {"command": "bash _ask/tests/test-askit-complete.sh", "result": "pass", "notes": "Confirms command and completion are gated until ask-based."}
+  ],
+  "result": "pass",
+  "notes": "Evidence-only closure; the global askit bootstrap proposal remains open separately."
+}

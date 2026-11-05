@@ -5,19 +5,23 @@ Hidden: ready-set scheduling, TaskResult TDD/exemption gate, CAS SHA fold.
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 from pathlib import Path
 from engineering_model.workflow import adopted, guarded_workflow, workflow_admission, _refuse
 from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
-    NotIntegrable, check_integrable, git, read_candidate, result_path,
-    runtime_exclusions, source_changes, validate_review, verify_candidate,
+    NotIntegrable, _checkpoint_run_locked, check_integrable, git, read_candidate, result_path,
+    reuse_checkpointed_verification, runtime_exclusions, source_changes, validate_review,
+    validate_task_verification_report, verification_report_receipt, verify_candidate,
 )
 from inner_loop.graph import _task_map, load_graph, validate_graph
 from inner_loop.integrate import Escalate, resume as git_resume
 from inner_loop.integrate import integrate as git_integrate
-from inner_loop.state import cas_apply, cas_init, load_state, spawn_writer, state_lock, state_transaction
+from inner_loop.state import (cas_apply, cas_init, checkpoint_held_state, load_state,
+                              spawn_writer, state_lock, state_transaction)
+from inner_loop.recovery import require_safe
 
 
 def git_sha(root: Path) -> str:
@@ -62,6 +66,7 @@ def ready_ids(graph: dict, doc: dict) -> list[str]:
         "integrated",
         "cancelled",
         "blocked",
+        "interrupted",
         "failed",
         "escalated",
     }
@@ -83,10 +88,16 @@ def ensure_state(root: Path, work_id: str) -> dict:
     if status != "ok":
         raise ValueError(status)
     try:
-        return load_state(root, work_id)
+        doc = load_state(root, work_id)
     except FileNotFoundError:
         ids = list(_task_map(graph))
+        require_safe(root, work_id, graph, None)
         return cas_init(root, work_id, ids, coordinator_sha=git_sha(root))
+    except json.JSONDecodeError:
+        require_safe(root, work_id, graph, None)
+        raise
+    require_safe(root, work_id, graph, doc)
+    return doc
 
 
 def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str:
@@ -95,23 +106,56 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
     if task_id is None:
         raise NotIntegrable('selected task identity is required before integration')
     with workflow_admission(root, work_id, delivery_task_id=task_id), \
-            state_transaction(root, work_id) as doc:
+            state_transaction(root, work_id, finalize_verification=True) as doc:
         running = _running(doc)
         if len(running) != 1 or task_id not in running:
             raise Escalate("explicit selected task is not the unique running task")
         candidate = read_candidate(root, work_id, task_id, doc)
-        check_integrable(candidate.result)
+        check_integrable(candidate.result, root=root,
+                         candidate_sha=candidate.identity['candidate_sha'],
+                         accepted_plan_digest=doc['tasks'][task_id].get('accepted_plan_digest'))
         task = doc['tasks'][task_id]
         review = validate_review(root, task, candidate)
         if source_changes(root, work_id):
             raise NotIntegrable('dirty coordinator source; commit or resolve changes before integration')
-        evidence = verify_candidate(root, candidate)
+        evidence = reuse_checkpointed_verification(root, work_id, task, candidate)
+        verification_reused = evidence is not None
+        if evidence is None:
+            report_reference = candidate.result.get('verification_report')
+            if report_reference is not None:
+                evidence = verification_report_receipt(root, work_id, task_id,
+                                                       candidate, doc)
+            else:
+                evidence = verify_candidate(root, candidate)
         # Checks can take time: ref/result/review or coordinator source drift
         # invalidates their applicability before any FF/state advancement.
         current = read_candidate(root, work_id, task_id, doc)
         if current != candidate or source_changes(root, work_id):
             raise NotIntegrable('candidate/result/source changed during verification')
         validate_review(root, task, current)
+        # The trusted child has exited and released every ledger lock. Fold only
+        # the run IDs named by its exact passing completion receipt while the
+        # coordinator transaction already owns state.lock.
+        for run_id in evidence.get('traceability_run_ids', []):
+            _checkpoint_run_locked(root, work_id, task_id, run_id, doc)
+        if isinstance(evidence.get('task_verification_report'), dict):
+            _report, row, reference = validate_task_verification_report(
+                root, work_id, task_id, candidate, doc)
+            if (reference != evidence['task_verification_report']
+                    or row.get('digest') != evidence.get('task_report_digest')):
+                raise NotIntegrable('TaskResult verification report changed during integration')
+        task.setdefault('evidence', {})['verification'] = evidence
+        record_path = evidence.get('record_path')
+        try:
+            record_raw = (root / record_path).read_bytes()
+        except (OSError, TypeError) as exc:
+            raise NotIntegrable(f'verification evidence record is unavailable: {exc}') from exc
+        task['evidence']['verification_record_digest'] = hashlib.sha256(record_raw).hexdigest()
+        if not verification_reused:
+            # This is the durable verification-complete point. A crash from
+            # here through FF replays the exact receipt and performs only the
+            # missing integration/state fold.
+            checkpoint_held_state(root, work_id, doc)
         sha = git_integrate(root, candidate.identity['candidate_sha'], 'ff-only', work_id=work_id,
                             delivery_task_id=task_id)
         if sha != candidate.identity['candidate_sha'] or git(root, 'rev-parse', 'HEAD^{tree}') != evidence['tree_sha']:
@@ -119,6 +163,8 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         evidence['resulting_sha'] = sha
         evidence['review'] = review
         (root / evidence['record_path']).write_text(json.dumps(evidence, indent=2) + '\n')
+        task['evidence']['verification_record_digest'] = hashlib.sha256(
+            (root / evidence['record_path']).read_bytes()).hexdigest()
         task['status'] = 'integrated'
         task['result_path'] = str(result_path(root, work_id, task_id).relative_to(root))
         task['evidence']['verification'] = evidence
@@ -140,6 +186,12 @@ def run_once(root: Path, work_id: str) -> str:
     try:
         doc = load_state(root, work_id)
     except FileNotFoundError:
+        doc = None
+    except json.JSONDecodeError:
+        require_safe(root, work_id, graph, None)
+        raise
+    require_safe(root, work_id, graph, doc)
+    if doc is None:
         doc = {"tasks": {}}
     running = _running(doc)
     if running:

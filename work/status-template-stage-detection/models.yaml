@@ -1,0 +1,7 @@
+codex:
+  03-spec-challenge: gpt-6.1-sol
+  06-implement: gpt-6-luna
+reasoning_effort:
+  codex:
+    03-spec-challenge: medium
+    06-implement: medium

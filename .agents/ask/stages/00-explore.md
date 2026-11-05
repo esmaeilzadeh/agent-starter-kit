@@ -13,6 +13,39 @@ When the destination is foggy, chart decisions (and run research/prototypes)
 until What/Why can be owned — then hand off into Intent / 01 Grill.
 ```
 
+## Continuation recovery (before new-task intake)
+
+When the human says “continue,” “resume,” or equivalent, first inspect the
+current branch, workstream artifacts, inner-loop state, and recent commits.
+
+- If the human names a workstream, resolve that target before considering the
+  checkout. If it is ambiguous or unavailable, ask about that target; never
+  substitute the checked-out workstream.
+- Otherwise, when the checkout is `agent/<work-id>` and matching workstream
+  artifacts exist, treat it as the continuation target even if unrelated live
+  workstreams exist. Check that its stage and authorization evidence agree
+  before acting. Resume its exact authorized stage and task, retaining prior
+  approvals, only when that evidence is consistent; otherwise ask for
+  clarification before action.
+- If that workstream is terminal or its plan explicitly stops, report the
+  authorized endpoint. Do not offer a chooser among unrelated workstreams or
+  infer permission for a later stage.
+- For other checkouts, resolve the target from remaining evidence. Ask for
+  clarification before action if no target is identifiable or multiple targets
+  remain plausible. At any checkout, ask before acting when relevant stage or
+  authorization evidence conflicts.
+
+Apply the Explore/Grill entry gate only after establishing that the request
+starts a genuinely new task.
+
+## Mandatory request route gate
+
+Before this stage or its subject-intake command, apply the request route gate in
+root `AGENTS.md` and `_ask/policies/workflow.md`. If the requested outcome is a
+reported defect against existing behavior, leave Explore and use the focused
+bug-fix path. For a mixed request, Explore only the separate feature workstream.
+An explicit `/00-explore` invocation does not skip this routing decision.
+
 ## Adopted subject intake
 
 Before choosing or creating execution work, recording intent, or admitting a
@@ -37,7 +70,7 @@ treat Explore as decision work, not implementation
 keep a durable map (explore-map artifact and/or tracker map)
 separate human decisions from research facts
 prepare Community Skills declared for Explore via Skill Preparation
-before Explore decision grilling: propose extra related skills that would change What/Why; ask before prepare; pin accepted skills in the repo manifest
+before Explore decision grilling: propose extra related skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
 expand only load-bearing Explore decisions (Grilling Expansion: two-block + assume-list)
 stop and hand off when the destination is clear
 ```
@@ -78,7 +111,7 @@ STILL_FOGGY → continue Explore (or escalate to human)
 
 - Do **not** stuff R&D / destination discovery into `06 Implement`.
 - Non-empty `## Handoff to Intent` on the explore-map is required before `01 Grill`.
-- Run Skill Preparation for Explore-bound Community Skills before labor. Extra related skills: ask first, then pin in `_ask/skills/manifest.yaml` (never `latest`).
+- Run Skill Preparation for Explore-bound Community Skills before labor. Present extra related skills that would change What/Why as selectable choices; prepare only selected skills, then pin in `_ask/skills/manifest.yaml` (never `latest`).
 - Explore decision grilling uses the same filter as `01 Grill` (load-bearing numbered Qs + “I’ll assume…”). See `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 - Never start Explore on a dirty worktree; if dirty, grill the human per `_ask/policies/worktree.md`.
-- Kit path: `_ask/policies/workflow.md`. **If 00 runs**, create `work/<work-id>/explore-map.md` from `_ask/templates/explore-map.md` when missing, and do not skip that artifact. **If 00 is a real skip** (dest already ownable, and the human did not invoke `/00-explore`), do not create the map; record the skip in `intent.md` and go to 01 after confirm. `/00-explore` always runs this stage — do not ask whether Explore is needed. Off-path only if the human explicitly leaves the kit.
+- Kit path: `_ask/policies/workflow.md`. **If 00 runs for a feature**, create `work/<work-id>/explore-map.md` from `_ask/templates/explore-map.md` when missing, and do not skip that artifact. **If 00 is a real skip** (destination already ownable, and the human did not invoke `/00-explore`), do not create the map; record the skip in `intent.md` and go to 01 after the submitted intent approval choice. `/00-explore` starts this stage for feature work; the mandatory request route gate still decides whether the request belongs here. Off-path does not bypass that gate.

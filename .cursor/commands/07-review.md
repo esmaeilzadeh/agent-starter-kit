@@ -28,11 +28,15 @@ See `_ask/policies/workflow.md`. Prepare `review.md`. After defaults-OK, do not 
 
 ## Model spawn (required)
 
-Spawn the generated Review subagent for the current runtime. Present that runtime’s picker list (default is the resolved `cheap` or `diverse` pool for workstream risk; unset risk is LOW → cheap). The human confirms. If the pick is the same family as Implement on that runtime, warn once; continue after a second confirm. Record `model`, `runtime`, and `parent_model` on `review.md`. Do not author the review only in the parent context. A review agent is still not the sole acceptance mechanism.
+Spawn the generated Review subagent for the current runtime. Present the model picker as selectable choices (default is resolved cheap/diverse pool for workstream risk; unset risk is LOW → cheap). A highlight alone is not consent. If the selected model is the same family as Implement, explain why and offer “Continue with this model” / “Choose another model” as choices; proceed only on the submitted continue choice. If buttons are unavailable, offer numbered choices and accept the number or option label, never a written confirmation sentence. Record model, runtime, and parent_model on review.md. Do not author the review only in the parent context.
 
 ## Inner-loop
 
 When `work/<work-id>/inner-loop/tasks.yaml` exists, review the **current** writer only (`./ask inner-loop status`).
+
+Use the classification and completion rules in `.agents/ask/task-loop.md`.
+Report local structural suggestions, broader horizontal refactors, existing-spec
+behavior defects, required redesign, and evidence-backed withdrawals separately.
 
 **Steering boundary:** run `git diff --name-only` and match those paths to the task’s `owned_paths` globs (seam/module patterns, not a file list). Verdict is `APPROVED` or `REJECTED`.
 

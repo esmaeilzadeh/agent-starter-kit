@@ -1,0 +1,1 @@
+PASS: setup --help works; non-TTY setup refuses and does not write .ask.env; verify scaffold refuses non-TTY

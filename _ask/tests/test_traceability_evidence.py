@@ -59,6 +59,22 @@ class EvidenceTests(unittest.TestCase):
         for mutate in [lambda r:r.update(criteria=[]),lambda r:r['criteria'][0].update(type_adequacy={}),lambda r:r['tests'][0].update(counterexample=''),lambda r:r['tests'][0].update(decision='REJECTED')]:
             record=copy.deepcopy(self.c.record);mutate(record['review']);record['review_digest']=digest(record['review']);write_json(self.c.root/'work/w/traceability/reviews'/(self.c.sha+'.json'),record)
             self.assertEqual(self.evaluate(review=record)['status'],'fail')
+    def test_disconnected_red_source_has_actionable_ancestry_error(self):
+        red=copy.deepcopy(self.c.red)
+        tree=self.c.git('rev-parse',self.c.red_sha+'^{tree}')
+        disconnected=self.c.git('commit-tree',tree,'-m','disconnected duplicate red source')
+        red['candidate_sha']=disconnected
+        for execution in red['executions']:
+            execution['source_sha']=disconnected
+        for case in red['cases']:
+            case['source_sha']=disconnected
+        self.persist(red)
+        result=self.evaluate([red,self.c.green])
+        self.assertIn('red source commit',result['errors'][0])
+        self.assertIn(disconnected,result['errors'][0])
+        self.assertIn(self.c.sha,result['errors'][0])
+        self.assertNotEqual(result['errors'][0],'')
+
     def test_U07_mutated_log_source_run_identity_or_revision_is_rejected(self):
         self.passing()
         for field,value in [('run_id','wrong'),('candidate_sha',self.c.red_sha),('plan_digest','wrong')]:

@@ -15,6 +15,10 @@ LATER_ONLY=0
 WORK_ONLY=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --references)
+      ROOT="$(git rev-parse --show-toplevel)"
+      exec "$ROOT/_ask/scripts/references.sh" status
+      ;;
     --work-id)
       WORK_ID_SET=1
       if [[ $# -lt 2 || "$2" == -* ]]; then
@@ -29,11 +33,12 @@ while [[ $# -gt 0 ]]; do
     --work-only) WORK_ONLY=1; shift ;;
     -h|--help)
       cat <<'EOF'
-Usage: ./ask status [--work-id <id>] [--json] [--later-only] [--work-only]
+Usage: ./ask status [--work-id <id>] [--json] [--later-only] [--work-only] [--references]
 
 Live workstreams are inferred from local refs/heads/agent/* (no checkout).
 Archived workstreams are work/* on the default branch with no matching agent/* branch.
-Later cards are .later/*.md on this checkout (not live). --later-only / --work-only print one inventory.
+Later cards are committed .later/*.md from develop (or origin/develop) on every checkout. --later-only / --work-only print one inventory.
+--references prints the coherent numeric reference inventory.
 EOF
       exit 0
       ;;
@@ -60,7 +65,7 @@ export ASK_STATUS_LATER_ONLY="$LATER_ONLY"
 export ASK_STATUS_WORK_ONLY="$WORK_ONLY"
 
 python3 - <<'PY'
-import json, os, re, stat, subprocess, sys
+import json, os, re, subprocess, sys
 
 def git(*args, check=True):
     r = subprocess.run(["git", *args], capture_output=True, text=True)
@@ -120,6 +125,20 @@ def meaningful(text):
         return True
     return False
 
+def has_task_row(text):
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) < 2 or all(re.fullmatch(r":?-{3,}:?", cell) for cell in cells):
+            continue
+        if cells[0].casefold() in {"task id", "task", "id"}:
+            continue
+        if cells[0] and cells[1]:
+            return True
+    return False
+
 def sha_in(text):
     return bool(re.search(r"\b[0-9a-f]{7,40}\b", text or "", re.I))
 
@@ -138,9 +157,8 @@ def artifacts(ref, work_id):
         "explore_handoff": meaningful(section_after(explore or "", "Handoff to Intent")),
         "intent": meaningful(section_after(intent or "", "What")),
         "plan": meaningful(section_after(plan or "", "Approach"))
-            or meaningful(section_after(plan or "", "Work breakdown")),
-        "review": meaningful(section_after(review or "", "Review verdict"))
-            or meaningful(section_after(review or "", "Findings")),
+            or has_task_row(section_after(plan or "", "Work breakdown")),
+        "review": meaningful(section_after(review or "", "Review verdict")),
         "result": False,
         "result_sha": "",
         "accepted": False,
@@ -210,43 +228,40 @@ def warnings_for(wid, ref, default, st, life):
         return ["code-without-plan"]
     return []
 
-def later_cards():
-    later_dir = ".later"
-    if not os.path.isdir(later_dir):
+def integration_branch(fallback):
+    for ref in ("refs/heads/develop", "refs/remotes/origin/develop"):
+        if subprocess.run(["git", "show-ref", "--verify", "--quiet", ref]).returncode == 0:
+            return ref
+    return fallback
+
+def later_cards(ref):
+    listed = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", ref, "--", ".later"],
+        capture_output=True, text=True,
+    )
+    if listed.returncode != 0:
         return []
-    try:
-        names = os.listdir(later_dir)
-    except OSError:
-        return []
-    names = [n for n in names if not n.startswith(".")]
-    names.sort(key=lambda s: s.encode("utf-8"))
+    names = [
+        path[len(".later/"):]
+        for path in listed.stdout.splitlines()
+        if path.startswith(".later/") and path.endswith(".md")
+        and path != ".later/README.md" and "/" not in path[len(".later/"):]
+    ]
     out = []
-    for name in names:
-        if name == "README.md":
-            continue
-        if not name.endswith(".md"):
-            continue
-        path = os.path.join(later_dir, name)
+    for name in sorted(names, key=lambda s: s.encode("utf-8")):
         posix = f".later/{name}"
-        slug = name[:-3]
-        try:
-            st = os.lstat(path)
-        except OSError:
-            out.append({"slug": slug, "title": "", "path": posix})
-            continue
-        if not stat.S_ISREG(st.st_mode):
-            continue
+        content = subprocess.run(
+            ["git", "show", f"{ref}:{posix}"],
+            capture_output=True, text=True, errors="replace",
+        )
         title = ""
-        try:
-            with open(path, "r", encoding="utf-8", errors="replace", newline="") as fh:
-                for raw in fh:
-                    line = raw.replace("\r\n", "\n").replace("\r", "").rstrip("\n")
-                    if line.startswith("# "):
-                        title = line[2:].strip()
-                        break
-        except OSError:
-            title = ""
-        out.append({"slug": slug, "title": title, "path": posix})
+        if content.returncode == 0:
+            for raw in content.stdout.splitlines():
+                line = raw.rstrip("\n")
+                if line.startswith("# "):
+                    title = line[2:].strip()
+                    break
+        out.append({"slug": name[:-3], "title": title, "path": posix})
     return out
 
 def print_later_block(cards):
@@ -310,7 +325,7 @@ for wid in archive_ids:
         "warnings": [],
     })
 
-cards = later_cards()
+cards = later_cards(integration_branch(default))
 if later_only:
     later_out = cards
 elif work_only or want:
@@ -325,7 +340,7 @@ if as_json:
 
 if later_only:
     if not later_out:
-        print("status: no later cards in .later/")
+        print("status: no later cards on the integration branch")
         sys.exit(0)
     print_later_block(later_out)
     sys.exit(0)

@@ -6,6 +6,14 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Correction labor against review findings; stay within accepted spec.
 
+When an inner-loop task graph is active, follow `.agents/ask/task-loop.md`:
+finish every valid task-local finding and obtain fresh review of each changed
+candidate; only an evidence-backed reviewer withdrawal can close a finding
+without a fix. An empty Refactor pass is recorded without inventing edits.
+Park broader horizontal refactors for coordinator handling, and stop for Spec
+Change when meaning, behavior, or contract must change. Ambiguous or unsafe
+findings remain escalated and block task completion.
+
 ## 15.8 08 Refactor Agent
 
 Purpose:
@@ -23,7 +31,7 @@ current code
 project rules
 ```
 
-For each finding:
+For findings outside an active task graph, classify each as:
 
 ```text
 FIX
@@ -39,7 +47,10 @@ If the finding implies a spec change, call the Spec Change workflow.
 
 Stay on the current task’s steering `owned_paths` globs. Invoke `./ask inner-loop` for this writer; do not start a second task.
 
-Done when each in-scope finding is FIX, ACCEPT WITH RATIONALE, or ESCALATE and required checks have been rerun.
+With an active task graph, done only when valid local findings are fixed and
+freshly reviewed, or withdrawn by the reviewer with evidence, and required
+checks pass. Escalations remain blocking. Outside an active task graph, use the
+FIX / ACCEPT WITH RATIONALE / ESCALATE dispositions above.
 
 ---
 

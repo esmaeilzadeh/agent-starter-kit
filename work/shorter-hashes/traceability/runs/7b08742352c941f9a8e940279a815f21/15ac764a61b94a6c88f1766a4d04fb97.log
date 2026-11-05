@@ -1,0 +1,30 @@
+test_evidence_projection_and_exact_runner (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests) ... ERROR
+test_qualified_tasks_and_cas_recovery (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests) ... FAIL
+
+======================================================================
+ERROR: test_evidence_projection_and_exact_runner (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-d6qtysjc/candidate/_ask/tests/test_workflow_refs_inner_loop.py", line 108, in test_evidence_projection_and_exact_runner
+    self._assert_task_scoped_run()
+  File "/tmp/ask-cases-d6qtysjc/candidate/_ask/tests/test_workflow_refs_inner_loop.py", line 124, in _assert_task_scoped_run
+    graph_path.parent.mkdir(parents=True)
+  File "/usr/lib/python3.10/pathlib.py", line 1175, in mkdir
+    self._accessor.mkdir(self, mode)
+FileExistsError: [Errno 17] File exists: '/tmp/tmpp1zdd_is/work/fixture-work/inner-loop'
+
+======================================================================
+FAIL: test_qualified_tasks_and_cas_recovery (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-d6qtysjc/candidate/_ask/tests/test_workflow_refs_inner_loop.py", line 88, in test_qualified_tasks_and_cas_recovery
+    self.assertEqual(persisted.get("schema"), "ask-workflow-envelope/v1")
+AssertionError: 'ask-inner-loop-state/v1' != 'ask-workflow-envelope/v1'
+- ask-inner-loop-state/v1
++ ask-workflow-envelope/v1
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.324s
+
+FAILED (failures=1, errors=1)

@@ -1,0 +1,18 @@
+{
+  "schema": "ask-task-review/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "6",
+  "base_sha": "d6cc349b74cf4ff45af5af6adf32f423fd5f9a43",
+  "red_sha": "9637cfec3d967d7d71ca5ef3c760b1947cd59d18",
+  "candidate_sha": "9bd679794d5baf8c84d949be15b92d6b39f6a48d",
+  "reviewer": "/root/task6_code_review",
+  "decision": "APPROVED",
+  "confidence_percent": 94,
+  "findings": [],
+  "summary": "The candidate's changed paths are within Task 6 ownership, and its checkpoint, catalog, cache compatibility, and export/import behavior match the approved plan. The supplied native Green and reliability/recovery results support the review. The mapped final Green run passed 6/1 and 6/2; reliability 29/29 and recovery 35/35 passed.",
+  "candidate_file_digests": {
+    ".agents/ask/verification/traceability/evidence.py": "3ffd942a337012e55c38deef6dec6bd0a46df0897abce7a02f6def686e8bb392",
+    "_ask/scripts/inner_loop/checkpoint.py": "85414d50445084d39b264f58f1878f7635263c7f1fcafd643d4e9f4f12eb64a2",
+    "_ask/tests/test_workflow_refs_inner_loop.py": "9a147aeddd0c179bf268ad463a94202209a4ac89ae666169879761d66de505a6"
+  }
+}

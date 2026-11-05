@@ -1,0 +1,29 @@
+{
+  "schema": "ask-task-scope-authorization/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "9",
+  "kind": "bounded-bug-fix",
+  "basis": "Accepted Task 9 SH-15/SH-16 require persisted reviewed decisions to govern public impact and require unresolved affected paths to block clearance.",
+  "reproduction": {
+    "environment": "disposable ReferenceRepository Git fixture",
+    "operation": "Publish alpha/spec/1@2, capture context, run public references decide for beta/review/1@1, recapture, then apply that exact persisted decision to public graph impact.",
+    "before_generation": "25961fde85e38311dd3ffa5526814dd5a9e515d6faf95b4b62ea31be7cb6fe60",
+    "after_generation": "503b1aa6e69da0e4b8bb647fdd0fd3f995c7489220b8ccffcc820899e9e95d87",
+    "outcome": "Decision publication changed the captured generation; applying the stored decision returned stale_context/incomplete. The public impact command also did not load persisted decisions. E2E analysis additionally showed that candidate-side traversal of a reviewed old-to-new upstream rebind was rejected because traversal was required to equal only old_upstream."
+  },
+  "authorized_paths": [
+    ".agents/ask/workflow_refs/project.py",
+    ".agents/ask/workflow_refs/cli.py",
+    ".agents/ask/workflow_refs/impact.py",
+    "_ask/tests/test_workflow_refs_e2e.py",
+    "_ask/tests/workflow_refs_fixture.py"
+  ],
+  "constraints": [
+    "Keep intent, accepted spec, and accepted plan unchanged.",
+    "Preserve exact owner/ref vectors; exclude only decision-only catalog changes from the dependency-context generation.",
+    "Resolve only explicitly selected qualified decision references through trusted public projection.",
+    "Apply a reviewed decision only when traversal matches its declared old or new upstream; keep dependent, context, authority, and complete required-path checks intact.",
+    "Unresolved or reassessment-required impacted paths must not report complete clearance.",
+    "Do not change policy/authority checks or create Red evidence."
+  ]
+}

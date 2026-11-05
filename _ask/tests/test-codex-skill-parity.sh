@@ -120,6 +120,9 @@ cp -a "$ROOT/_ask" "$SOURCE/_ask"
 cp -a "$ROOT/.agents/ask" "$SOURCE/.agents/ask"
 cp "$ROOT/ask" "$SOURCE/ask"
 git init -q "$SOURCE"
+# The fixture only needs repository sources. The developer checkout may have a
+# large ignored virtualenv under _ask/.venv; never pack that into test clones.
+printf '%s\n' '_ask/.venv/' > "$SOURCE/.gitignore"
 git -C "$SOURCE" add .
 git -C "$SOURCE" -c user.name=fixture -c user.email=fixture@example.com commit -qm source
 git -C "$SOURCE" tag parity-fixture

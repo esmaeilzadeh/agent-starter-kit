@@ -1,0 +1,35 @@
+{
+  "schema": "ask-checkpoint-reconciliation-review/v1",
+  "work_id": "shorter-hashes",
+  "reviewer": "/root/spec_review",
+  "decision": "APPROVED",
+  "proposal_path": "work/shorter-hashes/inner-loop/evidence/checkpoint-reconciliation-task2-rerun-2026-10-28.json",
+  "proposal_sha256": "2a23393176cd71a763d484f35f463ab628b9002beb423342862a977906e75e84",
+  "candidate_sha": "fa062bb5b83c4f8c32174ca085538316f5f7f5cc",
+  "checkpoint_sha": "2d18cb76f918dcfa9d0df642bad683fe29b514d2",
+  "findings": [],
+  "summary": "The rebound proposal matches every current preimage. Task 2 remains running; its old TaskResult binds rejected candidate 5ae661e while HEAD is the descendant fa062bb. Archiving only that stale TaskResult without changing bytes or state is an honest reconciliation, not task acceptance. The selected checkpoint contains byte-identical state at revision 22. The proposed existing publisher preserves the previous checkpoint as first parent and updates refs/ask/inner-loop/shorter-hashes with compare-and-swap; its documented caller requirement is the persistent state lock. This approval authorizes only the exact reviewed runtime reconciliation and subsequent fresh runs, not the source candidate or task integration.",
+  "checked_preimages": {
+    "head": "fa062bb5b83c4f8c32174ca085538316f5f7f5cc",
+    "checkpoint_ref": "refs/ask/inner-loop/shorter-hashes",
+    "checkpoint": "2d18cb76f918dcfa9d0df642bad683fe29b514d2",
+    "state_revision": 22,
+    "state_sha256": "da26c2590655aaa67c3d23547ae91517bc39eeba55ca3dd5c9a8d14492a1f55c",
+    "stale_result_sha256": "acd6dd7d56991a660268577f239fccca40511afd5aa26644a9ccadd9765cdf03",
+    "previous_rejected_review_sha256": "f7a363813d1b3ec1889cca7066875a6008271f2b4a592ab3142d3df5ecb344c8",
+    "ledger_sha256": "c2c7fc327bd33d83b45857aaadaa028b09c2030afe3329cde0411d5a533fe800",
+    "ledger_rows": 27,
+    "archive_destination": "absent",
+    "checkpoint_state_equals_live_bytes": true,
+    "publisher_state_serialization_preserves_live_bytes": true,
+    "old_candidate_and_task_base_are_ancestors_of_head": true
+  },
+  "recheck_steps": [
+    "Acquire the existing persistent inner-loop state lock before any mutation and retain it through archive and checkpoint CAS.",
+    "Recheck the exact proposal digest, HEAD, selected checkpoint ref, revision-22 state bytes, old TaskResult bytes, rejected-review bytes, 27-row ledger bytes, and candidate ancestry against these preimages; abort on any movement.",
+    "Refuse an existing archive destination with different bytes. Preserve the old TaskResult byte-for-byte at the specified destination, retain the rejected review and ledger, and remove only the stale live result path.",
+    "Call the existing checkpoint publisher with unchanged state; verify the resulting first parent is 2d18cb76f918dcfa9d0df642bad683fe29b514d2 and its ref update used that expected old value.",
+    "After publication verify state bytes/revision, old result archive, rejected-review bytes, and ledger bytes/row count remain unchanged; confirm the runtime agrees with the new checkpoint and reconciliation reports ready.",
+    "Run new candidate-bound evidence without relabeling or accepting the rejected prior candidate."
+  ]
+}

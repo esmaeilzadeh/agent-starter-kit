@@ -1,0 +1,34 @@
+{
+  "schema": "ask-task-review/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "2",
+  "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+  "red_sha": null,
+  "candidate_sha": "6a807d8e6733c1a277e83c7e96f4944f80b99c35",
+  "reviewer": "/root/spec_review",
+  "decision": "REJECTED",
+  "findings": [
+    {
+      "id": "T2-R5",
+      "severity": "P1",
+      "classification": "existing-spec behavior defect",
+      "location": ".agents/ask/workflow_refs/store.py:413",
+      "requirement": "specs/proposals/shorter-hashes.md requires ambiguous item IDs to fail explicitly, unsupported/incomplete comparison not to establish equivalence, and required artifacts/dependencies to exist before a success report.",
+      "reproduction": "Using exact candidate 6a807d8 in three isolated Git fixtures, initialize a catalog and commit items.json containing respectively (1) only item y, (2) two different items both id=x, or (3) item x with duplicate value keys. Register alpha/spec/1 with item_id=x and structured-item/1, then resolve the returned reference.",
+      "actual": "All three invalid or unresolvable selected items publish alpha/spec/1@1 successfully, and resolve_version succeeds. The helper independently returns absent, ambiguous, and incomplete respectively, but it is never consulted because latest_entry is None.",
+      "expected": "A first published ordinary structured-item reference must identify a valid, unique selected item. Refuse malformed/ambiguous/incomplete source and handle proven deletion through explicit lifecycle analysis rather than reporting a normal resolvable item.",
+      "cause": "Structured extraction validation runs only inside latest_entry/same_bindings deduplication; initial allocation bypasses it completely.",
+      "fix": "Validate the selected structured item before publishing its first revision or taking a different-binding publication path. Preserve explicit absence/deletion distinctions and add the reproduced malformed/ambiguous publication cases before changing production code."
+    }
+  ],
+  "summary": "Independent pinned checks confirm distinct high-precision decimals, equivalent signed/scaled zero forms, self-contained source binding, and an incomplete result for the prior 500-array canonicalization case. Approval is withheld because initial structured publication still accepts absent, ambiguous and duplicate-key items and resolution reports success. No source or coordinator state was changed. Review stopped on this concrete publication-validation defect.",
+  "candidate_file_digests": {
+    ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+    ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+    ".agents/ask/workflow_refs/store.py": "27c6e5928f340e01e774a1c6df7143c54b2ec4824ddad3affee452712074b730",
+    ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+    "_ask/tests/test_workflow_refs_identity.py": "b90abf2b93880855629c8622549989c00eb74ae8c8b4b60990b47504696f3161",
+    "_ask/tests/test_workflow_refs_store.py": "13e05ac36f9f0cb19309e5d705fcfdceac80feaa550387ef8ffc927c6a39cc02",
+    "_ask/tests/test_workflow_refs_codec.py": "a7255d7f9df017a3975857596c5fd1abec5d61382f4e6c8b3b7109c036a4957c"
+  }
+}

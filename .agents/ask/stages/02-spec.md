@@ -38,7 +38,7 @@ Before finishing the specification, read the prepared `writing-for-agents` skill
 
 ## E2E
 
-Carry Grill’s E2E applicability into the spec: journeys (or `not_applicable` plus reason), environment, data, reset. Human confirms with this specification. Missing E2E with no reason refuses Plan/Implement.
+Carry Grill’s E2E applicability into the spec: journeys (or `not_applicable` plus reason), environment, data, reset. This is covered by Grill’s complete intent choice; do not request a separate confirmation. If the E2E contract changes after approval, use the Spec Change choice. Missing E2E with no reason refuses Plan/Implement.
 
 ## Structured test evidence
 

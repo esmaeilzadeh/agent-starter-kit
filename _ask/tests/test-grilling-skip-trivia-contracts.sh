@@ -3,7 +3,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 for f in .agents/ask/stages/01-grill.md .agents/ask/stages/00-explore.md _ask/spec/03-policies-skills-context.md; do
-  grep -q 'ask before' "$f"
+  grep -q 'selectable choices' "$f"
+  grep -q 'prepare only selected' "$f"
   grep -q 'manifest' "$f"
 done
 grep -q "I'll assume" .agents/ask/stages/01-grill.md || grep -q 'I’ll assume' .agents/ask/stages/01-grill.md
