@@ -15,7 +15,9 @@ class BundleTests(unittest.TestCase):
             consumer = Path(temp) / "consumer"
             self.init_repo(consumer)
             self.install_from(ROOT, consumer)
-            self.assertIn("Review and Refactor happen inside each task", (consumer / "_ask/guide/02-workflow.md").read_text())
+            self.assertFalse((consumer / "_ask/guide").exists())
+            self.assertFalse((consumer / "_ask/spec").exists())
+            self.assertFalse((consumer / "_ask/tests").exists())
             self.assertTrue((consumer / ".agents/ask/task-loop.md").is_file())
             for stage in ("06-implement", "07-review", "08-refactor"):
                 source = (consumer / f".agents/ask/stages/{stage}.md").read_text()
