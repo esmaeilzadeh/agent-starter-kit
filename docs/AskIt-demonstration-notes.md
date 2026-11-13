@@ -296,9 +296,11 @@ The inventory is the authority for demonstration status. Each key occurs once.
 | E-01 | LIVE | `./ask check-clean` walkthrough | Current command surface |
 | E-02 | LIVE | `./ask start-work` walkthrough | Current command surface |
 | E-03 | LIVE | Intent/spec/plan lifecycle | `_ask/docs/demo/end-to-end-plan.md` |
-| E-04 | SAVED | Canonical stage and policy sources | `AGENTS.md`, `.agents/ask/`, `_ask/policies/` at `484bf94` |
-| E-05 | SAVED | Traceability contract | `_ask/docs/spec-test-traceability.md` at `484bf94` |
-| E-06 | OPTIONAL | Two-moons experiment | `_ask/docs/demo/end-to-end-plan.md` at `484bf94`; not executed for this guide |
+| E-04a | SAVED | Route and continuation source | `AGENTS.md` at `8f39ecd5f58c9c38def247007c1365c4036052bd` |
+| E-04b | SAVED | Canonical stage sources | `.agents/ask/stages/` at `bc0f332cc7f7ea952a48a2cab9394ef59d0d47bb` |
+| E-04c | SAVED | Delegation and workflow policy | `_ask/policies/delegation.md` and `_ask/policies/workflow.md` at `336133642b08440a5fbc33f1863699febbb6bb16` and `bc0f332cc7f7ea952a48a2cab9394ef59d0d47bb` |
+| E-05 | SAVED | Traceability contract | `_ask/docs/spec-test-traceability.md` at `a3e2c6932dad29faf44ec6cbce13770f51d460ec` |
+| E-06 | OPTIONAL | Two-moons experiment | `_ask/docs/demo/end-to-end-plan.md` at `10816d39c1c2ce3fdc9f703394bbf7e3be11e588`; not executed for this guide |
 | E-07 | OPTIONAL | Historical shorter-hashes evidence clinic | `work/shorter-hashes/` at `8d96ffd`; not the primary path |
 
 ## Citation inventory
@@ -314,6 +316,8 @@ passage. `SUPPORTED` is the only passing support value.
 | Delegated authority | `_ask/policies/delegation.md` | Autonomous and escalation boundaries | SUPPORTED |
 | Demo lifecycle | `_ask/docs/demo/end-to-end-plan.md` | Facilitator sequence | SUPPORTED |
 | Evidence and traceability | `_ask/docs/spec-test-traceability.md` | Contract and completion evidence | SUPPORTED |
+| Workflow references | `_ask/docs/workflow-references.md` | Reference and provenance commands | SUPPORTED |
+| Worktree safety | `_ask/policies/worktree.md` | Clean-tree and preservation boundaries | SUPPORTED |
 | Stage source of truth | `.agents/ask/stages/` | Stage contracts | SUPPORTED |
 
 ## Parity record

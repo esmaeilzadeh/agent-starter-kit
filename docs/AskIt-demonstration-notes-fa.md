@@ -280,9 +280,11 @@ commit کهنه، منبع نامرتبط، تغییر منبع پس از برر
 | E-01 | LIVE | نمایش `./ask check-clean` | سطح فرمان جاری |
 | E-02 | LIVE | نمایش `./ask start-work` | سطح فرمان جاری |
 | E-03 | LIVE | چرخهٔ هدف/مشخصات/برنامه | `_ask/docs/demo/end-to-end-plan.md` |
-| E-04 | SAVED | منبع قرارداد مرحله‌ها و سیاست‌ها | `AGENTS.md`، `.agents/ask/`، `_ask/policies/` در `484bf94` |
-| E-05 | SAVED | قرارداد ردگیری شواهد | `_ask/docs/spec-test-traceability.md` در `484bf94` |
-| E-06 | OPTIONAL | آزمایش two-moons | `_ask/docs/demo/end-to-end-plan.md` در `484bf94`؛ برای این راهنما اجرا نشده |
+| E-04a | SAVED | منبع مسیر و ادامه | `AGENTS.md` در `8f39ecd5f58c9c38def247007c1365c4036052bd` |
+| E-04b | SAVED | منابع اصلی مرحله‌ها | `.agents/ask/stages/` در `bc0f332cc7f7ea952a48a2cab9394ef59d0d47bb` |
+| E-04c | SAVED | سیاست اختیار و جریان کار | `_ask/policies/delegation.md` و `_ask/policies/workflow.md` در `336133642b08440a5fbc33f1863699febbb6bb16` و `bc0f332cc7f7ea952a48a2cab9394ef59d0d47bb` |
+| E-05 | SAVED | قرارداد ردگیری شواهد | `_ask/docs/spec-test-traceability.md` در `a3e2c6932dad29faf44ec6cbce13770f51d460ec` |
+| E-06 | OPTIONAL | آزمایش two-moons | `_ask/docs/demo/end-to-end-plan.md` در `10816d39c1c2ce3fdc9f703394bbf7e3be11e588`؛ برای این راهنما اجرا نشده |
 | E-07 | OPTIONAL | کلینیک تاریخی shorter-hashes | `work/shorter-hashes/` در `8d96ffd`؛ مسیر اصلی نیست |
 
 ## فهرست ارجاع‌ها
@@ -298,6 +300,8 @@ commit کهنه، منبع نامرتبط، تغییر منبع پس از برر
 | اختیار واگذارشده | `_ask/policies/delegation.md` | مرزهای خودکار و ارجاع | SUPPORTED |
 | چرخهٔ نمایش | `_ask/docs/demo/end-to-end-plan.md` | توالی ارائه‌دهنده | SUPPORTED |
 | شواهد و ردگیری | `_ask/docs/spec-test-traceability.md` | قرارداد و شواهد پایان | SUPPORTED |
+| ارجاع‌های جریان کار | `_ask/docs/workflow-references.md` | فرمان‌های ارجاع و منشأ | SUPPORTED |
+| ایمنی درخت کار | `_ask/policies/worktree.md` | مرزهای درخت تمیز و حفظ تغییرها | SUPPORTED |
 | منبع اصلی مرحله‌ها | `.agents/ask/stages/` | قراردادهای مرحله‌ای | SUPPORTED |
 
 ## رکورد هم‌ترازی
