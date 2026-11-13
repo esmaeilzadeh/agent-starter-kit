@@ -2,31 +2,16 @@
 
 ## Verdict
 
-**FAIL**
+**PASS**
 
-Candidate: `2ed93a92db5925fe17ba759dd11b321c10eb2e5a`
+Candidate: `cfa06aabcf4f060a0b6ab4b39f56d0eb669d4fff`
 Accepted contract base: `63c377abd7764c689653d16a35baf25d9217e5c1`
 Baseline: `2e5ea92989c48c10e4829bc22c325643443a38b3`
 
-The candidate satisfies the structural, timing, compression, parity, primary-path,
-boundary-preservation, and production-scope requirements. It fails the evidence
-provenance and citation-inventory requirements:
-
-1. `E-04` and `E-05` label rows as `SAVED` and cite `484bf94`, but that commit
-   only adds `work/askit-demonstration-rebuild/traceability-accepted.json`; it
-   does not produce or last change the listed saved sources. For example, the
-   last-changing commits are `8f39ecd5f58c9c38def247007c1365c4036052bd`
-   (`AGENTS.md`), `336133642b08440a5fbc33f1863699febbb6bb16`
-   (`_ask/policies/delegation.md`), and
-   `a3e2c6932dad29faf44ec6cbce13770f51d460ec` (`_ask/docs/spec-test-traceability.md`).
-   `E-04` also groups multiple directories/files under one SHA rather than
-   identifying each saved artifact's provenance.
-2. The presenter notes directly cite `_ask/docs/workflow-references.md` in the
-   EVIDENCE section and `_ask/policies/worktree.md` in RECOVERY, in both
-   languages, but neither path has a citation-inventory row with a passage and
-   `SUPPORTED` decision. The seven listed citation paths do exist and their
-   listed decisions are `SUPPORTED`; the inventory is nevertheless incomplete
-   for all cited workflow claims.
+The two findings from the prior review are fixed. The corrected candidate
+provides per-artifact saved-source paths and last-changing SHAs, and both
+guides now inventory the directly cited workflow-reference and worktree-policy
+sources. No remaining blocking finding was identified.
 
 ## Criterion-by-criterion findings
 
@@ -35,10 +20,10 @@ provenance and citation-inventory requirements:
 | DOC-001 | PASS | Both requested guides exist. Each has exactly `ORIENT`, `MODEL`, `ROUTE`, `WALKTHROUGH`, `EVIDENCE`, `RECOVERY`, `ADOPT`, `CLOSE` in that order, with matching session-map outcomes. |
 | DOC-002 | PASS | Both guides provide the required opening, model, lifecycle walkthrough, evidence/recovery treatment, adoption exercise, and close. |
 | DOC-003 | PASS | Every section has cue card, presenter notes, internal timing, and outcome. The eight allocations are `8+12+10+20+12+10+10+8 = 90` in both guides. |
-| DOC-004 | FAIL | Inventory keys `E-01` through `E-07` are unique and each is labeled `LIVE`, `SAVED`, or `OPTIONAL`; LIVE material is explicitly non-execution. However, the SAVED rows do not provide valid producing/last-changing provenance for their cited artifacts: both use `484bf94`, which did not change those artifacts. |
-| DOC-005 | FAIL | All seven listed citation paths exist and have passage descriptions plus `SUPPORTED` decisions. The inventory omits the directly cited `_ask/docs/workflow-references.md` and `_ask/policies/worktree.md`, so it does not record support decisions for every cited workflow source. |
+| DOC-004 | PASS | Inventory keys `E-01`, `E-02`, `E-03`, `E-04a`, `E-04b`, `E-04c`, `E-05`, `E-06`, and `E-07` are unique in both guides and each has exactly one `LIVE`, `SAVED`, or `OPTIONAL` label. SAVED rows identify artifact paths and per-artifact last-changing SHAs: `AGENTS.md` at `8f39ecd5f58c9c38def247007c1365c4036052bd`; `.agents/ask/stages/` at `bc0f332cc7f7ea952a48a2cab9394ef59d0d47bb`; delegation/workflow policies at `336133642b08440a5fbc33f1863699febbb6bb16` and `bc0f332cc7f7ea952a48a2cab9394ef59d0d47bb`; and traceability documentation at `a3e2c6932dad29faf44ec6cbce13770f51d460ec`. LIVE instructions remain explicitly non-execution claims. |
+| DOC-005 | PASS | Every citation inventory row names an existing path, a passage to inspect, and `SUPPORTED`. The inventories include `README.md`, `AGENTS.md`, workflow/delegation policies, demo lifecycle, traceability, `_ask/docs/workflow-references.md`, `_ask/policies/worktree.md`, and canonical stage sources in both languages. |
 | DOC-006 | PASS | The parity record covers all seven required dimensions and marks every one `MATCH`: section IDs/order, outcomes, timing, lifecycle, evidence labels, ownership, and primary/optional status. Direct comparison supports those matches. |
-| DOC-007 | PASS | Physical `wc -l` counts including blank lines: English `721 → 349` (51.60% reduction); Persian `773 → 332` (57.05% reduction). The safety checklist preserves model, human ownership, evidence discipline, recovery/refusal, and failure boundaries. |
+| DOC-007 | PASS | Physical `wc -l` counts including blank lines: English `721 → 353` (51.04% reduction); Persian `773 → 336` (56.53% reduction). The safety checklist preserves model, human ownership, evidence discipline, recovery/refusal, and failure boundaries. |
 
 ## Additional checks
 
@@ -47,9 +32,8 @@ provenance and citation-inventory requirements:
   are explicitly optional, with the historical clinic marked non-primary.
 - **Unsupported execution claims:** No command is presented as already run.
   The walkthrough is labeled `LIVE`; optional material is labeled
-  unexecuted or historical. No runtime test evidence is asserted by this
-  review.
-- **Candidate scope:** `git diff --name-only 2ed93a9^ 2ed93a9` contains only
+  unexecuted or historical.
+- **Candidate scope:** `git diff --name-only cfa06aa^ cfa06aa` contains only
   `docs/AskIt-demonstration-notes.md` and
   `docs/AskIt-demonstration-notes-fa.md`.
 - **Canonical contract identity:** The canonical spec digest is
