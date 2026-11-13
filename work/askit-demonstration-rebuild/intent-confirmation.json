@@ -1,0 +1,8 @@
+{
+  "schema": "ask-intent-confirmation/v2",
+  "work_id": "askit-demonstration-rebuild",
+  "scope": "complete-intent-and-assumptions",
+  "prompt": "Do you approve the complete intent and every listed assumption as written?",
+  "intent_sha256": "777e4ed194e643ba8cc63ede9d0d8fb112e171dec4f8275965b1f71ffd94c93e",
+  "human_choice": "approve"
+}
