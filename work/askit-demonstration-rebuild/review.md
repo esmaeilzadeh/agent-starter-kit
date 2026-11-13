@@ -43,6 +43,16 @@ sources. No remaining blocking finding was identified.
   The accepted plan declares executable tests empty, so this is a review-only
   assessment; no fabricated test cases or runtime results are included.
 
+## Traceability input
+
+The coordinator input is the raw v2 document at
+`work/askit-demonstration-rebuild/traceability/review-input-cfa06aab.json`.
+It binds candidate `cfa06aabcf4f060a0b6ab4b39f56d0eb669d4fff` to the accepted
+contract SHA `63c377abd7764c689653d16a35baf25d9217e5c1`, records the exact
+spec/plan digests above, identifies both production-document source digests,
+uses `scope: workstream`, sets `decision: APPROVED` and `boundary: ok`, and
+contains no fabricated tests.
+
 ## Inspected sources
 
 - `specs/current/askit-demonstration-rebuild.md`
