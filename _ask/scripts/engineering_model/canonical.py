@@ -14,6 +14,7 @@ def diagnostics(snapshot):
     errors = []
     documents = {}
     required_specs = set()
+    required_plans = set()
     feature_paths = set()
     model = snapshot.document
     if isinstance(model, dict) and isinstance(model.get("nodes"), list):
@@ -23,6 +24,8 @@ def diagnostics(snapshot):
             reference = node.get("reference")
             if isinstance(reference, dict) and isinstance(reference.get("path"), str):
                 required_specs.add(reference["path"])
+                if reference["path"].endswith("/test-plan.json"):
+                    required_plans.add(reference["path"])
     for path, plan in snapshot.documents.items():
         if path.endswith("/test-plan.json"):
             if isinstance(plan, dict) and isinstance(plan.get("work_id"), str):
@@ -82,6 +85,8 @@ def diagnostics(snapshot):
         is_plan = (len(parts) == 3 and parts[0] == "work" and parts[-1] == "test-plan.json"
                    and SLUG.fullmatch(parts[1]))
         if not is_spec and not is_plan and path not in feature_paths:
+            continue
+        if is_plan and raw is None and path not in required_plans:
             continue
         value = snapshot.documents.get(path) if raw is not None else None
         if not isinstance(value, dict):

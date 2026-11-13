@@ -19,9 +19,11 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from engineering_model.admission import admit
+from engineering_model.actions import Refused
 from engineering_model.context import _recorded_association
 from engineering_model.projection import project
 from engineering_model.workbench_sources import discover_work, read_snapshot
+from engineering_model.workflow import require_model
 from workbench_context import (
     STATE_COMMITTED_SOURCE_CACHE, STATE_FORM_IDENTITY, STATE_ROUTE, STATE_ROUTE_HISTORY,
     STATE_SOURCE, STATE_SOURCE_SELECTION, STATE_SUBJECT_ENTRY,
@@ -147,6 +149,7 @@ def _diagnostic(code: str, path: str, message: str) -> dict:
 def _capture_view(root: Path, work_id: str) -> dict:
     """Admit once, or expose a previously published snapshot read-only."""
     try:
+        require_model(root, work_id)
         snapshot, diagnostics = admit(root, work_id)
         editable = not diagnostics and snapshot is not None
         last_validated = False
@@ -167,6 +170,9 @@ def _capture_view(root: Path, work_id: str) -> dict:
         return {"snapshot": snapshot.identity, "projection": projection,
                 "captured": snapshot, "editable": editable, "last_validated": last_validated,
                 "diagnostics": diagnostics}
+    except Refused as exc:
+        return {"snapshot": None, "projection": None, "captured": None,
+                "editable": False, "last_validated": False, "diagnostics": [exc.diagnostic]}
     except (OSError, UnicodeError, ValueError, KeyError, TypeError) as exc:
         return {"snapshot": None, "projection": None, "captured": None,
                 "editable": False, "last_validated": False,
@@ -1043,6 +1049,12 @@ with st.container(horizontal=True, vertical_alignment="center"):
              icon=":material/check_circle:" if view["editable"] else ":material/visibility:",
              color="green" if view["editable"] else "orange")
 if projection is None:
+    if not (root / "work" / work_id / "engineering-model.json").exists():
+        st.error(f"Required Engineering Model is missing: work/{work_id}/engineering-model.json")
+        st.info("This workstream is incomplete. Prepare the model from "
+                "_ask/templates/engineering-model.json, set its work_id, and populate its current "
+                "intent, specification, tasks and tests. The UI does not create or repair project artifacts.")
+        st.code(f"./ask model validate --work-id {work_id}\n./ask check-workstream {work_id}", language="bash")
     st.warning("Current inputs could not be admitted.")
     _show_diagnostics(view.get("diagnostics", []))
     st.error("No admitted or previously published snapshot is available for this workstream.")

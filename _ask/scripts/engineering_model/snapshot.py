@@ -20,7 +20,7 @@ from .passages import (HEADING_DISCOVERY_VERSION, PLAN_TASK_DISCOVERY_VERSION,
                        RULES_VERSION as PASSAGE_RULES_VERSION, resolve)
 
 _COMMIT = re.compile(r"^[0-9a-f]{40,64}$")
-DEPENDENCY_DISCOVERY_VERSION = "engineering-input-closure/v4"
+DEPENDENCY_DISCOVERY_VERSION = "engineering-input-closure/v5"
 _MISSING_REVISION = object()
 
 
@@ -247,7 +247,7 @@ def capture(root, work_id, *, model_bytes=None, overrides=None):
     documents = {model_path: document}
     references = {model_path: model_references} if model_references else {}
     input_errors = {}
-    pending = referenced_paths(document)
+    pending = referenced_paths(document) | {f"work/{work_id}/inner-loop/tasks.yaml"}
     while pending:
         relative = min(pending)
         pending.remove(relative)

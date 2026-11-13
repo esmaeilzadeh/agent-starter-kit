@@ -55,6 +55,16 @@ Map the spec’s E2E contract to tooling and isolation. `not_applicable` plus re
 ## Structured test evidence
 
 Prepare both `work/<work-id>/inner-loop/tasks.yaml` and `work/<work-id>/test-plan.json`.
+Populate the required `work/<work-id>/engineering-model.json` alongside them.
+Reference every planned test by its canonical case ID and link its Scenario
+with the exact v2 case binding. Record product Tasks with explicit execution
+aliases and uniquely resolvable spec/plan context; retain the TaskGraph's IDs.
+Preserve existing model IDs, decisions and history through guarded edits
+(`_ask/docs/engineering-model.md`). A seed model alone is not a completed Plan.
+Run `./ask model validate --work-id <work-id>` and
+`./ask check-workstream <work-id>` before implementation; missing model task/test
+links must be completed before handing off.
+
 The plan's Work breakdown table and task graph must describe the same tasks. A task
 is a bounded implementation outcome, not a placeholder for an unresolved future
 decision or the entire workstream. Use one task when the change is a single

@@ -1,9 +1,26 @@
-# Engineering Model pilot
+# Engineering Model
 
-The optional `work/<work-id>/engineering-model.json` sidecar organizes intent,
+The required `work/<work-id>/engineering-model.json` organizes intent,
 requirements, scenarios, decisions and work. Specifications/test plans remain
 canonical for behavior/assertions; existing traceability remains authoritative
 for execution and completion. A declared `done` task is not execution evidence.
+
+`./ask start-work <work-id>` creates a v2 seed model. Grill fills its purpose,
+decisions and assumptions; Spec adds canonical requirement references; Plan adds
+Tasks, Scenario case bindings, Tests and their relationships. Use guarded edits
+to keep linked definitions consistent. Validate the model before handing off a
+stage. Snapshots include the TaskGraph and referenced test plan. Implementation preflight
+also checks planned Test references and required context for declared v2 product
+Tasks. Delivery tasks retain their TaskGraph identity and need no invented
+product alias. The seed alone is insufficient for a plan with executable tests.
+
+For an older workstream without a model, prepare
+`work/<work-id>/engineering-model.json` from
+`_ask/templates/engineering-model.json`, replace its `work_id`, and populate it
+from the existing intent, specification, TaskGraph and test plan. Validate with
+`./ask model validate --work-id <work-id>`, then run
+`./ask check-workstream <work-id>` before resuming implementation. Missing models
+block named workflow actions. Browsing neither creates nor migrates a model.
 
 The validator dispatches by exact schema. Existing v1 definitions retain their
 required intent/parent, field, lifecycle and reference rules. V2 definitions may
@@ -83,8 +100,7 @@ apply. Use guarded `edit` for canonical changes inside such an action; raw
 definition writes cannot be made equivalent by a later read admission.
 
 Verify, review/completion recording, acceptance checks and inner-loop entry
-points use shared admission for adopted workstreams. Existing unadopted
-workstreams keep their policy and acquire no validated-state label. Adoption
+points require shared model admission for every named workstream. Presence
 markers include the working model, tracked HEAD model and published pointer, so
 deleting the working file does not bypass admission.
 

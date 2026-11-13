@@ -10,6 +10,7 @@ import tempfile
 from verification.traceability.adapters import run_tests
 from verification.traceability.contracts import POLICY,digest
 from verification.traceability.evidence import accept_plan,inventory,load_accepted,record_test_review,source_digests,write_json
+from traceability_support import seed_model
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
@@ -37,7 +38,8 @@ class Consumer:
                 self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n  - id: b\n    depends_on: [a]\n    owned_paths: [app.py]\n')
                 self.plan['task_scopes']=[{'task_id':'a','test_ids':['U']},{'task_id':'b','test_ids':['E']}]
         self.write('work/w/plan.md','# Plan\nExecute explicit unit and separate-process CLI cases.\n')
-        self.write('specs/current/w.json',self.spec);self.write('work/w/test-plan.json',self.plan)
+        self.write('specs/current/w.json',self.spec);self.write('specs/current/w.md','# Workstream specification\n');self.write('work/w/test-plan.json',self.plan)
+        seed_model(self.root, 'w')
         self.red_sha=self.commit('faulty implementation with behavior assertions')
         decision={'decision':'APPROVED','reviewer':'fixture-independent','spec_digest':digest(self.spec),'plan_digest':digest(self.plan)}
         self.write('work/w/traceability/plan-review.json',decision)

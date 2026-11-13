@@ -191,7 +191,7 @@ class PassageTests(unittest.TestCase):
             baseline, diagnostics = admit(root, "product")
             self.assertEqual(diagnostics, [])
             identity = baseline.identity
-            self.assertEqual(identity["dependency_discovery_version"], "engineering-input-closure/v3")
+            self.assertEqual(identity["dependency_discovery_version"], "engineering-input-closure/v5")
             self.assertTrue(identity["passage_rules_version"])
             self.assertTrue(identity["heading_discovery_version"])
             self.assertTrue(identity["plan_task_discovery_version"])
@@ -871,7 +871,7 @@ class PassageAdmissionTests(unittest.TestCase):
             try:
                 from inner_loop.state import cas_init, cas_apply
                 from inner_loop.evidence import record_review as candidate_record_review
-                cas_init(review_root, "product", ["WB-003"], coordinator_sha=review_sha)
+                cas_init(review_root, "product", ["WB-003", "WB-004"], coordinator_sha=review_sha)
                 cas_apply(review_root, "product", 0, lambda state: state["tasks"]["WB-003"].update(
                     status="running", base_sha=review_sha, task_branch="task/selected"))
                 _put(review_root, "work/product/inner-loop/results/WB-003.json", {
@@ -898,9 +898,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 self.assertEqual(integrated["tasks"]["WB-003"]["status"], "integrated")
                 self.assertEqual(integrated["coordinator_sha"], candidate_sha)
 
-                # Inner-loop integration of kit TaskResults is legal for an
-                # unadopted workstream; no product execution alias exists to
-                # pass through the adopted-model guard.
+                # Missing models refuse integration before task-result handling.
                 unadopted_root = root / "unadopted-integrate-ready"
                 unadopted_root.mkdir()
                 _put(unadopted_root, "work/product/inner-loop/tasks.yaml",
@@ -912,13 +910,14 @@ class PassageAdmissionTests(unittest.TestCase):
                 subprocess.run(["git", "add", "."], cwd=unadopted_root, check=True)
                 subprocess.run(["git", "commit", "-qm", "unadopted inner-loop fixture"], cwd=unadopted_root, check=True)
                 cas_init(unadopted_root, "product", ["WB-003"])
+                unadopted_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=unadopted_root,
+                                                        text=True).strip()
                 cas_apply(unadopted_root, "product", 0, lambda state: state["tasks"]["WB-003"].update(
-                    status="running", base_sha=review_sha, task_branch="task/selected"))
+                    status="running", base_sha=unadopted_sha, task_branch="task/selected"))
                 try:
                     candidate_integrate_ready(unadopted_root, "product", "WB-003")
                 except Exception as exc:
-                    self.assertIn("missing or invalid TaskResult", str(exc),
-                                  "unadopted integration must reach task-result validation, not require a model alias")
+                    self.assertIn("engineering-model.json is required", str(exc))
                 else:
                     self.fail("integration without the required TaskResult unexpectedly advanced")
 
@@ -974,6 +973,8 @@ class PassageAdmissionTests(unittest.TestCase):
                 subprocess.run(["git", "config", "user.name", "Test"], cwd=legacy_routes, check=True)
                 subprocess.run(["git", "add", "."], cwd=legacy_routes, check=True)
                 subprocess.run(["git", "commit", "-qm", "valid legacy v1 model"], cwd=legacy_routes, check=True)
+                from traceability_support import accept as accept_fixture_plan
+                accept_fixture_plan(legacy_routes, "pilot")
                 legacy_scripts = str(legacy_routes / "_ask/scripts")
                 legacy_bridge = str(legacy_routes / ".agents/ask")
                 sys.path[:0] = [legacy_scripts, legacy_bridge]

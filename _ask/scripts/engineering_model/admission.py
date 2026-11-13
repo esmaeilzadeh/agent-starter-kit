@@ -13,7 +13,7 @@ from pathlib import Path
 import tempfile
 from types import MappingProxyType
 
-from .snapshot import Snapshot, capture, is_current, read_input, safe_relative
+from .snapshot import Snapshot, _normalize_record, capture, is_current, read_input, safe_relative
 from .validation import RULES_VERSION, SCHEMA_V2
 from .passages import delivery_task_execution, required_task_passages, selected_task_node
 
@@ -223,8 +223,17 @@ def _load_generation(state, work_id, digest):
     passages = manifest.get("passages", {})
     if not isinstance(passages, dict):
         raise ValueError("published passage map is invalid")
+    documents, references = {}, {}
+    for path, raw in files.items():
+        if raw is None or not path.endswith(".json"):
+            continue
+        document, linked = _normalize_record(raw)
+        documents[path] = document
+        if linked:
+            references[path] = linked
     snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
-                        MappingProxyType(passages))
+                        MappingProxyType(passages), MappingProxyType(documents),
+                        MappingProxyType(references))
     if snapshot.identity != identity or identity["digest"] != digest:
         raise ValueError("published generation identity has changed")
     return snapshot

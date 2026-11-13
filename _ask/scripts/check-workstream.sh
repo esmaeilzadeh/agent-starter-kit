@@ -25,10 +25,8 @@ done
 if [[ -f "$ROOT/_ask/scripts/engineering_model/workflow.py" ]]; then
   PYTHONPATH="$ROOT/_ask/scripts${PYTHONPATH:+:$PYTHONPATH}" \
     python3 -m engineering_model.workflow --root "$ROOT" --work-id "$WORK_ID"
-elif [[ -e "work/$WORK_ID/engineering-model.json" || -L "work/$WORK_ID/engineering-model.json" || \
-        -e "work/$WORK_ID/traceability/model-state/current.json" || -L "work/$WORK_ID/traceability/model-state/current.json" ]] || \
-     git cat-file -e "HEAD:work/$WORK_ID/engineering-model.json" 2>/dev/null; then
-  echo 'EM007_ADMISSION: adopted work requires the shared document workflow module' >&2
+else
+  echo 'EM007_ADMISSION: workstreams require the shared document workflow module and Engineering Model' >&2
   exit 1
 fi
 

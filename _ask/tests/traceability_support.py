@@ -11,12 +11,42 @@ from verification.traceability.evidence import accept_plan,inventory,load_accept
 from verification.yaml_lite import parse_yaml
 
 
+def seed_model(root, work_id):
+    """Model real fixture task/test identities without manufacturing execution evidence."""
+    path = root / 'work' / work_id / 'engineering-model.json'
+    if path.exists():
+        return
+    graph_path = root / 'work' / work_id / 'inner-loop/tasks.yaml'
+    graph = parse_yaml(graph_path.read_text()) if graph_path.exists() else {}
+    plan_path = root / 'work' / work_id / 'test-plan.json'
+    plan = json.loads(plan_path.read_text()) if plan_path.exists() else {}
+    nodes = [{'id': 'purpose', 'type': 'intent', 'title': 'Orchestration fixture', 'lifecycle': 'active'}]
+    edges = []
+    for task in graph.get('tasks', []):
+        nodes.append({'id': task['id'], 'type': 'task', 'title': task['id'], 'lifecycle': 'planned'})
+        edges.append({'type': 'contains', 'source': 'purpose', 'target': task['id']})
+    if plan.get('tests'):
+        nodes.extend([{'id': 'requirement', 'type': 'requirement', 'title': 'Fixture scope', 'lifecycle': 'draft'},
+                      {'id': 'scenario', 'type': 'scenario', 'title': 'Fixture behavior', 'lifecycle': 'draft'}])
+        edges.extend([{'type': 'contains', 'source': 'purpose', 'target': 'requirement'},
+                      {'type': 'contains', 'source': 'requirement', 'target': 'scenario'}])
+    for index, test in enumerate(plan.get('tests', [])):
+        identity = f'case-{index}'
+        nodes.append({'id': identity, 'type': 'test', 'title': test['id'], 'lifecycle': 'active',
+                      'reference': {'path': f'work/{work_id}/test-plan.json', 'id': test['id']}})
+        edges.append({'type': 'covers', 'source': identity, 'target': 'scenario'})
+    write_json(path, {'schema': 'ask-engineering-model/v1', 'work_id': work_id, 'revision': 1,
+                      'nodes': nodes, 'edges': edges})
+
+
 def seed(root,work_id):
     graph_path=root/'work'/work_id/'inner-loop/tasks.yaml'
     graph=parse_yaml(graph_path.read_text()) if graph_path.exists() else {'tasks':[]}
     spec={'schema':'ask-spec/v1','work_id':work_id,'revision':1,'criteria':[{'id':'FIXTURE-CONFIG','given':'Disposable orchestration fixture','when':'Fixture CheckPlan and ownership are inspected','then':['Fixture configuration is isolated from production'],'verification_mode':'review','reason':'Nonbehavioral fixture metadata; behavior assertions belong to the enclosing real integration suite.','review_decision':{'decision':'APPROVED','reviewer':'fixture-reviewer','recorded_by':'fixture-coordinator','policy':POLICY}}]}
     plan={'schema':'ask-test-plan/v1','work_id':work_id,'spec_digest':digest(spec),'obligations':[],'tests':[],'runners':[],'task_scopes':[{'task_id':t['id'],'test_ids':[]} for t in graph['tasks']]}
     write_json(root/'specs/current'/f'{work_id}.json',spec);write_json(root/'work'/work_id/'test-plan.json',plan)
+    (root/'specs/current'/f'{work_id}.md').write_text('# Disposable orchestration fixture specification\n')
+    seed_model(root, work_id)
     with (root/'.gitignore').open('a') as stream:stream.write(f'\nwork/{work_id}/traceability/\n__pycache__/\n')
 
 
@@ -36,7 +66,8 @@ def review(root,work_id,sha):
     record_test_review(root,work_id,sha,'HEAD',path,'fixture-coordinator')
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('operation',choices=['seed','accept','review']);p.add_argument('root',type=Path);p.add_argument('work_id');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('operation',choices=['seed','seed-model','accept','review']);p.add_argument('root',type=Path);p.add_argument('work_id');a=p.parse_args()
     if a.operation=='seed':seed(a.root,a.work_id)
+    elif a.operation=='seed-model':seed_model(a.root,a.work_id)
     elif a.operation=='accept':accept(a.root,a.work_id)
     else:review(a.root,a.work_id,subprocess.check_output(['git','rev-parse','HEAD'],cwd=a.root,text=True).strip())

@@ -49,5 +49,20 @@ git checkout -q master 2>/dev/null || git checkout -q main
 [[ "$(git rev-parse --abbrev-ref HEAD)" == agent/demo ]] || fail "checked out agent/demo"
 git merge-base --is-ancestor develop HEAD || fail "agent/demo not based on develop"
 test -f on-develop || fail "missing develop tip file"
+python3 - <<'PY'
+import json
+from pathlib import Path
+path = Path('work/demo/engineering-model.json')
+model = json.loads(path.read_text())
+assert model['schema'] == 'ask-engineering-model/v2'
+assert model['work_id'] == 'demo'
+assert model['revision'] == 1
+assert model['nodes'][0]['type'] == 'intent'
+model['revision'] = 7
+path.write_text(json.dumps(model))
+PY
+git add work && git commit -qm 'existing model must survive start-work retry'
+./_ask/scripts/start-work.sh demo
+python3 -c 'import json; assert json.load(open("work/demo/engineering-model.json"))["revision"] == 7'
 
 echo "PASS: start-work from develop or fail closed"

@@ -93,6 +93,15 @@ A submitted “Approve defaults” choice (or “Approve all recommendations” 
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
 
+## Required Engineering Model
+
+`./ask start-work <work-id>` seeds `work/<work-id>/engineering-model.json`.
+Before closing Grill, populate its purpose from the approved intent and record
+the decisions and assumptions that affect this work. Follow the lifecycle and
+guarded-edit contract in `_ask/docs/engineering-model.md`. Keep product identity
+separate from execution ownership. A missing model is an incomplete workstream;
+prepare it before continuing, including when resuming older work.
+
 ## Model spawn (optional)
 
 When this stage’s resolved model differs from the parent, or `work/<id>/models.yaml` / env sets an explicit override, you may spawn the generated Grill subagent for that runtime. The child expands questions and returns them. The parent asks the human and writes `intent.md`. The child must not close Grill.
