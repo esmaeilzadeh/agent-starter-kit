@@ -1,0 +1,99 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "Copilot coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "b37a5bdf57afb49d2f1c192c058e7e7b9ec675a367bbed3c4ea1c92b4283f9b6",
+  "review_digest": "230f4892c5fc9814bc8196cb1fafe2d315c93ff0fe19bc2621e36e9033a2aaed",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "reviewer": "copilot-independent-demonstration-review",
+    "recorded_by": "Copilot coordinator",
+    "spec_digest": "bcb2fbcb507eb9a1a53e789f1630d6f9fb799e5845fff09263ea43ed28bb5ed3",
+    "plan_digest": "21a01aab9822ae463fda87a71061a7b05ddd6cc1a81db833c734a85a821fbbe5",
+    "candidate_sha": "2ed93a92db5925fe17ba759dd11b321c10eb2e5a",
+    "source_digests": {},
+    "scope": "workstream",
+    "task_id": null,
+    "test_ids": [],
+    "criterion_ids": [
+      "DOC-001",
+      "DOC-002",
+      "DOC-003",
+      "DOC-004",
+      "DOC-005",
+      "DOC-006",
+      "DOC-007"
+    ],
+    "base_sha": "63c377abd7764c689653d16a35baf25d9217e5c1",
+    "criteria": [
+      {
+        "id": "DOC-001",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: both guides and the exact eight-section ID/order and outcome parity were inspected directly. The semantic verdict and any defects are recorded in review.md."
+      },
+      {
+        "id": "DOC-002",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: the opening, model, lifecycle walkthrough, evidence/recovery, adoption exercise, and close were inspected in both guides."
+      },
+      {
+        "id": "DOC-003",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: cue cards, presenter guidance, outcomes, and all eight internal timing entries were inspected; the totals were independently calculated as 90 minutes."
+      },
+      {
+        "id": "DOC-004",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: every evidence-inventory row and execution-status claim was inspected. The review found unique labels and explicit LIVE boundaries, while recording the invalid SAVED provenance in review.md."
+      },
+      {
+        "id": "DOC-005",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: every citation-inventory row was checked for path existence, passage description, and SUPPORTED decision, and all direct source citations in the guides were compared against the inventory. The omitted worktree and workflow-reference rows are recorded in review.md."
+      },
+      {
+        "id": "DOC-006",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: the seven required parity dimensions were compared across the English and Persian guides, including primary versus optional status, and each recorded MATCH was checked."
+      },
+      {
+        "id": "DOC-007",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {},
+        "assessment": "Approved review coverage: baseline and candidate physical wc -l counts, the 35 percent threshold, the preservation checklist, and the candidate commit file scope were independently checked."
+      }
+    ],
+    "tests": [],
+    "inspected_sources": [],
+    "reviewed_sources": [
+      "specs/current/askit-demonstration-rebuild.md",
+      "specs/current/askit-demonstration-rebuild.json",
+      "work/askit-demonstration-rebuild/plan.md",
+      "work/askit-demonstration-rebuild/test-plan.json",
+      "work/askit-demonstration-rebuild/traceability-accepted.json",
+      "README.md",
+      "AGENTS.md",
+      "_ask/policies/workflow.md",
+      "_ask/policies/delegation.md",
+      "_ask/policies/worktree.md",
+      "_ask/docs/demo/end-to-end-plan.md",
+      "_ask/docs/spec-test-traceability.md",
+      "_ask/docs/workflow-references.md",
+      ".agents/ask/stages/",
+      "docs/AskIt-demonstration-notes.md",
+      "docs/AskIt-demonstration-notes-fa.md"
+    ],
+    "changed_cases": [],
+    "inventory_exclusions": {}
+  },
+  "candidate_sha": "2ed93a92db5925fe17ba759dd11b321c10eb2e5a",
+  "scope": "workstream",
+  "task_id": null
+}
