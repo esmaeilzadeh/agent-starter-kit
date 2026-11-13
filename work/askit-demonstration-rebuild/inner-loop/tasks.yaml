@@ -1,0 +1,8 @@
+schema: ask-inner-loop-tasks/v1
+work_id: askit-demonstration-rebuild
+tasks:
+  - id: DOC-REBUILD
+    depends_on: []
+    owned_paths:
+      - docs/AskIt-demonstration-notes.md
+      - docs/AskIt-demonstration-notes-fa.md

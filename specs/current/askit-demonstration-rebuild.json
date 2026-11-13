@@ -1,0 +1,78 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "askit-demonstration-rebuild",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "DOC-001",
+      "given": "The two requested demonstration-note paths are inspected",
+      "when": "The rebuilt documentation is reviewed",
+      "then": [
+        "Both Markdown files exist",
+        "They contain matching ordered section identifiers and session outcomes"
+      ],
+      "verification_mode": "review"
+    },
+    {
+      "id": "DOC-002",
+      "given": "A technical presenter has the rebuilt guide",
+      "when": "They scan the document from beginning to end",
+      "then": [
+        "The guide presents an opening, core model, lifecycle walkthrough, evidence and recovery, adoption exercise, and close"
+      ],
+      "verification_mode": "review"
+    },
+    {
+      "id": "DOC-003",
+      "given": "A presenter is preparing to run one guide section",
+      "when": "They inspect that section",
+      "then": [
+        "They can find a concise cue card",
+        "They can find presenter guidance",
+        "They can find timing",
+        "They can find an observable audience outcome"
+      ],
+      "verification_mode": "review"
+    },
+    {
+      "id": "DOC-004",
+      "given": "The guide describes a demonstration, example, or result",
+      "when": "The claim is checked against the repository",
+      "then": [
+        "The material is labeled live, saved evidence, or optional",
+        "Unverified execution is not presented as fact"
+      ],
+      "verification_mode": "review"
+    },
+    {
+      "id": "DOC-005",
+      "given": "The guide makes a workflow or evidence claim",
+      "when": "Its source reference is followed",
+      "then": [
+        "The referenced repository path exists",
+        "The source supports the claim being made"
+      ],
+      "verification_mode": "review"
+    },
+    {
+      "id": "DOC-006",
+      "given": "The English and Persian guides are compared",
+      "when": "Their structure and meaning are reviewed",
+      "then": [
+        "They cover the same outcomes and lifecycle",
+        "Natural language differences do not change the intended meaning"
+      ],
+      "verification_mode": "review"
+    },
+    {
+      "id": "DOC-007",
+      "given": "The rebuilt guide is compared with the current 40-slide notes",
+      "when": "A presenter evaluates scanability and scope",
+      "then": [
+        "The rebuilt guide is materially shorter and easier to scan",
+        "The core AskIt model and safety boundaries remain present"
+      ],
+      "verification_mode": "review"
+    }
+  ]
+}

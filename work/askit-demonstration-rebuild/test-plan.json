@@ -1,0 +1,14 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "askit-demonstration-rebuild",
+  "spec_digest": "f4126d944d1308a4844ffde6aa91b097768271687b292e2d20e4cf674a20eb15",
+  "obligations": [],
+  "runners": [],
+  "tests": [],
+  "task_scopes": [
+    {
+      "task_id": "DOC-REBUILD",
+      "test_ids": []
+    }
+  ]
+}
