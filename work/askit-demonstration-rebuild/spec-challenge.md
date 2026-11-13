@@ -4,177 +4,217 @@
 
 model=opus; runtime=claude; parent_model=unknown.
 
-This is the independent Spec Challenge review for
-`askit-demonstration-rebuild`. The requested Opus selection was recorded; no
-parent model identity was available to establish. The review followed the
-stage contract, the spec/test traceability contract, and the embedded
-`writing-for-agents` guidance. No production documentation was edited and no
-approval was invented.
+This is the independent rerun for `askit-demonstration-rebuild` at contract
+commit `9ef3a3e1977470df5ae6e45a00cdce298c77ab8f`. The prior challenge is the
+artifact committed at `3f4d8ad960c3d1ea2a67e263494a0c8890d65ad5`. The requested
+Opus model is the configured Claude adversarial binding; no parent-model
+identity was available. This review did not edit production documentation or
+invent approval.
 
 ## Specification
 
-Reviewed:
+Reviewed the updated intent, canonical JSON and Markdown specification,
+test-plan, plan, task graph, engineering model, prior challenge, and the
+relevant protocol/authority documents:
 
-- `specs/current/askit-demonstration-rebuild.md`
-- `specs/current/askit-demonstration-rebuild.json`
-- `work/askit-demonstration-rebuild/intent.md`
-- `work/askit-demonstration-rebuild/plan.md`
-- `work/askit-demonstration-rebuild/test-plan.json`
-- `work/askit-demonstration-rebuild/inner-loop/tasks.yaml`
-- `docs/AskIt-demonstration-notes.md`
-- `docs/AskIt-demonstration-notes-fa.md`
-- `AGENTS.md`, `README.md`, `_ask/docs/demo/end-to-end-plan.md`,
-  `_ask/policies/{delegation,workflow}.md`, and
-  `_ask/docs/spec-test-traceability.md`
+- `work/askit-demonstration-rebuild/{intent.md,plan.md,test-plan.json,inner-loop/tasks.yaml,engineering-model.json,spec-challenge.md}`
+- `specs/current/askit-demonstration-rebuild.{json,md}`
+- `_ask/docs/spec-test-traceability.md`
+- `_ask/policies/{delegation,verification,workflow}.md`
+- `_ask/docs/demo/end-to-end-plan.md`, `README.md`, and `AGENTS.md`
+- baseline production notes `docs/AskIt-demonstration-notes.md` and
+  `docs/AskIt-demonstration-notes-fa.md`, only for baseline/verification
 
-The canonical spec contains the exact criteria `DOC-001` through `DOC-007`,
-all marked `verification_mode: "review"`. The canonical spec digest is
-`f4126d944d1308a4844ffde6aa91b097768271687b292e2d20e4cf674a20eb15`.
-The current test-plan digest is
-`0cddbc2f440c4b3584c915090b223c220fa4c7670aea7744ddad9b116b67576e`; its
+The canonical spec digest is
+`1ee038693c4765dd7d7bfd254662c4a7a26fc6e36638a4e325358dbdd23db1a1`.
+The updated test-plan digest is
+`9da9facd33e619538946d0ad059834d5ee69138a2ba1ed8da55fdf4f339a3282`; the
 engineering-model digest is
 `b2745a59031139556a5e5eff9f667bce90e90df9deeb55680faf0e73f2004602`.
 
+The update resolves several findings from the prior challenge: the required
+fixed IDs/order are now explicit
+(`ORIENT`, `MODEL`, `ROUTE`, `WALKTHROUGH`, `EVIDENCE`, `RECOVERY`, `ADOPT`,
+`CLOSE`); internal timing is stated as an exact 90-minute sum while audience
+cue cards need not show duration; the 35% language-specific line reduction is
+explicit; labels, citation-review fields, and parity dimensions are named; and
+the plan now attempts criterion-level mappings.
+
+The production baseline is 721 English lines and 773 Persian lines at
+baseline source commit
+`2e5ea92989c48c10e4829bc22c325643443a38b3`. No
+`work/askit-demonstration-rebuild/traceability/` evidence or
+`refs/ask/accepted-tests/askit-demonstration-rebuild` authority ref exists.
+
 ## Ambiguities
 
-1. **Section identity and scope are undefined (`DOC-001`, `DOC-003`).**
-   The spec requires matching ordered “section IDs” and says every section
-   needs four fields, but does not define the ID syntax, the authoritative
-   section set, or whether preparation, references, appendices, and closing
-   checks count. A guide can satisfy the headings informally while English
-   and Persian differ in a non-obvious subsection.
+1. **Target versus canonical duration.** The intent and specification prose
+   call the session “approximately 90 minutes,” while the canonical criterion
+   and test case require an exact eight-section sum of 90. The intended rule
+   appears to be “approximately 90 for the audience; exactly 90 in the
+   facilitator schedule,” but that distinction should be stated once as the
+   acceptance rule. Otherwise a 89- or 91-minute schedule can be defended by
+   the prose despite failing the intended internal contract.
 
-2. **The 90-minute requirement has two possible truths.** The Goal and intent
-   describe a 90-minute session, while the intent permits a shorter session if
-   that is “more honest,” and the spec only says the total must remain
-   explicit and coherent. There is no decision rule for choosing 90 minutes
-   versus another duration, nor a tolerance for rounding. A schedule can
-   total 89, 90, or 95 minutes and still be arguable under the current text.
+2. **Saved-evidence SHA semantics.** The updated criterion says a `SAVED` row
+   names a path and a relevant SHA “when applicable,” while the requested
+   contract requires saved rows to identify path and relevant SHA. “Relevant”
+   and “applicable” are not defined: source commit, workstream commit, and
+   artifact-producing commit are different claims. Define the row schema and
+   require a specific SHA rule, or explicitly enumerate the exceptions.
 
-3. **“Important,” “supports the claim,” “substantially shorter,” and “easier
-   to scan” are not observable bounds (`DOC-005`, `DOC-007`).** Existence of a
-   cited path does not show that the cited source supports the adjacent
-   statement. Likewise, the current English and Persian notes are 721 and 773
-   lines; “materially/substantially shorter” has no threshold, baseline
-   measure, or required scanability test.
+3. **Baseline and line-count method.** “Current-language baseline” is not
+   pinned in the test plan, and line count does not say whether blank lines,
+   headings, and the final newline count. Once the two production files are
+   replaced, “current” can move. The baseline paths and commit above, plus a
+   deterministic counting rule, need to be part of the accepted evidence.
 
-4. **Demonstration-label coverage is underspecified (`DOC-004`).** The
-   requirement names `live`, `saved evidence`, and `optional`, but does not
-   define the label format or require an inventory of every command, result,
-   historical example, or hypothetical instruction. A sentence such as “run
-   `./ask verify`” can be read as a recommendation or as an executed fact.
+4. **Outcome and inventory identity.** “Matching session outcomes” has no
+   canonical list, and “every command, result, historical example, and
+   optional activity” has no item identity rule. A command repeated in
+   presenter prose and an evidence table could receive two labels or none
+   unless the inventory row is the authority and each item has a stable key.
 
-5. **Semantic parity lacks a review protocol (`DOC-006`).** “Same outcomes and
-   lifecycle” does not identify the parity dimensions to compare, how timing
-   and evidence labels are paired, or what degree of natural-language
-   variation is acceptable. The existing files already show different
-   non-slide sections, so heading-number parity alone would be insufficient.
+5. **Citation and parity record shape.** The criteria require a citation path,
+   relevant heading/excerpt, support decision, and seven parity dimensions,
+   but do not define allowed decision values or where the records live. A
+   reviewer could produce incompatible “supported” and “yes” records and
+   both appear compliant.
 
 ## Missing failure cases
 
-- A cited source exists but is stale, unrelated, or does not support the
-  statement; `DOC-005` currently tests path existence and support only as an
-  unbounded reviewer judgment.
-- A command is labeled `live` but the repository contains no corresponding
-  execution evidence, or a saved artifact is described without its path/SHA.
-- English and Persian have the same section IDs but one omits an audience
-  outcome, changes the timing, or reverses the evidence boundary inside prose.
-- The two documents have matching section headings but the combined timing
-  exceeds the stated session length, or rounded per-section values do not sum
-  to it.
-- The rebuilt guide is only trivially shorter than the 40-slide source, or is
-  shorter by deleting the human-ownership and evidence-safety boundaries;
-  `DOC-007` does not distinguish successful compression from unsafe omission.
-- A historical or optional appendix becomes the practical primary path despite
-  the invariant that the simple walkthrough remains primary.
-- A source path is renamed or removed after drafting; the current criteria do
-  not require a reproducible citation inventory tied to the candidate revision.
+- **The updated contracts do not validate.** Running
+  `./ask traceability validate-plan askit-demonstration-rebuild
+  --revision 9ef3a3e` fails with `unauthorized_review_only` for every
+  `DOC-001`–`DOC-007`, then `invalid_obligation` and `invalid_required_types`
+  for those same obligations, plus `invalid_test_type` and
+  `invalid_runner_case` for `DOC-001-R`–`DOC-007-R`. The validator permits
+  executable types `unit`, `integration`, and `e2e`; `review` is not a test
+  type. Review-only criteria instead require a reason and an attributable
+  `APPROVED` decision under `_ask/policies/delegation.md`. This is a
+  blocking authority/traceability defect, not merely missing runtime evidence.
+
+- **DOC-002 mapping drops recovery.** The canonical criterion requires
+  “evidence and recovery,” but `DOC-002-R` checks
+  `opening/model/route/walkthrough/evidence/adoption/close` and omits an
+  explicit recovery assertion. A guide can therefore pass the mapped case
+  while omitting the RECOVERY teaching beat.
+
+- **DOC-007 mapping is not exhaustive.** Its generic “safety checklist” does
+  not enumerate the required preservation checks for core model, ownership,
+  evidence, recovery, and failure boundaries. It does not establish which
+  omitted boundary is a failure.
+
+- **Reduction cannot be reproduced from the test plan.** `DOC-007-R` names
+  only the rebuilt files as `source_paths`, not the pinned English/Persian
+  baselines or a count procedure. A later reviewer cannot distinguish a
+  genuine 35% reduction from a changed baseline.
+
+- **Label and citation counterexamples remain admissible.** A row can label
+  an item `SAVED` without a SHA under the undefined “when applicable”
+  exception; a citation can name an existing but unrelated path; and a
+  repeated command can have conflicting labels. The plan has no explicit
+  duplicate/conflict or stale-source failure assertion.
+
+- **Review authority is absent.** There is no plan-review decision, accepted
+  traceability pin, or independent semantic-review record for these exact
+  contract digests. The worker-authored challenge cannot supply that
+  coordinator authority.
+
+- **Intent authority is stale.** `intent-confirmation.json` records digest
+  `777e4ed...`, while the committed current `intent.md` hashes to
+  `76c299a...`; `./ask check-workstream askit-demonstration-rebuild` reports
+  that the intent changed after confirmation. Implementation/acceptance must
+  not treat the earlier approval as approval of the updated intent.
 
 ## Over-constraint risks
 
 - Requiring identical English/Persian prose or line-by-line translation would
-  conflict with the explicit requirement for natural Persian. The current
-  semantic-alignment criterion should remain structural and meaning-based, not
-  textual identity.
-- Treating every repository claim as requiring a live command would conflict
-  with the no-benchmark/no-new-artifact non-goals. Saved evidence and clearly
-  optional material are legitimate modes.
-- Requiring preservation of all 40 slide slots would undermine the stated Why
-  and the non-goal of retaining the existing structure.
+  contradict the natural-Persian requirement. Parity should remain
+  dimension-by-dimension and meaning-based.
+- Requiring every command to be executed live would contradict the explicit
+  `SAVED` and `OPTIONAL` modes and the no-benchmark/no-new-artifact
+  non-goals.
+- Requiring preservation of the old 40-slide structure would undermine the
+  Why. The fixed eight-section contract and safety checklist are the better
+  boundary.
+- An exact internal 90-minute sum is appropriate for a facilitator schedule,
+  but should not be read as requiring audience cue cards to display duration;
+  that audience-facing exemption is explicitly intended and should remain.
 
 ## Under-constraint risks
 
-- The test plan is not merely sparse: `obligations`, `runners`, and `tests`
-  are all empty, and `DOC-REBUILD.test_ids` is empty. Under
-  `_ask/docs/spec-test-traceability.md`, review-only criteria may have empty
-  executable cases, but every testable criterion still needs an explicit
-  required type, case/decision mapping, assertions, source paths, and an
-  independent review-only classification decision. The exact `DOC-001` to
-  `DOC-007` obligations and decisions are absent.
-- The plan says it will create a “review-only criteria mapping,” but the
-  committed JSON contains no such mapping. This is a direct artifact/spec
-  inconsistency and prevents an exact plan review or accepted pin.
-- The single task has no test IDs. Consequently, even a later semantic review
-  cannot demonstrate coverage of each exact criterion or bind the review to
-  the `DOC-REBUILD` scope.
-- “Review-only” is an evidence mode, not permission to omit authority. No
-  independent plan-review decision or accepted traceability pin is present in
-  the inspected workstream artifacts. Worker prose cannot substitute for the
-  coordinator-recorded authority required by the traceability contract.
-- `E2E: not_applicable` is reasonable for static Markdown, but the spec should
-  explicitly state that structural, parity, citation, timing, and editorial
-  review obligations replace runtime E2E—not leave the empty test plan to
-  imply that no evidence is required.
-- Migration scope is not bounded enough to resolve whether source references
-  are copied, only cited, or updated when canonical paths change. The
-  non-goal forbids unrelated documentation edits, but the plan's broad source
-  list could invite incidental cleanup.
+- The canonical criteria are all `verification_mode: "review"` but lack the
+  required per-criterion `reason` and attributable `review_decision`. Adding
+  a review-shaped test plan does not authorize them.
+- The test plan conflates review-only decisions with executable tests. It has
+  no supported runner/case for these review entries and therefore cannot be
+  accepted or pinned by the traceability validator.
+- The parity checklist names the right dimensions but does not require an
+  explicit result for each language pair, including lifecycle and
+  primary/optional status.
+- Citation review is not bound to a complete claim inventory, so “important”
+  claims can be omitted from review. The inventory must cover every cited
+  workflow/evidence claim, not only the paths a reviewer happens to notice.
+- Migration scope says the two Markdown files are deliverables but does not
+  explicitly state whether indexes, links, or the PPTX files are intentionally
+  unchanged. Leaving this implicit risks either stale navigation or unrelated
+  documentation cleanup.
 
 ## Recommended clarifications
 
-1. Add a deterministic section contract: define a stable ID format, enumerate
-   the required section IDs/order, state whether appendices and preparation
-   material are included, and require each ID to expose cue, guidance, timing,
-   and outcome fields in both languages.
-2. Choose one session-duration rule. For example, declare a target of exactly
-   90 minutes with an explicit rounding tolerance, or change the target to a
-   stated shorter duration and explain why. Require the sum of canonical
-   numeric timings to satisfy that rule in both documents.
-3. Replace subjective compression wording with a reviewable baseline and
-   guardrail: record current line/section counts, set a minimum reduction, and
-   require an explicit checklist showing that the core model, ownership,
-   evidence, recovery, and failure boundaries remain.
-4. Define a claim-label and citation inventory. Every demonstration command,
-   result, historical example, and optional activity should have one of the
-   three labels; saved evidence should name its repository path (and SHA when
-   the source requires it); live material should be an instruction to execute,
-   not a claim that execution already occurred.
-5. Define source-reference review as a per-claim decision: path exists,
-   relevant source excerpt/heading identified, and the claim is supported.
-   Include a failure decision for unsupported or stale citations.
-6. Add a parity checklist covering exact section IDs/order, outcomes,
-   lifecycle stages, evidence labels, timing, ownership boundaries, and
-   optional/primary status. Permit natural Persian wording while requiring an
-   explicit semantic-review result for each dimension.
-7. Populate `work/askit-demonstration-rebuild/test-plan.json` with one
-   explicit review obligation for each exact criterion `DOC-001`–`DOC-007`,
-   required type `review`, case IDs, assertions, source paths, and
-   review-only classification decisions. Map those case IDs to `DOC-REBUILD`
-   in `task_scopes`; keep executable `cases` empty only where the contract
-   explicitly permits it.
-8. Recompute the plan (and any task-graph/engineering-model contract digest),
-   obtain the independent `decision: APPROVED` plan-review record, and pin the
-   exact spec/plan/task/delegation contracts before implementation. This
-   challenge does not grant that approval.
+1. **Repair the review-only contract before implementation.** Add a reason and
+   an attributable `APPROVED` review decision (with policy, reviewer, and
+   recorded-by fields) for each review-only criterion, or change the criteria
+   to an actually supported verification mode. Remove `review` obligations
+   and pseudo-tests from `test-plan.json`; review-only criteria may have empty
+   executable cases, but still require independent semantic review. Do not
+   fabricate the approval in this challenge.
+
+2. **Create and pin authority through the coordinator.** Recompute the exact
+   spec/plan/task-graph/delegation digests after the contract repair, obtain
+   the independent `decision: APPROVED` plan-review record, run
+   `accept-plan`, and commit the resulting accepted pin. The challenge verdict
+   is not that approval.
+
+3. **Make the acceptance language deterministic.** State: “The session target
+   is approximately 90 minutes; the eight internal numeric timings must sum
+   exactly to 90 minutes. Cue cards need not display duration.” Define the
+   outcome list, item-key rule, allowed labels, and the exact `SAVED` path/SHA
+   rule.
+
+4. **Pin baseline evidence.** Record both baseline paths, commit
+   `2e5ea92989c48c10e4829bc22c325643443a38b3`, the counting command/rule, and
+   the 35% calculation in the review obligation. Keep the baseline as
+   verification history after the production files are replaced.
+
+5. **Tighten the review mappings.** Add an explicit RECOVERY assertion to
+   `DOC-002-R`; expand `DOC-007-R` into five named safety assertions; and
+   require one decision per parity dimension and one row per cited claim.
+   Record citation support as a bounded value such as `SUPPORTED` or
+   `UNSUPPORTED`, including the relevant heading/excerpt.
+
+6. **Bound migration.** State that only the two requested Markdown files are
+   production deliverables; PPTX files and unrelated indexes/links remain
+   unchanged unless a separately approved scope change identifies a broken
+   reference. Record the old files' commit as baseline rather than silently
+   deleting historical context.
+
+7. **Renew intent confirmation.** Obtain confirmation against the current
+   `intent.md` digest before implementation. Preserve the submitted choice
+   and exact digest; do not infer renewed approval from the prior
+   `intent-confirmation.json`.
 
 ## Challenge verdict
 
 **ESCALATE.**
 
-The intended What/Why is coherent and the review-only verification mode is
-appropriate for static facilitation notes, but the missing review obligations
-and exact criterion mapping are a blocking traceability defect, not an
-implementation detail. The unbounded timing, parity, citation, demonstration
-label, and compression criteria also admit concrete contradictory outcomes.
-Human/coordinator decisions are required before the plan can be independently
-approved and pinned. Artifact written: yes.
+The What/Why and the requested eight-section teaching contract are coherent,
+and the update resolves the prior challenge's major content ambiguities.
+However, the exact updated contracts fail the repository's traceability
+validator because review-only criteria are missing their required authority
+metadata and are incorrectly represented as unsupported `review` tests. The
+timing/baseline/label inventory details and two incomplete test mappings leave
+acceptance reproducibility open as well. Human/coordinator decisions and a
+repaired, independently accepted contract pin are required before
+implementation or acceptance. No approval is implied by this artifact.
