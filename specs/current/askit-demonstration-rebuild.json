@@ -9,7 +9,8 @@
       "when": "The rebuilt documentation is reviewed",
       "then": [
         "Both Markdown files exist",
-        "They contain matching ordered section identifiers and session outcomes"
+        "They contain the eight ordered section identifiers ORIENT, MODEL, ROUTE, WALKTHROUGH, EVIDENCE, RECOVERY, ADOPT, and CLOSE",
+        "They contain matching session outcomes"
       ],
       "verification_mode": "review"
     },
@@ -29,7 +30,8 @@
       "then": [
         "They can find a concise cue card",
         "They can find presenter guidance",
-        "They can find timing",
+        "They can find internal timing",
+        "The eight section timings sum to 90 minutes",
         "They can find an observable audience outcome"
       ],
       "verification_mode": "review"
@@ -39,7 +41,8 @@
       "given": "The guide describes a demonstration, example, or result",
       "when": "The claim is checked against the repository",
       "then": [
-        "The material is labeled live, saved evidence, or optional",
+        "Every command, result, historical example, and optional activity has exactly one LIVE, SAVED, or OPTIONAL label",
+        "SAVED rows identify their repository path and relevant SHA when applicable",
         "Unverified execution is not presented as fact"
       ],
       "verification_mode": "review"
@@ -50,7 +53,8 @@
       "when": "Its source reference is followed",
       "then": [
         "The referenced repository path exists",
-        "The source supports the claim being made"
+        "A relevant heading or excerpt is identified",
+        "An explicit support decision is recorded"
       ],
       "verification_mode": "review"
     },
@@ -59,7 +63,7 @@
       "given": "The English and Persian guides are compared",
       "when": "Their structure and meaning are reviewed",
       "then": [
-        "They cover the same outcomes and lifecycle",
+        "They match on section IDs and order, outcomes, timing, lifecycle, evidence labels, ownership boundaries, and primary or optional status",
         "Natural language differences do not change the intended meaning"
       ],
       "verification_mode": "review"
@@ -69,7 +73,8 @@
       "given": "The rebuilt guide is compared with the current 40-slide notes",
       "when": "A presenter evaluates scanability and scope",
       "then": [
-        "The rebuilt guide is materially shorter and easier to scan",
+        "Each rebuilt note is at least 35% shorter by line count than its current-language baseline",
+        "A safety checklist confirms that the core model, ownership, evidence, recovery, and failure boundaries remain",
         "The core AskIt model and safety boundaries remain present"
       ],
       "verification_mode": "review"

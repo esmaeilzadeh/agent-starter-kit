@@ -42,8 +42,9 @@ reviewable.
   may remain as historical/reference assets.
 - The audience is developers and technical decision-makers who need a concrete
   mental model and a safe first adoption path.
-- The guide is a 90-minute presentation/workshop unless the final structure
-  makes a shorter timing more honest; timing must be explicit either way.
+- The guide targets approximately 90 minutes. Its facilitator timing is
+  internally explicit, but audience-facing cue cards do not need to display
+  the duration.
 - Repository paths and current canonical contracts are the authority over
   claims inherited from the old notes.
 - “Separate presenter notes + concise cue cards” means each section will make
@@ -63,6 +64,11 @@ reviewable.
 - Use a simple end-to-end AskIt walkthrough as the main demonstration.
 - Keep presenter guidance separate from concise cue cards; do not write a
   full word-for-word script.
+- Use eight stable guide sections and require at least a 35% reduction from
+  the current notes while preserving the safety-boundary checklist.
+- Maintain explicit evidence/citation inventories and review parity across
+  section order, outcomes, timing, lifecycle, evidence labels, ownership, and
+  primary/optional status.
 
 ## E2E
 
@@ -71,4 +77,3 @@ Applicability: `not_applicable`
 If `not_applicable`, reason: This work changes static Markdown facilitation
 notes only. It has no product runtime journey; verification is structural,
 content, parity, source-reference, and Markdown-quality checking.
-

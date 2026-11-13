@@ -22,27 +22,31 @@ work was executed.
 
 ## Behavior
 
-The notes are two parallel Markdown documents. Each document presents the same
-teaching sequence:
+The notes are two parallel Markdown documents. Each document presents these
+eight stable sections, in this order:
 
-1. audience, outcomes, and session map;
-2. AskIt's core model: human intent, delegated labor, durable evidence, and
-   acceptance;
-3. repository orientation and request routing;
-4. a simple end-to-end walkthrough from request through acceptance;
-5. evidence, recovery, and failure boundaries;
-6. a bounded adoption exercise and closing reconstruction check.
+1. `ORIENT` — audience, outcomes, and session map;
+2. `MODEL` — human intent, delegated labor, durable evidence, and acceptance;
+3. `ROUTE` — repository orientation and request routing;
+4. `WALKTHROUGH` — a simple end-to-end path from request through acceptance;
+5. `EVIDENCE` — claims, sources, provenance, and review boundaries;
+6. `RECOVERY` — refusal, stale evidence, and changed-destination cases;
+7. `ADOPT` — a bounded first-use exercise;
+8. `CLOSE` — reconstruction check and next action.
 
 Each section separates:
 
 - a concise cue card suitable for a slide or presenter glance;
 - presenter notes describing what to say, show, and ask;
-- timing and expected audience outcome; and
+- internal facilitator timing and expected audience outcome; and
 - source/evidence references where a claim depends on repository material.
 
-Demonstration material is explicitly labeled as live, saved evidence, or
-optional. Historical examples and prepared commands are never described as
-executed unless the repository contains corresponding evidence.
+Demonstration material is explicitly labeled as `LIVE`, `SAVED`, or
+`OPTIONAL`. Every command, result, historical example, and optional activity
+has one label in the evidence inventory. `SAVED` rows name the repository path
+and source SHA when relevant; `LIVE` rows are instructions to execute rather
+than claims that execution already happened. The internal facilitator timings
+sum to approximately 90 minutes; cue cards do not need to display duration.
 
 ## Interfaces
 
@@ -54,13 +58,20 @@ executed unless the repository contains corresponding evidence.
 ## Constraints
 
 - English and Persian must have matching section IDs and order.
-- Timing must be internally consistent and sum to the stated session length.
+- Internal timing must be consistent and sum to 90 minutes; the audience
+  cue-card layer does not need to show duration.
 - Claims about commands, stages, authority, and evidence must point to current
   repository sources.
-- The guide must be scannable during a live session; avoid a 40-slide
-  transcript or near-verbatim speech.
+- The guide must be at least 35% shorter by line count than the current
+  English/Persian notes respectively and remain scannable during a live
+  session; avoid a 40-slide transcript or near-verbatim speech.
 - Persian prose should be natural and technically precise, not a mechanical
   line-by-line translation.
+- The eight section IDs and their order are identical in both languages.
+- A parity review covers section IDs/order, outcomes, timing, lifecycle,
+  evidence labels, ownership boundaries, and primary/optional status.
+- A citation review records the source path, relevant heading or excerpt, and
+  support decision for every cited claim.
 - Keep changes limited to the two requested notes plus required workstream
   contracts and verification artifacts.
 
@@ -85,21 +96,26 @@ executed unless the repository contains corresponding evidence.
 
 ## Acceptance criteria
 
-- `DOC-001`: Both requested Markdown files exist and contain the same ordered
-  section IDs and session outcomes.
+- `DOC-001`: Both requested Markdown files exist and contain the eight ordered
+  section IDs (`ORIENT`, `MODEL`, `ROUTE`, `WALKTHROUGH`, `EVIDENCE`,
+  `RECOVERY`, `ADOPT`, `CLOSE`) and the same session outcomes.
 - `DOC-002`: The guide has a clear opening, core model, lifecycle walkthrough,
   evidence/recovery section, adoption exercise, and close.
-- `DOC-003`: Every section has a concise cue card, presenter guidance, timing,
-  and an observable audience outcome.
-- `DOC-004`: Demonstration claims are labeled live, saved evidence, or optional,
-  and no unverified execution is presented as fact.
-- `DOC-005`: Important workflow claims cite repository paths that exist and
-  remain relevant to the claim.
-- `DOC-006`: English and Persian are semantically aligned while allowing
-  natural language differences.
-- `DOC-007`: The notes are substantially shorter and more scannable than the
-  current 40-slide script, without losing the core AskIt model or safety
-  boundaries.
+- `DOC-003`: Every fixed section has a concise cue card, presenter guidance,
+  internal timing, and an observable audience outcome; the eight timings sum
+  to 90 minutes.
+- `DOC-004`: The evidence inventory assigns every command, result, historical
+  example, and optional activity exactly one label: `LIVE`, `SAVED`, or
+  `OPTIONAL`; saved rows identify their path and relevant SHA, and no
+  unverified execution is presented as fact.
+- `DOC-005`: Every cited workflow claim has an existing repository path, a
+  relevant heading or excerpt, and an explicit support decision.
+- `DOC-006`: English and Persian match on section IDs/order, outcomes, timing,
+  lifecycle, evidence labels, ownership boundaries, and primary/optional
+  status while allowing natural language differences.
+- `DOC-007`: Each rebuilt note is at least 35% shorter by line count than its
+  current-language baseline, and a safety checklist confirms preservation of
+  the core model, ownership, evidence, recovery, and failure boundaries.
 
 ## Open questions
 

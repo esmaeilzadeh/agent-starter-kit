@@ -1,14 +1,149 @@
 {
   "schema": "ask-test-plan/v1",
   "work_id": "askit-demonstration-rebuild",
-  "spec_digest": "f4126d944d1308a4844ffde6aa91b097768271687b292e2d20e4cf674a20eb15",
-  "obligations": [],
+  "spec_digest": "1ee038693c4765dd7d7bfd254662c4a7a26fc6e36638a4e325358dbdd23db1a1",
+  "obligations": [
+    {
+      "criterion_id": "DOC-001",
+      "required_types": ["review"]
+    },
+    {
+      "criterion_id": "DOC-002",
+      "required_types": ["review"]
+    },
+    {
+      "criterion_id": "DOC-003",
+      "required_types": ["review"]
+    },
+    {
+      "criterion_id": "DOC-004",
+      "required_types": ["review"]
+    },
+    {
+      "criterion_id": "DOC-005",
+      "required_types": ["review"]
+    },
+    {
+      "criterion_id": "DOC-006",
+      "required_types": ["review"]
+    },
+    {
+      "criterion_id": "DOC-007",
+      "required_types": ["review"]
+    }
+  ],
   "runners": [],
-  "tests": [],
+  "tests": [
+    {
+      "id": "DOC-001-R",
+      "criterion_ids": ["DOC-001"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Both rebuilt Markdown guides",
+        "when": "Their fixed section IDs and outcomes are compared",
+        "then": ["The eight IDs and outcomes match in order"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-001", "checks": ["Exact ID set and order", "Matching outcomes"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    },
+    {
+      "id": "DOC-002-R",
+      "criterion_ids": ["DOC-002"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The rebuilt guide outline",
+        "when": "A presenter scans it end to end",
+        "then": ["All six required teaching beats are present"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-002", "checks": ["Opening/model/route/walkthrough/evidence/adoption/close coverage"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    },
+    {
+      "id": "DOC-003-R",
+      "criterion_ids": ["DOC-003"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Each fixed guide section",
+        "when": "Its presenter block is inspected",
+        "then": ["Cue, guidance, timing, and outcome are present", "Timing totals 90 minutes"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-003", "checks": ["Required fields per section", "Numeric timing sum"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    },
+    {
+      "id": "DOC-004-R",
+      "criterion_ids": ["DOC-004"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The evidence inventory",
+        "when": "Every command, result, historical example, and optional activity is checked",
+        "then": ["Each has exactly one LIVE/SAVED/OPTIONAL label", "SAVED rows identify path and SHA when relevant"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-004", "checks": ["Complete label inventory", "No unsupported execution claim"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    },
+    {
+      "id": "DOC-005-R",
+      "criterion_ids": ["DOC-005"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Every cited workflow claim",
+        "when": "Its citation inventory row is followed",
+        "then": ["The path exists", "A relevant heading/excerpt and support decision are recorded"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-005", "checks": ["Existing path", "Relevant source passage", "Support decision"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    },
+    {
+      "id": "DOC-006-R",
+      "criterion_ids": ["DOC-006"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "English and Persian parity checklist",
+        "when": "All listed parity dimensions are compared",
+        "then": ["IDs/order, outcomes, timing, lifecycle, labels, ownership, and primary/optional status match"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-006", "checks": ["Seven parity dimensions reviewed", "Natural Persian wording retained"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    },
+    {
+      "id": "DOC-007-R",
+      "criterion_ids": ["DOC-007"],
+      "type": "review",
+      "change_kind": "new",
+      "scenario": {
+        "given": "The current and rebuilt notes",
+        "when": "Line counts and safety checklist are compared",
+        "then": ["Each language is at least 35% shorter", "Core safety boundaries remain"]
+      },
+      "expected_assertions": [
+        {"criterion_id": "DOC-007", "checks": ["Reduction percentage", "Safety checklist"]}
+      ],
+      "source_paths": ["docs/AskIt-demonstration-notes.md", "docs/AskIt-demonstration-notes-fa.md"]
+    }
+  ],
   "task_scopes": [
     {
       "task_id": "DOC-REBUILD",
-      "test_ids": []
+      "test_ids": ["DOC-001-R", "DOC-002-R", "DOC-003-R", "DOC-004-R", "DOC-005-R", "DOC-006-R", "DOC-007-R"]
     }
   ]
 }

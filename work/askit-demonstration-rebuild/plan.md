@@ -4,7 +4,7 @@
 
 `specs/current/askit-demonstration-rebuild.md` and its canonical JSON criteria,
 revision 1, digest
-`f4126d944d1308a4844ffde6aa91b097768271687b292e2d20e4cf674a20eb15`.
+`1ee038693c4765dd7d7bfd254662c4a7a26fc6e36638a4e325358dbdd23db1a1`.
 
 ## Approach
 
