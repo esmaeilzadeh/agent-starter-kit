@@ -3,6 +3,6 @@
   "work_id": "askit-demonstration-rebuild",
   "scope": "complete-intent-and-assumptions",
   "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "777e4ed194e643ba8cc63ede9d0d8fb112e171dec4f8275965b1f71ffd94c93e",
+  "intent_sha256": "21da709b5be62a9ec77b24dba4304607cd32e3ee1470252de6208c414f9522c6",
   "human_choice": "approve"
 }
