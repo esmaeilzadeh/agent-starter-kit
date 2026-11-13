@@ -22,14 +22,8 @@
     "DOC-007"
   ],
   "test_ids": [],
-  "source_digests": {
-    "docs/AskIt-demonstration-notes.md": "204ff316d48f8474663d88cc30174dfa7ff91f2b3e4fb76fa7ee87dc9b0858e6",
-    "docs/AskIt-demonstration-notes-fa.md": "7f79c818cdfc66877351b8a7e76726ab9c074e99ca2586b765d3623a73b89842"
-  },
-  "inspected_sources": [
-    "docs/AskIt-demonstration-notes.md",
-    "docs/AskIt-demonstration-notes-fa.md"
-  ],
+  "source_digests": {},
+  "inspected_sources": [],
   "changed_cases": [],
   "inventory_exclusions": {},
   "decision": "APPROVED",
