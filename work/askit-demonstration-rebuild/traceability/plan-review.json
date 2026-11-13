@@ -1,0 +1,17 @@
+{
+  "schema": "ask-test-plan-review/v1",
+  "work_id": "askit-demonstration-rebuild",
+  "decision": "APPROVED",
+  "reviewer": "copilot-independent-plan-review",
+  "model": "not exposed",
+  "reasoning_effort": "not exposed",
+  "runtime": "copilot-cli",
+  "parent_model": "not exposed",
+  "reviewed_sha": "b766b0a77312febcc2f3f5c671c31e7d89730d8d",
+  "spec_digest": "bcb2fbcb507eb9a1a53e789f1630d6f9fb799e5845fff09263ea43ed28bb5ed3",
+  "plan_digest": "21a01aab9822ae463fda87a71061a7b05ddd6cc1a81db833c734a85a821fbbe5",
+  "graph_digest": "cf9a3c32c5a89811c7dedcb4c0d268b1ba65b339fc1f9e4ec092682b5a4628cf",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "assessment": "Approved. All seven canonical criteria are explicitly review-only and each has a non-empty reason plus an attributable APPROVED review decision under _ask/policies/delegation.md. The canonical ask-test-plan/v1 is intentionally executable-empty: obligations, runners, and tests are empty, its DOC-REBUILD task scope has no test IDs, and both traceability validate-plan and inner-loop graph validation pass. The single TaskGraph task owns exactly the two requested Markdown deliverables and matches the plan's one cohesive work breakdown. The approved intent confirmation digest matches intent.md; the plan preserves the approved What/Why, non-goals, audience, eight-section structure, and production boundary. Baselines are pinned to 2e5ea92989c48c10e4829bc22c325643443a38b3 and the physical wc -l method including blank lines is explicit. Evidence labels and unique inventory keys, saved path/SHA requirements, citation path/passage/SUPPORTED-or-UNSUPPORTED records, parity dimensions with MATCH-or-MISMATCH decisions, and the two-note-only migration boundary are all bounded by the current spec and intent. The narrative plan's PENDING_AFTER_SPEC_UPDATE marker is non-authoritative; the canonical test-plan spec_digest binds the exact current JSON contract.",
+  "blocking_findings": []
+}
