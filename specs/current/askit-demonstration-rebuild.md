@@ -43,10 +43,12 @@ Each section separates:
 
 Demonstration material is explicitly labeled as `LIVE`, `SAVED`, or
 `OPTIONAL`. Every command, result, historical example, and optional activity
-has one label in the evidence inventory. `SAVED` rows name the repository path
-and source SHA when relevant; `LIVE` rows are instructions to execute rather
-than claims that execution already happened. The internal facilitator timings
-sum to approximately 90 minutes; cue cards do not need to display duration.
+has one unique inventory key and one label in the evidence inventory. `SAVED`
+rows name the artifact path and the commit that produced or last changed that
+artifact; `LIVE` rows are instructions to execute rather than claims that
+execution already happened. The session target is approximately 90 minutes;
+the eight internal numeric timings sum exactly to 90 minutes, and cue cards do
+not need to display duration.
 
 ## Interfaces
 
@@ -71,7 +73,12 @@ sum to approximately 90 minutes; cue cards do not need to display duration.
 - A parity review covers section IDs/order, outcomes, timing, lifecycle,
   evidence labels, ownership boundaries, and primary/optional status.
 - A citation review records the source path, relevant heading or excerpt, and
-  support decision for every cited claim.
+  `SUPPORTED`/`UNSUPPORTED` decision for every cited claim.
+- A parity review records one `MATCH`/`MISMATCH` decision for each required
+  parity dimension and one row per uniquely keyed inventory item.
+- Baselines are the two current note files at commit
+  `2e5ea92989c48c10e4829bc22c325643443a38b3`; reduction uses physical
+  `wc -l` counts including blank lines.
 - Keep changes limited to the two requested notes plus required workstream
   contracts and verification artifacts.
 
@@ -85,6 +92,9 @@ sum to approximately 90 minutes; cue cards do not need to display duration.
   implementation and review work.
 - The simple walkthrough remains the primary demonstration; any historical case
   is explicitly secondary or optional.
+- Only the two requested Markdown files are production deliverables. PPTX
+  files, indexes, links, and unrelated documentation remain unchanged unless
+  a separately approved scope change identifies a broken reference.
 
 ## Failure cases
 
@@ -113,8 +123,8 @@ sum to approximately 90 minutes; cue cards do not need to display duration.
 - `DOC-006`: English and Persian match on section IDs/order, outcomes, timing,
   lifecycle, evidence labels, ownership boundaries, and primary/optional
   status while allowing natural language differences.
-- `DOC-007`: Each rebuilt note is at least 35% shorter by line count than its
-  current-language baseline, and a safety checklist confirms preservation of
+- `DOC-007`: Each rebuilt note is at least 35% shorter by physical `wc -l` count than its
+  pinned current-language baseline, and a safety checklist confirms preservation of
   the core model, ownership, evidence, recovery, and failure boundaries.
 
 ## Open questions

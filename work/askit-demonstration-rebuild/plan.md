@@ -4,7 +4,7 @@
 
 `specs/current/askit-demonstration-rebuild.md` and its canonical JSON criteria,
 revision 1, digest
-`1ee038693c4765dd7d7bfd254662c4a7a26fc6e36638a4e325358dbdd23db1a1`.
+`PENDING_AFTER_SPEC_UPDATE`.
 
 ## Approach
 
@@ -29,8 +29,11 @@ reviewed together. There are no executable product behavior tests; direct
 editorial review plus deterministic structure/source checks provide evidence.
 
 Create `work/askit-demonstration-rebuild/inner-loop/tasks.yaml` with the same
-single task and `work/askit-demonstration-rebuild/test-plan.json` with the
-review-only criteria mapping.
+single task. The criteria are review-only and carry their authority reasons
+and decisions in the canonical spec; executable test cases are intentionally
+empty. The independent plan review must inspect every criterion decision,
+baseline/counting rule, evidence inventory, citation inventory, parity record,
+and migration boundary.
 
 ## Risks
 

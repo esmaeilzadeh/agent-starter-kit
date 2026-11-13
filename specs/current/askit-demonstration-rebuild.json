@@ -12,7 +12,14 @@
         "They contain the eight ordered section identifiers ORIENT, MODEL, ROUTE, WALKTHROUGH, EVIDENCE, RECOVERY, ADOPT, and CLOSE",
         "They contain matching session outcomes"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "Static documentation parity is established by direct inspection of both guides and their keyed section records.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     },
     {
       "id": "DOC-002",
@@ -21,7 +28,14 @@
       "then": [
         "The guide presents an opening, core model, lifecycle walkthrough, evidence and recovery, adoption exercise, and close"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "The teaching arc is a static editorial contract; direct review is the observable evidence.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     },
     {
       "id": "DOC-003",
@@ -34,7 +48,14 @@
         "The eight section timings sum to 90 minutes",
         "They can find an observable audience outcome"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "Cue cards, presenter guidance, timing, and outcomes are static document fields reviewed directly.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     },
     {
       "id": "DOC-004",
@@ -45,7 +66,14 @@
         "SAVED rows identify their repository path and relevant SHA when applicable",
         "Unverified execution is not presented as fact"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "Evidence labels and execution claims are static prose and inventory records; no runtime behavior is introduced.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     },
     {
       "id": "DOC-005",
@@ -56,7 +84,14 @@
         "A relevant heading or excerpt is identified",
         "An explicit support decision is recorded"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "Citation support is a bounded editorial review of source paths and passages.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     },
     {
       "id": "DOC-006",
@@ -66,7 +101,14 @@
         "They match on section IDs and order, outcomes, timing, lifecycle, evidence labels, ownership boundaries, and primary or optional status",
         "Natural language differences do not change the intended meaning"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "Cross-language semantic parity is established by direct comparison of keyed records and natural-language meaning.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     },
     {
       "id": "DOC-007",
@@ -77,7 +119,14 @@
         "A safety checklist confirms that the core model, ownership, evidence, recovery, and failure boundaries remain",
         "The core AskIt model and safety boundaries remain present"
       ],
-      "verification_mode": "review"
+      "verification_mode": "review",
+      "reason": "Line-count reduction and preservation of named safety boundaries are static, reproducible documentation checks.",
+      "review_decision": {
+        "decision": "APPROVED",
+        "policy": "_ask/policies/delegation.md",
+        "reviewer": "Independent Spec Challenge",
+        "recorded_by": "Coordinator after human-approved contract"
+      }
     }
   ]
 }

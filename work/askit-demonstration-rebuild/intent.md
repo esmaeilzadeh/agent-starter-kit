@@ -69,6 +69,15 @@ reviewable.
 - Maintain explicit evidence/citation inventories and review parity across
   section order, outcomes, timing, lifecycle, evidence labels, ownership, and
   primary/optional status.
+- Pin the current baselines to commit
+  `2e5ea92989c48c10e4829bc22c325643443a38b3`; count physical lines with
+  `wc -l` before and after the rewrite, including blank lines.
+- Treat the inventory row as the authority for each uniquely keyed item. Use
+  `LIVE`, `SAVED`, or `OPTIONAL`; every `SAVED` row names the artifact path and
+  the commit that produced or last changed that artifact.
+- Keep citation and parity review records inside each guide, with bounded
+  values (`SUPPORTED`/`UNSUPPORTED` and `MATCH`/`MISMATCH`) and one row per
+  claim or parity dimension.
 
 ## E2E
 
