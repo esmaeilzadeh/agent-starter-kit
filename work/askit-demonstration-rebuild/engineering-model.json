@@ -1,0 +1,15 @@
+{
+  "schema": "ask-engineering-model/v1",
+  "work_id": "askit-demonstration-rebuild",
+  "revision": 1,
+  "nodes": [
+    {
+      "id": "coherent-askit-demonstration",
+      "type": "intent",
+      "title": "Create a coherent AskIt demonstration",
+      "description": "Rebuild the English and Persian demonstration notes as an accurate, audience-ready representation of AskIt, grounded in the repository's canonical workflow and evidence.",
+      "lifecycle": "active"
+    }
+  ],
+  "edges": []
+}
