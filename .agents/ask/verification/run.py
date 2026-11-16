@@ -22,26 +22,17 @@ from verification.traceability.service import check_completion
 
 def workflow_context(root, work_id, *, code_root=None, selected_task_id=None,
                      selected_execution=None, delivery_task_id=None):
-    """Load shared admission; older standalone, unadopted verifiers stay usable."""
+    """Require shared document admission for every named workstream."""
     if work_id is None:
         return nullcontext()
     scripts=Path(code_root or root)/'_ask/scripts'
     if (scripts/'engineering_model/workflow.py').is_file():
         sys.path.insert(0,str(scripts))
     try:
-        from engineering_model.workflow import adopted, workflow_admission
+        from engineering_model.workflow import workflow_admission
     except ModuleNotFoundError as exc:
         if exc.name not in {'engineering_model','engineering_model.workflow'}:raise
-        # Older consumers may ship only the verification package. Missing shared
-        # admission is compatible only if no adoption marker exists anywhere.
-        model=Path(root)/'work'/work_id/'engineering-model.json'
-        pointer=Path(root)/'work'/work_id/'traceability/model-state/current.json'
-        tracked=subprocess.run(['git','cat-file','-e',f'HEAD:work/{work_id}/engineering-model.json'],cwd=root,capture_output=True)
-        if model.exists() or model.is_symlink() or pointer.exists() or pointer.is_symlink() or tracked.returncode==0:
-            raise Invalid('EM007_ADMISSION: adopted work requires the shared document workflow module') from exc
-        return nullcontext()
-    if not adopted(root,work_id):
-        return workflow_admission(root,work_id)
+        raise Invalid('EM007_ADMISSION: workstreams require the shared document workflow module') from exc
     return workflow_admission(root,work_id,selected_task_id=selected_task_id,
                               selected_execution=selected_execution,delivery_task_id=delivery_task_id)
 

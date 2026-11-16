@@ -21,7 +21,7 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 TPL="$ROOT/_ask/templates"
-for required in intent.md plan.md review.md verification.json acceptance.md; do
+for required in intent.md plan.md review.md verification.json acceptance.md engineering-model.json; do
   if [[ ! -f "$TPL/$required" ]]; then
     echo "start-work: required template is missing: $TPL/$required" >&2
     exit 1
@@ -66,6 +66,20 @@ copy_tpl "$TPL/plan.md" "$WS/plan.md"
 copy_tpl "$TPL/review.md" "$WS/review.md"
 copy_tpl "$TPL/verification.json" "$WS/verification.json"
 copy_tpl "$TPL/acceptance.md" "$WS/acceptance.md"
+python3 - "$TPL/engineering-model.json" "$WS/engineering-model.json" "$WORK_ID" <<'PY'
+import json
+from pathlib import Path
+import sys
+
+template, destination, work_id = sys.argv[1:]
+path = Path(destination)
+if not path.exists() and not path.is_symlink():
+    model = json.loads(Path(template).read_text(encoding="utf-8"))
+    model["work_id"] = work_id
+    model["nodes"][0]["title"] = work_id.replace("-", " ")
+    with path.open("x", encoding="utf-8") as stream:
+        stream.write(json.dumps(model, indent=2) + "\n")
+PY
 
 flock -u "$REF_LOCK_FD"
 exec {REF_LOCK_FD}>&-

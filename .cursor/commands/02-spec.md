@@ -46,4 +46,9 @@ Carry Grill’s E2E applicability into the spec: journeys (or `not_applicable` p
 
 Create canonical JSON criterion metadata from `_ask/templates/spec.json` alongside the specification; keep stable observable criterion IDs.
 
+Update the required `work/<work-id>/engineering-model.json` with requirement
+references to those canonical criterion IDs. Keep proposed Scenarios draft until
+Plan supplies their canonical case bindings. Use the guarded-edit contract in
+`_ask/docs/engineering-model.md`; validate the model before finishing this stage.
+
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.

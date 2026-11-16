@@ -124,6 +124,8 @@ class RecoveryTests(unittest.TestCase):
         self.write(".agents/ask/verification/traceability/unittest_runner.py",
                    "# fixture runner identity\n")
         self.write("work/w/test-plan.json", json.dumps(self.old_plan, sort_keys=True))
+        from traceability_support import seed_model
+        seed_model(self.root, 'w')
         self.commit("accepted task graph")
         self.base = self.git("rev-parse", "HEAD")
         self.old_spec_digest = self.json_digest(self.spec)

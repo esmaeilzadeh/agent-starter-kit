@@ -270,7 +270,7 @@ class UiIntegrationTests(unittest.TestCase):
             with patch.dict(os.environ, {"ASK_MODEL_ROOT": str(root)}):
                 app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=15)
                 self.assertFalse(app.exception, app.exception)
-                self.assertIn("No task records are available.", text(app))
+                self.assertIn("Build", text(app))
                 self.assertIn("No canonical scenarios are recorded.", text(app))
                 app.button(key="overview:summary:scenarios").click().run(timeout=15)
                 self.assertFalse(app.exception, app.exception)

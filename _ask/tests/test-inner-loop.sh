@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Inner-loop graph validate, CAS, single-writer.
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 ASK="$ROOT/ask"
 PY=(python3 "$ROOT/_ask/scripts/inner_loop/__main__.py")
@@ -75,6 +76,7 @@ tasks:
     depends_on: []
     owned_paths: [x/**]
 YAML
+python3 "$ROOT/_ask/tests/traceability_support.py" seed-model "$TMP" cas
 "${PY[@]}" --root "$TMP" cas-init cas
 out="$("${PY[@]}" --root "$TMP" cas-apply cas --observed 0)"
 printf '%s\n' "$out" | grep -q 'revision=1' || fail "cas apply: $out"
@@ -208,6 +210,8 @@ tasks:
     owned_paths: [b/**]
 YAML
 mkdir -p "$DRV/.agents" "$DRV/_ask/policies" "$DRV/work/drv/inner-loop/evidence"
+mkdir -p "$DRV/_ask/scripts"
+cp -R "$ROOT/_ask/scripts/engineering_model" "$DRV/_ask/scripts/"
 mkdir -p "$DRV/.agents/ask"
 cp -R "$ROOT/.agents/ask/verification" "$DRV/.agents/ask/"
 cat > "$DRV/.agents/verification.yaml" <<'YAML'
@@ -309,6 +313,7 @@ tasks:
     depends_on: []
     owned_paths: [x/**]
 YAML
+python3 "$ROOT/_ask/tests/traceability_support.py" seed-model "$DRV" cnl
 out="$("${PY[@]}" --root "$DRV" run cnl)"
 printf '%s\n' "$out" | grep -q 'running=x' || fail "cancel fixture run: $out"
 out="$("${PY[@]}" --root "$DRV" cancel cnl all)"

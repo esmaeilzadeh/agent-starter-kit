@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -11,8 +12,14 @@ echo x > README.md
 git add README.md && git commit -q -m init
 mkdir -p _ask/scripts work/demo
 cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/check-workstream.sh" _ask/scripts/
+cp -r "$ROOT/_ask/scripts/engineering_model" _ask/scripts/
+cp -r "$ROOT/_ask/scripts/inner_loop" _ask/scripts/
+mkdir -p .agents
+cp -r "$ROOT/.agents/ask" .agents/
+python3 "$ROOT/_ask/tests/traceability_support.py" seed-model "$TMP" demo
 chmod +x _ask/scripts/*.sh
-git add _ask work && git commit -q -m kit
+printf 'work/demo/traceability/\n__pycache__/\n' > .gitignore
+git add . && git commit -q -m kit
 git checkout -q -b agent/demo
 # no spec
 set +e

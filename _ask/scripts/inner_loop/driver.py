@@ -8,7 +8,7 @@ import json
 import hashlib
 import subprocess
 from pathlib import Path
-from engineering_model.workflow import adopted, guarded_workflow, workflow_admission, _refuse
+from engineering_model.workflow import require_model, guarded_workflow, workflow_admission, _refuse
 from engineering_model.admission import validate_current
 
 from inner_loop.evidence import (
@@ -176,9 +176,9 @@ def run_once(root: Path, work_id: str) -> str:
     # Validate current adopted definitions before interpreting coordinator state.
     # A concrete ready Task is then admitted under its qualified execution
     # identity before state initialization or writer admission can mutate.
-    if adopted(root, work_id):
-        _snapshot, diagnostics = validate_current(root, work_id)
-        _refuse(diagnostics)
+    require_model(root, work_id)
+    _snapshot, diagnostics = validate_current(root, work_id)
+    _refuse(diagnostics)
     graph = load_graph(root, work_id)
     status = validate_graph(graph)
     if status != "ok":
