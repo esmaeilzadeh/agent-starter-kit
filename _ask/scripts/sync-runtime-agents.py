@@ -268,12 +268,10 @@ def main() -> int:
     os.chdir(root)
     bind = bindings_dir(root)
     defaults = load_yaml(bind / "models.defaults.yaml")
-    consumer = load_yaml(root / "_ask" / "bindings" / "models.yaml")
-    local_bind = root / ".agents" / "ask.local" / "bindings"
-    if local_bind.is_dir():
-        extra = load_yaml(local_bind / "models.yaml")
-        if extra:
-            consumer = {**consumer, **extra}
+    models = root / ".agents" / "ask.local" / "bindings" / "models.yaml"
+    if not models.is_file():
+        models = root / "_ask" / "bindings" / "models.yaml"
+    consumer = load_yaml(models)
     work = {}
     work_id = os.environ.get("ASK_WORK_ID")
     if work_id:

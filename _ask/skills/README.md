@@ -16,7 +16,8 @@ Pins map to the skills CLI as `source#revision`.
 
 ## Dual lock
 
-- `manifest.yaml` — human-reviewed pins (this directory; **consumer-owned** on upgrade)
+- `.agents/ask.local/skills/manifest.yaml` — project pins to review and commit
+- `_ask/skills/manifest.yaml` — default pins used to seed new projects
 - `skills-lock.json` (repo root) — CLI install record; commit it
 - `.agents/skills/` — prepared bodies; gitignored; regenerate via `./ask prepare`
 

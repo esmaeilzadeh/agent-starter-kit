@@ -30,6 +30,11 @@ trap 'rm -rf "$TMP"' EXIT
 git clone --depth 1 --branch "$VERSION" "$SOURCE_REPO" "$TMP/kit" 2>/dev/null \
   || git clone "$SOURCE_REPO" "$TMP/kit" && git -C "$TMP/kit" checkout "$VERSION"
 
+# Copy legacy settings before refreshing the kit trees.
+if [[ -f "$TMP/kit/_ask/scripts/copy-project-config.sh" ]]; then
+  bash "$TMP/kit/_ask/scripts/copy-project-config.sh" "$ROOT" "$TMP/kit/_ask/skills/manifest.yaml"
+fi
+
 # Consumer-owned paths to preserve
 preserve=(
   _ask/skills/manifest.yaml

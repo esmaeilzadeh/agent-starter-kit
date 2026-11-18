@@ -8,6 +8,7 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 - Generated `.agents/skills/kit-*/SKILL.md` (reserved ASK stage namespace)
 - `_ask/agents/*.md` pointers **except** `*.local.md`
 - `_ask/guide/` modules
+- `_ask/skills/manifest.yaml` (default pins for a new project)
 - `_ask/spec/` modules
 - `_ask/templates/`
 - Stock `_ask/policies/*.md` when the consumer has not replaced the policy tree
@@ -24,17 +25,20 @@ Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or ann
 
 ## Consumer-owned (never clobber by default)
 
-- `_ask/skills/manifest.yaml`
 - Policies when customized (or a local policy overlay tree)
 - Local sections of root `AGENTS.md`
 - `.cursor/rules/local/`
-- `.agents/ask.local/` (per-stage and binding overlays merged at sync time)
-- `_ask/agents/*.local.md` (legacy overlay path still merged if ask.local file is absent)
-- `_ask/bindings/models.yaml` (optional consumer model overlay)
+- `.agents/ask.local/skills/manifest.yaml` (skill pins)
+- `.agents/ask.local/bindings/models.yaml` (optional project model settings)
+- `.agents/ask.local/stages/<stage>.md` (optional stage overrides)
 - `.agents/verification.yaml` (committed CheckPlan; scaffold/upgrade leave it)
 - Product `docs/`, `scripts/`, `tests/`, `src/`
 - Product `specs/`, `work/` (engineering state)
 - Prepared `.agents/skills/` bodies outside reserved `kit-*` children (regenerated; gitignored)
+
+Commit project settings under `.agents/ask.local/`. In a kit checkout that has not been installed, copy the default manifest there before editing project pins. Rerun the updated installer
+for an existing project to copy its legacy settings out of `_ask/`. Existing
+files in `.agents/ask.local/` take precedence.
 
 ## Related
 

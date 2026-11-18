@@ -71,6 +71,10 @@ copy_path() {
   fi
 }
 
+if [[ "$DRY_RUN" -eq 0 ]]; then
+  bash "$ROOT/_ask/scripts/copy-project-config.sh" "$TARGET" "$ROOT/_ask/skills/manifest.yaml"
+fi
+
 # Paths to overlay
 for rel in \
   _ask \
