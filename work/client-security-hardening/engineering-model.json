@@ -1,14 +1,94 @@
 {
-  "schema": "ask-engineering-model/v2",
-  "work_id": "client-security-hardening",
-  "revision": 1,
+  "edges": [],
   "nodes": [
     {
       "id": "purpose",
-      "type": "intent",
+      "lifecycle": "draft",
       "title": "Protect client code and credentials across AskIt install, upgrade, and use",
-      "lifecycle": "draft"
+      "type": "intent"
+    },
+    {
+      "id": "csh-001",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Launcher trust",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-002",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-002",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Write boundaries",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-003",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-003",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Recovery after interrupted writes",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-004",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-004",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Private tracker credentials",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-005",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-005",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Pinned distribution and skills",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-006",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Trusted local verification",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-007",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-007",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Generated agent configuration",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-008",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-008",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Workbench network default",
+      "type": "requirement"
     }
   ],
-  "edges": []
+  "revision": 2,
+  "schema": "ask-engineering-model/v2",
+  "work_id": "client-security-hardening"
 }
