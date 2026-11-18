@@ -88,13 +88,16 @@ for rel in \
   copy_path "$rel"
 done
 
-# Ensure target gitignores prepared skills
+# Ensure target gitignores prepared skills, setup secrets, and the installed kit
 if [[ "$DRY_RUN" -eq 0 ]]; then
   if ! grep -q '.agents/skills/' "$TARGET/.gitignore" 2>/dev/null; then
     echo -e '\n# Prepared Community Skills\n.agents/skills/' >> "$TARGET/.gitignore"
   fi
   if ! grep -q '^\.ask\.env$' "$TARGET/.gitignore" 2>/dev/null; then
     echo -e '\n# Setup wizard secrets\n.ask.env\n.ask/tracker-context.md' >> "$TARGET/.gitignore"
+  fi
+  if ! grep -qxF '/_ask/' "$TARGET/.gitignore" 2>/dev/null; then
+    printf '\n# Installed AskIt kit\n/_ask/\n' >> "$TARGET/.gitignore"
   fi
 fi
 

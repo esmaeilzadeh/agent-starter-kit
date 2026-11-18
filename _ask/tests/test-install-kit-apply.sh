@@ -14,6 +14,7 @@ git add . && git commit -q -m init
 SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP"
 test -d "$TMP/_ask"
 test -f "$TMP/_ask/scripts/check-clean-worktree.sh"
+git check-ignore -q _ask/scripts/check-clean-worktree.sh
 test -d "$TMP/.cursor"
 test -x "$TMP/ask"
 grep -q consumer "$TMP/docs/README.md"
