@@ -89,11 +89,14 @@ for rel in \
   copy_path "$rel"
 done
 
-# Ensure target gitignores prepared skills
+# Ensure target gitignores prepared skills, setup secrets, and the installed kit
 if [[ "$DRY_RUN" -eq 0 ]]; then
   python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --update-ignore
   if ! grep -q '^\.ask\.env$' "$TARGET/.gitignore" 2>/dev/null; then
     echo -e '\n# Setup wizard secrets\n.ask.env\n.ask/tracker-context.md' >> "$TARGET/.gitignore"
+  fi
+  if ! grep -qxF '/_ask/' "$TARGET/.gitignore" 2>/dev/null; then
+    printf '\n# Installed AskIt kit\n/_ask/\n' >> "$TARGET/.gitignore"
   fi
 fi
 
