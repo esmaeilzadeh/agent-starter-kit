@@ -63,6 +63,10 @@ copy_path() {
   fi
 }
 
+if [[ "$DRY_RUN" -eq 0 ]]; then
+  bash "$ROOT/_ask/scripts/copy-project-config.sh" "$TARGET" "$ROOT/_ask/skills/manifest.yaml"
+fi
+
 # Consumer runtime only; kit specs, tests, authoring guides and local environments stay here.
 for rel in \
   _ask/agents \
@@ -96,8 +100,8 @@ done
 
 # Ensure target gitignores the installed kit and prepared skills
 if [[ "$DRY_RUN" -eq 0 ]]; then
-  if ! grep -qxF '_ask/' "$TARGET/.gitignore" 2>/dev/null; then
-    printf '\n# Installed AskIt kit\n_ask/\n' >> "$TARGET/.gitignore"
+  if ! grep -qxF '/_ask/' "$TARGET/.gitignore" 2>/dev/null; then
+    printf '\n# Installed AskIt kit\n/_ask/\n' >> "$TARGET/.gitignore"
   fi
   python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --update-ignore
   if ! grep -q '^\.ask\.env$' "$TARGET/.gitignore" 2>/dev/null; then

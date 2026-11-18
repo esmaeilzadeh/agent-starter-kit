@@ -165,7 +165,7 @@ Protocol SoT: `.agents/ask/` (stages, bindings, verification). `_ask/agents` are
 
 If the destination is foggy:
 - run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
-- prepare Community Skills from _ask/skills/manifest.yaml (do not vendor by default).
+- prepare Community Skills from .agents/ask.local/skills/manifest.yaml (do not vendor by default).
 If the destination is already clear: omit 00; do not write explore-map.md; record the skip in intent.md.
 Free on-path chat: announce foggy vs clear, then offer **Start Explore** / **Start Grill** as selectable choices. `/00-explore` starts Explore immediately.
 
@@ -266,7 +266,7 @@ The kit repository **dogfoods** its own `_ask/` and Cursor Binding.
 
 **Kit-owned** (safe to refresh on upgrade): `.agents/ask/`, templates, guide/spec modules, stock scripts, root `ask`, generated `.cursor` projections.
 
-**Consumer-owned** (never clobber by default): `_ask/skills/manifest.yaml`, policies (or local policy tree), local `AGENTS.md` sections, `.cursor/rules/local/`, `.agents/ask.local/`, `_ask/agents/*.local.md` (legacy overlay merged at sync time).
+**Consumer-owned** (never clobber by default): `.agents/ask.local/skills/manifest.yaml`, policies (or local policy tree), local `AGENTS.md` sections, `.cursor/rules/local/`, `.agents/ask.local/`, `_ask/agents/*.local.md` (legacy overlay merged at sync time).
 
 Upgrade pulls an **explicit kit version/tag** (not blind `main`), refreshes kit-owned files, then runs prepare + sync unless `--skip-prepare`. Community Skill updates remain separate deliberate manifest pin bumps.
 

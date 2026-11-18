@@ -15,6 +15,8 @@ git add . && git commit -q -m init
 SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP"
 test -d "$TMP/_ask"
 test -f "$TMP/_ask/scripts/check-clean-worktree.sh"
+cmp "$ROOT/_ask/skills/manifest.yaml" .agents/ask.local/skills/manifest.yaml
+git add .agents/ask.local/skills/manifest.yaml
 test -d "$TMP/.cursor"
 test -x "$TMP/ask"
 grep -q consumer "$TMP/docs/README.md"
@@ -34,7 +36,7 @@ test ! -e "$TMP/install-askit.sh"
 grep -qxF 'consumer-cache/' "$TMP/.gitignore"
 git check-ignore -q _ask/scripts/check-clean-worktree.sh
 SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP" >/dev/null
-test "$(grep -cxF '_ask/' "$TMP/.gitignore")" -eq 1
+test "$(grep -cxF '/_ask/' "$TMP/.gitignore")" -eq 1
 "$TMP/ask" --help >/dev/null
 "$TMP/ask" sync >/dev/null
 echo "PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/"

@@ -111,7 +111,7 @@ STILL_FOGGY → continue Explore (or escalate to human)
 
 - Do **not** stuff R&D / destination discovery into `06 Implement`.
 - Non-empty `## Handoff to Intent` on the explore-map is required before `01 Grill`.
-- Run Skill Preparation for Explore-bound Community Skills before labor. Present extra related skills that would change What/Why as selectable choices; prepare only selected skills, then pin in `_ask/skills/manifest.yaml` (never `latest`).
+- Run Skill Preparation for Explore-bound Community Skills before labor. Present extra related skills that would change What/Why as selectable choices; prepare only selected skills, then pin in `.agents/ask.local/skills/manifest.yaml` (never `latest`).
 - Explore decision grilling uses the same filter as `01 Grill` (load-bearing numbered Qs + “I’ll assume…”). See `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 - Never start Explore on a dirty worktree; if dirty, grill the human per `_ask/policies/worktree.md`.
 - Kit path: `_ask/policies/workflow.md`. **If 00 runs for a feature**, create `work/<work-id>/explore-map.md` from `_ask/templates/explore-map.md` when missing, and do not skip that artifact. **If 00 is a real skip** (destination already ownable, and the human did not invoke `/00-explore`), do not create the map; record the skip in `intent.md` and go to 01 after the submitted intent approval choice. `/00-explore` starts this stage for feature work; the mandatory request route gate still decides whether the request belongs here. Off-path does not bypass that gate.
