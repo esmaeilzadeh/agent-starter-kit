@@ -1,0 +1,14 @@
+{
+  "schema": "ask-engineering-model/v2",
+  "work_id": "client-security-hardening",
+  "revision": 1,
+  "nodes": [
+    {
+      "id": "purpose",
+      "type": "intent",
+      "title": "Protect client code and credentials across AskIt install, upgrade, and use",
+      "lifecycle": "draft"
+    }
+  ],
+  "edges": []
+}
