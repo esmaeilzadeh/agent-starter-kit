@@ -11,7 +11,7 @@ Make AskIt safer to install, upgrade, and use in fresh and existing client repos
 - Preserve trusted local verification and reduce the environment inherited by local checks. Keep retained verification logs private.
 - Validate generated agent configuration before publishing it and bind the workbench to loopback by default.
 - Enforce Git ownership in fresh and existing clients. Keep project inputs trackable and ignore installed kit files, generated outputs and local state. Automatically migrate unchanged tracked kit copies while preserving the working files and existing client edits. Leave migration changes for the ordinary project upgrade commit.
-- Make project and global installation reversible. Provide previewable uninstall commands that remove proven kit changes while preserving project configuration, credentials and unrelated edits.
+- Make project and global installation reversible. Provide previewable uninstall commands that remove proven kit changes. Project uninstall preserves all project-owned files, every Git-tracked file, credentials, unrelated edits and the Git index.
 
 ## Why
 

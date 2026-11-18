@@ -14,6 +14,8 @@ Keep project-owned files trackable: project instructions, overlays, skill pins a
 
 Add CSH-010 for reversible installation. Provide `ask uninstall --dry-run` for one client checkout and `askit self-uninstall --dry-run` for the global installation. Both commands support applying the same previewed operation. Use the same ownership records as install and upgrade. Uninstall removes verified kit files and reverses AskIt-managed entries in shared files, preserving project settings, credentials, unrelated edits and the Git index. Global uninstall removes its verified launcher, cache and opted-in completion entries. It leaves installed client projects intact. Project uninstall does not change the global installation.
 
+For project uninstall, a file is eligible for deletion only if AskIt can prove it owns the file and Git does not track it. Preserve project-owned files even when untracked, and report tracked kit artifacts as retained. Keep project instructions, verification settings, overlays, specs, and work records. In a shared file such as `.gitignore`, remove only the verified AskIt-managed entries and preserve all project entries. Never delete the shared file or modify the Git index.
+
 ## Migration
 
 For existing clients, migrate legacy custom inputs stored under kit paths to trackable project paths. Preflight Git status, effective ignore rules, and ownership. If a tracked file matches a known stock revision or an output regenerated from the same installed revision and inputs, automatically remove its index entry while retaining its working copy. Match ownership and bytes, not path alone. Reject a collision, conflicting ignore rule, or staged/unstaged edit before writing when it cannot be preserved automatically. Preserve staged work outside the operation. Restore affected index entries and file changes if the migration fails. Leave resulting changes for the ordinary project upgrade commit.
@@ -28,6 +30,7 @@ For uninstall, preflight the complete operation. If a legacy artifact lacks owne
 - Existing and newly created project settings remain stageable. Setup and verification keep credentials, private reports and transient files out of normal Git staging.
 - The source kit repository can continue tracking its own generated stage projections.
 - Install and uninstall a fresh client. The preview makes no writes, and applying it removes the kit runtime, generated outputs, and managed ignore entries. Project files and the Git index stay intact.
+- Uninstall in a client with committed project settings, untracked project settings, and a tracked legacy copy of a kit file. All three remain on disk and the Git index stays unchanged. Only verified untracked kit files are deleted.
 - Install, upgrade, then uninstall in a client with custom rules and settings. Project-owned files stay byte-identical. An ambiguous legacy artifact, edited kit artifact, or simulated failure leaves the client's pre-uninstall state recoverable.
 - Globally install with completion enabled, then self-uninstall. Remove only the owned launcher, cache and completion entries. Preserve unrelated shell configuration and installed projects. Repeating either uninstall reports that there is nothing left to remove.
 
