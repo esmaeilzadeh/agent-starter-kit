@@ -3,7 +3,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-MANIFEST="$(cd "$(dirname "$0")" && pwd)/manifest.yaml"
+MANIFEST="$ROOT/.agents/ask.local/skills/manifest.yaml"
+if [[ ! -f "$MANIFEST" ]]; then
+  MANIFEST="$ROOT/_ask/skills/manifest.yaml"
+fi
 cd "$ROOT"
 
 if [[ ! -f "$MANIFEST" ]]; then

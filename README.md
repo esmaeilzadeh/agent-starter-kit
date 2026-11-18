@@ -56,7 +56,7 @@ You can still overlay from a kit clone: `./ask install /path/to/your/app`.
 - **Explore (`00`)** when the destination is foggy — durable `work/<work-id>/explore-map.md`
 - **Engineering Pipeline (`01`–`10`)** — Grill → Spec → Challenge → Plan → Implement → Verify → Accept. When a task graph is active, each task runs Red → Green → Refactor, independent Review, and local correction inside Implement, as defined by the [canonical task loop](.agents/ask/task-loop.md).
 - **Codex stage skills** via `$kit-00-explore` through `$kit-10-accept`; see [Codex integration](_ask/docs/codex-integration.md).
-- **Pinned Community Skills** via `_ask/skills/manifest.yaml` + `./ask prepare` ([skills.sh](https://www.skills.sh/))
+- **Pinned Community Skills** via `.agents/ask.local/skills/manifest.yaml` + `./ask prepare` ([skills.sh](https://www.skills.sh/))
 - **Thin Cursor Binding** — rules *point* at protocol; generated projections under `.cursor/`
 - **`/off-path`** — Cursor command: leave the kit path for **this chat only**; a new chat starts on-path
 - **Git guardrails** — `_ask/policies/worktree.md`

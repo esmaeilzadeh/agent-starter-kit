@@ -88,7 +88,7 @@ work/<work-id>/intent.md
 
 ## Grilling Expansion
 
-**Skill-before-grill:** Before the first numbered question, search for related Community Skills (skills.sh / find-skills / `.agents/skills`). Propose at most three, and only if a skill would change What/Why. **Ask before preparing any extra skill.** Do not auto-download. For each accepted skill: add/update `_ask/skills/manifest.yaml` with an explicit `revision` (never `latest`), then `./ask prepare`. That pin stays for later work in this repo. Skip the propose step when no extra domain skill would change What/Why. Already-pinned required manifest skills still prepare as today.
+**Skill-before-grill:** Before the first numbered question, search for related Community Skills (skills.sh / find-skills / `.agents/skills`). Propose at most three, and only if a skill would change What/Why. **Ask before preparing any extra skill.** Do not auto-download. For each accepted skill: add/update `.agents/ask.local/skills/manifest.yaml` with an explicit `revision` (never `latest`), then `./ask prepare`. That pin stays for later work in this repo. Skip the propose step when no extra domain skill would change What/Why. Already-pinned required manifest skills still prepare as today.
 
 **Frontier filter:** Number a question only if it is hard to reverse, is What/Why/non-goal, the recommendation might be wrong, or it blocks other decisions. Do not ask trivia with an obvious repo default. Do not ask facts from files, ADRs, or `CONTEXT.md`. Cap depth at destination, constraints, non-goals.
 

@@ -85,7 +85,7 @@ Commands:
       --source <git-url>       override clone URL (or env KIT_SOURCE_REPO)
 
   prepare
-      Install pinned Community Skills from _ask/skills/manifest.yaml. No flags.
+      Install pinned Community Skills from .agents/ask.local/skills/manifest.yaml. No flags.
       Env: SKIP_INSTALL=1   validate pins only
 
   setup

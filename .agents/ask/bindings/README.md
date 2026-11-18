@@ -8,7 +8,7 @@ Do not put slugs in `.agents/ask/stages/*.md` or in `models.defaults.yaml`.
 
 1. `work/<work-id>/models.yaml` — used at spawn time (set `ASK_WORK_ID` when you want sync to bake it)
 2. Env / `.ask.env`: `ASK_MODEL_07_REVIEW=diverse` or `ASK_MODEL_07_REVIEW_CURSOR=claude-sonnet-5`
-3. Consumer overlay `.agents/ask.local/bindings/models.yaml` or `_ask/bindings/models.yaml` (optional; upgrade must not clobber it)
+3. Project settings in `.agents/ask.local/bindings/models.yaml` (optional). If absent, AskIt reads the legacy `_ask/bindings/models.yaml`.
 4. `models.defaults.yaml` (role or pool)
 5. `runtimes/<id>.yaml` (slug)
 

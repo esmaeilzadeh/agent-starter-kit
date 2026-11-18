@@ -8,6 +8,6 @@ alwaysApply: false
 
 Do not apply this skill to specifications or other machine-first Markdown. Those use `writing-for-agents`. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
 
-Pin: `blader/humanizer` @ `v3.0.0` in `_ask/skills/manifest.yaml`. Do not copy the pattern list into kit files.
+Pin: `blader/humanizer` @ `v3.0.0` in `.agents/ask.local/skills/manifest.yaml`. Do not copy the pattern list into kit files.
 
 Canonical: `.agents/skills/humanizer/SKILL.md`.
