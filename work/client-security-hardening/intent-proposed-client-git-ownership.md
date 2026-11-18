@@ -10,7 +10,7 @@ Make AskIt safer to install, upgrade, and use in fresh and existing client repos
 - Verify the selected kit revision before execution, pin external installers and bundled skills, and require explicit approval for new client skill sources.
 - Preserve trusted local verification and reduce the environment inherited by local checks. Keep retained verification logs private.
 - Validate generated agent configuration before publishing it and bind the workbench to loopback by default.
-- Keep generated Codex stage skills out of client Git on install and upgrade. Preserve local regeneration and give clients that already track the files a migration path.
+- Enforce Git ownership in fresh and existing clients. Keep project inputs trackable and ignore installed kit files, generated outputs and local state. Automatically migrate unchanged tracked kit copies while preserving the working files and existing client edits. Leave migration changes for the ordinary project upgrade commit.
 
 ## Why
 
