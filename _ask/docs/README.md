@@ -9,6 +9,8 @@ Agent entry: [AGENTS.md](../../AGENTS.md).
 
 | Path | Contents |
 | --- | --- |
+| [developer-guide.md](developer-guide.md) | Step-by-step AskIt use, all stages, options, approvals, and recovery |
+| [askit-vs-superpowers.md](askit-vs-superpowers.md) | Version-pinned workflow and feature comparison with Superpowers |
 | [demo/end-to-end-plan.md](demo/end-to-end-plan.md) | Facilitator script: Explore (optional) → Accept |
 | [adr/](adr/) | Architecture decision records |
 | [agents/](agents/) | Issue tracker, triage labels, domain notes for this kit repo |

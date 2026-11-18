@@ -9,6 +9,10 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 
 ## Start here
 
+For a practical walkthrough, read the **[AskIt developer guide](_ask/docs/developer-guide.md)**
+from setup through acceptance. See also **[AskIt and Superpowers](_ask/docs/askit-vs-superpowers.md)**
+for a source-based workflow comparison.
+
 | Step | Action |
 | --- | --- |
 | 1 | Read **[AGENTS.md](AGENTS.md)** — short operational checklist every agent must follow |
