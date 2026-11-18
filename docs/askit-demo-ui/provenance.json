@@ -1,0 +1,44 @@
+{
+  "develop_base": "eac5950928752e30f0341330bdcc6c39b601a420",
+  "demo_commit": "99866ad58f63414287a15a9309bd99833340ecf6",
+  "test_screenshot_commit": "d444804bda2a68e0d503c4b2c23c8aef3622e2b8",
+  "identical_test_inputs": [
+    {
+      "path": "_ask/demo/orders_export.py",
+      "sha256": "c1efac065e70cde52b0c3a5f0227352a8f9987588f07d6abfda86e57c2e7d17c",
+      "identical": true
+    },
+    {
+      "path": "_ask/tests/test_demo_orders_export.py",
+      "sha256": "26dce08a32560f875aae25c5461ccf86104ceedf390983dc1339a0b37a6f3411",
+      "identical": true
+    },
+    {
+      "path": "specs/current/demo-orders-export.json",
+      "sha256": "42d9520b18662996fa2a45b2aba920c54d07c51cb0ae2c3c5dc69e9e033c6c65",
+      "identical": true
+    },
+    {
+      "path": "specs/current/demo-orders-export.md",
+      "sha256": "c439c9d501439cec80ac9df7e6d0adbfcbc60fefe860c74e9d9a3452f575902c",
+      "identical": true
+    },
+    {
+      "path": "work/demo-orders-export/test-plan.json",
+      "sha256": "751dbeb9d9e28546f6fb42df61180d5c5c37932c785de12837a38f54c5a8b6c6",
+      "identical": true
+    }
+  ],
+  "test_model_node_identical": true,
+  "hierarchy": [
+    "Epic (intent display root)",
+    "filtered-orders-story",
+    "paid-orders-flow",
+    "export-orders-csv",
+    "ORDERS-CSV-PAID"
+  ],
+  "ordinary_unittest": "1 passed; not structured completion evidence",
+  "model_validation": "valid=true; diagnostics=[]",
+  "task_status": "Planned",
+  "structured_execution": "not recorded"
+}
