@@ -10,9 +10,6 @@ import sys
 import unicodedata
 from pathlib import Path
 
-import yaml
-
-
 STAGES = [
     "00-explore",
     "01-grill",
@@ -74,9 +71,9 @@ def parse_yaml(text: str) -> dict:
         if raw in ("", "~", "null"):
             return None
         if raw.startswith('"') and raw.endswith('"'):
-            return yaml.safe_load(raw)
+            return json.loads(raw)
         if raw.startswith("'") and raw.endswith("'"):
-            return yaml.safe_load(raw)
+            return raw[1:-1].replace("''", "'")
         if raw.lower() in ("true", "false"):
             return raw.lower() == "true"
         if raw.startswith("[") and raw.endswith("]"):
@@ -203,10 +200,10 @@ def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> N
                 try:
                     import tomli as tomllib
                 except ImportError:
-                    values = re.findall(r"^model = (.+)$", text, re.MULTILINE)
-                    if len(values) != 1:
-                        raise ValueError("expected exactly one model field")
-                    document = {"model": json.loads(values[0])}
+                    raise SystemExit(
+                        "Codex runtime validation requires Python 3.11+ (tomllib) "
+                        "or the tomli package; install tomli before running ./ask sync"
+                    )
                 else:
                     document = tomllib.loads(text)
             else:
@@ -218,7 +215,7 @@ def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> N
             frontmatter = parts[1]
             if len(re.findall(r"^model:", frontmatter, re.MULTILINE)) != 1:
                 raise ValueError("expected exactly one model field")
-            document = yaml.safe_load(frontmatter)
+            document = parse_yaml(frontmatter)
     except Exception as exc:
         raise SystemExit(f"invalid {runtime} template for {stage}: {exc}") from exc
     if not isinstance(document, dict) or document.get("model") != slug:
