@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 21,
+  "revision": 23,
   "coordinator_sha": "ffb57a593f5bb46e1f8deba683f31a18f3975c2a",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
@@ -266,6 +266,15 @@
             "phase": "final_green",
             "task_id": "CSH-02",
             "candidate_sha": "300c3fc0813c36d882af23d6b6256ac01fa5df0d",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "cc4ff99684d146bd85f09868dca73164",
+            "digest": "dec972bff5cd0c0c3689c5094280f0d5270b5b531f074275d0ff78a6578a4aa2",
+            "phase": "final_green",
+            "task_id": "CSH-02",
+            "candidate_sha": "f07282a8c1c6b28a726f7f496cb4c378193c8b0b",
             "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
             "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
           }
