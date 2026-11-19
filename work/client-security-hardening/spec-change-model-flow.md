@@ -1,7 +1,8 @@
 # Spec Change proposal: decide models during Grill
 
-Status: PROPOSED. This records the human's requested feature; it does not amend
-the accepted security specification or authorize implementation.
+Status: APPROVED by the submitted human response "approved" after the combined
+proposal and complete revised intent were presented. Revision 2 of the canonical
+specification includes this extension. Approval authorizes planning only.
 
 ## Current specification and reason
 
@@ -141,13 +142,13 @@ the second workstream.
 
 ## Decision and endpoint
 
-Pending one submitted choice approving this proposal and the complete revised
-intent together, or keeping the current security scope. CSH-001 through CSH-008
-remain unchanged. These proposed IDs join the canonical registry only after
-approval and renewed independent challenge of the amended contract.
+Human response: "approved". The proposal and complete revised intent are approved
+together; `intent-confirmation.json` binds the updated intent. CSH-001 through
+CSH-008 remain unchanged; CSH-009 through CSH-012 are now in registry revision 2.
+Obtain renewed independent challenge of the amended contract.
 
 The security-only Astra challenge remains valid for its exact revision-1 digest;
-it does not approve the new model-flow criteria. Planning is paused for this
-scope decision. After approval, revise Spec/Challenge/Plan, then stop when the
+it does not approve the new model-flow criteria. The scope decision is resolved.
+Revise Spec/Challenge/Plan, then stop when the
 implementation plan is ready. No implementation, merge or publication is
 authorized.

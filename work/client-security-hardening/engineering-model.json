@@ -3,8 +3,8 @@
   "nodes": [
     {
       "id": "purpose",
-      "lifecycle": "draft",
-      "title": "Protect client code and credentials across AskIt install, upgrade, and use",
+      "lifecycle": "active",
+      "title": "Protect client files and credentials with predictable model decisions",
       "type": "intent"
     },
     {
@@ -86,9 +86,49 @@
       },
       "title": "Workbench network default",
       "type": "requirement"
+    },
+    {
+      "id": "csh-009",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-009",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "One model decision during Grill",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-010",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-010",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Automatic stage model reuse",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-011",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-011",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Implementation orchestrator handoff",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-012",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-012",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Portable model decisions and capability evidence",
+      "type": "requirement"
     }
   ],
-  "revision": 2,
+  "revision": 3,
   "schema": "ask-engineering-model/v2",
   "work_id": "client-security-hardening"
 }

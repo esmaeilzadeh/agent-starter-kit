@@ -2,11 +2,13 @@
 
 ## Current status
 
-Planning paused after the human requested an additional feature. The new
-proposal is `spec-change-model-flow.md`; its complete revised intent is
-`intent-model-flow.proposed.md`. They require one combined scope/intent decision
-before amending the accepted security contract. The prior no-change disposition
-below applies only to revision 1 and is retained as history.
+Human approved `spec-change-model-flow.md` and the complete revised intent
+with the exact response "approved". The canonical criterion registry is now
+revision 2; CSH-001 through CSH-008 are unchanged and CSH-009 through CSH-012
+cover the extension. Intent confirmation binds the exact presented draft bytes;
+its historical pending wording is superseded by this recorded approval.
+Rechallenge the combined contract, then finish Plan and stop before implementation.
+The prior no-change disposition below applies to revision 1 and remains history.
 
 ## Prior disposition: security specification revision 1
 

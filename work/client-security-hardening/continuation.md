@@ -51,3 +51,12 @@ complete revised intent together. After that choice, amend and independently
 challenge the combined specification before completing Plan. Keep the original
 endpoint: stop when the implementation plan is ready. A generic continuation
 does not approve the proposed scope expansion or implementation.
+
+## Expanded scope approved
+
+Human response: "approved", to the combined model-flow proposal and complete
+revised intent. Approval is recorded against the exact proposed intent bytes.
+Prior security-only intent, confirmation and challenge are preserved as version-1
+artifacts. Resume revision-2 Spec Challenge with the already-selected Astra, then
+finish the implementation plan. Stop before implementation; no new model picker
+is needed. The frozen kit pin remains unchanged.
