@@ -135,6 +135,19 @@ class ClientTests(unittest.TestCase):
         self.assertTrue((self.fx.home / ".zshrc").exists())
         self.assertFalse(marker.exists())
 
+        unsafe_home = self.fx.root / "unsafe-home"
+        unsafe_home.mkdir()
+        sentinel = self.fx.root / "startup-sentinel"
+        sentinel.write_text("keep\n", encoding="utf-8")
+        (unsafe_home / ".bashrc").symlink_to(sentinel)
+        rejected = self.fx.run(
+            [str(launcher), "completion-install"], cwd=project,
+            env={**env, "HOME": str(unsafe_home)},
+        )
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn("regular file", rejected.stderr)
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "keep\n")
+
 
 if __name__ == "__main__":
     unittest.main()

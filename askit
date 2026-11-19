@@ -242,9 +242,6 @@ askit_self_install() {
   ln -sfn "$CACHE/askit" "$BIN/askit"
   echo "askit: $BIN/askit -> $CACHE/askit"
 
-  ASKIT_SKIP_COMPLETION_INSTALL="${ASKIT_SKIP_COMPLETION_INSTALL:-}" \
-    ASKIT_DIR="$CACHE" "$CACHE/_ask/scripts/install-user-completion.sh" >/dev/null 2>&1 || true
-
   if [[ "$HERE" -eq 1 ]]; then
     if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
       echo "askit: --here is not applicable in a non-git folder" >&2
@@ -349,6 +346,22 @@ askit_confirm_add() {
   esac
 }
 
+askit_usage() {
+  cat <<'EOF'
+askit — installed launcher for the Agent Starter Kit
+
+Usage:
+  askit trust                 trust this checkout's executable identity
+  askit completion            print shell completion code
+  askit completion-install    opt in to installing shell completion
+  askit <command>             run a command in a trusted Ask checkout
+EOF
+}
+
+askit_project_trust() {
+  python3 "$ASKIT_DIR/_ask/scripts/launcher-trust.py" "$1" --root "$git_root"
+}
+
 askit_add_kit() {
   ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/askit-bootstrap.sh"
 }
@@ -360,9 +373,6 @@ if [[ -f "$COMPLETE_LIB" ]]; then
 fi
 
 cmd="${1:-}"
-if [[ "$cmd" != "--complete" ]]; then
-  ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/install-user-completion.sh" >/dev/null 2>&1 || true
-fi
 
 git_root="$(askit_git_root || true)"
 ask_repo=0
@@ -384,6 +394,22 @@ if [[ "$cmd" == "--complete" ]]; then
   exit 0
 fi
 
+if [[ "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
+  askit_usage
+  exit 0
+fi
+
+if [[ "$cmd" == "trust" ]]; then
+  [[ "$ask_repo" -eq 1 ]] || { echo "askit: run trust from an Ask-based Git checkout" >&2; exit 1; }
+  askit_project_trust trust
+  exit $?
+fi
+
+if [[ "$cmd" == "completion-install" ]]; then
+  ASKIT_DIR="$ASKIT_DIR" "$ASKIT_DIR/_ask/scripts/install-user-completion.sh"
+  exit $?
+fi
+
 if [[ "$cmd" == "completion" ]]; then
   if [[ -x "$ASKIT_DIR/ask" ]]; then
     exec "$ASKIT_DIR/ask" completion "${2:-}"
@@ -398,16 +424,11 @@ if [[ -z "$git_root" ]]; then
 fi
 
 if [[ "$ask_repo" -eq 1 ]]; then
+  askit_project_trust check || exit $?
   exec "$git_root/ask" "$@"
 fi
 
 # Git repo, but not ask-based: never dump kit commands; never overlay silently.
-if [[ "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
-  echo "askit: this git repo is not ask-based (need _ask/ and ./ask)." >&2
-  echo "askit: run askit here and confirm to add ask capability." >&2
-  exit 1
-fi
-
 if ! askit_confirm_add; then
   exit 2
 fi
@@ -419,10 +440,5 @@ if [[ ! -x "$git_root/ask" ]]; then
   exit 1
 fi
 
-if [[ -z "$cmd" ]]; then
-  exec "$git_root/ask" --help
-fi
-if [[ "$cmd" == "setup" && -z "${ASKIT_SKIP_SETUP:-}" ]]; then
-  exec "$git_root/ask" setup
-fi
-exec "$git_root/ask" "$@"
+echo "askit: kit added; run askit trust in a terminal before using project commands." >&2
+exit 2
