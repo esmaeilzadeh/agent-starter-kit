@@ -29,6 +29,12 @@ def ensure_dir(path: Path) -> None:
     os.chmod(path, 0o700)
 
 
+def check_dir_ancestors(path: Path) -> None:
+    for part in reversed((path, *path.parents)):
+        if part.is_symlink() or not part.is_dir():
+            raise ValueError(f"completion directory is not a real directory: {part}")
+
+
 def checked_file(path: Path) -> int | None:
     if not path.exists() and not path.is_symlink():
         return None
@@ -56,6 +62,7 @@ def atomic_write(path: Path, content: bytes, mode: int) -> None:
 
 try:
     home = Path(os.environ["HOME"]).absolute()
+    check_dir_ancestors(home)
     data_home = Path(os.environ.get("XDG_DATA_HOME") or home / ".local/share").absolute()
     bash_home = Path(os.environ.get("BASH_COMPLETION_USER_DIR") or data_home / "bash-completion").absolute()
     data = data_home / "askit"

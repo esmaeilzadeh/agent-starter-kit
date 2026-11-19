@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import glob
 import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shlex
 import stat
 import subprocess
@@ -96,20 +98,30 @@ def _entries(root: Path) -> list[tuple[str, Path]]:
         if not plan.is_file():
             continue
         for line in plan.read_text(encoding="utf-8").splitlines():
-            if not line.lstrip().startswith("command:"):
+            match = re.match(r"\s*(?:-\s*)?command\s*:\s*(.*)$", line)
+            if not match:
                 continue
-            value = line.split(":", 1)[1].strip().strip("'\"")
+            value = match.group(1).strip().strip("'\"")
             try:
                 tokens = shlex.split(value)
             except ValueError as exc:
                 raise ValueError(f"cannot inspect verification command in {plan.relative_to(root)}") from exc
             for token in tokens:
-                if token.startswith("-") or Path(token).is_absolute():
+                if token.startswith("-"):
                     continue
-                candidates = sorted(root.glob(token)) if any(ch in token for ch in "*?[") else [root / token]
+                has_glob = any(ch in token for ch in "*?[")
+                if Path(token).is_absolute():
+                    candidates = glob.glob(token) if has_glob else [token]
+                else:
+                    candidates = sorted(root.glob(token)) if has_glob else [root / token]
                 for item in candidates:
+                    item = Path(item)
                     if item.is_file() or item.is_symlink():
-                        found[item.relative_to(root).as_posix()] = item
+                        try:
+                            relative_path = item.relative_to(root).as_posix()
+                        except ValueError:
+                            relative_path = f"@verification/{item}"
+                        found[relative_path] = item
     # A CheckPlan may invoke local scripts from anywhere in the checkout.
     for current, directories, filenames in os.walk(root, followlinks=False):
         current_path = Path(current)

@@ -70,11 +70,22 @@ class ClientTests(unittest.TestCase):
         plan.parent.mkdir(parents=True, exist_ok=True)
         plan.write_text(
             "schema: ask-checkplan/v1\nchecks:\n  - id: local\n"
-            "    command: python3 verify-check\n", encoding="utf-8",
+            "    command: python3 verify-check\n"
+            f"  - id: absolute\n    command: python3 {configured_source}\n",
+            encoding="utf-8",
         )
         configured = self.identity(project)
         configured_source.write_text("print('configured two')\n", encoding="utf-8")
         self.assertNotEqual(self.identity(project)["digest"], configured["digest"])
+        absolute_source = project / "absolute-check"
+        absolute_source.write_text("print('absolute one')\n", encoding="utf-8")
+        plan.write_text(
+            f"schema: ask-checkplan/v1\nchecks:\n  - id: absolute\n"
+            f"    command: python3 {absolute_source}\n", encoding="utf-8",
+        )
+        with_absolute = self.identity(project)
+        absolute_source.write_text("print('absolute two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_absolute["digest"])
 
         hooks = project / ".githooks"
         hooks.mkdir()
@@ -263,6 +274,27 @@ class ClientTests(unittest.TestCase):
         )
         self.assertNotEqual(ancestor_rejected.returncode, 0)
         self.assertFalse((redirected / "share/askit").exists())
+
+        real_home = self.fx.root / "real-home"
+        (real_home / "home").mkdir(parents=True)
+        linked_parent = self.fx.root / "linked-home-parent"
+        linked_parent.symlink_to(real_home, target_is_directory=True)
+        external_data = self.fx.root / "external-data"
+        external_completion = self.fx.root / "external-completion"
+        outside_home_env = env.copy()
+        outside_home_env.update({
+            "HOME": str(linked_parent / "home"),
+            "XDG_DATA_HOME": str(external_data),
+            "BASH_COMPLETION_USER_DIR": str(external_completion),
+        })
+        outside_home_rejected = self.fx.run(
+            [str(ROOT / "_ask/scripts/install-user-completion.sh")], cwd=project,
+            env={**outside_home_env, "ASKIT_DIR": str(ROOT)},
+        )
+        self.assertNotEqual(outside_home_rejected.returncode, 0)
+        self.assertFalse(external_data.exists())
+        self.assertFalse(external_completion.exists())
+        self.assertFalse((real_home / "home/.bashrc").exists())
 
 
 if __name__ == "__main__":
