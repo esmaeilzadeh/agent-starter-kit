@@ -22,7 +22,7 @@ if [[ -z "$TARGET" ]]; then
   echo "usage: install-kit.sh [--dry-run] [--force] [--skip-prepare] <target-repo>" >&2
   exit 2
 fi
-TARGET="$(cd "$TARGET" && pwd)"
+TARGET="$(cd "$TARGET" && pwd -P)"
 if [[ "$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)" != "$TARGET" ]]; then
   echo "install-kit: target is not a git repo: $TARGET" >&2
   exit 1

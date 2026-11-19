@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Refresh kit-owned files from an explicit kit version tag/sha.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd -P)"
 VERSION=""
 EXPECTED_COMMIT=""
 SKIP_PREPARE=0
@@ -11,7 +11,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) VERSION="$2"; shift 2 ;;
     --expected-commit) EXPECTED_COMMIT="$2"; shift 2 ;;
-    --target) ROOT="$(cd "$2" && pwd)"; shift 2 ;;
+    --target) ROOT="$(cd "$2" && pwd -P)"; shift 2 ;;
     --skip-prepare) SKIP_PREPARE=1; shift ;;
     --source) SOURCE_REPO="$2"; shift 2 ;;
     *) echo "usage: upgrade-kit.sh --version <tag-or-sha> [--target <consumer-repo>] [--skip-prepare] [--source <git-url>]" >&2; exit 2 ;;

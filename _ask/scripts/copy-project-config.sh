@@ -4,15 +4,15 @@ set -euo pipefail
 
 target="$1"
 default_manifest="$2"
-root="$(cd "$target" && pwd)"
+root="$(cd "$target" && pwd -P)"
+kit_root="$(cd "$(dirname "$0")/../.." && pwd -P)"
 if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
-  exec python3 "$(dirname "$0")/write-transaction.py" run \
-    --root "$root" --path .agents/ask.local \
-      --input-path _ask/scripts --input-path _ask/skills/manifest.yaml \
-      --input-path _ask/bindings/models.yaml --input-path _ask/agents -- \
-    bash "$root/_ask/scripts/copy-project-config.sh" \
-      "{target}" "{target}/_ask/skills/manifest.yaml"
+  exec python3 "$kit_root/_ask/scripts/write-transaction.py" run \
+    --root "$root" --path .agents/ask.local -- \
+    bash "$kit_root/_ask/scripts/copy-project-config.sh" \
+      "{target}" "$default_manifest" "$kit_root"
 fi
+kit_root="${3:-$kit_root}"
 project="$target/.agents/ask.local"
 
 copy_if_missing() {
@@ -22,9 +22,9 @@ copy_if_missing() {
   fi
 }
 
-copy_if_missing "$target/_ask/skills/manifest.yaml" "$project/skills/manifest.yaml"
 copy_if_missing "$default_manifest" "$project/skills/manifest.yaml"
-copy_if_missing "$target/_ask/bindings/models.yaml" "$project/bindings/models.yaml"
-for legacy in "$target"/_ask/agents/[0-9][0-9]-*.local.md; do
+copy_if_missing "$kit_root/_ask/skills/manifest.yaml" "$project/skills/manifest.yaml"
+copy_if_missing "$kit_root/_ask/bindings/models.yaml" "$project/bindings/models.yaml"
+for legacy in "$kit_root"/_ask/agents/[0-9][0-9]-*.local.md; do
   copy_if_missing "$legacy" "$project/stages/$(basename "$legacy" .local.md).md"
 done
