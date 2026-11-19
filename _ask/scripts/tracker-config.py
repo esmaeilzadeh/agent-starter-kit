@@ -109,7 +109,21 @@ def credential_path(root: Path) -> Path:
     config = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))).expanduser()
     if not config.is_absolute():
         raise ConfigError("XDG_CONFIG_HOME must be absolute")
-    check_components(config)
+    config = Path(os.path.abspath(config))
+    if config == root or root in config.parents:
+        raise ConfigError("private credential storage must be outside the checkout")
+    check_components(config, allow_missing=True)
+    current = Path(config.anchor)
+    for part in config.parts[1:]:
+        current /= part
+        try:
+            current.mkdir(mode=0o700)
+            os.chmod(current, 0o700)
+        except FileExistsError:
+            pass
+        info = current.lstat()
+        if stat.S_ISLNK(info.st_mode) or not stat.S_ISDIR(info.st_mode):
+            raise ConfigError("XDG_CONFIG_HOME contains an unsafe path")
     if not config.is_dir() or config.stat().st_uid != os.getuid():
         raise ConfigError("XDG_CONFIG_HOME must be an owned directory")
     key = hashlib.sha256(str(root).encode()).hexdigest()
@@ -201,10 +215,26 @@ def store(project_root: Path, credential_root: Path, record: dict) -> None:
             or any(key not in SECRET_KEYS or not isinstance(value, str)
                    for key, value in credentials.items())):
         raise ConfigError("tracker credentials are invalid")
+    destination = credential_path(credential_root)
+    if destination.exists() or destination.is_symlink():
+        info = destination.lstat()
+        if (stat.S_ISLNK(info.st_mode) or not stat.S_ISREG(info.st_mode)
+                or info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o600):
+            raise ConfigError("private credential file is unsafe")
+        try:
+            old = json.loads(destination.read_text(encoding="utf-8"))
+            old_credentials = old["credentials"]
+        except (OSError, KeyError, TypeError, json.JSONDecodeError):
+            raise ConfigError("private credential file is invalid") from None
+        if (not isinstance(old, dict) or old.get("schema") != "askit-tracker-credentials/v1"
+                or not isinstance(old_credentials, dict)
+                or any(key not in SECRET_KEYS or not isinstance(value, str)
+                       for key, value in old_credentials.items())):
+            raise ConfigError("private credential file is invalid")
+        credentials = {**old_credentials, **credentials}
     payload = {"schema": "askit-tracker-credentials/v1", "tracker": tracker,
                "url": url, "credentials": credentials}
-    private_write(credential_path(credential_root),
-                  (json.dumps(payload, sort_keys=True, indent=2) + "\n").encode())
+    private_write(destination, (json.dumps(payload, sort_keys=True, indent=2) + "\n").encode())
     path = project_root / ".agents/ask.local/tracker.json"
     if path.exists() or path.is_symlink():
         info = path.lstat()
