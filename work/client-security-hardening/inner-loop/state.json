@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 16,
+  "revision": 19,
   "coordinator_sha": "ffb57a593f5bb46e1f8deba683f31a18f3975c2a",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
@@ -239,6 +239,24 @@
             "phase": "final_green",
             "task_id": "CSH-02",
             "candidate_sha": "0c641cb42e549e4cdcee65e484b5541d9b334574",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "8ba9f43ac5de42719f56e694ea408a53",
+            "digest": "7ed1abdcfcc49dd1675bceb6c71cc8bbaeac980faf760959f28df80afad87cfc",
+            "phase": "final_green",
+            "task_id": "CSH-02",
+            "candidate_sha": "fe6aaad1bcaddcb291911093b31546b9eead4990",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "b6ba0fe41e2a44e189db239620ee65cb",
+            "digest": "23bf615312b46a8600d67e6c610d452a8224e65a86d644fce95f5a50c9e60c82",
+            "phase": "final_green",
+            "task_id": "CSH-02",
+            "candidate_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
             "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
             "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
           }
