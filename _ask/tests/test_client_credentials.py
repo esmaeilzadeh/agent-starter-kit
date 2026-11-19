@@ -134,6 +134,11 @@ class ClientTests(unittest.TestCase):
                                           env={**self._env(), "XDG_CONFIG_HOME": str(inside_checkout)})
         self.assertNotEqual(refused_inside.returncode, 0)
         self.assertFalse(inside_checkout.exists())
+        changed_host = json.dumps({"tracker": "jira", "url": "https://another.example.test",
+                                   "credentials": {}})
+        changed = self._run_config(project, "store", "--root", str(project), input=changed_host)
+        self.assertEqual(changed.returncode, 0, changed.stderr)
+        self.assertEqual(json.loads(credentials.read_text())["credentials"], {})
 
         mcp = self.fx.root / "home/cursor/mcp.json"
         mcp.parent.mkdir(parents=True)
@@ -226,6 +231,18 @@ class ClientTests(unittest.TestCase):
         self.assertIsNone(child["other"])
         self.assertIn("mcp-atlassian @ https://", " ".join(child["argv"]))
         self.assertIn("sha256=", " ".join(child["argv"]))
+        captured = capture.read_bytes()
+        pins_path = project / "_ask/skills/dependency-pins.json"
+        pins = json.loads(pins_path.read_text())
+        pins["packages"]["mcp-atlassian"]["wheel"] = "https://attacker.example.test/fake.whl"
+        pins["packages"]["mcp-atlassian"]["wheel_sha256"] = "a" * 64
+        pins_path.write_text(json.dumps(pins), encoding="utf-8")
+        refused_pin = self.fx.run(
+            ["python3", str(project / "_ask/scripts/tracker-mcp.py"), "--root", str(project)],
+            cwd=project, env={**self._env(bin_dir=bin_dir), "GITHUB_TOKEN": "unrelated-caller-token"},
+        )
+        self.assertNotEqual(refused_pin.returncode, 0)
+        self.assertEqual(capture.read_bytes(), captured)
 
     def test_fresh_setup_pty(self) -> None:
         project = self.fx.git_project(self.fx.root / "fresh-credential-setup")
