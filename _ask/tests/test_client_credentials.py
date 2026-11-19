@@ -188,11 +188,11 @@ class ClientTests(unittest.TestCase):
         self.assertIn("JIRA_PERSONAL_TOKEN", history)
         key = hashlib.sha256(str(project.resolve()).encode()).hexdigest()
         credentials = self.fx.config / "askit/projects" / key / "credentials.json"
-        self.assertEqual(json.loads(credentials.read_text())["credentials"]["JIRA_PERSONAL_TOKEN"],
+        self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
                          "$(touch " + str(marker) + ")")
         repeated = self._run_config(project, "migrate", "--root", str(project), "--yes")
         self.assertEqual(repeated.returncode, 0, repeated.stderr)
-        self.assertEqual(json.loads(credentials.read_text())["credentials"]["JIRA_PERSONAL_TOKEN"],
+        self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
                          "$(touch " + str(marker) + ")")
 
         bin_dir = self.fx.root / "fake-bin"
