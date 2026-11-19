@@ -19,7 +19,11 @@ __pycache__/
 .ask.env
 .ask/tracker-context.md
 
-# Candidate-bound traceability outputs; archive reviewed evidence explicitly.
-work/*/traceability/
+# Raw candidate-bound traceability output; public summaries remain stageable.
+work/*/traceability/runs/*/*.log
+work/*/traceability/runs/*/*.json
+!work/*/traceability/runs/*/results.json
+work/*/traceability/static-runs/*/*.log
+work/*/traceability/static-runs/*/*.json
 work/*/inner-loop/state.lock
 _ask/.venv/

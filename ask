@@ -54,7 +54,7 @@ Commands:
       Structured spec-to-test contracts and evidence. Use --help for arguments.
 
   verify
-      Run repo checks; print commit SHA. No flags.
+      Run repo checks; print commit SHA. --help explains the trusted local execution boundary.
       Env: VERIFY_OUT_DIR, VERIFY_JSON
 
   record-result --work-id <id> --commit-sha <sha> --result <text> [--notes <text>]

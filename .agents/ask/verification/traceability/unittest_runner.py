@@ -2,10 +2,18 @@
 from __future__ import annotations
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 import traceback
 import unittest
+
+
+def write_private(path, value):
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, 'O_NOFOLLOW', 0)
+    fd = os.open(path, flags, 0o600)
+    os.fchmod(fd, 0o600)
+    with os.fdopen(fd, 'w') as stream:stream.write(value)
 
 class CaseResult(unittest.TextTestResult):
     def __init__(self,*args,**kwargs):
@@ -46,8 +54,10 @@ def main():
             suite=unittest.TestSuite(test for test in flatten(suite) if test.id() in selected)
         result=unittest.TextTestRunner(verbosity=2,resultclass=CaseResult).run(suite)
         doc={'cases':result.cases,'collection_status':'error' if loader.errors or not result.testsRun else 'ok'}
-        output.write_text(json.dumps(doc))
+        write_private(output, json.dumps(doc))
         return 0 if result.wasSuccessful() and result.testsRun and not loader.errors else 1
     except Exception:
-        traceback.print_exc();output.write_text(json.dumps({'cases':[],'collection_status':'error'}));return 1
+        traceback.print_exc()
+        write_private(output, json.dumps({'cases':[],'collection_status':'error'}))
+        return 1
 if __name__=='__main__':raise SystemExit(main())
