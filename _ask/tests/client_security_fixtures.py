@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import os
 import json
+import pty
+import select
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 
 
@@ -61,6 +64,32 @@ class ClientFixture:
             stderr=subprocess.PIPE,
             timeout=60,
         )
+
+    def run_tty(self, argv: list[str], *, cwd: Path, env: dict[str, str],
+                input: str) -> subprocess.CompletedProcess[str]:
+        master, slave = pty.openpty()
+        process = subprocess.Popen(argv, cwd=cwd, env=env, stdin=slave, stdout=slave, stderr=slave,
+                                   close_fds=True)
+        os.close(slave)
+        os.write(master, input.encode())
+        output = bytearray()
+        deadline = time.monotonic() + 60
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    output.extend(os.read(master, 65536))
+                except OSError:
+                    break
+            if process.poll() is not None and not ready:
+                break
+        if process.poll() is None:
+            process.kill()
+            raise subprocess.TimeoutExpired(argv, 60, output=bytes(output))
+        process.wait()
+        os.close(master)
+        text = output.decode(errors="replace")
+        return subprocess.CompletedProcess(argv, process.returncode, text, text)
 
     def git_project(self, path: Path) -> Path:
         path.mkdir(parents=True, exist_ok=True)

@@ -58,8 +58,13 @@ class ClientTests(unittest.TestCase):
         ignored = self.fx.run(["git", "check-ignore", "-q", ".ask.env"], cwd=client)
         self.assertEqual(ignored.returncode, 0, "credential file is not ignored")
 
+        launcher = self.fx.install_launcher()
+        trusted = self.fx.run_tty([str(launcher), "trust"], cwd=client, env=env, input="y\n")
+        if trusted.returncode:
+            failures.append("installed launcher did not establish client trust: "
+                            + (trusted.stderr or trusted.stdout).splitlines()[0])
         migration = self.fx.run(
-            [str(client / "ask"), "credentials", "migrate"], cwd=client, env=env
+            [str(launcher), "credentials", "migrate"], cwd=client, env=env
         )
         credential_id = hashlib.sha256(str(client.resolve()).encode()).hexdigest()
         credentials = (self.fx.config / "askit/projects" / credential_id / "credentials.json")
@@ -82,7 +87,7 @@ class ClientTests(unittest.TestCase):
             failures.append("migration did not warn about rotating the legacy token")
         self.assertNotIn("dummy-never-real", migration.stdout + migration.stderr)
 
-        verify = self.fx.run([str(client / "ask"), "verify"], cwd=client, env=env)
+        verify = self.fx.run([str(launcher), "verify"], cwd=client, env=env)
         if verify.returncode:
             details = (verify.stderr or verify.stdout).splitlines()
             failures.append("trusted verifier did not complete: " + "; ".join(details[:2]))
@@ -96,7 +101,7 @@ class ClientTests(unittest.TestCase):
         )
         self.assertEqual(attack_install.returncode, 0, attack_install.stderr)
         rejected_upgrade = self.fx.run(
-            [str(attack_client / "ask"), "upgrade", "--version", "main", "--source", str(untrusted)],
+            [str(launcher), "upgrade", "--version", "main", "--source", str(untrusted)],
             cwd=attack_client,
             env={**env, "ASKIT_TEST_MARKER": str(marker)},
         )
@@ -105,8 +110,6 @@ class ClientTests(unittest.TestCase):
         if marker.exists():
             failures.append("untrusted upgrade helper executed")
             marker.unlink()
-
-        launcher = self.fx.install_launcher()
 
         # Kill an upgrade after it replaces the first kit tree; the installed
         # launcher must recover the transaction before project delegation.
@@ -119,6 +122,7 @@ class ClientTests(unittest.TestCase):
                                  encoding="utf-8")
         self.assertEqual(self.fx.run(["git", "-C", str(source), "add", "_ask/skills/prepare-skills.sh"]).returncode, 0)
         self.assertEqual(self.fx.run(["git", "-C", str(source), "commit", "-qm", "test upgrade source"]).returncode, 0)
+        source_commit = self.fx.run(["git", "-C", str(source), "rev-parse", "HEAD"]).stdout.strip()
         original_kit_file = client / "_ask/skills/prepare-skills.sh"
         original_kit_bytes = original_kit_file.read_bytes()
         kill_bin = self.fx.root / "kill-bin"
@@ -129,9 +133,10 @@ class ClientTests(unittest.TestCase):
         cp_shim.write_text(
             "#!/bin/sh\n"
             f"'{cp}' \"$@\" || exit $?\n"
-            "case \" $* \" in *\"$ASKIT_TEST_KILL_TARGET\"*) "
+            "for arg do destination=$arg; done\n"
+            "if [ \"$destination\" = \"$ASKIT_TEST_KILL_TARGET\" ]; then "
             "if [ ! -e \"$ASKIT_TEST_KILL_MARKER\" ]; then "
-            ": > \"$ASKIT_TEST_KILL_MARKER\"; kill -KILL \"$PPID\"; fi;; esac\n",
+            ": > \"$ASKIT_TEST_KILL_MARKER\"; kill -KILL \"$PPID\"; fi; fi\n",
             encoding="utf-8",
         )
         cp_shim.chmod(0o755)
@@ -140,15 +145,17 @@ class ClientTests(unittest.TestCase):
             "ASKIT_TEST_KILL_TARGET": str(client / "_ask/skills"),
             "ASKIT_TEST_KILL_MARKER": str(self.fx.root / "upgrade-killed"),
         }
-        interrupted = self.fx.run(
-            [str(client / "ask"), "upgrade", "--version", "main", "--source", str(source),
-             "--skip-prepare"], cwd=client, env=kill_env,
+        interrupted = self.fx.run_tty(
+            [str(launcher), "upgrade", "--version", source_commit, "--source", str(source),
+             "--skip-prepare"], cwd=client, env=kill_env, input="y\n" * 10,
         )
         if not (self.fx.root / "upgrade-killed").exists():
             failures.append("upgrade fault injection did not kill at publish: "
                             + interrupted.stdout + interrupted.stderr)
         elif interrupted.returncode != -9:
             failures.append(f"publish fault returned {interrupted.returncode}, expected SIGKILL")
+        self.assertNotEqual(original_kit_file.read_bytes(), original_kit_bytes,
+                            "fault injection did not interrupt after publishing changed bytes")
         recovered = self.fx.run([str(launcher), "verify"], cwd=client, env=self.fx.env)
         if recovered.returncode:
             details = (recovered.stderr or recovered.stdout).splitlines()
@@ -375,6 +382,21 @@ class ClientTests(unittest.TestCase):
             failures.append("unsupported orchestrator switch did not stop with a named manual handoff")
         if not any(call.get("action") == "identity" for call in runtime_calls):
             failures.append("the public coordinator did not inspect the fake parent orchestrator identity")
+        identity_observations = sum(call.get("action") == "identity" for call in runtime_calls)
+        blocked_resume = self.fx.run(
+            [str(loop_checkout / "ask"), "inner-loop", "resume", "model-flow"],
+            cwd=loop_checkout, env=handoff_env,
+        )
+        blocked_state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else None
+        blocked_status = ((blocked_state or {}).get("tasks", {}).get("implementation", {})
+                          .get("status", "pending"))
+        if blocked_status in {"running", "completed"}:
+            failures.append("resume admitted a still-mismatched orchestrator")
+        blocked_calls = [json.loads(line) for line in adapter_log.read_text(encoding="utf-8").splitlines()] \
+            if adapter_log.exists() else []
+        blocked_observations = sum(call.get("action") == "identity" for call in blocked_calls)
+        if blocked_observations <= identity_observations:
+            failures.append("resume did not freshly inspect the mismatched parent identity")
         runtime["identity"] = "gpt-6-luna"
         adapter_config.write_text(json.dumps(runtime), encoding="utf-8")
         resumed = self.fx.run(
@@ -387,6 +409,10 @@ class ClientTests(unittest.TestCase):
         if resumed.returncode != 0 or resumed_status != "running":
             failures.append("matching parent identity did not resume implementation: "
                             + resumed.stdout + resumed.stderr)
+        resumed_calls = [json.loads(line) for line in adapter_log.read_text(encoding="utf-8").splitlines()] \
+            if adapter_log.exists() else []
+        if sum(call.get("action") == "identity" for call in resumed_calls) <= blocked_observations:
+            failures.append("successful resume did not freshly verify the updated parent identity")
         if (loop_checkout / "work/model-flow/acceptance.md").exists():
             failures.append("model confirmation/resume created final acceptance without an acceptance action")
         self.assertFalse(failures, "\n".join(failures))
