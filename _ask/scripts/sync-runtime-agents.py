@@ -5,9 +5,12 @@ from __future__ import annotations
 import os
 import json
 import re
+import subprocess
 import sys
 import unicodedata
 from pathlib import Path
+
+import yaml
 
 
 STAGES = [
@@ -42,31 +45,47 @@ def parse_yaml(text: str) -> dict:
     i = 0
 
     def strip_comment(s: str) -> str:
-        in_q = False
+        quote = None
         out = []
-        for ch in s:
-            if ch == '"' and not in_q:
-                in_q = True
-                out.append(ch)
-            elif ch == '"' and in_q:
-                in_q = False
-                out.append(ch)
-            elif ch == "#" and not in_q:
+        i = 0
+        while i < len(s):
+            ch = s[i]
+            if quote == "'" and ch == "'" and i + 1 < len(s) and s[i + 1] == "'":
+                out.extend((ch, s[i + 1]))
+                i += 2
+                continue
+            if quote == '"' and ch == "\\" and i + 1 < len(s):
+                out.extend((ch, s[i + 1]))
+                i += 2
+                continue
+            if quote:
+                if ch == quote:
+                    quote = None
+            elif ch in "'\"" and (not s[:i].strip() or s[:i].rstrip().endswith((":", "-"))):
+                quote = ch
+            elif ch == "#":
                 break
-            else:
-                out.append(ch)
+            out.append(ch)
+            i += 1
         return "".join(out).rstrip()
 
     def parse_scalar(raw: str):
         raw = raw.strip()
         if raw in ("", "~", "null"):
             return None
-        if (raw.startswith('"') and raw.endswith('"')) or (
-            raw.startswith("'") and raw.endswith("'")
-        ):
-            return raw[1:-1]
+        if raw.startswith('"') and raw.endswith('"'):
+            return yaml.safe_load(raw)
+        if raw.startswith("'") and raw.endswith("'"):
+            return yaml.safe_load(raw)
         if raw.lower() in ("true", "false"):
             return raw.lower() == "true"
+        if raw.startswith("[") and raw.endswith("]"):
+            inner = raw[1:-1].strip()
+            return [] if not inner else [parse_scalar(item) for item in inner.split(",")]
+        if raw.startswith("{") and raw.endswith("}"):
+            return {}
+        if re.fullmatch(r"[+-]?(?:0[xX][0-9a-fA-F_]+|0[oO][0-7_]+|0[bB][01_]+|(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:[eE][+-]?[0-9_]+)?)", raw):
+            return 0
         return raw
 
     while i < len(lines):
@@ -173,6 +192,44 @@ def validate_model(value, runtime: str, stage: str) -> str:
             or any(unicodedata.category(ch) in {"Cc", "Zl", "Zp"} for ch in value)):
         raise SystemExit(f"invalid model for {runtime} {stage}: expected a nonempty single-line string")
     return value
+
+
+def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> None:
+    try:
+        if runtime == "codex":
+            try:
+                import tomllib
+            except ImportError:
+                import tomli as tomllib
+            document = tomllib.loads(text)
+        else:
+            parts = text.split("---", 2)
+            if len(parts) != 3 or parts[0].strip():
+                raise ValueError("missing frontmatter")
+            frontmatter = parts[1]
+            if len(re.findall(r"^model:", frontmatter, re.MULTILINE)) != 1:
+                raise ValueError("expected exactly one model field")
+            document = yaml.safe_load(frontmatter)
+    except Exception as exc:
+        raise SystemExit(f"invalid {runtime} template for {stage}: {exc}") from exc
+    if not isinstance(document, dict) or document.get("model") != slug:
+        raise SystemExit(f"invalid {runtime} template for {stage}: model field failed round-trip")
+
+
+def run_transaction(root: Path) -> int:
+    inputs = ["_ask/scripts", ".agents/ask", ".agents/ask.local", "_ask/bindings"]
+    if work_id := os.environ.get("ASK_WORK_ID"):
+        inputs.append(f"work/{work_id}")
+    command = [
+        sys.executable, str(root / "_ask/scripts/write-transaction.py"), "run",
+        "--root", str(root),
+    ]
+    for path in (".cursor/agents", ".claude/agents", ".codex/agents", ".opencode/agents"):
+        command.extend(("--path", path))
+    for path in inputs:
+        command.extend(("--input-path", path))
+    command.extend(("--", sys.executable, "{target}/_ask/scripts/sync-runtime-agents.py"))
+    return subprocess.run(command, cwd=root, check=False).returncode
 
 
 def is_role_or_pool(val: str) -> bool:
@@ -282,7 +339,9 @@ def bindings_dir(root: Path) -> Path:
 
 
 def main() -> int:
-    root = Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2])
+    root = (Path(__file__).resolve().parents[2] if os.environ.get("ASKIT_TRANSACTION_ACTIVE") == "1"
+            else Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2]))
+    root = root.resolve()
     os.chdir(root)
     bind = bindings_dir(root)
     defaults = load_yaml(bind / "models.defaults.yaml")
@@ -318,7 +377,7 @@ def main() -> int:
                     toml_tpl,
                     name=name,
                     description=desc,
-                    model=json.dumps(slug),
+                    model=json.dumps(slug, ensure_ascii=False),
                     reasoning_effort_line=f'model_reasoning_effort = "{effort}"\n' if effort else "",
                     runtime=runtime,
                     stage=stage,
@@ -328,7 +387,7 @@ def main() -> int:
                 text = render(
                     opencode_tpl,
                     description=desc,
-                    model=json.dumps(slug),
+                    model=json.dumps(slug, ensure_ascii=False),
                     permission_block=permission_block,
                     runtime=runtime,
                     stage=stage,
@@ -339,16 +398,13 @@ def main() -> int:
                     md_tpl,
                     name=name,
                     description=desc,
-                    model=json.dumps(slug),
+                    model=json.dumps(slug, ensure_ascii=False),
                     readonly_line=readonly,
                     runtime=runtime,
                     stage=stage,
                 )
                 dest = out_dir / f"{name}.md"
-            field = r"^model = (.+)$" if runtime == "codex" else r"^model: (.+)$"
-            values = re.findall(field, text, re.MULTILINE)
-            if len(values) != 1 or json.loads(values[0]) != slug:
-                raise SystemExit(f"invalid {runtime} template for {stage}: model field failed round-trip")
+            validate_rendered_model(text, runtime, slug, stage)
             outputs.append((dest, text))
     # Preflight every assignment before touching any runtime's existing output.
     for dest, text in outputs:
@@ -360,4 +416,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    transaction_root = Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2]).resolve()
+    if os.environ.get("ASKIT_TRANSACTION_ACTIVE") != "1" and (transaction_root / ".git").exists():
+        raise SystemExit(run_transaction(transaction_root))
+    # shortcut: non-Git fixture roots run in place; standalone non-repository sync is unsupported.
     raise SystemExit(main())

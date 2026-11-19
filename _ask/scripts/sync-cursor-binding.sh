@@ -20,7 +20,7 @@ cd "$ROOT"
 OUT_SKILLS=".cursor/skills"
 OUT_CMDS=".cursor/commands"
 python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check
-python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"
+ASK_ROOT="$ROOT" python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"
 mkdir -p "$OUT_SKILLS" "$OUT_CMDS"
 
 if [[ -d .agents/ask/stages ]]; then

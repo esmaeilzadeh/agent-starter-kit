@@ -103,14 +103,19 @@ class ClientTests(unittest.TestCase):
             if rejected.returncode == 0 or self.snapshot() != before:
                 issues.append(f'accepted non-string YAML model {invalid!r}')
 
-        (self.root / 'work/example/models.yaml').write_text(
-            "codex:\n  06-implement: 'quoted ''model'' # suffix'\n", encoding='utf-8')
-        result = self.run_generator()
-        if result.returncode:
-            issues.append(result.stderr)
-        else:
+        quoted_values = (
+            ("'quoted ''model'' # suffix'", "quoted 'model' # suffix"),
+            ('"quoted \\\"model\\\" \\\\ path # suffix"', 'quoted "model" \\ path # suffix'),
+        )
+        for encoded, expected in quoted_values:
+            (self.root / 'work/example/models.yaml').write_text(
+                'codex:\n  06-implement: ' + encoded + '\n', encoding='utf-8')
+            result = self.run_generator()
+            if result.returncode:
+                issues.append(result.stderr)
+                continue
             actual = self.model(self.root / '.codex/agents/kit-06-implement.toml')['model']
-            if actual != "quoted 'model' # suffix":
+            if actual != expected:
                 issues.append(f'quoted YAML model changed to {actual!r}')
         self.assertEqual(issues, [])
 

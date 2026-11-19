@@ -72,6 +72,6 @@ if [[ "${ASK_SYNC_TEST_FORCE_FAILURE:-0}" == "1" ]]; then
   exit 97
 fi
 
-python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
+env -u ASKIT_TRANSACTION_ACTIVE python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
 
 echo "PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs"
