@@ -90,10 +90,9 @@ class ClientTests(unittest.TestCase):
 
         before = self.snapshot()
         for invalid in ('', 'first line\nsecond line', 'bad\x01value'):
-            with self.subTest(invalid=repr(invalid)):
-                rejected = self.run_generator(ASK_MODEL_06_IMPLEMENT=invalid)
-                self.assertNotEqual(rejected.returncode, 0, repr(invalid))
-                self.assertEqual(self.snapshot(), before)
+            rejected = self.run_generator(ASK_MODEL_06_IMPLEMENT=invalid)
+            self.assertNotEqual(rejected.returncode, 0, repr(invalid))
+            self.assertEqual(self.snapshot(), before)
         (self.root / 'work/example/models.yaml').write_text(
             'codex:\n  06-implement: true\n', encoding='utf-8')
         rejected = self.run_generator()
