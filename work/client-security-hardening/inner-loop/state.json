@@ -1,7 +1,7 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 11,
+  "revision": 16,
   "coordinator_sha": "ffb57a593f5bb46e1f8deba683f31a18f3975c2a",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
@@ -213,7 +213,37 @@
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "9dd6e027f83049508bcc90979c5110b1",
+            "digest": "6f5504b11383c495938260b6d8e826352ab8c568e396b75ce1c8317cfb5c27a4",
+            "phase": "red",
+            "task_id": "CSH-02",
+            "candidate_sha": "b5e0f97012aa433efbe88bf5f4027a449f3890e9",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "1ba9287594b54f7bba781acdad29380b",
+            "digest": "c7192e664cfcb2b532e025cf94d103d8c6892570bb3c44b3f35963275591552c",
+            "phase": "final_green",
+            "task_id": "CSH-02",
+            "candidate_sha": "ad8275a40fe5de036a4db9bf088683beae0f6965",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "160261d22c834828875f0c2c39d1cf13",
+            "digest": "80aa450fc525e1c0b22cf2da4adb8bc248714b6fd749a850ad547489fbbfed25",
+            "phase": "final_green",
+            "task_id": "CSH-02",
+            "candidate_sha": "0c641cb42e549e4cdcee65e484b5541d9b334574",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          }
+        ]
+      },
       "attempt_number": 1,
       "attempt_id": "CSH-02:attempt-1",
       "accepted_plan_ref": "44aecc9aaf7b69ec2fdaeffc8f63343f2de9f315",
