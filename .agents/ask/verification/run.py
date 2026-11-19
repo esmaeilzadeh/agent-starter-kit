@@ -79,7 +79,8 @@ def main():
                 for runner in contracts['plan']['runners']:
                     runs=[r for r in cases['executions'] if r['runner_id']==runner['id']]
                     if len(runs)==1 and scope=='workstream':
-                        cache[tuple(runner['argv'])]=runs[0]['exit_code'] if runs[0]['collection_status']=='ok' else 1
+                        key=(tuple(runner['argv']),tuple(runner.get('env_allow', [])))
+                        cache.setdefault(key,[]).append(runs[0])
             command_cache={}
             run_id=uuid.uuid4().hex
             static_dir=runtime/'work'/work_id/'traceability'/'static-runs'/run_id if work_id else None
@@ -88,13 +89,12 @@ def main():
                 command=check['command'];print(f'verify: running: {command}',flush=True)
                 artifact=None
                 cache_key=(command,tuple(check.get('env_allow', [])))
+                matching=cache.get((tuple(shlex.split(command)),cache_key[1]),[])
                 if cache_key in command_cache:code,artifact=command_cache[cache_key]
-                elif (tuple(shlex.split(command)) in cache
-                      and command==shlex.join(shlex.split(command))
-                      and next((r.get('env_allow', []) for r in contracts['plan']['runners']
-                                if tuple(r['argv'])==tuple(shlex.split(command))), [])==check.get('env_allow', [])):
-                    code=cache[tuple(shlex.split(command))]
-                    match=next(r for r in cases['executions'] if tuple(r['argv'])==tuple(shlex.split(command)))
+                elif (command==shlex.join(shlex.split(command))
+                      and len(matching)==1):
+                    match=matching[0]
+                    code=match['exit_code'] if match['collection_status']=='ok' else 1
                     artifact=match['output_artifact']
                 else:
                     env=build_environment(os.environ, check.get('env_allow', []), {
