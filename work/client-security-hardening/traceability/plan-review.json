@@ -1,0 +1,292 @@
+{
+  "schema": "ask-plan-review/v1",
+  "work_id": "client-security-hardening",
+  "decision": "REJECTED",
+  "reviewer": "gpt-6-astra/security-plan-review",
+  "runtime": "codex",
+  "parent_model": "GPT-6 (exact variant unavailable)",
+  "independent": true,
+  "contract_sha": "7e7e5f66fe33801929a037d62027714c85197547",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+  "graph_digest": "3d736ccafdc00c370092499474074a11cee7a8aa99ce7c6091bdff855d68d181",
+  "plan_markdown_sha256": "5de58deda486a52ab5313a236c56f5f28104f4daf025cadec596a085ff27039b",
+  "frozen_contract_sha": "88035127763fb1436775c13c941fbcba7484d581",
+  "findings": [
+    {
+      "id": "PR-01",
+      "severity": "blocking",
+      "location": "inner-loop/tasks.yaml: CSH-01 owned_paths; test-plan.json: CSH-T04",
+      "problem": "CSH-01 must propagate mandatory preparation failure through public install, but install-kit.sh is not owned until CSH-03 and currently swallows preparation failure with || true. The first task cannot satisfy its assigned E2E obligation within ownership.",
+      "minimal_fix": "Add _ask/scripts/install-kit.sh to CSH-01 owned_paths; retain sequential ownership in CSH-03. Include bootstrap propagation in the focused caller check."
+    },
+    {
+      "id": "PR-02",
+      "severity": "blocking",
+      "location": "test-plan.json: CSH-T07; plan.md: Verification approach",
+      "problem": "CSH-T07 is classified as a passing regression but includes launcher help and no startup writes. Current askit automatically invokes completion installation for completion/help and delegates help to an existing project dispatcher. That combines new CSH-001 behavior with the existing --complete guard and would bypass required Red for the new portion.",
+      "minimal_fix": "Keep a narrow --complete completion guard as regression; move launcher help and startup-edit refusal into the new-behavior T08 or another explicitly new case. Establish the actual old guard baseline during authorized implementation; do not claim it has passed now."
+    },
+    {
+      "id": "PR-03",
+      "severity": "blocking",
+      "location": "plan.md: CSH-10 and Verification approach; test-plan.json: CSH-T38/CSH-T39",
+      "problem": "The two composed journeys are marked new and authored only in the last task after all relevant behavior has been implemented by CSH-01 through CSH-09. The plan requires Red at each owning task but supplies no way to obtain genuine preimplementation Red for these final journeys. A successful earlier implementation would make those new tests Green on arrival.",
+      "minimal_fix": "Define an executable baseline capture strategy for these exact journey assertions before earlier production changes, with coordinator/TaskGraph ownership and accepted-contract evidence preserved, or redesign test/task placement so their genuine behavior Red precedes the relevant implementation. Do not relabel new aggregate feature behavior as regression merely to bypass Red, weaken assertions, or introduce artificial failure."
+    }
+  ],
+  "criterion_assessments": [
+    {
+      "criterion_id": "CSH-001",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T05",
+        "CSH-T06",
+        "CSH-T07",
+        "CSH-T08",
+        "CSH-T38"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-02",
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-002",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T09",
+        "CSH-T10",
+        "CSH-T11",
+        "CSH-T38"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-003",
+      "required_types": [
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T12",
+        "CSH-T13",
+        "CSH-T14",
+        "CSH-T38"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-004",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T15",
+        "CSH-T16",
+        "CSH-T17",
+        "CSH-T18",
+        "CSH-T38"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-005",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T01",
+        "CSH-T02",
+        "CSH-T03",
+        "CSH-T04",
+        "CSH-T38"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-01",
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-006",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T19",
+        "CSH-T20",
+        "CSH-T21",
+        "CSH-T22",
+        "CSH-T23",
+        "CSH-T38"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-007",
+      "required_types": [
+        "unit",
+        "integration"
+      ],
+      "test_ids": [
+        "CSH-T24",
+        "CSH-T25",
+        "CSH-T26"
+      ],
+      "type_coverage": "present",
+      "decision": "APPROVED",
+      "findings": [],
+      "assessment": "Focused assertions cover the approved criterion; test types are appropriate for the boundary."
+    },
+    {
+      "criterion_id": "CSH-008",
+      "required_types": [
+        "unit",
+        "integration"
+      ],
+      "test_ids": [
+        "CSH-T27",
+        "CSH-T28"
+      ],
+      "type_coverage": "present",
+      "decision": "APPROVED",
+      "findings": [],
+      "assessment": "Focused assertions cover the approved criterion; test types are appropriate for the boundary."
+    },
+    {
+      "criterion_id": "CSH-009",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T29",
+        "CSH-T39",
+        "CSH-T40"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-010",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T30",
+        "CSH-T31",
+        "CSH-T39"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-011",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T33",
+        "CSH-T34",
+        "CSH-T35",
+        "CSH-T36",
+        "CSH-T39"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    },
+    {
+      "criterion_id": "CSH-012",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ],
+      "test_ids": [
+        "CSH-T32",
+        "CSH-T37",
+        "CSH-T39"
+      ],
+      "type_coverage": "present",
+      "decision": "REJECTED",
+      "findings": [
+        "PR-03"
+      ],
+      "assessment": "Observable focused cases and correct required test types are declared; listed findings must be corrected before accepting the whole contract."
+    }
+  ],
+  "test_adequacy": {
+    "declared_cases": 40,
+    "tasks": 10,
+    "structural_validation": "PASS using frozen contracts_at/validate_plan; no behavior execution",
+    "coverage": "All twelve criteria and required test types are mapped; every case has one sequential owning task.",
+    "passing_regressions": "CSH-T11 preservation remains a regression subject to actual baseline. CSH-T07 must be narrowed per PR-02. No passing execution is claimed.",
+    "model_links": "Engineering model has 12 requirements, 10 tasks, 40 scenarios and 40 tests. Revised local Test.reference form is accepted by coordinator tooling; scenarios retain exact case and plan digest identities.",
+    "handoff": "Plan distinguishes actual orchestrator from child, validates automatic switch result, permits explicit manual acknowledgment only when introspection is unavailable, preserves legacy policy and stops before implementation preflight for plan-only authorization.",
+    "dependency_pins": "Exact external pins are reviewed task outputs before external execution; deferred metadata lookup is explicitly blocked on missing provenance and does not authorize floating versions."
+  },
+  "limitations": [
+    "Planning acceptance only; no implementation or product acceptance.",
+    "No behavior tests, exploit reproduction, dependency audit or paid runtime calls ran.",
+    "Static source observations ground PR-01/02; actual baseline behavior must be exercised only after implementation authorization.",
+    "Runtime availability and automatic switch capabilities are not verified by this review.",
+    "Composed journey assertions are broad but focused cases supply individual boundary checks; actual test source and assertion continuity require later independent review."
+  ]
+}
