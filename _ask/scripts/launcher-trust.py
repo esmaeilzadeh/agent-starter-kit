@@ -23,10 +23,12 @@ METADATA = {
 }
 RUNTIME_DIRS = (
     "_ask/scripts", "_ask/skills", "_ask/agents", "_ask/hooks",
+    "_ask/policies", "_ask/templates", "_ask/bindings",
     ".agents/ask", ".agents/ask.local", ".agents/verification",
-    ".cursor/commands", ".cursor/skills", ".cursor/rules",
-    ".codex/agents", ".codex/skills", ".claude/agents", ".claude/skills",
-    ".opencode/agents", ".opencode/commands",
+    ".cursor/commands", ".cursor/skills", ".cursor/rules", ".cursor/agents",
+    ".codex/agents", ".codex/skills", ".codex/commands", ".codex/rules",
+    ".claude/agents", ".claude/skills", ".claude/commands",
+    ".opencode/agents", ".opencode/commands", ".opencode/skills", ".opencode/rules",
     ".git/hooks",
 )
 RUNTIME_FILES = (
@@ -80,9 +82,45 @@ def _entries(root: Path) -> list[tuple[str, Path]]:
     return sorted(found.items())
 
 
+def _git_runtime(root: Path) -> tuple[list[tuple[str, Path]], str]:
+    config = subprocess.run(
+        ["git", "-C", str(root), "config", "--show-origin", "--null", "--get-regexp",
+         r"^(core\.hooksPath|core\.fsmonitor|filter\..*\.(clean|smudge|process)|diff\..*\.textconv|merge\..*\.driver)$"],
+        capture_output=True,
+    )
+    hooks = subprocess.run(
+        ["git", "-C", str(root), "config", "--path", "--get", "core.hooksPath"],
+        capture_output=True, text=True,
+    )
+    if hooks.returncode:
+        hooks = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--path-format=absolute", "--git-path", "hooks"],
+            capture_output=True, text=True, check=True,
+        )
+    hook_dir = Path(hooks.stdout.strip())
+    if not hook_dir.is_absolute():
+        hook_dir = root / hook_dir
+    entries = []
+    if hook_dir.is_dir() and not hook_dir.is_symlink():
+        for current, directories, filenames in os.walk(hook_dir, followlinks=False):
+            current_path = Path(current)
+            for directory in list(directories):
+                item = current_path / directory
+                if item.is_symlink():
+                    entries.append((f"@git-hooks/{hook_dir}/{item.relative_to(hook_dir)}", item))
+                    directories.remove(directory)
+            for filename in filenames:
+                item = current_path / filename
+                entries.append((f"@git-hooks/{hook_dir}/{item.relative_to(hook_dir)}", item))
+    elif hook_dir.is_symlink():
+        entries.append((f"@git-hooks/{hook_dir}", hook_dir))
+    return entries, hashlib.sha256(config.stdout).hexdigest()
+
+
 def identity(root: Path) -> dict:
     rows = []
-    for relative, path in _entries(root):
+    git_entries, config_digest = _git_runtime(root)
+    for relative, path in _entries(root) + git_entries:
         info = path.lstat()
         mode = stat.S_IMODE(info.st_mode)
         if stat.S_ISLNK(info.st_mode):
@@ -102,7 +140,10 @@ def identity(root: Path) -> dict:
             "mode": mode,
             "sha256": hashlib.sha256(content).hexdigest(),
         })
-    payload = json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()
+    payload = json.dumps(
+        {"files": rows, "git_execution_config_sha256": config_digest},
+        sort_keys=True, separators=(",", ":"),
+    ).encode()
     return {
         "root": str(root),
         "digest": hashlib.sha256(payload).hexdigest(),

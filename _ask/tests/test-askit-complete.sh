@@ -5,7 +5,7 @@ ASKIT="$ROOT/askit"
 chmod +x "$ASKIT"
 export ASKIT_SKIP_COMPLETION_INSTALL=1
 
-# From the kit repo, askit finds ./ask and wraps it.
+# Installed launcher help and completion do not dispatch to ./ask.
 out="$("$ASKIT" --help)"
 printf '%s\n' "$out" | grep -q 'Agent Starter Kit'
 out="$("$ASKIT" --complete 1 askit sta)"
@@ -13,7 +13,7 @@ printf '%s\n' "$out" | grep -q start-work
 out="$("$ASKIT" completion bash)"
 printf '%s\n' "$out" | grep -q askit
 
-# Git repo without the kit: no command catalog. Completion is self-install only.
+# Git repo without the kit: help and completion remain installed behavior.
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 git init -q "$TMP"
@@ -23,8 +23,8 @@ git config user.name t
 echo x > README.md
 git add README.md && git commit -q -m init
 out="$("$ASKIT" --help 2>&1 || true)"
-printf '%s\n' "$out" | grep -q 'not ask-based'
-! printf '%s\n' "$out" | grep -q 'no ./ask yet'
+printf '%s\n' "$out" | grep -q 'installed launcher'
+! printf '%s\n' "$out" | grep -q 'no ./ask'
 ! printf '%s\n' "$out" | grep -q start-work
 out="$("$ASKIT" --complete 1 askit)"
 printf '%s\n' "$out" | grep -q self-install
@@ -47,4 +47,4 @@ printf '%s\n' "$out" | grep -q status
 out="$("$ASKIT" --complete 1 ./ask start)"
 printf '%s\n' "$out" | grep -q start-work
 
-echo "PASS: askit wraps ./ask; completion is gated until the repo is ask-based"
+echo "PASS: askit help and completion stay in the installed launcher"

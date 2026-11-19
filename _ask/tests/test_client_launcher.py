@@ -46,7 +46,27 @@ class ClientTests(unittest.TestCase):
         second = self.identity(project)
         self.assertNotEqual(second["digest"], first["digest"])
         helper.chmod(0o755)
-        self.assertNotEqual(self.identity(project)["digest"], second["digest"])
+        changed_mode = self.identity(project)
+        self.assertNotEqual(changed_mode["digest"], second["digest"])
+
+        hooks = project / ".githooks"
+        hooks.mkdir()
+        hook = hooks / "pre-commit"
+        hook.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        hook.chmod(0o755)
+        self.fx.run(["git", "-C", str(project), "config", "core.hooksPath", ".githooks"])
+        with_hooks = self.identity(project)
+        self.assertNotEqual(with_hooks["digest"], changed_mode["digest"])
+        hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_hooks["digest"])
+
+        escaping = project / "_ask/scripts/outside.py"
+        outside = self.fx.root / "outside.py"
+        outside.write_text("print('outside')\n", encoding="utf-8")
+        escaping.symlink_to(outside)
+        with self.assertRaisesRegex(AssertionError, "escapes checkout"):
+            self.identity(project)
+        escaping.unlink()
 
         moved = self.fx.root / "moved-project"
         project.rename(moved)
@@ -73,14 +93,24 @@ class ClientTests(unittest.TestCase):
 
         trusted = self.fx.run_tty([str(launcher), "trust"], cwd=project, env=env, input="y\n")
         self.assertEqual(trusted.returncode, 0, trusted.stderr)
-        self.assertIn("sha256", (trusted.stdout + trusted.stderr).lower())
+        self.assertIn("sha-256", (trusted.stdout + trusted.stderr).lower())
         allowed = self.fx.run([str(launcher), "verify"], cwd=project, env=env)
         self.assertEqual(allowed.returncode, 0, allowed.stderr)
         self.assertTrue(marker.exists())
 
         marker.unlink()
-        (project / "_ask/scripts/helper.py").write_text("print('replacement')\n", encoding="utf-8")
-        stale = self.fx.run([str(launcher), "verify"], cwd=project, env=env)
+        moved = self.fx.root / "moved-project"
+        project.rename(moved)
+        moved_trust = self.fx.run([str(launcher), "verify"], cwd=moved, env=env)
+        self.assertNotEqual(moved_trust.returncode, 0)
+        self.assertIn("trust", (moved_trust.stdout + moved_trust.stderr).lower())
+        moved_approved = self.fx.run_tty(
+            [str(launcher), "trust"], cwd=moved, env=env, input="y\n"
+        )
+        self.assertEqual(moved_approved.returncode, 0, moved_approved.stderr)
+
+        (moved / "_ask/scripts/helper.py").write_text("print('replacement')\n", encoding="utf-8")
+        stale = self.fx.run([str(launcher), "verify"], cwd=moved, env=env)
         self.assertNotEqual(stale.returncode, 0)
         self.assertIn("trust", (stale.stdout + stale.stderr).lower())
         self.assertFalse(marker.exists())
@@ -104,7 +134,14 @@ class ClientTests(unittest.TestCase):
         self.assertFalse(marker.exists())
 
     def test_completion_requires_opt_in(self) -> None:
+        startup = {name: (self.fx.home / name).read_bytes() if (self.fx.home / name).exists() else None
+                   for name in (".bashrc", ".zshrc")}
         launcher = self.fx.install_launcher()
+        self.assertEqual(
+            {name: (self.fx.home / name).read_bytes() if (self.fx.home / name).exists() else None
+             for name in startup}, startup,
+            "self-install must not edit shell startup files",
+        )
         project = self.fx.git_project(self.fx.root / "completion-opt-in-project")
         (project / "_ask").mkdir()
         marker = self.fx.root / "help-dispatcher-ran"
@@ -116,9 +153,6 @@ class ClientTests(unittest.TestCase):
         env = self.fx.env.copy()
         env.pop("ASKIT_SKIP_COMPLETION_INSTALL", None)
         env["ASKIT_TEST_MARKER"] = str(marker)
-        startup = {name: (self.fx.home / name).read_bytes() if (self.fx.home / name).exists() else None
-                   for name in (".bashrc", ".zshrc")}
-
         help_result = self.fx.run([str(launcher), "--help"], cwd=project, env=env)
         completion = self.fx.run([str(launcher), "completion", "bash"], cwd=project, env=env)
         self.assertEqual(help_result.returncode, 0, help_result.stderr)

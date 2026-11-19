@@ -10,6 +10,8 @@ ask_complete_emit() {
 }
 
 ask_complete_commands() {
+  ask_complete_emit trust "trust this checkout's executable identity"
+  ask_complete_emit completion-install "opt in to installing shell completion"
   ask_complete_emit check-clean "refuse dirty worktree"
   ask_complete_emit start-work "branch agent/<work-id> + seed work/<work-id>/"
   ask_complete_emit check-workstream "preconditions before implement"
