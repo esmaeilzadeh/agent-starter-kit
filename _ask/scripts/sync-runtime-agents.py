@@ -204,7 +204,7 @@ def parse_generated_toml(text: str) -> dict:
                 escape = value[index]
                 if escape == "\n":
                     index += 1
-                    while index < len(value) and value[index].isspace():
+                    while index < len(value) and value[index] in " \t\n":
                         index += 1
                     continue
                 if escape in 'btnfr"\\':
