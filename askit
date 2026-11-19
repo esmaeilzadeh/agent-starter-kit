@@ -110,7 +110,6 @@ askit_self_install() {
     return 1
   fi
   [[ -z "$BACKUP" ]] || rm -rf "$BACKUP"
-  STAGING=""
 
   mkdir -p "$BIN"
   ln -sfn "$CACHE/askit" "$BIN/askit"

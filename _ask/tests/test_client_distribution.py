@@ -132,6 +132,7 @@ class ClientTests(unittest.TestCase):
         self.assertFalse(marker.exists(), "unverified source helper ran during self-install")
         self.assertEqual(cache_sentinel.read_text(encoding="utf-8"), "preserve\n")
         self.assertEqual(installed.resolve(), old_launcher)
+        self.assertEqual(list((self.fx.cache / "askit").glob("kit.*")), [])
 
         client = self.fx.git_project(self.fx.root / "upgrade-client")
         installed_ask = self.fx.run(
