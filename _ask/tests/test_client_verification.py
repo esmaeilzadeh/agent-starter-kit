@@ -2,10 +2,13 @@
 import json
 import os
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import nullcontext
+from unittest.mock import patch
 
 ASK = Path(__file__).resolve().parents[2] / '.agents' / 'ask'
 sys.path.insert(0, str(ASK))
@@ -13,12 +16,70 @@ from verification.environment import build_environment
 from verification.plan import expand_plan
 from verification.traceability.adapters import run_tests
 from verification.environment import warn_tracked_logs, private_directory, private_open
+from verification import run as verify_runner
 from contextlib import redirect_stderr
 from io import StringIO
 from traceability_fixture import Consumer
 
 
 class ClientTests(unittest.TestCase):
+    def test_static_check_reuses_matching_runner_result_and_artifact(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            sha = 'a' * 40
+            (root / '.agents').mkdir()
+            (root / '.agents/verification.yaml').write_text('checks: []\n')
+            argv = ['python3', '-c', "print('same argv')"]
+            command = shlex.join(argv)
+            checks = [{'id': 'static', 'command': command, 'env_allow': ['SAFE_A']}]
+            contracts = {'plan': {'runners': [
+                {'id': 'r1', 'argv': argv, 'env_allow': ['SAFE_A']},
+                {'id': 'r2', 'argv': argv, 'env_allow': ['SAFE_B']},
+            ]}}
+            first_log = root / 'work/w/traceability/r1.log'
+            second_log = root / 'work/w/traceability/r2.log'
+            first_log.parent.mkdir(parents=True)
+            first_log.write_text('runner one passed\n')
+            second_log.write_text('runner two failed\n')
+            cases = {'executions': [
+                {'runner_id': 'r1', 'argv': argv, 'exit_code': 0,
+                 'collection_status': 'ok', 'output_artifact': 'work/w/traceability/r1.log'},
+                {'runner_id': 'r2', 'argv': argv, 'exit_code': 1,
+                 'collection_status': 'ok', 'output_artifact': 'work/w/traceability/r2.log'},
+            ]}
+            def fake_git(_root, *args):
+                if args == ('rev-parse', 'HEAD'):
+                    return sha
+                if args == ('rev-parse', '--abbrev-ref', 'HEAD'):
+                    return 'agent/w'
+                if args[:2] == ('worktree', 'add'):
+                    Path(args[3]).mkdir(parents=True)
+                return ''
+            env = {
+                'ASK_ROOT': str(root), 'ASK_WORK_ID': 'w',
+                'ASK_TRACEABILITY_RUNTIME_ROOT': str(root),
+                'ASK_TRACEABILITY_ANCHOR_SHA': sha,
+                'ASK_TRACEABILITY_SCOPE': 'workstream',
+                'VERIFY_JSON': str(root / 'verify.json'),
+            }
+            with patch.dict(os.environ, env, clear=False), \
+                 patch.object(verify_runner, 'warn_tracked_logs'), \
+                 patch.object(verify_runner, 'git', side_effect=fake_git), \
+                 patch.object(verify_runner, 'workflow_context', return_value=nullcontext()), \
+                 patch.object(verify_runner, 'load_plan', return_value={}), \
+                 patch.object(verify_runner, 'expand_plan', return_value=checks), \
+                 patch.object(verify_runner, 'check_isolation'), \
+                 patch.object(verify_runner, 'load_accepted', return_value=contracts), \
+                 patch.object(verify_runner, 'source_changes', return_value=False), \
+                 patch.object(verify_runner, 'run_tests', return_value=cases), \
+                 patch.object(verify_runner, 'check_completion', return_value={'status': 'pass'}):
+                result = verify_runner.main()
+
+            self.assertEqual(result, 0)
+            check = json.loads((root / 'verify.json').read_text())['checks'][0]
+            self.assertEqual(check['status'], 'pass')
+            self.assertEqual(check['evidence'], 'work/w/traceability/r1.log')
+
     def test_allowlist_and_owned_metadata(self):
         caller = {
             'PATH': '/trusted/bin', 'HOME': '/home/test', 'JIRA_PERSONAL_TOKEN': 'dummy-token',
