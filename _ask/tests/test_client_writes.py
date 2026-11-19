@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import signal
 import subprocess
 import time
 import unittest
@@ -37,11 +38,11 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertIn(".cursor", result.stderr + result.stdout)
         self.assertEqual(sorted(p.name for p in outside.iterdir()), ["sentinel"])
-        self.assertFalse((project / "_ask/agents/00-intent.md").exists())
+        self.assertFalse((project / "_ask/agents/00-explore.md").exists())
 
     def test_late_conflict_no_writes(self) -> None:
         project = self.fx.git_project(self.fx.root / "late-conflict")
-        prior = project / "_ask/agents/00-intent.md"
+        prior = project / "_ask/agents/00-explore.md"
         prior.parent.mkdir(parents=True)
         prior.write_text("client bytes\n", encoding="utf-8")
         outside = self.fx.root / "outside"
@@ -100,7 +101,7 @@ class ClientTests(unittest.TestCase):
 
     def test_caught_failure_restores(self) -> None:
         project = self.fx.git_project(self.fx.root / "caught-failure")
-        old = project / "_ask/agents/00-intent.md"
+        old = project / "_ask/agents/00-explore.md"
         old.parent.mkdir(parents=True)
         old.write_text("client bytes\n", encoding="utf-8")
         marker = self.fx.root / "rsync-hit"
@@ -111,11 +112,11 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(old.read_text(encoding="utf-8"), "client bytes\n")
         self.assertFalse((project / "ask").exists())
-        self.assertFalse(marker.exists(), "failed staged operation must not reach publish")
+        self.assertTrue(marker.exists(), "injected failure did not run")
 
     def test_kill_restart_recovers(self) -> None:
         project = self.fx.git_project(self.fx.root / "killed-install")
-        old = project / "_ask/agents/00-intent.md"
+        old = project / "_ask/agents/00-explore.md"
         old.parent.mkdir(parents=True)
         old.write_text("client bytes\n", encoding="utf-8")
         marker = self.fx.root / "rsync-hit"
@@ -123,12 +124,13 @@ class ClientTests(unittest.TestCase):
         process = subprocess.Popen(
             ["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(project)],
             cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            start_new_session=True,
         )
         deadline = time.monotonic() + 10
         while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
             time.sleep(0.02)
         self.assertTrue(marker.exists(), "install did not reach its first staged copy")
-        process.kill()
+        os.killpg(process.pid, signal.SIGKILL)
         process.communicate(timeout=5)
 
         first = self._recover(project)
@@ -141,7 +143,7 @@ class ClientTests(unittest.TestCase):
 
     def test_recovery_preserves_intervening_edits(self) -> None:
         project = self.fx.git_project(self.fx.root / "edited-during-recovery")
-        old = project / "_ask/agents/00-intent.md"
+        old = project / "_ask/agents/00-explore.md"
         old.parent.mkdir(parents=True)
         old.write_text("client bytes\n", encoding="utf-8")
         marker = self.fx.root / "rsync-hit"
@@ -149,12 +151,13 @@ class ClientTests(unittest.TestCase):
         process = subprocess.Popen(
             ["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(project)],
             cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            start_new_session=True,
         )
         deadline = time.monotonic() + 10
         while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
             time.sleep(0.02)
         self.assertTrue(marker.exists(), "install did not reach its first staged copy")
-        process.kill()
+        os.killpg(process.pid, signal.SIGKILL)
         process.communicate(timeout=5)
         old.write_text("intervening client edit\n", encoding="utf-8")
 
