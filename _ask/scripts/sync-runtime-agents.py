@@ -200,8 +200,17 @@ def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> N
             try:
                 import tomllib
             except ImportError:
-                import tomli as tomllib
-            document = tomllib.loads(text)
+                try:
+                    import tomli as tomllib
+                except ImportError:
+                    values = re.findall(r"^model = (.+)$", text, re.MULTILINE)
+                    if len(values) != 1:
+                        raise ValueError("expected exactly one model field")
+                    document = {"model": json.loads(values[0])}
+                else:
+                    document = tomllib.loads(text)
+            else:
+                document = tomllib.loads(text)
         else:
             parts = text.split("---", 2)
             if len(parts) != 3 or parts[0].strip():
