@@ -242,6 +242,8 @@ class ClientTests(unittest.TestCase):
             if process.poll() is None:
                 os.killpg(process.pid, signal.SIGKILL)
             process.communicate(timeout=5)
+        pending = old.read_text(encoding="utf-8")
+        self.assertNotEqual(pending, "client bytes\n")
         state = project / ".git/askit-transactions"
         journal = next(state.glob("*/journal.json"))
         saved = journal.read_text(encoding="utf-8")
@@ -251,7 +253,7 @@ class ClientTests(unittest.TestCase):
         rejected = self._recover(project)
         self.assertNotEqual(rejected.returncode, 0)
         self.assertTrue(journal.exists())
-        self.assertEqual(old.read_text(encoding="utf-8"), "interrupted\n")
+        self.assertEqual(old.read_text(encoding="utf-8"), pending)
         journal.write_text(saved, encoding="utf-8")
         old.write_text("intervening client edit\n", encoding="utf-8")
 
