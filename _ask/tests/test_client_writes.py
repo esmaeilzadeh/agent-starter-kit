@@ -181,14 +181,20 @@ class ClientTests(unittest.TestCase):
 
     def test_kill_restart_recovers(self) -> None:
         project = self.fx.git_project(self.fx.root / "killed-install")
+        dispatcher = project / "ask"
+        dispatcher.write_text("#!/bin/sh\nprintf ran > \"$ASKIT_TEST_MARKER\"\n", encoding="utf-8")
+        dispatcher.chmod(0o755)
+        installed = self._install(project, "--skip-prepare")
+        self.assertEqual(installed.returncode, 0, installed.stderr)
         old = project / "_ask/agents/00-explore.md"
-        old.parent.mkdir(parents=True)
-        old.write_text("client bytes\n", encoding="utf-8")
-        self._claim_existing(project, old)
+        original = old.read_bytes()
         marker = self.fx.root / "publish-hit"
         env = self._fault_environment(project, marker, "pause")
+        helper = project / "_ask/scripts/write-transaction.py"
         process = subprocess.Popen(
-            ["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(project)],
+            ["python3", str(helper), "run", "--root", str(project), "--path", "_ask/agents", "--",
+             "python3", "-c", "import pathlib,sys; pathlib.Path(sys.argv[1]).write_text('interrupted\\n')",
+             "{target}/_ask/agents/00-explore.md"],
             cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             start_new_session=True,
         )
@@ -202,13 +208,17 @@ class ClientTests(unittest.TestCase):
                 os.killpg(process.pid, signal.SIGKILL)
             process.communicate(timeout=5)
 
-        first = self._recover(project)
-        second = self._recover(project)
-
-        self.assertEqual(first.returncode, 0, first.stderr)
-        self.assertEqual(second.returncode, 0, second.stderr)
-        self.assertEqual(old.read_text(encoding="utf-8"), "client bytes\n")
-        self.assertFalse((project / "ask").exists())
+        self.assertNotEqual(old.read_bytes(), original)
+        launcher = self.fx.install_launcher()
+        trusted = self.fx.run_tty([str(launcher), "trust"], cwd=project, env=self.fx.env, input="y\n")
+        self.assertEqual(trusted.returncode, 0, trusted.stderr)
+        self.assertEqual(old.read_bytes(), original)
+        delegated = self.fx.run(
+            [str(launcher), "verify"], cwd=project,
+            env={**self.fx.env, "ASKIT_TEST_MARKER": str(self.fx.root / "dispatcher-ran")},
+        )
+        self.assertEqual(delegated.returncode, 0, delegated.stderr)
+        self.assertTrue((self.fx.root / "dispatcher-ran").exists())
 
     def test_recovery_preserves_intervening_edits(self) -> None:
         project = self.fx.git_project(self.fx.root / "edited-during-recovery")
