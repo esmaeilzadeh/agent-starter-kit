@@ -28,6 +28,7 @@ class ClientTests(unittest.TestCase):
 
     def _env(self, *, bin_dir: Path | None = None) -> dict[str, str]:
         env = dict(self.fx.env)
+        env["TERM"] = "xterm"
         if bin_dir:
             env["PATH"] = str(bin_dir) + ":/usr/bin:/bin"
         return env
