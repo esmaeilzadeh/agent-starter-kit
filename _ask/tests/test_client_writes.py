@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
 import shutil
+import stat
 import signal
 import subprocess
 import time
@@ -24,6 +27,18 @@ class ClientTests(unittest.TestCase):
         return self.fx.run([
             "bash", str(ROOT / "_ask/scripts/install-kit.sh"), *flags, str(project),
         ])
+
+    def _claim_existing(self, project: Path, path: Path) -> None:
+        state = project / ".git/askit-transactions"
+        state.mkdir(mode=0o700)
+        (state / "owned-files.json").write_text(json.dumps({
+            "schema": "askit-installed-files/v1",
+            "files": {path.relative_to(project).as_posix(): {
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "mode": stat.S_IMODE(path.stat().st_mode),
+            }},
+        }), encoding="utf-8")
+        (state / "owned-files.json").chmod(0o600)
 
     def test_classify_paths(self) -> None:
         project = self.fx.git_project(self.fx.root / "unsafe-tree")
@@ -58,6 +73,38 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(prior.read_text(encoding="utf-8"), "client bytes\n")
         self.assertEqual(sorted(p.name for p in outside.iterdir()), ["sentinel"])
 
+        valid = self.fx.git_project(self.fx.root / "reinstall-conflict")
+        installed = self._install(valid, "--skip-prepare")
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        owned = valid / "_ask/agents/00-explore.md"
+        original = owned.read_bytes()
+        original_gitignore = (valid / ".gitignore").read_bytes()
+        unsafe = valid / ".cursor/commands"
+        shutil.rmtree(unsafe)
+        unsafe.unlink(missing_ok=True)
+        unsafe_outside = self.fx.root / "reinstall-outside"
+        unsafe_outside.mkdir()
+        unsafe_sentinel = unsafe_outside / "sentinel"
+        unsafe_sentinel.write_text("keep\n", encoding="utf-8")
+        unsafe.symlink_to(unsafe_outside, target_is_directory=True)
+
+        version = self.fx.run(["git", "rev-parse", "HEAD"], cwd=ROOT).stdout.strip()
+        attempts = [
+            self._install(valid, "--skip-prepare"),
+            self.fx.run([
+                "bash", str(ROOT / "_ask/scripts/upgrade-kit.sh"), "--version", version,
+                "--expected-commit", version, "--source", str(ROOT), "--target", str(valid),
+                "--skip-prepare",
+            ]),
+            self.fx.run(["bash", str(valid / "_ask/scripts/sync-cursor-binding.sh")], cwd=valid),
+        ]
+        for attempt in attempts:
+            self.assertNotEqual(attempt.returncode, 0, attempt.stdout)
+            self.assertIn(".cursor", attempt.stderr + attempt.stdout)
+            self.assertEqual(owned.read_bytes(), original)
+            self.assertEqual((valid / ".gitignore").read_bytes(), original_gitignore)
+            self.assertEqual(sorted(p.name for p in unsafe_outside.iterdir()), ["sentinel"])
+
     def test_preserve_client_settings(self) -> None:
         project = self.fx.git_project(self.fx.root / "preserve-client")
         settings = project / ".agents/ask.local/stages/01-grill.md"
@@ -79,24 +126,41 @@ class ClientTests(unittest.TestCase):
             ["git", "-C", str(project), "status", "--porcelain"]
         ).stdout)
 
-    def _rsync_fault(self, marker: Path, *, sleep: bool) -> Path:
-        real_rsync = shutil.which("rsync")
-        self.assertIsNotNone(real_rsync, "rsync is required by install-kit")
-        bin_dir = self.fx.root / "fault-bin"
-        bin_dir.mkdir(exist_ok=True)
-        wrapper = bin_dir / "rsync"
-        wrapper.write_text(
-            "#!/bin/sh\n"
-            + f"{real_rsync} \"$@\" || exit $?\n"
-            + f"printf hit > {marker}\n"
-            + ("while :; do sleep 1; done\n" if sleep else "exit 55\n"),
+    def _fault_environment(self, project: Path, marker: Path, mode: str) -> dict[str, str]:
+        hooks = self.fx.root / ("python-hook-" + mode)
+        hooks.mkdir()
+        (hooks / "sitecustomize.py").write_text(
+            "import os, pathlib, time\n"
+            "_replace = os.replace\n"
+            "_triggered = False\n"
+            "_root = pathlib.Path(os.environ['ASK_TEST_PROJECT']).resolve()\n"
+            "_marker = pathlib.Path(os.environ['ASK_TEST_MARKER'])\n"
+            "_mode = os.environ['ASK_TEST_MODE']\n"
+            "def replace(src, dst, *args, **kwargs):\n"
+            "    global _triggered\n"
+            "    result = _replace(src, dst, *args, **kwargs)\n"
+            "    target = pathlib.Path(dst)\n"
+            "    if (not _triggered and target.name == '00-explore.md' and "
+            "target.parent == _root / '_ask/agents'):\n"
+            "        _triggered = True\n"
+            "        _marker.write_text('published')\n"
+            "        if _mode == 'fail': raise OSError('injected publish failure')\n"
+            "        if _mode == 'pause':\n"
+            "            while True: time.sleep(1)\n"
+            "    return result\n"
+            "os.replace = replace\n",
             encoding="utf-8",
         )
-        wrapper.chmod(0o755)
-        return bin_dir
+        return dict(
+            self.fx.env,
+            PYTHONPATH=str(hooks),
+            ASK_TEST_PROJECT=str(project),
+            ASK_TEST_MARKER=str(marker),
+            ASK_TEST_MODE=mode,
+        )
 
     def _recover(self, project: Path) -> subprocess.CompletedProcess[str]:
-        helper = project / "_ask/scripts/write-transaction.py"
+        helper = ROOT / "_ask/scripts/write-transaction.py"
         return self.fx.run(["python3", str(helper), "recover", "--root", str(project)])
 
     def test_caught_failure_restores(self) -> None:
@@ -104,34 +168,39 @@ class ClientTests(unittest.TestCase):
         old = project / "_ask/agents/00-explore.md"
         old.parent.mkdir(parents=True)
         old.write_text("client bytes\n", encoding="utf-8")
-        marker = self.fx.root / "rsync-hit"
-        env = dict(self.fx.env, PATH=f"{self._rsync_fault(marker, sleep=False)}:{self.fx.env['PATH']}")
+        self._claim_existing(project, old)
+        marker = self.fx.root / "publish-hit"
+        env = self._fault_environment(project, marker, "fail")
 
         result = self.fx.run(["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(project)], env=env)
 
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(old.read_text(encoding="utf-8"), "client bytes\n")
         self.assertFalse((project / "ask").exists())
-        self.assertTrue(marker.exists(), "injected failure did not run")
+        self.assertTrue(marker.exists(), "injected publish failure did not run")
 
     def test_kill_restart_recovers(self) -> None:
         project = self.fx.git_project(self.fx.root / "killed-install")
         old = project / "_ask/agents/00-explore.md"
         old.parent.mkdir(parents=True)
         old.write_text("client bytes\n", encoding="utf-8")
-        marker = self.fx.root / "rsync-hit"
-        env = dict(self.fx.env, PATH=f"{self._rsync_fault(marker, sleep=True)}:{self.fx.env['PATH']}")
+        self._claim_existing(project, old)
+        marker = self.fx.root / "publish-hit"
+        env = self._fault_environment(project, marker, "pause")
         process = subprocess.Popen(
             ["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(project)],
             cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             start_new_session=True,
         )
         deadline = time.monotonic() + 10
-        while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
-            time.sleep(0.02)
-        self.assertTrue(marker.exists(), "install did not reach its first staged copy")
-        os.killpg(process.pid, signal.SIGKILL)
-        process.communicate(timeout=5)
+        try:
+            while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
+                time.sleep(0.02)
+            self.assertTrue(marker.exists(), "install did not reach the first publish")
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid, signal.SIGKILL)
+            process.communicate(timeout=5)
 
         first = self._recover(project)
         second = self._recover(project)
@@ -146,19 +215,23 @@ class ClientTests(unittest.TestCase):
         old = project / "_ask/agents/00-explore.md"
         old.parent.mkdir(parents=True)
         old.write_text("client bytes\n", encoding="utf-8")
-        marker = self.fx.root / "rsync-hit"
-        env = dict(self.fx.env, PATH=f"{self._rsync_fault(marker, sleep=True)}:{self.fx.env['PATH']}")
+        self._claim_existing(project, old)
+        marker = self.fx.root / "publish-hit"
+        env = self._fault_environment(project, marker, "pause")
         process = subprocess.Popen(
             ["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(project)],
             cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             start_new_session=True,
         )
         deadline = time.monotonic() + 10
-        while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
-            time.sleep(0.02)
-        self.assertTrue(marker.exists(), "install did not reach its first staged copy")
-        os.killpg(process.pid, signal.SIGKILL)
-        process.communicate(timeout=5)
+        try:
+            while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
+                time.sleep(0.02)
+            self.assertTrue(marker.exists(), "install did not reach the first publish")
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid, signal.SIGKILL)
+            process.communicate(timeout=5)
         old.write_text("intervening client edit\n", encoding="utf-8")
 
         result = self._recover(project)
