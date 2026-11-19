@@ -1,7 +1,7 @@
 ---
 name: kit-07-review
 description: Kit protocol stage 07-review (claude).
-model: sonnet
+model: "sonnet"
 readonly: true
 ---
 

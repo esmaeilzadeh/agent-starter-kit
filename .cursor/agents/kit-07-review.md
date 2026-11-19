@@ -1,7 +1,7 @@
 ---
 name: kit-07-review
 description: Kit protocol stage 07-review (cursor).
-model: grok-4.6
+model: "grok-4.6"
 readonly: true
 ---
 

@@ -72,7 +72,7 @@ class ClientTests(unittest.TestCase):
         return yaml.safe_load(frontmatter)
 
     def test_scalar_roundtrip(self):
-        value = 'custom "quoted" \\ path: mapping-like'
+        value = 'custom "quoted" \\ path: mapping-like {{stage}}'
         result = self.run_generator(ASK_MODEL_06_IMPLEMENT=value)
         self.assertEqual(result.returncode, 0, result.stderr)
         generated = [

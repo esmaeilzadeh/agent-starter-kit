@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import os
+import json
+import re
 import sys
+import unicodedata
 from pathlib import Path
 
 
@@ -22,6 +25,7 @@ STAGES = [
 ]
 
 RUNTIMES = ("cursor", "claude", "codex", "opencode")
+MISSING = object()
 OUT_DIRS = {
     "cursor": Path(".cursor/agents"),
     "claude": Path(".claude/agents"),
@@ -152,7 +156,7 @@ def env_stage_key(stage: str) -> str:
 
 def value_from_overlay(data: dict, stage: str, runtime: str):
     if not data:
-        return None
+        return MISSING
     rt = data.get(runtime)
     if isinstance(rt, dict) and stage in rt:
         return rt[stage]
@@ -161,7 +165,14 @@ def value_from_overlay(data: dict, stage: str, runtime: str):
     stages = data.get("stages")
     if isinstance(stages, dict) and stage in stages:
         return stages[stage]
-    return None
+    return MISSING
+
+
+def validate_model(value, runtime: str, stage: str) -> str:
+    if (not isinstance(value, str) or not value.strip()
+            or any(unicodedata.category(ch) in {"Cc", "Zl", "Zp"} for ch in value)):
+        raise SystemExit(f"invalid model for {runtime} {stage}: expected a nonempty single-line string")
+    return value
 
 
 def is_role_or_pool(val: str) -> bool:
@@ -185,27 +196,30 @@ def resolve_slug(
     )
     risk = str(risk).upper()
 
-    env_rt = env.get(f"{env_stage_key(stage)}_{runtime.upper()}")
-    if env_rt:
-        return env_rt
-    env_any = env.get(env_stage_key(stage))
-    if env_any and not is_role_or_pool(env_any):
-        return env_any
+    env_rt_key = f"{env_stage_key(stage)}_{runtime.upper()}"
+    env_any_key = env_stage_key(stage)
+    if env_rt_key in env:
+        return validate_model(env[env_rt_key], runtime, stage)
+    env_any = env.get(env_any_key, MISSING)
+    if env_any is not MISSING:
+        validate_model(env_any, runtime, stage)
+        if not is_role_or_pool(env_any):
+            return env_any
 
     for overlay in (work, consumer):
         hit = value_from_overlay(overlay, stage, runtime)
-        if hit is None:
+        if hit is MISSING:
             continue
-        hit = str(hit)
+        validate_model(hit, runtime, stage)
         if not is_role_or_pool(hit):
             return hit
         return slug_from_role_or_pool(hit, stage, risk, defaults, runtime_cfg)
 
-    if env_any and is_role_or_pool(env_any):
+    if env_any is not MISSING and is_role_or_pool(env_any):
         return slug_from_role_or_pool(env_any, stage, risk, defaults, runtime_cfg)
 
     role = (defaults.get("stages") or {}).get(stage)
-    return slug_from_role_or_pool(str(role), stage, risk, defaults, runtime_cfg)
+    return slug_from_role_or_pool(validate_model(role, runtime, stage), stage, risk, defaults, runtime_cfg)
 
 
 def slug_from_role_or_pool(token: str, stage: str, risk: str, defaults: dict, runtime_cfg: dict) -> str:
@@ -215,24 +229,26 @@ def slug_from_role_or_pool(token: str, stage: str, risk: str, defaults: dict, ru
         slug = pools.get(token)
         if not slug:
             raise SystemExit(f"runtime missing pool {token}")
-        return str(slug)
+        return slug
     if token == "review":
         pool = (defaults.get("review_pool") or {}).get(risk, "cheap")
         slug = pools.get(pool)
         if not slug:
             raise SystemExit(f"runtime missing pool {pool} for risk {risk}")
-        return str(slug)
+        return slug
     slug = roles.get(token)
     if not slug:
         raise SystemExit(f"runtime missing role {token}")
-    return str(slug)
+    return slug
 
 
 def render(tpl: str, **kw: str) -> str:
-    out = tpl
-    for k, v in kw.items():
-        out = out.replace("{{" + k + "}}", v)
-    return out
+    def replace(match):
+        key = match.group(1)
+        if key not in kw:
+            raise ValueError(f"unknown template field: {key}")
+        return kw[key]
+    return re.sub(r"\{\{([a-z_]+)\}\}", replace, tpl)
 
 
 def resolve_effort(stage: str, model: str, cfg: dict, consumer: dict, work: dict, env: dict) -> str | None:
@@ -242,8 +258,10 @@ def resolve_effort(stage: str, model: str, cfg: dict, consumer: dict, work: dict
     if value is None:
         for overlay in (work, consumer):
             value = value_from_overlay(overlay.get("reasoning_effort") or {}, stage, "codex")
-            if value is not None:
+            if value is not MISSING:
                 break
+    if value is MISSING:
+        value = None
     if value is None:
         efforts = cfg.get("reasoning_effort") or {}
         models = efforts.get("models") or {}
@@ -289,7 +307,7 @@ def main() -> int:
             continue
         out_dir = root / OUT_DIRS[runtime]
         for stage in STAGES:
-            slug = resolve_slug(stage, runtime, defaults, cfg, consumer, work, os.environ)
+            slug = validate_model(resolve_slug(stage, runtime, defaults, cfg, consumer, work, os.environ), runtime, stage)
             name = f"kit-{stage}"
             desc = f"Kit protocol stage {stage} ({runtime})."
             readonly = "readonly: true\n" if stage == "07-review" else ""
@@ -300,7 +318,7 @@ def main() -> int:
                     toml_tpl,
                     name=name,
                     description=desc,
-                    model=slug,
+                    model=json.dumps(slug),
                     reasoning_effort_line=f'model_reasoning_effort = "{effort}"\n' if effort else "",
                     runtime=runtime,
                     stage=stage,
@@ -310,7 +328,7 @@ def main() -> int:
                 text = render(
                     opencode_tpl,
                     description=desc,
-                    model=slug,
+                    model=json.dumps(slug),
                     permission_block=permission_block,
                     runtime=runtime,
                     stage=stage,
@@ -321,12 +339,16 @@ def main() -> int:
                     md_tpl,
                     name=name,
                     description=desc,
-                    model=slug,
+                    model=json.dumps(slug),
                     readonly_line=readonly,
                     runtime=runtime,
                     stage=stage,
                 )
                 dest = out_dir / f"{name}.md"
+            field = r"^model = (.+)$" if runtime == "codex" else r"^model: (.+)$"
+            values = re.findall(field, text, re.MULTILINE)
+            if len(values) != 1 or json.loads(values[0]) != slug:
+                raise SystemExit(f"invalid {runtime} template for {stage}: model field failed round-trip")
             outputs.append((dest, text))
     # Preflight every assignment before touching any runtime's existing output.
     for dest, text in outputs:

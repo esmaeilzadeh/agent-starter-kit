@@ -1,7 +1,7 @@
 ---
 description: Kit protocol stage 07-review (opencode).
 mode: subagent
-model: grok-4.6
+model: "grok-4.6"
 permission:
   edit: deny
 ---

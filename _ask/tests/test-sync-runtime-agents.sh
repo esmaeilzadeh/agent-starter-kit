@@ -43,10 +43,10 @@ fi
 
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
 
-grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
+grep -q 'model: "grok-4.6"' .cursor/agents/kit-07-review.md
 grep -q 'readonly: true' .cursor/agents/kit-07-review.md
-grep -q 'model: composer-2.5' .cursor/agents/kit-06-implement.md
-grep -q 'model: sonnet' .claude/agents/kit-07-review.md
+grep -q 'model: "composer-2.5"' .cursor/agents/kit-06-implement.md
+grep -q 'model: "sonnet"' .claude/agents/kit-07-review.md
 grep -q 'model = "gpt-6-luna"' .codex/agents/kit-06-implement.toml
 
 test -f .opencode/agents/kit-06-implement.md
@@ -60,10 +60,10 @@ fi
 grep -q 'edit: deny' .opencode/agents/kit-07-review.md
 
 env -u ASK_WORK_ID ASK_RISK=HIGH python3 _ask/scripts/sync-runtime-agents.py >/dev/null
-grep -q 'model: kimi-k3' .cursor/agents/kit-07-review.md
+grep -q 'model: "kimi-k3"' .cursor/agents/kit-07-review.md
 grep -q 'model = "gpt-6-astra"' .codex/agents/kit-07-review.toml
 env -u ASK_WORK_ID ASK_MODEL_07_REVIEW=thinking python3 _ask/scripts/sync-runtime-agents.py >/dev/null
-grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
+grep -q 'model: "grok-4.6"' .cursor/agents/kit-07-review.md
 grep -q 'model = "gpt-6.1-sol"' .codex/agents/kit-07-review.toml
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
 
