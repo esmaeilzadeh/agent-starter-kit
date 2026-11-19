@@ -125,6 +125,13 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.snapshot(), before)
 
+        final_output = self.root / '.opencode/agents/kit-10-accept.md'
+        final_output.write_text('client edit\n', encoding='utf-8')
+        before = self.snapshot()
+        result = self.run_generator(ASK_MODEL_06_IMPLEMENT='safe-model')
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(self.snapshot(), before)
+
     def test_python310_without_tomli_fails_before_publication(self):
         before = self.snapshot()
         env = self.environment(ASKIT_TRANSACTION_ACTIVE='1')
@@ -134,13 +141,6 @@ class ClientTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('install tomli', result.stderr)
-        self.assertEqual(self.snapshot(), before)
-
-        final_output = self.root / '.opencode/agents/kit-10-accept.md'
-        final_output.write_text('client edit\n', encoding='utf-8')
-        before = self.snapshot()
-        result = self.run_generator(ASK_MODEL_06_IMPLEMENT='safe-model')
-        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.snapshot(), before)
 
     def test_sync_valid_formats(self):
