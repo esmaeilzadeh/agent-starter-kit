@@ -962,9 +962,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T01",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_distribution.ClientTests.test_immutable_pins",
       "type": "test"
@@ -989,9 +987,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T02",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_distribution.ClientTests.test_reject_mismatched_source",
       "type": "test"
@@ -1016,9 +1012,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T03",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_distribution.ClientTests.test_source_approval_before_fetch",
       "type": "test"
@@ -1043,9 +1037,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T04",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_distribution.ClientTests.test_mandatory_failure_propagates",
       "type": "test"
@@ -1070,9 +1062,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T05",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_launcher.ClientTests.test_identity_scope",
       "type": "test"
@@ -1097,9 +1087,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T06",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_launcher.ClientTests.test_delegation_requires_trust",
       "type": "test"
@@ -1124,9 +1112,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T07",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_launcher.ClientTests.test_completion_stays_installed",
       "type": "test"
@@ -1151,9 +1137,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T08",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_launcher.ClientTests.test_completion_requires_opt_in",
       "type": "test"
@@ -1178,9 +1162,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T09",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_writes.ClientTests.test_classify_paths",
       "type": "test"
@@ -1205,9 +1187,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T10",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_writes.ClientTests.test_late_conflict_no_writes",
       "type": "test"
@@ -1232,9 +1212,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T11",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_writes.ClientTests.test_preserve_client_settings",
       "type": "test"
@@ -1259,9 +1237,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T12",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_writes.ClientTests.test_caught_failure_restores",
       "type": "test"
@@ -1286,9 +1262,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T13",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_writes.ClientTests.test_kill_restart_recovers",
       "type": "test"
@@ -1313,9 +1287,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T14",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_writes.ClientTests.test_recovery_preserves_intervening_edits",
       "type": "test"
@@ -1340,9 +1312,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T15",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
       "type": "test"
@@ -1367,9 +1337,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T16",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
       "type": "test"
@@ -1394,9 +1362,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T17",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
       "type": "test"
@@ -1421,9 +1387,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T18",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_credentials.ClientTests.test_fresh_setup_pty",
       "type": "test"
@@ -1448,9 +1412,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T19",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_verification.ClientTests.test_allowlist_and_owned_metadata",
       "type": "test"
@@ -1475,9 +1437,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T20",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_verification.ClientTests.test_checkplan_environment",
       "type": "test"
@@ -1502,9 +1462,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T21",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_verification.ClientTests.test_instrumented_environment",
       "type": "test"
@@ -1529,9 +1487,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T22",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_verification.ClientTests.test_private_retained_outputs",
       "type": "test"
@@ -1556,9 +1512,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T23",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_verification.ClientTests.test_trusted_verify_journey",
       "type": "test"
@@ -1583,9 +1537,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T24",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_runtime_config.ClientTests.test_scalar_roundtrip",
       "type": "test"
@@ -1610,9 +1562,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T25",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_runtime_config.ClientTests.test_sync_atomic_invalid",
       "type": "test"
@@ -1637,9 +1587,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T26",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_runtime_config.ClientTests.test_sync_valid_formats",
       "type": "test"
@@ -1664,9 +1612,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T27",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_workbench.ClientTests.test_address_precedence",
       "type": "test"
@@ -1691,9 +1637,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T28",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_workbench.ClientTests.test_actual_listener",
       "type": "test"
@@ -1718,9 +1662,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T29",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_model_decisions.ClientTests.test_one_grill_decision",
       "type": "test"
@@ -1745,9 +1687,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T30",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_model_decisions.ClientTests.test_reuse_and_resume",
       "type": "test"
@@ -1772,9 +1712,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T31",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_model_decisions.ClientTests.test_legacy_choices",
       "type": "test"
@@ -1799,9 +1737,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T32",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_model_decisions.ClientTests.test_portable_projections",
       "type": "test"
@@ -1826,9 +1762,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T33",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_orchestrator.ClientTests.test_accessible_implementor",
       "type": "test"
@@ -1853,9 +1787,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T34",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_orchestrator.ClientTests.test_automatic_switch_verified",
       "type": "test"
@@ -1880,9 +1812,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T35",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_orchestrator.ClientTests.test_manual_switch_resume",
       "type": "test"
@@ -1907,9 +1837,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T36",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_orchestrator.ClientTests.test_plan_only_endpoint",
       "type": "test"
@@ -1934,9 +1862,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T37",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_orchestrator.ClientTests.test_capability_evidence",
       "type": "test"
@@ -1961,9 +1887,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T38",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_journeys.ClientTests.test_client_upgrade_journey",
       "type": "test"
@@ -1988,9 +1912,7 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T39",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_journeys.ClientTests.test_model_flow_journey",
       "type": "test"
@@ -2015,15 +1937,13 @@
       "lifecycle": "active",
       "reference": {
         "id": "CSH-T40",
-        "path": "work/client-security-hardening/test-plan.json",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
-        "work_id": "client-security-hardening"
+        "path": "work/client-security-hardening/test-plan.json"
       },
       "title": "test_client_model_decisions.ClientTests.test_decision_persistence",
       "type": "test"
     }
   ],
-  "revision": 4,
+  "revision": 5,
   "schema": "ask-engineering-model/v2",
   "work_id": "client-security-hardening"
 }
