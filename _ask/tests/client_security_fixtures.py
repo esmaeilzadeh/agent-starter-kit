@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 import subprocess
 import tempfile
 from pathlib import Path
@@ -19,24 +20,31 @@ class ClientFixture:
         self.config = self.root / "config"
         self.cache = self.root / "cache"
         self.prefix = self.root / "prefix"
-        for path in (self.home, self.config, self.cache, self.prefix):
+        self.tmp = self.root / "tmp"
+        for path in (self.home, self.config, self.cache, self.prefix, self.tmp):
             path.mkdir()
-        self.env = os.environ.copy()
-        for name in ("BASH_ENV", "ENV", "PYTHONPATH", "PYTHONHOME", "ASK_WORK_ID"):
-            self.env.pop(name, None)
-        self.env.update({
+        self.env = {
+            "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "TZ": "UTC",
             "HOME": str(self.home),
+            "TMPDIR": str(self.tmp),
             "XDG_CONFIG_HOME": str(self.config),
             "XDG_CACHE_HOME": str(self.cache),
             "ASKIT_PREFIX": str(self.prefix),
-            "ASKIT_SKIP_COMPLETION_INSTALL": "",
+            "ASKIT_SKIP_COMPLETION_INSTALL": "1",
             "SKIP_INSTALL": "1",
-            "GIT_CONFIG_COUNT": "2",
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_CONFIG_COUNT": "3",
             "GIT_CONFIG_KEY_0": "init.defaultBranch",
             "GIT_CONFIG_VALUE_0": "main",
-            "GIT_CONFIG_KEY_1": "safe.directory",
-            "GIT_CONFIG_VALUE_1": "*",
-        })
+            "GIT_CONFIG_KEY_1": "user.name",
+            "GIT_CONFIG_VALUE_1": "Client Test",
+            "GIT_CONFIG_KEY_2": "user.email",
+            "GIT_CONFIG_VALUE_2": "client@example.invalid",
+        }
 
     def close(self) -> None:
         self._tmp.cleanup()
@@ -87,10 +95,35 @@ class ClientFixture:
             "#!/bin/sh\nprintf executed > \"$ASKIT_TEST_MARKER\"\n", encoding="utf-8"
         )
         helper.chmod(0o755)
+        migrate = source / "_ask/scripts/copy-project-config.sh"
+        migrate.write_text(
+            "#!/bin/sh\nprintf executed > \"$ASKIT_TEST_MARKER\"\n", encoding="utf-8"
+        )
+        migrate.chmod(0o755)
         self.run(["git", "-C", str(source), "add", "askit", "_ask"])
         self.run(["git", "-C", str(source), "commit", "-qm", "untrusted source"])
-        child = self.env.copy()
-        child.pop("ASKIT_SKIP_COMPLETION_INSTALL", None)
-        child["ASKIT_TEST_MARKER"] = str(marker)
         return source
 
+    def fake_model_runtime(self, *, identity: str = "gpt-6.1-sol",
+                           models: list[str] | None = None,
+                           can_switch: bool = False) -> tuple[Path, Path]:
+        adapter = self.root / "fake-model-runtime.py"
+        log = self.root / "model-runtime.jsonl"
+        adapter.write_text(
+            "#!/usr/bin/env python3\n"
+            "import json, os, sys\n"
+            "request = json.load(sys.stdin)\n"
+            "with open(os.environ['ASK_MODEL_RUNTIME_LOG'], 'a', encoding='utf-8') as f:\n"
+            "    f.write(json.dumps(request) + '\\n')\n"
+            "action = request['action']\n"
+            f"models = {json.dumps(models or ['gpt-6.1-sol', 'gpt-6-luna', 'gpt-6-astra'])}\n"
+            f"identity = {json.dumps(identity)}\n"
+            f"can_switch = {json.dumps(can_switch)}\n"
+            "response = {'models': models} if action == 'catalog' else "
+            "({'model': identity} if action == 'identity' else "
+            "({'supported': can_switch, 'model': request.get('model')} if action == 'switch' else {}))\n"
+            "print(json.dumps(response))\n",
+            encoding="utf-8",
+        )
+        adapter.chmod(0o755)
+        return adapter, log
