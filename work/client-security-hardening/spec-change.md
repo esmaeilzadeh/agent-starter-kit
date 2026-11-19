@@ -1,4 +1,14 @@
-# Spec Change disposition: client-security-hardening
+# Spec Change record: client-security-hardening
+
+## Current status
+
+Planning paused after the human requested an additional feature. The new
+proposal is `spec-change-model-flow.md`; its complete revised intent is
+`intent-model-flow.proposed.md`. They require one combined scope/intent decision
+before amending the accepted security contract. The prior no-change disposition
+below applies only to revision 1 and is retained as history.
+
+## Prior disposition: security specification revision 1
 
 ## Current specification
 

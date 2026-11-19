@@ -36,3 +36,18 @@ its focused repair separately before overlapping installer work.
   with the configured reviewer despite the shared GPT family.
 
 No implementation or execution evidence is claimed by this recovery record.
+
+## Subsequent human interruption: model-flow feature proposal
+
+Human directed: "stop and add this spec change", then supplied the model-flow
+feature. Planning stopped before a populated plan, TaskGraph or test plan was
+written. Independent Astra Spec Challenge passed the security-only revision-1
+contract; that verdict does not cover the later model-flow proposal.
+
+Recorded `spec-change-model-flow.md` and the full
+`intent-model-flow.proposed.md`. Keep the accepted intent and canonical security
+specification unchanged until one submitted choice approves the proposal and
+complete revised intent together. After that choice, amend and independently
+challenge the combined specification before completing Plan. Keep the original
+endpoint: stop when the implementation plan is ready. A generic continuation
+does not approve the proposed scope expansion or implementation.
