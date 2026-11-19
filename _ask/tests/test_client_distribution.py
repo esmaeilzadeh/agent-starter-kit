@@ -204,21 +204,34 @@ class ClientTests(unittest.TestCase):
         cache = self.fx.cache / "askit/kit"
         modified_marker = self.fx.root / "modified-cache-helper-ran"
         helper = cache / "_ask/scripts/install-user-completion.sh"
-        helper.write_text(f"#!/bin/sh\nprintf executed > '{modified_marker}'\n", encoding="utf-8")
-        helper.chmod(0o755)
+        helper_path = "_ask/scripts/install-user-completion.sh"
+        original_helper = self.fx.run(
+            ["git", "-C", str(cache), "show", f"HEAD:{helper_path}"]
+        ).stdout
 
-        client = self.fx.git_project(self.fx.root / "modified-cache-client")
-        direct = self.fx.run([str(launcher)], cwd=client)
-        self.assertNotEqual(direct.returncode, 0)
-        self.assertIn("cached release is modified", direct.stderr)
-        self.assertFalse(modified_marker.exists())
+        for flag, clear in (("--assume-unchanged", "--no-assume-unchanged"),
+                            ("--skip-worktree", "--no-skip-worktree")):
+            self.fx.run(["git", "-C", str(cache), "update-index", "--no-assume-unchanged", "--", helper_path])
+            self.fx.run(["git", "-C", str(cache), "update-index", "--no-skip-worktree", "--", helper_path])
+            helper.write_text(original_helper, encoding="utf-8")
+            helper.write_text(f"#!/bin/sh\nprintf executed > '{modified_marker}'\n", encoding="utf-8")
+            helper.chmod(0o755)
+            self.fx.run(["git", "-C", str(cache), "update-index", flag, "--", helper_path])
+            status = self.fx.run(["git", "-C", str(cache), "status", "--porcelain"]).stdout
+            self.assertEqual(status, "", f"fixture flag did not hide its edit: {flag}")
+
+            client = self.fx.git_project(self.fx.root / f"modified-cache-client-{flag[2:]}")
+            direct = self.fx.run([str(launcher)], cwd=client)
+            self.assertNotEqual(direct.returncode, 0)
+            self.assertIn("cached release", direct.stderr)
+            self.assertFalse(modified_marker.exists())
 
         bootstrap = self.fx.run(
             ["bash", str(cache / "_ask/scripts/askit-bootstrap.sh")], cwd=client,
             env=self.fx.env | {"ASKIT_KIT_ROOT": str(cache)},
         )
         self.assertNotEqual(bootstrap.returncode, 0)
-        self.assertIn("cached release is modified", bootstrap.stderr)
+        self.assertIn("cached release", bootstrap.stderr)
         self.assertFalse(modified_marker.exists())
 
     def test_source_approval_before_fetch(self) -> None:

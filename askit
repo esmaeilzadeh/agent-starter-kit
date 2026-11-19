@@ -31,7 +31,7 @@ EOF
 
 askit_release_record() {
   python3 - "$1" "$2" "${3:-}" <<'PY'
-import json, os, re, stat, subprocess, sys, tempfile
+import hashlib, json, os, re, stat, subprocess, sys, tempfile
 from pathlib import Path
 
 cache, action, commit = Path(sys.argv[1]).resolve(strict=True), sys.argv[2], sys.argv[3]
@@ -80,6 +80,42 @@ status = subprocess.run(["git", "-C", str(cache), "status", "--porcelain", "--un
                         text=True, capture_output=True, check=True).stdout
 if not re.fullmatch(r"[0-9a-f]{40}", head) or tree != index_tree or status:
     raise SystemExit("askit: cached release is modified; reinstall a verified commit")
+
+object_format = subprocess.run(["git", "-C", str(cache), "rev-parse", "--show-object-format"],
+                               text=True, capture_output=True, check=True).stdout.strip()
+entries = subprocess.run(["git", "-C", str(cache), "ls-tree", "-rz", "--full-tree", "HEAD"],
+                         capture_output=True, check=True).stdout.split(b"\0")
+for entry in entries:
+    if not entry:
+        continue
+    metadata, raw_path = entry.split(b"\t", 1)
+    mode, kind, expected = metadata.decode("ascii").split()
+    target = cache / os.fsdecode(raw_path)
+    parent = target.parent
+    while parent != cache:
+        if parent.is_symlink():
+            raise SystemExit("askit: cached release contains a modified path; reinstall a verified commit")
+        parent = parent.parent
+    try:
+        info = target.lstat()
+        if mode == "120000" and stat.S_ISLNK(info.st_mode):
+            content = os.fsencode(os.readlink(target))
+        elif mode in {"100644", "100755"} and stat.S_ISREG(info.st_mode):
+            if bool(info.st_mode & 0o111) != (mode == "100755"):
+                raise SystemExit("askit: cached release contains a modified mode; reinstall a verified commit")
+            content = target.read_bytes()
+        else:
+            raise SystemExit("askit: cached release contains a modified file type; reinstall a verified commit")
+    except OSError as error:
+        raise SystemExit(f"askit: cannot verify cached release path {target}: {error}")
+    blob = hashlib.new(object_format, b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+    if kind != "blob" or blob != expected:
+        raise SystemExit("askit: cached release contents differ from the trusted commit; reinstall a verified commit")
+
+untracked = subprocess.run(["git", "-C", str(cache), "ls-files", "--others", "-z"],
+                           capture_output=True, check=True).stdout
+if untracked:
+    raise SystemExit("askit: cached release contains untracked files; reinstall a verified commit")
 
 key = str(cache)
 if action == "store":
