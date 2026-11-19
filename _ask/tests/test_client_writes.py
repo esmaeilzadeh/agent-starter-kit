@@ -105,6 +105,17 @@ class ClientTests(unittest.TestCase):
             self.assertEqual((valid / ".gitignore").read_bytes(), original_gitignore)
             self.assertEqual(sorted(p.name for p in unsafe_outside.iterdir()), ["sentinel"])
 
+        standalone = self.fx.git_project(self.fx.root / "standalone-sync")
+        self.assertEqual(self._install(standalone, "--skip-prepare").returncode, 0)
+        calls = [
+            self.fx.run(["bash", str(standalone / "_ask/scripts/sync-cursor-binding.sh")], cwd=standalone),
+            self.fx.run(["python3", str(standalone / "_ask/scripts/sync-codex-skills.py"), "--update-ignore"], cwd=standalone),
+            self.fx.run(["bash", str(standalone / "_ask/scripts/copy-project-config.sh"),
+                         str(standalone), str(standalone / "_ask/skills/manifest.yaml")], cwd=standalone),
+        ]
+        for call in calls:
+            self.assertEqual(call.returncode, 0, call.stderr)
+
     def test_preserve_client_settings(self) -> None:
         project = self.fx.git_project(self.fx.root / "preserve-client")
         settings = project / ".agents/ask.local/stages/01-grill.md"
@@ -113,6 +124,9 @@ class ClientTests(unittest.TestCase):
         manifest = project / "_ask/skills/manifest.yaml"
         manifest.parent.mkdir(parents=True)
         manifest.write_text("client manifest\n", encoding="utf-8")
+        cursor_settings = project / ".cursor/settings.json"
+        cursor_settings.parent.mkdir(parents=True)
+        cursor_settings.write_text('{"editor": "client"}\n', encoding="utf-8")
         self.fx.run(["git", "-C", str(project), "add", ".agents/ask.local/stages/01-grill.md"])
         self.fx.run(["git", "-C", str(project), "commit", "-qm", "custom stage"])
 
@@ -125,6 +139,18 @@ class ClientTests(unittest.TestCase):
         self.assertNotIn(".agents/ask.local/stages/01-grill.md", self.fx.run(
             ["git", "-C", str(project), "status", "--porcelain"]
         ).stdout)
+        owner_path = project / ".git/askit-transactions/owned-files.json"
+        owner_manifest = json.loads(owner_path.read_text())
+        self.assertNotIn(".cursor/settings.json", owner_manifest["files"])
+        version = self.fx.run(["git", "rev-parse", "HEAD"], cwd=ROOT).stdout.strip()
+        upgraded = self.fx.run([
+            "bash", str(ROOT / "_ask/scripts/upgrade-kit.sh"), "--version", version,
+            "--expected-commit", version, "--source", str(ROOT), "--target", str(project),
+            "--skip-prepare",
+        ])
+        self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
+        self.assertEqual(cursor_settings.read_text(encoding="utf-8"), '{"editor": "client"}\n')
+        self.assertNotIn(".cursor/settings.json", json.loads(owner_path.read_text())["files"])
 
     def _fault_environment(self, project: Path, marker: Path, mode: str) -> dict[str, str]:
         hooks = self.fx.root / ("python-hook-" + mode)
@@ -136,10 +162,20 @@ class ClientTests(unittest.TestCase):
             "_root = pathlib.Path(os.environ['ASK_TEST_PROJECT']).resolve()\n"
             "_marker = pathlib.Path(os.environ['ASK_TEST_MARKER'])\n"
             "_mode = os.environ['ASK_TEST_MODE']\n"
+            "import json\n"
             "def replace(src, dst, *args, **kwargs):\n"
             "    global _triggered\n"
-            "    result = _replace(src, dst, *args, **kwargs)\n"
             "    target = pathlib.Path(dst)\n"
+            "    if _mode == 'edit' and target.name == 'journal.json':\n"
+            "        data = json.loads(pathlib.Path(src).read_text())\n"
+            "        if data.get('state') != 'committed':\n"
+            "            (_root / '_ask/agents/00-explore.md').write_text('concurrent client edit\\n')\n"
+            "    result = _replace(src, dst, *args, **kwargs)\n"
+            "    if _mode == 'finalize' and target.name == 'journal.json':\n"
+            "        data = json.loads(target.read_text())\n"
+            "        if data.get('state') == 'committed':\n"
+            "            _marker.write_text('finalizing')\n"
+            "            while True: time.sleep(1)\n"
             "    if (not _triggered and target.name == '00-explore.md' and "
             "target.parent == _root / '_ask/agents'):\n"
             "        _triggered = True\n"
@@ -178,6 +214,18 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(old.read_text(encoding="utf-8"), "client bytes\n")
         self.assertFalse((project / "ask").exists())
         self.assertTrue(marker.exists(), "injected publish failure did not run")
+
+        concurrent = self.fx.git_project(self.fx.root / "concurrent-write")
+        old = concurrent / "_ask/agents/00-explore.md"
+        old.parent.mkdir(parents=True)
+        old.write_text("kit bytes\n", encoding="utf-8")
+        self._claim_existing(concurrent, old)
+        concurrent_result = self.fx.run(
+            ["bash", str(ROOT / "_ask/scripts/install-kit.sh"), "--skip-prepare", str(concurrent)],
+            env=self._fault_environment(concurrent, self.fx.root / "concurrent-hit", "edit"),
+        )
+        self.assertNotEqual(concurrent_result.returncode, 0)
+        self.assertEqual(old.read_text(encoding="utf-8"), "concurrent client edit\n")
 
     def test_kill_restart_recovers(self) -> None:
         project = self.fx.git_project(self.fx.root / "killed-install")
@@ -219,6 +267,34 @@ class ClientTests(unittest.TestCase):
         )
         self.assertEqual(delegated.returncode, 0, delegated.stderr)
         self.assertTrue((self.fx.root / "dispatcher-ran").exists())
+
+        finalizing = self.fx.git_project(self.fx.root / "finalize-restart")
+        installed = self._install(finalizing, "--skip-prepare")
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        path = finalizing / "_ask/agents/00-explore.md"
+        marker = self.fx.root / "finalize-hit"
+        env = self._fault_environment(finalizing, marker, "finalize")
+        process = subprocess.Popen(
+            ["python3", str(finalizing / "_ask/scripts/write-transaction.py"), "run",
+             "--root", str(finalizing), "--path", "_ask/agents", "--",
+             "python3", "-c", "import pathlib,sys; pathlib.Path(sys.argv[1]).write_text('committed\\n')",
+             "{target}/_ask/agents/00-explore.md"],
+            cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            start_new_session=True,
+        )
+        deadline = time.monotonic() + 10
+        try:
+            while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
+                time.sleep(0.02)
+            self.assertTrue(marker.exists(), "transaction did not persist committed state")
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid, signal.SIGKILL)
+            process.communicate(timeout=5)
+        self.assertEqual(path.read_text(encoding="utf-8"), "committed\n")
+        recovered = self._recover(finalizing)
+        self.assertEqual(recovered.returncode, 0, recovered.stderr)
+        self.assertEqual(list((finalizing / ".git/askit-transactions").glob("*/journal.json")), [])
 
     def test_recovery_preserves_intervening_edits(self) -> None:
         project = self.fx.git_project(self.fx.root / "edited-during-recovery")
