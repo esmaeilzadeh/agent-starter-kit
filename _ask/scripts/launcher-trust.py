@@ -101,7 +101,9 @@ def _entries(root: Path) -> list[tuple[str, Path]]:
             match = re.match(r"\s*(?:-\s*)?command\s*:\s*(.*)$", line)
             if not match:
                 continue
-            value = match.group(1).strip().strip("'\"")
+            value = match.group(1).strip()
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+                value = value[1:-1]
             try:
                 tokens = shlex.split(value)
             except ValueError as exc:

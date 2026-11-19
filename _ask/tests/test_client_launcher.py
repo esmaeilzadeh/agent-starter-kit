@@ -33,6 +33,10 @@ class ClientTests(unittest.TestCase):
         helper = project / "_ask/scripts/helper.py"
         helper.parent.mkdir(parents=True)
         helper.write_text("print('ok')\n", encoding="utf-8")
+
+        preset = project / ".agents/ask/verification/presets/ask-kit.yaml"
+        preset.parent.mkdir(parents=True)
+        shutil.copyfile(ROOT / ".agents/ask/verification/presets/ask-kit.yaml", preset)
         first = self.identity(project)
 
         alias = self.fx.root / "identity-alias"
@@ -71,7 +75,9 @@ class ClientTests(unittest.TestCase):
         plan.write_text(
             "schema: ask-checkplan/v1\nchecks:\n  - id: local\n"
             "    command: python3 verify-check\n"
-            f"  - id: absolute\n    command: python3 {configured_source}\n",
+            f"  - id: absolute\n    command: python3 {configured_source}\n"
+            "  - id: quoted-glob\n"
+            "    command: python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'\n",
             encoding="utf-8",
         )
         configured = self.identity(project)
