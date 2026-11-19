@@ -18,15 +18,12 @@ import tempfile
 
 def ensure_dir(path: Path) -> None:
     path = path.absolute()
-    missing = []
-    current = path
-    while not current.exists() and not current.is_symlink():
-        missing.append(current)
-        current = current.parent
-    if current.is_symlink() or not current.is_dir():
-        raise ValueError(f"completion directory is not a real directory: {current}")
-    for part in reversed(missing):
-        part.mkdir(mode=0o700)
+    for part in reversed((path, *path.parents)):
+        if part.exists() or part.is_symlink():
+            if part.is_symlink() or not part.is_dir():
+                raise ValueError(f"completion directory is not a real directory: {part}")
+        else:
+            part.mkdir(mode=0o700)
     if path.stat().st_uid != os.getuid():
         raise ValueError(f"completion directory must be owned by the current user: {path}")
     os.chmod(path, 0o700)

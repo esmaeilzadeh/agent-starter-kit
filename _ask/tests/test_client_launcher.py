@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import shutil
 import unittest
 from pathlib import Path
 
@@ -49,6 +51,31 @@ class ClientTests(unittest.TestCase):
         changed_mode = self.identity(project)
         self.assertNotEqual(changed_mode["digest"], second["digest"])
 
+        ui_source = project / "_ask/ui/streamlit_app.py"
+        ui_source.parent.mkdir(parents=True)
+        ui_source.write_text("print('ui one')\n", encoding="utf-8")
+        with_ui = self.identity(project)
+        ui_source.write_text("print('ui two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_ui["digest"])
+
+        check_source = project / "custom_check.py"
+        check_source.write_text("print('check one')\n", encoding="utf-8")
+        with_check = self.identity(project)
+        check_source.write_text("print('check two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_check["digest"])
+
+        configured_source = project / "verify-check"
+        configured_source.write_text("print('configured one')\n", encoding="utf-8")
+        plan = project / ".agents/verification.yaml"
+        plan.parent.mkdir(parents=True, exist_ok=True)
+        plan.write_text(
+            "schema: ask-checkplan/v1\nchecks:\n  - id: local\n"
+            "    command: python3 verify-check\n", encoding="utf-8",
+        )
+        configured = self.identity(project)
+        configured_source.write_text("print('configured two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], configured["digest"])
+
         hooks = project / ".githooks"
         hooks.mkdir()
         hook = hooks / "pre-commit"
@@ -59,6 +86,10 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(with_hooks["digest"], changed_mode["digest"])
         hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
         self.assertNotEqual(self.identity(project)["digest"], with_hooks["digest"])
+        self.fx.run(["git", "-C", str(project), "config", "filter.unsafe.clean", "run-me"])
+        with self.assertRaisesRegex(AssertionError, "cannot safely trust configured Git executable"):
+            self.identity(project)
+        self.fx.run(["git", "-C", str(project), "config", "--unset", "filter.unsafe.clean"])
 
         shared = project / "shared-code"
         shared.mkdir()
@@ -126,6 +157,37 @@ class ClientTests(unittest.TestCase):
         self.assertIn("trust", (stale.stdout + stale.stderr).lower())
         self.assertFalse(marker.exists())
 
+    def test_trust_record_rejects_symlinked_project_directory(self) -> None:
+        project = self.fx.git_project(self.fx.root / "symlink-trust-project")
+        trust_helper = ROOT / "_ask/scripts/launcher-trust.py"
+        (project / "_ask/scripts").mkdir(parents=True)
+        (project / "_ask/scripts/helper.py").write_text("print('ok')\n", encoding="utf-8")
+        dispatcher = project / "ask"
+        dispatcher.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        dispatcher.chmod(0o755)
+        self.assertEqual(
+            self.fx.run_tty(["python3", str(trust_helper), "trust", "--root", str(project)],
+                            cwd=project, env=self.fx.env, input="y\n").returncode,
+            0,
+        )
+
+        project_hash = hashlib.sha256(str(project.resolve()).encode()).hexdigest()
+        record_dir = self.fx.config / "askit/projects" / project_hash
+        record = record_dir / "trust.json"
+        controlled = project / ".agents/private-trust"
+        controlled.mkdir(parents=True)
+        shutil.copyfile(record, controlled / "trust.json")
+        (controlled / "trust.json").chmod(0o600)
+        record.unlink()
+        record_dir.rmdir()
+        record_dir.symlink_to(controlled, target_is_directory=True)
+
+        refused = self.fx.run(
+            ["python3", str(trust_helper), "check", "--root", str(project)], cwd=project,
+        )
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertIn("trust directory", refused.stderr.lower())
+
     def test_completion_stays_installed(self) -> None:
         launcher = self.fx.install_launcher()
         project = self.fx.git_project(self.fx.root / "completion-project")
@@ -192,6 +254,22 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(rejected.returncode, 0)
         self.assertIn("regular file", rejected.stderr)
         self.assertEqual(sentinel.read_text(encoding="utf-8"), "keep\n")
+
+        linked_home = self.fx.root / "linked-home"
+        linked_home.mkdir()
+        redirected = self.fx.root / "redirected-home-data"
+        redirected.mkdir()
+        (linked_home / ".local").symlink_to(redirected, target_is_directory=True)
+        unsafe_env = env.copy()
+        unsafe_env["HOME"] = str(linked_home)
+        unsafe_env.pop("XDG_DATA_HOME", None)
+        unsafe_env.pop("BASH_COMPLETION_USER_DIR", None)
+        ancestor_rejected = self.fx.run(
+            [str(ROOT / "_ask/scripts/install-user-completion.sh")], cwd=project,
+            env={**unsafe_env, "ASKIT_DIR": str(ROOT)},
+        )
+        self.assertNotEqual(ancestor_rejected.returncode, 0)
+        self.assertFalse((redirected / "share/askit").exists())
 
 
 if __name__ == "__main__":
