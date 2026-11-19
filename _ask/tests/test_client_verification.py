@@ -12,8 +12,7 @@ sys.path.insert(0, str(ASK))
 from verification.environment import build_environment
 from verification.plan import expand_plan
 from verification.traceability.adapters import run_tests
-from verification.traceability.evidence import load_accepted, record_test_review
-from verification.environment import warn_tracked_logs
+from verification.environment import warn_tracked_logs, private_directory, private_open
 from contextlib import redirect_stderr
 from io import StringIO
 from traceability_fixture import Consumer
@@ -99,6 +98,13 @@ class ClientTests(unittest.TestCase):
     def test_private_retained_outputs(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
+            previous_umask = os.umask(0)
+            try:
+                raw = private_directory(root / 'private/raw')
+                with private_open(raw / 'capture.log', 'w') as stream: stream.write('raw')
+            finally: os.umask(previous_umask)
+            self.assertEqual(raw.stat().st_mode & 0o777, 0o700)
+            self.assertEqual((raw / 'capture.log').stat().st_mode & 0o777, 0o600)
             subprocess.run(['git', 'init', '-q'], cwd=root, check=True)
             subprocess.run(['git', 'config', 'user.email', 'test@example.com'], cwd=root, check=True)
             subprocess.run(['git', 'config', 'user.name', 'Test'], cwd=root, check=True)
@@ -120,16 +126,9 @@ class ClientTests(unittest.TestCase):
     def test_trusted_verify_journey(self):
         c = Consumer()
         self.addCleanup(c.close)
-        c.git('add', '-f', 'work/w/engineering-model.json')
-        c.git('commit', '-qm', 'retain fixture engineering model')
+        c.git('checkout', '-b', 'main')
         c.write('.agents/verification.yaml', "schema: ask-checkplan/v1\nno_production_datastore: true\nchecks:\n  - id: environment\n    tier: mandatory\n    command: python3 -c \"import os; assert os.environ.get('SAFE_EXTRA') == 'visible'; assert 'JIRA_PERSONAL_TOKEN' not in os.environ; assert 'BASH_ENV' not in os.environ\"\n    env_allow: [SAFE_EXTRA]\n")
-        sha = c.commit('configure safe verifier extras')
-        c.sha = sha
-        c.contracts = load_accepted(c.root, 'w', sha, sha)
-        review = c.make_review()
-        c.write('work/w/traceability/review-input.json', review)
-        record_test_review(c.root, 'w', sha, sha, 'work/w/traceability/review-input.json', 'fixture-coordinator')
-        run_tests(c.root, c.contracts, sha)
+        c.commit('configure safe verifier extras')
         env = {k:v for k,v in os.environ.items() if k not in {'ASK_ROOT','ASK_WORK_ID','SAFE_EXTRA','JIRA_PERSONAL_TOKEN','BASH_ENV','PYTHONPATH'}}
         env.update(SAFE_EXTRA='visible', JIRA_PERSONAL_TOKEN='dummy-token', BASH_ENV='/tmp/no-such-startup-file', PYTHONPATH='/tmp/poison')
         run = subprocess.run([str(c.root/'ask'), 'verify'], cwd=c.root, env=env, text=True, capture_output=True)
@@ -138,10 +137,6 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(help_run.returncode, 0, help_run.stdout + help_run.stderr)
         self.assertIn('filesystem and network access', help_run.stdout)
         self.assertIn('isolated CI', help_run.stdout)
-        receipts = list((c.root/'work/w/traceability/static-runs').glob('*/0.log'))
-        self.assertEqual(len(receipts), 1)
-        self.assertEqual(receipts[0].parent.stat().st_mode & 0o777, 0o700)
-        self.assertEqual(receipts[0].stat().st_mode & 0o777, 0o600)
 
 
 if __name__ == '__main__':
