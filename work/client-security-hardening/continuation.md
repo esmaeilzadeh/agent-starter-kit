@@ -1,6 +1,23 @@
 # Continuation: 2026-11-19
 
-## Current endpoint: Plan ready, stop before implementation
+## Current endpoint: implementation authorized; stop at orchestrator handoff
+
+The human's explicit direction is `implement`. This extends the prior plan-ready
+endpoint for the approved contract without changing What, Why, or assumptions;
+the approved `intent.md` and confirmation remain byte-identical. Implementation
+has not started. The first task is CSH-01, after the required orchestrator
+handoff.
+
+The approved specification requires the current Codex orchestrator to use the
+latest accessible implementor, with a human-selected exact override preserved.
+The accepted plan's current Codex example is Luna. The current orchestrator is
+recorded as `GPT-6 (exact variant unavailable)`, and available controls do not
+provide a supported current-session model switch. A separate task started with
+another model would not switch this orchestrator. Stop here until the human
+switches this session to the latest accessible Codex implementor and resumes.
+Do not infer that a cached model is currently accessible.
+
+## Prior endpoint: Plan ready, stop before implementation
 
 The implementation plan is ready. Independent Astra plan review APPROVED the
 exact contract at `64ec68e5409b461d0a5b3c3e88644c63e29044f8`; all three prior
