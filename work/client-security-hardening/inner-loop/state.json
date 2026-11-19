@@ -1,24 +1,24 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 2,
+  "revision": 3,
   "coordinator_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
     "CSH-01": {
-      "status": "interrupted",
-      "base_sha": "",
+      "status": "running",
+      "base_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
       "evidence": {},
-      "attempt_number": 1,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "attempt_number": 2,
+      "attempt_id": "CSH-01:attempt-2",
+      "accepted_plan_ref": "51f00358e9580a782ad997d942c6e364ccf82e12",
+      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "attempt_started_revision": 3,
       "attempt_history": [
         {
           "attempt_id": "CSH-01:attempt-1",
@@ -37,7 +37,9 @@
           "started_revision": 1,
           "interrupted_revision": 2
         }
-      ]
+      ],
+      "reopened_from_attempt": "CSH-01:attempt-1",
+      "reopen_reason": "Resume authorized implementation after Astra approval of the explicit implementation amendment"
     },
     "CSH-02": {
       "status": "pending",
