@@ -9,14 +9,25 @@ extension. The exact human response `approved` binds the complete revised intent
 The proposed-draft title and historical pending sentence inside the byte-preserved
 intent are superseded by the approval record, not another approval request.
 
-## Authorization and stop
+## Authorization and execution boundary
 
-Prepare and independently review this implementation contract, then STOP.
-No production changes, behavior tests, inner-loop execution, merges, pushes or
-publication are authorized in this session. A ready plan is not implemented or
-accepted product behavior. A later explicit implementation instruction is needed;
-a generic continuation returns this endpoint. Do not enter the implementation
-orchestrator switch gate merely to complete Plan.
+The plan-ready endpoint was reached, then the human explicitly directed
+`implement`; that later direction extends execution authority and is recorded in
+`continuation.md`. What, Why, assumptions, accepted intent bytes and intent
+confirmation are unchanged. Execute the reviewed TaskGraph in order. CSH-01 must
+first author and independently review the CSH-T38/T39 test-only Red baseline;
+production edits begin only after that approval. Preserve the remaining task,
+review, verification and final acceptance evidence required below.
+
+### Authorized implementation amendment — 2026-11-19
+
+The human's explicit `implement` direction supersedes the earlier plan-only
+endpoint. The CSH-01 test baseline is committed at
+`371e4a5741f34afb0b2c37401fc847dc14309664`; frozen run
+`01ba1187a3584c9184579b9af66fdc07` collected CSH-T38 and CSH-T39 and recorded
+behavior-assertion Reds. Independent reviewer `gpt-6-astra/security-plan-review`
+approved that exact baseline. CSH-10 remains pending; this early evidence does
+not advance its task state. Continue implementation from CSH-01.
 
 ## Approach
 
@@ -231,11 +242,10 @@ separate focused repair before overlapping changes. Park unrelated findings.
 
 ## Contract and completion evidence
 
-Before any future implementation, validate Engineering Model, TaskGraph and test
-contract, independently review the exact spec/plan/graph digests, commit them, and
-record coordinator acceptance of the reviewed test obligations. The accepted pin
-authorizes the contract, not execution beyond this plan-only endpoint. Do not
-initialize inner-loop state or start a task until explicit implementation authority.
+The accepted test pin authorizes the exact spec, plan, graph and mapped obligations.
+Implementation authority is extended by the later explicit human direction
+recorded above. Each task still requires candidate-bound Red/Green where
+applicable, independent review, and coordinator integration evidence.
 
 Later implementation completion requires candidate-bound semantic review, actual
 Red/Green where applicable, full final coordinator Verify and human acceptance.
@@ -248,11 +258,11 @@ an explicit product root; do not accidentally validate its own frozen workstream
 
 Managed execution of untrusted branches, hosted workbench access, broader workflow
 redesign, automatic Git history/index rewriting, a new release signing service,
-model-price optimization, arbitrary child-model substitution for an orchestrator,
-and any implementation in this session.
+model-price optimization, and arbitrary child-model substitution for an
+orchestrator.
 
 ## Endpoint
 
-When the independent contract review and planning checks pass, report Plan ready
-and stop. Preserve this endpoint in continuation recovery; no future model handoff
-or implementation gate is currently missing authorization to finish planning.
+The plan-ready milestone is complete and its original stop has been superseded by
+the recorded implementation direction. Finish the ten TaskGraph tasks in order,
+run final coordinator Verify, and leave workstream acceptance for the human.

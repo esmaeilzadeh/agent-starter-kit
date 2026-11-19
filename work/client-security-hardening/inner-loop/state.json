@@ -1,13 +1,13 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 1,
+  "revision": 2,
   "coordinator_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
     "CSH-01": {
-      "status": "running",
-      "base_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
+      "status": "interrupted",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
@@ -15,11 +15,29 @@
       "debug_round": 0,
       "evidence": {},
       "attempt_number": 1,
-      "attempt_id": "CSH-01:attempt-1",
-      "accepted_plan_ref": "95f797b3dfc41dce61bf20dd5d80ecff614fa75f",
-      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
-      "attempt_started_revision": 1,
-      "attempt_history": []
+      "attempt_id": "",
+      "accepted_plan_ref": "",
+      "accepted_plan_digest": "",
+      "attempt_started_revision": null,
+      "attempt_history": [
+        {
+          "attempt_id": "CSH-01:attempt-1",
+          "attempt_number": 1,
+          "status": "interrupted",
+          "reason": "Rebase the authorized CSH-01 attempt after the reviewed CSH-10 early Red baseline commits",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
+          "interrupted_candidate_sha": "371e4a5741f34afb0b2c37401fc847dc14309664",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {},
+          "accepted_plan_ref": "95f797b3dfc41dce61bf20dd5d80ecff614fa75f",
+          "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "execution_runs": [],
+          "started_revision": 1,
+          "interrupted_revision": 2
+        }
+      ]
     },
     "CSH-02": {
       "status": "pending",
