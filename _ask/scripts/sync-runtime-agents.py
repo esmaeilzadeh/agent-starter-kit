@@ -193,6 +193,9 @@ def validate_model(value, runtime: str, stage: str) -> str:
 
 def parse_generated_toml(text: str) -> dict:
     """Parse the assignment and multiline-string subset used by agent.toml.tpl."""
+    if any(unicodedata.category(char) == "Cc" and char not in "\t\n\r" for char in text):
+        raise ValueError("control character in TOML template")
+
     def validate_multiline_escapes(value: str) -> None:
         index = 0
         while index < len(value):
@@ -241,11 +244,16 @@ def parse_generated_toml(text: str) -> dict:
             raise ValueError(f"duplicate TOML field: {key}")
         if raw.startswith('"""'):
             body = [raw[3:]] if raw[3:] else []
+            if body and '"""' in body[0]:
+                raise ValueError(f"unsupported embedded TOML delimiter: {key}")
             while not body or not body[-1].endswith('"""'):
                 if index == len(lines):
                     raise ValueError(f"unterminated TOML multiline string: {key}")
-                body.append(lines[index])
+                line = lines[index]
                 index += 1
+                if line != '"""' and '"""' in line:
+                    raise ValueError(f"unsupported embedded TOML delimiter: {key}")
+                body.append(line)
             if body[-1] != '"""':
                 raise ValueError(f"invalid TOML multiline string terminator: {key}")
             body.pop()
@@ -253,6 +261,9 @@ def parse_generated_toml(text: str) -> dict:
             validate_multiline_escapes(value)
             document[key] = value
         else:
+            if not raw.startswith('"') or not raw.endswith('"'):
+                raise ValueError(f"expected TOML basic string: {key}")
+            validate_multiline_escapes(raw[1:-1])
             value = json.loads(raw)
             if not isinstance(value, str):
                 raise ValueError(f"expected TOML string field: {key}")
