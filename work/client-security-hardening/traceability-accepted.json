@@ -1,10 +1,10 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "64ec68e5409b461d0a5b3c3e88644c63e29044f8",
+  "contract_sha": "1291552a68cd31b6561e0fe91be693e507d34bb5",
   "work_id": "client-security-hardening",
   "reviewer": "gpt-6-astra/security-plan-review",
-  "recorded_by": "codex/planning-coordinator",
+  "recorded_by": "codex/implementation-coordinator",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
   "plan_review": {
@@ -19,7 +19,7 @@
     "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
     "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
     "graph_digest": "6d99009738a029cb42c546d93726b7864445ab5feecc5ed2f5a98305fbaa4668",
-    "plan_markdown_sha256": "4b6db0e6bf8d467ae9fdb6746c97605afaed5b1952dcdd52ff491c327d4c0222",
+    "plan_markdown_sha256": "5f57ea42d3b2fb1c9fde2860339cbfd25d5230b226879d66ed19b04d5f6c1ae1",
     "frozen_contract_sha": "88035127763fb1436775c13c941fbcba7484d581",
     "findings": [],
     "criterion_assessments": [
@@ -249,12 +249,11 @@
       "evidence_sequence": "T38/T39 are authored under early CSH-01 ownership before production; coordinator records task-scoped CSH-10 assertion Red without starting that task. Same-contract ledger evidence and source ancestry are compatible with the frozen traceability reader; final review checks actual assertion continuity."
     },
     "limitations": [
-      "Planning approval only; this is not implementation or product acceptance.",
-      "No behavior tests, exploit reproduction, dependency audit or paid runtime calls ran.",
-      "The declared future tests have not been implemented or executed. Genuine assertion Red and final Green remain required where applicable.",
+      "This approval authorizes implementation from CSH-01; it is not product verification, merge, publication, or final human acceptance.",
+      "Only the early CSH-T38/T39 assertion Red baseline has run; task-scoped behavior checks and final Green evidence remain required.",
       "Exact package/skill pins remain reviewed CSH-01 outputs before external execution; unavailable provenance or compatibility blocks use.",
-      "Actual runtime/account availability and current-session switch capabilities require implementation-stage evidence. Unsupported/unknown capabilities retain the specified manual/escalation paths.",
-      "Review approval binds this exact spec, test plan, graph and plan Markdown. Material contract revisions require renewed independent review."
+      "Actual runtime/account availability and current-session switch capabilities require implementation-stage evidence. Unsupported or unknown capabilities retain the specified manual/escalation paths.",
+      "The amendment approval binds the exact candidate and plan Markdown hash recorded above; material contract revisions require renewed independent review."
     ],
     "supersedes": {
       "decision": "REJECTED",
@@ -277,9 +276,36 @@
         "decision": "RESOLVED",
         "evidence": "CSH-01 owns initial journey/fixture authorship before production writes. Coordinator captures CSH-T38/T39 assertion Red as scope=task, task_id=CSH-10 under the same accepted contract; initial source stays an ancestor and final review verifies assertion continuity. CSH-10 remains sole execution/completion owner with no early state transition."
       }
-    ]
+    ],
+    "reviewed_candidate_sha": "eebe137bb70629716f5333b7e90d501a25d69586",
+    "authorization_amendment_review": {
+      "decision": "APPROVED",
+      "reviewer": "gpt-6-astra/security-plan-review",
+      "candidate_sha": "eebe137bb70629716f5333b7e90d501a25d69586",
+      "plan_markdown_sha256": "5f57ea42d3b2fb1c9fde2860339cbfd25d5230b226879d66ed19b04d5f6c1ae1",
+      "reviewed_at": "2026-11-19",
+      "authorization": "The explicit user direction implement supersedes the plan-ready stop; implementation resumes at CSH-01.",
+      "contract_unchanged": [
+        "accepted intent",
+        "specification",
+        "test plan",
+        "TaskGraph",
+        "task order"
+      ],
+      "early_baseline": {
+        "candidate_sha": "371e4a5741f34afb0b2c37401fc847dc14309664",
+        "run_id": "01ba1187a3584c9184579b9af66fdc07",
+        "cases": [
+          "CSH-T38",
+          "CSH-T39"
+        ],
+        "task_state": "CSH-10 remains pending; early Red does not advance it"
+      },
+      "human_acceptance_remains_required": true,
+      "findings": []
+    }
   },
-  "plan_review_digest": "fbc97aa2ba21383f8a1354540692ee0c6b1d6e00eb786634ce0a88167fdcab8c",
+  "plan_review_digest": "9726acdbd585db66d6e205c00cebba0423565fc3fbcfa0bf60047f8abb0ad58b",
   "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
   "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
   "graph_digest": "6d99009738a029cb42c546d93726b7864445ab5feecc5ed2f5a98305fbaa4668"
