@@ -127,16 +127,22 @@ class ClientTests(unittest.TestCase):
 
         template = self.root / '.agents/ask/bindings/templates/agent.toml.tpl'
         original_template = template.read_text(encoding='utf-8')
-        template.write_text(original_template.replace('Runtime: {{runtime}}',
-                                                       'Runtime: {{runtime}}\\q'), encoding='utf-8')
         env = self.environment(ASKIT_TRANSACTION_ACTIVE='1')
-        result = subprocess.run(
-            ['python3', '-S', '_ask/scripts/sync-runtime-agents.py'],
-            cwd=self.root, env=env, text=True, capture_output=True,
+        invalid_templates = (
+            original_template.replace('Runtime: {{runtime}}', 'Runtime: {{runtime}}\\q'),
+            original_template.replace('Runtime: {{runtime}}', 'Runtime: {{runtime}} """ trailing'),
+            original_template.replace('description = "{{description}}"', r'description = "\/"'),
+            original_template.replace('Runtime: {{runtime}}', 'Runtime: {{runtime}}\x0btrailing'),
         )
-        template.write_text(original_template, encoding='utf-8')
-        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertEqual(self.snapshot(), before)
+        for invalid_template in invalid_templates:
+            template.write_text(invalid_template, encoding='utf-8')
+            result = subprocess.run(
+                ['python3', '-S', '_ask/scripts/sync-runtime-agents.py'],
+                cwd=self.root, env=env, text=True, capture_output=True,
+            )
+            template.write_text(original_template, encoding='utf-8')
+            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertEqual(self.snapshot(), before)
 
         final_output = self.root / '.opencode/agents/kit-10-accept.md'
         final_output.write_text('client edit\n', encoding='utf-8')
