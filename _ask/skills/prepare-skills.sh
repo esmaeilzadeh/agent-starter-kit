@@ -2,7 +2,7 @@
 # Prepare the selected pinned skills after validating their identities and approvals.
 set -euo pipefail
 
-ROOT="${ASK_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 MANIFEST="$ROOT/.agents/ask.local/skills/manifest.yaml"
 if [[ ! -f "$MANIFEST" ]]; then
   MANIFEST="$ROOT/_ask/skills/manifest.yaml"

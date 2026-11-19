@@ -29,6 +29,92 @@ Then in an app git repo:
 EOF
 }
 
+askit_release_record() {
+  python3 - "$1" "$2" "${3:-}" <<'PY'
+import json, os, re, stat, subprocess, sys, tempfile
+from pathlib import Path
+
+cache, action, commit = Path(sys.argv[1]).resolve(strict=True), sys.argv[2], sys.argv[3]
+config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config").expanduser().absolute()
+for part in (config, *config.parents):
+    if part != part.parent and part.is_symlink():
+        raise SystemExit("askit: trusted release record path cannot contain symlinks")
+config = config.resolve()
+try:
+    root = subprocess.run(["git", "rev-parse", "--show-toplevel"], text=True,
+                          capture_output=True, check=True).stdout.strip()
+    root = Path(root).resolve()
+except (subprocess.CalledProcessError, OSError):
+    root = None
+if root and (config == root or root in config.parents):
+    raise SystemExit("askit: trusted release records must be stored outside the project")
+
+directory = config / "askit"
+directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+if directory.is_symlink() or directory.stat().st_uid != os.getuid():
+    raise SystemExit("askit: trusted release directory must be owned by the current user")
+os.chmod(directory, 0o700)
+record = directory / "trusted-releases.json"
+if record.exists():
+    if record.is_symlink() or not record.is_file():
+        raise SystemExit("askit: trusted release record must be a regular file")
+    info = record.stat()
+    if info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) & 0o077:
+        raise SystemExit("askit: trusted release record must be private and user-owned")
+    try:
+        data = json.loads(record.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        raise SystemExit("askit: trusted release record is invalid")
+else:
+    data = {"schema": "askit-trusted-releases/v1", "releases": {}}
+if data.get("schema") != "askit-trusted-releases/v1" or not isinstance(data.get("releases"), dict):
+    raise SystemExit("askit: trusted release record is invalid")
+
+head = subprocess.run(["git", "-C", str(cache), "rev-parse", "--verify", "HEAD"],
+                      text=True, capture_output=True, check=True).stdout.strip()
+tree = subprocess.run(["git", "-C", str(cache), "rev-parse", "HEAD^{tree}"],
+                      text=True, capture_output=True, check=True).stdout.strip()
+index_tree = subprocess.run(["git", "-C", str(cache), "write-tree"],
+                            text=True, capture_output=True, check=True).stdout.strip()
+status = subprocess.run(["git", "-C", str(cache), "status", "--porcelain", "--untracked-files=all"],
+                        text=True, capture_output=True, check=True).stdout
+if not re.fullmatch(r"[0-9a-f]{40}", head) or tree != index_tree or status:
+    raise SystemExit("askit: cached release is modified; reinstall a verified commit")
+
+key = str(cache)
+if action == "store":
+    if head != commit:
+        raise SystemExit("askit: cached release does not match the verified commit")
+    data["releases"][key] = head
+elif action == "check":
+    trusted = data["releases"].get(key)
+    if trusted is None:
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            raise SystemExit(f"askit: no trusted release record for {head}; rerun interactively or self-install with --expected-commit")
+        print(f"askit: trust installed kit release {head} for {cache}?")
+        if input("Trust this commit? [y/N] ").strip().lower() not in {"y", "yes"}:
+            raise SystemExit("askit: release trust was not granted")
+        data["releases"][key] = head
+    elif trusted != head:
+        raise SystemExit("askit: cached release commit changed; reinstall a verified commit")
+else:
+    raise SystemExit("askit: invalid trusted release action")
+
+fd, temporary = tempfile.mkstemp(prefix=".trusted-releases-", dir=directory)
+try:
+    os.fchmod(fd, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        json.dump(data, stream, indent=2)
+        stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, record)
+finally:
+    if os.path.exists(temporary):
+        os.unlink(temporary)
+PY
+}
+
 askit_self_install() {
   local SOURCE="${KIT_SOURCE_REPO:-https://github.com/esmaeilzadeh/agent-starter-kit.git}"
   local REF="${KIT_REF:-main}"
@@ -109,6 +195,11 @@ askit_self_install() {
     echo "askit: cannot publish verified release cache" >&2
     return 1
   fi
+  if ! askit_release_record "$CACHE" store "$ACTUAL_COMMIT"; then
+    mv "$CACHE" "$STAGING/repo"
+    [[ -z "$BACKUP" ]] || mv "$BACKUP" "$CACHE"
+    return 1
+  fi
   [[ -z "$BACKUP" ]] || rm -rf "$BACKUP"
 
   mkdir -p "$BIN"
@@ -182,6 +273,14 @@ askit_home() {
 }
 
 ASKIT_DIR="$(askit_home)"
+if [[ "${1:-}" == "verify-release-cache" ]]; then
+  askit_release_record "$ASKIT_DIR" check
+  exit
+fi
+ASKIT_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit"
+if [[ -d "$ASKIT_CACHE" && "$(cd "$ASKIT_CACHE" && pwd -P)" == "$ASKIT_DIR" ]]; then
+  askit_release_record "$ASKIT_DIR" check || exit $?
+fi
 
 askit_git_root() {
   git rev-parse --show-toplevel 2>/dev/null

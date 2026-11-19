@@ -22,6 +22,11 @@ if [[ -z "$KIT" ]]; then
   exit 1
 fi
 
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit"
+if [[ -d "$CACHE" && "$(cd "$CACHE" && pwd -P)" == "$(cd "$KIT" && pwd -P)" ]]; then
+  "$KIT/askit" verify-release-cache
+fi
+
 # shellcheck disable=SC2086
 "$KIT/ask" install ${ASKIT_INSTALL_FLAGS:---skip-prepare} "$TARGET"
 

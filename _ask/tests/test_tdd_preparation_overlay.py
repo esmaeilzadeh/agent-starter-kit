@@ -1,15 +1,22 @@
 from __future__ import annotations
 
 import os
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "_ask/scripts"))
+import distribution
 
 
 class PreparationTests(unittest.TestCase):
@@ -79,8 +86,17 @@ class PreparationTests(unittest.TestCase):
         env["PATH"] = str(self.root / "bin") + os.pathsep + env.get("PATH", "")
         if skip_install:
             env["SKIP_INSTALL"] = "1"
-        return subprocess.run(["./ask", "prepare"], cwd=self.root, env=env,
-                              text=True, capture_output=True)
+        else:
+            env.pop("SKIP_INSTALL", None)
+        stdout, stderr = StringIO(), StringIO()
+        with patch.dict(os.environ, env), redirect_stdout(stdout), redirect_stderr(stderr):
+            result = distribution.prepare(
+                self.root, self.overlay, self.root / "_ask/skills/dependency-pins.json",
+                installer=lambda _entry, _source: subprocess.run(
+                    ["npx"], cwd=self.root, text=True, capture_output=True),
+                source_resolver=lambda _entry, _pins, path: path,
+            )
+        return SimpleNamespace(returncode=result, stdout=stdout.getvalue(), stderr=stderr.getvalue())
 
     def test_both_views_use_canonical_tdd_override(self):
         manifest_before = self.overlay.read_bytes()
