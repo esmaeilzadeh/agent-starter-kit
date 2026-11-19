@@ -342,7 +342,7 @@
       "change_kind": "new",
       "scenario": {
         "given": "A disposable client and mandatory installer stand-in that fails",
-        "when": "Public prepare, install and upgrade commands run",
+        "when": "Public prepare, install, bootstrap and upgrade commands run",
         "then": [
           "Every caller reports failure",
           "No success result is emitted and the caller stops further delegation"
@@ -435,18 +435,18 @@
       "change_kind": "regression",
       "scenario": {
         "given": "An installed launcher and an untrusted marker project",
-        "when": "Bash/Zsh completion and launcher help are invoked",
+        "when": "The installed --complete candidate lookup is invoked",
         "then": [
-          "Installed completion output is produced",
-          "Project dispatcher marker and shell startup files remain unchanged"
+          "Installed completion candidates are produced",
+          "Project dispatcher marker remains absent"
         ]
       },
       "expected_assertions": [
         {
           "criterion_id": "CSH-001",
           "checks": [
-            "Installed completion output is produced",
-            "Project dispatcher marker and shell startup files remain unchanged"
+            "Installed completion candidates are produced",
+            "Project dispatcher marker remains absent"
           ]
         }
       ],
@@ -466,9 +466,9 @@
       "change_kind": "new",
       "scenario": {
         "given": "Disposable user startup files and launcher prefix",
-        "when": "Self-install and daily use precede explicit completion installation",
+        "when": "Self-install, completion snippet generation, launcher help and daily use precede explicit completion installation",
         "then": [
-          "No startup edits by default",
+          "No startup edits or project help delegation occur before trust or explicit completion opt-in",
           "Only explicit opt-in changes validated startup files"
         ]
       },
@@ -476,7 +476,7 @@
         {
           "criterion_id": "CSH-001",
           "checks": [
-            "No startup edits by default",
+            "No startup edits or project help delegation occur before trust or explicit completion opt-in",
             "Only explicit opt-in changes validated startup files"
           ]
         }

@@ -4,6 +4,9 @@ tasks:
   - id: CSH-01
     depends_on: []
     owned_paths:
+      - _ask/scripts/install-kit.sh
+      - _ask/tests/test_client_journeys.py
+      - _ask/tests/client_security_fixtures.py
       - askit
       - _ask/scripts/askit-bootstrap.sh
       - _ask/scripts/upgrade-kit.sh

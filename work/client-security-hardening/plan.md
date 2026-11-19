@@ -57,7 +57,21 @@ Shared owned paths occur only across explicitly ordered tasks.
 
 ### CSH-01: Verified distribution and dependency approvals
 
-Criteria: CSH-005.
+Criteria: CSH-005. Initial authorship of the CSH-10 journey tests is also owned
+here so their behavioral Red precedes all production changes; their execution
+obligations and final completion remain exclusively CSH-10.
+
+Before any production edit, author `test_client_journeys.py` and its shared
+fixture with the exact CSH-T38/T39 assertions against existing public CLI entry
+points. Commit that test-only baseline as an ancestor of all later candidates.
+The coordinator runs the accepted contract with `--scope task --task-id CSH-10
+--phase red --candidate-sha <baseline-sha>` and retains the actual results.
+Both cases must collect and fail observable behavior assertions; missing imports,
+helper modules, setup failures or artificial failure supply no Red. No CSH-10 task
+start or state transition is implied by this early evidence capture. If baseline
+assertions already pass, retain Green and resolve their classification through
+independent contract review before implementing, without altering behavior to
+manufacture Red. Review the baseline assertions before production starts.
 
 Resolve a selected release to a full immutable commit before fetched kit code runs. Require an expected full commit from the trusted installed release record or an explicit user selection; verify fetched HEAD and working-tree contents against it. Never execute the downloaded install/upgrade helper before that check. A tag is only a lookup name, not independent proof. Preserve the direct checked-out-script explicit-action boundary. Use the installed launcher for bootstrap and recovery entry points.
 
@@ -71,7 +85,7 @@ Criteria: CSH-001.
 
 Add an installed-launcher trust action and refusal before project delegation. Use the physical Git checkout root as the trust key: symlink aliases of that root share trust; a moved or different checkout requires trust again. The identity is a deterministic SHA-256 manifest of the dispatcher and every kit/runtime executable or executable configuration it can reach, including installed helper/module trees, verification commands, hooks and configured code-loading paths. Hash path, file kind, mode and content, not just ask or a Git HEAD. Reject escaping executable symlinks. Explicit trusted-project code can execute with the account's privileges; this is enrollment, not a sandbox.
 
-Keep trust records in an owner-only user directory, bind them to checkout+identity and atomically replace them. Changes to execution-bearing overlays, helpers or upgrade content invalidate trust. Ordinary model/public metadata that cannot alter execution is excluded by an explicit classification and tests. Show the identity being trusted; the project cannot grant its own trust. Noninteractive daily commands require an existing matching record. Completion and launcher help use installed code and never call the project dispatcher. Remove daily automatic completion installation; provide one explicit opt-in action with validated startup-file writes.
+Keep trust records in an owner-only user directory, bind them to checkout+identity and atomically replace them. Changes to execution-bearing overlays, helpers or upgrade content invalidate trust. Ordinary model/public metadata that cannot alter execution is excluded by an explicit classification and tests. Show the identity being trusted; the project cannot grant its own trust. Noninteractive daily commands require an existing matching record. Completion candidate lookup retains its focused Green guard (T07). Launcher help, completion snippet generation and their lack of implicit startup writes are new T08 behavior requiring real assertion Red. Completion and launcher help use installed code and never call the project dispatcher. Remove daily automatic completion installation; provide one explicit opt-in action with validated startup-file writes.
 
 ### CSH-03: Complete write preflight and durable recovery
 
@@ -139,7 +153,12 @@ Local inspection establishes only that Codex exposes a startup --model option an
 
 Criteria: CSH-001, CSH-002, CSH-003, CSH-004, CSH-005, CSH-006, CSH-007, CSH-008, CSH-009, CSH-010, CSH-011, CSH-012.
 
-Run the full disposable client journeys and document the supported acquisition/trust boundary, install/upgrade recovery, source approval, credential migration/rotation, verifier environment extras, private-log cleanup, loopback override and one-time model decision/handoff. Replace mutable curl-pipe instructions that imply verified acquisition with explicit acquisition/expected-revision guidance; the initial trusted launcher remains a user trust decision. Include existing-client and legacy model-record migration without automatic Git index/history edits.
+Use the CSH-01-authored CSH-T38/T39 journey tests and retain their early
+coordinator-executed CSH-10 assertion Red against the same accepted spec/plan.
+The baseline must be an ancestor of the final candidate; independent review
+checks exact assertion continuity and final Green. Do not defer initial journey
+test authorship until this task, relabel the new behavior as regression or
+weaken assertions. Then run the full disposable client journeys and document the supported acquisition/trust boundary, install/upgrade recovery, source approval, credential migration/rotation, verifier environment extras, private-log cleanup, loopback override and one-time model decision/handoff. Replace mutable curl-pipe instructions that imply verified acquisition with explicit acquisition/expected-revision guidance; the initial trusted launcher remains a user trust decision. Include existing-client and legacy model-record migration without automatic Git index/history edits.
 
 Map every changed entry point to a focused unittest case; reuse existing shell journeys as subprocess fixtures or Green regressions where they already protect accepted behavior. Keep raw outputs private. Finish independent semantic review and coordinator Verify only when later implementation is explicitly authorized. This task's contract is planned now; it is not executed in this planning session.
 
@@ -152,10 +171,11 @@ exact canonical case ID and plan digest, not merely a shared criterion. All twel
 criteria require executable evidence; none is review-only. Existing shell tests
 are additional boundary regressions, not substitutes for instrumented cases.
 
-At each later authorized implementation task: inspect every caller, add the
+At each later authorized implementation task, except the explicitly early-captured
+CSH-T38/T39 journeys: inspect every caller, add the
 focused cases, capture genuine assertion Red for new behavior, then implement,
 refactor, commit and obtain independent review of the candidate and assertion
-continuity. Collection/import/setup failures supply no Red. CSH-T07 (completion)
+continuity. Collection/import/setup failures supply no Red. CSH-T07 (`--complete` candidate lookup only)
 and CSH-T11 (client preservation) protect existing accepted behavior and are Green
 regressions; establish their baseline without manufacturing failure. If a planned
 new case already protects accepted passing behavior, retain it as Green and amend

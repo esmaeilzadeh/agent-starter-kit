@@ -945,7 +945,7 @@
     {
       "case": {
         "case_id": "CSH-T01",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t01-scenario",
@@ -970,7 +970,7 @@
     {
       "case": {
         "case_id": "CSH-T02",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t02-scenario",
@@ -995,7 +995,7 @@
     {
       "case": {
         "case_id": "CSH-T03",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t03-scenario",
@@ -1020,7 +1020,7 @@
     {
       "case": {
         "case_id": "CSH-T04",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t04-scenario",
@@ -1045,7 +1045,7 @@
     {
       "case": {
         "case_id": "CSH-T05",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t05-scenario",
@@ -1070,7 +1070,7 @@
     {
       "case": {
         "case_id": "CSH-T06",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t06-scenario",
@@ -1095,7 +1095,7 @@
     {
       "case": {
         "case_id": "CSH-T07",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t07-scenario",
@@ -1104,7 +1104,7 @@
         "id": "CSH-001",
         "path": "specs/current/client-security-hardening.json"
       },
-      "title": "Bash/Zsh completion and launcher help are invoked",
+      "title": "The installed --complete candidate lookup is invoked",
       "type": "scenario"
     },
     {
@@ -1120,7 +1120,7 @@
     {
       "case": {
         "case_id": "CSH-T08",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t08-scenario",
@@ -1129,7 +1129,7 @@
         "id": "CSH-001",
         "path": "specs/current/client-security-hardening.json"
       },
-      "title": "Self-install and daily use precede explicit completion installation",
+      "title": "Self-install, completion snippet generation, launcher help and daily use precede explicit completion installation",
       "type": "scenario"
     },
     {
@@ -1145,7 +1145,7 @@
     {
       "case": {
         "case_id": "CSH-T09",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t09-scenario",
@@ -1170,7 +1170,7 @@
     {
       "case": {
         "case_id": "CSH-T10",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t10-scenario",
@@ -1195,7 +1195,7 @@
     {
       "case": {
         "case_id": "CSH-T11",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t11-scenario",
@@ -1220,7 +1220,7 @@
     {
       "case": {
         "case_id": "CSH-T12",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t12-scenario",
@@ -1245,7 +1245,7 @@
     {
       "case": {
         "case_id": "CSH-T13",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t13-scenario",
@@ -1270,7 +1270,7 @@
     {
       "case": {
         "case_id": "CSH-T14",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t14-scenario",
@@ -1295,7 +1295,7 @@
     {
       "case": {
         "case_id": "CSH-T15",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t15-scenario",
@@ -1320,7 +1320,7 @@
     {
       "case": {
         "case_id": "CSH-T16",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t16-scenario",
@@ -1345,7 +1345,7 @@
     {
       "case": {
         "case_id": "CSH-T17",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t17-scenario",
@@ -1370,7 +1370,7 @@
     {
       "case": {
         "case_id": "CSH-T18",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t18-scenario",
@@ -1395,7 +1395,7 @@
     {
       "case": {
         "case_id": "CSH-T19",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t19-scenario",
@@ -1420,7 +1420,7 @@
     {
       "case": {
         "case_id": "CSH-T20",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t20-scenario",
@@ -1445,7 +1445,7 @@
     {
       "case": {
         "case_id": "CSH-T21",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t21-scenario",
@@ -1470,7 +1470,7 @@
     {
       "case": {
         "case_id": "CSH-T22",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t22-scenario",
@@ -1495,7 +1495,7 @@
     {
       "case": {
         "case_id": "CSH-T23",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t23-scenario",
@@ -1520,7 +1520,7 @@
     {
       "case": {
         "case_id": "CSH-T24",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t24-scenario",
@@ -1545,7 +1545,7 @@
     {
       "case": {
         "case_id": "CSH-T25",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t25-scenario",
@@ -1570,7 +1570,7 @@
     {
       "case": {
         "case_id": "CSH-T26",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t26-scenario",
@@ -1595,7 +1595,7 @@
     {
       "case": {
         "case_id": "CSH-T27",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t27-scenario",
@@ -1620,7 +1620,7 @@
     {
       "case": {
         "case_id": "CSH-T28",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t28-scenario",
@@ -1645,7 +1645,7 @@
     {
       "case": {
         "case_id": "CSH-T29",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t29-scenario",
@@ -1670,7 +1670,7 @@
     {
       "case": {
         "case_id": "CSH-T30",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t30-scenario",
@@ -1695,7 +1695,7 @@
     {
       "case": {
         "case_id": "CSH-T31",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t31-scenario",
@@ -1720,7 +1720,7 @@
     {
       "case": {
         "case_id": "CSH-T32",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t32-scenario",
@@ -1745,7 +1745,7 @@
     {
       "case": {
         "case_id": "CSH-T33",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t33-scenario",
@@ -1770,7 +1770,7 @@
     {
       "case": {
         "case_id": "CSH-T34",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t34-scenario",
@@ -1795,7 +1795,7 @@
     {
       "case": {
         "case_id": "CSH-T35",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t35-scenario",
@@ -1820,7 +1820,7 @@
     {
       "case": {
         "case_id": "CSH-T36",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t36-scenario",
@@ -1845,7 +1845,7 @@
     {
       "case": {
         "case_id": "CSH-T37",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t37-scenario",
@@ -1870,7 +1870,7 @@
     {
       "case": {
         "case_id": "CSH-T38",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t38-scenario",
@@ -1895,7 +1895,7 @@
     {
       "case": {
         "case_id": "CSH-T39",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t39-scenario",
@@ -1920,7 +1920,7 @@
     {
       "case": {
         "case_id": "CSH-T40",
-        "plan_digest": "133e42874472d10b8288669b4f2e6d81ce6b169c2c5307853fc0f2eef6b6d775",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
         "work_id": "client-security-hardening"
       },
       "id": "csh-t40-scenario",
@@ -1943,7 +1943,7 @@
       "type": "test"
     }
   ],
-  "revision": 5,
+  "revision": 6,
   "schema": "ask-engineering-model/v2",
   "work_id": "client-security-hardening"
 }
