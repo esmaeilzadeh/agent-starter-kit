@@ -399,6 +399,10 @@ if [[ "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
   exit 0
 fi
 
+if [[ "$ask_repo" -eq 1 && -f "$ASKIT_DIR/_ask/scripts/write-transaction.py" ]]; then
+  python3 "$ASKIT_DIR/_ask/scripts/write-transaction.py" recover --root "$git_root" || exit $?
+fi
+
 if [[ "$cmd" == "trust" ]]; then
   [[ "$ask_repo" -eq 1 ]] || { echo "askit: run trust from an Ask-based Git checkout" >&2; exit 1; }
   askit_project_trust trust

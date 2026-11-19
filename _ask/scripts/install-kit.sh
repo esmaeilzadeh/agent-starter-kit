@@ -23,9 +23,25 @@ if [[ -z "$TARGET" ]]; then
   exit 2
 fi
 TARGET="$(cd "$TARGET" && pwd)"
-if [[ ! -d "$TARGET/.git" ]]; then
+if [[ "$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)" != "$TARGET" ]]; then
   echo "install-kit: target is not a git repo: $TARGET" >&2
   exit 1
+fi
+
+if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" && "$DRY_RUN" -eq 0 ]]; then
+  args=(python3 "$ROOT/_ask/scripts/write-transaction.py" run --root "$TARGET")
+  for rel in \
+    _ask/agents _ask/bindings _ask/cursor-commands _ask/policies _ask/scripts \
+    _ask/skills _ask/templates _ask/ui _ask/docs .agents/ask .agents/ask.local \
+    .agents/skills .cursor .codex/agents .claude/agents .opencode/agents \
+    .gitignore AGENTS.md ask .ask.env.example .ask; do
+    args+=(--path "$rel")
+  done
+  args+=(-- bash "$ROOT/_ask/scripts/install-kit.sh")
+  [[ "$FORCE" -eq 0 ]] || args+=(--force)
+  [[ "$SKIP_PREPARE" -eq 0 ]] || args+=(--skip-prepare)
+  args+=("{target}")
+  exec "${args[@]}"
 fi
 
 # Never touch consumer docs

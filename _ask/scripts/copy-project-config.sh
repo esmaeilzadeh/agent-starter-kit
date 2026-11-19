@@ -4,6 +4,13 @@ set -euo pipefail
 
 target="$1"
 default_manifest="$2"
+root="$(cd "$target" && pwd)"
+if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
+  exec python3 "$(dirname "$0")/write-transaction.py" run \
+    --root "$root" --path .agents/ask.local -- \
+    bash "$root/_ask/scripts/copy-project-config.sh" \
+      "{target}" "{target}/_ask/skills/manifest.yaml"
+fi
 project="$target/.agents/ask.local"
 
 copy_if_missing() {

@@ -3,6 +3,13 @@
 # Merges .agents/ask.local/stages/<stage>.md then _ask/agents/<stage>.local.md.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
+  exec python3 "$ROOT/_ask/scripts/write-transaction.py" run \
+    --root "$ROOT" \
+    --path .cursor --path .agents/ask --path .agents/skills \
+    --path .codex/agents --path .claude/agents --path .opencode/agents -- \
+    bash "{target}/_ask/scripts/sync-cursor-binding.sh"
+fi
 cd "$ROOT"
 OUT_SKILLS=".cursor/skills"
 OUT_CMDS=".cursor/commands"

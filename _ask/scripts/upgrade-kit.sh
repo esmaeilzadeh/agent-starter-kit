@@ -34,6 +34,23 @@ if [[ "$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null || true)" != "$ROO
   exit 2
 fi
 
+if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
+  args=(python3 "$ROOT/_ask/scripts/write-transaction.py" run --root "$ROOT")
+  for rel in \
+    _ask/skills _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts \
+    _ask/tests _ask/docs _ask/cursor-commands _ask/bindings _ask/OWNED-PATHS.md \
+    _ask/MAPPING.md _ask/README.md .agents/ask .agents/ask.local .agents/skills \
+    .cursor .codex/agents .claude/agents .opencode/agents .gitignore ask \
+    ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md; do
+    args+=(--path "$rel")
+  done
+  args+=(-- bash "$ROOT/_ask/scripts/upgrade-kit.sh" --version "$VERSION" --target "{target}")
+  [[ -z "$EXPECTED_COMMIT" ]] || args+=(--expected-commit "$EXPECTED_COMMIT")
+  [[ "$SKIP_PREPARE" -eq 0 ]] || args+=(--skip-prepare)
+  args+=(--source "$SOURCE_REPO")
+  exec "${args[@]}"
+fi
+
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 if ! git clone --depth 1 --branch "$VERSION" "$SOURCE_REPO" "$TMP/kit" 2>/dev/null; then
