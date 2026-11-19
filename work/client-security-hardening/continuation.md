@@ -1,6 +1,6 @@
 # Continuation: 2026-11-19
 
-## Current endpoint: implementation authorized; stop at orchestrator handoff
+## Current endpoint: CSH-01 implementation
 
 The human's explicit direction is `implement`. This extends the prior plan-ready
 endpoint for the approved contract without changing What, Why, or assumptions;
@@ -11,11 +11,9 @@ handoff.
 The approved specification requires the current Codex orchestrator to use the
 latest accessible implementor, with a human-selected exact override preserved.
 The human selected `gpt-6-luna` as the exact implementation override. The current
-orchestrator is recorded as `GPT-6 (exact variant unavailable)`, and available
-controls do not provide a supported current-session model switch. A separate
-task started with another model would not switch this orchestrator. Stop here
-until the human switches this session to `gpt-6-luna` and resumes. Do not infer
-that a cached model is currently accessible.
+turn is recorded as `gpt-6-luna` at high effort in the active Codex session log.
+This satisfies the exact model override for implementation entry. The clean
+workstream is resuming at CSH-01.
 
 ## Prior endpoint: Plan ready, stop before implementation
 
