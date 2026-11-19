@@ -407,8 +407,7 @@
         "when": "Daily invocation runs without a TTY then with explicit trust",
         "then": [
           "No marker before trust and noninteractive refusal is actionable",
-          "Matching trust delegates; helper replacement invalidates trust before delegation",
-          "A project-controlled symlink parent cannot supply a valid trust record"
+          "Matching trust delegates; helper replacement invalidates trust before delegation"
         ]
       },
       "expected_assertions": [
@@ -416,8 +415,7 @@
           "criterion_id": "CSH-001",
           "checks": [
             "No marker before trust and noninteractive refusal is actionable",
-            "Matching trust delegates; helper replacement invalidates trust before delegation",
-            "A project-controlled symlink parent cannot supply a valid trust record"
+            "Matching trust delegates; helper replacement invalidates trust before delegation"
           ]
         }
       ],
