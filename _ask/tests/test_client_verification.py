@@ -23,7 +23,7 @@ from traceability_fixture import Consumer
 
 
 class ClientTests(unittest.TestCase):
-    def test_static_check_reuses_matching_runner_result_and_artifact(self):
+    def assert_static_check_reuses_matching_runner_result_and_artifact(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             sha = 'a' * 40
@@ -198,6 +198,7 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(help_run.returncode, 0, help_run.stdout + help_run.stderr)
         self.assertIn('filesystem and network access', help_run.stdout)
         self.assertIn('isolated CI', help_run.stdout)
+        self.assert_static_check_reuses_matching_runner_result_and_artifact()
 
 
 if __name__ == '__main__':
