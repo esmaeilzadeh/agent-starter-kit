@@ -116,6 +116,30 @@ class ClientTests(unittest.TestCase):
         for call in calls:
             self.assertEqual(call.returncode, 0, call.stderr)
 
+        empty = self.fx.git_project(self.fx.root / "empty-config-target")
+        default_manifest = self.fx.root / "custom-default.yaml"
+        default_manifest.write_text("version: 1\nskills: []\n", encoding="utf-8")
+        seeded = self.fx.run([
+            "bash", str(ROOT / "_ask/scripts/copy-project-config.sh"),
+            str(empty), str(default_manifest),
+        ])
+        self.assertEqual(seeded.returncode, 0, seeded.stderr)
+        self.assertEqual((empty / ".agents/ask.local/skills/manifest.yaml").read_text(),
+                         "version: 1\nskills: []\n")
+
+        aliased = self.fx.git_project(self.fx.root / "alias-target")
+        alias = self.fx.root / "alias"
+        alias.symlink_to(aliased, target_is_directory=True)
+        installed = self._install(alias, "--skip-prepare")
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        version = self.fx.run(["git", "rev-parse", "HEAD"], cwd=ROOT).stdout.strip()
+        upgraded = self.fx.run([
+            "bash", str(ROOT / "_ask/scripts/upgrade-kit.sh"), "--version", version,
+            "--expected-commit", version, "--source", str(ROOT), "--target", str(alias),
+            "--skip-prepare",
+        ])
+        self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
+
     def test_preserve_client_settings(self) -> None:
         project = self.fx.git_project(self.fx.root / "preserve-client")
         settings = project / ".agents/ask.local/stages/01-grill.md"
