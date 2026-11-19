@@ -127,6 +127,23 @@ class ClientTests(unittest.TestCase):
         self.assertEqual((empty / ".agents/ask.local/skills/manifest.yaml").read_text(),
                          "version: 1\nskills: []\n")
 
+        legacy = self.fx.git_project(self.fx.root / "legacy-config-target")
+        (legacy / "_ask/skills").mkdir(parents=True)
+        (legacy / "_ask/skills/manifest.yaml").write_text("legacy manifest\n")
+        (legacy / "_ask/bindings").mkdir(parents=True)
+        (legacy / "_ask/bindings/models.yaml").write_text("legacy models\n")
+        (legacy / "_ask/agents").mkdir(parents=True)
+        (legacy / "_ask/agents/01-grill.local.md").write_text("legacy stage\n")
+        seeded = self.fx.run([
+            "bash", str(ROOT / "_ask/scripts/copy-project-config.sh"),
+            str(legacy), str(default_manifest),
+        ])
+        self.assertEqual(seeded.returncode, 0, seeded.stderr)
+        overlay = legacy / ".agents/ask.local"
+        self.assertEqual((overlay / "skills/manifest.yaml").read_text(), "legacy manifest\n")
+        self.assertEqual((overlay / "bindings/models.yaml").read_text(), "legacy models\n")
+        self.assertEqual((overlay / "stages/01-grill.md").read_text(), "legacy stage\n")
+
         aliased = self.fx.git_project(self.fx.root / "alias-target")
         alias = self.fx.root / "alias"
         alias.symlink_to(aliased, target_is_directory=True)
