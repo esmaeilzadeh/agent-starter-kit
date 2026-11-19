@@ -5,8 +5,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import pty
+import select
 import stat
 import subprocess
+import termios
+import time
 import unittest
 from pathlib import Path
 
@@ -39,6 +43,35 @@ class ClientTests(unittest.TestCase):
             ["python3", str(project / "_ask/scripts/tracker-config.py"), *args],
             cwd=project, env=env or self._env(), input=input,
         )
+
+    def _run_setup_tty(self, project: Path, env: dict[str, str], input: str) -> subprocess.CompletedProcess[str]:
+        master, slave = pty.openpty()
+        attrs = termios.tcgetattr(slave)
+        attrs[3] &= ~termios.ECHO
+        termios.tcsetattr(slave, termios.TCSANOW, attrs)
+        argv = [str(project / "ask"), "setup"]
+        process = subprocess.Popen(argv, cwd=project, env=env, stdin=slave, stdout=slave,
+                                   stderr=slave, close_fds=True)
+        os.close(slave)
+        os.write(master, input.encode())
+        output = bytearray()
+        deadline = time.monotonic() + 60
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    output.extend(os.read(master, 65536))
+                except OSError:
+                    break
+            if process.poll() is not None and not ready:
+                break
+        if process.poll() is None:
+            process.kill()
+            raise subprocess.TimeoutExpired(argv, 60, output=bytes(output))
+        process.wait()
+        os.close(master)
+        text = output.decode(errors="replace")
+        return subprocess.CompletedProcess(argv, process.returncode, text, text)
 
     def test_legacy_data_and_urls(self) -> None:
         project = self.fx.git_project(self.fx.root / "credential-parser")
@@ -177,8 +210,8 @@ class ClientTests(unittest.TestCase):
         mcp = self.fx.root / "home/cursor/mcp.json"
         mcp.parent.mkdir(parents=True)
         mcp.write_text('{"mcpServers":{"existing":{"command":"keep"}}}\n')
-        result = self.fx.run_tty(
-            [str(project / "ask"), "setup"], cwd=project,
+        result = self._run_setup_tty(
+            project,
             env={**self._env(bin_dir=bin_dir), "MCP_JSON": str(mcp)},
             input="\njira\nhttps://jira.example.test\ndummy-setup-token\nn\n2\n\n\n",
         )
