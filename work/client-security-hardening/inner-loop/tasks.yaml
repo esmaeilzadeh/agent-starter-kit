@@ -1,0 +1,134 @@
+schema: ask-inner-loop-tasks/v1
+work_id: client-security-hardening
+tasks:
+  - id: CSH-01
+    depends_on: []
+    owned_paths:
+      - askit
+      - _ask/scripts/askit-bootstrap.sh
+      - _ask/scripts/upgrade-kit.sh
+      - _ask/skills/prepare-skills.sh
+      - _ask/skills/manifest.yaml
+      - _ask/scripts/distribution.py
+      - _ask/skills/dependency-pins.json
+      - _ask/tests/test_client_distribution.py
+  - id: CSH-02
+    depends_on: [CSH-01]
+    owned_paths:
+      - askit
+      - _ask/scripts/ask-complete.sh
+      - _ask/scripts/install-user-completion.sh
+      - _ask/scripts/launcher-trust.py
+      - _ask/tests/test_client_launcher.py
+      - _ask/tests/test-askit-complete.sh
+      - _ask/tests/test-askit-first-run.sh
+      - _ask/tests/test-install-user-completion.sh
+  - id: CSH-03
+    depends_on: [CSH-02]
+    owned_paths:
+      - _ask/scripts/install-kit.sh
+      - _ask/scripts/upgrade-kit.sh
+      - _ask/scripts/copy-project-config.sh
+      - _ask/scripts/sync-cursor-binding.sh
+      - _ask/scripts/sync-codex-skills.py
+      - _ask/scripts/write-transaction.py
+      - _ask/scripts/install-user-completion.sh
+      - _ask/skills/prepare-skills.sh
+      - askit
+      - ask
+      - _ask/tests/test_client_writes.py
+      - _ask/tests/test-install-kit-apply.sh
+  - id: CSH-04
+    depends_on: [CSH-03]
+    owned_paths:
+      - _ask/scripts/setup.sh
+      - _ask/scripts/tracker-config.py
+      - _ask/scripts/tracker-mcp.py
+      - .ask.env.example
+      - _ask/docs/agents/issue-tracker.md
+      - _ask/tests/test_client_credentials.py
+      - _ask/tests/test-setup-env-gitignore.sh
+      - _ask/tests/test-setup-human-only.sh
+  - id: CSH-05
+    depends_on: [CSH-04]
+    owned_paths:
+      - .agents/ask/verification/run.py
+      - .agents/ask/verification/plan.py
+      - .agents/ask/verification/environment.py
+      - .agents/ask/verification/traceability/adapters.py
+      - .agents/ask/verification/traceability/unittest_runner.py
+      - .agents/ask/verification/traceability/contracts.py
+      - .agents/ask/verification/traceability/coverage.py
+      - _ask/scripts/verify.sh
+      - ask
+      - .gitignore
+      - _ask/tests/test_client_verification.py
+  - id: CSH-06
+    depends_on: [CSH-05]
+    owned_paths:
+      - _ask/scripts/sync-runtime-agents.py
+      - _ask/scripts/sync-cursor-binding.sh
+      - _ask/scripts/sync-codex-skills.py
+      - .agents/ask/bindings/templates/**
+      - .cursor/agents/**
+      - .codex/agents/**
+      - .claude/agents/**
+      - .opencode/agents/**
+      - _ask/tests/test_client_runtime_config.py
+      - _ask/tests/test-sync-runtime-agents.sh
+  - id: CSH-07
+    depends_on: [CSH-06]
+    owned_paths:
+      - _ask/scripts/ui.sh
+      - _ask/tests/test_client_workbench.py
+  - id: CSH-08
+    depends_on: [CSH-07]
+    owned_paths:
+      - .agents/ask/stages/01-grill.md
+      - .agents/ask/stages/03-spec-challenge.md
+      - .agents/ask/stages/07-review.md
+      - .agents/ask/bindings/README.md
+      - .agents/ask/bindings/models.defaults.yaml
+      - _ask/policies/workflow.md
+      - _ask/policies/delegation.md
+      - _ask/scripts/model-decisions.py
+      - _ask/scripts/sync-runtime-agents.py
+      - _ask/scripts/sync-cursor-binding.sh
+      - _ask/scripts/sync-codex-skills.py
+      - .cursor/**
+      - .codex/agents/**
+      - .claude/agents/**
+      - .opencode/**
+      - .agents/skills/kit-*/**
+      - _ask/tests/test_client_model_decisions.py
+  - id: CSH-09
+    depends_on: [CSH-08]
+    owned_paths:
+      - .agents/ask/stages/06-implement.md
+      - .agents/ask/bindings/runtimes/**
+      - _ask/scripts/model-decisions.py
+      - _ask/scripts/orchestrator-handoff.py
+      - _ask/scripts/check-workstream.sh
+      - _ask/scripts/inner_loop/driver.py
+      - _ask/scripts/inner_loop/__main__.py
+      - ask
+      - _ask/scripts/sync-runtime-agents.py
+      - .cursor/**
+      - .codex/agents/**
+      - .claude/agents/**
+      - .opencode/**
+      - .agents/skills/kit-*/**
+      - _ask/tests/test_client_orchestrator.py
+  - id: CSH-10
+    depends_on: [CSH-09]
+    owned_paths:
+      - _ask/tests/test_client_journeys.py
+      - _ask/tests/client_security_fixtures.py
+      - README.md
+      - _ask/README.md
+      - _ask/docs/client-security.md
+      - _ask/docs/codex-model-routing.md
+      - _ask/docs/codex-integration.md
+      - _ask/docs/agents/issue-tracker.md
+      - _ask/bindings/README.md
+      - .ask/README.md
