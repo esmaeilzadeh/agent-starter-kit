@@ -5,12 +5,13 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
-import json
 import os
 import re
 import stat
 import sys
 from pathlib import Path
+
+import distribution
 
 
 def resolve_uvx(root: Path) -> str:
@@ -43,7 +44,7 @@ def main() -> int:
     try:
         root = config.canonical_root(args.root)
         launcher = resolve_uvx(root)
-        pins = json.loads((root / "_ask/skills/dependency-pins.json").read_text(encoding="utf-8"))
+        pins = distribution.read_pins(root / "_ask/skills/dependency-pins.json")
         package = pins["packages"]["mcp-atlassian"]
         wheel, digest = package["wheel"], package["wheel_sha256"]
         if (package.get("version") != "0.24.6" or not wheel.startswith("https://")

@@ -231,7 +231,8 @@ def store(project_root: Path, credential_root: Path, record: dict) -> None:
                 or any(key not in SECRET_KEYS or not isinstance(value, str)
                        for key, value in old_credentials.items())):
             raise ConfigError("private credential file is invalid")
-        credentials = {**old_credentials, **credentials}
+        if old.get("tracker") == tracker and old.get("url") == url:
+            credentials = {**old_credentials, **credentials}
     payload = {"schema": "askit-tracker-credentials/v1", "tracker": tracker,
                "url": url, "credentials": credentials}
     private_write(destination, (json.dumps(payload, sort_keys=True, indent=2) + "\n").encode())
