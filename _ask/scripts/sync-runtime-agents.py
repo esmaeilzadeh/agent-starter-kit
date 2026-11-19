@@ -199,7 +199,7 @@ def parse_generated_toml(text: str) -> dict:
     while index < len(lines):
         line = lines[index]
         index += 1
-        if not line.strip():
+        if not line.strip() or line.lstrip().startswith("#"):
             continue
         match = re.fullmatch(r"([A-Za-z][A-Za-z0-9_-]*)\s*=\s*(.*)", line)
         if not match:
