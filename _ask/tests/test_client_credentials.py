@@ -124,6 +124,17 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(store.returncode, 0, store.stderr)
         self.assertEqual(json.loads(local.read_text())["memory_choice"], "1")
 
+        fresh_config = self.fx.root / "new-config/nested"
+        fresh = self._run_config(project, "store", "--root", str(project), input=external,
+                                 env={**self._env(), "XDG_CONFIG_HOME": str(fresh_config)})
+        self.assertEqual(fresh.returncode, 0, fresh.stderr)
+        self.assertEqual(stat.S_IMODE(fresh_config.stat().st_mode), 0o700)
+        inside_checkout = project / ".private-config"
+        refused_inside = self._run_config(project, "store", "--root", str(project), input=external,
+                                          env={**self._env(), "XDG_CONFIG_HOME": str(inside_checkout)})
+        self.assertNotEqual(refused_inside.returncode, 0)
+        self.assertFalse(inside_checkout.exists())
+
         mcp = self.fx.root / "home/cursor/mcp.json"
         mcp.parent.mkdir(parents=True)
         before = '{"mcpServers":{"existing":{"command":"keep"}}}\n'
@@ -179,6 +190,10 @@ class ClientTests(unittest.TestCase):
         credentials = self.fx.config / "askit/projects" / key / "credentials.json"
         self.assertEqual(json.loads(credentials.read_text())["credentials"]["JIRA_PERSONAL_TOKEN"],
                          "$(touch " + str(marker) + ")")
+        repeated = self._run_config(project, "migrate", "--root", str(project), "--yes")
+        self.assertEqual(repeated.returncode, 0, repeated.stderr)
+        self.assertEqual(json.loads(credentials.read_text())["credentials"]["JIRA_PERSONAL_TOKEN"],
+                         "$(touch " + str(marker) + ")")
 
         bin_dir = self.fx.root / "fake-bin"
         bin_dir.mkdir()
@@ -192,17 +207,25 @@ class ClientTests(unittest.TestCase):
             encoding="utf-8",
         )
         uvx.chmod(0o755)
+        local_bin = project / "local-bin"
+        local_bin.mkdir()
+        local_uvx = local_bin / "uvx"
+        local_uvx.write_text("#!/bin/sh\nprintf executed > " + repr(str(self.fx.root / "local-uvx-ran")) + "\n",
+                             encoding="utf-8")
+        local_uvx.chmod(0o755)
         called = self.fx.run(
             ["python3", str(project / "_ask/scripts/tracker-mcp.py"), "--root", str(project)],
-            cwd=project, env={**self._env(bin_dir=bin_dir),
+            cwd=project, env={**self._env(bin_dir=bin_dir), "PATH": str(local_bin) + ":" + str(bin_dir) + ":/usr/bin:/bin",
                               "GITHUB_TOKEN": "unrelated-caller-token"},
         )
         self.assertEqual(called.returncode, 0, called.stderr)
+        self.assertFalse((self.fx.root / "local-uvx-ran").exists())
         child = json.loads(capture.read_text())
         self.assertEqual(child["token"], "$(touch " + str(marker) + ")")
         self.assertEqual(child["url"], "https://jira.example.test")
         self.assertIsNone(child["other"])
-        self.assertIn("mcp-atlassian==0.24.6", " ".join(child["argv"]))
+        self.assertIn("mcp-atlassian @ https://", " ".join(child["argv"]))
+        self.assertIn("sha256=", " ".join(child["argv"]))
 
     def test_fresh_setup_pty(self) -> None:
         project = self.fx.git_project(self.fx.root / "fresh-credential-setup")
