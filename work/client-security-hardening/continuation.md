@@ -10,12 +10,12 @@ handoff.
 
 The approved specification requires the current Codex orchestrator to use the
 latest accessible implementor, with a human-selected exact override preserved.
-The accepted plan's current Codex example is Luna. The current orchestrator is
-recorded as `GPT-6 (exact variant unavailable)`, and available controls do not
-provide a supported current-session model switch. A separate task started with
-another model would not switch this orchestrator. Stop here until the human
-switches this session to the latest accessible Codex implementor and resumes.
-Do not infer that a cached model is currently accessible.
+The human selected `gpt-6-luna` as the exact implementation override. The current
+orchestrator is recorded as `GPT-6 (exact variant unavailable)`, and available
+controls do not provide a supported current-session model switch. A separate
+task started with another model would not switch this orchestrator. Stop here
+until the human switches this session to `gpt-6-luna` and resumes. Do not infer
+that a cached model is currently accessible.
 
 ## Prior endpoint: Plan ready, stop before implementation
 
