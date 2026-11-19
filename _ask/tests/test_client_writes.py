@@ -242,6 +242,17 @@ class ClientTests(unittest.TestCase):
             if process.poll() is None:
                 os.killpg(process.pid, signal.SIGKILL)
             process.communicate(timeout=5)
+        state = project / ".git/askit-transactions"
+        journal = next(state.glob("*/journal.json"))
+        saved = journal.read_text(encoding="utf-8")
+        record = json.loads(saved)
+        record["files"].insert(0, {"path": "../outside/sentinel"})
+        journal.write_text(json.dumps(record), encoding="utf-8")
+        rejected = self._recover(project)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertTrue(journal.exists())
+        self.assertEqual(old.read_text(encoding="utf-8"), "interrupted\n")
+        journal.write_text(saved, encoding="utf-8")
         old.write_text("intervening client edit\n", encoding="utf-8")
 
         result = self._recover(project)
