@@ -106,24 +106,29 @@ class ClientFixture:
 
     def fake_model_runtime(self, *, identity: str = "gpt-6.1-sol",
                            models: list[str] | None = None,
-                           can_switch: bool = False) -> tuple[Path, Path]:
+                           can_switch: bool = False) -> tuple[Path, Path, Path]:
         adapter = self.root / "fake-model-runtime.py"
         log = self.root / "model-runtime.jsonl"
+        config = self.root / "model-runtime.json"
+        config.write_text(json.dumps({
+            "identity": identity,
+            "models": models or ["gpt-6.1-sol", "gpt-6-luna", "gpt-6-astra"],
+            "can_switch": can_switch,
+        }), encoding="utf-8")
         adapter.write_text(
             "#!/usr/bin/env python3\n"
             "import json, os, sys\n"
             "request = json.load(sys.stdin)\n"
+            "with open(os.environ['ASK_MODEL_RUNTIME_CONFIG'], encoding='utf-8') as f: "
+            "config = json.load(f)\n"
             "with open(os.environ['ASK_MODEL_RUNTIME_LOG'], 'a', encoding='utf-8') as f:\n"
             "    f.write(json.dumps(request) + '\\n')\n"
             "action = request['action']\n"
-            f"models = {json.dumps(models or ['gpt-6.1-sol', 'gpt-6-luna', 'gpt-6-astra'])}\n"
-            f"identity = {json.dumps(identity)}\n"
-            f"can_switch = {json.dumps(can_switch)}\n"
-            "response = {'models': models} if action == 'catalog' else "
-            "({'model': identity} if action == 'identity' else "
-            "({'supported': can_switch, 'model': request.get('model')} if action == 'switch' else {}))\n"
+            "response = {'models': config['models']} if action == 'catalog' else "
+            "({'model': config['identity']} if action == 'identity' else "
+            "({'supported': config['can_switch'], 'model': request.get('model')} if action == 'switch' else {}))\n"
             "print(json.dumps(response))\n",
             encoding="utf-8",
         )
         adapter.chmod(0o755)
-        return adapter, log
+        return adapter, log, config
