@@ -191,6 +191,44 @@ def validate_model(value, runtime: str, stage: str) -> str:
     return value
 
 
+def parse_generated_toml(text: str) -> dict:
+    """Parse the assignment and multiline-string subset used by agent.toml.tpl."""
+    document = {}
+    lines = text.splitlines()
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if not line.strip():
+            continue
+        match = re.fullmatch(r"([A-Za-z][A-Za-z0-9_-]*)\s*=\s*(.*)", line)
+        if not match:
+            raise ValueError(f"invalid TOML assignment: {line}")
+        key, raw = match.groups()
+        if key in document:
+            raise ValueError(f"duplicate TOML field: {key}")
+        if raw.startswith('"""'):
+            body = [raw[3:]] if raw[3:] else []
+            while not body or not body[-1].endswith('"""'):
+                if index == len(lines):
+                    raise ValueError(f"unterminated TOML multiline string: {key}")
+                body.append(lines[index])
+                index += 1
+            if body[-1] != '"""':
+                raise ValueError(f"invalid TOML multiline string terminator: {key}")
+            body.pop()
+            document[key] = "\n".join(body).lstrip("\n")
+        else:
+            value = json.loads(raw)
+            if not isinstance(value, str):
+                raise ValueError(f"expected TOML string field: {key}")
+            document[key] = value
+    allowed = {"name", "description", "model", "model_reasoning_effort", "developer_instructions"}
+    if not {"name", "description", "model", "developer_instructions"} <= document.keys() or document.keys() - allowed:
+        raise ValueError("unexpected generated TOML fields")
+    return document
+
+
 def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> None:
     try:
         if runtime == "codex":
@@ -200,10 +238,7 @@ def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> N
                 try:
                     import tomli as tomllib
                 except ImportError:
-                    raise SystemExit(
-                        "Codex runtime validation requires Python 3.11+ (tomllib) "
-                        "or the tomli package; install tomli before running ./ask sync"
-                    )
+                    document = parse_generated_toml(text)
                 else:
                     document = tomllib.loads(text)
             else:

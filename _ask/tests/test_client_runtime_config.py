@@ -132,15 +132,23 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.snapshot(), before)
 
-    def test_python310_without_tomli_fails_before_publication(self):
+    def test_python310_without_tomli_validates_toml_template(self):
         before = self.snapshot()
         env = self.environment(ASKIT_TRANSACTION_ACTIVE='1')
         result = subprocess.run(
             ['python3', '-S', '_ask/scripts/sync-runtime-agents.py'],
             cwd=self.root, env=env, text=True, capture_output=True,
         )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.snapshot(), before)
+
+        template = self.root / '.agents/ask/bindings/templates/agent.toml.tpl'
+        template.write_text('name = "unterminated\n', encoding='utf-8')
+        result = subprocess.run(
+            ['python3', '-S', '_ask/scripts/sync-runtime-agents.py'],
+            cwd=self.root, env=env, text=True, capture_output=True,
+        )
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn('install tomli', result.stderr)
         self.assertEqual(self.snapshot(), before)
 
     def test_sync_valid_formats(self):
