@@ -156,25 +156,17 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(stale.returncode, 0)
         self.assertIn("trust", (stale.stdout + stale.stderr).lower())
         self.assertFalse(marker.exists())
-
-    def test_trust_record_rejects_symlinked_project_directory(self) -> None:
-        project = self.fx.git_project(self.fx.root / "symlink-trust-project")
         trust_helper = ROOT / "_ask/scripts/launcher-trust.py"
-        (project / "_ask/scripts").mkdir(parents=True)
-        (project / "_ask/scripts/helper.py").write_text("print('ok')\n", encoding="utf-8")
-        dispatcher = project / "ask"
-        dispatcher.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
-        dispatcher.chmod(0o755)
         self.assertEqual(
-            self.fx.run_tty(["python3", str(trust_helper), "trust", "--root", str(project)],
-                            cwd=project, env=self.fx.env, input="y\n").returncode,
+            self.fx.run_tty(["python3", str(trust_helper), "trust", "--root", str(moved)],
+                            cwd=moved, env=env, input="y\n").returncode,
             0,
         )
 
-        project_hash = hashlib.sha256(str(project.resolve()).encode()).hexdigest()
+        project_hash = hashlib.sha256(str(moved.resolve()).encode()).hexdigest()
         record_dir = self.fx.config / "askit/projects" / project_hash
         record = record_dir / "trust.json"
-        controlled = project / ".agents/private-trust"
+        controlled = moved / ".agents/private-trust"
         controlled.mkdir(parents=True)
         shutil.copyfile(record, controlled / "trust.json")
         (controlled / "trust.json").chmod(0o600)
@@ -183,10 +175,11 @@ class ClientTests(unittest.TestCase):
         record_dir.symlink_to(controlled, target_is_directory=True)
 
         refused = self.fx.run(
-            ["python3", str(trust_helper), "check", "--root", str(project)], cwd=project,
+            ["python3", str(trust_helper), "check", "--root", str(moved)], cwd=moved,
         )
         self.assertNotEqual(refused.returncode, 0)
         self.assertIn("trust directory", refused.stderr.lower())
+        self.assertFalse(marker.exists())
 
     def test_completion_stays_installed(self) -> None:
         launcher = self.fx.install_launcher()
