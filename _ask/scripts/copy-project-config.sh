@@ -7,7 +7,9 @@ default_manifest="$2"
 root="$(cd "$target" && pwd)"
 if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
   exec python3 "$(dirname "$0")/write-transaction.py" run \
-    --root "$root" --path .agents/ask.local -- \
+    --root "$root" --path .agents/ask.local \
+      --input-path _ask/scripts --input-path _ask/skills/manifest.yaml \
+      --input-path _ask/bindings/models.yaml --input-path _ask/agents -- \
     bash "$root/_ask/scripts/copy-project-config.sh" \
       "{target}" "{target}/_ask/skills/manifest.yaml"
 fi

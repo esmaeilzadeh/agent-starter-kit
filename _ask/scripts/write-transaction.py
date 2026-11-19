@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -179,6 +180,10 @@ def restore(root: Path, state: Path, journal_path: Path) -> None:
             or identity_record.get("inode") != root_info.st_ino
             or identity_record.get("git_dir") != str(state.parent.resolve())):
         fail(f"transaction journal belongs to another repository: {journal_path}")
+    if journal.get("state") == "committed":
+        shutil.rmtree(journal_path.parent)
+        fsync_dir(state)
+        return
     raw_scope = journal.get("scope")
     if not isinstance(raw_scope, list) or not raw_scope or not all(isinstance(v, str) for v in raw_scope):
         fail(f"transaction journal has no write scope: {journal_path}")
@@ -270,7 +275,7 @@ def restore(root: Path, state: Path, journal_path: Path) -> None:
     fsync_dir(state)
 
 
-def recover(root: Path) -> None:
+def recover_locked(root: Path) -> None:
     state = git_state(root)
     for journal in sorted(state.glob("*/journal.json")):
         if (journal.parent.is_symlink() or not journal.parent.is_dir()
@@ -280,6 +285,16 @@ def recover(root: Path) -> None:
                 or journal.stat().st_uid != os.getuid() or stat.S_IMODE(journal.stat().st_mode) & 0o077):
             fail(f"unsafe transaction journal: {journal}")
         restore(root, state, journal)
+
+
+def recover(root: Path) -> None:
+    state = git_state(root)
+    fd = os.open(state / "transaction.lock", os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        recover_locked(root)
+    finally:
+        os.close(fd)
 
 
 def publish(root: Path, stage: Path, paths: list[Path]) -> None:
@@ -307,7 +322,8 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
     known = ownership["files"]
     if not isinstance(known, dict):
         fail(f"invalid installed-file ownership manifest: {ownership_path}")
-    next_files = dict(known)
+    next_files = {name: value for name, value in known.items()
+                  if not name.startswith(".cursor/") or generated(root / name)}
     for name in changes:
         rel = safe_relative(name)
         target = root / rel
@@ -326,9 +342,12 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
         else:
             next_files.pop(name, None)
     for name, current in after.items():
-        if name not in before or before[name] == current:
-            if not protected(name):
-                next_files[name] = {"sha256": current[0], "mode": current[1]}
+        if protected(name):
+            continue
+        if name in changes and name not in before:
+            next_files[name] = {"sha256": current[0], "mode": current[1]}
+        elif name in before and generated(root / name):
+            next_files[name] = {"sha256": current[0], "mode": current[1]}
     ownership_after = (json.dumps({"schema": "askit-installed-files/v1", "files": next_files},
                                   sort_keys=True, indent=2) + "\n").encode()
     if not changes:
@@ -373,6 +392,9 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
         if ownership_bytes is not None:
             (journal_dir / ownership_backup).write_bytes(ownership_bytes)
             os.chmod(journal_dir / ownership_backup, 0o600)
+            with (journal_dir / ownership_backup).open("rb") as stream:
+                os.fsync(stream.fileno())
+        fsync_dir(journal_dir)
         journal = journal_dir / "journal.json"
         atomic_json(journal, {
             "schema": "askit-write-transaction/v1", "files": files,
@@ -390,6 +412,10 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
         })
         for item in files:
             target = root / item["path"]
+            expected = ((item["before_hash"], item["before_mode"])
+                        if item["before_hash"] is not None else None)
+            if identity(target) != expected:
+                fail(f"client file changed during transaction preflight: {target}")
             target.parent.mkdir(parents=True, exist_ok=True)
             validate_tree(root, safe_relative(item["path"]))
             if item["after_hash"] is None:
@@ -410,6 +436,10 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
             fsync_dir(target.parent)
         fd, temporary = tempfile.mkstemp(prefix=".owned-files-", dir=state)
         try:
+            current_ownership_hash = digest(ownership_path)
+            expected_ownership_hash = hashlib.sha256(ownership_bytes).hexdigest() if ownership_bytes else None
+            if current_ownership_hash != expected_ownership_hash:
+                fail(f"installed-file ownership changed during transaction: {ownership_path}")
             os.fchmod(fd, 0o600)
             with os.fdopen(fd, "wb") as stream:
                 stream.write(ownership_after)
@@ -420,6 +450,9 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
         finally:
             if os.path.exists(temporary):
                 os.unlink(temporary)
+        journal_data = json.loads(journal.read_text(encoding="utf-8"))
+        journal_data["state"] = "committed"
+        atomic_json(journal, journal_data)
         shutil.rmtree(journal_dir)
         fsync_dir(state)
     except BaseException:
@@ -436,39 +469,49 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
 def run(args: argparse.Namespace) -> int:
     root = safe_root(Path(args.root))
     paths = [safe_relative(path) for path in args.path]
-    for path in paths:
+    input_paths = list(dict.fromkeys(paths + [safe_relative(path) for path in args.input_path]))
+    input_paths = [path for path in input_paths
+                   if not any(path != parent and parent in path.parents for parent in input_paths)]
+    for path in input_paths:
         validate_tree(root, path)
         files_under(root, path)
-    recover(root)
-    with tempfile.TemporaryDirectory(prefix="askit-stage-", dir=root.parent) as temp:
-        stage = Path(temp) / "project"
-        stage.mkdir()
-        for rel in paths:
-            source = root / rel
-            target = stage / rel
-            if source.is_dir():
-                shutil.copytree(source, target, symlinks=True)
-            elif source.is_file():
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(source, target)
-        git_marker = root / ".git"
-        if git_marker.is_dir():
-            (stage / ".git").symlink_to(git_marker.resolve(), target_is_directory=True)
-        elif git_marker.is_file():
-            git_dir = subprocess.run(
-                ["git", "-C", str(root), "rev-parse", "--absolute-git-dir"],
-                text=True, capture_output=True, check=True,
-            ).stdout.strip()
-            (stage / ".git").write_text(f"gitdir: {git_dir}\n", encoding="utf-8")
-        else:
-            fail(f"transaction root has no Git metadata: {root}")
-        env = dict(os.environ, ASKIT_TRANSACTION_ACTIVE="1")
-        env.pop("GIT_DIR", None)
-        env.pop("GIT_WORK_TREE", None)
-        result = subprocess.run(args.command_stage(stage), cwd=root, env=env)
-        if result.returncode:
-            return result.returncode
-        publish(root, stage, paths)
+    state = git_state(root)
+    lock_path = state / "transaction.lock"
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        recover_locked(root)
+        with tempfile.TemporaryDirectory(prefix="askit-stage-", dir=root.parent) as temp:
+            stage = Path(temp) / "project"
+            stage.mkdir()
+            for rel in input_paths:
+                source = root / rel
+                target = stage / rel
+                if source.is_dir():
+                    shutil.copytree(source, target, symlinks=True)
+                elif source.is_file():
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(source, target)
+            git_marker = root / ".git"
+            if git_marker.is_dir():
+                (stage / ".git").symlink_to(git_marker.resolve(), target_is_directory=True)
+            elif git_marker.is_file():
+                git_dir = subprocess.run(
+                    ["git", "-C", str(root), "rev-parse", "--absolute-git-dir"],
+                    text=True, capture_output=True, check=True,
+                ).stdout.strip()
+                (stage / ".git").write_text(f"gitdir: {git_dir}\n", encoding="utf-8")
+            else:
+                fail(f"transaction root has no Git metadata: {root}")
+            env = dict(os.environ, ASKIT_TRANSACTION_ACTIVE="1")
+            env.pop("GIT_DIR", None)
+            env.pop("GIT_WORK_TREE", None)
+            result = subprocess.run(args.command_stage(stage), cwd=root, env=env)
+            if result.returncode:
+                return result.returncode
+            publish(root, stage, paths)
+    finally:
+        os.close(fd)
     return 0
 
 
@@ -478,6 +521,7 @@ def main() -> int:
     command = sub.add_parser("run")
     command.add_argument("--root", required=True)
     command.add_argument("--path", action="append", required=True)
+    command.add_argument("--input-path", action="append", default=[])
     command.add_argument("command", nargs=argparse.REMAINDER)
     recovery = sub.add_parser("recover")
     recovery.add_argument("--root", required=True)

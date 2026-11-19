@@ -25,7 +25,9 @@ def main():
             and os.environ.get('ASKIT_TRANSACTION_ACTIVE') != '1'):
         command = [
             sys.executable, str(ROOT / '_ask/scripts/write-transaction.py'), 'run',
-            '--root', str(ROOT), '--path', '.cursor', '--path', '.agents/skills',
+            '--root', str(ROOT), '--path', '.agents/skills',
+            '--input-path', '_ask/scripts', '--input-path', '.cursor/skills',
+            '--input-path', '.agents/ask/stages', '--input-path', '_ask/agents',
         ]
         if '--update-ignore' in sys.argv:
             command.extend(['--path', '.gitignore'])
