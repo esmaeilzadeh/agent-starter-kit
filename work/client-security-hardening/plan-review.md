@@ -1,6 +1,6 @@
 # Independent implementation plan review
 
-Decision: **APPROVED** for planning acceptance at the exact contract below. No unresolved findings remain. Implementation, merge, publication and product acceptance are not authorized.
+Decision: **APPROVED** for planning acceptance at the exact contract below. No unresolved findings remain. This original review recorded the plan-ready endpoint; its implementation stop was later superseded by the explicit human `implement` direction and the amendment review below.
 
 Reviewer: `gpt-6-astra/security-plan-review`, runtime `codex`, independent child context. Existing submitted Astra selection applies. Parent model: GPT-6; exact variant unavailable. The previous REJECTED review is retained in Git at `b7848e2`.
 
@@ -35,4 +35,21 @@ The JSON decision contains individual criterion assessments and test adequacy de
 
 No behavior tests, exploit reproduction, dependency audit, paid model calls or runtime switching checks ran. Tests remain planned; this review does not establish product correctness or available runtime capabilities. Approval binds only the contract digests above.
 
-The coordinator may record planning acceptance and report Plan ready. Then stop. A later explicit implementation instruction is required before production changes, journey baseline execution, task dispatch or orchestrator handoff.
+At the time of this review, the coordinator could record planning acceptance and report Plan ready, then stop. A later explicit implementation instruction was required before production changes, journey baseline execution, task dispatch or orchestrator handoff.
+
+## Implementation authorization amendment review — 2026-11-19
+
+Decision: **APPROVED** by independent reviewer `gpt-6-astra/security-plan-review`.
+
+- Exact candidate: `eebe137bb70629716f5333b7e90d501a25d69586`
+- Exact `plan.md` SHA-256: `5f57ea42d3b2fb1c9fde2860339cbfd25d5230b226879d66ed19b04d5f6c1ae1`
+- Spec digest: `664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc`
+- Test-plan digest: `c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf`
+- TaskGraph digest: `6d99009738a029cb42c546d93726b7864445ab5feecc5ed2f5a98305fbaa4668`
+
+The amendment records the user's explicit implementation authorization and
+starts execution at CSH-01. It does not change the accepted intent, specification,
+test cases, TaskGraph, or task order. The reviewed CSH-T38/T39 Red baseline does
+not advance CSH-10; that task remains pending. Human acceptance remains the final
+workstream gate. This amendment supersedes only the earlier plan-only endpoint;
+the original planning review and its findings remain historical evidence.
