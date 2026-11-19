@@ -193,6 +193,38 @@ def validate_model(value, runtime: str, stage: str) -> str:
 
 def parse_generated_toml(text: str) -> dict:
     """Parse the assignment and multiline-string subset used by agent.toml.tpl."""
+    def validate_multiline_escapes(value: str) -> None:
+        index = 0
+        while index < len(value):
+            char = value[index]
+            if char == "\\":
+                index += 1
+                if index == len(value):
+                    raise ValueError("unterminated TOML escape")
+                escape = value[index]
+                if escape == "\n":
+                    index += 1
+                    while index < len(value) and value[index].isspace():
+                        index += 1
+                    continue
+                if escape in 'btnfr"\\':
+                    index += 1
+                    continue
+                if escape in "uU":
+                    width = 4 if escape == "u" else 8
+                    digits = value[index + 1:index + 1 + width]
+                    if len(digits) != width or not re.fullmatch(r"[0-9a-fA-F]+", digits):
+                        raise ValueError("invalid TOML Unicode escape")
+                    codepoint = int(digits, 16)
+                    if codepoint > 0x10FFFF or 0xD800 <= codepoint <= 0xDFFF:
+                        raise ValueError("invalid TOML Unicode scalar")
+                    index += width + 1
+                    continue
+                raise ValueError(f"invalid TOML escape: \\{escape}")
+            if unicodedata.category(char) == "Cc" and char not in "\t\n\r":
+                raise ValueError("control character in TOML multiline string")
+            index += 1
+
     document = {}
     lines = text.splitlines()
     index = 0
@@ -217,7 +249,9 @@ def parse_generated_toml(text: str) -> dict:
             if body[-1] != '"""':
                 raise ValueError(f"invalid TOML multiline string terminator: {key}")
             body.pop()
-            document[key] = "\n".join(body).lstrip("\n")
+            value = "\n".join(body).lstrip("\n")
+            validate_multiline_escapes(value)
+            document[key] = value
         else:
             value = json.loads(raw)
             if not isinstance(value, str):
