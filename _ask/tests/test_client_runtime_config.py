@@ -72,9 +72,10 @@ class ClientTests(unittest.TestCase):
         return yaml.safe_load(frontmatter)
 
     def test_scalar_roundtrip(self):
-        value = 'custom "quoted" \\ path: mapping-like {{stage}}'
+        value = 'custom "quoted" \\ path: mapping-like {{stage}} 🙂'
         result = self.run_generator(ASK_MODEL_06_IMPLEMENT=value)
         self.assertEqual(result.returncode, 0, result.stderr)
+        issues = []
         generated = [
             self.root / '.cursor/agents/kit-06-implement.md',
             self.root / '.claude/agents/kit-06-implement.md',
@@ -85,23 +86,44 @@ class ClientTests(unittest.TestCase):
             try:
                 actual = self.model(path)['model']
             except Exception as exc:
-                self.fail(f'{path} does not parse as one model scalar: {exc}')
-            self.assertEqual(actual, value, str(path))
+                issues.append(f'{path} does not parse as one model scalar: {exc}')
+                continue
+            if actual != value:
+                issues.append(f'{path} changed model to {actual!r}')
 
         before = self.snapshot()
         for invalid in ('', 'first line\nsecond line', 'bad\x01value'):
             rejected = self.run_generator(ASK_MODEL_06_IMPLEMENT=invalid)
-            self.assertNotEqual(rejected.returncode, 0, repr(invalid))
-            self.assertEqual(self.snapshot(), before)
+            if rejected.returncode == 0 or self.snapshot() != before:
+                issues.append(f'accepted invalid environment model {invalid!r}')
+        for invalid in ('true', '123', '[one, two]'):
+            (self.root / 'work/example/models.yaml').write_text(
+                'codex:\n  06-implement: ' + invalid + '\n', encoding='utf-8')
+            rejected = self.run_generator()
+            if rejected.returncode == 0 or self.snapshot() != before:
+                issues.append(f'accepted non-string YAML model {invalid!r}')
+
         (self.root / 'work/example/models.yaml').write_text(
-            'codex:\n  06-implement: true\n', encoding='utf-8')
-        rejected = self.run_generator()
-        self.assertNotEqual(rejected.returncode, 0, rejected.stderr)
-        self.assertEqual(self.snapshot(), before)
+            "codex:\n  06-implement: 'quoted ''model'' # suffix'\n", encoding='utf-8')
+        result = self.run_generator()
+        if result.returncode:
+            issues.append(result.stderr)
+        else:
+            actual = self.model(self.root / '.codex/agents/kit-06-implement.toml')['model']
+            if actual != "quoted 'model' # suffix":
+                issues.append(f'quoted YAML model changed to {actual!r}')
+        self.assertEqual(issues, [])
 
     def test_sync_atomic_invalid(self):
         before = self.snapshot()
         result = self.run_sync(ASK_MODEL_10_ACCEPT_CODEX='safe\ninjected = true')
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(self.snapshot(), before)
+
+        final_output = self.root / '.opencode/agents/kit-10-accept.md'
+        final_output.write_text('client edit\n', encoding='utf-8')
+        before = self.snapshot()
+        result = self.run_generator(ASK_MODEL_06_IMPLEMENT='safe-model')
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(self.snapshot(), before)
 
@@ -114,8 +136,18 @@ class ClientTests(unittest.TestCase):
         overlay = self.root / '.agents/ask.local/bindings/models.yaml'
         overlay.parent.mkdir(parents=True, exist_ok=True)
         overlay.write_text('claude:\n  06-implement: ' + project_value + '\n', encoding='utf-8')
-        result = self.run_sync(ASK_MODEL_06_IMPLEMENT_CODEX=env_value)
+        wrong_root = self.root / 'wrong-root'
+        shutil.copytree(self.root / '.agents/ask', wrong_root / '.agents/ask')
+        shutil.copytree(self.root / '.agents/ask.local', wrong_root / '.agents/ask.local')
+        shutil.copytree(self.root / 'work', wrong_root / 'work')
+        (wrong_root / '.cursor/agents').mkdir(parents=True)
+        wrong_output = wrong_root / '.cursor/agents/kit-06-implement.md'
+        wrong_output.write_text('preserve wrong-root output\n', encoding='utf-8')
+        result = self.run_sync(ASK_MODEL_06_IMPLEMENT_CODEX=env_value,
+                               ASK_ROOT=str(wrong_root))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(wrong_output.read_text(encoding='utf-8'),
+                         'preserve wrong-root output\n')
         expected = {
             '.cursor/agents/kit-06-implement.md': work_value,
             '.claude/agents/kit-06-implement.md': project_value,
