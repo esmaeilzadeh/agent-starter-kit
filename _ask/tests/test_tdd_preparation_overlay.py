@@ -23,15 +23,23 @@ class PreparationTests(unittest.TestCase):
         shutil.copy2(ROOT / "ask", self.root / "ask")
         shutil.copy2(ROOT / "_ask/skills/prepare-skills.sh",
                      self.root / "_ask/skills/prepare-skills.sh")
+        shutil.copy2(ROOT / "_ask/skills/dependency-pins.json",
+                     self.root / "_ask/skills/dependency-pins.json")
+        shutil.copy2(ROOT / "_ask/scripts/distribution.py",
+                     self.root / "_ask/scripts/distribution.py")
+        shutil.copy2(ROOT / "_ask/skills/manifest.yaml",
+                     self.root / "_ask/skills/manifest.yaml")
         shutil.copy2(ROOT / "_ask/skills/tdd-override.md",
                      self.root / "_ask/skills/tdd-override.md")
         shutil.copy2(ROOT / "_ask/scripts/ask-complete.sh",
                      self.root / "_ask/scripts/ask-complete.sh")
-        (self.root / "_ask/skills/manifest.yaml").write_text(textwrap.dedent("""\
+        self.overlay = self.root / ".agents/ask.local/skills/manifest.yaml"
+        self.overlay.parent.mkdir(parents=True)
+        self.overlay.write_text(textwrap.dedent("""\
             skills:
               tdd:
                 source: mattpocock/skills
-                revision: "v1.2.3"
+                revision: "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e"
                 skill: tdd
                 role: inner-loop-red-green
                 required: true
@@ -75,7 +83,7 @@ class PreparationTests(unittest.TestCase):
                               text=True, capture_output=True)
 
     def test_both_views_use_canonical_tdd_override(self):
-        manifest_before = (self.root / "_ask/skills/manifest.yaml").read_bytes()
+        manifest_before = self.overlay.read_bytes()
         result = self.prepare()
 
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -87,7 +95,7 @@ class PreparationTests(unittest.TestCase):
             self.assertIn(".agents/ask/task-loop.md", content)
             self.assertEqual(content.count("<!-- ASK TDD OVERRIDE START -->"), 1)
             self.assertEqual(content.count("<!-- ASK TDD OVERRIDE END -->"), 1)
-        self.assertEqual((self.root / "_ask/skills/manifest.yaml").read_bytes(), manifest_before)
+        self.assertEqual(self.overlay.read_bytes(), manifest_before)
 
         self.set_installer('''
 mkdir -p .agents/skills/tdd
@@ -98,7 +106,7 @@ SKILL
         (self.root / self.installed_views[1]).unlink()
         missing_view = self.prepare()
         self.assertNotEqual(missing_view.returncode, 0, missing_view.stdout)
-        self.assertIn("missing required Cursor TDD skill output", missing_view.stderr)
+        self.assertIn("missing prepared TDD skill view", missing_view.stderr)
 
     def test_repeated_prepare_replaces_managed_override(self):
         self.set_installer('''
@@ -138,11 +146,11 @@ fi
         initial = self.prepare()
         self.assertEqual(initial.returncode, 0, initial.stdout + initial.stderr)
         snapshots = {path: (self.root / path).read_bytes() for path in self.installed_views}
-        manifest = (self.root / "_ask/skills/manifest.yaml").read_bytes()
+        manifest = self.overlay.read_bytes()
         result = self.prepare(skip_install=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual({path: (self.root / path).read_bytes() for path in self.installed_views}, snapshots)
-        self.assertEqual((self.root / "_ask/skills/manifest.yaml").read_bytes(), manifest)
+        self.assertEqual(self.overlay.read_bytes(), manifest)
 
     def test_failed_required_install_is_not_success(self):
         for relative in self.installed_views:
@@ -156,7 +164,7 @@ fi
         self.assertNotIn("prepare-skills: ok tdd", result.stdout)
 
     def test_missing_optional_skill_is_not_fabricated(self):
-        manifest = self.root / "_ask/skills/manifest.yaml"
+        manifest = self.overlay
         manifest.write_text(manifest.read_text().replace("required: true", "required: false"), encoding="utf-8")
         self.set_installer("exit 9\n")
         result = self.prepare()

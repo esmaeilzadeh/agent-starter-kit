@@ -3,12 +3,14 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 VERSION=""
+EXPECTED_COMMIT=""
 SKIP_PREPARE=0
 SOURCE_REPO="${KIT_SOURCE_REPO:-https://github.com/esmaeilzadeh/agent-starter-kit.git}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --version) VERSION="$2"; shift 2 ;;
+    --expected-commit) EXPECTED_COMMIT="$2"; shift 2 ;;
     --target) ROOT="$(cd "$2" && pwd)"; shift 2 ;;
     --skip-prepare) SKIP_PREPARE=1; shift ;;
     --source) SOURCE_REPO="$2"; shift 2 ;;
@@ -19,6 +21,13 @@ if [[ -z "$VERSION" ]]; then
   echo "upgrade-kit: --version required (never blind main)" >&2
   exit 2
 fi
+if [[ -z "$EXPECTED_COMMIT" && "$VERSION" =~ ^[0-9a-f]{40}$ ]]; then
+  EXPECTED_COMMIT="$VERSION"
+fi
+if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "upgrade-kit: a full expected commit is required (--expected-commit or a full-SHA --version)" >&2
+  exit 2
+fi
 
 if [[ "$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null || true)" != "$ROOT" ]]; then
   echo "upgrade-kit: target must be a Git repository root: $ROOT" >&2
@@ -27,8 +36,22 @@ fi
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-git clone --depth 1 --branch "$VERSION" "$SOURCE_REPO" "$TMP/kit" 2>/dev/null \
-  || git clone "$SOURCE_REPO" "$TMP/kit" && git -C "$TMP/kit" checkout "$VERSION"
+if ! git clone --depth 1 --branch "$VERSION" "$SOURCE_REPO" "$TMP/kit" 2>/dev/null; then
+  if ! git clone "$SOURCE_REPO" "$TMP/kit" \
+    || ! git -C "$TMP/kit" checkout --detach "$VERSION"; then
+    echo "upgrade-kit: unable to fetch selected source revision $VERSION" >&2
+    exit 1
+  fi
+fi
+ACTUAL_COMMIT="$(git -C "$TMP/kit" rev-parse --verify HEAD 2>/dev/null || true)"
+if [[ "$ACTUAL_COMMIT" != "$EXPECTED_COMMIT" ]]; then
+  echo "upgrade-kit: release revision mismatch (expected $EXPECTED_COMMIT, fetched $ACTUAL_COMMIT)" >&2
+  exit 1
+fi
+if [[ -n "$(git -C "$TMP/kit" status --porcelain --untracked-files=all)" ]]; then
+  echo "upgrade-kit: fetched release working tree is not clean" >&2
+  exit 1
+fi
 
 # Copy legacy settings before refreshing the kit trees.
 if [[ -f "$TMP/kit/_ask/scripts/copy-project-config.sh" ]]; then
@@ -72,7 +95,7 @@ while IFS= read -r -d '' f; do
 done < <(find "$ROOT/_ask/agents" -name '*.local.md' -print0 2>/dev/null || true)
 
 if [[ "$SKIP_PREPARE" -eq 0 ]]; then
-  SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/_ask/skills/prepare-skills.sh" || true
+  SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/_ask/skills/prepare-skills.sh"
 fi
 python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
 "$ROOT/_ask/scripts/sync-cursor-binding.sh"

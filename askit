@@ -14,10 +14,11 @@ askit self-install — put this command on PATH
 
 Usage:
   $ASKIT_CURL
-  askit self-install [--source <git-url-or-path>] [--ref <branch-or-tag>] [--prefix <dir>] [--here]
+  askit self-install [--source <git-url-or-path>] [--ref <branch-or-tag>] [--expected-commit <full-sha>] [--prefix <dir>] [--here]
 
   --source   kit git URL or local clone (default: GitHub main repo)
   --ref      branch or tag to check out (default: main)
+  --expected-commit  full fetched commit; a full-SHA --ref implies this value
   --prefix   install prefix; askit goes in <prefix>/bin (default: ~/.local)
   --here     also overlay the kit into the current git repo
 
@@ -31,6 +32,7 @@ EOF
 askit_self_install() {
   local SOURCE="${KIT_SOURCE_REPO:-https://github.com/esmaeilzadeh/agent-starter-kit.git}"
   local REF="${KIT_REF:-main}"
+  local EXPECTED_COMMIT="${KIT_COMMIT:-}"
   local PREFIX="${ASKIT_PREFIX:-$HOME/.local}"
   local HERE=0
 
@@ -38,6 +40,7 @@ askit_self_install() {
     case "$1" in
       --source) SOURCE="$2"; shift 2 ;;
       --ref) REF="$2"; shift 2 ;;
+      --expected-commit) EXPECTED_COMMIT="$2"; shift 2 ;;
       --prefix) PREFIX="$2"; shift 2 ;;
       --here) HERE=1; shift ;;
       -h|--help)
@@ -56,31 +59,60 @@ askit_self_install() {
     return 1
   fi
 
+  if [[ -z "$EXPECTED_COMMIT" && "$REF" =~ ^[0-9a-f]{40}$ ]]; then
+    EXPECTED_COMMIT="$REF"
+  fi
+  if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+    echo "askit: a full expected commit is required (--expected-commit or a full-SHA --ref)" >&2
+    return 2
+  fi
+
   local CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit"
   local BIN="$PREFIX/bin"
+  local CACHE_PARENT STAGING BACKUP=""
 
   echo "askit: kit $SOURCE @ $REF"
   echo "askit: cache $CACHE"
 
-  mkdir -p "$(dirname "$CACHE")" "$BIN"
-
-  if [[ -d "$CACHE/.git" ]]; then
-    git -C "$CACHE" remote set-url origin "$SOURCE" 2>/dev/null || git -C "$CACHE" remote add origin "$SOURCE"
-    git -C "$CACHE" fetch --depth 1 origin "$REF"
-    git -C "$CACHE" checkout -f --detach FETCH_HEAD
-  else
-    rm -rf "$CACHE"
-    if ! git clone --depth 1 --branch "$REF" "$SOURCE" "$CACHE" 2>/dev/null; then
-      git clone "$SOURCE" "$CACHE"
-      git -C "$CACHE" checkout "$REF"
+  CACHE_PARENT="$(dirname "$CACHE")"
+  mkdir -p "$CACHE_PARENT"
+  STAGING="$(mktemp -d "$CACHE_PARENT/kit.XXXXXX")"
+  trap '[[ -z "${STAGING:-}" ]] || rm -rf "$STAGING"' RETURN
+  if ! git clone --depth 1 --branch "$REF" "$SOURCE" "$STAGING/repo" 2>/dev/null; then
+    if ! git clone "$SOURCE" "$STAGING/repo" \
+      || ! git -C "$STAGING/repo" checkout --detach "$REF"; then
+      echo "askit: unable to fetch selected source revision $REF" >&2
+      return 1
     fi
   fi
-
-  if [[ ! -x "$CACHE/askit" ]]; then
-    echo "askit: $CACHE/askit missing after clone" >&2
+  local ACTUAL_COMMIT
+  ACTUAL_COMMIT="$(git -C "$STAGING/repo" rev-parse --verify HEAD 2>/dev/null || true)"
+  if [[ "$ACTUAL_COMMIT" != "$EXPECTED_COMMIT" ]]; then
+    echo "askit: release revision mismatch (expected $EXPECTED_COMMIT, fetched $ACTUAL_COMMIT)" >&2
+    return 1
+  fi
+  if [[ -n "$(git -C "$STAGING/repo" status --porcelain --untracked-files=all)" ]]; then
+    echo "askit: fetched release working tree is not clean" >&2
+    return 1
+  fi
+  if [[ ! -x "$STAGING/repo/askit" ]]; then
+    echo "askit: verified release is missing askit" >&2
     return 1
   fi
 
+  if [[ -e "$CACHE" || -L "$CACHE" ]]; then
+    BACKUP="$CACHE.previous.$$"
+    mv "$CACHE" "$BACKUP"
+  fi
+  if ! mv "$STAGING/repo" "$CACHE"; then
+    [[ -z "$BACKUP" ]] || mv "$BACKUP" "$CACHE"
+    echo "askit: cannot publish verified release cache" >&2
+    return 1
+  fi
+  [[ -z "$BACKUP" ]] || rm -rf "$BACKUP"
+  STAGING=""
+
+  mkdir -p "$BIN"
   ln -sfn "$CACHE/askit" "$BIN/askit"
   echo "askit: $BIN/askit -> $CACHE/askit"
 

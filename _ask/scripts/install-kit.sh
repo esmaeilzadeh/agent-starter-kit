@@ -116,7 +116,7 @@ fi
 
 if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   if [[ -x "$TARGET/_ask/skills/prepare-skills.sh" ]]; then
-    (cd "$TARGET" && SKIP_INSTALL="${SKIP_INSTALL:-0}" ./_ask/skills/prepare-skills.sh) || true
+    (cd "$TARGET" && SKIP_INSTALL="${SKIP_INSTALL:-0}" ./_ask/skills/prepare-skills.sh)
   fi
 fi
 if [[ -x "$TARGET/_ask/scripts/sync-cursor-binding.sh" ]]; then

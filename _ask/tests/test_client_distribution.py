@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import unittest
 from pathlib import Path
 
@@ -140,7 +141,8 @@ class ClientTests(unittest.TestCase):
         before = (client / "README.md").read_bytes()
         upgrade = self.fx.run(
             [str(ROOT / "_ask/scripts/upgrade-kit.sh"), "--version", "main",
-             "--source", str(source), "--expected-commit", wrong_commit],
+             "--source", str(source), "--expected-commit", wrong_commit,
+             "--target", str(client)],
             cwd=client,
         )
         self.assertNotEqual(upgrade.returncode, 0)
@@ -156,17 +158,27 @@ class ClientTests(unittest.TestCase):
         overlay.parent.mkdir(parents=True)
         overlay.write_text(self._skill_manifest(source, commit), encoding="utf-8")
         project = overlay.parents[3]
+        (project / "_ask/skills").mkdir(parents=True)
+        (project / "_ask/scripts").mkdir(parents=True)
+        for relative in (
+            "_ask/skills/manifest.yaml",
+            "_ask/skills/dependency-pins.json",
+            "_ask/skills/prepare-skills.sh",
+            "_ask/scripts/distribution.py",
+        ):
+            shutil.copy2(ROOT / relative, project / relative)
+        prepare_script = project / "_ask/skills/prepare-skills.sh"
         log, env = self._install_npx_spy()
         env["HOME"] = str(project)
         env["XDG_CONFIG_HOME"] = str(self.fx.config)
 
-        refused = self.fx.run(["bash", str(ROOT / "_ask/skills/prepare-skills.sh")],
+        refused = self.fx.run(["bash", str(prepare_script)],
                               cwd=project, env=env)
         self.assertNotEqual(refused.returncode, 0)
         self.assertFalse(log.exists(), "skill installer fetched an unapproved source")
 
         approved = self.fx.run_tty(
-            ["bash", str(ROOT / "_ask/skills/prepare-skills.sh")],
+            ["bash", str(prepare_script)],
             cwd=project, env=env, input="y\n",
         )
         self.assertEqual(approved.returncode, 0, approved.stdout)
@@ -178,6 +190,14 @@ class ClientTests(unittest.TestCase):
         self.assertFalse((project / ".agents/ask.local/skills/skill-source-approvals.json").exists())
 
         original_calls = log.read_text(encoding="utf-8").splitlines()
+        destination = project / ".agents/skills/demo"
+        destination.parent.mkdir(parents=True)
+        destination.symlink_to(self.fx.root / "outside-skill", target_is_directory=True)
+        refused = self.fx.run(["bash", str(prepare_script)], cwd=project, env=env)
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertEqual(log.read_text(encoding="utf-8").splitlines(), original_calls)
+        destination.unlink()
+
         variations = [
             self._skill_manifest(other_source, commit),
             self._skill_manifest(source, "f" * 40),
@@ -185,7 +205,7 @@ class ClientTests(unittest.TestCase):
         ]
         for manifest in variations:
             overlay.write_text(manifest, encoding="utf-8")
-            refused = self.fx.run(["bash", str(ROOT / "_ask/skills/prepare-skills.sh")],
+            refused = self.fx.run(["bash", str(prepare_script)],
                                   cwd=project, env=env)
             self.assertNotEqual(refused.returncode, 0)
             self.assertEqual(log.read_text(encoding="utf-8").splitlines(), original_calls)
@@ -202,6 +222,7 @@ class ClientTests(unittest.TestCase):
             [str(ROOT / "_ask/scripts/install-kit.sh"), "--force", str(client)], env=env
         )
         self.assertNotEqual(install.returncode, 0, "install reported success after required prepare failed")
+        self.assertNotIn("install-kit: applied", install.stdout)
 
         bootstrap_client = self.fx.git_project(self.fx.root / "bootstrap-client")
         bootstrap = self.fx.run(
@@ -209,15 +230,17 @@ class ClientTests(unittest.TestCase):
             env=env | {"ASKIT_KIT_ROOT": str(ROOT), "ASKIT_INSTALL_FLAGS": "--force"},
         )
         self.assertNotEqual(bootstrap.returncode, 0, "bootstrap reported success after prepare failed")
+        self.assertNotIn("askit: done", bootstrap.stdout)
 
         source_commit = self.fx.run(["git", "rev-parse", "HEAD"], cwd=ROOT).stdout.strip()
         upgrade_client = self.fx.git_project(self.fx.root / "upgrade-failure-client")
         upgrade = self.fx.run(
             [str(ROOT / "_ask/scripts/upgrade-kit.sh"), "--version", source_commit,
-             "--source", str(ROOT)],
+             "--source", str(ROOT), "--target", str(upgrade_client)],
             cwd=upgrade_client, env=env,
         )
         self.assertNotEqual(upgrade.returncode, 0, "upgrade reported success after prepare failed")
+        self.assertNotIn("upgrade-kit: refreshed", upgrade.stdout)
 
 
 if __name__ == "__main__":
