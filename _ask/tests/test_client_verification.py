@@ -31,7 +31,7 @@ class ClientTests(unittest.TestCase):
             'ASK_TRACEABILITY_RUNTIME_ROOT': '/private/run',
         })
         self.assertEqual(env['PATH'], '/trusted/bin')
-        self.assertEqual(env['EXTRA_OK'], 'visible')
+        self.assertEqual(env.get('EXTRA_OK'), 'visible')
         self.assertEqual(env['ASK_ROOT'], '/candidate')
         self.assertEqual(env['ASK_TRACEABILITY_RUNTIME_ROOT'], '/private/run')
         for name in ('JIRA_PERSONAL_TOKEN', 'BASH_ENV', 'PYTHONPATH'):
@@ -54,7 +54,7 @@ class ClientTests(unittest.TestCase):
             check.parent.mkdir(); check.write_text('#!/bin/sh\nexit 0\n'); check.chmod(0o755)
             (preset / 'sample.yaml').write_text('checks:\n  - id: scripts\n    glob: checks/*.sh\n    env_allow: [EXTRA_OK]\n')
             expanded = expand_plan(root, {'presets': ['sample']})
-            self.assertEqual(expanded[0]['env_allow'], ['EXTRA_OK'])
+            self.assertEqual(expanded[0].get('env_allow'), ['EXTRA_OK'])
             (preset / 'sample.yaml').write_text("checks:\n  - id: direct\n    command: 'true'\n    env_allow: [EXTRA_OK]\n")
             self.assertEqual(expand_plan(root, {'presets': ['sample']})[0]['env_allow'], ['EXTRA_OK'])
 
@@ -120,6 +120,8 @@ class ClientTests(unittest.TestCase):
     def test_trusted_verify_journey(self):
         c = Consumer()
         self.addCleanup(c.close)
+        c.git('add', '-f', 'work/w/engineering-model.json')
+        c.git('commit', '-qm', 'retain fixture engineering model')
         c.write('.agents/verification.yaml', "schema: ask-checkplan/v1\nno_production_datastore: true\nchecks:\n  - id: environment\n    tier: mandatory\n    command: python3 -c \"import os; assert os.environ.get('SAFE_EXTRA') == 'visible'; assert 'JIRA_PERSONAL_TOKEN' not in os.environ; assert 'BASH_ENV' not in os.environ\"\n    env_allow: [SAFE_EXTRA]\n")
         sha = c.commit('configure safe verifier extras')
         c.sha = sha
