@@ -1,312 +1,32 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "1291552a68cd31b6561e0fe91be693e507d34bb5",
+  "contract_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6",
   "work_id": "client-security-hardening",
-  "reviewer": "gpt-6-astra/security-plan-review",
-  "recorded_by": "codex/implementation-coordinator",
+  "reviewer": "gpt-6.1-sol (medium)",
+  "recorded_by": "codex-coordinator",
   "policy": "_ask/policies/delegation.md",
   "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
   "plan_review": {
-    "schema": "ask-plan-review/v1",
-    "work_id": "client-security-hardening",
     "decision": "APPROVED",
-    "reviewer": "gpt-6-astra/security-plan-review",
-    "runtime": "codex",
-    "parent_model": "GPT-6 (exact variant unavailable)",
-    "independent": true,
-    "contract_sha": "64ec68e5409b461d0a5b3c3e88644c63e29044f8",
+    "reviewer": "gpt-6.1-sol (medium)",
+    "reviewed_candidate_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6",
     "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
     "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
-    "graph_digest": "6d99009738a029cb42c546d93726b7864445ab5feecc5ed2f5a98305fbaa4668",
-    "plan_markdown_sha256": "5f57ea42d3b2fb1c9fde2860339cbfd25d5230b226879d66ed19b04d5f6c1ae1",
-    "frozen_contract_sha": "88035127763fb1436775c13c941fbcba7484d581",
-    "findings": [],
-    "criterion_assessments": [
-      {
-        "criterion_id": "CSH-001",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T05",
-          "CSH-T06",
-          "CSH-T07",
-          "CSH-T08",
-          "CSH-T38"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Identity scope, noninteractive trust refusal, helper invalidation, narrow existing completion regression and new help/snippet/startup behavior are separately covered."
-      },
-      {
-        "criterion_id": "CSH-002",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T09",
-          "CSH-T10",
-          "CSH-T11",
-          "CSH-T38"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Path classification, late conflict with unchanged sentinels and actual client settings preservation cover preflight and valid writes."
-      },
-      {
-        "criterion_id": "CSH-003",
-        "required_types": [
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T12",
-          "CSH-T13",
-          "CSH-T14",
-          "CSH-T38"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Caught failures, abrupt termination/restart, repeated recovery, retained backup on recovery failure and intervening client edits are explicit."
-      },
-      {
-        "criterion_id": "CSH-004",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T15",
-          "CSH-T16",
-          "CSH-T17",
-          "CSH-T18",
-          "CSH-T38"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Literal data/URL parsing, restrictive creation/replacement, unsafe paths, MCP opt-in, staged credential migration and fresh PTY setup are explicit."
-      },
-      {
-        "criterion_id": "CSH-005",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T01",
-          "CSH-T02",
-          "CSH-T03",
-          "CSH-T04",
-          "CSH-T38"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Reviewed immutable dependency/source identities, mismatch-before-execution, approval-before-fetch and all caller failure propagation are mapped."
-      },
-      {
-        "criterion_id": "CSH-006",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T19",
-          "CSH-T20",
-          "CSH-T21",
-          "CSH-T22",
-          "CSH-T23",
-          "CSH-T38"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "One allowlist builder, static and instrumented runners, owned metadata, private/staging-safe outputs and successful public verification are covered."
-      },
-      {
-        "criterion_id": "CSH-007",
-        "required_types": [
-          "unit",
-          "integration"
-        ],
-        "test_ids": [
-          "CSH-T24",
-          "CSH-T25",
-          "CSH-T26"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Exact scalar round-trip and invalid late-runtime rejection before publication are tested across generated formats and override inputs."
-      },
-      {
-        "criterion_id": "CSH-008",
-        "required_types": [
-          "unit",
-          "integration"
-        ],
-        "test_ids": [
-          "CSH-T27",
-          "CSH-T28"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Argument precedence has unit coverage and actual listener binding has integration coverage; argv-only evidence cannot substitute."
-      },
-      {
-        "criterion_id": "CSH-009",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T29",
-          "CSH-T39",
-          "CSH-T40"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "One complete Grill decision, defaults versus explicit exceptions, persistence and an end-to-end model-flow journey are mapped."
-      },
-      {
-        "criterion_id": "CSH-010",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T30",
-          "CSH-T31",
-          "CSH-T39"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Saved choice precedence, independent review, real escalations, continuation and legacy workstreams without invented policy consent are covered."
-      },
-      {
-        "criterion_id": "CSH-011",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T33",
-          "CSH-T34",
-          "CSH-T35",
-          "CSH-T36",
-          "CSH-T39"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Runtime ordering/access, exact overrides, real parent identity, automatic switch verification, manual acknowledgment provenance and plan-only stop are separately asserted."
-      },
-      {
-        "criterion_id": "CSH-012",
-        "required_types": [
-          "unit",
-          "integration",
-          "e2e"
-        ],
-        "test_ids": [
-          "CSH-T32",
-          "CSH-T37",
-          "CSH-T39"
-        ],
-        "type_coverage": "present",
-        "decision": "APPROVED",
-        "findings": [],
-        "assessment": "Portable model resolution, regenerated projections and unknown/unsupported capability evidence are covered; fake adapters do not claim live vendor support."
-      }
-    ],
-    "test_adequacy": {
-      "declared_cases": 40,
-      "tasks": 10,
-      "structural_validation": "PASS using frozen contracts_at/validate_plan; no behavior execution",
-      "coverage": "All twelve criteria and required test types are mapped. Every one of 40 cases has exactly one execution/completion task, its source is owned there, and all 40 Scenario.case identities bind the amended canonical plan digest.",
-      "passing_regressions": "CSH-T07 is the narrow existing --complete guard; CSH-T11 is existing client preservation. Establish actual Green baselines during authorized implementation and never manufacture Red. New T08 and composed journeys retain new classifications.",
-      "model_links": "12 requirements, 10 tasks, 40 scenarios and 40 tests. Local Test.reference paths/IDs and exact Scenario.case plan digest/IDs were independently checked; no binding errors.",
-      "handoff": "Plan distinguishes actual orchestrator from child, validates automatic switch result, permits explicit manual acknowledgment only when introspection is unavailable, preserves legacy policy and stops before implementation preflight for plan-only authorization.",
-      "dependency_pins": "Exact external pins are reviewed task outputs before external execution; deferred metadata lookup is explicitly blocked on missing provenance and does not authorize floating versions.",
-      "evidence_sequence": "T38/T39 are authored under early CSH-01 ownership before production; coordinator records task-scoped CSH-10 assertion Red without starting that task. Same-contract ledger evidence and source ancestry are compatible with the frozen traceability reader; final review checks actual assertion continuity."
+    "scope": "CSH-01 TaskGraph owned_paths amendment only",
+    "change": {
+      "path": "work/client-security-hardening/inner-loop/tasks.yaml",
+      "added_owned_paths": [
+        "_ask/tests/test-prepare-skills-refuses-latest.sh",
+        "_ask/tests/test_tdd_preparation_overlay.py"
+      ]
     },
-    "limitations": [
-      "This approval authorizes implementation from CSH-01; it is not product verification, merge, publication, or final human acceptance.",
-      "Only the early CSH-T38/T39 assertion Red baseline has run; task-scoped behavior checks and final Green evidence remain required.",
-      "Exact package/skill pins remain reviewed CSH-01 outputs before external execution; unavailable provenance or compatibility blocks use.",
-      "Actual runtime/account availability and current-session switch capabilities require implementation-stage evidence. Unsupported or unknown capabilities retain the specified manual/escalation paths.",
-      "The amendment approval binds the exact candidate and plan Markdown hash recorded above; material contract revisions require renewed independent review."
-    ],
-    "supersedes": {
-      "decision": "REJECTED",
-      "contract_sha": "7e7e5f66fe33801929a037d62027714c85197547",
-      "retained_review_commit": "b7848e2"
-    },
-    "resolved_findings": [
-      {
-        "id": "PR-01",
-        "decision": "RESOLVED",
-        "evidence": "CSH-01 now owns _ask/scripts/install-kit.sh; CSH-T04 explicitly exercises public prepare, install, bootstrap and upgrade failure propagation. Shared ownership with CSH-03 is ordered."
-      },
-      {
-        "id": "PR-02",
-        "decision": "RESOLVED",
-        "evidence": "CSH-T07 is limited to existing --complete candidate lookup with no project dispatcher marker. New CSH-T08 owns launcher help, snippet generation and startup default behavior, requiring real behavior Red."
-      },
-      {
-        "id": "PR-03",
-        "decision": "RESOLVED",
-        "evidence": "CSH-01 owns initial journey/fixture authorship before production writes. Coordinator captures CSH-T38/T39 assertion Red as scope=task, task_id=CSH-10 under the same accepted contract; initial source stays an ancestor and final review verifies assertion continuity. CSH-10 remains sole execution/completion owner with no early state transition."
-      }
-    ],
-    "reviewed_candidate_sha": "eebe137bb70629716f5333b7e90d501a25d69586",
-    "authorization_amendment_review": {
-      "decision": "APPROVED",
-      "reviewer": "gpt-6-astra/security-plan-review",
-      "candidate_sha": "eebe137bb70629716f5333b7e90d501a25d69586",
-      "plan_markdown_sha256": "5f57ea42d3b2fb1c9fde2860339cbfd25d5230b226879d66ed19b04d5f6c1ae1",
-      "reviewed_at": "2026-11-19",
-      "authorization": "The explicit user direction implement supersedes the plan-ready stop; implementation resumes at CSH-01.",
-      "contract_unchanged": [
-        "accepted intent",
-        "specification",
-        "test plan",
-        "TaskGraph",
-        "task order"
-      ],
-      "early_baseline": {
-        "candidate_sha": "371e4a5741f34afb0b2c37401fc847dc14309664",
-        "run_id": "01ba1187a3584c9184579b9af66fdc07",
-        "cases": [
-          "CSH-T38",
-          "CSH-T39"
-        ],
-        "task_state": "CSH-10 remains pending; early Red does not advance it"
-      },
-      "human_acceptance_remains_required": true,
-      "findings": []
-    }
+    "assessment": "Both added paths exercise skill preparation owned by CSH-01. Specification, canonical test cases, plan text, task order, and dependencies are unchanged. No additional contract obligations were introduced.",
+    "implementation_reviewed": false,
+    "tests_run": false
   },
-  "plan_review_digest": "9726acdbd585db66d6e205c00cebba0423565fc3fbcfa0bf60047f8abb0ad58b",
+  "plan_review_digest": "43d3385a388dcefbf59262a1c0ef2bf51e20d76f0d2cab1ac211ba482dbacb45",
   "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
   "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
-  "graph_digest": "6d99009738a029cb42c546d93726b7864445ab5feecc5ed2f5a98305fbaa4668"
+  "graph_digest": "aff18ca84b1cc196ae6e5a7e0c20064d97505705b318358bf370165602d23228"
 }

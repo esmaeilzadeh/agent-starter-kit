@@ -53,3 +53,16 @@ test cases, TaskGraph, or task order. The reviewed CSH-T38/T39 Red baseline does
 not advance CSH-10; that task remains pending. Human acceptance remains the final
 workstream gate. This amendment supersedes only the earlier plan-only endpoint;
 the original planning review and its findings remain historical evidence.
+
+## CSH-01 ownership amendment review — 2026-11-19
+
+Decision: **APPROVED** by independent reviewer `gpt-6.1-sol (medium)`.
+
+- Exact candidate: `ab109ead101e409f8f30b5339cd3ecf2157bf4c6`
+- Exact reviewed change: add `_ask/tests/test-prepare-skills-refuses-latest.sh`
+  and `_ask/tests/test_tdd_preparation_overlay.py` to CSH-01 `owned_paths`.
+- The added paths exercise skill preparation, which CSH-01 owns. The approved
+  specification, test cases, plan text, task order, and dependencies are unchanged.
+- No additional contract obligations were introduced.
+- This review approves only the ownership amendment, not implementation
+  correctness or completion of CSH-01.

@@ -1,13 +1,13 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 3,
+  "revision": 4,
   "coordinator_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
     "CSH-01": {
-      "status": "running",
-      "base_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
+      "status": "interrupted",
+      "base_sha": "",
       "task_branch": "",
       "result_path": "",
       "boundary_reject": null,
@@ -15,10 +15,10 @@
       "debug_round": 0,
       "evidence": {},
       "attempt_number": 2,
-      "attempt_id": "CSH-01:attempt-2",
-      "accepted_plan_ref": "51f00358e9580a782ad997d942c6e364ccf82e12",
-      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
-      "attempt_started_revision": 3,
+      "attempt_id": "",
+      "accepted_plan_ref": "",
+      "accepted_plan_digest": "",
+      "attempt_started_revision": null,
       "attempt_history": [
         {
           "attempt_id": "CSH-01:attempt-1",
@@ -36,6 +36,54 @@
           "execution_runs": [],
           "started_revision": 1,
           "interrupted_revision": 2
+        },
+        {
+          "attempt_id": "CSH-01:attempt-2",
+          "attempt_number": 2,
+          "status": "interrupted",
+          "reason": "Pause the CSH-01 attempt to record the independently reviewed ownership amendment required by the accepted-contract gate; preserve committed candidate ab109ea and resume this authorized implementation afterward.",
+          "attempt_id_created_during_interrupt": false,
+          "base_sha": "df9aa60be0305b51cb6c1cc64d089387892e2782",
+          "interrupted_candidate_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6",
+          "task_branch": "",
+          "result_path": "",
+          "evidence": {},
+          "accepted_plan_ref": "51f00358e9580a782ad997d942c6e364ccf82e12",
+          "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "execution_runs": [
+            {
+              "run_id": "b0062b74671d42b38c31f41b7f98644f",
+              "digest": "a3b81cf035510d987ba36b2ba16e18b92356aa7f18e1b0c105096096aef41fc6",
+              "phase": "red",
+              "scope": "task",
+              "task_id": "CSH-01",
+              "candidate_sha": "8ae59477db5dcdb8a1bf46ade1c5c3c2955109eb",
+              "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+              "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+            },
+            {
+              "run_id": "884a779ea19344ebbf00f811de64c3e1",
+              "digest": "94bdcc34d04fa0d006fbc5ae2548d6abcce3b9f7ac74f8dd776041021f1768a6",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CSH-01",
+              "candidate_sha": "79e2e007e253fa9de908e02e1a24e8595a00e501",
+              "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+              "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+            },
+            {
+              "run_id": "b0b6144bbf92442191c580d88585a50d",
+              "digest": "dace857a81d16766322c1555e73da6aa1349d81c0301cc6b5d49f3062e0c59dc",
+              "phase": "final_green",
+              "scope": "task",
+              "task_id": "CSH-01",
+              "candidate_sha": "8366f5c1a81293ff582744ae9be13336bd34ab32",
+              "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+              "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+            }
+          ],
+          "started_revision": 3,
+          "interrupted_revision": 4
         }
       ],
       "reopened_from_attempt": "CSH-01:attempt-1",
