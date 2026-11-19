@@ -60,6 +60,17 @@ class ClientTests(unittest.TestCase):
         hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
         self.assertNotEqual(self.identity(project)["digest"], with_hooks["digest"])
 
+        shared = project / "shared-code"
+        shared.mkdir()
+        target = shared / "runtime.py"
+        target.write_text("print('one')\n", encoding="utf-8")
+        local = project / ".agents/ask.local/shared"
+        local.parent.mkdir(parents=True, exist_ok=True)
+        local.symlink_to(Path("../../shared-code"), target_is_directory=True)
+        linked = self.identity(project)
+        target.write_text("print('two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], linked["digest"])
+
         escaping = project / "_ask/scripts/outside.py"
         outside = self.fx.root / "outside.py"
         outside.write_text("print('outside')\n", encoding="utf-8")

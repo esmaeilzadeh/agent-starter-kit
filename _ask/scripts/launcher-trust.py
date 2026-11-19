@@ -117,10 +117,30 @@ def _git_runtime(root: Path) -> tuple[list[tuple[str, Path]], str]:
     return entries, hashlib.sha256(config.stdout).hexdigest()
 
 
+def _tree_entries(base: Path, prefix: str) -> list[tuple[str, Path]]:
+    found = []
+    for current, directories, filenames in os.walk(base, followlinks=False):
+        current_path = Path(current)
+        for directory in list(directories):
+            path = current_path / directory
+            if path.is_symlink():
+                found.append((f"{prefix}/{path.relative_to(base).as_posix()}", path))
+                directories.remove(directory)
+        for filename in filenames:
+            path = current_path / filename
+            found.append((f"{prefix}/{path.relative_to(base).as_posix()}", path))
+    return sorted(found)
+
+
 def identity(root: Path) -> dict:
     rows = []
     git_entries, config_digest = _git_runtime(root)
-    for relative, path in _entries(root) + git_entries:
+    pending = _entries(root) + git_entries
+    expanded: set[Path] = set()
+    index = 0
+    while index < len(pending):
+        relative, path = pending[index]
+        index += 1
         info = path.lstat()
         mode = stat.S_IMODE(info.st_mode)
         if stat.S_ISLNK(info.st_mode):
@@ -129,6 +149,11 @@ def identity(root: Path) -> dict:
                 raise ValueError(f"executable trust path escapes checkout: {relative}")
             kind = "symlink"
             content = os.fsencode(os.readlink(path))
+            if target.is_dir() and target not in expanded:
+                expanded.add(target)
+                pending.extend(_tree_entries(target, f"{relative}/@target"))
+            elif target.is_file():
+                pending.append((f"{relative}/@target", target))
         elif stat.S_ISREG(info.st_mode):
             kind = "file"
             content = path.read_bytes()
@@ -140,6 +165,7 @@ def identity(root: Path) -> dict:
             "mode": mode,
             "sha256": hashlib.sha256(content).hexdigest(),
         })
+    rows.sort(key=lambda row: row["path"])
     payload = json.dumps(
         {"files": rows, "git_execution_config_sha256": config_digest},
         sort_keys=True, separators=(",", ":"),
