@@ -30,7 +30,9 @@ its focused repair separately before overlapping installer work.
 - Access preflight passed; checkout was clean.
 - Approved intent confirmation and canonical specification exist.
 - Plan is still a template; no TaskGraph, test plan, or inner-loop state exists.
-- Next stage: independent Spec Challenge. Its frozen stage contract requires a
-  submitted reviewer model choice before spawning; the choice is pending.
+- Next stage at recovery: independent Spec Challenge. The model choice was
+  resolved by the human direction, "continue with astra for review". Use
+  `gpt-6-astra` in an independent context; this explicitly authorizes proceeding
+  with the configured reviewer despite the shared GPT family.
 
 No implementation or execution evidence is claimed by this recovery record.
