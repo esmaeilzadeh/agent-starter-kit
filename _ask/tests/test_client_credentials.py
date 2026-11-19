@@ -118,6 +118,11 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(stat.S_IMODE(credentials.stat().st_mode), 0o600)
         self.assertEqual(json.loads(credentials.read_text())["credentials"]["JIRA_PERSONAL_TOKEN"],
                          "dummy-private-token")
+        local = project / ".agents/ask.local/tracker.json"
+        local.write_text('{"memory_choice":"1","tracker":"old","url":"https://old.test"}\n')
+        store = self._run_config(project, "store", "--root", str(project), input=external)
+        self.assertEqual(store.returncode, 0, store.stderr)
+        self.assertEqual(json.loads(local.read_text())["memory_choice"], "1")
 
         mcp = self.fx.root / "home/cursor/mcp.json"
         mcp.parent.mkdir(parents=True)
@@ -157,9 +162,9 @@ class ClientTests(unittest.TestCase):
             "MEMORY_CHOICE=2\nJIRA_PERSONAL_TOKEN='$(touch " + str(marker) + ")'\n",
             encoding="utf-8",
         )
-        self.fx.run(["git", "-C", str(project), "add", ".ask.env"])
+        self.fx.run(["git", "-C", str(project), "add", "-f", ".ask.env"])
         self.fx.run(["git", "-C", str(project), "commit", "-qm", "legacy credentials"])
-        self.fx.run(["git", "-C", str(project), "add", ".ask.env"])
+        self.fx.run(["git", "-C", str(project), "add", "-f", ".ask.env"])
         result = self._run_config(project, "migrate", "--root", str(project), "--yes")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse(marker.exists())
@@ -183,13 +188,13 @@ class ClientTests(unittest.TestCase):
             "#!/usr/bin/env python3\nimport json, os, sys\n"
             "json.dump({'argv': sys.argv[1:], 'url': os.getenv('JIRA_URL'), "
             "'token': os.getenv('JIRA_PERSONAL_TOKEN'), 'other': os.getenv('GITHUB_TOKEN')}, "
-            "open(os.environ['ASK_TEST_CAPTURE'], 'w'))\n",
+            "open(" + repr(str(capture)) + ", 'w'))\n",
             encoding="utf-8",
         )
         uvx.chmod(0o755)
         called = self.fx.run(
             ["python3", str(project / "_ask/scripts/tracker-mcp.py"), "--root", str(project)],
-            cwd=project, env={**self._env(bin_dir=bin_dir), "ASK_TEST_CAPTURE": str(capture),
+            cwd=project, env={**self._env(bin_dir=bin_dir),
                               "GITHUB_TOKEN": "unrelated-caller-token"},
         )
         self.assertEqual(called.returncode, 0, called.stderr)
