@@ -1,0 +1,36 @@
+{
+  "schema": "ask-planning-validation/v1",
+  "work_id": "client-security-hardening",
+  "scope": "implementation-contract-only",
+  "candidate_sha": "64ec68e5409b461d0a5b3c3e88644c63e29044f8",
+  "frozen_tooling_sha": "88035127763fb1436775c13c941fbcba7484d581",
+  "frozen_tooling_path": "/tmp/askit-security.e0Qyvz/frozen",
+  "snapshot_digest": "e1e86e2bf279a6af918172282b64bea554896a2a10d1a97b531236650fc4775a",
+  "status": "pass",
+  "checks": {
+    "engineering_model_validate_current": "pass; no diagnostics",
+    "engineering_model_require_plan_links": "pass; task context and test references complete",
+    "inner_loop_validate_graph": "ok; 10 ordered tasks",
+    "traceability_contracts_at": "pass; exact committed criteria, test plan and graph",
+    "security_criteria_preservation": "pass; first eight criterion objects equal revision 1",
+    "case_ownership": "pass; 40 unique cases, exactly one responsible task per case",
+    "plan_table_graph_alignment": "pass; same 10 task IDs in the same order",
+    "intent_confirmation": "pass; digest matches exact approved revised intent bytes",
+    "source_scope": "pass; only workstream and specification artifacts differ from product base",
+    "execution_boundary": "pass; no inner-loop state initialized",
+    "git_diff_check": "pass"
+  },
+  "methods": [
+    "Frozen engineering_model.admission.validate_current and workflow.require_plan_links with explicit product root",
+    "Frozen inner_loop.graph.load_graph/validate_graph",
+    "Frozen verification.traceability.evidence.contracts_at against candidate_sha",
+    "Direct JSON, SHA-256 and Git comparisons for approvals, ownership, original criteria and source scope"
+  ],
+  "limitations": [
+    "These are planning checks, not behavior tests or product Verify.",
+    "Independent semantic plan review is recorded separately and must approve the exact contract.",
+    "No dependency safety audit, exploit reproduction, live model availability or automatic orchestrator switching is claimed.",
+    "Local Codex and Cursor help expose startup model selection; that does not establish current-session switching capability.",
+    "No implementation, merge, push, publication or product acceptance is authorized."
+  ]
+}

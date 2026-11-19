@@ -1,5 +1,27 @@
 # Continuation: 2026-11-19
 
+## Current endpoint: Plan ready, stop before implementation
+
+The implementation plan is ready. Independent Astra plan review APPROVED the
+exact contract at `64ec68e5409b461d0a5b3c3e88644c63e29044f8`; all three prior
+findings are resolved. `planning-validation.json` records successful planning
+checks. `traceability-accepted.json` and the local coordinator accepted-tests ref
+pin the reviewed specification, test plan and TaskGraph. `result.json` records
+`plan-ready`, not a product verification pass.
+
+The contract contains 12 criteria, 10 sequential tasks and 40 explicitly owned
+cases with Engineering Model task/context and Scenario/case links. No inner-loop
+execution state was initialized. No production changes, behavior tests, full
+product Verify, merge, push, publication or product acceptance occurred.
+
+The human's endpoint is reached. For a generic "continue", report this endpoint
+without opening an implementation model picker or starting a task. Only a later
+explicit implementation direction can extend execution authority. Keep the
+approved intent bytes and confirmation intact when recording such a direction.
+
+The sections below retain recovery and approval history; their pending states
+are superseded by this current endpoint.
+
 ## Authorized endpoint
 
 Human direction: "stop when implementation plan is ready". Continue from the

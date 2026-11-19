@@ -7,7 +7,10 @@ with the exact response "approved". The canonical criterion registry is now
 revision 2; CSH-001 through CSH-008 are unchanged and CSH-009 through CSH-012
 cover the extension. Intent confirmation binds the exact presented draft bytes;
 its historical pending wording is superseded by this recorded approval.
-Rechallenge the combined contract, then finish Plan and stop before implementation.
+Independent Astra challenge passed the combined contract, and independent plan
+review APPROVED contract `64ec68e5409b461d0a5b3c3e88644c63e29044f8` after the three
+plan corrections. Planning checks passed and reviewed obligations are pinned.
+The implementation plan is ready; stop before implementation.
 The prior no-change disposition below applies to revision 1 and remains history.
 
 ## Prior disposition: security specification revision 1
