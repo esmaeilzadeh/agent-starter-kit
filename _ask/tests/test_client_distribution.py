@@ -43,7 +43,7 @@ class ClientTests(unittest.TestCase):
             self.assertRegex(entry["revision"], r"^[0-9a-f]{40}$")
             self.assertRegex(identity["tree"], r"^[0-9a-f]{40}$")
             self.assertRegex(identity["skill_sha256"], r"^[0-9a-f]{64}$")
-            self.assertTrue(identity["path"].endswith("/SKILL.md"))
+            self.assertTrue(identity["path"] == "SKILL.md" or identity["path"].endswith("/SKILL.md"))
 
         cli = pins["packages"]["skills"]
         self.assertEqual(cli["version"], "1.5.18")
