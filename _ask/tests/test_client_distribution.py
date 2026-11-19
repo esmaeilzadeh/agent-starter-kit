@@ -198,20 +198,20 @@ class ClientTests(unittest.TestCase):
         self.assertFalse(marker.exists(), "unverified upgrade helper ran")
         self.assertEqual((client / "README.md").read_bytes(), before)
         self.assertTrue((client / "ask").is_file())
-
-    def test_modified_cached_release_is_not_executed(self) -> None:
+        shutil.rmtree(cache)
+        installed.unlink()
         launcher = self.fx.install_launcher()
         cache = self.fx.cache / "askit/kit"
-        marker = self.fx.root / "modified-cache-helper-ran"
+        modified_marker = self.fx.root / "modified-cache-helper-ran"
         helper = cache / "_ask/scripts/install-user-completion.sh"
-        helper.write_text(f"#!/bin/sh\nprintf executed > '{marker}'\n", encoding="utf-8")
+        helper.write_text(f"#!/bin/sh\nprintf executed > '{modified_marker}'\n", encoding="utf-8")
         helper.chmod(0o755)
 
         client = self.fx.git_project(self.fx.root / "modified-cache-client")
         direct = self.fx.run([str(launcher)], cwd=client)
         self.assertNotEqual(direct.returncode, 0)
         self.assertIn("cached release is modified", direct.stderr)
-        self.assertFalse(marker.exists())
+        self.assertFalse(modified_marker.exists())
 
         bootstrap = self.fx.run(
             ["bash", str(cache / "_ask/scripts/askit-bootstrap.sh")], cwd=client,
@@ -219,7 +219,7 @@ class ClientTests(unittest.TestCase):
         )
         self.assertNotEqual(bootstrap.returncode, 0)
         self.assertIn("cached release is modified", bootstrap.stderr)
-        self.assertFalse(marker.exists())
+        self.assertFalse(modified_marker.exists())
 
     def test_source_approval_before_fetch(self) -> None:
         source, commit = self._source_project("skill-source")
