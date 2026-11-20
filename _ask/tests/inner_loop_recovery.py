@@ -89,7 +89,6 @@ class RecoveryTests(unittest.TestCase):
             "work/*/inner-loop/state.json\n"
             "work/*/inner-loop/state.lock\n"
             "work/*/inner-loop/results/\n"
-            "work/*/inner-loop/evidence/\n"
             "work/*/traceability/\n",
         )
         self.write("work/w/inner-loop/tasks.yaml", TASKS)
@@ -158,7 +157,8 @@ class RecoveryTests(unittest.TestCase):
     def recovery_review(self, proposal):
         return {
             "schema": "ask-recovery-adoption-review/v1", "decision": "APPROVED",
-            "reviewer": "independent-reviewer", "recorded_by": "coordinator",
+            "reviewer": "independent-reviewer", "reviewer_model": "gpt-6-sol",
+            "reviewer_effort": "medium", "recorded_by": "coordinator",
             "proposal_sha256": hashlib.sha256(
                 json.dumps(proposal, sort_keys=True, separators=(",", ":")).encode()
             ).hexdigest(),
@@ -2046,6 +2046,12 @@ class test_b(unittest.TestCase):
         forged = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
                               "--review", str(review_path))
         self.assertNotEqual(forged.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        wrong_reviewer = dict(review, reviewer_model="gpt-6-astra")
+        review_path.write_text(json.dumps(wrong_reviewer, sort_keys=True) + "\n")
+        wrong_model = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                   "--review", str(review_path))
+        self.assertNotEqual(wrong_model.returncode, 0)
         self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
         review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
         adopted = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),

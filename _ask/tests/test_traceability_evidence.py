@@ -77,7 +77,8 @@ class EvidenceTests(unittest.TestCase):
         proposal_digest=hashlib.sha256(json.dumps(proposal,sort_keys=True,
             separators=(',',':')).encode()).hexdigest()
         review={'schema':'ask-recovery-adoption-review/v1','decision':'APPROVED',
-            'reviewer':'independent','recorded_by':'coordinator','scope':'exact-recovery-adoption',
+            'reviewer':'independent','reviewer_model':'gpt-6-sol','reviewer_effort':'medium',
+            'recorded_by':'coordinator','scope':'exact-recovery-adoption',
             'proposal_sha256':proposal_digest,'candidate_sha':'source',
             'early_red_continuity_sha256':continuity_sha}
         proposal_raw=json.dumps(proposal).encode();review_raw=json.dumps(review).encode()
@@ -88,7 +89,7 @@ class EvidenceTests(unittest.TestCase):
             'previous_checkpoint':'prior','observed_revision':0,'resulting_revision':1,
             'source_head':'source','source_tree':'tree',
             'early_red_continuity_sha256':continuity_sha}
-        state={'coordinator_sha':'source','revision':3,'recovery_adoptions':[receipt]}
+        state={'coordinator_sha':'integrated','revision':3,'recovery_adoptions':[receipt]}
         old_state={'coordinator_sha':'source','revision':1,'recovery_adoptions':[receipt]}
         state_path='artifacts/work/w/inner-loop/state.json'
         docs={
@@ -103,7 +104,8 @@ class EvidenceTests(unittest.TestCase):
         def checkpoint(_root,_work,commit=None):
             name=commit or 'latest';manifest,files=docs[name]
             return name,(state if name=='latest' else old_state),files
-        with patch('inner_loop.checkpoint.read_checkpoint',side_effect=checkpoint), \
+        with patch('inner_loop.recovery._is_ancestor',return_value=True), \
+             patch('inner_loop.checkpoint.read_checkpoint',side_effect=checkpoint), \
              patch('inner_loop.checkpoint._read_tree',side_effect=lambda _root,sha:docs[sha]):
             context=retained_adoption_continuity(Path('.'),'w',state)
         self.assertIsNotNone(context)
