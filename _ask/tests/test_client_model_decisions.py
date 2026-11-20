@@ -76,9 +76,8 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(other_runtime.returncode, 0,
                          other_runtime.stderr or other_runtime.stdout)
         other_plan = json.loads(other_runtime.stdout)
-        with self.subTest(consent_runtime='cursor'):
-            self.assertFalse(other_plan['confirmed'])
-            self.assertFalse(other_plan['policy_confirmed'])
+        self.assertFalse(other_plan['confirmed'])
+        self.assertFalse(other_plan['policy_confirmed'])
 
         risk_id = 'decision-risk-test'
         risk_dir = self.root / 'work' / risk_id
@@ -95,9 +94,8 @@ class ClientTests(unittest.TestCase):
         )
         self.assertEqual(saved_low.returncode, 0, saved_low.stderr or saved_low.stdout)
         low_plan = yaml.safe_load((risk_dir / 'models.yaml').read_text())['model_plan']
-        with self.subTest(submitted_risk='LOW'):
-            self.assertEqual(low_plan['risk'], 'LOW')
-            self.assertEqual(low_plan['selections']['07-review']['model'], 'gpt-6-luna')
+        self.assertEqual(low_plan['risk'], 'LOW')
+        self.assertEqual(low_plan['selections']['07-review']['model'], 'gpt-6-luna')
 
         grill = (self.root / '.agents/ask/stages/01-grill.md').read_text(encoding='utf-8')
         self.assertEqual(grill.count('Confirm model plan'), 1)
