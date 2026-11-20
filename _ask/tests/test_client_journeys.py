@@ -5,7 +5,6 @@ from __future__ import annotations
 import unittest
 import json
 import hashlib
-import shutil
 from pathlib import Path
 
 from client_security_fixtures import ClientFixture, ROOT
@@ -127,24 +126,32 @@ class ClientTests(unittest.TestCase):
         original_kit_bytes = original_kit_file.read_bytes()
         kill_bin = self.fx.root / "kill-bin"
         kill_bin.mkdir()
-        cp = shutil.which("cp")
-        self.assertIsNotNone(cp)
-        cp_shim = kill_bin / "cp"
-        cp_shim.write_text(
-            "#!/bin/sh\n"
-            f"'{cp}' \"$@\" || exit $?\n"
-            "for arg do destination=$arg; done\n"
-            "if [ \"$destination\" = \"$ASKIT_TEST_KILL_TARGET\" ]; then "
-            "if [ ! -e \"$ASKIT_TEST_KILL_MARKER\" ]; then "
-            ": > \"$ASKIT_TEST_KILL_MARKER\"; kill -KILL \"$PPID\"; fi; fi\n",
+        sitecustomize = kill_bin / "sitecustomize.py"
+        sitecustomize.write_text(
+            "import os, signal\n"
+            "_replace = os.replace\n"
+            "def _kill_after_publish(source, destination, *args, **kwargs):\n"
+            "    result = _replace(source, destination, *args, **kwargs)\n"
+            "    if (os.fspath(destination) == os.environ.get('ASKIT_TEST_KILL_TARGET')\n"
+            "            and os.path.basename(os.fspath(source)).startswith('.publish-')\n"
+            "            and not os.path.exists(os.environ['ASKIT_TEST_KILL_MARKER'])):\n"
+            "        with open(os.environ['ASKIT_TEST_KILL_MARKER'], 'w'): pass\n"
+            "        os.kill(os.getpid(), signal.SIGKILL)\n"
+            "    return result\n"
+            "os.replace = _kill_after_publish\n",
             encoding="utf-8",
         )
-        cp_shim.chmod(0o755)
         kill_env = env | {
-            "PATH": f"{kill_bin}:{env['PATH']}",
-            "ASKIT_TEST_KILL_TARGET": str(client / "_ask/skills"),
+            "PYTHONPATH": str(kill_bin),
+            "ASKIT_TEST_KILL_TARGET": str(client / "_ask/skills/prepare-skills.sh"),
             "ASKIT_TEST_KILL_MARKER": str(self.fx.root / "upgrade-killed"),
         }
+        refreshed_trust = self.fx.run_tty(
+            [str(launcher), "trust"], cwd=client, env=env, input="y\n",
+        )
+        if refreshed_trust.returncode:
+            failures.append("could not refresh trust before injected upgrade: "
+                            + (refreshed_trust.stderr or refreshed_trust.stdout).splitlines()[0])
         interrupted = self.fx.run_tty(
             [str(launcher), "upgrade", "--version", source_commit, "--source", str(source),
              "--skip-prepare"], cwd=client, env=kill_env, input="y\n" * 10,

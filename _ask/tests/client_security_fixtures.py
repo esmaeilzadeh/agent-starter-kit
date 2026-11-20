@@ -31,6 +31,7 @@ class ClientFixture:
             "LANG": "C.UTF-8",
             "LC_ALL": "C.UTF-8",
             "TZ": "UTC",
+            "PYTHONDONTWRITEBYTECODE": "1",
             "HOME": str(self.home),
             "TMPDIR": str(self.tmp),
             "XDG_CONFIG_HOME": str(self.config),
