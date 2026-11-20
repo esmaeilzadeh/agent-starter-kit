@@ -82,6 +82,23 @@ class ClientTests(unittest.TestCase):
             self.assertNotIn('--server.address=127.0.0.1', argv)
             self.assertIn('--server.port=8765', argv)
 
+        self.capture.unlink()
+        result = self.run_fake('--', '--server.address=192.0.2.8', 'app value')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        argv = json.loads(self.capture.read_text(encoding='utf-8'))
+        self.assertEqual(argv, [
+            '-m', 'streamlit', 'run', str(self.kit_root / '_ask/ui/streamlit_app.py'),
+            '--server.address=127.0.0.1', '--', '--server.address=192.0.2.8', 'app value',
+        ])
+
+        self.capture.unlink()
+        result = self.run_fake('--server.address=192.0.2.8', '--',
+                               '--server.address=127.0.0.1')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        argv = json.loads(self.capture.read_text(encoding='utf-8'))
+        self.assertEqual(argv[-3:], ['--server.address=192.0.2.8', '--',
+                                     '--server.address=127.0.0.1'])
+
         for invalid in (
             ('--server.address',),
             ('--server.address', '--server.port=8765'),
@@ -139,7 +156,7 @@ class ClientTests(unittest.TestCase):
             time.sleep(.1)
         self.fail(f'UI did not listen on {expected_address}:{port}')
 
-    def start_real_ui(self, address, port, ambient_address):
+    def start_real_ui(self, address, port, ambient_address, *app_args):
         project_config = self.root / '.streamlit'
         project_config.mkdir(exist_ok=True)
         (project_config / 'config.toml').write_text(
@@ -152,6 +169,7 @@ class ClientTests(unittest.TestCase):
         args = ['bash', str(self.ui), f'--server.port={port}', '--server.headless=true']
         if address is not None:
             args.append(f'--server.address={address}')
+        args.extend(app_args)
         process = subprocess.Popen(args, cwd=self.root, env=env,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         self.addCleanup(self.stop_process, process)
@@ -183,13 +201,14 @@ class ClientTests(unittest.TestCase):
 
     def test_actual_listener(self):
         self.assertTrue(Path('/proc/self/fd').exists(), 'listener assertion requires Linux /proc')
-        for address, expected, ambient in (
-                (None, '127.0.0.1', '0.0.0.0'),
-                ('0.0.0.0', '0.0.0.0', '127.0.0.1')):
+        for address, expected, ambient, app_args in (
+                (None, '127.0.0.1', '0.0.0.0', ('--', '--server.address=0.0.0.0')),
+                ('0.0.0.0', '0.0.0.0', '127.0.0.1',
+                 ('--', '--server.address=127.0.0.1'))):
             with socket.socket() as sock:
                 sock.bind(('127.0.0.1', 0))
                 port = sock.getsockname()[1]
-            process = self.start_real_ui(address, port, ambient)
+            process = self.start_real_ui(address, port, ambient, *app_args)
             self.wait_for_listener(process, port, expected)
             self.wait_for_health(port)
             self.stop_process(process)
