@@ -144,6 +144,38 @@ publish_milestones(Path(ROOT), 'w')
         self.git('add', '-f', str(path.relative_to(self.root)))
         self.assertIn(str(path.relative_to(self.root)), dirty_paths(self.root))
 
+    def test_reopen_rejects_reviewed_sibling_of_publication(self):
+        from inner_loop.attempts import _reviewed_reconciliation
+        from inner_loop.state import ProtocolViolation
+        base = self.state['coordinator_sha']
+        (self.root / 'README').write_text('interrupted source')
+        self.git('add', 'README')
+        self.git('commit', '-qm', 'interrupted source')
+        candidate = self.git('rev-parse', 'HEAD')
+        task = self.state['tasks']['T1']
+        task.update(status='interrupted', attempt_number=1, attempt_history=[{
+            'attempt_id': 'T1:attempt-1', 'attempt_number': 1,
+            'base_sha': base, 'interrupted_candidate_sha': candidate}])
+        _publish_state(self.root, 'w', self.state)
+        publication = publish_milestones(self.root, 'w')
+        state = load_state(self.root, 'w')
+        sibling = self.git('commit-tree', self.git('rev-parse', candidate + '^{tree}'),
+                           '-p', candidate, '-m', 'reviewed sibling')
+        self.git('update-ref', 'refs/heads/agent/w', sibling, publication)
+        record = {'schema': 'ask-inner-loop-reconciliation/v1', 'work_id': 'w', 'task_id': 'T1',
+            'previous_checkpoint_sha': read_checkpoint(self.root, 'w')[0],
+            'previous_revision': state['revision'], 'previous_attempt_id': 'T1:attempt-1',
+            'interrupted_candidate_sha': candidate, 'new_attempt_id': 'T1:attempt-2',
+            'accepted_plan_ref': 'pin', 'accepted_plan_digest': 'digest',
+            'new_attempt_base_sha': publication, 'candidate_sha': sibling}
+        path = self.root / 'work/w/inner-loop/evidence/reconciliation-T1-attempt-1-to-2.json'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(record))
+        with patch('inner_loop.attempts.accepted_plan_ref', return_value='pin'), \
+                patch('inner_loop.attempts.accepted_plan_digest', return_value='digest'):
+            with self.assertRaisesRegex(ProtocolViolation, 'new attempt base ancestry'):
+                _reviewed_reconciliation(self.root, 'w', 'T1', state)
+
     def test_selected_review_and_old_state_temp_require_retained_bytes(self):
         review = self.root / 'work/w/inner-loop/evidence/review.md'
         review.parent.mkdir(parents=True)

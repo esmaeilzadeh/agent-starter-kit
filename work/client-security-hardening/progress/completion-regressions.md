@@ -43,3 +43,10 @@ All seven client-write security tests pass (187.884s), and accepted source/pin
 artifact comparisons are unchanged. Selected recovery proposal/review paths
 qualify as clean only after exact checkpoint retention; public task summaries
 include recovery authority digests without copying private inventories.
+
+Independent review of 8bfb46c found one omitted new-base -> reviewed-candidate
+ancestry check after interrupted publication. The direct check and a real Git
+sibling rejection case now pass, together with the valid reopen path. The other
+reviewed changes were accepted; twelve milestone/preflight checks passed during
+that review. The combined model/runtime/orchestrator/traceability/engineering
+suite passed 47 checks. Final full recovery/aggregate results remain due.

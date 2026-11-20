@@ -132,6 +132,8 @@ def _reviewed_reconciliation(root: Path, work_id: str, task_id: str, doc: dict):
                     valid = False
         if not valid:
             raise ProtocolViolation("interrupted candidate has no exact retained progress publication lineage")
+    if not _is_ancestor(root, expected["new_attempt_base_sha"], expected["candidate_sha"]):
+        raise ProtocolViolation("reconciled source postimage is outside the new attempt base ancestry")
     if not _is_ancestor(root, expected["interrupted_candidate_sha"], expected["candidate_sha"]):
         raise ProtocolViolation("reconciled source postimage is outside the interrupted candidate ancestry")
     from inner_loop.evidence import source_changes
