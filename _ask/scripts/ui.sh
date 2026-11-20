@@ -13,6 +13,10 @@ declare -a streamlit_args=()
 address_set=false
 while (($#)); do
   case "$1" in
+    --)
+      streamlit_args+=("$@")
+      break
+      ;;
     --server.address=*)
       address="${1#*=}"
       shift
