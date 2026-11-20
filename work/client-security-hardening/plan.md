@@ -29,6 +29,19 @@ behavior-assertion Reds. Independent reviewer `gpt-6-astra/security-plan-review`
 approved that exact baseline. CSH-10 remains pending; this early evidence does
 not advance its task state. Continue implementation from CSH-01.
 
+### Authorized same-branch feature addition — 2026-11-20
+
+After CSH-10, the human explicitly directed adding confidence-based model
+escalation to this work on the current branch. Keep the accepted `intent.md`
+byte-identical. For consequential decisions with unresolved uncertainty,
+continue autonomously only above 90% subjective confidence; otherwise consult
+each available native model rung once, in configured order, and ask the human
+only when the ladder is exhausted or the decision requires human authority or
+preference. The approved Codex ladder is Sol/high → Astra/medium → Astra/high.
+Other runtime rungs must use verified native models/settings; do not invent
+equivalences. Preserve existing user authority, scope, independent review, and
+verification requirements.
+
 ## Approach
 
 One branch, `agent/client-security-hardening`; one writer. Ten bounded tasks run
