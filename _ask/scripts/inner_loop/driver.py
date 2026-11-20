@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import hashlib
 import subprocess
+import sys
 from pathlib import Path
 from engineering_model.workflow import require_model, guarded_workflow, workflow_admission, _refuse
 from engineering_model.admission import validate_current
@@ -38,6 +39,26 @@ def _is_git(root: Path) -> bool:
         ["git", "rev-parse", "--git-dir"], cwd=root, capture_output=True, text=True
     )
     return proc.returncode == 0
+
+
+def _implementation_handoff(root: Path, work_id: str) -> None:
+    helper = root / "_ask/scripts/orchestrator-handoff.py"
+    if not helper.is_file():
+        # Compatibility for pre-handoff fixtures/workspaces with no saved plan.
+        if (root / "work" / work_id / "models.yaml").exists():
+            raise ValueError("saved model plan cannot be checked: handoff helper is unavailable")
+        return
+    proc = subprocess.run(
+        [sys.executable, str(helper), "preflight", "--work-id", work_id],
+        cwd=root, capture_output=True, text=True, check=False,
+    )
+    try:
+        report = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        report = {}
+    if proc.returncode != 0 or report.get("status") not in {"ready", "skipped"}:
+        reason = report.get("request") or report.get("reason") or proc.stderr.strip()
+        raise ValueError(reason or "implementation model handoff is blocked")
 
 
 def _depends(task: dict) -> list[str]:
@@ -199,6 +220,7 @@ def run_once(root: Path, work_id: str) -> str:
         if result_path(root, work_id, tid).is_file():
             integrate_ready(root, work_id, tid)
             return run_once(root, work_id)
+        _implementation_handoff(root, work_id)
         with workflow_admission(root, work_id):
             return f"waiting={tid}"
     ready = ready_ids(graph, doc)
@@ -207,6 +229,7 @@ def run_once(root: Path, work_id: str) -> str:
             ensure_state(root, work_id)
             return "quiescent"
     tid = ready[0]
+    _implementation_handoff(root, work_id)
     with workflow_admission(root, work_id, delivery_task_id=tid):
         ensure_state(root, work_id)
         spawn_writer(root, work_id, tid)

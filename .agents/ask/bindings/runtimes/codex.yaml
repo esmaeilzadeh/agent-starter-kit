@@ -27,6 +27,15 @@ reasoning_effort:
 families:
   - gpt
 
+implementation_family: gpt
+handoff:
+  capabilities:
+    catalog: unknown
+    identity: unknown
+    switch: unknown
+  manual_action: "run /model {model} in the active Codex session and verify it with /status"
+  evidence: https://learn.chatgpt.com/docs/developer-commands?surface=cli
+
 picker:
   - gpt-6.1-sol
   - gpt-6-astra

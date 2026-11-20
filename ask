@@ -27,7 +27,7 @@ Commands:
       Create branch agent/<work-id> and seed work/<work-id>/.
       <work-id>   required slug
 
-  check-workstream <work-id> [--allow-dirty] [--acceptance]
+  check-workstream <work-id> [--allow-dirty] [--acceptance] [--implementation]
       Preconditions before implement (branch, spec, plan, current human intent confirmation).
       --allow-dirty   skip the clean-tree check
 
@@ -94,6 +94,12 @@ Commands:
 
   inner-loop validate|status|run|resume|cancel [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
+
+  model decision {save|submit|show|resolve|resolve-implementor|capability}
+      Save or inspect the confirmed stage-model plan and runtime evidence.
+
+  orchestrator-handoff preflight|resume
+      Verify or resume the confirmed implementation model handoff.
 
   model {validate|admit|show|edit|watch|context} --work-id <work-id>
       Validate the Engineering Model and its canonical references.
@@ -254,6 +260,16 @@ case "$cmd" in
   check-workstream|check)
     exec "$SCRIPTS/check-workstream.sh" "$@"
     ;;
+  model)
+    if [[ "${1:-}" == "decision" ]]; then
+      shift
+      exec python3 "$SCRIPTS/model-decisions.py" "$@"
+    fi
+    exec bash "$SCRIPTS/model.sh" "$@"
+    ;;
+  orchestrator-handoff)
+    exec python3 "$SCRIPTS/orchestrator-handoff.py" "$@"
+    ;;
   confirm-intent)
     exec python3 "$SCRIPTS/intent-confirmation.py" confirm --root "$ROOT" "$@"
     ;;
@@ -289,9 +305,6 @@ case "$cmd" in
     ;;
   inner-loop)
     exec python3 "$SCRIPTS/inner_loop/__main__.py" "$@"
-    ;;
-  model)
-    exec bash "$SCRIPTS/model.sh" "$@"
     ;;
   stage-intake)
     exec python3 "$SCRIPTS/stage-intake.py" "$@"

@@ -21,6 +21,14 @@ families:
   - fable
   - claude
 
+handoff:
+  capabilities:
+    catalog: unknown
+    identity: unknown
+    switch: unknown
+  manual_action: "select {model} in Claude Code's active model selector"
+  evidence: https://docs.anthropic.com/en/docs/claude-code/model-config
+
 picker:
   - haiku
   - sonnet

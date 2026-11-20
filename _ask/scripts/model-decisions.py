@@ -8,6 +8,8 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
+import subprocess
 import tempfile
 
 
@@ -94,6 +96,118 @@ def runtime_config(bind: Path, runtime: str) -> dict:
     return cfg
 
 
+def effective_risk(work: dict, consumer: dict, env: dict,
+                   submitted: str | None = None) -> str:
+    value = (submitted or work.get('risk') or consumer.get('risk')
+             or env.get('ASK_RISK') or 'LOW')
+    risk = str(value).upper()
+    if risk not in {'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'}:
+        raise ValueError(f'invalid workstream risk: {risk}')
+    return risk
+
+
+def runtime_request(runtime: str, action: str, **fields) -> dict:
+    adapter = os.environ.get('ASK_MODEL_RUNTIME_ADAPTER')
+    if not adapter:
+        raise ValueError(f'{runtime} runtime adapter is unavailable')
+    command = shlex.split(adapter)
+    if not command:
+        raise ValueError(f'{runtime} runtime adapter is unavailable')
+    request = {'action': action, 'runtime': runtime, **fields}
+    try:
+        result = subprocess.run(command, input=json.dumps(request), text=True,
+                                capture_output=True, check=False, timeout=30)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ValueError(f'{runtime} {action} evidence unavailable: {exc}') from exc
+    if result.returncode:
+        raise ValueError(f'{runtime} {action} evidence unavailable: adapter exited {result.returncode}')
+    try:
+        response = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f'{runtime} {action} evidence unavailable: invalid adapter response') from exc
+    if not isinstance(response, dict):
+        raise ValueError(f'{runtime} {action} evidence unavailable: expected an object')
+    return response
+
+
+def capability(runtime: str) -> dict:
+    report = {'runtime': runtime, 'catalog': 'unknown', 'identity': 'unknown',
+              'switch': 'unknown', 'evidence': []}
+    runtime_config(_MODELS.bindings_dir(ROOT), runtime)
+    try:
+        catalog = runtime_request(runtime, 'catalog')
+        models = catalog.get('models')
+        if catalog.get('supported') is False:
+            report['catalog'] = 'unsupported'
+        elif (catalog.get('authenticated') is True and catalog.get('access_verified') is True
+              and isinstance(models, list) and all(isinstance(item, str) for item in models)):
+            report['catalog'] = 'supported'
+        report['evidence'].append({'action': 'catalog', 'status': report['catalog'],
+                                   'source': 'current-session-adapter'})
+    except ValueError:
+        pass
+    try:
+        identity = runtime_request(runtime, 'identity')
+        if isinstance(identity.get('model'), str) and identity['model']:
+            report['identity'] = 'supported'
+        elif identity.get('supported') is False:
+            report['identity'] = 'unsupported'
+        if identity.get('switch_supported') is True:
+            report['switch'] = 'supported'
+        elif identity.get('switch_supported') is False:
+            report['switch'] = 'unsupported'
+        report['evidence'].append({'action': 'identity', 'status': report['identity'],
+                                   'switch': report['switch'],
+                                   'source': 'current-session-adapter'})
+    except ValueError:
+        pass
+    return report
+
+
+def resolve_implementor(work_id: str, runtime: str | None = None) -> str:
+    _path, bind, defaults, consumer, work = load_inputs(work_id)
+    runtime = runtime or work.get('runtime') or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
+    cfg = runtime_config(bind, runtime)
+    plan = work.get('model_plan') or {}
+    if plan.get('status') != 'confirmed' or plan.get('runtime') != runtime:
+        return resolve(work_id, '06-implement', runtime)
+
+    configured = _MODELS.value_from_overlay(work, '06-implement', runtime)
+    if configured is not _MODELS.MISSING and not _MODELS.is_role_or_pool(configured):
+        return _MODELS.validate_model(configured, runtime, '06-implement')
+    if plan.get('implementation_policy') == 'exact':
+        selection = (plan.get('selections') or {}).get('06-implement') or {}
+        return _MODELS.validate_model(selection.get('model'), runtime, '06-implement')
+    if plan.get('implementation_policy') != 'latest-accessible':
+        raise ValueError('confirmed model plan has no implementation policy')
+
+    catalog = runtime_request(runtime, 'catalog')
+    if catalog.get('authenticated') is not True or catalog.get('access_verified') is not True:
+        raise ValueError(f'{runtime} catalog does not prove current account access')
+    models = catalog.get('models')
+    if not isinstance(models, list) or not models or not all(isinstance(item, str) for item in models):
+        raise ValueError(f'{runtime} catalog did not provide current accessible models')
+    current = (plan.get('selections') or {}).get('06-implement') or {}
+    base = current.get('model')
+    families = cfg.get('families') or []
+    family = cfg.get('implementation_family')
+    if family is None:
+        family = next((item for item in families
+                       if isinstance(item, str) and (base == item or base.startswith(item + '-'))), None)
+    if not isinstance(family, str) or not family:
+        raise ValueError(f'{runtime} implementation family cannot be identified')
+    accessible = [item for item in models if item == family or item.startswith(family + '-')]
+    if not accessible:
+        raise ValueError(f'{runtime} catalog has no current accessible model in family {family}')
+    if len(accessible) == 1:
+        return _MODELS.validate_model(accessible[0], runtime, '06-implement')
+    order = catalog.get('order')
+    if (not isinstance(order, list) or not all(isinstance(item, str) for item in order)
+            or set(order) != set(accessible) or len(order) != len(accessible)):
+        raise ValueError(f'{runtime} catalog lacks explicit version ordering evidence for {family}')
+    return _MODELS.validate_model(order[-1], runtime, '06-implement')
+
+
 def model_table(runtime: str, risk: str, defaults: dict, runtime_cfg: dict,
                 consumer: dict, work: dict, env: dict, submitted: set[str] | None = None):
     submitted = submitted or set()
@@ -165,9 +279,7 @@ def save(work_id: str, decision: dict) -> dict:
     for stage, model in overrides.items():
         _MODELS.validate_model(model, runtime, stage)
 
-    risk = str(decision.get('risk') or work.get('risk') or os.environ.get('ASK_RISK') or 'LOW').upper()
-    if risk not in {'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'}:
-        raise ValueError(f'invalid workstream risk: {risk}')
+    risk = effective_risk(work, consumer, os.environ, decision.get('risk'))
     env = dict(os.environ)
     env['ASK_RISK'] = risk
     runtime_overlay = work.get(runtime)
@@ -208,7 +320,7 @@ def show(work_id: str, runtime: str | None = None) -> dict:
     _path, bind, defaults, consumer, work = load_inputs(work_id)
     runtime = runtime or work.get('runtime') or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
     cfg = runtime_config(bind, runtime)
-    risk = str(work.get('risk') or os.environ.get('ASK_RISK') or 'LOW').upper()
+    risk = effective_risk(work, consumer, os.environ)
     env = dict(os.environ)
     env['ASK_RISK'] = risk
     selections = model_table(runtime, risk, defaults, cfg, consumer, work, env)
@@ -240,7 +352,7 @@ def resolve(work_id: str, stage: str, runtime: str | None = None) -> str:
         raise ValueError(f'unknown model stage: {stage}')
     cfg = runtime_config(bind, runtime)
     env = dict(os.environ)
-    env['ASK_RISK'] = str(work.get('risk') or env.get('ASK_RISK') or 'LOW')
+    env['ASK_RISK'] = effective_risk(work, consumer, env)
     return _MODELS.validate_model(
         _MODELS.resolve_slug(stage, runtime, defaults, cfg, consumer, work, env),
         runtime, stage,
@@ -250,7 +362,7 @@ def resolve(work_id: str, stage: str, runtime: str | None = None) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest='command', required=True)
-    for command in ('save', 'submit', 'show', 'resolve'):
+    for command in ('save', 'submit', 'show', 'resolve', 'resolve-implementor', 'capability'):
         sub = subparsers.add_parser(command)
         sub.add_argument('--work-id', required=True)
         if command in {'save', 'submit'}:
@@ -258,7 +370,7 @@ def main() -> int:
             sub.add_argument('--risk')
             sub.add_argument('--implementation-policy')
             sub.add_argument('--override', action='append', default=[])
-        if command in {'show', 'resolve'}:
+        if command in {'show', 'resolve', 'resolve-implementor', 'capability'}:
             sub.add_argument('--runtime')
         if command == 'resolve':
             sub.add_argument('--stage', required=True)
@@ -281,6 +393,11 @@ def main() -> int:
         print(json.dumps(plan, ensure_ascii=False))
     elif args.command == 'show':
         print(json.dumps(show(args.work_id, args.runtime), ensure_ascii=False))
+    elif args.command == 'resolve-implementor':
+        print(resolve_implementor(args.work_id, args.runtime))
+    elif args.command == 'capability':
+        runtime = args.runtime or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
+        print(json.dumps(capability(runtime), ensure_ascii=False))
     else:
         print(resolve(args.work_id, args.stage, args.runtime))
     return 0
