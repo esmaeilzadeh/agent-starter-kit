@@ -49,9 +49,13 @@ def load_inputs(work_id: str):
 
 def yaml_scalar(value) -> str:
     if isinstance(value, str):
-        if (re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', value)
-                and value.lower() not in {'true', 'false', 'null', 'yes', 'no', 'on', 'off', '~'}
-                and not re.fullmatch(r'[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)', value)):
+        reserved = {
+            'true', 'false', 'null', 'yes', 'no', 'on', 'off', '~',
+            '.nan', 'nan', '.inf', 'inf', '+.inf', '-.inf', '+inf', '-inf',
+            '.infinity', 'infinity', '+.infinity', '-.infinity',
+        }
+        if (re.fullmatch(r'[A-Za-z][A-Za-z0-9_.-]*', value)
+                and value.lower() not in reserved):
             return value
     return json.dumps(value, ensure_ascii=False)
 
@@ -171,6 +175,7 @@ def save(work_id: str, decision: dict) -> dict:
         runtime_overlay = {}
     runtime_overlay.update(overrides)
     work[runtime] = runtime_overlay
+    work['risk'] = risk
 
     table = model_table(runtime, risk, defaults, cfg, consumer, work, env, set(overrides))
     if policy == 'exact' and '06-implement' not in overrides:
@@ -208,7 +213,7 @@ def show(work_id: str, runtime: str | None = None) -> dict:
     env['ASK_RISK'] = risk
     selections = model_table(runtime, risk, defaults, cfg, consumer, work, env)
     saved = work.get('model_plan') or {}
-    confirmed = saved.get('status') == 'confirmed'
+    confirmed = saved.get('status') == 'confirmed' and saved.get('runtime') == runtime
     policy = saved.get('implementation_policy') if confirmed else 'legacy-configured'
     return {
         'runtime': runtime,
