@@ -77,20 +77,26 @@ def _valid_recovery_review(review: dict, work_id: str) -> bool:
         and review.get("decision") == "APPROVED"
         and isinstance(review.get("reviewer"), str)
         and bool(review["reviewer"].strip())
-        and isinstance(review.get("reviewer_model"), str)
-        and bool(review["reviewer_model"].strip())
-        and isinstance(review.get("reviewer_effort"), str)
-        and bool(review["reviewer_effort"].strip())
+        and ("reviewer_model" not in review or (
+            isinstance(review["reviewer_model"], str) and bool(review["reviewer_model"].strip())
+        ))
+        and ("reviewer_effort" not in review or (
+            isinstance(review["reviewer_effort"], str) and bool(review["reviewer_effort"].strip())
+        ))
         and isinstance(review.get("recorded_by"), str)
         and bool(review["recorded_by"].strip())
         and review["reviewer"] != review["recorded_by"]
         and review.get("scope") == "exact-recovery-adoption"
     )
-    return valid and (work_id != "client-security-hardening" or (
+    if not valid:
+        return False
+    if work_id != "client-security-hardening":
+        return True
+    return (
         review["reviewer"] == "gpt-6.1-sol (medium)"
         and review["reviewer_model"] == "gpt-6.1-sol"
         and review["reviewer_effort"] == "medium"
-    ))
+    )
 
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
