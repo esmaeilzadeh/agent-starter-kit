@@ -72,6 +72,33 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(shown.returncode, 0, shown.stderr or shown.stdout)
         self.assertEqual(json.loads(shown.stdout)['selections']['07-review']['model'],
                          'gpt-6-astra')
+        other_runtime = self.decision(None, 'show', '--runtime', 'cursor')
+        self.assertEqual(other_runtime.returncode, 0,
+                         other_runtime.stderr or other_runtime.stdout)
+        other_plan = json.loads(other_runtime.stdout)
+        with self.subTest(consent_runtime='cursor'):
+            self.assertFalse(other_plan['confirmed'])
+            self.assertFalse(other_plan['policy_confirmed'])
+
+        risk_id = 'decision-risk-test'
+        risk_dir = self.root / 'work' / risk_id
+        risk_dir.mkdir()
+        (risk_dir / 'models.yaml').write_text('risk: HIGH\n', encoding='utf-8')
+        low_risk = {
+            'runtime': 'codex', 'risk': 'LOW', 'submission': 'confirm',
+            'implementation_policy': 'latest-accessible', 'overrides': {},
+        }
+        saved_low = subprocess.run(
+            [sys.executable, str(self.root / '_ask/scripts/model-decisions.py'),
+             'save', '--work-id', risk_id], cwd=self.root, env=self.env(),
+            input=json.dumps(low_risk), text=True, capture_output=True,
+        )
+        self.assertEqual(saved_low.returncode, 0, saved_low.stderr or saved_low.stdout)
+        low_plan = yaml.safe_load((risk_dir / 'models.yaml').read_text())['model_plan']
+        with self.subTest(submitted_risk='LOW'):
+            self.assertEqual(low_plan['risk'], 'LOW')
+            self.assertEqual(low_plan['selections']['07-review']['model'], 'gpt-6-luna')
+
         grill = (self.root / '.agents/ask/stages/01-grill.md').read_text(encoding='utf-8')
         self.assertEqual(grill.count('Confirm model plan'), 1)
         self.assertIn('Change selected models', grill)
@@ -180,6 +207,26 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(resolved.returncode, 0, resolved.stderr or resolved.stdout)
         self.assertEqual(resolved.stdout.strip(), 'new-typing-default')
         self.assertTrue(path.is_file())
+
+        scalar_id = 'decision-scalar-test'
+        (self.root / 'work' / scalar_id).mkdir()
+        scalar_decision = dict(DECISION, overrides={'07-review': '1e3',
+                                                     '06-implement': '0xabc'})
+        saved_scalars = subprocess.run(
+            [sys.executable, str(self.root / '_ask/scripts/model-decisions.py'),
+             'save', '--work-id', scalar_id], cwd=self.root, env=self.env(),
+            input=json.dumps(scalar_decision), text=True, capture_output=True,
+        )
+        self.assertEqual(saved_scalars.returncode, 0,
+                         saved_scalars.stderr or saved_scalars.stdout)
+        for stage, expected in (('07-review', '1e3'), ('06-implement', '0xabc')):
+            restored = subprocess.run(
+                [sys.executable, str(self.root / '_ask/scripts/model-decisions.py'),
+                 'resolve', '--work-id', scalar_id, '--stage', stage],
+                cwd=self.root, env=self.env(), text=True, capture_output=True,
+            )
+            self.assertEqual(restored.returncode, 0, restored.stderr or restored.stdout)
+            self.assertEqual(restored.stdout.strip(), expected)
 
         outside = self.root / 'outside'
         outside.mkdir()
