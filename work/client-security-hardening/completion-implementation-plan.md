@@ -165,13 +165,14 @@ security changes, `6400154`/`e8414c4` escalation, evidence, plan, and subsequent
 maintenance commits separately. Include the predecessor manifest/checkpoint and
 all bytes necessary for independent replay. No future wildcard authorization.
 
-An independent Sol/medium review binds the proposal digest and exact source /
-reviewed tooling candidate. Adoption revalidates under `state_lock` with observed
-revision and expected ref/HEAD CAS. Extend `state_transaction`'s internal
-`reconciliation_validator` boundary to return an immutable verified adoption
-context as well as exact allowed source paths. The existing callback returns
-paths only and cannot authorize rejected projections before the transaction
-yields. Pass this context explicitly through `_require_reconciled` →
+An independent `gpt-6.1-sol` medium review binds the proposal digest and exact
+source / reviewed tooling candidate; its retained review records `reviewer`,
+`reviewer_model`, and `reviewer_effort`. Adoption revalidates under
+`state_lock` with observed revision and expected ref/HEAD CAS. Extend
+`state_transaction`'s internal `reconciliation_validator` boundary to return an
+immutable verified adoption context as well as exact allowed source paths. The
+existing callback returns paths only and cannot authorize rejected projections
+before the transaction yields. Pass this context explicitly through `_require_reconciled` →
 `require_safe` → `inspect` → `_traceability_matches_checkpoint`, including the
 historical scope-compatible-result predicate. It binds proposal/review digests,
 observed state/checkpoint/HEAD, work identity, and exact projection replacement

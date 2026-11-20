@@ -60,6 +60,31 @@ def _adoption_projection_inventory_matches(work_id: str, checkpoint: tuple,
                if name == prefix + "completion.json")
 
 
+def _source_is_clean(root: Path, allowed_evidence_paths: set[str] | None = None) -> bool:
+    status = _git(root, "status", "--porcelain=v1", "--untracked-files=all")
+    if status.returncode:
+        return False
+    allowed = allowed_evidence_paths or set()
+    for entry in status.stdout.splitlines():
+        if entry[:2] != "??" or entry[3:] not in allowed:
+            return False
+    return True
+
+
+def _valid_recovery_review(review: dict) -> bool:
+    return (
+        review.get("schema") == "ask-recovery-adoption-review/v1"
+        and review.get("decision") == "APPROVED"
+        and review.get("reviewer") == "gpt-6.1-sol (medium)"
+        and review.get("reviewer_model") == "gpt-6.1-sol"
+        and review.get("reviewer_effort") == "medium"
+        and isinstance(review.get("recorded_by"), str)
+        and bool(review["recorded_by"].strip())
+        and review["reviewer"] != review["recorded_by"]
+        and review.get("scope") == "exact-recovery-adoption"
+    )
+
+
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
 
@@ -637,10 +662,7 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
     retained_completion = retained.get(completion_path)
     live_completion = live.get(completion_path)
     if live_completion is not None and live_completion != retained_completion:
-        reviewed_completion = (adoption_inventory_valid and any(
-            name == completion_path for name, _ in adoption_context.projection_inventory
-        ))
-        if not reviewed_completion and not _completion_projection_matches(
+        if not _completion_projection_matches(
             root, work_id, live_completion, expected_verification=expected_verification,
         ):
             return False
@@ -714,9 +736,12 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
             return False
     unexpected_new = {name for name in live.keys() - retained.keys()
                       if not name.startswith(model_state_prefix)}
-    return (unexpected_new <= allowed_new
-            and (_model_state_matches_checkpoint(root, work_id, retained, live)
-                 or adoption_inventory_valid))
+    model_state_valid = _model_state_matches_checkpoint(root, work_id, retained, live)
+    if not model_state_valid and adoption_inventory_valid:
+        model_state_valid = _reviewed_model_state_matches_checkpoint(
+            root, work_id, retained, live, adoption_context,
+        )
+    return unexpected_new <= allowed_new and model_state_valid
 
 
 def _completion_projection_matches(root: Path, work_id: str, raw: bytes, *,
@@ -745,6 +770,10 @@ def _completion_projection_matches(root: Path, work_id: str, raw: bytes, *,
             )
         if report.get("status") != "fail":
             return False
+        import sys
+        ask_path = str(Path(root) / ".agents" / "ask")
+        if ask_path not in sys.path:
+            sys.path.insert(0, ask_path)
         from verification.traceability.service import inspect_completion
         verified, _ = inspect_completion(
             root, work_id, candidate, candidate, scope, task_id,
@@ -835,6 +864,109 @@ def _model_state_matches_checkpoint(root: Path, work_id: str,
         if base.get("result_digest") != old_generation or generation != old_generation:
             return False
         return set(current) == (set(old) | allowed)
+    except (OSError, RuntimeError, UnicodeDecodeError, ValueError, KeyError, TypeError,
+            AttributeError):
+        return False
+
+
+def _reviewed_model_state_matches_checkpoint(root: Path, work_id: str,
+                                             retained: dict[str, bytes], live: dict[str, bytes],
+                                             context: RecoveryAdoptionContext) -> bool:
+    """Validate all model-state objects when a review explicitly adopts its boundary."""
+    from engineering_model.admission import (
+        _load_generation, _pointer, _publication, _state_directory,
+    )
+
+    prefix = f"work/{work_id}/traceability/model-state/"
+    old = {name: raw for name, raw in retained.items() if name.startswith(prefix)}
+    current = {name: raw for name, raw in live.items() if name.startswith(prefix)}
+    if context.work_id != work_id:
+        return False
+    if not old and not current:
+        return True
+    if any(current.get(name) != raw for name, raw in old.items()
+           if name != prefix + "current.json"):
+        return False
+    try:
+        state = _state_directory(root, work_id)
+        pointer_path = prefix + "current.json"
+        pointer = _pointer(state)
+        old_pointer = json.loads(old[pointer_path]) if pointer_path in old else None
+        if pointer is None or pointer_path not in current:
+            return False
+        _load_generation(state, work_id, pointer["generation"])
+        if old_pointer is not None:
+            if not isinstance(old_pointer, dict):
+                return False
+            _load_generation(state, work_id, old_pointer["generation"])
+
+        expected = {pointer_path}
+        generations = {name[len(prefix + "generations/"):].split("/", 1)[0]
+                       for name in current if name.startswith(prefix + "generations/")}
+        publications = {name[len(prefix + "publications/"):-5]
+                        for name in current if name.startswith(prefix + "publications/")
+                        and name.endswith(".json")}
+        for digest in generations:
+            if not re.fullmatch(r"[0-9a-f]{64}", digest):
+                return False
+            _load_generation(state, work_id, digest)
+            manifest_path = prefix + f"generations/{digest}/manifest.json"
+            manifest = json.loads(current[manifest_path])
+            snapshot = manifest["snapshot"]
+            expected.add(manifest_path)
+            blob_digests = {snapshot["model"]["sha256"], *(
+                row["sha256"] for row in snapshot["inputs"] if row.get("status") == "present"
+            )}
+            expected.update(prefix + f"generations/{digest}/blobs/{blob}" for blob in blob_digests)
+        for publication in publications:
+            if not re.fullmatch(r"[0-9a-f]{64}", publication):
+                return False
+            event = _publication(state, publication)
+            if (event.get("result_digest") not in generations
+                    or (event.get("base_digest") is not None
+                        and event.get("base_digest") not in generations)
+                    or (event.get("previous_publication") is not None
+                        and event["previous_publication"] not in publications)):
+                return False
+            previous = event.get("previous_publication")
+            if (previous is not None
+                    and event.get("base_digest")
+                    != _publication(state, previous).get("result_digest")):
+                return False
+            seen = set()
+            pending = publication
+            while pending is not None:
+                if pending in seen:
+                    return False
+                seen.add(pending)
+                pending = _publication(state, pending).get("previous_publication")
+            expected.add(prefix + f"publications/{publication}.json")
+        if pointer.get("publication") is not None and pointer["publication"] not in publications:
+            return False
+        old_publication = old_pointer.get("publication") if isinstance(old_pointer, dict) else None
+        if old_publication is not None:
+            selected = pointer.get("publication")
+            generation = pointer["generation"]
+            seen = set()
+            while selected != old_publication:
+                if not isinstance(selected, str) or selected in seen:
+                    return False
+                seen.add(selected)
+                event = _publication(state, selected)
+                if event.get("result_digest") != generation:
+                    return False
+                previous = event.get("previous_publication")
+                if previous is None:
+                    return False
+                generation, selected = event.get("base_digest"), previous
+            if (generation != old_pointer.get("generation")
+                    or _publication(state, old_publication).get("result_digest") != generation):
+                return False
+        if prefix + "writer.lock" in current:
+            if current[prefix + "writer.lock"]:
+                return False
+            expected.add(prefix + "writer.lock")
+        return set(current) == expected
     except (OSError, RuntimeError, UnicodeDecodeError, ValueError, KeyError, TypeError,
             AttributeError):
         return False
@@ -1222,7 +1354,8 @@ def require_safe(root: Path, work_id: str, graph: dict, state: dict | None = Non
         raise RecoveryRequired(report)
 
 
-def recovery_proposal(root: Path, work_id: str) -> dict:
+def recovery_proposal(root: Path, work_id: str, *,
+                      allowed_evidence_paths: set[str] | None = None) -> dict:
     """Create a deterministic, read-only inventory for one reviewed recovery fold."""
     root = Path(root).resolve()
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", work_id):
@@ -1338,7 +1471,6 @@ def recovery_proposal(root: Path, work_id: str) -> dict:
     manifest_raw = tree_files.get("checkpoint.json")
     if manifest_raw is None:
         raise ValueError("predecessor checkpoint manifest is missing")
-    current_status = _git(root, "status", "--porcelain", "--untracked-files=all")
     continuity_path = root / "work" / work_id / "early-red-continuity.json"
     continuity = None
     continuity_sha256 = None
@@ -1369,7 +1501,7 @@ def recovery_proposal(root: Path, work_id: str) -> dict:
         "source_tree": tree,
         "early_red_continuity": continuity,
         "early_red_continuity_sha256": continuity_sha256,
-        "source_clean": current_status.returncode == 0 and not current_status.stdout.strip(),
+        "source_clean": _source_is_clean(root, allowed_evidence_paths),
         "commit_attribution": attribution,
         "source_paths": sorted(source_paths),
         "historical_contract_pin": json.loads(historical_pin_raw),
@@ -1399,9 +1531,13 @@ def recovery_adopt(root: Path, work_id: str, proposal_path: Path,
         path = Path(path)
         candidate = path if path.is_absolute() else root / path
         evidence_root = root / "work" / work_id / "inner-loop" / "evidence"
-        if (candidate.parent != evidence_root or evidence_root.is_symlink()
-                or candidate.is_symlink()):
-            raise ValueError("recovery adoption evidence cannot be a symlink")
+        ancestors = [evidence_root, *evidence_root.parents]
+        if (candidate.parent != evidence_root
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", candidate.name)
+                or candidate.is_symlink()
+                or any(parent.is_symlink() for parent in ancestors
+                       if parent == root or root in parent.parents)):
+            raise ValueError("recovery adoption evidence must be a safe direct child without symlinks")
         if not candidate.is_file():
             raise ValueError("recovery adoption evidence must be retained under inner-loop/evidence")
         try:
@@ -1419,13 +1555,7 @@ def recovery_adopt(root: Path, work_id: str, proposal_path: Path,
         proposal, sort_keys=True, separators=(",", ":")
     ).encode()).hexdigest()
     review_digest = hashlib.sha256(review_raw).hexdigest()
-    if (review.get("schema") != "ask-recovery-adoption-review/v1"
-            or review.get("decision") != "APPROVED"
-            or not isinstance(review.get("reviewer"), str)
-            or not review["reviewer"].strip()
-            or not isinstance(review.get("recorded_by"), str)
-            or not review["recorded_by"].strip()
-            or review["reviewer"] == review["recorded_by"]
+    if (not _valid_recovery_review(review)
             or review.get("proposal_sha256") != proposal_digest
             or review.get("candidate_sha") != proposal.get("source_head")
             or review.get("early_red_continuity_sha256")
@@ -1438,11 +1568,12 @@ def recovery_adopt(root: Path, work_id: str, proposal_path: Path,
     def validate(doc: dict):
         current_proposal, current_proposal_raw, current_proposal_path = read_evidence(proposal_path)
         current_review, current_review_raw, current_review_path = read_evidence(review_path)
-        current = recovery_proposal(root, work_id)
+        current = recovery_proposal(root, work_id,
+                                    allowed_evidence_paths={proposal_rel, review_rel})
         if (current != proposal or current_proposal != proposal
                 or current_proposal_raw != proposal_raw or current_proposal_path != proposal_rel
                 or current_review != review or current_review_raw != review_raw
-                or current_review_path != review_rel or not proposal.get("source_clean")):
+            or current_review_path != review_rel or not proposal.get("source_clean")):
             raise CasConflict("recovery proposal is stale or source is not clean")
         if (doc.get("revision") != proposal.get("observed_revision")
                 or doc.get("coordinator_sha") != proposal.get("old_coordinator_sha")):
@@ -1557,7 +1688,8 @@ def retained_adoption_continuity(root: Path, work_id: str, state: dict,
     receipt = receipts[0]
     if not isinstance(receipt, dict) or receipt.get("schema") != "ask-recovery-adoption-receipt/v1":
         return None
-    if state.get("coordinator_sha") != receipt.get("source_head"):
+    if not _is_ancestor(root, receipt.get("source_head", ""),
+                        state.get("coordinator_sha", "")):
         return None
     adoption_checkpoint = None
     adoption_files = None
@@ -1601,14 +1733,7 @@ def retained_adoption_continuity(root: Path, work_id: str, state: dict,
     review_digest = hashlib.sha256(review_raw).hexdigest()
     if (proposal_digest != receipt.get("proposal_sha256")
             or review_digest != receipt.get("review_sha256")
-            or review.get("schema") != "ask-recovery-adoption-review/v1"
-            or review.get("decision") != "APPROVED"
-            or not isinstance(review.get("reviewer"), str)
-            or not review["reviewer"].strip()
-            or not isinstance(review.get("recorded_by"), str)
-            or not review["recorded_by"].strip()
-            or review["reviewer"] == review["recorded_by"]
-            or review.get("scope") != "exact-recovery-adoption"
+            or not _valid_recovery_review(review)
             or review.get("proposal_sha256") != proposal_digest
             or review.get("candidate_sha") != receipt.get("source_head")
             or review.get("early_red_continuity_sha256")

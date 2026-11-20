@@ -142,6 +142,25 @@ passing verifier evidence or reproduce as a canonical failed report. Preserved
 historical failure diagnostics are not passing evidence and require reviewed
 adoption when their original contract is no longer current.
 
+### Reviewed recovery adoption
+
+Use `recovery-propose` to create a read-only proposal, then retain its exact
+bytes and the independent review under `work/<id>/inner-loop/evidence/` before
+`recovery-adopt`. The review binds the proposal digest, source candidate, and
+continuity digest. For this workstream, record the approved native reviewer as
+`gpt-6.1-sol (medium)` with `reviewer_model: gpt-6.1-sol` and
+`reviewer_effort: medium`. The command accepts only those exact proposal and
+review files as untracked evidence; other staged, changed, or untracked source
+blocks adoption.
+
+Reviewed adoption does not waive projection checks. Completion reports still
+pass the completion validator, and model-state pointers, selected generations,
+blobs, and publication records must remain structurally valid and match the
+reviewed inventory. The adoption receipt stays authoritative through descendant
+checkpoints when the coordinator advances from the adopted source commit.
+Ordinary inspection, CAS, and writer admission gain no authority from proposal
+files on disk.
+
 ## Structured spec-to-test gate
 
 Normal integration also validates the task subset of the accepted JSON spec/test

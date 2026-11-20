@@ -187,7 +187,8 @@ class RecoveryTests(unittest.TestCase):
         if env is not None:
             child_env.update(env)
         child_env["PYTHONPATH"] = os.pathsep.join(
-            part for part in (str(SCRIPTS), child_env.get("PYTHONPATH", "")) if part
+            part for part in (str(SCRIPTS), str(REPO / ".agents" / "ask"),
+                              child_env.get("PYTHONPATH", "")) if part
         )
         return subprocess.run(
             [sys.executable, "-m", "inner_loop", "--root", str(self.root), *args],
@@ -1822,6 +1823,7 @@ class test_b(unittest.TestCase):
         blob_path.write_bytes(retained_blob + b"tampered")
         self.assertFalse(_traceability_matches_checkpoint(self.root, "w", checkpoint))
         blob_path.write_bytes(retained_blob)
+
         selected_publication.write_bytes(retained_publication + b"tampered")
         self.assertFalse(_traceability_matches_checkpoint(self.root, "w", checkpoint))
         selected_publication.write_bytes(retained_publication)
@@ -1904,6 +1906,33 @@ class test_b(unittest.TestCase):
             _traceability_matches_checkpoint(self.root, "w", checkpoint),
             "an admission publication after the checkpoint requires reviewed adoption",
         )
+
+    def test_reviewed_model_state_adoption_checks_selected_and_unlinked_objects(self):
+        from engineering_model.admission import _publish, _state_directory, capture
+        from inner_loop.recovery import RecoveryAdoptionContext, _reviewed_model_state_matches_checkpoint
+
+        state_dir = _state_directory(self.root, "w")
+        state_dir.mkdir(parents=True)
+        (state_dir / "writer.lock").touch()
+        self.assertTrue(_publish(state_dir, capture(self.root, "w"), self.root))
+        traceability = self.root / "work/w/traceability"
+        live = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in traceability.rglob("*") if path.is_file()}
+        context = RecoveryAdoptionContext(
+            work_id="w", branch="agent/w", proposal_sha256="p", review_sha256="r",
+            reviewer="gpt-6.1-sol (medium)", checkpoint_commit="checkpoint",
+            state_sha256="state", observed_revision=0, source_head=self.anchor_commit,
+            projection_inventory=(), source_paths=frozenset(),
+        )
+        self.assertTrue(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ))
+        unexpected = state_dir / "unlinked.json"
+        unexpected.write_text("{}\n")
+        live[unexpected.relative_to(self.root).as_posix()] = unexpected.read_bytes()
+        self.assertFalse(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ))
 
     def test_recovery_rejects_unbound_completion_projection(self):
         from inner_loop.recovery import _traceability_matches_checkpoint
@@ -2012,12 +2041,10 @@ class test_b(unittest.TestCase):
         self.commit("pending task source candidate")
         head = self.git("rev-parse", "HEAD")
 
-        self.write("work/w/traceability/completion.json", json.dumps({
-            "schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
-            "task_id": None, "candidate_sha": head, "input_digests": {},
-            "criterion_evidence": [], "missing_evidence": [], "errors": ["old contract"],
-            "execution_artifacts": [],
-        }) + "\n")
+        from verification.traceability.service import inspect_completion
+        completion, _ = inspect_completion(self.root, "w", head, head)
+        self.assertEqual(completion["status"], "fail")
+        self.write("work/w/traceability/completion.json", json.dumps(completion) + "\n")
         from engineering_model.admission import _publish, _state_directory, capture
         model_state = _state_directory(self.root, "w")
         model_state.mkdir(parents=True, exist_ok=True)
@@ -2054,6 +2081,54 @@ class test_b(unittest.TestCase):
                                    "--review", str(review_path))
         self.assertNotEqual(wrong_model.returncode, 0)
         self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+
+        unexpected_evidence = proposal_path.parent / "unreviewed.json"
+        unexpected_evidence.write_text("{}\n")
+        dirty = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                             "--review", str(review_path))
+        self.assertNotEqual(dirty.returncode, 0)
+        unexpected_evidence.unlink()
+
+        completion_path = self.root / "work/w/traceability/completion.json"
+        valid_completion = completion_path.read_bytes()
+        completion_path.write_text('{"schema":"untrusted"}\n')
+        proposal_path.unlink()
+        review_path.unlink()
+        invalid_proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(invalid_proposed.returncode, 0, invalid_proposed.stderr)
+        proposal = json.loads(invalid_proposed.stdout)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review = self.recovery_review(proposal)
+        review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
+        invalid_completion = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                          "--review", str(review_path))
+        self.assertNotEqual(invalid_completion.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        completion_path.write_bytes(valid_completion)
+
+        unlinked_model_state = self.root / "work/w/traceability/model-state/unlinked.json"
+        unlinked_model_state.write_text("{}\n")
+        proposal_path.unlink()
+        review_path.unlink()
+        invalid_model_proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(invalid_model_proposed.returncode, 0, invalid_model_proposed.stderr)
+        proposal = json.loads(invalid_model_proposed.stdout)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review = self.recovery_review(proposal)
+        review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
+        invalid_model = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                     "--review", str(review_path))
+        self.assertNotEqual(invalid_model.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        unlinked_model_state.unlink()
+
+        proposal_path.unlink()
+        review_path.unlink()
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review = self.recovery_review(proposal)
         review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
         adopted = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
                               "--review", str(review_path))

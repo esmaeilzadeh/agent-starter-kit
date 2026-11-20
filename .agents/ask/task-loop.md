@@ -60,3 +60,5 @@ writer's branch to publish a card.
 
 The outer workflow still performs aggregate verification and Accept. It does
 not add unconditional task Review or Refactor passes outside this loop.
+When a pending task needs explicit recovery adoption, follow the reviewed
+recovery procedure in `_ask/docs/inner-loop-evidence.md`.
