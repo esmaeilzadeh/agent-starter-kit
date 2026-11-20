@@ -1246,7 +1246,11 @@ def inspect(root: Path, work_id: str, graph: dict, state: dict | None = None,
                         selected = _git(root, "rev-parse", "--verify", selected_branch + "^{commit}")
                         if selected.returncode or selected.stdout.strip() != candidate:
                             conflicts.append(f"{relative}: candidate differs from the selected task branch")
-                        if not _is_ancestor(root, state.get("coordinator_sha") or "", candidate):
+                        coordinator = state.get("coordinator_sha") or ""
+                        # Integrated source precedes its milestone publication.
+                        lineage = ((candidate, coordinator) if task_state.get("status") == "integrated"
+                                   else (coordinator, candidate))
+                        if not _is_ancestor(root, *lineage):
                             conflicts.append(f"{relative}: candidate is outside selected checkout ancestry")
                     elif task_state.get("status") == "running":
                         current = _git(root, "rev-parse", "--verify", "HEAD^{commit}")

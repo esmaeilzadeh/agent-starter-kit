@@ -62,3 +62,12 @@ The outer workflow still performs aggregate verification and Accept. It does
 not add unconditional task Review or Refactor passes outside this loop.
 When a pending task needs explicit recovery adoption, follow the reviewed
 recovery procedure in `_ask/docs/inner-loop-evidence.md`.
+
+### Publish meaningful progress
+
+After integration or interruption and before another writer, publish compact
+Git milestones with `./ask inner-loop publish-evidence <work-id>`. Preserve
+rejected reviews and corrected submissions in checkpoint history. Running task
+refs defer publication until the safe boundary; keep the reviewed source SHA.
+A failed publication blocks the next writer. See `_ask/docs/inner-loop-evidence.md`
+for retained runtime caches, exact retries and privacy.

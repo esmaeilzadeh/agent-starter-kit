@@ -190,6 +190,8 @@ def integrate_ready(root: Path, work_id: str, task_id: str | None = None) -> str
         task['result_path'] = str(result_path(root, work_id, task_id).relative_to(root))
         task['evidence']['verification'] = evidence
         doc['coordinator_sha'] = sha
+    from inner_loop.milestones import publish_milestones
+    publish_milestones(root, work_id)
     return sha
 
 
@@ -228,6 +230,9 @@ def run_once(root: Path, work_id: str) -> str:
         with workflow_admission(root, work_id):
             ensure_state(root, work_id)
             return "quiescent"
+    from inner_loop.milestones import publish_milestones
+    if _is_git(root) and doc.get("tasks"):
+        publish_milestones(root, work_id)
     tid = ready[0]
     _implementation_handoff(root, work_id)
     with workflow_admission(root, work_id, delivery_task_id=tid):

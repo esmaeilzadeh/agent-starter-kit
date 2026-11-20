@@ -251,9 +251,24 @@ def main(argv: list[str] | None = None) -> int:
     ra.add_argument("--proposal", required=True)
     ra.add_argument("--review", required=True)
 
+    pe = sub.add_parser("publish-evidence", help="commit compact retained task milestones")
+    pe.add_argument("work_id")
+    mg = sub.add_parser("migrate-runtime", help="untrack exact reviewed runtime inventory, preserving bytes")
+    mg.add_argument("work_id")
+    mg.add_argument("--inventory", required=True)
+
     args = p.parse_args(argv)
     root = repo_root(args.root)
     try:
+        if args.cmd == "publish-evidence":
+            from inner_loop.milestones import publish_milestones
+            print(publish_milestones(root, args.work_id))
+            return 0
+        if args.cmd == "migrate-runtime":
+            from inner_loop.milestones import migrate_runtime
+            inventory = json.loads(Path(args.inventory).read_bytes())
+            print(json.dumps(migrate_runtime(root, args.work_id, inventory)))
+            return 0
         if args.cmd == "validate":
             return cmd_validate(root, args.work_id)
         if args.cmd == "status":

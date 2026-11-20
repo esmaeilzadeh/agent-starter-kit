@@ -55,10 +55,41 @@ checkout by default, or a task branch recorded in state and eligible for FF.
 Run the accepted task-scoped test runner after committing the candidate, then
 place its report reference in TaskResult before requesting review. The
 candidate SHA already exists, so TaskResult can bind the immutable report
-without a digest cycle. State, results and execution/review evidence are
-runtime paths; keep source/TaskGraph/intent changes committed. These runtime
-exceptions apply only to `work/<work-id>/inner-loop/{state.json,state.lock,
-.state-*.tmp,results/**,evidence/**}`. They do not exempt the whole workstream.
+without a digest cycle. Commit meaningful progress as one compact
+`work/<work-id>/progress/<task-id>.json` per task using
+`./ask inner-loop publish-evidence <work-id>`. The publisher reads authenticated
+checkpoint history, preserves rejected reviews, correction submissions, attempts,
+unattached historical runs and integration receipts, and excludes commands, raw
+output and free-form private prose. Supporting digests retain links to full local
+evidence, including notes. Git retains each public record's earlier versions.
+
+The driver publishes after integration and before the next writer. Publication
+failure blocks that writer. A running task, including a separate task ref, defers
+publication until integration or explicit interruption; its intermediate evidence
+remains checkpointed. Do not rebase an approved candidate for a progress commit.
+The next writer starts from the publication commit; the source candidate SHA
+continues to identify the tested/reviewed source. Publication receipts in the next
+checkpoint map source, record digests and publication commit without a hash cycle.
+Exact staged and postcommit retries complete once; an unchanged rerender creates
+neither a commit nor a state revision. Pending tasks may be backfilled after a
+reviewed recovery adoption; arbitrary source advances are rejected.
+
+`./ask check-clean` accepts known runtime cache paths only when their bytes and
+file types match a valid retained checkpoint and matching state cache. It checks
+ignored runtime files too. Staged runtime files and all progress/source changes
+remain dirty. Arbitrary authorization/review Markdown remains stageable. An empty
+known state lock is permitted; forged, missing or corrupt retention is refused.
+Use `inner-loop migrate-runtime <work-id> --inventory <json>` only with an explicit
+reviewed `{checkpoint_sha, paths: {path: sha256}}` inventory. It removes only exact
+retained runtime entries from the index, preserving worktree bytes and Git history.
+Commit that migration with its inventory; do not blanket-untrack work directories.
+
+Raw outputs stay in private repo-relative runtime caches and local checkpoint
+refs. Keep raw-bearing exports/snapshots outside normal source commits and public
+bundles, with directories 0700 and files 0600. Checkpoint capture/restore and
+traceability verification keep their existing path contracts. Local checkpoint
+refs are never automatically pushed. Missing matching raw output blocks dependent
+verification; a public summary cannot substitute for it.
 
 ## Delegated review
 

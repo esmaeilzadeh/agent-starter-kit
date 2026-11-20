@@ -96,7 +96,7 @@ Commands:
       Move supported legacy tracker credentials to private storage and remove
       secret assignments from .ask.env without changing the Git index or history.
 
-  inner-loop validate|status|run|resume|cancel [work-id]
+  inner-loop validate|status|run|resume|cancel|publish-evidence [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
 
   model decision {save|submit|show|resolve|resolve-implementor|capability}

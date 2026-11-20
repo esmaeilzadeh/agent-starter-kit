@@ -27,3 +27,13 @@ work/*/traceability/static-runs/*/*.log
 work/*/traceability/static-runs/*/*.json
 work/*/inner-loop/state.lock
 _ask/.venv/
+
+# Exact retained caches; check-clean validates ignored runtime bytes too.
+work/*/inner-loop/state.json
+work/*/inner-loop/results/*.json
+work/*/inner-loop/evidence/verify-*/integration.json
+work/*/traceability/executions.json
+work/*/traceability/completion.json
+work/*/traceability/static-*.json
+work/*/traceability/model-state/
+work/*/traceability/runs/*/results.json

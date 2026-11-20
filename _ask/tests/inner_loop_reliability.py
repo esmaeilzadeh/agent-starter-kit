@@ -180,7 +180,8 @@ except NotIntegrable as exc:
         self.assertEqual(evidence["checks"][0]["exit_code"], 0)
         self.assertEqual(evidence["review"]["reviewer"], "independent-agent")
         self.assertTrue((self.root / evidence["record_path"]).is_file())
-        self.assertEqual(state["coordinator_sha"], self.candidate)
+        self.assertEqual(state["coordinator_sha"], self.git("rev-parse", "HEAD"))
+        self.assertEqual(state["milestone_publications"][-1]["source_sha"], self.candidate)
 
     def test_failed_candidate_checks_prevent_fast_forward_and_state_fold(self):
         self.check("exit 7")
@@ -221,7 +222,7 @@ except NotIntegrable as exc:
         self.task_branch()
         self.review()
         self.assertEqual(integrate_ready(self.root, "w", "a"), self.candidate)
-        self.assertEqual(self.git("rev-parse", "HEAD"), self.candidate)
+        self.assertEqual(self.git("rev-parse", "HEAD^"), self.candidate)
         self.assertEqual(len(self.git("worktree", "list", "--porcelain").split("worktree ")) - 1, 1)
 
     def test_changed_result_or_review_cannot_reuse_approval(self):
@@ -324,8 +325,9 @@ os.replace=interrupt
         self.assertEqual(resume_from_state(self.root, "w"), "running=b")
         state = load_state(self.root, "w")
         self.assertEqual(state["tasks"]["a"]["status"], "integrated")
-        self.assertEqual(state["coordinator_sha"], self.candidate)
-        self.assertEqual(state["tasks"]["b"]["base_sha"], self.candidate)
+        self.assertEqual(state["coordinator_sha"], self.git("rev-parse", "HEAD"))
+        self.assertEqual(state["milestone_publications"][-1]["source_sha"], self.candidate)
+        self.assertEqual(state["tasks"]["b"]["base_sha"], state["coordinator_sha"])
 
     def test_concurrent_state_update_cannot_interleave_with_integration(self):
         integrating, proceed = self.paused_integration()
