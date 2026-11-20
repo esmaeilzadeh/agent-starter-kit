@@ -297,6 +297,19 @@ def recover(root: Path) -> None:
         os.close(fd)
 
 
+def shared_ignore_update(before: bytes, after: bytes) -> bool:
+    """Only kit-managed ignore lines may change in a consumer-owned file."""
+    managed = {b'/_ask/', b'.ask.env', b'.ask/tracker-context.md',
+               b'.agents/skills/', b'/.agents/skills/', b'.agents/skills', b'/.agents/skills',
+               b'.agents/skills/*', b'!.agents/skills/kit-*/',
+               b'# Installed AskIt kit', b'# Setup wizard secrets',
+               b'# Prepared skills; ASK kit-* projections are committed'}
+    def consumer(raw):
+        return b''.join(line for line in raw.splitlines(keepends=True)
+                        if line.strip() not in managed).rstrip(b'\r\n')
+    return consumer(before) == consumer(after)
+
+
 def publish(root: Path, stage: Path, paths: list[Path]) -> None:
     before: dict[str, tuple[str, int]] = {}
     after: dict[str, tuple[str, int]] = {}
@@ -330,14 +343,18 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
         if protected(name) and name in before:
             fail(f"refusing to replace project-owned setting: {target}")
         prior = before.get(name)
-        if prior:
+        new = after.get(name)
+        shared_ignore = bool(name == '.gitignore' and prior and new and prior[1] == new[1]
+                             and shared_ignore_update(target.read_bytes(), (stage / rel).read_bytes()))
+        if prior and not shared_ignore:
             recorded = known.get(name)
             if recorded is not None and recorded != {"sha256": prior[0], "mode": prior[1]}:
                 fail(f"installed file was edited since the last update: {target}")
             if recorded is None and not generated(target):
                 fail(f"unowned destination collision: {target}")
-        new = after.get(name)
-        if new:
+        if shared_ignore:
+            next_files.pop(name, None)
+        elif new:
             next_files[name] = {"sha256": new[0], "mode": new[1]}
         else:
             next_files.pop(name, None)

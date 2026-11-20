@@ -327,7 +327,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         raise NotIntegrable('migration_required/incomplete: traceability report identity/schema does not match the selected task/run')
     candidate = report.get('candidate_sha')
     current_sha = git(root, 'rev-parse', 'HEAD')
-    adoption_context = retained_adoption_context(root, work_id)
+    adoption_context = retained_adoption_context(root, work_id, state=state)
     continuity = None
     if adoption_context is not None and adoption_context.early_red_continuity:
         try:
@@ -384,6 +384,11 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
 
     runner_path = '.agents/ask/verification/traceability/unittest_runner.py'
     runner_revision = candidate if adopted_early_red else base
+    if work_id == 'continuation-recovery' and task_id == 'CR-3':
+        migration = _authorized_cr3_migration(root, Candidate({}, {
+            'work_id': work_id, 'task_id': task_id, 'base_sha': base,
+            'candidate_sha': candidate}, ''))
+        runner_revision = migration['verifier_sha']
     base_runner = subprocess.run(['git', 'show', f'{runner_revision}:{runner_path}'], cwd=root,
                                  capture_output=True)
     if base_runner.returncode:

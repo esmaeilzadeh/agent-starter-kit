@@ -15,6 +15,7 @@ import unittest
 REPO = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO / "_ask" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(REPO / ".agents" / "ask"))
 
 from _ask.tests.inner_loop_recovery_fixture import (
@@ -94,23 +95,24 @@ class RecoveryTests(unittest.TestCase):
         self.write("work/w/inner-loop/tasks.yaml", TASKS)
         self.spec = {
             "schema": "ask-spec/v1",
-            "work_id": "w",
-            "criteria": [{"id": "C1", "given": "state", "when": "checked", "then": ["safe"]}],
+            "work_id": "w", "revision": 1,
+            "criteria": [{"id": "C1", "given": "state", "when": "checked", "then": ["safe"], "verification_mode": "tests"}],
         }
         self.case_a = {
             "id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
             "case_id": "tests.test_a", "scenario": {"given": "a", "when": "runs", "then": ["passes"]},
             "expected_assertions": [{"criterion_id": "C1", "checks": ["passes"]}],
-            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration",
+            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new",
         }
         self.case_b = {
             "id": "T-B", "task_id": "a", "criterion_ids": ["C1"],
             "case_id": "tests.test_b", "scenario": {"given": "b", "when": "runs", "then": ["passes"]},
             "expected_assertions": [{"criterion_id": "C1", "checks": ["passes"]}],
-            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration",
+            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new",
         }
         self.old_plan = {
-            "schema": "ask-test-plan/v1", "work_id": "w",
+            "schema": "ask-test-plan/v1", "work_id": "w", "spec_digest": self.json_digest(self.spec),
+            "obligations": [{"criterion_id": "C1", "required_types": ["integration"]}],
             "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
                          "adapter": "unittest"}],
             "tests": [self.case_a, self.case_b],
@@ -118,6 +120,7 @@ class RecoveryTests(unittest.TestCase):
                             {"task_id": "b", "test_ids": []}],
         }
         self.write("specs/current/w.json", json.dumps(self.spec, sort_keys=True))
+        self.write("specs/current/w.md", "# Disposable recovery specification\n")
         self.write(".agents/ask/verification/traceability/__init__.py",
                    "CAPABILITY = 'ask-traceability/v1'\n")
         self.write(".agents/ask/verification/traceability/unittest_runner.py",
@@ -367,11 +370,11 @@ class test_b(unittest.TestCase):
             self.write("src/a.py", "green\n")
             self.commit("CR-3 real assertion green fixture")
             return red_sha, self.git("rev-parse", "HEAD")
-        if setup_error_sibling:
+        if setup_error_sibling or old_runner:
             env = dict(os.environ, ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
                        ASK_INNER_LOOP_ROLE="worker")
             env["PYTHONPATH"] = os.pathsep.join(
-                part for part in (str(self.root / ".agents/ask"),
+                part for part in (str(self.root / ".agents/ask"), str(SCRIPTS),
                                   os.environ.get("PYTHONPATH", "")) if part
             )
             red_process = subprocess.run(
@@ -393,7 +396,16 @@ class test_b(unittest.TestCase):
         green_sha = self.git("rev-parse", "HEAD")
         from verification.traceability.adapters import run_tests
         contracts = {"spec": self.spec, "plan": self.old_plan}
-        green = run_tests(self.root, contracts, green_sha, "task", "a", "final_green")
+        if old_runner:
+            green_process = subprocess.run(
+                [sys.executable, "-m", "verification.traceability.cli", "--root", str(self.root),
+                 "run", "w", "--candidate-sha", green_sha, "--anchor-sha", self.anchor_commit,
+                 "--scope", "task", "--task-id", "a", "--phase", "final_green"],
+                cwd=self.root, env=env, capture_output=True, text=True)
+            self.assertEqual(green_process.returncode, 0, green_process.stdout + green_process.stderr)
+            green = json.loads(green_process.stdout)
+        else:
+            green = run_tests(self.root, contracts, green_sha, "task", "a", "final_green")
         return red, green
 
     def test_checkpoint_real_red_and_green(self):
@@ -641,7 +653,8 @@ class test_b(unittest.TestCase):
                 driver.integrate_ready(self.root, "w", "a")
                 recovered = load_state(self.root, "w")
                 self.assertEqual(recovered["tasks"]["a"]["status"], "integrated")
-                self.assertEqual(recovered["coordinator_sha"], self.candidate)
+                self.assertEqual(recovered["coordinator_sha"], self.git("rev-parse", "HEAD"))
+                self.assertEqual(recovered["milestone_publications"][-1]["source_sha"], self.candidate)
                 recovered_receipt = recovered["tasks"]["a"]["evidence"]["verification"]
                 for key in ("candidate_sha", "completion_digest", "static_receipt_digest",
                             "traceability_run_ids", "result_digest"):
@@ -681,7 +694,8 @@ class test_b(unittest.TestCase):
                 driver.integrate_ready(self.root, "w", "a")
                 recovered = load_state(self.root, "w")
                 self.assertEqual(recovered["tasks"]["a"]["status"], "integrated")
-                self.assertEqual(recovered["coordinator_sha"], self.candidate)
+                self.assertEqual(recovered["coordinator_sha"], self.git("rev-parse", "HEAD"))
+                self.assertEqual(recovered["milestone_publications"][-1]["source_sha"], self.candidate)
 
         PostFastForwardRecoveryCase("test_interrupt_after_real_fast_forward").run(result)
         self.assertEqual(result.errors, [])
@@ -971,6 +985,7 @@ class test_b(unittest.TestCase):
                 # failed check.
                 from inner_loop.driver import run_once
                 self.assertEqual(run_once(self.root, "w"), "running=b")
+                b_candidate = load_state(self.root, "w")["tasks"]["b"]["base_sha"]
                 pythonpath = os.pathsep.join((str(self.root / ".agents/ask"), str(SCRIPTS),
                                               os.environ.get("PYTHONPATH", "")))
                 nested_env = dict(
@@ -981,8 +996,8 @@ class test_b(unittest.TestCase):
                 cli = [sys.executable, "-m", "verification.traceability.cli",
                        "--root", str(self.root)]
                 failed = subprocess.run(
-                    cli + ["check-completion", "w", "--candidate-sha", self.candidate,
-                           "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b"],
+                    cli + ["check-completion", "w", "--candidate-sha", b_candidate,
+                           "--anchor-sha", b_candidate, "--scope", "task", "--task-id", "b"],
                     cwd=self.root, env=nested_env,
                     capture_output=True, text=True,
                 )
@@ -998,8 +1013,8 @@ class test_b(unittest.TestCase):
                 )
 
                 finalized = subprocess.run(
-                    cli + ["run", "w", "--candidate-sha", self.candidate,
-                           "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b",
+                    cli + ["run", "w", "--candidate-sha", b_candidate,
+                           "--anchor-sha", b_candidate, "--scope", "task", "--task-id", "b",
                            "--phase", "final_green"],
                     cwd=self.root, env=nested_env,
                     capture_output=True, text=True,
@@ -1215,7 +1230,8 @@ class test_b(unittest.TestCase):
                 ["git", "show", f"{old_sha}:.agents/ask/verification/run.py"], cwd=self.root,
             )
             self.assertEqual(runner.read_bytes(), expected)
-            output = self.root / "work/w/inner-loop/evidence/old-runner-verification.json"
+            output = self.root / "work/w/inner-loop/evidence/verify-oldrunner/verification.json"
+            output.parent.mkdir(parents=True, exist_ok=True)
             env = dict(os.environ, ASK_ROOT=str(self.root), ASK_WORK_ID="w",
                        ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
                        ASK_TRACEABILITY_ANCHOR_SHA=old_sha,
@@ -1354,6 +1370,7 @@ class test_b(unittest.TestCase):
         quiescent = self.run_cli("run", "w")
         self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
         self.assertEqual(quiescent.stdout.strip(), "quiescent")
+        stopped = load_state(self.root, "w")
 
         premature = self.run_cli("reopen", "w", "a", "--reason", "must wait for plan acceptance")
         self.assertNotEqual(premature.returncode, 0)
@@ -2842,6 +2859,8 @@ class test_b(unittest.TestCase):
         )
         legacy_files = write_legacy_fixture(self.root)
         self.write("work/continuation-recovery/inner-loop/tasks.yaml", REPAIR_TASKS)
+        from traceability_support import seed
+        seed(self.root, 'continuation-recovery')
         self.commit("immutable blocked product fixture and isolated repair graph")
         contract_sha = self.git("rev-parse", "HEAD")
         self.write(
@@ -2876,9 +2895,10 @@ class test_b(unittest.TestCase):
         from inner_loop.state import cas_apply
         cas_apply(self.root, "continuation-recovery", repair_state["revision"],
                   lambda doc: doc["tasks"]["CR-1"].update(status="integrated"))
-        second = self.run_cli("run", "continuation-recovery")
-        self.assertEqual(second.returncode, 0, second.stderr + second.stdout)
-        self.assertIn("running=CR-2", second.stdout)
+        # This fixture exercises state isolation, not fabricated integration evidence.
+        from inner_loop.state import spawn_writer
+        second = spawn_writer(self.root, "continuation-recovery", "CR-2")
+        self.assertEqual(second['tasks']['CR-2']['status'], 'running')
         self.assertEqual({name: (self.root / name).read_bytes() for name in legacy_files}, state_before)
         self.assertEqual(self.git("rev-parse", authority_ref), authority_before)
 
@@ -3441,6 +3461,10 @@ class test_b(unittest.TestCase):
         (root / ".agents/verification.yaml").write_text(
             "schema: ask-checkplan/v1\nno_production_datastore: true\n"
             "checks:\n  - id: required\n    tier: mandatory\n    command: 'true'\n")
+        (root / "specs/current/continuation-recovery.md").write_text('# Disposable continuation recovery specification\n')
+        from traceability_support import seed_model
+        seed_model(root, work_id)
+        git("add", "work/continuation-recovery/engineering-model.json", "specs/current/continuation-recovery.md")
         git("add", "specs/current/continuation-recovery.json",
             "work/continuation-recovery/test-plan.json",
             migration["source_review_artifact"],
@@ -3595,7 +3619,11 @@ class test_b(unittest.TestCase):
         self.assertFalse(import_marker.exists(),
                          "current verifier code ran before the accepted verifier pin was checked")
         from inner_loop.driver import integrate_ready
-        integrated_sha = integrate_ready(root, work_id, task_id)
+        from unittest.mock import patch
+        # This C/V migration fixture has synthetic CR-1/2 terminal states and
+        # exercises CR-3 integration; complete milestone backfill has its own suite.
+        with patch('inner_loop.milestones.publish_milestones'):
+            integrated_sha = integrate_ready(root, work_id, task_id)
         self.assertEqual(integrated_sha, candidate_sha)
         final_state = load_state(root, work_id)
         task = final_state["tasks"][task_id]

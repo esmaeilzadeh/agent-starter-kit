@@ -158,7 +158,7 @@ def load_historical_accepted(root, work_id, candidate_sha):
     return dict(contracts,pin=pin)
 
 
-def retained_adoption_context(root, work_id):
+def retained_adoption_context(root, work_id, *, state=None, checkpoint=None):
     """Return adoption authority only when the current checkpoint retains it."""
     import sys
     scripts = Path(root) / '_ask' / 'scripts'
@@ -168,10 +168,11 @@ def retained_adoption_context(root, work_id):
     from inner_loop.recovery import retained_adoption_continuity
     from inner_loop.state import load_state
 
-    checkpoint = read_checkpoint(root, work_id)
+    checkpoint = checkpoint or read_checkpoint(root, work_id)
     if checkpoint is None:
         return None
-    state = load_state(root, work_id)
+    if state is None:
+        state = load_state(root, work_id)
     return retained_adoption_continuity(root, work_id, state, checkpoint)
 
 

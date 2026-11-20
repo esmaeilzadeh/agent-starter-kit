@@ -10,7 +10,8 @@ import sys
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from inner_loop.checkpoint import CheckpointError, _destination, read_checkpoint
+from inner_loop.checkpoint import (CheckpointError, _destination, read_checkpoint,
+                                   is_checkpoint_state_ancestor)
 
 
 def runtime_path(name: str, work_id: str) -> bool:
@@ -20,7 +21,7 @@ def runtime_path(name: str, work_id: str) -> bool:
     tail = name[len(prefix):]
     return bool(re.fullmatch(
         r'inner-loop/(?:state\.(?:json|lock)|\.state-[\w-]+\.tmp|results/[\w.-]+\.json|'
-        r'evidence/verify-[\w-]+/integration\.json)|'
+        r'evidence/verify-[\w-]+/(?:integration\.json|verification\.json|output\.log))|'
         r'traceability/(?:executions\.json|completion\.json|static-[a-f0-9]+\.json|'
         r'runs/[\w-]+/[\w.-]+|static-runs/[\w-]+/[\w.-]+|'
         r'model-state/[\w./-]+)', tail))
@@ -45,15 +46,31 @@ def dirty_paths(root: Path) -> list[str]:
     if not branch.startswith('agent/'):
         return sorted(visible)
     work_id = branch[6:].split('/task/', 1)[0]
-    names = visible | {n for n in names if runtime_path(n, work_id)}
+    try:
+        checkpoint = read_checkpoint(root, work_id)
+    except (CheckpointError, ValueError, OSError):
+        checkpoint = None
+    review_paths = set()
+    if checkpoint:
+        for receipt in checkpoint[1].get('recovery_adoptions', []):
+            if isinstance(receipt, dict):
+                for key in ('proposal_path', 'review_path'):
+                    reference = receipt.get(key)
+                    if isinstance(reference, str) and reference.startswith(f'work/{work_id}/inner-loop/evidence/'):
+                        review_paths.add(reference)
+        for task in checkpoint[1].get('tasks', {}).values():
+            for attempt in [task, *task.get('attempt_history', [])]:
+                reference = ((attempt.get('evidence') or {}).get('review') or {}).get('evidence')
+                if isinstance(reference, str) and reference.startswith(f'work/{work_id}/inner-loop/evidence/'):
+                    review_paths.add(reference)
+    names = visible | {n for n in names if runtime_path(n, work_id) or n in review_paths}
     staged = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z'],
                                         cwd=root).decode().split('\0'))
-    runtime = {n for n in names - staged if runtime_path(n, work_id)}
+    runtime = {n for n in names - staged if runtime_path(n, work_id) or n in review_paths}
     dirty = names - runtime
     if not runtime:
         return sorted(dirty)
     try:
-        checkpoint = read_checkpoint(root, work_id)
         if checkpoint is None:
             return sorted(names)
         _, state, files = checkpoint
@@ -65,8 +82,11 @@ def dirty_paths(root: Path) -> list[str]:
             valid = path.is_file() and not path.is_symlink() and not path.stat().st_mode & 0o111
             if valid and name.endswith('/inner-loop/state.lock'):
                 valid = path.read_bytes() == b''
-            elif valid and (name.endswith('/inner-loop/state.json') or re.search(r'/inner-loop/\.state-[\w-]+\.tmp$', name)):
+            elif valid and name.endswith('/inner-loop/state.json'):
                 valid = json.loads(path.read_bytes()) == state
+            elif valid and re.search(r'/inner-loop/\.state-[\w-]+\.tmp$', name):
+                value = json.loads(path.read_bytes())
+                valid = value == state or is_checkpoint_state_ancestor(root, work_id, value, checkpoint[0])
             elif valid:
                 valid = files.get('artifacts/' + name) == path.read_bytes()
             if not valid:

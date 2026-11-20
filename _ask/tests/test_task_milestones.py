@@ -144,6 +144,23 @@ publish_milestones(Path(ROOT), 'w')
         self.git('add', '-f', str(path.relative_to(self.root)))
         self.assertIn(str(path.relative_to(self.root)), dirty_paths(self.root))
 
+    def test_selected_review_and_old_state_temp_require_retained_bytes(self):
+        review = self.root / 'work/w/inner-loop/evidence/review.md'
+        review.parent.mkdir(parents=True)
+        review.write_text('Private independent assessment')
+        self.state['tasks']['T1']['evidence']['review'] = {'evidence': str(review.relative_to(self.root)), 'verdict': 'REJECTED'}
+        _publish_state(self.root, 'w', self.state)
+        temporary = self.root / 'work/w/inner-loop/.state-old.tmp'
+        temporary.write_text(json.dumps(self.state))
+        self.assertEqual(dirty_paths(self.root), [])
+        publish_milestones(self.root, 'w')
+        self.assertEqual(dirty_paths(self.root), [])
+        unrelated = review.with_name('authorization.md')
+        unrelated.write_text('Uncommitted human authority')
+        self.assertIn(str(unrelated.relative_to(self.root)), dirty_paths(self.root))
+        review.write_text('Tampered assessment')
+        self.assertIn(str(review.relative_to(self.root)), dirty_paths(self.root))
+
     def test_public_summary_excludes_raw_command_and_output(self):
         path = self.root / 'work/w/inner-loop/results/T1.json'
         path.parent.mkdir(parents=True)

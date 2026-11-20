@@ -40,6 +40,24 @@ class ClientTests(unittest.TestCase):
         }), encoding="utf-8")
         (state / "owned-files.json").chmod(0o600)
 
+    def test_consumer_ignore_managed_updates_preserve_unmanaged_rules(self):
+        project = self.fx.git_project(self.fx.root / 'consumer-ignore')
+        ignore = project / '.gitignore'
+        ignore.write_text('consumer-cache/\n')
+        for _ in range(2):
+            installed = self._install(project, '--skip-prepare')
+            self.assertEqual(installed.returncode, 0, installed.stdout + installed.stderr)
+            self.assertTrue(ignore.read_text().startswith('consumer-cache/\n'))
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('write_transaction_ignore', ROOT / '_ask/scripts/write-transaction.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        original = b'consumer-cache/\n'
+        self.assertTrue(module.shared_ignore_update(original, original + b'/_ask/\n'))
+        self.assertFalse(module.shared_ignore_update(original, b'/_ask/\n'))
+        self.assertFalse(module.shared_ignore_update(original, original + b'*\n'))
+        self.assertFalse(module.shared_ignore_update(original, b'other-cache/\n'))
+
     def test_classify_paths(self) -> None:
         project = self.fx.git_project(self.fx.root / "unsafe-tree")
         outside = self.fx.root / "outside"

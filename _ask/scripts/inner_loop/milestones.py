@@ -120,6 +120,8 @@ def records(root: Path, work_id: str, checkpoint: tuple) -> dict[str, bytes]:
         document = {
             'schema': 'ask-task-milestone/v1', 'work_id': work_id, 'task_id': task_id,
             'status': task.get('status'), 'attempt_id': task.get('attempt_id'),
+            'recovery': [_pick(r, 'source_head source_tree proposal_sha256 review_sha256 previous_checkpoint')
+                         for r in state.get('recovery_adoptions', [])],
             'source_base_sha': task.get('base_sha'),
             'source_candidate_sha': verification.get('candidate_sha'),
             'attempt_history': [_pick(a, 'attempt_id attempt_number status base_sha interrupted_candidate_sha')
@@ -159,6 +161,18 @@ def publish_milestones(root: Path, work_id: str) -> str:
         head = git(root, 'rev-parse', 'HEAD')
         documents = records(root, work_id, checkpoint)
         base = state['coordinator_sha']
+        interrupted = [t['attempt_history'][-1] for t in state['tasks'].values()
+                       if t.get('status') == 'interrupted' and t.get('attempt_history')]
+        candidates = {a['interrupted_candidate_sha'] for a in interrupted
+                      if a.get('base_sha') == base and a.get('interrupted_candidate_sha')
+                      and subprocess.run(['git', 'merge-base', '--is-ancestor', base, a['interrupted_candidate_sha']],
+                                         cwd=root, capture_output=True).returncode == 0}
+        if head in candidates:
+            base = head
+        elif head != base:
+            parent = git(root, 'rev-parse', 'HEAD^')
+            if parent in candidates:
+                base = parent
         if head != base:
             if (git(root, 'rev-parse', 'HEAD^') != base
                     or set(git(root, 'diff', '--name-only', base, head).splitlines()) - documents.keys()
