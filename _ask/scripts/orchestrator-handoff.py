@@ -84,6 +84,7 @@ def preflight(work_id: str, entry: str = 'implementation') -> dict:
     except ValueError:
         saved = load_observation(work_id)
         if (saved.get('status') == 'manually-observed'
+                and saved.get('runtime') == runtime
                 and saved.get('target_model') == model
                 and saved.get('observed_model') == model
                 and isinstance(saved.get('provenance'), str) and saved['provenance'].strip()):
@@ -111,6 +112,7 @@ def preflight(work_id: str, entry: str = 'implementation') -> dict:
 
     saved = load_observation(work_id)
     if (not current and saved.get('status') == 'manually-observed'
+            and saved.get('runtime') == runtime
             and saved.get('target_model') == model
             and saved.get('observed_model') == model
             and isinstance(saved.get('provenance'), str) and saved['provenance'].strip()):

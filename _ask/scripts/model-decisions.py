@@ -292,10 +292,26 @@ def save(work_id: str, decision: dict) -> dict:
     previous_runtime = previous.get('runtime')
     explicit_before = previous.get('explicit_overrides') or []
     materialized_before = previous.get('materialized_overrides') or []
-    previous_overrides = (explicit_before + materialized_before
-                          if isinstance(explicit_before, list)
-                          and isinstance(materialized_before, list) else [])
-    if previous_runtime in _MODELS.RUNTIMES:
+    explicit_before = ([stage for stage in explicit_before
+                        if isinstance(stage, str) and stage in stages]
+                       if isinstance(explicit_before, list) else [])
+    materialized_before = ([stage for stage in materialized_before
+                            if isinstance(stage, str) and stage in stages]
+                           if isinstance(materialized_before, list) else [])
+    previous_overrides = explicit_before + materialized_before
+    if submission == 'confirm' and previous.get('status') == 'confirmed':
+        if previous_runtime != runtime or previous.get('implementation_policy') != policy:
+            raise ValueError('changing a confirmed model plan requires submission=change')
+        retained = {}
+        for stage in explicit_before:
+            configured = _MODELS.value_from_overlay(work, stage, runtime)
+            if configured is not _MODELS.MISSING:
+                retained[stage] = configured
+        for stage, model in overrides.items():
+            if stage not in retained or retained[stage] != model:
+                raise ValueError('changing a saved stage override requires submission=change')
+        overrides = retained
+    if submission == 'change' and previous_runtime in _MODELS.RUNTIMES:
         prior_overlay = work.get(previous_runtime)
         if isinstance(prior_overlay, dict):
             for stage in previous_overrides:

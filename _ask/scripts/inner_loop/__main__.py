@@ -16,6 +16,7 @@ from inner_loop.driver import (  # noqa: E402
     NotIntegrable,
     cancel,
     git_sha,
+    _implementation_handoff,
     resume_from_state,
     run_until,
 )
@@ -114,6 +115,7 @@ def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
 
 
 def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
+    _implementation_handoff(root, work_id)
     with workflow_admission(root, work_id, delivery_task_id=task_id):
         doc = spawn_writer(root, work_id, task_id)
     print(f"running={task_id} revision={doc['revision']}")
