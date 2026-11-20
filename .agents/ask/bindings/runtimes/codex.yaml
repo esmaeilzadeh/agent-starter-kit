@@ -28,6 +28,7 @@ families:
   - gpt
 
 implementation_family: gpt
+implementation_variant: luna
 handoff:
   capabilities:
     catalog: unknown

@@ -26,6 +26,8 @@ families:
   - muse
   - kimi
 
+implementation_family: composer
+
 handoff:
   capabilities:
     catalog: unknown

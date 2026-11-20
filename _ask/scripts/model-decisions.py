@@ -191,21 +191,27 @@ def resolve_implementor(work_id: str, runtime: str | None = None) -> str:
     base = current.get('model')
     families = cfg.get('families') or []
     family = cfg.get('implementation_family')
+    variant = cfg.get('implementation_variant')
     if family is None:
         family = next((item for item in families
                        if isinstance(item, str) and (base == item or base.startswith(item + '-'))), None)
     if not isinstance(family, str) or not family:
         raise ValueError(f'{runtime} implementation family cannot be identified')
-    accessible = [item for item in models if item == family or item.startswith(family + '-')]
+    accessible = [item for item in models
+                  if (item == family or item.startswith(family + '-'))
+                  and (not isinstance(variant, str) or not variant
+                       or item.endswith('-' + variant))]
     if not accessible:
         raise ValueError(f'{runtime} catalog has no current accessible model in family {family}')
     if len(accessible) == 1:
         return _MODELS.validate_model(accessible[0], runtime, '06-implement')
     order = catalog.get('order')
     if (not isinstance(order, list) or not all(isinstance(item, str) for item in order)
-            or set(order) != set(accessible) or len(order) != len(accessible)):
+            or len(order) != len(set(order)) or not set(accessible).issubset(order)
+            or not set(order).issubset(models)):
         raise ValueError(f'{runtime} catalog lacks explicit version ordering evidence for {family}')
-    return _MODELS.validate_model(order[-1], runtime, '06-implement')
+    return _MODELS.validate_model(
+        [item for item in order if item in accessible][-1], runtime, '06-implement')
 
 
 def model_table(runtime: str, risk: str, defaults: dict, runtime_cfg: dict,
@@ -284,8 +290,12 @@ def save(work_id: str, decision: dict) -> dict:
     env['ASK_RISK'] = risk
     previous = work.get('model_plan') or {}
     previous_runtime = previous.get('runtime')
-    previous_overrides = previous.get('explicit_overrides') or []
-    if previous_runtime in _MODELS.RUNTIMES and isinstance(previous_overrides, list):
+    explicit_before = previous.get('explicit_overrides') or []
+    materialized_before = previous.get('materialized_overrides') or []
+    previous_overrides = (explicit_before + materialized_before
+                          if isinstance(explicit_before, list)
+                          and isinstance(materialized_before, list) else [])
+    if previous_runtime in _MODELS.RUNTIMES:
         prior_overlay = work.get(previous_runtime)
         if isinstance(prior_overlay, dict):
             for stage in previous_overrides:
@@ -298,9 +308,11 @@ def save(work_id: str, decision: dict) -> dict:
     work['risk'] = risk
 
     table = model_table(runtime, risk, defaults, cfg, consumer, work, env, set(overrides))
+    materialized_overrides = []
     if policy == 'exact' and '06-implement' not in overrides:
         runtime_overlay['06-implement'] = table['06-implement']['model']
         table['06-implement']['source'] = 'exact-policy'
+        materialized_overrides.append('06-implement')
 
     record = dict(work)
     record['risk'] = risk
@@ -313,6 +325,7 @@ def save(work_id: str, decision: dict) -> dict:
         'risk': risk,
         'implementation_policy': policy,
         'explicit_overrides': sorted(overrides),
+        'materialized_overrides': materialized_overrides,
         'selections': table,
         'review_relationship': {
             'review_stage': '07-review',

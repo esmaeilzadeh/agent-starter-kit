@@ -21,6 +21,8 @@ families:
   - fable
   - claude
 
+implementation_family: sonnet
+
 handoff:
   capabilities:
     catalog: unknown

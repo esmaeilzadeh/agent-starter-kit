@@ -104,8 +104,10 @@ class ClientTests(unittest.TestCase):
                 'authenticated': True,
                 'access_verified': True,
                 'family': 'gpt',
-                'models': ['gpt-6.9-luna', 'gpt-6.10-luna'],
-                'order': ['gpt-6.9-luna', 'gpt-6.10-luna'],
+                'models': ['gpt-6.9-luna', 'gpt-6.10-luna',
+                           'gpt-6.12-sol', 'gpt-6.13-astra'],
+                'order': ['gpt-6.9-luna', 'gpt-6.10-luna',
+                          'gpt-6.12-sol', 'gpt-6.13-astra'],
             },
             'identity': {'model': 'gpt-6.1-sol'},
             'switch_supported': False,
@@ -126,6 +128,7 @@ class ClientTests(unittest.TestCase):
         self.save_plan()
         self.write_adapter({
             'catalog': {'authenticated': True, 'family': 'gpt',
+                        'access_verified': True,
                         'models': ['gpt-6.9-luna', 'gpt-6.10-luna']},
             'identity': {'model': 'gpt-6.1-sol'},
         })
@@ -165,6 +168,13 @@ class ClientTests(unittest.TestCase):
 
         self.write_adapter({'identity': {'model': 'gpt-6.1-sol'}, 'switch_supported': True,
                             'switch_result': 'gpt-6-luna'})
+        switched_ok = self.run_ask('orchestrator-handoff', 'preflight', '--work-id', self.work_id)
+        successful_actions = [event.get('action') for event in self.events()]
+        if switched_ok.returncode or 'ready' not in switched_ok.stdout.lower() or 'switch' not in successful_actions or successful_actions.count('identity') < 2:
+            failures.append('supported switch was not verified by a fresh matching identity')
+
+        self.write_adapter({'identity': {'model': 'gpt-6.1-sol'}, 'switch_supported': True,
+                            'switch_result': 'gpt-6-astra'})
         switched = self.run_ask('orchestrator-handoff', 'preflight', '--work-id', self.work_id)
         actions = [event.get('action') for event in self.events()]
         if switched.returncode == 0 or 'identity' not in actions or 'switch' not in actions:

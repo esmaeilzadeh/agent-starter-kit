@@ -24,6 +24,8 @@ families:
   - gpt
   - kimi
 
+implementation_family: grok
+
 handoff:
   capabilities:
     catalog: unknown
