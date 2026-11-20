@@ -582,19 +582,22 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
         verified_replacements = {
             prefix + f"static-{candidate}.json": static_digest,
         }
+    completion_path = prefix + "completion.json"
+    retained_completion = retained.get(completion_path)
+    live_completion = live.get(completion_path)
+    if live_completion is not None and live_completion != retained_completion:
+        if not _completion_projection_matches(
+            root, work_id, live_completion, expected_verification=expected_verification,
+        ):
+            return False
+    model_state_prefix = prefix + "model-state/"
     for name, content in retained.items():
         if name == ledger_path:
             continue
-        # The completion report is a current projection. Its historical bytes
-        # are authenticated above from the retained checkpoint, so later
-        # verification may legitimately replace this live projection.
-        if name == prefix + "completion.json":
+        if name.startswith(model_state_prefix):
+            continue
+        if name == completion_path:
             if name not in live:
-                return False
-            try:
-                if not isinstance(json.loads(live[name]), dict):
-                    return False
-            except (UnicodeDecodeError, ValueError):
                 return False
             continue
         expected_digest = verified_replacements.get(name)
@@ -603,6 +606,11 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
             return False
     allowed_new = {ledger_path}
     for name in live.keys() - retained.keys():
+        if name.startswith(model_state_prefix):
+            continue
+        if name == completion_path:
+            allowed_new.add(name)
+            continue
         relative = name[len(prefix):] if name.startswith(prefix) else ""
         parts = relative.split("/") if relative else []
         if name == prefix + "executions.lock":
@@ -650,7 +658,131 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
         if any(name not in live or hashlib.sha256(live[name]).hexdigest() != expected
                for name, expected in verified_replacements.items()):
             return False
-    return set(live) - set(retained) <= allowed_new
+    unexpected_new = {name for name in live.keys() - retained.keys()
+                      if not name.startswith(model_state_prefix)}
+    return (unexpected_new <= allowed_new
+            and _model_state_matches_checkpoint(root, work_id, retained, live))
+
+
+def _completion_projection_matches(root: Path, work_id: str, raw: bytes, *,
+                                   expected_verification: dict | None = None) -> bool:
+    """Validate changed projections without treating diagnostics as pass evidence."""
+    try:
+        report = json.loads(raw)
+        if not isinstance(report, dict) or report.get("schema") != "ask-completion/v1":
+            return False
+        candidate = report.get("candidate_sha")
+        scope, task_id = report.get("scope"), report.get("task_id")
+        if (not isinstance(candidate, str) or len(candidate) != 40
+                or any(char not in "0123456789abcdef" for char in candidate)
+                or not _commit_exists(root, candidate)
+                or scope not in {"workstream", "task"}
+                or (scope == "task" and not isinstance(task_id, str))
+                or (scope == "workstream" and task_id is not None)):
+            return False
+        if report.get("status") == "pass":
+            return bool(
+                expected_verification
+                and expected_verification.get("result") == "pass"
+                and expected_verification.get("candidate_sha") == candidate
+                and (scope != "task" or expected_verification.get("task_id") == task_id)
+                and expected_verification.get("completion_digest") == hashlib.sha256(raw).hexdigest()
+            )
+        if report.get("status") != "fail":
+            return False
+        from verification.traceability.service import inspect_completion
+        verified, _ = inspect_completion(
+            root, work_id, candidate, candidate, scope, task_id,
+        )
+        return verified == report
+    except (ImportError, OSError, RuntimeError, UnicodeDecodeError, ValueError, KeyError,
+            TypeError, AttributeError, subprocess.SubprocessError):
+        return False
+
+
+def _model_state_matches_checkpoint(root: Path, work_id: str,
+                                    retained: dict[str, bytes], live: dict[str, bytes]) -> bool:
+    """Allow only a complete, guarded publication after the retained boundary."""
+    from engineering_model.admission import (
+        _load_generation, _pointer, _publication, _state_directory,
+        guarded_publication_chain,
+    )
+
+    prefix = f"work/{work_id}/traceability/model-state/"
+    old = {name: raw for name, raw in retained.items() if name.startswith(prefix)}
+    current = {name: raw for name, raw in live.items() if name.startswith(prefix)}
+    if not old:
+        return not current
+
+    pointer_path = prefix + "current.json"
+    retained_pointer = old.get(pointer_path)
+    current_pointer = current.get(pointer_path)
+    if retained_pointer is None or current_pointer is None:
+        return False
+    if any(current.get(name) != raw for name, raw in old.items() if name != pointer_path):
+        return False
+
+    try:
+        state = _state_directory(root, work_id)
+        old_pointer = json.loads(retained_pointer)
+        pointer = _pointer(state)
+        if (not isinstance(old_pointer, dict) or not isinstance(pointer, dict)
+                or set(old_pointer) - {"generation", "publication"}
+                or set(pointer) - {"generation", "publication"}):
+            return False
+        old_generation = old_pointer.get("generation")
+        if (not isinstance(old_generation, str) or len(old_generation) != 64
+                or any(char not in "0123456789abcdef" for char in old_generation)):
+            return False
+        _load_generation(state, work_id, old_generation)
+        _load_generation(state, work_id, pointer["generation"])
+        if current_pointer == retained_pointer:
+            return set(current) == set(old)
+
+        old_publication = old_pointer.get("publication")
+        if (not isinstance(old_publication, str)
+                or not guarded_publication_chain(
+                    root, work_id, old_generation, pointer["generation"],
+                    base_publication=old_publication,
+                )):
+            return False
+
+        allowed = {pointer_path}
+        selected = pointer.get("publication")
+        generation = pointer["generation"]
+        seen = set()
+        while selected != old_publication:
+            if not isinstance(selected, str) or selected in seen:
+                return False
+            seen.add(selected)
+            event = _publication(state, selected)
+            if event.get("kind") != "guarded-edit" or event.get("result_digest") != generation:
+                return False
+            _load_generation(state, work_id, generation)
+            generation_path = prefix + f"generations/{generation}/"
+            generation_dir = state / "generations" / generation
+            manifest = json.loads((generation_dir / "manifest.json").read_bytes())
+            snapshot = manifest["snapshot"]
+            blob_digests = {snapshot["model"]["sha256"], *(
+                record["sha256"] for record in snapshot["inputs"]
+                if record.get("status") == "present"
+            )}
+            allowed.add(generation_path + "manifest.json")
+            allowed.update(generation_path + f"blobs/{digest}" for digest in blob_digests)
+            allowed.add(prefix + f"publications/{selected}.json")
+            previous = event.get("previous_publication")
+            if not isinstance(previous, str) or not isinstance(event.get("base_digest"), str):
+                return False
+            generation, selected = event["base_digest"], previous
+            if len(seen) > len(current):
+                return False
+        base = _publication(state, old_publication)
+        if base.get("result_digest") != old_generation or generation != old_generation:
+            return False
+        return set(current) == (set(old) | allowed)
+    except (OSError, RuntimeError, UnicodeDecodeError, ValueError, KeyError, TypeError,
+            AttributeError):
+        return False
 
 
 def _changed_paths(root: Path, base: str, head: str) -> list[str]:

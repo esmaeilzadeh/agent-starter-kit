@@ -133,6 +133,15 @@ An in-place TaskResult invalidated by that repair is refused until resubmitted;
 its recorded review and state revision are retained. External/manual Git writers
 remain outside this advisory coordination model.
 
+Checkpoint recovery keeps retained execution evidence byte-identical and accepts
+only append-only execution-ledger rows. A changed model-state pointer is carried
+forward only when the selected generation and every publication since the retained
+boundary validate as a guarded edit; ordinary admissions and unlinked files need
+an exact reviewed adoption. A changed completion projection must match retained
+passing verifier evidence or reproduce as a canonical failed report. Preserved
+historical failure diagnostics are not passing evidence and require reviewed
+adoption when their original contract is no longer current.
+
 ## Structured spec-to-test gate
 
 Normal integration also validates the task subset of the accepted JSON spec/test

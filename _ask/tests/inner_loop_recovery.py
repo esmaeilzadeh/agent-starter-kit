@@ -935,25 +935,10 @@ class test_b(unittest.TestCase):
                         historical[digest_key],
                     )
                 completion = self.root / "work/w/traceability/completion.json"
-                completion.write_text('{"status":"fail","reason":"later candidate"}\n')
-                traceability = self.root / "work/w/traceability"
-                (traceability / "static-later.json").write_text('{"status":"fail"}\n')
-                (traceability / "static-runs/later/0.log").parent.mkdir(parents=True, exist_ok=True)
-                (traceability / "static-runs/later/0.log").write_text("failed verifier output\n")
-                (traceability / "reviews/later.json").parent.mkdir(parents=True, exist_ok=True)
-                (traceability / "reviews/later.json").write_text('{"verdict":"REJECTED"}\n')
-                (traceability / "verification-later.json").write_text('{"result":"fail"}\n')
-                (traceability / "plan-review-later.json").write_text('{"decision":"APPROVED"}\n')
                 self.assertEqual(
                     _checkpointed_verification(self.root, "w", retained_state, checkpoint),
                     historical,
                     "a failed later verifier projection must not invalidate retained historical evidence",
-                )
-                self.assertTrue(
-                    _traceability_matches_checkpoint(
-                        self.root, "w", checkpoint, expected_verification=historical,
-                    ),
-                    "later derived verifier/review artifacts must coexist with exact retained evidence",
                 )
 
                 # Exercise the production continuation path: task B runs a
@@ -983,6 +968,12 @@ class test_b(unittest.TestCase):
                 self.assertEqual(json.loads(failed.stdout)["status"], "fail")
                 failed_projection = json.loads(completion.read_text(encoding="utf-8"))
                 self.assertEqual(failed_projection["status"], "fail")
+                self.assertTrue(
+                    _traceability_matches_checkpoint(
+                        self.root, "w", checkpoint, expected_verification=historical,
+                    ),
+                    "the canonical failed projection must coexist with retained passing evidence",
+                )
 
                 finalized = subprocess.run(
                     cli + ["run", "w", "--candidate-sha", self.candidate,
@@ -1737,6 +1728,230 @@ class test_b(unittest.TestCase):
         self.assertEqual(
             recovered["static_receipt_digest"],
             hashlib.sha256((self.root / f"work/w/traceability/static-{candidate}.json").read_bytes()).hexdigest(),
+        )
+
+    def test_recovery_accepts_guarded_model_projection_and_append_only_ledger(self):
+        from engineering_model.admission import _publish, _state_directory, capture
+        from inner_loop.recovery import _traceability_matches_checkpoint
+
+        state_dir = _state_directory(self.root, "w")
+        state_dir.mkdir(parents=True)
+        (state_dir / "writer.lock").touch()
+        snapshot = capture(self.root, "w")
+        self.assertTrue(_publish(state_dir, snapshot, self.root))
+        self.write("work/w/traceability/executions.json", "[]\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": self.anchor_commit, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        model_path = self.root / "work/w/engineering-model.json"
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n", encoding="utf-8")
+        updated = capture(self.root, "w")
+        with (state_dir / "writer.lock").open("a+b"):
+            self.assertTrue(_publish(state_dir, updated, self.root,
+                                     guarded_base=snapshot.identity["digest"]))
+
+        ledger = self.root / "work/w/traceability/executions.json"
+        ledger.write_text(json.dumps([{"run_id": "new-run"}]) + "\n", encoding="utf-8")
+        self.assertTrue(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a validated guarded publication and append-only ledger extension should remain recoverable",
+        )
+
+        extra = state_dir / "generations" / ("f" * 64) / "manifest.json"
+        extra.parent.mkdir(parents=True)
+        extra.write_text("{}\n", encoding="utf-8")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "unlinked model-state files must remain a recovery conflict",
+        )
+        extra.unlink()
+        extra.parent.rmdir()
+
+        pointer_path = state_dir / "current.json"
+        retained_pointer = pointer_path.read_bytes()
+        malformed_publication = b"[]\n"
+        malformed_digest = hashlib.sha256(malformed_publication).hexdigest()
+        publication_path = state_dir / "publications" / f"{malformed_digest}.json"
+        publication_path.write_bytes(malformed_publication)
+        pointer_path.write_text(json.dumps({
+            "generation": updated.identity["digest"], "publication": malformed_digest,
+        }) + "\n", encoding="utf-8")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "digest-correct but malformed publication JSON must fail closed",
+        )
+        pointer_path.write_bytes(retained_pointer)
+        publication_path.unlink()
+
+        pointer = json.loads(retained_pointer)
+        selected_publication = state_dir / "publications" / f"{pointer['publication']}.json"
+        retained_publication = selected_publication.read_bytes()
+        selected_generation = state_dir / "generations" / pointer["generation"]
+        manifest = json.loads((selected_generation / "manifest.json").read_text())
+        blob_digest = manifest["snapshot"]["model"]["sha256"]
+        blob_path = selected_generation / "blobs" / blob_digest
+        retained_blob = blob_path.read_bytes()
+        blob_path.write_bytes(retained_blob + b"tampered")
+        self.assertFalse(_traceability_matches_checkpoint(self.root, "w", checkpoint))
+        blob_path.write_bytes(retained_blob)
+        selected_publication.write_bytes(retained_publication + b"tampered")
+        self.assertFalse(_traceability_matches_checkpoint(self.root, "w", checkpoint))
+        selected_publication.write_bytes(retained_publication)
+
+        missing_ancestor = "a" * 64
+        orphan_event = json.dumps({
+            "schema": "ask-engineering-publication/v1", "kind": "guarded-edit",
+            "base_digest": snapshot.identity["digest"],
+            "result_digest": updated.identity["digest"],
+            "previous_publication": missing_ancestor,
+        }, sort_keys=True).encode() + b"\n"
+        orphan_digest = hashlib.sha256(orphan_event).hexdigest()
+        orphan_path = state_dir / "publications" / f"{orphan_digest}.json"
+        orphan_path.write_bytes(orphan_event)
+        pointer_path.write_text(json.dumps({
+            "generation": updated.identity["digest"], "publication": orphan_digest,
+        }) + "\n", encoding="utf-8")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a guarded publication with a missing ancestor must fail closed",
+        )
+        pointer_path.write_bytes(retained_pointer)
+        orphan_path.unlink()
+
+        from unittest.mock import patch
+        cycle_digest = "b" * 64
+        cycle_event = {
+            "kind": "guarded-edit", "result_digest": updated.identity["digest"],
+            "base_digest": snapshot.identity["digest"],
+            "previous_publication": cycle_digest,
+        }
+        pointer_path.write_text(json.dumps({
+            "generation": updated.identity["digest"], "publication": cycle_digest,
+        }) + "\n", encoding="utf-8")
+        with patch("engineering_model.admission._publication", return_value=cycle_event), \
+                patch("engineering_model.admission.guarded_publication_chain", return_value=True):
+            self.assertFalse(
+                _traceability_matches_checkpoint(self.root, "w", checkpoint),
+                "a cyclic guarded publication chain must fail closed",
+            )
+        pointer_path.write_bytes(retained_pointer)
+
+        outside = self.root.parent / "recovery-outside"
+        outside.write_text("outside the traceability root")
+        escape_link = state_dir / "publications" / "escape.json"
+        escape_link.symlink_to(outside)
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a symlink escaping model state must fail closed",
+        )
+        escape_link.unlink()
+        outside.unlink()
+
+        first_guarded_pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+        first_publication = state_dir / "publications" / f"{first_guarded_pointer['publication']}.json"
+        first_publication_bytes = first_publication.read_bytes()
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n", encoding="utf-8")
+        second = capture(self.root, "w")
+        with (state_dir / "writer.lock").open("a+b"):
+            self.assertTrue(_publish(
+                state_dir, second, self.root,
+                guarded_base=updated.identity["digest"],
+            ))
+        self.assertTrue(_traceability_matches_checkpoint(self.root, "w", checkpoint))
+        first_publication.write_bytes(first_publication_bytes + b"tampered")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "tampering an intermediate publication in a multi-link chain must fail closed",
+        )
+        first_publication.write_bytes(first_publication_bytes)
+
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n", encoding="utf-8")
+        unreviewed = capture(self.root, "w")
+        self.assertTrue(_publish(state_dir, unreviewed, self.root))
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "an admission publication after the checkpoint requires reviewed adoption",
+        )
+
+    def test_recovery_rejects_unbound_completion_projection(self):
+        from inner_loop.recovery import _traceability_matches_checkpoint
+
+        self.write("work/w/traceability/completion.json", json.dumps({
+            "schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+            "task_id": None, "candidate_sha": self.anchor_commit,
+            "input_digests": {}, "criterion_evidence": [], "missing_evidence": [],
+            "errors": ["historical diagnostic"], "execution_artifacts": [],
+        }) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": self.anchor_commit, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        self.write("work/w/traceability/completion.json", '{"status":"fail","reason":"unbound"}\n')
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a changed completion projection needs canonical or explicit receipt binding",
+        )
+        for invalid in (
+            {"schema": "ask-completion/v1", "status": "fail", "scope": "invalid",
+             "candidate_sha": self.anchor_commit},
+            {"schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+             "candidate_sha": "f" * 40},
+            {"schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+             "candidate_sha": self.anchor_commit, "work_id": "other"},
+        ):
+            self.write("work/w/traceability/completion.json", json.dumps(invalid) + "\n")
+            self.assertFalse(
+                _traceability_matches_checkpoint(self.root, "w", checkpoint),
+                "wrong scope, candidate, or work identity must fail closed",
+            )
+
+    def test_recovery_accepts_completion_bound_to_retained_verifier_receipt(self):
+        from inner_loop.recovery import _traceability_matches_checkpoint
+
+        candidate = self.anchor_commit
+        old_completion = {"schema": "legacy-completion-fixture", "status": "fail"}
+        self.write("work/w/traceability/completion.json", json.dumps(old_completion) + "\n")
+        static = {"schema": "static-fixture", "candidate_sha": candidate, "result": "pass"}
+        static_path = f"work/w/traceability/static-{candidate}.json"
+        self.write(static_path, json.dumps(static) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": candidate, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        replacement = json.dumps({
+            "schema": "ask-completion/v1", "status": "pass", "scope": "workstream",
+            "task_id": None, "candidate_sha": candidate,
+        }, sort_keys=True).encode()
+        self.write("work/w/traceability/completion.json", replacement + b"\n")
+        verification = {
+            "result": "pass", "candidate_sha": candidate,
+            "completion_digest": hashlib.sha256(replacement + b"\n").hexdigest(),
+            "static_receipt_digest": hashlib.sha256((self.root / static_path).read_bytes()).hexdigest(),
+        }
+        self.assertTrue(
+            _traceability_matches_checkpoint(
+                self.root, "w", checkpoint, expected_verification=verification,
+            ),
+            "a passing projection is accepted only when its exact bytes match retained verifier evidence",
         )
 
     def test_interrupted_candidate_paths_do_not_block_dependent_tasks(self):
