@@ -1,13 +1,12 @@
 # Preserve recovery evidence and reconcile pending task attempts
 
-- **Status:** parked (not live; no `agent/*`)
+- **Status:** included in current completion planning on `agent/client-security-hardening`; no separate workstream
 - **Found during:** `client-security-hardening`
-- **Start later:** new session, `./ask start-work <new-work-id>`
-- **First stage:** 00 Explore; recovery scope and safe transitions need discovery
+- **Next step:** finish `work/client-security-hardening/completion-implementation-plan.md`, then stop for Luna coordinator handoff
 - **Tags:** recovery, inner-loop
 - **Attribution:** `client-security-hardening`, CSH-10 recovery conflicts; Astra/high consultation; candidate `e889779`
 - **Affected responsibilities:** recovery traceability validation for model-state projections; safe reconciliation when a pending task has source changes but no recorded attempt
-- **Publication status:** draft
+- **Publication status:** planning authorized by the human; implementation has not started
 
 ## Why
 
@@ -18,14 +17,16 @@ byte-identical and disallows newly published model-state files and
 `completion.json`. The current ledger's 80 rows correctly extend the checkpoint
 77-row prefix and are not themselves a conflict.
 
-## Proposed What (unapproved)
+## Scope
 
 Design and implement recovery that preserves immutable prior results, reviews,
 attempt history, accepted contract pins, and failed execution evidence while
 supporting valid append-only model-state/completion projections and an explicit
 pending-with-zero-attempt reconciliation. Never synthesize a past attempt or
-rewind source to hide the mismatch. Plan this work with Sol-high; keep the
-current frozen kit pin unchanged until this workstream is closed.
+rewind source to hide the mismatch. Plan this work with Sol-high alongside
+milestone evidence and laddered escalation under the latest direction recorded
+in `work/client-security-hardening/completion-scope.md`. Keep the current frozen
+kit pin unchanged and conduct kit maintenance with dogfooding disabled.
 
 ## Note
 

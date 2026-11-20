@@ -1,5 +1,16 @@
 # Continuation: 2026-11-19
 
+## Current endpoint: combined completion plan, then Luna handoff
+
+The latest human direction authorizes planning recovery, milestone evidence,
+and laddered escalation together as prerequisites for current-task completion.
+See `completion-scope.md` and `completion-implementation-plan.md`. This
+supersedes the historical CSH-01 endpoint and earlier sequencing that deferred
+evidence maintenance until CSH-10 was complete. Stop when the reviewed plan is
+ready so the human can switch back to the Luna coordinator. A generic resume
+does not remove this explicit plan-only stop. The original accepted security
+contracts and recorded CSH-01–09 integrations remain historical authority.
+
 ## Current endpoint: CSH-01 implementation
 
 The human's explicit direction is `implement`. This extends the prior plan-ready
