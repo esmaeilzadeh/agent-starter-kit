@@ -1,16 +1,5 @@
 # Authorized evidence publication follow-up
 
-## Current authorization
-
-The latest human direction includes milestone evidence, recovery, and laddered
-escalation in the current completion plan. `../../completion-scope.md` records
-that direction and supersedes the earlier post-CSH-10 sequence below. Prepare
-`../../completion-implementation-plan.md`, then stop for the human's Luna
-coordinator handoff before implementation. The earlier archive and draft
-references remain preservation evidence, not installed product changes.
-
-## Earlier authorization and preservation history
-
 Human direction (2026-11-20): apply the recommended milestone evidence changes; if changing the active inner loop is required, finish the current work first and apply the changes immediately afterward. Also find a safe solution for the current uncommitted files.
 
 Sequence: finish CSH-07 through CSH-10 using frozen runner 98f3c09d958a75c6e78181f196f313a99b4c0379 at /tmp/askit-security-csh06.98f3c09.frozen. Keep the pin unchanged. Then disable dogfooding for the authorized kit maintenance, implement normal branch milestone records, preserve candidate identity, reconcile clean-check behavior, and backfill current evidence. This direction does not change the accepted client-security intent or criteria.
