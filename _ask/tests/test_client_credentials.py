@@ -175,7 +175,7 @@ class ClientTests(unittest.TestCase):
         legacy.write_text(
             "# preserve this comment\nASK_TRACKER=jira\n"
             "ASK_TRACKER_URL=https://jira.example.test\n"
-            "MEMORY_CHOICE=2\nJIRA_PERSONAL_TOKEN='$(touch " + str(marker) + ")'\n"
+            "MEMORY_CHOICE=2\nTRACKER_TOKEN='$(touch " + str(marker) + ")'\n"
             "GITHUB_TOKEN=dummy-other-private-token\n",
             encoding="utf-8",
         )
@@ -191,18 +191,13 @@ class ClientTests(unittest.TestCase):
         self.assertIn("MEMORY_CHOICE=2", legacy.read_text())
         self.assertTrue(self.fx.run(["git", "-C", str(project), "diff", "--cached", "--quiet", "--", ".ask.env"]).returncode == 0)
         history = self.fx.run(["git", "-C", str(project), "show", "HEAD:.ask.env"]).stdout
-        self.assertIn("JIRA_PERSONAL_TOKEN", history)
+        self.assertIn("TRACKER_TOKEN", history)
         key = hashlib.sha256(str(project.resolve()).encode()).hexdigest()
         credentials = self.fx.config / "askit/projects" / key / "credentials.json"
         self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
                          "$(touch " + str(marker) + ")")
         self.assertEqual(json.loads(credentials.read_text())["credentials"].get("GITHUB_TOKEN"),
                          "dummy-other-private-token")
-        repeated = self._run_config(project, "migrate", "--root", str(project), "--yes")
-        self.assertEqual(repeated.returncode, 0, repeated.stderr)
-        self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
-                         "$(touch " + str(marker) + ")")
-
         bin_dir = self.fx.root / "fake-bin"
         bin_dir.mkdir()
         capture = self.fx.root / "mcp-child.json"
@@ -238,6 +233,12 @@ class ClientTests(unittest.TestCase):
         self.assertIsNone(child["other"])
         self.assertIn("mcp-atlassian @ https://", " ".join(child["argv"]))
         self.assertIn("sha256=", " ".join(child["argv"]))
+        repeated = self._run_config(project, "migrate", "--root", str(project), "--yes")
+        self.assertEqual(repeated.returncode, 0, repeated.stderr)
+        self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
+                         "$(touch " + str(marker) + ")")
+        self.assertEqual(json.loads(credentials.read_text())["credentials"].get("GITHUB_TOKEN"),
+                         "dummy-other-private-token")
         captured = capture.read_bytes()
         pins_path = project / "_ask/skills/dependency-pins.json"
         pins = json.loads(pins_path.read_text())
