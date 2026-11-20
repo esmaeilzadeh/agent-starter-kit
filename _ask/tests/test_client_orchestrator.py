@@ -101,12 +101,12 @@ class ClientTests(unittest.TestCase):
             if record.get('risk') != 'HIGH' or record['selections']['07-review']['model'] != 'gpt-6-astra':
                 failures.append('saved table did not preserve the project HIGH-risk defaults')
 
-        self.save_plan(policy='exact', overrides={'07-review': 'gpt-6-astra'},
+        self.save_plan(policy='exact', overrides={'07-review': 'gpt-6-luna'},
                        submission='change')
         confirmed = self.save_plan(policy='exact', overrides={}, submission='confirm')
         shown = self.run_ask('model', 'decision', 'show', '--work-id', self.work_id)
         if (confirmed.returncode or json.loads(shown.stdout)['selections']['07-review']['model']
-                != 'gpt-6-astra'):
+                != 'gpt-6-luna'):
             failures.append('confirmation discarded a saved exact stage override')
         self.save_plan(policy='latest-accessible', overrides={}, submission='change')
 
