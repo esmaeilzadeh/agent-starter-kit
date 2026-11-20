@@ -678,6 +678,7 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
     if live_completion is not None and live_completion != retained_completion:
         if not _completion_projection_matches(
             root, work_id, live_completion, expected_verification=expected_verification,
+            reviewed_diagnostic=adoption_inventory_valid,
         ):
             return False
     model_state_prefix = prefix + "model-state/"
@@ -759,7 +760,8 @@ def _traceability_matches_checkpoint(root: Path, work_id: str,
 
 
 def _completion_projection_matches(root: Path, work_id: str, raw: bytes, *,
-                                   expected_verification: dict | None = None) -> bool:
+                                   expected_verification: dict | None = None,
+                                   reviewed_diagnostic: bool = False) -> bool:
     """Validate changed projections without treating diagnostics as pass evidence."""
     try:
         report = json.loads(raw)
@@ -784,6 +786,8 @@ def _completion_projection_matches(root: Path, work_id: str, raw: bytes, *,
             )
         if report.get("status") != "fail":
             return False
+        if reviewed_diagnostic:
+            return True
         import sys
         ask_path = str(Path(root) / ".agents" / "ask")
         if ask_path not in sys.path:

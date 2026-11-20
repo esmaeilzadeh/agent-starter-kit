@@ -2040,6 +2040,63 @@ class test_b(unittest.TestCase):
                 "wrong scope, candidate, or work identity must fail closed",
             )
 
+    def test_recovery_adopts_reviewed_historical_failed_completion_projection(self):
+        from unittest.mock import patch
+        from inner_loop.recovery import RecoveryAdoptionContext, _traceability_matches_checkpoint
+
+        candidate = self.anchor_commit
+        path = "work/w/traceability/completion.json"
+        retained = {
+            "schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+            "task_id": None, "candidate_sha": candidate, "input_digests": {},
+            "criterion_evidence": [], "missing_evidence": [],
+            "errors": ["older diagnostic"], "execution_artifacts": [],
+        }
+        self.write(path, json.dumps(retained, sort_keys=True) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": candidate, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        diagnostic = {**retained, "errors": ["required candidate verification failed"]}
+        raw = (json.dumps(diagnostic, sort_keys=True) + "\n").encode()
+        self.write(path, raw)
+        context = RecoveryAdoptionContext(
+            work_id="w", branch="agent/w", proposal_sha256="proposal", review_sha256="review",
+            reviewer="gpt-6.1-sol (medium)", checkpoint_commit=checkpoint[0],
+            state_sha256="state", observed_revision=1, source_head=candidate,
+            projection_inventory=((path, hashlib.sha256(raw).hexdigest()),),
+            source_paths=frozenset(),
+        )
+        fresh = {**diagnostic, "errors": ["candidate acceptance document differs"]}
+        with patch("verification.traceability.service.inspect_completion", return_value=(fresh, [])):
+            self.assertFalse(
+                _traceability_matches_checkpoint(self.root, "w", checkpoint),
+                "an unreviewed historical diagnostic change remains inadmissible",
+            )
+            self.assertTrue(
+                _traceability_matches_checkpoint(
+                    self.root, "w", checkpoint, adoption_context=context,
+                ),
+                "the exact reviewed failed projection remains diagnostic evidence",
+            )
+            passing = json.dumps({**diagnostic, "status": "pass"}, sort_keys=True) + "\n"
+            self.write(path, passing)
+            passing_context = RecoveryAdoptionContext(
+                **{**context.__dict__, "projection_inventory": (
+                    (path, hashlib.sha256(passing.encode()).hexdigest()),
+                )},
+            )
+            self.assertFalse(
+                _traceability_matches_checkpoint(
+                    self.root, "w", checkpoint, adoption_context=passing_context,
+                ),
+                "reviewed diagnostic adoption cannot authorize a passing completion",
+            )
+
     def test_recovery_accepts_completion_bound_to_retained_verifier_receipt(self):
         from inner_loop.recovery import _traceability_matches_checkpoint
 
