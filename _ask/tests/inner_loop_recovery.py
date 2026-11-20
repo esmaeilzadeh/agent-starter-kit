@@ -2131,6 +2131,46 @@ class test_b(unittest.TestCase):
             "a passing projection is accepted only when its exact bytes match retained verifier evidence",
         )
 
+    def test_historical_green_uses_contract_pinned_runner_identity(self):
+        from inner_loop.recovery import _historical_runner_identity, _valid_final_green_scope
+
+        contract_sha = self.anchor_commit
+        runner_path = ".agents/ask/verification/traceability/unittest_runner.py"
+        self.write("src/a.py", "candidate = True\n")
+        self.write(runner_path, "# later candidate runner\n")
+        self.commit("candidate changes verifier after contract")
+        candidate_sha = self.git("rev-parse", "HEAD")
+        plan = {
+            "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
+                         "adapter": "unittest"}],
+            "tests": [{"id": "T-A", "task_id": "a", "case_id": "tests.test_a",
+                       "runner_id": "fixture", "source_paths": ["src/a.py"]}],
+        }
+        run_id = "green-contract-runner"
+        output = b"pinned verifier output\n"
+        output_path = f"work/w/traceability/runs/{run_id}/exec.log"
+        self.write(output_path, output)
+        source_digest = hashlib.sha256((self.root / "src/a.py").read_bytes()).hexdigest()
+        report = {
+            "run_id": run_id,
+            "runner_identity": _historical_runner_identity(self.root, contract_sha),
+            "executions": [{"id": "execution", "phase": "final_green",
+                            "collection_status": "ok", "exit_code": 0,
+                            "runner_id": "fixture", "source_sha": candidate_sha,
+                            "argv": ["python", "-m", "unittest", "fixture"],
+                            "adapter": "unittest", "output_artifact": output_path,
+                            "output_digest": hashlib.sha256(output).hexdigest()}],
+            "cases": [{"test_id": "T-A", "case_id": "tests.test_a",
+                       "runner_id": "fixture", "execution_id": "execution",
+                       "phase": "final_green", "outcome": "passed",
+                       "source_sha": candidate_sha, "source_digests": {"src/a.py": source_digest},
+                       "output_artifact": output_path,
+                       "output_digest": hashlib.sha256(output).hexdigest()}],
+        }
+        self.assertTrue(_valid_final_green_scope(
+            self.root, "w", report, plan, "a", {"T-A"}, candidate_sha, contract_sha,
+        ))
+
     def test_recovery_proposal_binds_state_checkpoint_and_source_without_mutation(self):
         self.install_valid_fixture_contract()
         initialized = self.run_cli("cas-init", "w")
