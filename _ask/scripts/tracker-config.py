@@ -332,9 +332,9 @@ def migrate(args: argparse.Namespace) -> int:
                       if not re.match(r"^\s*(?:export\s+)?(?:GITHUB_TOKEN|JIRA_PERSONAL_TOKEN|TRACKER_TOKEN)=", line))
     atomic_write(legacy_path, cleaned.encode("utf-8"), stat.S_IMODE(info.st_mode))
     if history_risk or staged:
-        print("warning: the legacy tracker token may remain in Git history; rotation is recommended. No index or history was changed.")
+        print("warning: the legacy tracker token may remain in Git history; rotation is recommended. Rotate the token as a precaution. No index or history was changed.")
     else:
-        print("warning: rotation of the legacy tracker token is recommended as a precaution.")
+        print("warning: rotation of the legacy tracker token is recommended; rotate it as a precaution.")
     print("credentials migrated to private storage; secret assignments removed from the working file")
     return 0
 
