@@ -127,6 +127,9 @@ tasks:
   - id: CSH-10
     depends_on: [CSH-09]
     owned_paths:
+      - ask
+      - _ask/scripts/tracker-config.py
+      - _ask/scripts/launcher-trust.py
       - _ask/tests/test_client_journeys.py
       - _ask/tests/client_security_fixtures.py
       - README.md
