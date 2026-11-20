@@ -23,8 +23,13 @@ class ClientTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix='ask-workbench-')
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        self.ui = self.root / 'ui.sh'
+        self.kit_root = self.root / 'kit'
+        self.ui = self.kit_root / '_ask/scripts/ui.sh'
+        self.ui.parent.mkdir(parents=True)
         shutil.copy2(ROOT / '_ask/scripts/ui.sh', self.ui)
+        app = self.kit_root / '_ask/ui/streamlit_app.py'
+        app.parent.mkdir(parents=True)
+        app.write_text('import streamlit as st\nst.write("ok")\n', encoding='utf-8')
         self.capture = self.root / 'argv.json'
         self.fake_python = self.root / 'python'
         self.fake_python.write_text(
@@ -62,7 +67,7 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(default.returncode, 0, default.stderr)
         argv = json.loads(self.capture.read_text(encoding='utf-8'))
         self.assertEqual(argv, [
-            '-m', 'streamlit', 'run', str(ROOT / '_ask/ui/streamlit_app.py'),
+            '-m', 'streamlit', 'run', str(self.kit_root / '_ask/ui/streamlit_app.py'),
             '--server.address=127.0.0.1', '--server.port=8765',
             '--browser.gatherUsageStats=false',
         ])
@@ -93,8 +98,16 @@ class ClientTests(unittest.TestCase):
     @staticmethod
     def listener_inodes(pid):
         inodes = set()
-        for fd in Path(f'/proc/{pid}/fd').iterdir():
-            match = re.fullmatch(r'socket:\[(\d+)\]', os.readlink(fd))
+        try:
+            descriptors = list(Path(f'/proc/{pid}/fd').iterdir())
+        except OSError:
+            return inodes
+        for fd in descriptors:
+            try:
+                target = os.readlink(fd)
+            except FileNotFoundError:
+                continue
+            match = re.fullmatch(r'socket:\[(\d+)\]', target)
             if match:
                 inodes.add(match.group(1))
         return inodes
