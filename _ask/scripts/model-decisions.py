@@ -486,10 +486,17 @@ def decide(work_id: str, request: dict) -> dict:
             unavailable.append({'model': model, 'effort': effort,
                                 'reason': 'unavailable model/effort or explicit restriction'})
             continue
+        if any(not isinstance(request.get(k), str) or not request[k].strip()
+               for k in ('decision', 'scope', 'uncertainty')):
+            raise ValueError('consultation requires readable decision, scope and uncertainty')
+        if not isinstance(request.get('evidence'), (str, list, dict)) or not request['evidence']:
+            raise ValueError('consultation requires concrete evidence or inspectable references')
         return outcome('consult', 'material uncertainty requires next verified native rung',
                        runtime=runtime, model=model, effort=effort, unavailable=unavailable,
                        request={'action': 'consult', 'runtime': runtime, 'model': model,
-                                'effort': effort, **identity, 'scope': request.get('scope'),
+                                'effort': effort, **identity, 'scope': request['scope'],
+                                'decision': request['decision'], 'evidence': request['evidence'],
+                                'confidence': confidence,
                                 'uncertainty': request.get('uncertainty'), 'assessments': assessments})
     return outcome('ask-human', 'available ladder exhausted with material uncertainty', unavailable=unavailable)
 

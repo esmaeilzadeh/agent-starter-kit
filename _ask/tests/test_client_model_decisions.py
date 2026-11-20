@@ -254,6 +254,9 @@ class ConfidenceDecisions(unittest.TestCase):
         return {'decision_id': 'repair-cas', 'evidence_digest': 'a' * 64,
                 'session_id': 'current-session', 'runtime': 'codex',
                 'authority_kind': 'within-scope', 'confidence': 90,
+                'decision': 'Choose the scoped CAS correction', 'scope': 'approved repair',
+                'uncertainty': 'Verify transaction race reasoning',
+                'evidence': [{'path': 'checkpoint.py', 'assessment': 'Exact CAS reproduction'}],
                 'capability_evidence': {'session_id': 'current-session', 'runtime': 'codex',
                     'source': 'native-tool-metadata', 'authenticated': True, 'access_verified': True,
                     'models': [{'model': 'gpt-6.1-sol', 'efforts': ['high']},
@@ -318,6 +321,8 @@ class ConfidenceDecisions(unittest.TestCase):
             result = self.module.consult('w', request)
         self.assertEqual(adapter.call_args.args, ('codex', 'consult'))
         self.assertEqual(adapter.call_args.kwargs['effort'], 'high')
+        self.assertEqual(adapter.call_args.kwargs['decision'], request['decision'])
+        self.assertEqual(adapter.call_args.kwargs['evidence'], request['evidence'])
         self.assertEqual(result['next']['action'], 'ask-human')
         response['confidence'] = 95
         with patch.object(self.module, 'runtime_request', return_value=response):

@@ -32,3 +32,9 @@ reuse; the dispatcher tests cover advancing/exhausting them. No simulated
 assessment is represented as a live verified consultation.
 
 Next: exact independent CMP-04 review, then one final live recovery proposal.
+
+Independent review of 7d7ed7f requested one correction: dispatch discarded the
+readable decision/evidence. The request now validates decision, scope,
+uncertainty and concrete evidence/references, and forwards all of them with
+confidence and prior assessments. Adapter assertions verify evidence arrival.
+All seven focused decision/CLI cases pass after correction.
