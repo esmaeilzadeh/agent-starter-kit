@@ -282,6 +282,14 @@ def save(work_id: str, decision: dict) -> dict:
     risk = effective_risk(work, consumer, os.environ, decision.get('risk'))
     env = dict(os.environ)
     env['ASK_RISK'] = risk
+    previous = work.get('model_plan') or {}
+    previous_runtime = previous.get('runtime')
+    previous_overrides = previous.get('explicit_overrides') or []
+    if previous_runtime in _MODELS.RUNTIMES and isinstance(previous_overrides, list):
+        prior_overlay = work.get(previous_runtime)
+        if isinstance(prior_overlay, dict):
+            for stage in previous_overrides:
+                prior_overlay.pop(stage, None)
     runtime_overlay = work.get(runtime)
     if not isinstance(runtime_overlay, dict):
         runtime_overlay = {}
@@ -304,6 +312,7 @@ def save(work_id: str, decision: dict) -> dict:
         'runtime': runtime,
         'risk': risk,
         'implementation_policy': policy,
+        'explicit_overrides': sorted(overrides),
         'selections': table,
         'review_relationship': {
             'review_stage': '07-review',
