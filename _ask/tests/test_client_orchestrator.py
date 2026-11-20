@@ -9,6 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from client_security_fixtures import ClientFixture, ROOT
+from traceability_support import seed as seed_traceability, accept as accept_traceability
 
 
 class ClientTests(unittest.TestCase):
@@ -69,9 +70,10 @@ class ClientTests(unittest.TestCase):
             return []
         return [json.loads(line) for line in self.log.read_text().splitlines()]
 
-    def save_plan(self, *, policy='latest-accessible', overrides=None, risk=None):
+    def save_plan(self, *, policy='latest-accessible', overrides=None, risk=None,
+                  runtime='codex', submission='confirm'):
         decision = {
-            'runtime': 'codex', 'submission': 'confirm',
+            'runtime': runtime, 'submission': submission,
             'implementation_policy': policy, 'overrides': overrides or {},
         }
         if risk is not None:
@@ -99,6 +101,15 @@ class ClientTests(unittest.TestCase):
             if record.get('risk') != 'HIGH' or record['selections']['07-review']['model'] != 'gpt-6-astra':
                 failures.append('saved table did not preserve the project HIGH-risk defaults')
 
+        self.save_plan(policy='exact', overrides={'07-review': 'gpt-6-astra'},
+                       submission='change')
+        confirmed = self.save_plan(policy='exact', overrides={}, submission='confirm')
+        shown = self.run_ask('model', 'decision', 'show', '--work-id', self.work_id)
+        if (confirmed.returncode or json.loads(shown.stdout)['selections']['07-review']['model']
+                != 'gpt-6-astra'):
+            failures.append('confirmation discarded a saved exact stage override')
+        self.save_plan(policy='latest-accessible', overrides={}, submission='change')
+
         self.write_adapter({
             'catalog': {
                 'authenticated': True,
@@ -118,14 +129,14 @@ class ClientTests(unittest.TestCase):
             failures.append('latest accessible model ignored runtime ordering: '
                             + (selected.stderr or selected.stdout))
 
-        exact = self.save_plan(overrides={'06-implement': 'gpt-6.9-luna'})
+        exact = self.save_plan(submission='change', overrides={'06-implement': 'gpt-6.9-luna'})
         selected_exact = self.run_ask('model', 'decision', 'resolve-implementor',
                                       '--work-id', self.work_id)
         if exact.returncode or selected_exact.returncode or selected_exact.stdout.strip() != 'gpt-6.9-luna':
             failures.append('explicit implementor override did not win: '
                             + (selected_exact.stderr or selected_exact.stdout))
 
-        self.save_plan()
+        self.save_plan(submission='change')
         self.write_adapter({
             'catalog': {'authenticated': True, 'family': 'gpt',
                         'access_verified': True,
@@ -139,7 +150,7 @@ class ClientTests(unittest.TestCase):
                 for word in ('order', 'ordering', 'evidence')):
             failures.append('unknown version ordering guessed a model')
 
-        self.save_plan()
+        self.save_plan(submission='change')
         self.write_adapter({
             'catalog': {'authenticated': True, 'family': 'gpt',
                         'models': ['gpt-6-luna'],
@@ -156,7 +167,8 @@ class ClientTests(unittest.TestCase):
 
     def test_automatic_switch_verified(self):
         failures = []
-        saved = self.save_plan(policy='exact', overrides={'06-implement': 'gpt-6-luna'})
+        saved = self.save_plan(policy='exact', overrides={'06-implement': 'gpt-6-luna'},
+                               submission='change')
         if saved.returncode:
             failures.append('exact model decision could not be saved')
         self.write_adapter({'identity': {'model': 'gpt-6-luna'}, 'switch_supported': True})
@@ -181,7 +193,42 @@ class ClientTests(unittest.TestCase):
             failures.append('mismatched post-switch identity was not blocked and re-observed')
         if any(event.get('action') == 'spawn' for event in self.events()):
             failures.append('child spawn was treated as a parent identity switch')
+
+        self.write_adapter({'identity': {}, 'switch_supported': False})
+        self.seed_writer_workstream()
+        saved = self.save_plan(policy='exact', overrides={'06-implement': 'gpt-6-luna'},
+                               submission='change')
+        self.assertEqual(saved.returncode, 0, saved.stderr or saved.stdout)
+        self.fx.run(['git', '-C', str(self.root), 'add',
+                     'work/' + self.work_id + '/models.yaml'])
+        self.fx.run(['git', '-C', str(self.root), 'commit', '-qm', 'save confirmed model plan'])
+        initialized = self.run_ask('inner-loop', 'cas-init', self.work_id)
+        self.assertEqual(initialized.returncode, 0, initialized.stderr or initialized.stdout)
+        admitted = self.run_ask('inner-loop', 'spawn-writer', self.work_id, 'task')
+        state = json.loads((self.work / 'inner-loop/state.json').read_text(encoding='utf-8'))
+        if (admitted.returncode == 0 or state['tasks']['task']['status'] != 'pending'
+                or 'gpt-6-luna' not in (admitted.stdout + admitted.stderr)):
+            failures.append('public spawn-writer bypassed the confirmed parent handoff gate')
         self.assertFalse(failures, '\n'.join(failures))
+
+    def seed_writer_workstream(self):
+        inner = self.work / 'inner-loop'
+        inner.mkdir(exist_ok=True)
+        (inner / 'tasks.yaml').write_text(
+            'schema: ask-inner-loop-tasks/v1\nwork_id: ' + self.work_id +
+            '\ntasks:\n  - id: task\n    depends_on: []\n    owned_paths: [src/**]\n',
+            encoding='utf-8')
+        (self.root / '.agents/verification.yaml').write_text(
+            'schema: ask-checkplan/v1\nno_production_datastore: true\n', encoding='utf-8')
+        seed_traceability(self.root, self.work_id)
+        prepared = self.fx.run(['git', '-C', str(self.root), 'add', '.agents/verification.yaml',
+                                'work/' + self.work_id, 'specs/current/' + self.work_id + '.json',
+                                'specs/current/' + self.work_id + '.md'])
+        self.assertEqual(prepared.returncode, 0, prepared.stderr)
+        committed = self.fx.run(['git', '-C', str(self.root), 'commit', '-qm',
+                                 'seed writer admission fixture'])
+        self.assertEqual(committed.returncode, 0, committed.stderr)
+        accept_traceability(self.root, self.work_id)
 
     def test_manual_switch_resume(self):
         failures = []
@@ -212,6 +259,15 @@ class ClientTests(unittest.TestCase):
                               '--provenance', 'unverified claim')
         if failed.returncode == 0:
             failures.append('mismatched manual observation was accepted')
+
+        switched_runtime = self.save_plan(runtime='cursor', policy='exact',
+                                          overrides={'06-implement': 'gpt-6-luna'},
+                                          submission='change')
+        self.write_adapter({'identity': {}, 'switch_supported': False})
+        stale = self.run_ask('orchestrator-handoff', 'preflight', '--work-id', self.work_id)
+        if (switched_runtime.returncode or stale.returncode == 0
+                or 'manual_handoff' not in stale.stdout):
+            failures.append('manual observation from an earlier runtime authorized this session')
         self.assertFalse(failures, '\n'.join(failures))
 
     def test_plan_only_endpoint(self):
