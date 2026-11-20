@@ -10,6 +10,10 @@ roles:
   typing: sonnet
   adversarial: opus
 
+confidence_escalation:
+  - claude-opus-5-5
+  - claude-fable-5-2
+
 pools:
   cheap: sonnet
   diverse: opus
@@ -36,4 +40,6 @@ picker:
   - sonnet
   - opus
   - fable
+  - claude-opus-5-5
+  - claude-fable-5-2
   - inherit

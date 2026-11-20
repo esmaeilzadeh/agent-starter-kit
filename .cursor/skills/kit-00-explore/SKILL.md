@@ -109,7 +109,7 @@ Gate:
 
 ```text
 DESTINATION_CLEAR → eligible for Intent / 01 Grill
-STILL_FOGGY → continue Explore (or escalate to human)
+STILL_FOGGY → continue Explore; consult configured model-confidence rungs before human escalation (see `_ask/policies/delegation.md`)
 ```
 
 ---

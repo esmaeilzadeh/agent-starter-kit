@@ -40,7 +40,7 @@ Gate:
 
 ```text
 PASS → eligible for acceptance
-ESCALATE → human decision required
+ESCALATE → consult configured model-confidence rungs; human decision remains required for scope/intent changes and other human-authority decisions
 ```
 
 ---

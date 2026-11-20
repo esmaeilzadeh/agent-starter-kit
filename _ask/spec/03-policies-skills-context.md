@@ -50,7 +50,7 @@ Gate:
 
 ```text
 DESTINATION_CLEAR → eligible for Intent / 01 Grill
-STILL_FOGGY → continue Explore (or escalate to human)
+STILL_FOGGY → continue Explore; consult configured model-confidence rungs before human escalation
 ```
 
 ---
@@ -161,7 +161,7 @@ Gate:
 
 ```text
 PASS → eligible for acceptance
-ESCALATE → human decision required
+ESCALATE → consult configured model-confidence rungs; human decision remains required for scope/intent changes and other human-authority decisions
 ```
 
 ---

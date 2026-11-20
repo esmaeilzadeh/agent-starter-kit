@@ -46,7 +46,7 @@ modify unrelated work
 rewrite acceptance criteria to make tests pass
 bypass policy
 perform forbidden high-risk actions
-continue through a mandatory escalation gate
+continue through a mandatory human-approval gate; consult `_ask/policies/delegation.md` before escalating uncertainty to the human
 ```
 
 At meaningful milestones, create commits so that important engineering states are recoverable and attributable. **Do not wait until the plan is finished** — commit after each meaningful step. **Do not wait for the human to ask** to commit on `agent/<work-id>`; the dedicated branch is the safety boundary (`_ask/policies/worktree.md`).
