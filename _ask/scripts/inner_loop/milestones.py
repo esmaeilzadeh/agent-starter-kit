@@ -99,7 +99,8 @@ def records(root: Path, work_id: str, checkpoint: tuple) -> dict[str, bytes]:
         for name in sorted(names):
             raw = artifacts.get(name)
             if raw is None:
-                if name == base + f'inner-loop/results/{task_id}.json' and task.get('status') == 'pending':
+                if (name == base + f'inner-loop/results/{task_id}.json'
+                        and task.get('status') != 'integrated' and not task.get('result_path')):
                     continue
                 raise NotIntegrable('missing retained milestone evidence: ' + name)
             for content, fingerprint in _versions(root, checkpoint_sha, name, raw):
@@ -110,7 +111,9 @@ def records(root: Path, work_id: str, checkpoint: tuple) -> dict[str, bytes]:
                         tdd = doc.get('tdd') or {}
                         submissions.append({**_pick(doc, 'candidate_sha base_sha'),
                             'sha256': fingerprint,
-                            'tdd': {phase: _pick(tdd.get(phase) or {}, 'exit_code source_sha run_id continuity_receipt')
+                            'tdd': {phase: {**_pick(tdd.get(phase) or {}, 'exit_code source_sha run_id'),
+                                'continuity_reference_sha256': canonical_digest(tdd[phase]['continuity_receipt'])
+                                if isinstance((tdd.get(phase) or {}).get('continuity_receipt'), dict) else None}
                                     for phase in ('red', 'green')},
                             'notes_sha256': hashlib.sha256(str(doc.get('notes', '')).encode()).hexdigest()})
         verification = evidence.get('verification') or {}
@@ -183,11 +186,35 @@ def publish_milestones(root: Path, work_id: str) -> str:
         git_dir = Path(git(root, 'rev-parse', '--absolute-git-dir'))
         index = Path(git(root, 'rev-parse', '--path-format=absolute', '--git-path', 'index'))
         lock = index.with_name(index.name + '.lock')
+        if lock.is_file() and not lock.is_symlink():
+            try:
+                owner = json.loads(lock.read_bytes())
+                stale = (owner.get('schema') == 'ask-milestone-index-lock/v1'
+                         and owner.get('work_id') == work_id
+                         and owner.get('checkpoint_sha') == checkpoint[0]
+                         and isinstance(owner.get('pid'), int) and owner['pid'] > 0)
+                if stale:
+                    try:
+                        os.kill(owner['pid'], 0)
+                        stale = False
+                    except ProcessLookupError:
+                        pass
+                    except PermissionError:
+                        stale = False
+                if stale:
+                    lock.unlink()
+            except (OSError, ValueError, AttributeError):
+                pass
         try:
             descriptor = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         except FileExistsError as exc:
             raise NotIntegrable('Git index is locked by another writer') from exc
-        os.close(descriptor)
+        with os.fdopen(descriptor, 'w') as stream:
+            json.dump({'schema': 'ask-milestone-index-lock/v1', 'pid': os.getpid(),
+                       'work_id': work_id, 'checkpoint_sha': checkpoint[0]}, stream)
+            stream.flush()
+            os.fsync(stream.fileno())
+        owns_lock = True
         try:
             with tempfile.TemporaryDirectory(prefix='milestones-', dir=git_dir) as temp:
                 alternate = Path(temp) / 'index'
@@ -202,6 +229,8 @@ def publish_milestones(root: Path, work_id: str) -> str:
                     _atomic_write(_destination(root, name), raw)
                     blob = _git(root, 'hash-object', '-w', '--stdin', input=raw).decode().strip()
                     isolated('update-index', '--add', '--cacheinfo', f'100644,{blob},{name}')
+                if os.environ.get('ASK_MILESTONE_CRASH_AT') == 'before_commit':
+                    os._exit(78)
                 if (git(root, 'rev-parse', 'HEAD') != head
                         or git(root, 'symbolic-ref', '--short', 'HEAD') != f'agent/{work_id}'
                         or read_checkpoint(root, work_id)[0] != checkpoint[0]
@@ -215,6 +244,8 @@ def publish_milestones(root: Path, work_id: str) -> str:
                                      input=f'Record {work_id} task milestones\n'.encode()).decode().strip()
                     _git(root, 'update-ref', f'refs/heads/agent/{work_id}', published, head)
                 os.replace(alternate, index)
+                lock.unlink()
+                owns_lock = False
                 if os.environ.get('ASK_MILESTONE_CRASH_AT') == 'after_commit':
                     os._exit(77)
                 receipt = {'publication_sha': published, 'source_sha': base,
@@ -228,7 +259,8 @@ def publish_milestones(root: Path, work_id: str) -> str:
                                    expected_branch=f'agent/{work_id}')
                 return published
         finally:
-            lock.unlink(missing_ok=True)
+            if owns_lock:
+                lock.unlink(missing_ok=True)
 
 
 def migrate_runtime(root: Path, work_id: str, inventory: dict) -> list[str]:
@@ -239,17 +271,25 @@ def migrate_runtime(root: Path, work_id: str, inventory: dict) -> list[str]:
         checkpoint = read_checkpoint(root, work_id)
         if checkpoint is None or inventory.get('checkpoint_sha') != checkpoint[0]:
             raise NotIntegrable('migration inventory checkpoint is stale')
-        if git(root, 'diff', '--cached', '--name-only'):
-            raise NotIntegrable('resolve staged changes before runtime migration')
+        staged = set(git(root, 'diff', '--cached', '--name-only').splitlines())
+        inventory_paths = inventory.get('paths', {})
+        if not isinstance(inventory_paths, dict):
+            raise NotIntegrable('migration requires a path/digest inventory')
+        if staged - inventory_paths.keys():
+            raise NotIntegrable('resolve unrelated staged changes before runtime migration')
         names = []
-        for name, digest in inventory.get('paths', {}).items():
+        for name, digest in inventory_paths.items():
             path = _destination(root, name)
             raw = checkpoint[2].get('artifacts/' + name)
             if (not runtime_path(name, work_id) or path.is_symlink() or not path.is_file()
                     or raw is None or path.read_bytes() != raw
                     or hashlib.sha256(raw).hexdigest() != digest):
                 raise NotIntegrable('migration inventory differs from retained bytes: ' + name)
-            if git(root, 'ls-files', '--', name):
+            if name in staged:
+                if (_git(root, 'show', 'HEAD:' + name) != raw
+                        or git(root, 'ls-files', '--', name)):
+                    raise NotIntegrable('staged migration is not the exact retained deletion')
+            elif git(root, 'ls-files', '--', name):
                 names.append(name)
         if names:
             git(root, 'rm', '--cached', '--', *names)

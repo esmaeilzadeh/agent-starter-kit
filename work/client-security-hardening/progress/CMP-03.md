@@ -16,3 +16,13 @@ publication; this narrow cross-module adjustment was reproduced by that case.
 Next: independent review of this exact source candidate, then CMP-04. Live
 adoption/backfill remains deferred until both components are reviewed. No accepted
 artifact or authority pin was changed. No live proposal was regenerated.
+
+Independent Sol/medium review of `93476be9` rejected four reproduced cases:
+actual postcommit crash left index.lock; terminal resume skipped publication;
+nested continuity fields could expose private content; migration rejected its
+own staged-deletion retry. Corrections release the publisher lock before the
+postcommit fault point and recover only a recognized dead publisher lock;
+quiescent resumes publish due events; continuity references are hashed rather
+than copied; exact inventory-bound staged deletions are retryable. Ten focused
+milestone tests now include actual subprocess exit faults before/after commit;
+the terminal integration retry test passes. Review fixes remain in CMP-03 scope.

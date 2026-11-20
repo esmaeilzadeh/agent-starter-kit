@@ -226,13 +226,13 @@ def run_once(root: Path, work_id: str) -> str:
         with workflow_admission(root, work_id):
             return f"waiting={tid}"
     ready = ready_ids(graph, doc)
+    from inner_loop.milestones import publish_milestones
+    if _is_git(root) and doc.get("tasks"):
+        publish_milestones(root, work_id)
     if not ready:
         with workflow_admission(root, work_id):
             ensure_state(root, work_id)
             return "quiescent"
-    from inner_loop.milestones import publish_milestones
-    if _is_git(root) and doc.get("tasks"):
-        publish_milestones(root, work_id)
     tid = ready[0]
     _implementation_handoff(root, work_id)
     with workflow_admission(root, work_id, delivery_task_id=tid):

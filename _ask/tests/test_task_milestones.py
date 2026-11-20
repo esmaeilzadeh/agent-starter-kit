@@ -95,6 +95,29 @@ class Milestones(unittest.TestCase):
         self.assertEqual(publish_milestones(self.root, 'w'), published)
         self.assertEqual(load_state(self.root, 'w')['revision'], revision)
 
+    def test_actual_process_crashes_retry_before_and_after_commit(self):
+        script = """
+from pathlib import Path
+from inner_loop import recovery, graph
+from inner_loop.milestones import publish_milestones
+recovery.require_safe = lambda *a, **kw: None
+graph.load_graph = lambda *a: {'tasks': []}
+publish_milestones(Path(ROOT), 'w')
+""".replace('ROOT', repr(str(self.root)))
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1] / 'scripts'),
+                   ASK_MILESTONE_CRASH_AT='before_commit')
+        crashed = subprocess.run([sys.executable, '-c', script], env=env, capture_output=True)
+        self.assertEqual(crashed.returncode, 78, crashed.stderr)
+        env['ASK_MILESTONE_CRASH_AT'] = 'after_commit'
+        crashed = subprocess.run([sys.executable, '-c', script], env=env, capture_output=True)
+        self.assertEqual(crashed.returncode, 77, crashed.stderr)
+        self.assertFalse((self.root / '.git/index.lock').exists())
+        published = self.git('rev-parse', 'HEAD')
+        self.assertEqual(publish_milestones(self.root, 'w'), published)
+        revision = load_state(self.root, 'w')['revision']
+        self.assertEqual(publish_milestones(self.root, 'w'), published)
+        self.assertEqual(load_state(self.root, 'w')['revision'], revision)
+
     def test_source_advance_and_active_writer_refuse(self):
         (self.root / 'README').write_text('changed\n')
         self.git('add', 'README')
@@ -125,7 +148,7 @@ class Milestones(unittest.TestCase):
         path = self.root / 'work/w/inner-loop/results/T1.json'
         path.parent.mkdir(parents=True)
         path.write_text(json.dumps({'schema': 'ask-task-result/v2', 'candidate_sha': self.state['coordinator_sha'],
-            'notes': 'SECRET-CANARY', 'tdd': {'red': {'command': 'SECRET-CANARY', 'output': 'SECRET-CANARY', 'exit_code': 1}}}))
+            'notes': 'SECRET-CANARY', 'tdd': {'red': {'command': 'SECRET-CANARY', 'output': 'SECRET-CANARY', 'exit_code': 1, 'continuity_receipt': {'output': 'SECRET-CANARY'}}}}))
         _publish_state(self.root, 'w', self.state)
         generated = records(self.root, 'w', read_checkpoint(self.root, 'w'))
         self.assertNotIn(b'SECRET-CANARY', b''.join(generated.values()))
@@ -166,6 +189,7 @@ class Milestones(unittest.TestCase):
                      'paths': {name: hashlib.sha256(raw).hexdigest()}}
         self.assertEqual(migrate_runtime(self.root, 'w', inventory), [name])
         self.assertEqual(path.read_bytes(), raw)
+        self.assertEqual(migrate_runtime(self.root, 'w', inventory), [])
         self.assertEqual(self.git('show', 'HEAD:' + name).encode() + b'\n', raw)
 
 

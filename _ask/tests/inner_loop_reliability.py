@@ -225,6 +225,19 @@ except NotIntegrable as exc:
         self.assertEqual(self.git("rev-parse", "HEAD^"), self.candidate)
         self.assertEqual(len(self.git("worktree", "list", "--porcelain").split("worktree ")) - 1, 1)
 
+    def test_terminal_resume_retries_failed_publication(self):
+        from unittest.mock import patch
+        self.review()
+        with patch('inner_loop.milestones.publish_milestones', side_effect=NotIntegrable('publication unavailable')):
+            with self.assertRaisesRegex(NotIntegrable, 'publication unavailable'):
+                integrate_ready(self.root, 'w', 'a')
+        state = load_state(self.root, 'w')
+        self.assertEqual(state['tasks']['a']['status'], 'integrated')
+        cas_apply(self.root, 'w', state['revision'], lambda doc: doc['tasks']['b'].update(status='cancelled'))
+        self.assertEqual(run_until(self.root, 'w'), 'quiescent')
+        self.assertEqual(json.loads((self.root / 'work/w/progress/a.json').read_bytes())['status'], 'integrated')
+        self.assertEqual(load_state(self.root, 'w')['coordinator_sha'], self.git('rev-parse', 'HEAD'))
+
     def test_changed_result_or_review_cannot_reuse_approval(self):
         self.review()
         self.result["notes"] = "changed after review"
