@@ -1997,6 +1997,9 @@ class test_b(unittest.TestCase):
                          if key not in {"reviewer_model", "reviewer_effort"}}
         self.assertTrue(_valid_recovery_review(legacy_review, "another-workstream"))
         self.assertFalse(_valid_recovery_review(legacy_review, "client-security-hardening"))
+        csh_missing_metadata = dict(legacy_review, reviewer="gpt-6.1-sol (medium)")
+        self.assertFalse(_valid_recovery_review(csh_missing_metadata,
+                                                "client-security-hardening"))
         csh_review = dict(review, reviewer="gpt-6.1-sol (medium)",
                           reviewer_model="gpt-6.1-sol")
         self.assertTrue(_valid_recovery_review(csh_review, "client-security-hardening"))

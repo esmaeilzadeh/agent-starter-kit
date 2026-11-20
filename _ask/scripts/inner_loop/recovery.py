@@ -94,8 +94,8 @@ def _valid_recovery_review(review: dict, work_id: str) -> bool:
         return True
     return (
         review["reviewer"] == "gpt-6.1-sol (medium)"
-        and review["reviewer_model"] == "gpt-6.1-sol"
-        and review["reviewer_effort"] == "medium"
+        and review.get("reviewer_model") == "gpt-6.1-sol"
+        and review.get("reviewer_effort") == "medium"
     )
 
 
