@@ -6,7 +6,9 @@ by this record.
 ## Bound source and authority
 
 - Work branch: `agent/client-security-hardening`.
-- Current HEAD: `3d33dc9` (`docs: checkpoint client security task evidence`).
+- Product/evidence state assessed: `3d33dc9` (`docs: checkpoint client security task evidence`).
+- Subsequent reconciliation records: `19645e8` (proposal) and `e889779`
+  (privacy-safe evidence bundle). The source commits remain in their original order.
 - Historical coordinator source: `9c62390c2f8b135f0b0256c2ad1233145d64c6d7`.
 - Retained checkpoint ref: `refs/ask/inner-loop/client-security-hardening` at
   `c8ebe82a55f40fca95036c0555e5280bbe605add`.
@@ -26,8 +28,19 @@ by this record.
 - The current execution ledger has 80 rows and SHA-256
   `f526f52796a1e360e8b2c4120171721966a230c83fe1a13459354e484a7da95f`.
   All 80 reports match their ledger digests; all 89 referenced output files
-  exist. The ledger, reports, outputs, source, state, and accepted pin are
-  committed in `3d33dc9`.
+  exist. They were not all present in the `3d33dc9` Git tree. Commit `e889779`
+  preserves 279 structured traceability and inner-loop files as one aggregate
+  artifact at
+  `work/client-security-hardening/inner-loop/evidence/recovery-evidence-bundle.tar.gz`.
+  Its sidecar binds SHA-256
+  `6605baa865406e1137d66e1add0469cc4a649463535bc132bc6be5dbd5dd6091`, 80
+  ledger rows, source tip `19645e8dab1ea615a7df54ab66040a0859ffca53`, state
+  digest, and checkpoint ref. The internal 279-file digest manifest and outer
+  archive digest were verified before commit. Raw output logs were excluded
+  from Git and preserved in a private archive at
+  `/home/mohamad/.local/state/askit/recovery/private-raw-logs-20261120T121230Z/raw-logs.tar.gz`
+  (directory mode `0700`, archive mode `0600`); it contains all 128 traceability
+  `.log` files, including the 89 referenced by execution reports.
 - The retained checkpoint contains 77 execution rows. The three later rows
   preserved in the current commit are:
   - `9df29c7a6725452e8824ccb902094a2b`: CSH-10 Red at
@@ -36,17 +49,31 @@ by this record.
   - `bf2e9bdc52cb4e95b0242d78a4216c59`: workstream final-Green attempt at
     `38fd792c82d1d3b05d8712541067fa97800b36fb`; its aggregate verification
     failed and remains failed evidence.
-- The recovery archive manifest at
+- The earlier private recovery archive manifest at
   `/home/mohamad/.local/state/askit/recovery/evidence-20261120T025943Z/manifest.json`
-  and its archive SHA-256 values verify. Those archives are earlier snapshots,
-  not complete backups of the 80-row ledger: the primary archive has 47 rows
-  and the candidate archive has 64. The committed `3d33dc9` evidence is the
-  complete current preservation source.
+  and their archive SHA-256 values verify. Those archives are earlier snapshots,
+  but they are not complete backups of the 80-row ledger:
+  the primary archive has 47 rows and the candidate archive has 64. The new
+  committed structured bundle and private raw-log archive together preserve
+  the current evidence without putting raw outputs in source history.
 - Frozen runner `98f3c09d958a75c6e78181f196f313a99b4c0379` read-only reconcile
   returned `recovery_required` with these conflicts: runtime traceability
   differs from checkpoint; CSH-10-owned source changed after its coordinator
   SHA while state says pending; and CSH-01–09 TaskResults fail the accepted
   contract carry-forward check.
+- The 77 retained execution rows are an exact prefix of the current 80 rows;
+  the runner explicitly permits append-only ledger rows. The concrete shared
+  carry-forward failure is `traceability/model-state/current.json`: its
+  checkpoint digest is
+  `facb21ed3d5c01165791d3e42ba1bf4cfdccf3c30200c35f6efe5fc40d3ac374` and its
+  live digest is
+  `9b8fac461b898082071d0f114f2bf242bdda07600b0206a78efc785d4058f4b4`. The
+  frozen validator requires that retained file to remain byte-identical and
+  also rejects the subsequently published model-state generation/publication
+  files and new `completion.json`, which are outside its allowed-new paths.
+  The accepted spec, plan, review, and per-task scope checks pass before this
+  traceability predicate. This is a recovery-validator compatibility defect;
+  it does not prove the historical TaskResult identities are wrong.
 
 ## Source chronology
 
@@ -73,15 +100,15 @@ and attribution; do not recast all later source as a CSH-10 attempt.
    `reconcile` is read-only, while `reopen` requires an interrupted task with
    attempt history; CSH-10 is pending with neither. `resume` and
    `resume-repair` can reset source and are unsafe here.
-4. The TaskResult contract mismatch cannot be repaired by editing historical
-   identities. The frozen validator's compatibility check depends on
-   immutable candidate pins, accepted plan review, task-scope evidence, and
-   checkpoint correspondence. The current read-only result does not establish
-   those predicates for CSH-01–09, so do not claim carry-forward until the
-   exact failed predicate is identified and reviewed.
-5. Escalate the unsupported pending-with-zero-attempt recovery transition to
-   Astra/high before any state/ref migration. If no existing safe transition
-   is found, track that as recovery-tooling work separately. Keep the queued
+4. Do not repair contract identity by editing historical results. The exact
+   failed recovery predicate is the checkpoint comparison for valid model-state
+   projections described above. Treat that as recovery-tooling work; retain
+   the old TaskResults and accepted pins unchanged.
+5. The pending-with-zero-attempt state has no supported transition: `reopen`
+   requires an interrupted task with attempt history, while `interrupt`
+   requires a running task. Astra/high assessed this at 98% confidence and
+   recommends preserving state and treating the transition as separate
+   recovery-tooling work before any migration. Keep the queued
    milestone-evidence maintenance stopped until this workstream is closed.
 
 ## Review and next check
