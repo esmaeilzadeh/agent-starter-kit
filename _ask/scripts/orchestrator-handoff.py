@@ -63,7 +63,7 @@ def manual_request(runtime: str, model: str, config: dict) -> dict:
     command = handoff.get('manual_action') or f"use {runtime}'s active model selector"
     return {
         'status': 'manual_handoff',
-        'request': f"{runtime.capitalize()}: {command.format(model=model)}; then resume this implementation.",
+        'request': f"Manual handoff for {runtime.capitalize()}: {command.format(model=model)}; then resume this implementation.",
     }
 
 

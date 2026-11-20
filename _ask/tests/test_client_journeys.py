@@ -295,7 +295,7 @@ class ClientTests(unittest.TestCase):
         review_agent = (checkout / ".codex/agents/kit-07-review.toml").read_text(encoding="utf-8")
         for stage, expected in (
             ("03-spec-challenge", "gpt-6-astra"),
-            ("05-plan", "gpt-6-luna"),
+            ("05-plan", "gpt-6.1-sol"),
             ("06-implement", "gpt-6-luna"),
             ("07-review", "gpt-6-astra"),
             ("continuation", "gpt-6.1-sol"),
