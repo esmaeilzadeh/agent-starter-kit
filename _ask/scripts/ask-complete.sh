@@ -176,7 +176,7 @@ ask_print_completions() {
   if [[ "$cword" -le 1 ]]; then
     ask_complete_commands
     if [[ "${words[0]:-}" == *askit ]]; then
-      ask_complete_emit self-install "put askit on PATH (same as curl | bash)"
+      ask_complete_emit self-install "install askit from a reviewed full-commit checkout"
     fi
     return 0
   fi

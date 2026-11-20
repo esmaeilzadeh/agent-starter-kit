@@ -90,7 +90,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 
 ## Quick commands
 
-`askit` is the PATH installer and daily command. In a repo that already has the kit, `./ask` is the same dispatcher. Both exec `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Tab completion: run `askit` once (installs a `~/.bashrc` / `~/.zshrc` hook and bash-completion files). No `eval`. `sta<Tab>` matches both `start-work` and `status`; type `start<Tab>` for `start-work`.
+`askit` is the PATH installer and daily command. In a repo that already has the kit, `./ask` is the same dispatcher. Both exec `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Install optional tab completion with `askit completion-install`. No `eval`. `sta<Tab>` matches both `start-work` and `status`; type `start<Tab>` for `start-work`.
 
 | Command | Purpose |
 | --- | --- |

@@ -1,24 +1,21 @@
 #!/usr/bin/env bash
 # askit — installer and daily command for the Agent Starter Kit.
-#   curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash
-#   askit self-install   # same, when you already have this file
+# Install from a checkout at a reviewed full commit SHA with self-install.
 # In an ask-based git repo (_ask/ + ./ask): same as ./ask.
 # Otherwise: refuse non-git folders; ask before adding the kit. No silent overlay.
 set -euo pipefail
-
-ASKIT_CURL='curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash'
 
 askit_self_install_usage() {
   cat <<EOF
 askit self-install — put this command on PATH
 
 Usage:
-  $ASKIT_CURL
-  askit self-install [--source <git-url-or-path>] [--ref <branch-or-tag>] [--expected-commit <full-sha>] [--prefix <dir>] [--here]
+  askit self-install --source <git-url-or-path> --ref <full-sha> \\
+    --expected-commit <same-full-sha> [--prefix <dir>] [--here]
 
-  --source   kit git URL or local clone (default: GitHub main repo)
-  --ref      branch or tag to check out (default: main)
-  --expected-commit  full fetched commit; a full-SHA --ref implies this value
+  --source   kit git URL or local clone
+  --ref      full commit SHA to check out
+  --expected-commit  same full commit SHA, checked before install
   --prefix   install prefix; askit goes in <prefix>/bin (default: ~/.local)
   --here     also overlay the kit into the current git repo
 
@@ -278,7 +275,7 @@ askit_self_install() {
   echo "askit: done. In an app git repo, run askit and confirm to add the kit."
 }
 
-# Piped to bash (curl | bash): this file *is* the installer.
+# Installer entry point. Installation requires an explicit expected commit.
 _askit0="${0##*/}"
 if [[ "$_askit0" == "bash" || "$_askit0" == "sh" || "$_askit0" == "-bash" || "$_askit0" == "-sh" ]]; then
   askit_self_install "$@"
@@ -388,7 +385,7 @@ if [[ "$cmd" == "--complete" ]]; then
     fi
   else
     if declare -F ask_complete_emit >/dev/null; then
-      ask_complete_emit self-install "put askit on PATH (same as curl | bash)"
+      ask_complete_emit self-install "install askit from a reviewed full-commit checkout"
     fi
   fi
   exit 0
