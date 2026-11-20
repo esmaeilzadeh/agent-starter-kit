@@ -145,6 +145,27 @@ class RecoveryTests(unittest.TestCase):
     def json_digest(value):
         return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
+    def install_valid_fixture_contract(self):
+        from traceability_support import accept, seed
+
+        self.write("_ask/policies/delegation.md", (REPO / "_ask/policies/delegation.md").read_bytes())
+        (self.root / "work/w/engineering-model.json").unlink()
+        seed(self.root, "w")
+        self.commit("valid recovery test contract")
+        accept(self.root, "w")
+        self.anchor_commit = self.git("rev-parse", "HEAD")
+
+    def recovery_review(self, proposal):
+        return {
+            "schema": "ask-recovery-adoption-review/v1", "decision": "APPROVED",
+            "reviewer": "independent-reviewer", "recorded_by": "coordinator",
+            "proposal_sha256": hashlib.sha256(
+                json.dumps(proposal, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest(),
+            "candidate_sha": proposal["source_head"], "scope": "exact-recovery-adoption",
+            "early_red_continuity_sha256": proposal.get("early_red_continuity_sha256"),
+        }
+
     def git(self, *args):
         return subprocess.check_output(["git", *args], cwd=self.root, text=True, stderr=subprocess.PIPE).strip()
 
@@ -1953,6 +1974,157 @@ class test_b(unittest.TestCase):
             ),
             "a passing projection is accepted only when its exact bytes match retained verifier evidence",
         )
+
+    def test_recovery_proposal_binds_state_checkpoint_and_source_without_mutation(self):
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state_before = state_path.read_bytes()
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        head_before = self.git("rev-parse", "HEAD")
+
+        proposed = self.run_cli("recovery-propose", "w")
+
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        self.assertEqual(proposal["work_id"], "w")
+        self.assertEqual(proposal["branch"], "agent/w")
+        self.assertEqual(proposal["observed_revision"], 0)
+        self.assertEqual(proposal["state_sha256"], hashlib.sha256(state_before).hexdigest())
+        self.assertEqual(proposal["checkpoint_commit"], checkpoint_before)
+        self.assertEqual(proposal["source_head"], head_before)
+        self.assertEqual(proposal["source_tree"], self.git("rev-parse", "HEAD^{tree}"))
+        self.assertIn("commit_attribution", proposal)
+        self.assertEqual(state_path.read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        self.assertEqual(self.git("rev-parse", "HEAD"), head_before)
+
+    def test_recovery_adoption_requires_review_and_is_exactly_retryable(self):
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        original = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        head = self.git("rev-parse", "HEAD")
+
+        self.write("work/w/traceability/completion.json", json.dumps({
+            "schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+            "task_id": None, "candidate_sha": head, "input_digests": {},
+            "criterion_evidence": [], "missing_evidence": [], "errors": ["old contract"],
+            "execution_artifacts": [],
+        }) + "\n")
+        from engineering_model.admission import _publish, _state_directory, capture
+        model_state = _state_directory(self.root, "w")
+        model_state.mkdir(parents=True, exist_ok=True)
+        (model_state / "writer.lock").touch()
+        with (model_state / "writer.lock").open("a+b"):
+            self.assertTrue(_publish(model_state, capture(self.root, "w"), self.root))
+
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        proposal_path = self.root / "work/w/inner-loop/evidence/recovery-proposal.json"
+        review_path = self.root / "work/w/inner-loop/evidence/recovery-review.json"
+        proposal_path.parent.mkdir(parents=True, exist_ok=True)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        unreviewed = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                  "--review", str(review_path))
+        self.assertNotEqual(unreviewed.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        generic_mutation = self.run_cli("cas-apply", "w", "--observed", "0")
+        self.assertNotEqual(generic_mutation.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+
+        review = self.recovery_review(proposal)
+        forged_review = dict(review, candidate_sha=self.anchor_commit)
+        review_path.write_text(json.dumps(forged_review, sort_keys=True) + "\n")
+        forged = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                              "--review", str(review_path))
+        self.assertNotEqual(forged.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
+        adopted = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                              "--review", str(review_path))
+        self.assertEqual(adopted.returncode, 0, adopted.stderr + adopted.stdout)
+        receipt = json.loads(adopted.stdout)
+        state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        self.assertEqual(state["revision"], original["revision"] + 1)
+        self.assertEqual(state["coordinator_sha"], head)
+        self.assertEqual(state["tasks"], original["tasks"])
+        self.assertEqual(receipt["previous_checkpoint"], checkpoint_before)
+        self.assertEqual(receipt["checkpoint_commit"], self.git("rev-parse", "refs/ask/inner-loop/w"))
+
+        retry = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                             "--review", str(review_path))
+        self.assertEqual(retry.returncode, 0, retry.stderr + retry.stdout)
+        self.assertEqual(json.loads(retry.stdout), receipt)
+        self.assertEqual(json.loads((self.root / "work/w/inner-loop/state.json").read_text())["revision"],
+                         original["revision"] + 1)
+
+    def test_recovery_adoption_rejects_stale_source_and_preserves_checkpoint(self):
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        evidence = self.root / "work/w/inner-loop/evidence"
+        proposal_path, review_path = evidence / "proposal.json", evidence / "review.json"
+        evidence.mkdir(parents=True, exist_ok=True)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review_path.write_text(json.dumps(self.recovery_review(proposal), sort_keys=True) + "\n")
+        self.write("src/a.py", "source changed after reviewed proposal\n")
+        self.commit("stale reviewed source head")
+
+        refused = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                               "--review", str(review_path))
+
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+
+    def test_recovery_adoption_atomically_checks_source_branch_at_checkpoint_publish(self):
+        from unittest.mock import patch
+        from inner_loop.recovery import recovery_adopt
+
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        head = self.git("rev-parse", "HEAD")
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        evidence = self.root / "work/w/inner-loop/evidence"
+        proposal_path, review_path = evidence / "proposal.json", evidence / "review.json"
+        evidence.mkdir(parents=True, exist_ok=True)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review_path.write_text(json.dumps(self.recovery_review(proposal), sort_keys=True) + "\n")
+        competing = self.git("commit-tree", self.git("rev-parse", "HEAD^{tree}"), "-p", head,
+                             "-m", "competing source head")
+
+        def move_source_after_revalidation(_before, _after):
+            self.git("update-ref", "refs/heads/agent/w", competing, head)
+
+        with patch("inner_loop.state._preserve_attempt_history", side_effect=move_source_after_revalidation):
+            with self.assertRaises(CheckpointError):
+                recovery_adopt(self.root, "w", proposal_path, review_path)
+
+        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        self.assertEqual(self.git("rev-parse", "refs/heads/agent/w"), competing)
 
     def test_interrupted_candidate_paths_do_not_block_dependent_tasks(self):
         started = self.run_cli("run", "w")

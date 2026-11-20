@@ -9,7 +9,8 @@ from types import SimpleNamespace
 from .adapters import git
 from .completion import evaluate_completion,evidence_state
 from .contracts import Invalid,digest,load,slug
-from .evidence import load_accepted,read_at,source_changes,write_json
+from .evidence import (load_accepted,read_at,retained_adoption_context,
+                       source_changes,write_json)
 
 
 class _RevisionPath:
@@ -104,6 +105,10 @@ def reports(root,work_id,contracts,sha,scope,task_id):
                if isinstance(d,dict) and d.get('work_id')==work_id
                and (scope=='workstream' or d.get('task_id')==task_id)
                and d.get('original_plan_digest')]
+    adoption_context=retained_adoption_context(root,work_id)
+    adopted_continuity=(json.loads(adoption_context.early_red_continuity)
+                        if adoption_context is not None and adoption_context.early_red_continuity
+                        else None)
     historical=[]
     for entry in ledger:
         if entry.get('phase')!='red' or entry.get('scope')!='task':continue
@@ -115,6 +120,15 @@ def reports(root,work_id,contracts,sha,scope,task_id):
             and all(d.get('report_digest')==entry.get('digest')
                     and d.get('ledger_row_digest')==digest(entry) for d in bound)):
             historical.append(entry)
+    if isinstance(adopted_continuity,dict) and (scope=='workstream' or adopted_continuity.get('task_id')==task_id):
+        adopted=[entry for entry in ledger if entry.get('run_id')==adopted_continuity.get('run_id')
+                 and entry.get('candidate_sha')==adopted_continuity.get('candidate_sha')
+                 and entry.get('task_id')==adopted_continuity.get('task_id')
+                 and entry.get('phase')=='red' and entry.get('scope')=='task'
+                 and entry.get('digest')==adopted_continuity.get('report_digest')
+                 and digest(entry)==adopted_continuity.get('ledger_row_digest')]
+        if len(adopted)==1 and all(entry.get('run_id')!=adopted[0].get('run_id') for entry in matching+historical):
+            historical.append(adopted[0])
     finals=[e for e in matching if e['phase']=='final_green' and e['candidate_sha']==sha and e['scope']==scope and e['task_id']==task_id]
     selected=[e for e in matching if e['phase']=='red']+historical+finals[-1:]
     docs=[];rejected=[]
@@ -167,7 +181,8 @@ def inspect_completion(root,work_id,sha=None,anchor_sha=None,scope='workstream',
                 artifact=(runtime_root/check.get('evidence','')).resolve()
                 if not artifact.is_relative_to((runtime_root/'work'/work_id/'traceability').resolve()) or file_digest(artifact)!=check.get('output_digest'):raise Invalid('changed/missing static execution log')
             static=receipt
-        report=evaluate_completion(contracts,review,runs,{'root':runtime_root,'candidate_sha':sha,'scope':scope,'task_id':task_id,'static_checks':static,'detached_candidate':root!=runtime_root,'historical_candidate':historical})
+        adoption_context=retained_adoption_context(runtime_root,work_id)
+        report=evaluate_completion(contracts,review,runs,{'root':runtime_root,'candidate_sha':sha,'scope':scope,'task_id':task_id,'static_checks':static,'detached_candidate':root!=runtime_root,'historical_candidate':historical,'adoption_context':adoption_context})
         report['rejected_historical_attempts']=rejected
     except (Invalid,OSError,ValueError,KeyError,TypeError,AttributeError) as exc:
         report['errors'].append(str(exc));report['evidence_state']=evidence_state(exc)
