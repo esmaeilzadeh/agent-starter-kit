@@ -53,7 +53,7 @@ class ClientTests(unittest.TestCase):
         return env
 
     def run_fake(self, *args, **env_values):
-        return subprocess.run([str(self.ui), *args], cwd=self.root, env=self.env(**env_values),
+        return subprocess.run(['bash', str(self.ui), *args], cwd=self.root, env=self.env(**env_values),
                               text=True, capture_output=True)
 
     def test_address_precedence(self):
@@ -133,8 +133,9 @@ class ClientTests(unittest.TestCase):
                     packed = bytes.fromhex(address_hex)
                     observed = socket.inet_ntop(socket.AF_INET if table == 'tcp' else socket.AF_INET6,
                                                 packed[::-1] if table == 'tcp' else packed)
-                    if observed == expected_address:
-                        return
+                    if observed != expected_address:
+                        self.fail(f'UI listener bound to {observed}:{port}; expected {expected_address}')
+                    return
             time.sleep(.1)
         self.fail(f'UI did not listen on {expected_address}:{port}')
 
@@ -146,8 +147,9 @@ class ClientTests(unittest.TestCase):
         env = {key: value for key, value in os.environ.items()
                if key not in {'ASK_PYTHON', 'STREAMLIT_SERVER_ADDRESS'}}
         env.update(HOME=str(self.root / 'home'), XDG_CONFIG_HOME=str(self.root / 'config'),
+                   PYTHONUSERBASE=str(Path.home() / '.local'),
                    STREAMLIT_SERVER_ADDRESS=ambient_address)
-        args = [str(self.ui), f'--server.port={port}', '--server.headless=true']
+        args = ['bash', str(self.ui), f'--server.port={port}', '--server.headless=true']
         if address is not None:
             args.append(f'--server.address={address}')
         process = subprocess.Popen(args, cwd=self.root, env=env,
