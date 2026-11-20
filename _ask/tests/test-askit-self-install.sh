@@ -20,7 +20,7 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$HOME" "$TMP"' EXIT
 cd "$TMP"
 set +e
-out="$("$ROOT/askit" --help 2>&1)"
+out="$("$ROOT/askit" status 2>&1)"
 code=$?
 set -e
 [[ "$code" -ne 0 ]]
