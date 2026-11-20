@@ -30,10 +30,13 @@ install flow, use the target checkout's upgrader as described in
 Review `.ask.env` before migration. Run `./ask credentials migrate`; it parses
 assignments as data and never evaluates shell syntax. The supported
 `TRACKER_TOKEN` alias maps to the configured GitHub or Jira credential and is
-stored in the private credentials file. Only credential assignments are
-removed from `.ask.env`; comments and public tracker settings remain. Existing
+stored in a versioned private record. Only credential assignments are removed
+from `.ask.env`; comments and public tracker settings remain. Existing
 conflicting private credentials stop migration before the legacy file is
-changed. The Git index and history are never edited. If the old file was
+changed. Old private files containing only `TRACKER_TOKEN` are unbound to a
+tracker URL: migration and MCP launch stop without changing them. Re-enter the
+tracker URL and token with `./ask setup` to replace that file. The Git index and
+history are never edited. If the old file was
 tracked or staged, rotate the credential because its old value may remain in
 history. See [issue tracker setup](agents/issue-tracker.md).
 

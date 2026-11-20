@@ -185,23 +185,7 @@ def read_credentials(root: Path) -> dict:
         raise ConfigError("private credential file is invalid") from None
     if (isinstance(data, dict) and set(data) == {"TRACKER_TOKEN"}
             and isinstance(data["TRACKER_TOKEN"], str) and data["TRACKER_TOKEN"]):
-        settings_path = root / ".agents/ask.local/tracker.json"
-        check_components(settings_path)
-        settings_info = settings_path.lstat()
-        if stat.S_ISLNK(settings_info.st_mode) or not stat.S_ISREG(settings_info.st_mode):
-            raise ConfigError("project tracker settings are unsafe")
-        try:
-            settings = json.loads(settings_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
-            raise ConfigError("project tracker settings are invalid") from None
-        tracker = settings.get("tracker") if isinstance(settings, dict) else None
-        url = settings.get("url") if isinstance(settings, dict) else None
-        if not isinstance(tracker, str) or tracker not in {"jira", "github"} \
-                or not isinstance(url, str):
-            raise ConfigError("legacy tracker credentials have no valid tracker settings")
-        key = "GITHUB_TOKEN" if tracker == "github" else "JIRA_PERSONAL_TOKEN"
-        return {"schema": "askit-tracker-credentials/v1", "tracker": tracker,
-                "url": validate_url(url), "credentials": {key: data["TRACKER_TOKEN"]}}
+        raise ConfigError("legacy tracker credential is unbound; re-enter the tracker URL and token with ./ask setup")
     if (not isinstance(data, dict) or data.get("schema") != "askit-tracker-credentials/v1"
             or not isinstance(data.get("credentials"), dict)):
         raise ConfigError("private credential file is invalid")
@@ -243,10 +227,19 @@ def store(project_root: Path, credential_root: Path, record: dict) -> None:
             raise ConfigError("private credential file is unsafe")
         try:
             old = read_credentials(credential_root)
+        except ConfigError:
+            try:
+                legacy = json.loads(destination.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                raise ConfigError("private credential file is invalid") from None
+            key = {"jira": "JIRA_PERSONAL_TOKEN", "github": "GITHUB_TOKEN"}.get(tracker)
+            if (not isinstance(legacy, dict) or set(legacy) != {"TRACKER_TOKEN"}
+                    or not isinstance(legacy["TRACKER_TOKEN"], str) or not legacy["TRACKER_TOKEN"]
+                    or not key or not credentials.get(key)):
+                raise ConfigError("legacy tracker credential is unbound; re-enter the tracker URL and token with ./ask setup") from None
+            old = None
+        if old and old.get("tracker") == tracker and old.get("url") == url:
             old_credentials = old["credentials"]
-        except (ConfigError, KeyError, TypeError):
-            raise ConfigError("private credential file is invalid") from None
-        if old.get("tracker") == tracker and old.get("url") == url:
             credentials = {**old_credentials, **credentials}
     payload = {"schema": "askit-tracker-credentials/v1", "tracker": tracker,
                "url": url, "credentials": credentials}
@@ -321,9 +314,6 @@ def migrate(args: argparse.Namespace) -> int:
     store(root, root,
           {"tracker": tracker, "url": url, "credentials": secrets,
            "settings": {key: value for key, value in values.items() if key in PUBLIC_KEYS}})
-    if legacy_token:
-        private_write(credential_path(root),
-                      (json.dumps({"TRACKER_TOKEN": legacy_token}) + "\n").encode())
     current = legacy_path.lstat()
     if (stat.S_ISLNK(current.st_mode) or not stat.S_ISREG(current.st_mode)
             or legacy_path.read_bytes() != before):

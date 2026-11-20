@@ -167,6 +167,65 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(refused.returncode, 0)
         self.assertEqual(list(outside.iterdir()), [])
 
+    def test_legacy_alias_credentials_fail_closed(self) -> None:
+        project = self.fx.git_project(self.fx.root / "legacy-alias-credentials")
+        self._install(project)
+        record = json.dumps({
+            "tracker": "jira", "url": "https://jira.example.test",
+            "credentials": {"JIRA_PERSONAL_TOKEN": "dummy-bound-token"},
+        })
+        stored = self._run_config(project, "store", "--root", str(project), input=record)
+        self.assertEqual(stored.returncode, 0, stored.stderr)
+
+        key = hashlib.sha256(str(project.resolve()).encode()).hexdigest()
+        credentials = self.fx.config / "askit/projects" / key / "credentials.json"
+        credentials.write_text('{"TRACKER_TOKEN":"dummy-old-token"}\n', encoding="utf-8")
+        credentials.chmod(0o600)
+        settings = project / ".agents/ask.local/tracker.json"
+        public = json.loads(settings.read_text(encoding="utf-8"))
+        public["url"] = "https://attacker.example.test"
+        settings.write_text(json.dumps(public), encoding="utf-8")
+
+        legacy_env = project / ".ask.env"
+        legacy_env.write_text(
+            "ASK_TRACKER=jira\nASK_TRACKER_URL=https://jira.example.test\n"
+            "TRACKER_TOKEN=dummy-old-token\n",
+            encoding="utf-8",
+        )
+        migration = self._run_config(project, "migrate", "--root", str(project), "--yes")
+        self.assertNotEqual(migration.returncode, 0)
+        self.assertIn("re-enter", (migration.stdout + migration.stderr).lower())
+        self.assertIn("TRACKER_TOKEN=dummy-old-token", legacy_env.read_text(encoding="utf-8"))
+        self.assertEqual(json.loads(credentials.read_text(encoding="utf-8")),
+                         {"TRACKER_TOKEN": "dummy-old-token"})
+
+        marker = self.fx.root / "legacy-alias-mcp-ran"
+        bin_dir = self.fx.root / "legacy-alias-bin"
+        bin_dir.mkdir()
+        uvx = bin_dir / "uvx"
+        uvx.write_text("#!/bin/sh\nprintf executed > " + repr(str(marker)) + "\n", encoding="utf-8")
+        uvx.chmod(0o755)
+        called = self.fx.run(
+            ["python3", str(project / "_ask/scripts/tracker-mcp.py"), "--root", str(project)],
+            cwd=project, env=self._env(bin_dir=bin_dir),
+        )
+        self.assertNotEqual(called.returncode, 0)
+        self.assertIn("re-enter", (called.stdout + called.stderr).lower())
+        self.assertFalse(marker.exists())
+
+        replacement = json.dumps({
+            "tracker": "jira", "url": "https://jira.example.test",
+            "credentials": {"JIRA_PERSONAL_TOKEN": "dummy-reentered-token"},
+        })
+        reentered = self._run_config(project, "store", "--root", str(project), input=replacement)
+        self.assertEqual(reentered.returncode, 0, reentered.stderr)
+        called = self.fx.run(
+            ["python3", str(project / "_ask/scripts/tracker-mcp.py"), "--root", str(project)],
+            cwd=project, env=self._env(bin_dir=bin_dir),
+        )
+        self.assertEqual(called.returncode, 0, called.stderr)
+        self.assertTrue(marker.exists())
+
     def test_migrate_staged_credentials(self) -> None:
         project = self.fx.git_project(self.fx.root / "credential-migration")
         self._install(project)
