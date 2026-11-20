@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -397,10 +398,134 @@ def resolve(work_id: str, stage: str, runtime: str | None = None) -> str:
     )
 
 
+def _confidence(value) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0 <= value <= 100:
+        raise ValueError('confidence must be a finite number from 0 to 100')
+    return float(value)
+
+
+def decide(work_id: str, request: dict) -> dict:
+    """Choose one native consultation rung for one material decision."""
+    for field in ('decision_id', 'evidence_digest', 'session_id'):
+        if not isinstance(request.get(field), str) or not request[field].strip():
+            raise ValueError('decision requires ' + field)
+    if not re.fullmatch(r'[0-9a-f]{64}', request['evidence_digest']):
+        raise ValueError('decision evidence_digest must be SHA256')
+    confidence = _confidence(request.get('confidence'))
+    identity = {key: request[key] for key in ('decision_id', 'evidence_digest', 'session_id')}
+    def outcome(action, reason, **extra):
+        return {**identity, 'action': action, 'reason': reason, **extra}
+    authority = request.get('authority_kind')
+    if authority != 'within-scope':
+        return outcome('ask-human', 'human authority required: ' + str(authority))
+    if request.get('human_decision_required') or request.get('model_restriction_requires_choice'):
+        return outcome('ask-human', 'explicit human authority or model preference')
+    if confidence > 90:
+        return outcome('continue', 'confidence above policy threshold', confidence=confidence)
+    runtime = request.get('runtime') or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
+    try:
+        cfg = runtime_config(_MODELS.bindings_dir(ROOT), runtime)
+    except ValueError:
+        return outcome('ask-human', 'runtime has no verified confidence ladder')
+    ladder = []
+    for value in cfg.get('confidence_escalation') or []:
+        model, separator, effort = value.partition('@')
+        pair = (model, effort if separator else None)
+        if pair not in ladder:
+            ladder.append(pair)
+    if not ladder:
+        return outcome('ask-human', 'runtime has no verified confidence ladder')
+    evidence = request.get('capability_evidence') or {}
+    valid_catalog = (evidence.get('session_id') == identity['session_id']
+                     and evidence.get('runtime') == runtime
+                     and evidence.get('source') in {'native-tool-metadata', 'current-session-adapter'}
+                     and evidence.get('authenticated') is True
+                     and evidence.get('access_verified') is True)
+    models = evidence.get('models') if valid_catalog else []
+    if not isinstance(models, list):
+        models = []
+    allowed = request.get('allowed_models')
+    if allowed is not None and (not isinstance(allowed, list) or not all(isinstance(m, str) for m in allowed)):
+        raise ValueError('allowed_models must be a list of native model names')
+    assessments = request.get('assessments') or []
+    if not isinstance(assessments, list):
+        raise ValueError('assessments must be a list')
+    used = -1
+    latest = None
+    for assessment in assessments:
+        if not isinstance(assessment, dict):
+            raise ValueError('assessment must be an object')
+        if any(assessment.get(k) != v for k, v in identity.items()):
+            continue
+        pair = (assessment.get('requested_model'), assessment.get('requested_effort'))
+        if pair not in ladder:
+            continue
+        rank = ladder.index(pair)
+        status = assessment.get('status')
+        verified = (assessment.get('identity_verified') is True
+                    and assessment.get('actual_model') == pair[0]
+                    and assessment.get('actual_effort') == pair[1])
+        if status not in {'assessed', 'unavailable'}:
+            raise ValueError('invalid assessment status')
+        if status == 'assessed':
+            if not verified or not isinstance(assessment.get('assessment'), str) or not assessment['assessment'].strip():
+                raise ValueError('assessment requires verified returned identity and reasoning; record unavailable otherwise')
+            _confidence(assessment.get('confidence'))
+        if rank >= used:
+            used, latest = rank, assessment
+    if latest and latest.get('status') == 'assessed' and latest['confidence'] > 90:
+        return outcome('continue', 'applicable verified assessment above threshold', assessment=latest)
+    unavailable = []
+    for rank, (model, effort) in enumerate(ladder):
+        if rank <= used:
+            continue
+        available = any(isinstance(m, dict) and m.get('model') == model
+                        and (effort is None or (isinstance(m.get('efforts'), list)
+                             and effort in m['efforts'])) for m in models)
+        if not available or (allowed is not None and model not in allowed):
+            unavailable.append({'model': model, 'effort': effort,
+                                'reason': 'unavailable model/effort or explicit restriction'})
+            continue
+        return outcome('consult', 'material uncertainty requires next verified native rung',
+                       runtime=runtime, model=model, effort=effort, unavailable=unavailable,
+                       request={'action': 'consult', 'runtime': runtime, 'model': model,
+                                'effort': effort, **identity, 'scope': request.get('scope'),
+                                'uncertainty': request.get('uncertainty'), 'assessments': assessments})
+    return outcome('ask-human', 'available ladder exhausted with material uncertainty', unavailable=unavailable)
+
+
+def consult(work_id: str, request: dict) -> dict:
+    """Execute the selected request through the existing runtime adapter."""
+    decision = decide(work_id, request)
+    if decision['action'] != 'consult':
+        return decision
+    native = decision['request']
+    record = {key: decision[key] for key in ('decision_id', 'evidence_digest', 'session_id')}
+    record.update(requested_model=decision['model'], requested_effort=decision['effort'])
+    try:
+        response = runtime_request(native['runtime'], 'consult', **{
+            k: v for k, v in native.items() if k not in {'action', 'runtime'}})
+        if (response.get('session_id') != request['session_id']
+                or response.get('decision_id') != request['decision_id']
+                or response.get('evidence_digest') != request['evidence_digest']
+                or response.get('actual_model') != decision['model']
+                or response.get('actual_effort') != decision['effort']
+                or response.get('identity_verified') is not True
+                or not isinstance(response.get('assessment'), str) or not response['assessment'].strip()):
+            raise ValueError('returned assessment identity or decision binding is unverifiable')
+        confidence = _confidence(response.get('confidence'))
+        record.update(status='assessed', confidence=confidence, assessment=response['assessment'],
+                      actual_model=response['actual_model'], actual_effort=response.get('actual_effort'), identity_verified=True)
+    except ValueError as exc:
+        record.update(status='unavailable', reason=str(exc))
+    updated = dict(request, assessments=[*(request.get('assessments') or []), record])
+    return {'assessment': record, 'next': decide(work_id, updated)}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest='command', required=True)
-    for command in ('save', 'submit', 'show', 'resolve', 'resolve-implementor', 'capability'):
+    for command in ('save', 'submit', 'show', 'resolve', 'resolve-implementor', 'capability', 'decide', 'consult'):
         sub = subparsers.add_parser(command)
         sub.add_argument('--work-id', required=True)
         if command in {'save', 'submit'}:
@@ -413,7 +538,14 @@ def main() -> int:
         if command == 'resolve':
             sub.add_argument('--stage', required=True)
     args = parser.parse_args()
-    if args.command in {'save', 'submit'}:
+    if args.command in {'decide', 'consult'}:
+        import sys
+        request = json.load(sys.stdin)
+        if not isinstance(request, dict):
+            raise ValueError('decision request must be an object')
+        operation = decide if args.command == 'decide' else consult
+        print(json.dumps(operation(args.work_id, request), allow_nan=False))
+    elif args.command in {'save', 'submit'}:
         import sys
         raw = sys.stdin.read()
         decision = json.loads(raw) if raw.strip() else {}

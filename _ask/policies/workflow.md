@@ -48,7 +48,7 @@ If the human is using the kit:
 
 1. **Artifacts are not optional** on the feature path (`01`–`10`). Each next stage stands on the previous document (intent, spec, plan, …). A reproduced bug fix reuses the existing contract and a concise repair record instead of creating a new feature spec and plan.
    **00 Explore is the exception:** it is an optional on-ramp. When the destination is already clear enough for Intent, **omit 00** (real skip). That is not “on-path with a missing explore-map.” When 00 *runs*, `explore-map.md` is required and Handoff must be non-empty before 01. See `AGENTS.md` item 1 and `.agents/ask/stages/00-explore.md`.
-2. **Prepare, then continue.** The agent writes the artifact for the current stage and proceeds to the next. Auto-continue in the same conversation after exit criteria; stop for required choice questions below and for human-only decisions. Before asking the human about unresolved uncertainty, follow the model-confidence escalation ladder in `_ask/policies/delegation.md`. Once a gate passes, continue through the authorized work without asking that decision again. If a required gate is missing, stale, or declined, present that exact unresolved decision immediately and wait before dependent work; retain prior decisions.
+2. **Prepare, then continue.** The agent writes the artifact for the current stage and proceeds to the next. Auto-continue in the same conversation after exit criteria; stop for required choice questions below and for human-only decisions. Before asking the human about unresolved uncertainty, follow the model-confidence escalation ladder below. Once a gate passes, continue through the authorized work without asking that decision again. If a required gate is missing, stale, or declined, present that exact unresolved decision immediately and wait before dependent work; retain prior decisions.
 3. **Skip = skip extra approvals, not documents.** Every required confirmation is a question with explicit selectable choices, such as **Approve complete intent and assumptions** / **Request changes**, plus an optional comment that can accompany a selected choice in the same response. A preselected option is not approval. Never ask the human to write or repeat a confirmation sentence. Use a native choice control only when callable for the current mode/question and capable of retaining both values; otherwise present numbered options and invite the selected number or label plus added text in the same reply. Accept concise affirmative text sent unsolicited for compatibility, record its exact text with `--response`, and never make the human restate it. Record intent approval with `./ask confirm-intent --work-id <id> --choice approve`. This one confirmation covers later prepared artifacts (spec marked CURRENT unless the human chose to stop, plan, review). Do not re-ask a bless on Plan / Review / Refactor. When What, Why, or assumptions change, present the scope-change proposal and the complete revised intent together as one decision; a single submitted approval may authorize both the linked change and that exact intent. Record the approved intent and its digest, and never ask sequentially for those same approvals. Keep distinct choices separate when they authorize unrelated decisions.
 4. **Second confirm: Accept.** Present **Accept workstream** / **Request changes** as selectable choices and close only after a submitted Accept choice, subject to delegation policy (evidence + commit SHA).
 5. **Missing artifacts but still on the feature path:** prepare them from the accepted defaults, present a required choice only if its decision has not happened yet, then continue. Do not jump to feature implementation with an empty `plan.md` / no spec. A reproduced bug fix follows the short path above.
@@ -96,3 +96,45 @@ A new chat is on-path again. Saying “skip the kit” / “just code” in an o
 `./ask status` may flag `code-without-plan` on a **live** branch that changed files outside `work/<id>/` and `specs/` while stage is still `seeded` / `explored` / `intent`. Signal that labor left the path without artifacts — not a failure by itself.
 
 Parked later-tasks in `.later/` are not live. `./ask status` reads committed cards from `develop` (or its remote-tracking ref) on every checkout.
+
+## Model-confidence escalation
+
+When a consequential decision still has material uncertainty, assess confidence
+as a subjective judgment. Continue autonomously only when confidence is **above
+90%**, and only within already authorized scope. At **90% or below**, consult
+the next distinct model/settings rung configured for the active runtime, once
+per rung, before asking the human. Give each assessor the decision, scope,
+evidence, uncertainty, and earlier assessments. Skip a rung already satisfied
+by an earlier assessment of the same decision from that rung or a later rung
+in the same configured ladder. Use the runtime's supported model-selection/
+spawn mechanism and verify the actual model/settings; unavailable or
+unverifiable rungs count as unavailable. Record the assessment, confidence,
+and actual model/settings in the existing work artifact; confidence is not a
+measured probability or verification evidence.
+
+Use only the active runtime's verified `confidence_escalation` binding. Entries
+are native picker names; Codex encodes effort as `model@effort`. The current
+Codex ladder is Sol/high → Astra/medium → Astra/high. Claude entries are candidates until current native capability evidence verifies
+the model IDs and supported efforts. Cursor and OpenCode have no verified ladder yet; do not infer one
+from their diverse/adversarial defaults. Report unavailable rungs as
+unavailable.
+
+Model consultation cannot approve a scope or acceptance change, supply human
+preference or authority, authorize destructive or production-impacting actions,
+override explicit user model restrictions, replace an assigned independent
+reviewer, or waive required verification. Ask the human when the configured
+ladder is exhausted and uncertainty remains material, or when the decision
+requires human authority or preference.
+
+Use `model-decisions.py decide --work-id <id>` with a JSON request on stdin.
+Bind each decision to its ID, material evidence digest and current session ID.
+Supply current native tool metadata or an authenticated runtime-adapter catalog
+with exact supported models/efforts. A binding entry alone proves no availability.
+The result is `continue`, an exact `consult` request, or `ask-human` with a reason.
+Execute consultation with the native agent tool, record returned model/effort,
+confidence and assessment, then resubmit the same decision with that assessment.
+The `consult` CLI operation supports an installed runtime adapter; a timeout,
+permission failure or unverifiable returned identity records an unavailable rung.
+Use existing work records for these assessments. Reuse only assessments of the
+same material decision/evidence in the current session; consult each rung once.
+Explicit authority decisions remain human decisions regardless of confidence.

@@ -242,5 +242,106 @@ class ClientTests(unittest.TestCase):
             self.assertEqual((outside / 'models.yaml').read_text(encoding='utf-8'), 'keep: true\n')
 
 
+class ConfidenceDecisions(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('decision_ladder_tests', ROOT / '_ask/scripts/model-decisions.py')
+        cls.module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.module)
+
+    def request(self, **values):
+        return {'decision_id': 'repair-cas', 'evidence_digest': 'a' * 64,
+                'session_id': 'current-session', 'runtime': 'codex',
+                'authority_kind': 'within-scope', 'confidence': 90,
+                'capability_evidence': {'session_id': 'current-session', 'runtime': 'codex',
+                    'source': 'native-tool-metadata', 'authenticated': True, 'access_verified': True,
+                    'models': [{'model': 'gpt-6.1-sol', 'efforts': ['high']},
+                               {'model': 'gpt-6-astra', 'efforts': ['medium', 'high']}]}, **values}
+
+    def assessment(self, request, model='gpt-6.1-sol', effort='high', confidence=85, **values):
+        return {**{k: request[k] for k in ('decision_id', 'evidence_digest', 'session_id')},
+                'requested_model': model, 'requested_effort': effort,
+                'actual_model': model, 'actual_effort': effort, 'identity_verified': True,
+                'status': 'assessed', 'assessment': 'Concrete scoped reasoning', 'confidence': confidence, **values}
+
+    def test_strict_threshold_and_malformed_confidence(self):
+        self.assertEqual(self.module.decide('w', self.request(confidence=90))['action'], 'consult')
+        self.assertEqual(self.module.decide('w', self.request(confidence=90.1))['action'], 'continue')
+        for value in (True, '91', None, -1, 101, float('nan'), float('inf')):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.module.decide('w', self.request(confidence=value))
+
+    def test_rungs_reuse_and_material_evidence_binding(self):
+        request = self.request()
+        decision = self.module.decide('w', request)
+        self.assertEqual((decision['model'], decision['effort']), ('gpt-6.1-sol', 'high'))
+        request['assessments'] = [self.assessment(request)]
+        decision = self.module.decide('w', request)
+        self.assertEqual((decision['model'], decision['effort']), ('gpt-6-astra', 'medium'))
+        request['assessments'].append(self.assessment(request, 'gpt-6-astra', 'medium'))
+        self.assertEqual(self.module.decide('w', request)['effort'], 'high')
+        request['assessments'].append(self.assessment(request, 'gpt-6-astra', 'high', 96))
+        self.assertEqual(self.module.decide('w', request)['action'], 'continue')
+        request['evidence_digest'] = 'b' * 64
+        self.assertEqual(self.module.decide('w', request)['model'], 'gpt-6.1-sol')
+        request['session_id'] = 'another-session'
+        self.assertEqual(self.module.decide('w', request)['action'], 'ask-human')
+
+    def test_unavailable_effort_catalog_and_human_authority(self):
+        request = self.request()
+        request['capability_evidence']['models'][0]['efforts'] = ['medium']
+        self.assertEqual(self.module.decide('w', request)['model'], 'gpt-6-astra')
+        self.assertEqual(self.module.decide('w', self.request(capability_evidence={}))['action'], 'ask-human')
+        self.assertEqual(self.module.decide('w', self.request(allowed_models=[]))['action'], 'ask-human')
+        for authority in ('scope-change', 'human-preference', 'unsafe-irreversible', None):
+            self.assertEqual(self.module.decide('w', self.request(authority_kind=authority, confidence=99))['action'], 'ask-human')
+        self.assertEqual(self.module.decide('w', self.request(runtime='unknown'))['action'], 'ask-human')
+        self.assertEqual(self.module.decide('w', self.request(runtime='cursor'))['action'], 'ask-human')
+
+    def test_consult_adapter_identity_failure_and_exhaustion(self):
+        from unittest.mock import patch
+        request = self.request()
+        with patch.object(self.module, 'runtime_request', side_effect=ValueError('timeout')):
+            result = self.module.consult('w', request)
+        self.assertEqual(result['assessment']['status'], 'unavailable')
+        self.assertEqual(result['next']['model'], 'gpt-6-astra')
+        request['assessments'] = [result['assessment']]
+        response = self.assessment(request, 'wrong-model', 'medium')
+        with patch.object(self.module, 'runtime_request', return_value=response):
+            result = self.module.consult('w', request)
+        self.assertEqual(result['assessment']['status'], 'unavailable')
+        self.assertEqual(result['next']['effort'], 'high')
+        request['assessments'].append(result['assessment'])
+        response = self.assessment(request, 'gpt-6-astra', 'high', confidence=89)
+        with patch.object(self.module, 'runtime_request', return_value=response) as adapter:
+            result = self.module.consult('w', request)
+        self.assertEqual(adapter.call_args.args, ('codex', 'consult'))
+        self.assertEqual(adapter.call_args.kwargs['effort'], 'high')
+        self.assertEqual(result['next']['action'], 'ask-human')
+        response['confidence'] = 95
+        with patch.object(self.module, 'runtime_request', return_value=response):
+            self.assertEqual(self.module.consult('w', request)['next']['action'], 'continue')
+
+    def test_forged_identity_is_not_an_assessment(self):
+        request = self.request()
+        request['assessments'] = [self.assessment(request, identity_verified=False)]
+        with self.assertRaises(ValueError):
+            self.module.decide('w', request)
+
+    def test_public_decision_cli(self):
+        proc = subprocess.run([sys.executable, str(ROOT / '_ask/scripts/model-decisions.py'),
+                               'decide', '--work-id', 'w'], input=json.dumps(self.request()),
+                              text=True, capture_output=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(json.loads(proc.stdout)['request']['effort'], 'high')
+
+    def test_every_canonical_stage_uses_central_policy(self):
+        for stage in (ROOT / '.agents/ask/stages').glob('[0-9][0-9]-*.md'):
+            self.assertIn('_ask/policies/workflow.md#model-confidence-escalation', stage.read_text())
+        self.assertIn('_ask/policies/workflow.md#model-confidence-escalation',
+                      (ROOT / '.agents/ask/task-loop.md').read_text())
+
+
 if __name__ == '__main__':
     unittest.main()

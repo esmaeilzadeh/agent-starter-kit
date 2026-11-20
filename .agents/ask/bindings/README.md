@@ -33,3 +33,13 @@ cursor:
 risk: HIGH
 07-review: diverse
 ```
+
+## Confidence consultation capabilities
+
+`confidence_escalation` entries are ordered candidate native names, with optional
+`@effort`. The central dispatcher is `model-decisions.py decide`; policy lives at
+`_ask/policies/workflow.md#model-confidence-escalation`. Runtime entries require
+current-session native catalog and effort evidence before dispatch. Claude names
+remain candidates until verified by that runtime; Cursor/OpenCode have no
+configured verified ladder. Availability failures advance to the next permitted
+rung and exhaustion reports the precise reason to the coordinator.

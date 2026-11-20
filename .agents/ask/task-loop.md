@@ -71,3 +71,7 @@ rejected reviews and corrected submissions in checkpoint history. Running task
 refs defer publication until the safe boundary; keep the reviewed source SHA.
 A failed publication blocks the next writer. See `_ask/docs/inner-loop-evidence.md`
 for retained runtime caches, exact retries and privacy.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+using the central decision operation. Consultation preserves independent review,
+verification and human authority.

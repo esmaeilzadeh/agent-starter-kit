@@ -115,3 +115,7 @@ After the submitted choice, save the complete decision once with `python3 _ask/s
 ## E2E
 
 Record whether E2E `applies` or `not_applicable` plus reason on `intent.md`. If it applies, gather journeys, observable outcomes, environment, test data, and reset. Include this contract in the complete intent confirmation; do not request a separate written confirmation. If it changes afterward, use the Spec Change choice. Missing E2E with no reason refuses Plan/Implement.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+through the central decision operation before a human interruption. Preserve
+human scope/approval authority and the saved Grill model selections.
