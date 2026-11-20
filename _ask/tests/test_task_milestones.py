@@ -193,6 +193,15 @@ publish_milestones(Path(ROOT), 'w')
         review.write_text('Tampered assessment')
         self.assertIn(str(review.relative_to(self.root)), dirty_paths(self.root))
 
+    def test_retained_semantic_review_is_runtime_and_tamper_is_dirty(self):
+        path = self.root / ('work/w/traceability/reviews/' + 'a' * 40 + '.json')
+        path.parent.mkdir(parents=True)
+        path.write_text('{"schema":"ask-recorded-test-review/v1"}')
+        _publish_state(self.root, 'w', self.state)
+        self.assertEqual(dirty_paths(self.root), [])
+        path.write_text('{"forged":true}')
+        self.assertIn(str(path.relative_to(self.root)), dirty_paths(self.root))
+
     def test_public_summary_excludes_raw_command_and_output(self):
         path = self.root / 'work/w/inner-loop/results/T1.json'
         path.parent.mkdir(parents=True)

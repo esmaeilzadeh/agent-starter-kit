@@ -50,3 +50,13 @@ sibling rejection case now pass, together with the valid reopen path. The other
 reviewed changes were accepted; twelve milestone/preflight checks passed during
 that review. The combined model/runtime/orchestrator/traceability/engineering
 suite passed 47 checks. Final full recovery/aggregate results remain due.
+
+After adoption/backfill, a focused regression reproduced one clean-cache
+classification omission: a checkpoint-retained semantic review at the canonical
+`traceability/reviews/<candidate>.json` path remained dirty. The exact known
+review path and execution lock now use the same retained-byte checks as other
+runtime caches. All thirteen milestone checks pass, including forged-review
+rejection. This is a separately attributed CMP-03 maintenance correction, not
+CSH-10-owned source work. The first fresh CSH-10 Green cf883d1090414d9d9c7e94dfbe507ba9
+passed T38/T39; a new exact candidate requires a fresh Green and independent review.
+The original adoption/proposal and all historical runs remain unchanged.

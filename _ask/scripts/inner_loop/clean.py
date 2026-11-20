@@ -22,7 +22,7 @@ def runtime_path(name: str, work_id: str) -> bool:
     return bool(re.fullmatch(
         r'inner-loop/(?:state\.(?:json|lock)|\.state-[\w-]+\.tmp|results/[\w.-]+\.json|'
         r'evidence/verify-[\w-]+/(?:integration\.json|verification\.json|output\.log))|'
-        r'traceability/(?:executions\.json|completion\.json|static-[a-f0-9]+\.json|'
+        r'traceability/(?:executions\.(?:json|lock)|completion\.json|static-[a-f0-9]+\.json|reviews/[a-f0-9]{40}\.json|'
         r'runs/[\w-]+/[\w.-]+|static-runs/[\w-]+/[\w.-]+|'
         r'model-state/[\w./-]+)', tail))
 
