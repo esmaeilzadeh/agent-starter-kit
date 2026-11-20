@@ -508,16 +508,17 @@ def _scope_compatible_result(root: Path, work_id: str, task_id: str,
         ):
             continue
         if _valid_final_green_scope(root, work_id, report, previous["plan"], task_id,
-                                    old_scope, result.get("candidate_sha"), old_anchor):
+                                    old_scope, result.get("candidate_sha"), base):
             return True
     return False
 
 
 def _valid_final_green_scope(root: Path, work_id: str, report: dict, plan: dict, task_id: str,
                              required_ids: set[str], candidate_sha: str,
-                             runner_contract_sha: str) -> bool:
+                             runner_base_sha: str) -> bool:
     """Check historical runner, output, source and exact final case bindings."""
-    if report.get("runner_identity") != _historical_runner_identity(root, runner_contract_sha):
+    # The adapter runs from the task base while its tests execute against candidate_sha.
+    if report.get("runner_identity") != _historical_runner_identity(root, runner_base_sha):
         return False
     tests = {item.get("id"): item for item in plan.get("tests", [])
              if isinstance(item, dict) and isinstance(item.get("id"), str)}

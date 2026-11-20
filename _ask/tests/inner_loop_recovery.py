@@ -2131,10 +2131,10 @@ class test_b(unittest.TestCase):
             "a passing projection is accepted only when its exact bytes match retained verifier evidence",
         )
 
-    def test_historical_green_uses_contract_pinned_runner_identity(self):
+    def test_historical_green_uses_task_base_runner_identity(self):
         from inner_loop.recovery import _historical_runner_identity, _valid_final_green_scope
 
-        contract_sha = self.anchor_commit
+        runner_base_sha = self.anchor_commit
         runner_path = ".agents/ask/verification/traceability/unittest_runner.py"
         self.write("src/a.py", "candidate = True\n")
         self.write(runner_path, "# later candidate runner\n")
@@ -2153,7 +2153,7 @@ class test_b(unittest.TestCase):
         source_digest = hashlib.sha256((self.root / "src/a.py").read_bytes()).hexdigest()
         report = {
             "run_id": run_id,
-            "runner_identity": _historical_runner_identity(self.root, contract_sha),
+            "runner_identity": _historical_runner_identity(self.root, runner_base_sha),
             "executions": [{"id": "execution", "phase": "final_green",
                             "collection_status": "ok", "exit_code": 0,
                             "runner_id": "fixture", "source_sha": candidate_sha,
@@ -2168,7 +2168,7 @@ class test_b(unittest.TestCase):
                        "output_digest": hashlib.sha256(output).hexdigest()}],
         }
         self.assertTrue(_valid_final_green_scope(
-            self.root, "w", report, plan, "a", {"T-A"}, candidate_sha, contract_sha,
+            self.root, "w", report, plan, "a", {"T-A"}, candidate_sha, runner_base_sha,
         ))
 
     def test_recovery_proposal_binds_state_checkpoint_and_source_without_mutation(self):
