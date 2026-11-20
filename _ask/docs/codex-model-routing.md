@@ -4,6 +4,11 @@ Sources: `.agents/ask/bindings/runtimes/codex.yaml` and the persistent repositor
 
 ## Defaults
 
+Grill presents one complete model plan for confirmation. Accept it as shown or
+submit the requested overrides together; routine stage changes do not ask for
+model selection again. A saved workstream decision stays authoritative for
+that workstream, including when ambient environment variables differ.
+
 | Job | Default | Effort | Use |
 | --- | --- | --- | --- |
 | Explore, Grill, Spec, Spec Change, Accept | `gpt-6.1-sol` | medium | General reasoning and engineering judgment. |
@@ -44,6 +49,13 @@ Effort resolves separately: runtime-specific `ASK_EFFORT_06_IMPLEMENT_CODEX`, ge
 For trivial edits use a Luna/low workstream override. For complex architecture/implementation use Sol/high, and Astra/high for particularly difficult reasoning. Global Codex settings are not changed. An explicit model override alone selects that model's configured effort default; it does not imply a complexity classification.
 
 An already running Codex session can retain cached agent-role configuration. Inspect a spawned agent's effective model; if cached roles still use retired pins, use an explicit available model override or reload the client. Do not claim filesystem regeneration changes an already running agent.
+
+Existing workstreams keep their previous configured implementor until an
+authorized Grill or explicit user change records a new policy. An old model
+record does not imply consent to the latest-accessible policy. If the current
+orchestrator cannot switch and verify its identity in-session, follow the
+manual UI handoff and wait before implementation; see [client acquisition and
+security](client-security.md).
 
 ## Selection basis
 

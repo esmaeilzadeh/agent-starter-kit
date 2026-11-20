@@ -11,16 +11,18 @@ file permissions. The setup flow asks before changing a user-wide MCP file.
 To migrate an existing `.ask.env`, first review it and then run:
 
 ```sh
-python3 _ask/scripts/tracker-config.py migrate --root . --yes
+./ask credentials migrate
 ```
 
 Migration parses assignments as data; it does not evaluate shell syntax. It
-stores supported credentials privately before removing only credential
-assignments from the working copy. Comments, public settings, staged index, and
-Git history are left alone. If the file is tracked or staged, migration warns
-that exposed credentials may need rotation; it does not rewrite history. Use
-HTTPS tracker URLs without embedded credentials. Jira MCP receives only its
-configured URL and token through the wrapper process environment.
+stores `TRACKER_TOKEN` as the configured GitHub or Jira credential in private
+storage before removing only credential assignments from the working copy.
+Comments, public settings, staged index, and Git history are left alone. If the
+file is tracked or staged, migration warns that the exposed credential should
+be rotated; it does not rewrite history. Use HTTPS tracker URLs without
+embedded credentials. Jira MCP receives only its configured URL and token
+through the wrapper process environment. See [client acquisition and
+security](../client-security.md) for migration safeguards.
 
 Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
 

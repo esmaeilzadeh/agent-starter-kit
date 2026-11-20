@@ -78,7 +78,7 @@ Commands:
       <target-repo>     required path; must already be a git repo
       Does not touch that repo's docs/, scripts/, tests/, or src/.
 
-  upgrade --version <tag-or-sha> [--skip-prepare] [--source <git-url>]
+  upgrade --version <tag-or-sha> --expected-commit <full-sha> [--skip-prepare] [--source <git-url>]
       Refresh kit-owned files from an explicit version (never blind main).
       --version <tag-or-sha>   required
       --skip-prepare           skip prepare + sync after refresh

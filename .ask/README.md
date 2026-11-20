@@ -5,3 +5,6 @@
 - **`.ask.env`** (repo root) — secrets. Gitignored. Start from `.ask.env.example`.
 
 Agents must not run `./ask setup` (human-only, needs a TTY).
+
+For safe install and upgrade, credential migration, verifier environment
+allowlisting and private logs, see the kit's [client security guide](../_ask/docs/client-security.md).
