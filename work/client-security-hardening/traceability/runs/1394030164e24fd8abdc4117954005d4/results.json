@@ -1,0 +1,81 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "1394030164e24fd8abdc4117954005d4",
+  "scope": "task",
+  "task_id": "CSH-07",
+  "candidate_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d"
+  },
+  "executions": [
+    {
+      "id": "c991b5de4e94420db4a0bfccad5df168",
+      "runner_id": "test_client_workbench",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_workbench.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/askit-security-csh06.98f3c09.frozen/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/client-security-hardening/traceability/runs/1394030164e24fd8abdc4117954005d4/c991b5de4e94420db4a0bfccad5df168.json",
+        "[\"test_client_workbench.ClientTests.test_address_precedence\", \"test_client_workbench.ClientTests.test_actual_listener\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_workbench.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/client-security-hardening/traceability/runs/1394030164e24fd8abdc4117954005d4/c991b5de4e94420db4a0bfccad5df168.log",
+      "output_digest": "95e0dcd29f8f0b85abb13679e13a72609d5b9c9ea7b24f72adeb657bed6b1a7e"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T28",
+      "runner_id": "test_client_workbench",
+      "execution_id": "c991b5de4e94420db4a0bfccad5df168",
+      "phase": "final_green",
+      "source_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "source_digests": {
+        "_ask/tests/test_client_workbench.py": "c9a61f185cba6024511dd928ef8edbc26d07f47e5bd874b5c7067971ebf64768"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/1394030164e24fd8abdc4117954005d4/c991b5de4e94420db4a0bfccad5df168.log",
+      "output_digest": "95e0dcd29f8f0b85abb13679e13a72609d5b9c9ea7b24f72adeb657bed6b1a7e"
+    },
+    {
+      "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T27",
+      "runner_id": "test_client_workbench",
+      "execution_id": "c991b5de4e94420db4a0bfccad5df168",
+      "phase": "final_green",
+      "source_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "source_digests": {
+        "_ask/tests/test_client_workbench.py": "c9a61f185cba6024511dd928ef8edbc26d07f47e5bd874b5c7067971ebf64768"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/1394030164e24fd8abdc4117954005d4/c991b5de4e94420db4a0bfccad5df168.log",
+      "output_digest": "95e0dcd29f8f0b85abb13679e13a72609d5b9c9ea7b24f72adeb657bed6b1a7e"
+    }
+  ]
+}

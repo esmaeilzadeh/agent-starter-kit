@@ -1,8 +1,8 @@
 {
   "schema": "ask-inner-loop-state/v1",
   "work_id": "client-security-hardening",
-  "revision": 55,
-  "coordinator_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+  "revision": 108,
+  "coordinator_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
   "coordinator_branch": "agent/client-security-hardening",
   "tasks": {
     "CSH-01": {
@@ -800,14 +800,184 @@
       "attempt_history": []
     },
     "CSH-05": {
-      "status": "running",
+      "status": "integrated",
       "base_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
       "task_branch": "",
-      "result_path": "",
+      "result_path": "work/client-security-hardening/inner-loop/results/CSH-05.json",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "9a347943da3846f1a7b8ce9a0e83c42d",
+            "digest": "cecb428386cec810b745511e5b77e13a68f51347e4322591472c495893777457",
+            "phase": "red",
+            "task_id": "CSH-05",
+            "candidate_sha": "741bcffcc2b469c39eaa9e0ddf2e018cf82d7b60",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "89117d943c03449792a8c8578430794f",
+            "digest": "bd28ceb61bb6041faf547941485f7756c2a2bd4bb47d38006564d63482e93d2e",
+            "phase": "red",
+            "task_id": "CSH-05",
+            "candidate_sha": "3ba7c1f287d3b047f794918b1002c9a52e617bbf",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "17f7be25f7dc43a5871b19db22be821d",
+            "digest": "d6edd81d8e15ea116cf5b3ce0628c36d1b7fc3865a8537142795ca5387313a3d",
+            "phase": "red",
+            "task_id": "CSH-05",
+            "candidate_sha": "24d0cbadb49f40b49e907e387ae91b0673e6c8b8",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "079b539763ae4c828b5d9e4c26e76304",
+            "digest": "87fd133354d7b3ed9c5bc43e6961eccb6a633bd8c0ab64684ff2045f7511987c",
+            "phase": "final_green",
+            "task_id": "CSH-05",
+            "candidate_sha": "e68130baf7f5593c38baa64adde9d24c19908c04",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "04ead7c63b374b91b1d348dcd16cc6b1",
+            "digest": "c00e498665a81f7e61369b673078538222fafb9443181b0b20ef2a833d49c388",
+            "phase": "red",
+            "task_id": "CSH-05",
+            "candidate_sha": "67264af7234781b44b7e3dedc54aef98bb21d77c",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "dd7db25f474543029ce2b8cdad9648ad",
+            "digest": "d0e4058030cbcdb7639f51bebdf286b98f72b4721b19a0d80d3cc9ed3412f6f8",
+            "phase": "final_green",
+            "task_id": "CSH-05",
+            "candidate_sha": "470f31918a8c06e9117e8b5bdeeb07b7e9b269fe",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "0293f768cbce4972ace7748b7087058f",
+            "digest": "356252043850d2dffb122f78baf37ceeba86d9a092789e96eea57e3ed9528cd4",
+            "phase": "final_green",
+            "task_id": "CSH-05",
+            "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          }
+        ],
+        "review": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-05",
+          "base_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+          "result_digest": "e0620ecac7e04ec7116e86a95ea72410b84b5b04873236e03caa24d38243780d",
+          "reviewer": "gpt-6.1-sol (medium)",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-05-review.md",
+          "evidence_digest": "f041f3d0862ce33eea59d1fdf0e2061eaace9578f2a622b3d3eb016d2a678d28",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-05",
+          "base_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "e0620ecac7e04ec7116e86a95ea72410b84b5b04873236e03caa24d38243780d",
+          "checks": [
+            {
+              "id": "CSH-T19",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_verification.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/c8afa78c25964e0cb7ef16f1474d8b9a.log",
+              "output_digest": "6c52556e7f32a77eaf574615dece12baf52b959d9f0f31c6dc8f2f41e214535b"
+            },
+            {
+              "id": "CSH-T20",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_verification.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/c8afa78c25964e0cb7ef16f1474d8b9a.log",
+              "output_digest": "6c52556e7f32a77eaf574615dece12baf52b959d9f0f31c6dc8f2f41e214535b"
+            },
+            {
+              "id": "CSH-T21",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_verification.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/c8afa78c25964e0cb7ef16f1474d8b9a.log",
+              "output_digest": "6c52556e7f32a77eaf574615dece12baf52b959d9f0f31c6dc8f2f41e214535b"
+            },
+            {
+              "id": "CSH-T22",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_verification.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/c8afa78c25964e0cb7ef16f1474d8b9a.log",
+              "output_digest": "6c52556e7f32a77eaf574615dece12baf52b959d9f0f31c6dc8f2f41e214535b"
+            },
+            {
+              "id": "CSH-T23",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_verification.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/c8afa78c25964e0cb7ef16f1474d8b9a.log",
+              "output_digest": "6c52556e7f32a77eaf574615dece12baf52b959d9f0f31c6dc8f2f41e214535b"
+            }
+          ],
+          "tree_sha": "7a0087a92c8d5c6e8fdc233cd166a27009a8fee9",
+          "traceability_run_ids": [
+            "0293f768cbce4972ace7748b7087058f"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+            "run_id": "0293f768cbce4972ace7748b7087058f",
+            "report_path": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/results.json",
+            "sha256": "f0c0b43dd13d979ced7ffba0d0602c0b0c49b8870141229a8cd6fed3aee6cdbd"
+          },
+          "task_report_digest": "356252043850d2dffb122f78baf37ceeba86d9a092789e96eea57e3ed9528cd4",
+          "runner_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+          "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "record_path": "work/client-security-hardening/inner-loop/evidence/verify-0293f768-je98fsrm/integration.json",
+          "resulting_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+          "review": {
+            "work_id": "client-security-hardening",
+            "task_id": "CSH-05",
+            "base_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+            "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+            "result_digest": "e0620ecac7e04ec7116e86a95ea72410b84b5b04873236e03caa24d38243780d",
+            "reviewer": "gpt-6.1-sol (medium)",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-05-review.md",
+            "evidence_digest": "f041f3d0862ce33eea59d1fdf0e2061eaace9578f2a622b3d3eb016d2a678d28",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        },
+        "verification_record_digest": "b2275ce92abdfb8a1715fa8f85f70b832ac0eeee15f210e7d28e8974a3aa4393"
+      },
       "attempt_number": 1,
       "attempt_id": "CSH-05:attempt-1",
       "accepted_plan_ref": "44aecc9aaf7b69ec2fdaeffc8f63343f2de9f315",
@@ -816,67 +986,666 @@
       "attempt_history": []
     },
     "CSH-06": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "integrated",
+      "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
       "task_branch": "",
-      "result_path": "",
+      "result_path": "work/client-security-hardening/inner-loop/results/CSH-06.json",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
-      "attempt_number": 0,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "d372fab523624491aebd009b67a5fd59",
+            "digest": "82ce0bfc9896e99299de2b8a03a37abffa6f3c3cdaafe3148340c1118a3490b8",
+            "phase": "red",
+            "task_id": "CSH-06",
+            "candidate_sha": "3dc915de41444db512bfd9f332b3d845c4b78a09",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "300ec51298ec4faaa8455acad4cbdcbf",
+            "digest": "6c04bcc344e6fe3fd9ee287a4e7e5e35d53abc619cb563c3d41d52d84446f16b",
+            "phase": "red",
+            "task_id": "CSH-06",
+            "candidate_sha": "3dc915de41444db512bfd9f332b3d845c4b78a09",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "7f697fdeff704872bd761fe604a81de4",
+            "digest": "21a47a28e50bdadef4077694da394f42a1e3aac56e6c04661623e66d0c277177",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "af08b660ecfa04b10a8823054771349f30206236",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "c3b93d06eb8c42be8f262d5a46f97bdc",
+            "digest": "d38114e3556dfa06e7a8f1412e5731749b508c0a6c97023dec00b8bac5b0cb70",
+            "phase": "red",
+            "task_id": "CSH-06",
+            "candidate_sha": "455615a389d5ccfd15d81a3a47d5e526e764c8d8",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "7dcf0008fdca42029347b5e985fadc8d",
+            "digest": "4220b87fdfa231edf5fd3c721d40fab50dc8c660a5ccec1e3f69449ec07d9e71",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "bc8108b464e87a690e6f12aa56cc8140f0fc9e22",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "1a0a3a9b75f24866ac9eacbfd365b44c",
+            "digest": "c3ae30b3bcef01fad1e6dd7da8112f7f4faa2e39cf8bd3cf59c1799cf6915585",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "9abfa1334295018b1e3acf4064df97f427929ef1",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "05220387e4c840c898b79902cc4af7a9",
+            "digest": "7ab71ee1df7ac495abc63ce9d6b654ad85a64868a2245af50ff8f14663e3d9d6",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "fcae7e33d64ee134f30d60c179cbd17689f954ac",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "14ab840b28c9438a9a03449a30643c00",
+            "digest": "eaa7d29be51834724d139ac68fc6c9e41f19c4615ba9eb3e7a0249b671801505",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "645533129383161e1b2e148150f846dde59b4657",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "90114465d2a8446b897ff0745d87c39a",
+            "digest": "124922beb52b39112b966450b51efd46a263d12c061c560c1a48c80611194c22",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "992f721578707d26326e975f75315f5bcf5f395c",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "970cb8614ac944c289e29f17458f8bb9",
+            "digest": "452419c38f532a6f90407ffee1e7c732606d3d429c8e4f28c09e07de81c770fe",
+            "phase": "red",
+            "task_id": "CSH-06",
+            "candidate_sha": "13f9ed00fa4e26efcdaba0cfb33df2c7d03adc31",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "a824b7a004f64b46b7f3deec5fee0470",
+            "digest": "c827b5a26954b2c069f3667211b6b1ec317f95e4c33ab9fdabd8078b5789d588",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "e9976cf49fd6a38f85897ae2dd8f85723cf38b89",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "710c89efe23247f0b658678332edfc23",
+            "digest": "1bf1569db8ac27c9319ad68019f7218b4b435971a66998e86f5e9f7c70d49c80",
+            "phase": "red",
+            "task_id": "CSH-06",
+            "candidate_sha": "421048ba45b4d2960dc2d77190bbfe5ecd94d4e6",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "f9cc0701faa6443c9213bae94e099a93",
+            "digest": "045dd2f7aeca66aa0ea4116d3f76014e1a76e1b6d6c6b841736eed1e9347f3d9",
+            "phase": "final_green",
+            "task_id": "CSH-06",
+            "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          }
+        ],
+        "review": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-06",
+          "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+          "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+          "result_digest": "86838b8be8790e4158ff798f1a86fa8c7d662df374afdc9f9a0b65a2bb104a46",
+          "reviewer": "gpt-6.1-sol (medium)",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-06-review.md",
+          "evidence_digest": "39000fabd7e6ccdbe7f402fa02655c17747f062577a1c5917094de9beee13848",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-06",
+          "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+          "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "86838b8be8790e4158ff798f1a86fa8c7d662df374afdc9f9a0b65a2bb104a46",
+          "checks": [
+            {
+              "id": "CSH-T24",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_runtime_config.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/ee37c0dc2fd545cb9c97d7b5c1140e58.log",
+              "output_digest": "34bef9ac2c197d3667fc3aa65376ec8a1691888961c6930c6b1bb419b8063fd5"
+            },
+            {
+              "id": "CSH-T25",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_runtime_config.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/ee37c0dc2fd545cb9c97d7b5c1140e58.log",
+              "output_digest": "34bef9ac2c197d3667fc3aa65376ec8a1691888961c6930c6b1bb419b8063fd5"
+            },
+            {
+              "id": "CSH-T26",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_runtime_config.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/ee37c0dc2fd545cb9c97d7b5c1140e58.log",
+              "output_digest": "34bef9ac2c197d3667fc3aa65376ec8a1691888961c6930c6b1bb419b8063fd5"
+            }
+          ],
+          "tree_sha": "8163ccda9f0e73540e2bce07305db7d9555a901a",
+          "traceability_run_ids": [
+            "f9cc0701faa6443c9213bae94e099a93"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+            "run_id": "f9cc0701faa6443c9213bae94e099a93",
+            "report_path": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/results.json",
+            "sha256": "dee82894a6bc41ca217f4524a41e8f885266dc1f8f2cf9f5b1724f24c87d565c"
+          },
+          "task_report_digest": "045dd2f7aeca66aa0ea4116d3f76014e1a76e1b6d6c6b841736eed1e9347f3d9",
+          "runner_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+          "runner_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d",
+          "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "record_path": "work/client-security-hardening/inner-loop/evidence/verify-f9cc0701-k342pzd8/integration.json",
+          "resulting_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+          "review": {
+            "work_id": "client-security-hardening",
+            "task_id": "CSH-06",
+            "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+            "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+            "result_digest": "86838b8be8790e4158ff798f1a86fa8c7d662df374afdc9f9a0b65a2bb104a46",
+            "reviewer": "gpt-6.1-sol (medium)",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-06-review.md",
+            "evidence_digest": "39000fabd7e6ccdbe7f402fa02655c17747f062577a1c5917094de9beee13848",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        },
+        "verification_record_digest": "c164e8d662fccee4c9b3f9bdded10959ac0dc357b3e4778cdfcf683be008d67e"
+      },
+      "attempt_number": 1,
+      "attempt_id": "CSH-06:attempt-1",
+      "accepted_plan_ref": "44aecc9aaf7b69ec2fdaeffc8f63343f2de9f315",
+      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "attempt_started_revision": 66,
       "attempt_history": []
     },
     "CSH-07": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "integrated",
+      "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
       "task_branch": "",
-      "result_path": "",
+      "result_path": "work/client-security-hardening/inner-loop/results/CSH-07.json",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
-      "attempt_number": 0,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "e340b33388c245a59166035aa8db5722",
+            "digest": "5d991bbaf8bc7cc36bf9f0a161da5e9b1a38cef62c215478cb6aed596538fc36",
+            "phase": "red",
+            "task_id": "CSH-07",
+            "candidate_sha": "6996bc8857a671dd5c095dc69be700348869f170",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "1394030164e24fd8abdc4117954005d4",
+            "digest": "a7d0c849be174b80f0b68d36922149203c3a313e762f5da1140685f9b34be896",
+            "phase": "final_green",
+            "task_id": "CSH-07",
+            "candidate_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "9ec0fd2f73f24af781fff873a07ddd53",
+            "digest": "f4fe057013deb39de41d3b070d7073bd9665a5d0dbc0f6488186b934ad4a2745",
+            "phase": "red",
+            "task_id": "CSH-07",
+            "candidate_sha": "ed8ec2eccf2989dfdddeb3c19f4602c14cd6eef2",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "cde7625afc9440f3b43ffd6b4d0efac0",
+            "digest": "a9ea5055161d6ddf024474b14724f9b22a10bf56663b56f71ccfe9866769d674",
+            "phase": "final_green",
+            "task_id": "CSH-07",
+            "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          }
+        ],
+        "review": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-07",
+          "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+          "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "result_digest": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+          "reviewer": "gpt-6.1-sol (medium)",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-07-review.md",
+          "evidence_digest": "4d69309267f66679760469a66583ec263812eecbba599ebc185076143b587459",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-07",
+          "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+          "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+          "checks": [
+            {
+              "id": "CSH-T28",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_workbench.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/cde7625afc9440f3b43ffd6b4d0efac0/eae9c50521f3473fbcc929bf1b17ee25.log",
+              "output_digest": "2902c10a1a5a487d8788e979378123de6b0769c38ede6017467d79be38266e74"
+            },
+            {
+              "id": "CSH-T27",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_workbench.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/cde7625afc9440f3b43ffd6b4d0efac0/eae9c50521f3473fbcc929bf1b17ee25.log",
+              "output_digest": "2902c10a1a5a487d8788e979378123de6b0769c38ede6017467d79be38266e74"
+            }
+          ],
+          "tree_sha": "c63d0acf65695689c9ad72328b7393f43e76cc8c",
+          "traceability_run_ids": [
+            "cde7625afc9440f3b43ffd6b4d0efac0"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+            "run_id": "cde7625afc9440f3b43ffd6b4d0efac0",
+            "report_path": "work/client-security-hardening/traceability/runs/cde7625afc9440f3b43ffd6b4d0efac0/results.json",
+            "sha256": "73faa2cfcadb3e251f25444f06c12a9da7b78efa11d10589979f75d70ba0fa78"
+          },
+          "task_report_digest": "a9ea5055161d6ddf024474b14724f9b22a10bf56663b56f71ccfe9866769d674",
+          "runner_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+          "runner_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d",
+          "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "record_path": "work/client-security-hardening/inner-loop/evidence/verify-cde7625a-nbzl3pu5/integration.json",
+          "resulting_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "review": {
+            "work_id": "client-security-hardening",
+            "task_id": "CSH-07",
+            "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+            "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+            "result_digest": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+            "reviewer": "gpt-6.1-sol (medium)",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-07-review.md",
+            "evidence_digest": "4d69309267f66679760469a66583ec263812eecbba599ebc185076143b587459",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        },
+        "verification_record_digest": "dec87328f446ee1b3f6ac02e3e0d3a93d231de6148904d7768ce99e100551547"
+      },
+      "attempt_number": 1,
+      "attempt_id": "CSH-07:attempt-1",
+      "accepted_plan_ref": "44aecc9aaf7b69ec2fdaeffc8f63343f2de9f315",
+      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "attempt_started_revision": 83,
       "attempt_history": []
     },
     "CSH-08": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "integrated",
+      "base_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
       "task_branch": "",
-      "result_path": "",
+      "result_path": "work/client-security-hardening/inner-loop/results/CSH-08.json",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
-      "attempt_number": 0,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "12ccd47952804fe7a514d01f1a7f8140",
+            "digest": "c887c912d77d15878c0940e078ce915e23739dee3891e50efc51aee2717687f6",
+            "phase": "red",
+            "task_id": "CSH-08",
+            "candidate_sha": "55dbb1859449402c7eb5cdd259efdd99c80f6db9",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "8230db3fc8af4287a54e6c4fe673a7a5",
+            "digest": "9b60d11200b2a2d36a6ddc71ddecfb0876f18d0dc2e9c2ac8ac8bffdd519f02a",
+            "phase": "final_green",
+            "task_id": "CSH-08",
+            "candidate_sha": "269672c0768a2b5f71de5f8a2bf13cadf731a344",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "91e7f881c39444059eba04c57b306304",
+            "digest": "d7319c761f601d71d590bccfdac1d0cdfc30646fed01997a7009b974b4e01ca5",
+            "phase": "final_green",
+            "task_id": "CSH-08",
+            "candidate_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          }
+        ],
+        "review": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-08",
+          "base_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "candidate_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+          "result_digest": "b1f7b2ca160d6619b60396672d7be627f6b6994bf44f58e02262934cd7f46206",
+          "reviewer": "gpt-6.1-sol (medium)",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-08-review.md",
+          "evidence_digest": "44a49664afd2eae2d73bc8e3031530603d73f69fc59d93e131125ac68cc94ecf",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-08",
+          "base_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "candidate_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "b1f7b2ca160d6619b60396672d7be627f6b6994bf44f58e02262934cd7f46206",
+          "checks": [
+            {
+              "id": "CSH-T40",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_model_decisions.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+              "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+            },
+            {
+              "id": "CSH-T31",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_model_decisions.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+              "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+            },
+            {
+              "id": "CSH-T29",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_model_decisions.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+              "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+            },
+            {
+              "id": "CSH-T32",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_model_decisions.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+              "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+            },
+            {
+              "id": "CSH-T30",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_model_decisions.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+              "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+            }
+          ],
+          "tree_sha": "1468675271e3d662f7ade0521cd521a862b2bb5b",
+          "traceability_run_ids": [
+            "91e7f881c39444059eba04c57b306304"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+            "run_id": "91e7f881c39444059eba04c57b306304",
+            "report_path": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/results.json",
+            "sha256": "8a6bba44947ccffbf5b8d2ad31dadaf51614cecf95b4bd17a0c3002e80030ff0"
+          },
+          "task_report_digest": "d7319c761f601d71d590bccfdac1d0cdfc30646fed01997a7009b974b4e01ca5",
+          "runner_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "runner_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d",
+          "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "record_path": "work/client-security-hardening/inner-loop/evidence/verify-91e7f881-5a738gfi/integration.json",
+          "resulting_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+          "review": {
+            "work_id": "client-security-hardening",
+            "task_id": "CSH-08",
+            "base_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+            "candidate_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+            "result_digest": "b1f7b2ca160d6619b60396672d7be627f6b6994bf44f58e02262934cd7f46206",
+            "reviewer": "gpt-6.1-sol (medium)",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-08-review.md",
+            "evidence_digest": "44a49664afd2eae2d73bc8e3031530603d73f69fc59d93e131125ac68cc94ecf",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        },
+        "verification_record_digest": "725e90bfc5f0683d02253eec21f027611feb6fbe50f6307b621de9a839713936"
+      },
+      "attempt_number": 1,
+      "attempt_id": "CSH-08:attempt-1",
+      "accepted_plan_ref": "44aecc9aaf7b69ec2fdaeffc8f63343f2de9f315",
+      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "attempt_started_revision": 92,
       "attempt_history": []
     },
     "CSH-09": {
-      "status": "pending",
-      "base_sha": "",
+      "status": "integrated",
+      "base_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
       "task_branch": "",
-      "result_path": "",
+      "result_path": "work/client-security-hardening/inner-loop/results/CSH-09.json",
       "boundary_reject": null,
       "review_round": 0,
       "debug_round": 0,
-      "evidence": {},
-      "attempt_number": 0,
-      "attempt_id": "",
-      "accepted_plan_ref": "",
-      "accepted_plan_digest": "",
-      "attempt_started_revision": null,
+      "evidence": {
+        "traceability_runs": [
+          {
+            "run_id": "2f54956a6f7a4f6b91a98b36c8360b67",
+            "digest": "ab1073146070a30222aace43e391e0094fb7c4331b373a9ec6d7598f27e52f86",
+            "phase": "red",
+            "task_id": "CSH-09",
+            "candidate_sha": "f4a634ecfa653d3e1a5db60e35f3b5ee6d453109",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "fc99b364d91c4ce28f26095f95dc5143",
+            "digest": "851c900fcdac48070db2bdfa62681e69bb7cf893c7796c76a9d61f89a7203b93",
+            "phase": "final_green",
+            "task_id": "CSH-09",
+            "candidate_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "1e09bbea00de4167b9222388899d7569",
+            "digest": "67df82d47cb3d975bc8b19ba97a939f4a6de97a3498ecd476b45ab1b42462aae",
+            "phase": "red",
+            "task_id": "CSH-09",
+            "candidate_sha": "cd3443f0e5782b7ed25b3395c861cfaa2d2a8bdd",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          },
+          {
+            "run_id": "c10b75a834d645eeb130419c5eeff3e0",
+            "digest": "7f62451d157bdd3b229d7088024244a80ca1a82ea3308a24e4ba681d736996c0",
+            "phase": "final_green",
+            "task_id": "CSH-09",
+            "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+            "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+            "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf"
+          }
+        ],
+        "review": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-09",
+          "base_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+          "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+          "result_digest": "1fbc64e9825b96b1c2c07047cd64efd25db710746a0d2cc1f0138bcfe0b65faf",
+          "reviewer": "gpt-6.1-sol (medium)",
+          "policy": "_ask/policies/delegation.md",
+          "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+          "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-09-review.md",
+          "evidence_digest": "ad960a1be6432ca05afa7e30780d763e9f2e1feeb61f9b67e2f3931564c04492",
+          "verdict": "APPROVED",
+          "boundary": "ok",
+          "exemption_reason": null
+        },
+        "verification": {
+          "work_id": "client-security-hardening",
+          "task_id": "CSH-09",
+          "base_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+          "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+          "schema": "ask-integration-evidence/v1",
+          "result": "pass",
+          "result_digest": "1fbc64e9825b96b1c2c07047cd64efd25db710746a0d2cc1f0138bcfe0b65faf",
+          "checks": [
+            {
+              "id": "CSH-T33",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_orchestrator.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/e0ddf481e6874a5d87c06e4fb339025e.log",
+              "output_digest": "0680bfe20dad948c39d8d8b8c7006fede949c6da4be98f63a6d13a892f58efb8"
+            },
+            {
+              "id": "CSH-T34",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_orchestrator.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/e0ddf481e6874a5d87c06e4fb339025e.log",
+              "output_digest": "0680bfe20dad948c39d8d8b8c7006fede949c6da4be98f63a6d13a892f58efb8"
+            },
+            {
+              "id": "CSH-T37",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_orchestrator.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/e0ddf481e6874a5d87c06e4fb339025e.log",
+              "output_digest": "0680bfe20dad948c39d8d8b8c7006fede949c6da4be98f63a6d13a892f58efb8"
+            },
+            {
+              "id": "CSH-T35",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_orchestrator.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/e0ddf481e6874a5d87c06e4fb339025e.log",
+              "output_digest": "0680bfe20dad948c39d8d8b8c7006fede949c6da4be98f63a6d13a892f58efb8"
+            },
+            {
+              "id": "CSH-T36",
+              "tier": "mandatory",
+              "command": "python3 -m unittest discover -s _ask/tests -p test_client_orchestrator.py",
+              "status": "pass",
+              "exit_code": 0,
+              "evidence": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/e0ddf481e6874a5d87c06e4fb339025e.log",
+              "output_digest": "0680bfe20dad948c39d8d8b8c7006fede949c6da4be98f63a6d13a892f58efb8"
+            }
+          ],
+          "tree_sha": "f3d6b1ea18fb67df2e72d27300fae6fdb6b71055",
+          "traceability_run_ids": [
+            "c10b75a834d645eeb130419c5eeff3e0"
+          ],
+          "task_verification_report": {
+            "schema": "ask-task-verification-report/v1",
+            "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+            "run_id": "c10b75a834d645eeb130419c5eeff3e0",
+            "report_path": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/results.json",
+            "sha256": "ef08760340a796d9331bf546c9fa4bd449fbff90eced816694bc554274d00019"
+          },
+          "task_report_digest": "7f62451d157bdd3b229d7088024244a80ca1a82ea3308a24e4ba681d736996c0",
+          "runner_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+          "runner_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d",
+          "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+          "record_path": "work/client-security-hardening/inner-loop/evidence/verify-c10b75a8-z3w_x6_v/integration.json",
+          "resulting_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+          "review": {
+            "work_id": "client-security-hardening",
+            "task_id": "CSH-09",
+            "base_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+            "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+            "result_digest": "1fbc64e9825b96b1c2c07047cd64efd25db710746a0d2cc1f0138bcfe0b65faf",
+            "reviewer": "gpt-6.1-sol (medium)",
+            "policy": "_ask/policies/delegation.md",
+            "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+            "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-09-review.md",
+            "evidence_digest": "ad960a1be6432ca05afa7e30780d763e9f2e1feeb61f9b67e2f3931564c04492",
+            "verdict": "APPROVED",
+            "boundary": "ok",
+            "exemption_reason": null
+          }
+        },
+        "verification_record_digest": "924462897fd30d6f08fffa54625ae5d7d7a4bb4eddcabdce491af162e8f33958"
+      },
+      "attempt_number": 1,
+      "attempt_id": "CSH-09:attempt-1",
+      "accepted_plan_ref": "44aecc9aaf7b69ec2fdaeffc8f63343f2de9f315",
+      "accepted_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "attempt_started_revision": 100,
       "attempt_history": []
     },
     "CSH-10": {

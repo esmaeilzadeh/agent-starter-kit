@@ -1,0 +1,126 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "91e7f881c39444059eba04c57b306304",
+  "scope": "task",
+  "task_id": "CSH-08",
+  "candidate_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d"
+  },
+  "executions": [
+    {
+      "id": "159408beb8604c7fa412980539008936",
+      "runner_id": "test_client_model_decisions",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_model_decisions.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/askit-security-csh06.98f3c09.frozen/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.json",
+        "[\"test_client_model_decisions.ClientTests.test_one_grill_decision\", \"test_client_model_decisions.ClientTests.test_reuse_and_resume\", \"test_client_model_decisions.ClientTests.test_legacy_choices\", \"test_client_model_decisions.ClientTests.test_portable_projections\", \"test_client_model_decisions.ClientTests.test_decision_persistence\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_model_decisions.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+      "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_client_model_decisions.ClientTests.test_decision_persistence",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T40",
+      "runner_id": "test_client_model_decisions",
+      "execution_id": "159408beb8604c7fa412980539008936",
+      "phase": "final_green",
+      "source_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+      "source_digests": {
+        "_ask/tests/test_client_model_decisions.py": "43d855e260127746d65347c2d5c7c377a35473aee5b795d4351a9a61a6efd457"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+      "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+    },
+    {
+      "case_id": "test_client_model_decisions.ClientTests.test_legacy_choices",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T31",
+      "runner_id": "test_client_model_decisions",
+      "execution_id": "159408beb8604c7fa412980539008936",
+      "phase": "final_green",
+      "source_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+      "source_digests": {
+        "_ask/tests/test_client_model_decisions.py": "43d855e260127746d65347c2d5c7c377a35473aee5b795d4351a9a61a6efd457"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+      "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+    },
+    {
+      "case_id": "test_client_model_decisions.ClientTests.test_one_grill_decision",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T29",
+      "runner_id": "test_client_model_decisions",
+      "execution_id": "159408beb8604c7fa412980539008936",
+      "phase": "final_green",
+      "source_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+      "source_digests": {
+        "_ask/tests/test_client_model_decisions.py": "43d855e260127746d65347c2d5c7c377a35473aee5b795d4351a9a61a6efd457"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+      "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+    },
+    {
+      "case_id": "test_client_model_decisions.ClientTests.test_portable_projections",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T32",
+      "runner_id": "test_client_model_decisions",
+      "execution_id": "159408beb8604c7fa412980539008936",
+      "phase": "final_green",
+      "source_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+      "source_digests": {
+        "_ask/tests/test_client_model_decisions.py": "43d855e260127746d65347c2d5c7c377a35473aee5b795d4351a9a61a6efd457"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+      "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+    },
+    {
+      "case_id": "test_client_model_decisions.ClientTests.test_reuse_and_resume",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T30",
+      "runner_id": "test_client_model_decisions",
+      "execution_id": "159408beb8604c7fa412980539008936",
+      "phase": "final_green",
+      "source_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+      "source_digests": {
+        "_ask/tests/test_client_model_decisions.py": "43d855e260127746d65347c2d5c7c377a35473aee5b795d4351a9a61a6efd457"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/91e7f881c39444059eba04c57b306304/159408beb8604c7fa412980539008936.log",
+      "output_digest": "9d8ea91711784f8d7c81eabc454927d93bf3acaaf2dbc2ef57e2e4945f5ba7b5"
+    }
+  ]
+}

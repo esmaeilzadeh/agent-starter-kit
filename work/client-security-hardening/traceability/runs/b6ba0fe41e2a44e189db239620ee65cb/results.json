@@ -1,0 +1,111 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "b6ba0fe41e2a44e189db239620ee65cb",
+  "scope": "task",
+  "task_id": "CSH-02",
+  "candidate_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "da9b05844f614c83a90dcaf5edb7b23a",
+      "runner_id": "test_client_launcher",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_launcher.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/askit-security.e0Qyvz/frozen/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/client-security-hardening/traceability/runs/b6ba0fe41e2a44e189db239620ee65cb/da9b05844f614c83a90dcaf5edb7b23a.json",
+        "[\"test_client_launcher.ClientTests.test_identity_scope\", \"test_client_launcher.ClientTests.test_delegation_requires_trust\", \"test_client_launcher.ClientTests.test_completion_stays_installed\", \"test_client_launcher.ClientTests.test_completion_requires_opt_in\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_launcher.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/client-security-hardening/traceability/runs/b6ba0fe41e2a44e189db239620ee65cb/da9b05844f614c83a90dcaf5edb7b23a.log",
+      "output_digest": "2cfd53c2dece182fac47fa99d72845427a234ec657a573d61512ed46b8ec6df7"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_client_launcher.ClientTests.test_completion_requires_opt_in",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T08",
+      "runner_id": "test_client_launcher",
+      "execution_id": "da9b05844f614c83a90dcaf5edb7b23a",
+      "phase": "final_green",
+      "source_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
+      "source_digests": {
+        "_ask/tests/test_client_launcher.py": "b640be0b6d3477f9923a0f650f381b9c6ddfcf5f43ec3ec81e470800c9e60595"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/b6ba0fe41e2a44e189db239620ee65cb/da9b05844f614c83a90dcaf5edb7b23a.log",
+      "output_digest": "2cfd53c2dece182fac47fa99d72845427a234ec657a573d61512ed46b8ec6df7"
+    },
+    {
+      "case_id": "test_client_launcher.ClientTests.test_completion_stays_installed",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T07",
+      "runner_id": "test_client_launcher",
+      "execution_id": "da9b05844f614c83a90dcaf5edb7b23a",
+      "phase": "final_green",
+      "source_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
+      "source_digests": {
+        "_ask/tests/test_client_launcher.py": "b640be0b6d3477f9923a0f650f381b9c6ddfcf5f43ec3ec81e470800c9e60595"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/b6ba0fe41e2a44e189db239620ee65cb/da9b05844f614c83a90dcaf5edb7b23a.log",
+      "output_digest": "2cfd53c2dece182fac47fa99d72845427a234ec657a573d61512ed46b8ec6df7"
+    },
+    {
+      "case_id": "test_client_launcher.ClientTests.test_delegation_requires_trust",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T06",
+      "runner_id": "test_client_launcher",
+      "execution_id": "da9b05844f614c83a90dcaf5edb7b23a",
+      "phase": "final_green",
+      "source_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
+      "source_digests": {
+        "_ask/tests/test_client_launcher.py": "b640be0b6d3477f9923a0f650f381b9c6ddfcf5f43ec3ec81e470800c9e60595"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/b6ba0fe41e2a44e189db239620ee65cb/da9b05844f614c83a90dcaf5edb7b23a.log",
+      "output_digest": "2cfd53c2dece182fac47fa99d72845427a234ec657a573d61512ed46b8ec6df7"
+    },
+    {
+      "case_id": "test_client_launcher.ClientTests.test_identity_scope",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T05",
+      "runner_id": "test_client_launcher",
+      "execution_id": "da9b05844f614c83a90dcaf5edb7b23a",
+      "phase": "final_green",
+      "source_sha": "e433d62fe0e499da6617a13f3e2d187e37a594ae",
+      "source_digests": {
+        "_ask/tests/test_client_launcher.py": "b640be0b6d3477f9923a0f650f381b9c6ddfcf5f43ec3ec81e470800c9e60595"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/b6ba0fe41e2a44e189db239620ee65cb/da9b05844f614c83a90dcaf5edb7b23a.log",
+      "output_digest": "2cfd53c2dece182fac47fa99d72845427a234ec657a573d61512ed46b8ec6df7"
+    }
+  ]
+}

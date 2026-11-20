@@ -1,0 +1,30 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "client-security-hardening",
+  "task_id": "CSH-05",
+  "base_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+  "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+  "tdd": {
+    "seam": "Keep cached verifier exit status and output evidence bound to the same runner environment.",
+    "red": {
+      "command": "frozen traceability CSH-05 red run 04ead7c63b374b91b1d348dcd16cc6b1",
+      "output": "test_trusted_verify_journey failed: duplicate argv with env_allow SAFE_A and SAFE_B reused runner B's exit code (1) while attaching runner A's log.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "frozen traceability CSH-05 final_green run 0293f768cbce4972ace7748b7087058f",
+      "output": "All CSH-T19 through CSH-T23 passed; the regression selected runner A's passing result and runner A's log.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+    "run_id": "0293f768cbce4972ace7748b7087058f",
+    "report_path": "work/client-security-hardening/traceability/runs/0293f768cbce4972ace7748b7087058f/results.json",
+    "sha256": "f0c0b43dd13d979ced7ffba0d0602c0b0c49b8870141229a8cd6fed3aee6cdbd"
+  },
+  "notes": "Independent gpt-6.1-sol (medium) review approved this exact candidate with boundary ok. The cache fix binds argv and env_allow, and ambiguous matches execute the static check directly. No applicable structural cleanup remained.",
+  "contract_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6"
+}

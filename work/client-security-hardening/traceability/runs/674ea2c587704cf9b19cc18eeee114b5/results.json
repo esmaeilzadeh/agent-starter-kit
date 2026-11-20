@@ -1,0 +1,111 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "674ea2c587704cf9b19cc18eeee114b5",
+  "scope": "task",
+  "task_id": "CSH-04",
+  "candidate_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2"
+  },
+  "executions": [
+    {
+      "id": "4f7e7336b9f14b6fbb3cd854c0d9b4c2",
+      "runner_id": "test_client_credentials",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_credentials.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/askit-security.e0Qyvz/frozen/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/client-security-hardening/traceability/runs/674ea2c587704cf9b19cc18eeee114b5/4f7e7336b9f14b6fbb3cd854c0d9b4c2.json",
+        "[\"test_client_credentials.ClientTests.test_legacy_data_and_urls\", \"test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in\", \"test_client_credentials.ClientTests.test_migrate_staged_credentials\", \"test_client_credentials.ClientTests.test_fresh_setup_pty\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_credentials.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "red",
+      "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+      "exit_code": 1,
+      "collection_status": "ok",
+      "output_artifact": "work/client-security-hardening/traceability/runs/674ea2c587704cf9b19cc18eeee114b5/4f7e7336b9f14b6fbb3cd854c0d9b4c2.log",
+      "output_digest": "69b80dbb61987070f21a5af5acb82c995a220e18038eb75caff6700d17f107c0"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T18",
+      "runner_id": "test_client_credentials",
+      "execution_id": "4f7e7336b9f14b6fbb3cd854c0d9b4c2",
+      "phase": "red",
+      "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+      "source_digests": {
+        "_ask/tests/test_client_credentials.py": "4a4d799cdc16a12f667bc38b923b3f5a8bba7294dbe6b1fcda82b22df2c3086f"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/674ea2c587704cf9b19cc18eeee114b5/4f7e7336b9f14b6fbb3cd854c0d9b4c2.log",
+      "output_digest": "69b80dbb61987070f21a5af5acb82c995a220e18038eb75caff6700d17f107c0"
+    },
+    {
+      "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T15",
+      "runner_id": "test_client_credentials",
+      "execution_id": "4f7e7336b9f14b6fbb3cd854c0d9b4c2",
+      "phase": "red",
+      "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+      "source_digests": {
+        "_ask/tests/test_client_credentials.py": "4a4d799cdc16a12f667bc38b923b3f5a8bba7294dbe6b1fcda82b22df2c3086f"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/674ea2c587704cf9b19cc18eeee114b5/4f7e7336b9f14b6fbb3cd854c0d9b4c2.log",
+      "output_digest": "69b80dbb61987070f21a5af5acb82c995a220e18038eb75caff6700d17f107c0"
+    },
+    {
+      "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+      "outcome": "error",
+      "failure_kind": "setup_or_runtime_error",
+      "test_id": "CSH-T17",
+      "runner_id": "test_client_credentials",
+      "execution_id": "4f7e7336b9f14b6fbb3cd854c0d9b4c2",
+      "phase": "red",
+      "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+      "source_digests": {
+        "_ask/tests/test_client_credentials.py": "4a4d799cdc16a12f667bc38b923b3f5a8bba7294dbe6b1fcda82b22df2c3086f"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/674ea2c587704cf9b19cc18eeee114b5/4f7e7336b9f14b6fbb3cd854c0d9b4c2.log",
+      "output_digest": "69b80dbb61987070f21a5af5acb82c995a220e18038eb75caff6700d17f107c0"
+    },
+    {
+      "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+      "outcome": "failed",
+      "failure_kind": "behavior_assertion",
+      "test_id": "CSH-T16",
+      "runner_id": "test_client_credentials",
+      "execution_id": "4f7e7336b9f14b6fbb3cd854c0d9b4c2",
+      "phase": "red",
+      "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+      "source_digests": {
+        "_ask/tests/test_client_credentials.py": "4a4d799cdc16a12f667bc38b923b3f5a8bba7294dbe6b1fcda82b22df2c3086f"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/674ea2c587704cf9b19cc18eeee114b5/4f7e7336b9f14b6fbb3cd854c0d9b4c2.log",
+      "output_digest": "69b80dbb61987070f21a5af5acb82c995a220e18038eb75caff6700d17f107c0"
+    }
+  ]
+}

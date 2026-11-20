@@ -1,0 +1,61 @@
+{
+  "work_id": "client-security-hardening",
+  "task_id": "CSH-07",
+  "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+  "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+  "schema": "ask-integration-evidence/v1",
+  "result": "pass",
+  "result_digest": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+  "checks": [
+    {
+      "id": "CSH-T28",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p test_client_workbench.py",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/client-security-hardening/traceability/runs/cde7625afc9440f3b43ffd6b4d0efac0/eae9c50521f3473fbcc929bf1b17ee25.log",
+      "output_digest": "2902c10a1a5a487d8788e979378123de6b0769c38ede6017467d79be38266e74"
+    },
+    {
+      "id": "CSH-T27",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p test_client_workbench.py",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/client-security-hardening/traceability/runs/cde7625afc9440f3b43ffd6b4d0efac0/eae9c50521f3473fbcc929bf1b17ee25.log",
+      "output_digest": "2902c10a1a5a487d8788e979378123de6b0769c38ede6017467d79be38266e74"
+    }
+  ],
+  "tree_sha": "c63d0acf65695689c9ad72328b7393f43e76cc8c",
+  "traceability_run_ids": [
+    "cde7625afc9440f3b43ffd6b4d0efac0"
+  ],
+  "task_verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+    "run_id": "cde7625afc9440f3b43ffd6b4d0efac0",
+    "report_path": "work/client-security-hardening/traceability/runs/cde7625afc9440f3b43ffd6b4d0efac0/results.json",
+    "sha256": "73faa2cfcadb3e251f25444f06c12a9da7b78efa11d10589979f75d70ba0fa78"
+  },
+  "task_report_digest": "a9ea5055161d6ddf024474b14724f9b22a10bf56663b56f71ccfe9866769d674",
+  "runner_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+  "runner_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d",
+  "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "record_path": "work/client-security-hardening/inner-loop/evidence/verify-cde7625a-nbzl3pu5/integration.json",
+  "resulting_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+  "review": {
+    "work_id": "client-security-hardening",
+    "task_id": "CSH-07",
+    "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+    "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+    "result_digest": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+    "reviewer": "gpt-6.1-sol (medium)",
+    "policy": "_ask/policies/delegation.md",
+    "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+    "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-07-review.md",
+    "evidence_digest": "4d69309267f66679760469a66583ec263812eecbba599ebc185076143b587459",
+    "verdict": "APPROVED",
+    "boundary": "ok",
+    "exemption_reason": null
+  }
+}

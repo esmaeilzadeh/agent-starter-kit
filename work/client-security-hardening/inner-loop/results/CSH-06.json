@@ -1,0 +1,30 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "client-security-hardening",
+  "task_id": "CSH-06",
+  "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+  "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+  "tdd": {
+    "seam": "Reject unrepresentable model scalars before publishing any runtime agent files.",
+    "red": {
+      "command": "frozen traceability CSH-06 red run 710c89efe23247f0b658678332edfc23",
+      "output": "CSH-T25 failed: embedded TOML triple-quote delimiter was accepted and generated runtime files were written.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "frozen traceability CSH-06 final_green run f9cc0701faa6443c9213bae94e099a93",
+      "output": "CSH-T24, CSH-T25 and CSH-T26 passed on the final candidate.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+    "run_id": "f9cc0701faa6443c9213bae94e099a93",
+    "report_path": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/results.json",
+    "sha256": "dee82894a6bc41ca217f4524a41e8f885266dc1f8f2cf9f5b1724f24c87d565c"
+  },
+  "notes": "Refactor pass: kept the TOML fallback scoped to the supported template syntax; no further structural cleanup was useful without expanding scope. The full client-write suite passed (6 tests). Independent gpt-6.1-sol (medium) review approved this exact candidate with boundary ok.",
+  "contract_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6"
+}

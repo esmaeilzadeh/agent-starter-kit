@@ -1,0 +1,126 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "fc99b364d91c4ce28f26095f95dc5143",
+  "scope": "task",
+  "task_id": "CSH-09",
+  "candidate_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d"
+  },
+  "executions": [
+    {
+      "id": "16732cd3961044ba92c74bfbfd5d9c96",
+      "runner_id": "test_client_orchestrator",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_orchestrator.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/askit-security-csh06.98f3c09.frozen/.agents/ask/verification/traceability/unittest_runner.py",
+        "/home/mohamad/Projects/UNI/ai-agent-start-kit/work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.json",
+        "[\"test_client_orchestrator.ClientTests.test_accessible_implementor\", \"test_client_orchestrator.ClientTests.test_automatic_switch_verified\", \"test_client_orchestrator.ClientTests.test_manual_switch_resume\", \"test_client_orchestrator.ClientTests.test_plan_only_endpoint\", \"test_client_orchestrator.ClientTests.test_capability_evidence\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_orchestrator.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.log",
+      "output_digest": "34eb45a8c6f58c70fd82938adbc2d30e2e5f01686e9c84b204628df1789582f8"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_client_orchestrator.ClientTests.test_accessible_implementor",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T33",
+      "runner_id": "test_client_orchestrator",
+      "execution_id": "16732cd3961044ba92c74bfbfd5d9c96",
+      "phase": "final_green",
+      "source_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+      "source_digests": {
+        "_ask/tests/test_client_orchestrator.py": "56e3fb12cb7c480400c51912ab399b40dbdcad302f25454dc78460e9a92c0b50"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.log",
+      "output_digest": "34eb45a8c6f58c70fd82938adbc2d30e2e5f01686e9c84b204628df1789582f8"
+    },
+    {
+      "case_id": "test_client_orchestrator.ClientTests.test_automatic_switch_verified",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T34",
+      "runner_id": "test_client_orchestrator",
+      "execution_id": "16732cd3961044ba92c74bfbfd5d9c96",
+      "phase": "final_green",
+      "source_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+      "source_digests": {
+        "_ask/tests/test_client_orchestrator.py": "56e3fb12cb7c480400c51912ab399b40dbdcad302f25454dc78460e9a92c0b50"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.log",
+      "output_digest": "34eb45a8c6f58c70fd82938adbc2d30e2e5f01686e9c84b204628df1789582f8"
+    },
+    {
+      "case_id": "test_client_orchestrator.ClientTests.test_capability_evidence",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T37",
+      "runner_id": "test_client_orchestrator",
+      "execution_id": "16732cd3961044ba92c74bfbfd5d9c96",
+      "phase": "final_green",
+      "source_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+      "source_digests": {
+        "_ask/tests/test_client_orchestrator.py": "56e3fb12cb7c480400c51912ab399b40dbdcad302f25454dc78460e9a92c0b50"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.log",
+      "output_digest": "34eb45a8c6f58c70fd82938adbc2d30e2e5f01686e9c84b204628df1789582f8"
+    },
+    {
+      "case_id": "test_client_orchestrator.ClientTests.test_manual_switch_resume",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T35",
+      "runner_id": "test_client_orchestrator",
+      "execution_id": "16732cd3961044ba92c74bfbfd5d9c96",
+      "phase": "final_green",
+      "source_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+      "source_digests": {
+        "_ask/tests/test_client_orchestrator.py": "56e3fb12cb7c480400c51912ab399b40dbdcad302f25454dc78460e9a92c0b50"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.log",
+      "output_digest": "34eb45a8c6f58c70fd82938adbc2d30e2e5f01686e9c84b204628df1789582f8"
+    },
+    {
+      "case_id": "test_client_orchestrator.ClientTests.test_plan_only_endpoint",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T36",
+      "runner_id": "test_client_orchestrator",
+      "execution_id": "16732cd3961044ba92c74bfbfd5d9c96",
+      "phase": "final_green",
+      "source_sha": "a838f86fb36a14113d778c89bab797a5fec5a93f",
+      "source_digests": {
+        "_ask/tests/test_client_orchestrator.py": "56e3fb12cb7c480400c51912ab399b40dbdcad302f25454dc78460e9a92c0b50"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/fc99b364d91c4ce28f26095f95dc5143/16732cd3961044ba92c74bfbfd5d9c96.log",
+      "output_digest": "34eb45a8c6f58c70fd82938adbc2d30e2e5f01686e9c84b204628df1789582f8"
+    }
+  ]
+}

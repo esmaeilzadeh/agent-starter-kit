@@ -1,0 +1,96 @@
+{
+  "schema": "ask-test-results/v1",
+  "run_id": "05220387e4c840c898b79902cc4af7a9",
+  "scope": "task",
+  "task_id": "CSH-06",
+  "candidate_sha": "fcae7e33d64ee134f30d60c179cbd17689f954ac",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "runner_identity": {
+    "capability": "ask-traceability/v1",
+    "adapter_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d"
+  },
+  "executions": [
+    {
+      "id": "8a974cd012a84dd0af380f4dc6eea132",
+      "runner_id": "test_client_runtime_config",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_runtime_config.py"
+      ],
+      "adapter": "unittest",
+      "actual_argv": [
+        "/usr/bin/python3",
+        "/tmp/askit-security-csh06.98f3c09.frozen/.agents/ask/verification/traceability/unittest_runner.py",
+        "/tmp/askit-csh05-integration/work/client-security-hardening/traceability/runs/05220387e4c840c898b79902cc4af7a9/8a974cd012a84dd0af380f4dc6eea132.json",
+        "[\"test_client_runtime_config.ClientTests.test_scalar_roundtrip\", \"test_client_runtime_config.ClientTests.test_sync_atomic_invalid\", \"test_client_runtime_config.ClientTests.test_sync_valid_formats\"]",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_runtime_config.py"
+      ],
+      "interpreter": "/usr/bin/python3",
+      "interpreter_version": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "phase": "final_green",
+      "source_sha": "fcae7e33d64ee134f30d60c179cbd17689f954ac",
+      "exit_code": 0,
+      "collection_status": "ok",
+      "output_artifact": "work/client-security-hardening/traceability/runs/05220387e4c840c898b79902cc4af7a9/8a974cd012a84dd0af380f4dc6eea132.log",
+      "output_digest": "1a086ae8c9ede48cdd9179c78a8d5a8df5ff3e99e96d76e29fffa9ef10ea89be"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "test_client_runtime_config.ClientTests.test_scalar_roundtrip",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T24",
+      "runner_id": "test_client_runtime_config",
+      "execution_id": "8a974cd012a84dd0af380f4dc6eea132",
+      "phase": "final_green",
+      "source_sha": "fcae7e33d64ee134f30d60c179cbd17689f954ac",
+      "source_digests": {
+        "_ask/tests/test_client_runtime_config.py": "48228682648f012364f7cba9af6253d419f943db30a6bb18f67938cd263e3be4"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/05220387e4c840c898b79902cc4af7a9/8a974cd012a84dd0af380f4dc6eea132.log",
+      "output_digest": "1a086ae8c9ede48cdd9179c78a8d5a8df5ff3e99e96d76e29fffa9ef10ea89be"
+    },
+    {
+      "case_id": "test_client_runtime_config.ClientTests.test_sync_atomic_invalid",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T25",
+      "runner_id": "test_client_runtime_config",
+      "execution_id": "8a974cd012a84dd0af380f4dc6eea132",
+      "phase": "final_green",
+      "source_sha": "fcae7e33d64ee134f30d60c179cbd17689f954ac",
+      "source_digests": {
+        "_ask/tests/test_client_runtime_config.py": "48228682648f012364f7cba9af6253d419f943db30a6bb18f67938cd263e3be4"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/05220387e4c840c898b79902cc4af7a9/8a974cd012a84dd0af380f4dc6eea132.log",
+      "output_digest": "1a086ae8c9ede48cdd9179c78a8d5a8df5ff3e99e96d76e29fffa9ef10ea89be"
+    },
+    {
+      "case_id": "test_client_runtime_config.ClientTests.test_sync_valid_formats",
+      "outcome": "passed",
+      "failure_kind": null,
+      "test_id": "CSH-T26",
+      "runner_id": "test_client_runtime_config",
+      "execution_id": "8a974cd012a84dd0af380f4dc6eea132",
+      "phase": "final_green",
+      "source_sha": "fcae7e33d64ee134f30d60c179cbd17689f954ac",
+      "source_digests": {
+        "_ask/tests/test_client_runtime_config.py": "48228682648f012364f7cba9af6253d419f943db30a6bb18f67938cd263e3be4"
+      },
+      "output_artifact": "work/client-security-hardening/traceability/runs/05220387e4c840c898b79902cc4af7a9/8a974cd012a84dd0af380f4dc6eea132.log",
+      "output_digest": "1a086ae8c9ede48cdd9179c78a8d5a8df5ff3e99e96d76e29fffa9ef10ea89be"
+    }
+  ]
+}

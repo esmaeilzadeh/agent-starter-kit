@@ -1,0 +1,30 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "client-security-hardening",
+  "task_id": "CSH-09",
+  "base_sha": "ead0e1dd4cd5808dd7a40c872102f59203466a96",
+  "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+  "tdd": {
+    "seam": "Verified implementation orchestrator handoff and current accessible implementor selection",
+    "red": {
+      "command": "frozen traceability run 1e09bbea00de4167b9222388899d7569 --phase red",
+      "output": "T33–T35 behavior assertions failed; T36–T37 passed at the immutable test baseline",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "frozen traceability run c10b75a834d645eeb130419c5eeff3e0 --phase final_green",
+      "output": "All five mapped cases passed at the final candidate",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "9c62390c2f8b135f0b0256c2ad1233145d64c6d7",
+    "run_id": "c10b75a834d645eeb130419c5eeff3e0",
+    "report_path": "work/client-security-hardening/traceability/runs/c10b75a834d645eeb130419c5eeff3e0/results.json",
+    "sha256": "ef08760340a796d9331bf546c9fa4bd449fbff90eced816694bc554274d00019"
+  },
+  "notes": "Review corrections committed in 42ae974: public writer spawn now requires the handoff gate, cached runtime observations are identity-bound, and confirming a submission preserves saved exact overrides unless explicitly changed. Commit 9c62390 corrects OpenCode implementor metadata to Composer. Final Green passed all five mapped cases; independent Sol-medium review approved this exact candidate.",
+  "contract_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6"
+}

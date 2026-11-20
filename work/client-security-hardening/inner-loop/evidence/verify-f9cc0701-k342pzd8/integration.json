@@ -1,0 +1,70 @@
+{
+  "work_id": "client-security-hardening",
+  "task_id": "CSH-06",
+  "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+  "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+  "schema": "ask-integration-evidence/v1",
+  "result": "pass",
+  "result_digest": "86838b8be8790e4158ff798f1a86fa8c7d662df374afdc9f9a0b65a2bb104a46",
+  "checks": [
+    {
+      "id": "CSH-T24",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p test_client_runtime_config.py",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/ee37c0dc2fd545cb9c97d7b5c1140e58.log",
+      "output_digest": "34bef9ac2c197d3667fc3aa65376ec8a1691888961c6930c6b1bb419b8063fd5"
+    },
+    {
+      "id": "CSH-T25",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p test_client_runtime_config.py",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/ee37c0dc2fd545cb9c97d7b5c1140e58.log",
+      "output_digest": "34bef9ac2c197d3667fc3aa65376ec8a1691888961c6930c6b1bb419b8063fd5"
+    },
+    {
+      "id": "CSH-T26",
+      "tier": "mandatory",
+      "command": "python3 -m unittest discover -s _ask/tests -p test_client_runtime_config.py",
+      "status": "pass",
+      "exit_code": 0,
+      "evidence": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/ee37c0dc2fd545cb9c97d7b5c1140e58.log",
+      "output_digest": "34bef9ac2c197d3667fc3aa65376ec8a1691888961c6930c6b1bb419b8063fd5"
+    }
+  ],
+  "tree_sha": "8163ccda9f0e73540e2bce07305db7d9555a901a",
+  "traceability_run_ids": [
+    "f9cc0701faa6443c9213bae94e099a93"
+  ],
+  "task_verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+    "run_id": "f9cc0701faa6443c9213bae94e099a93",
+    "report_path": "work/client-security-hardening/traceability/runs/f9cc0701faa6443c9213bae94e099a93/results.json",
+    "sha256": "dee82894a6bc41ca217f4524a41e8f885266dc1f8f2cf9f5b1724f24c87d565c"
+  },
+  "task_report_digest": "045dd2f7aeca66aa0ea4116d3f76014e1a76e1b6d6c6b841736eed1e9347f3d9",
+  "runner_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+  "runner_digest": "a49f10a0c7be90ae7f47a5613f99d3422854ee5451f3ea9e3478ed3881183d4d",
+  "traceability_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "record_path": "work/client-security-hardening/inner-loop/evidence/verify-f9cc0701-k342pzd8/integration.json",
+  "resulting_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+  "review": {
+    "work_id": "client-security-hardening",
+    "task_id": "CSH-06",
+    "base_sha": "98f3c09d958a75c6e78181f196f313a99b4c0379",
+    "candidate_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+    "result_digest": "86838b8be8790e4158ff798f1a86fa8c7d662df374afdc9f9a0b65a2bb104a46",
+    "reviewer": "gpt-6.1-sol (medium)",
+    "policy": "_ask/policies/delegation.md",
+    "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+    "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-06-review.md",
+    "evidence_digest": "39000fabd7e6ccdbe7f402fa02655c17747f062577a1c5917094de9beee13848",
+    "verdict": "APPROVED",
+    "boundary": "ok",
+    "exemption_reason": null
+  }
+}
