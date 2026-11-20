@@ -42,10 +42,12 @@ class ClientTests(unittest.TestCase):
             '    log.write(json.dumps(request) + "\\n")\n'
             'action = request["action"]\n'
             'if action == "catalog": response = config.get("catalog", {})\n'
-            'elif action == "identity": response = config.get("identity", {})\n'
+            'elif action == "identity":\n'
+            '    response = dict(config.get("identity", {}))\n'
+            '    if "switch_supported" in config: response["switch_supported"] = config["switch_supported"]\n'
             'elif action == "switch":\n'
             '    if config.get("switch_supported") and not config.get("switch_failure"):\n'
-            '        config["identity"] = config.get("switch_result", request.get("model"))\n'
+            '        config["identity"] = {"model": config.get("switch_result", request.get("model"))}\n'
             '        json.dump(config, open(path, "w", encoding="utf-8"))\n'
             '        response = {"supported": True}\n'
             '    else: response = {"supported": config.get("switch_supported", False)}\n'
@@ -100,6 +102,7 @@ class ClientTests(unittest.TestCase):
         self.write_adapter({
             'catalog': {
                 'authenticated': True,
+                'access_verified': True,
                 'family': 'gpt',
                 'models': ['gpt-6.9-luna', 'gpt-6.10-luna'],
                 'order': ['gpt-6.9-luna', 'gpt-6.10-luna'],
@@ -132,6 +135,20 @@ class ClientTests(unittest.TestCase):
                 word in (unknown_order.stderr + unknown_order.stdout).lower()
                 for word in ('order', 'ordering', 'evidence')):
             failures.append('unknown version ordering guessed a model')
+
+        self.save_plan()
+        self.write_adapter({
+            'catalog': {'authenticated': True, 'family': 'gpt',
+                        'models': ['gpt-6-luna'],
+                        'order': ['gpt-6-luna']},
+            'identity': {'model': 'gpt-6.1-sol'},
+        })
+        unknown_access = self.run_ask('model', 'decision', 'resolve-implementor',
+                                      '--work-id', self.work_id)
+        if unknown_access.returncode == 0 or not any(
+                word in (unknown_access.stderr + unknown_access.stdout).lower()
+                for word in ('access', 'evidence', 'verified')):
+            failures.append('catalog listing without current access evidence selected a model')
         self.assertFalse(failures, '\n'.join(failures))
 
     def test_automatic_switch_verified(self):
@@ -218,10 +235,18 @@ class ClientTests(unittest.TestCase):
             self.fail('live Codex capability query failed: ' + (codex.stderr or codex.stdout))
         live = json.loads(codex.stdout)
         self.assertEqual(live['runtime'], 'codex')
-        self.assertEqual(live['catalog'], 'supported')
+        self.assertEqual(live['catalog'], 'unknown')
         self.assertEqual(live['identity'], 'supported')
         self.assertEqual(live['switch'], 'unsupported')
         self.assertTrue(live['evidence'])
+
+        self.write_adapter({'catalog': {'authenticated': True, 'access_verified': True,
+                                        'models': ['gpt-6-luna']},
+                            'identity': {'model': 'gpt-6-luna'}, 'switch_supported': True})
+        supported = self.run_ask('model', 'decision', 'capability', '--work-id', self.work_id,
+                                 '--runtime', 'codex')
+        self.assertEqual(supported.returncode, 0, supported.stderr or supported.stdout)
+        self.assertEqual(json.loads(supported.stdout)['switch'], 'supported')
 
 
 if __name__ == '__main__':
