@@ -77,7 +77,7 @@ class EvidenceTests(unittest.TestCase):
         proposal_digest=hashlib.sha256(json.dumps(proposal,sort_keys=True,
             separators=(',',':')).encode()).hexdigest()
         review={'schema':'ask-recovery-adoption-review/v1','decision':'APPROVED',
-            'reviewer':'independent','reviewer_model':'gpt-6-sol','reviewer_effort':'medium',
+            'reviewer':'gpt-6.1-sol (medium)','reviewer_model':'gpt-6.1-sol','reviewer_effort':'medium',
             'recorded_by':'coordinator','scope':'exact-recovery-adoption',
             'proposal_sha256':proposal_digest,'candidate_sha':'source',
             'early_red_continuity_sha256':continuity_sha}

@@ -157,7 +157,7 @@ class RecoveryTests(unittest.TestCase):
     def recovery_review(self, proposal):
         return {
             "schema": "ask-recovery-adoption-review/v1", "decision": "APPROVED",
-            "reviewer": "independent-reviewer", "reviewer_model": "gpt-6-sol",
+            "reviewer": "gpt-6.1-sol (medium)", "reviewer_model": "gpt-6.1-sol",
             "reviewer_effort": "medium", "recorded_by": "coordinator",
             "proposal_sha256": hashlib.sha256(
                 json.dumps(proposal, sort_keys=True, separators=(",", ":")).encode()
@@ -2047,7 +2047,8 @@ class test_b(unittest.TestCase):
                               "--review", str(review_path))
         self.assertNotEqual(forged.returncode, 0)
         self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
-        wrong_reviewer = dict(review, reviewer_model="gpt-6-astra")
+        wrong_reviewer = dict(review, reviewer="gpt-6-astra (medium)",
+                              reviewer_model="gpt-6-astra")
         review_path.write_text(json.dumps(wrong_reviewer, sort_keys=True) + "\n")
         wrong_model = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
                                    "--review", str(review_path))
