@@ -12,8 +12,9 @@ the human's latest all-three-outcomes direction and immutable accepted preimages
 The human explicitly requires all three outcomes for the current work on
 `agent/client-security-hardening`: recover and finish CSH-10, publish compact
 milestone evidence including the current backfill, and finish operational
-laddered escalation. Recovery is a bug fix: retained valid evidence and a pending
-task cannot be reconciled safely by current tooling. Milestones are a feature;
+laddered escalation. Recovery has two routes: rejection of otherwise valid
+projections is a bug fix; explicit reviewed source adoption for a pending task
+with zero attempts is a feature adding a supported transition. Milestones are a feature;
 the clean gate's refusal of documented retained-runtime exceptions is a bug fix.
 Escalation is completion of the same-branch authorized feature at `6400154` /
 `e8414c4`. Reproduce each defect in an isolated fixture before its regression and
@@ -65,7 +66,8 @@ Recheck these identities at execution; never substitute a newer value silently.
   Raw 128 logs remain private at
   `/home/mohamad/.local/state/askit/recovery/private-raw-logs-20261120T121230Z/raw-logs.tar.gz`
   (parent 0700, archive 0600), including the 89 report-referenced outputs.
-  Verify bytes without printing output/credentials or copying raw logs to Git.
+  Verify bytes without printing output/credentials or copying raw logs to normal
+  source-branch commits. Existing local checkpoint object custody stays intact.
 - Recovery rejects changed `traceability/model-state/current.json`, newly
   published generation/publication files, and new `completion.json`. Current
   `_traceability_matches_checkpoint` only accepts replacement completion as a
@@ -114,7 +116,7 @@ step on the existing branch; preserve rejected candidates and correction evidenc
 | ID | Deliverable and dependencies | Exact owned surfaces | Focused cases |
 | --- | --- | --- | --- |
 | CMP-01 | Recovery projection validation; first | `_ask/scripts/inner_loop/recovery.py`; narrow read-only helper in `_ask/scripts/engineering_model/admission.py` if necessary; `_ask/tests/inner_loop_recovery.py`, `_ask/tests/inner_loop_recovery_fixture.py`; `_ask/docs/inner-loop-evidence.md` | REC-01–04 |
-| CMP-02 | Reviewed pending/zero-attempt adoption tooling; after CMP-01 | `_ask/scripts/inner_loop/recovery.py`, `state.py`, `checkpoint.py`, `__main__.py`; `ask` help only; same recovery test/fixture files; `_ask/docs/inner-loop-evidence.md`, `.agents/ask/task-loop.md` | REC-05–09 |
+| CMP-02 | Reviewed pending/zero-attempt adoption and authorized early-Red continuity tooling; after CMP-01 | `_ask/scripts/inner_loop/recovery.py`, `state.py`, `checkpoint.py`, `evidence.py`, `__main__.py`; `.agents/ask/verification/traceability/evidence.py`, `service.py`, `completion.py` only for the shared early-Red receipt validator/explicit trusted-context consumers; `ask` help only; `_ask/tests/inner_loop_recovery.py`, `inner_loop_recovery_fixture.py`, `inner_loop_reliability.py`, `test_traceability_evidence.py`; `_ask/docs/inner-loop-evidence.md`, `.agents/ask/task-loop.md` | REC-05–11 |
 | CMP-03 | Milestone publisher, clean migration, current backfill support; after CMP-02, before any live adoption/backfill | new `_ask/scripts/inner_loop/milestones.py`, new `clean.py`; `driver.py`, `__main__.py`, `checkpoint.py`, `evidence.py` only for shared retention/publication hooks; `_ask/scripts/check-clean-worktree.sh`; `.gitignore`; new `_ask/tests/test_task_milestones.py`; `_ask/tests/test-check-clean-worktree.sh`, `inner_loop_reliability.py`, `test-inner-loop-reliability.sh`; `_ask/policies/worktree.md`, `_ask/docs/inner-loop-evidence.md`, `.agents/ask/task-loop.md`, `ask` help | MIL-01–09 |
 | CMP-04 | Operational confidence ladder and projections; after CMP-03 | `_ask/scripts/model-decisions.py`; `.agents/ask/bindings/runtimes/{codex,claude,cursor,opencode}.yaml`; `_ask/policies/delegation.md`, `workflow.md`; `.agents/ask/stages/00-explore.md` through `10-accept.md`; `.agents/ask/task-loop.md`; `_ask/tests/test_client_model_decisions.py`, `test_client_runtime_config.py`; `_ask/tests/test-stages-inner-loop.sh`; `_ask/docs/codex-model-routing.md`, `.agents/ask/bindings/README.md`; generated runtime views via existing sync scripts | LAD-01–08 |
 | CMP-05 | Exact current recovery review, adoption, and CSH01–09 backfill; after CMP-01–04 pass independent review | New scoped records under `work/client-security-hardening/inner-loop/evidence/` and `work/client-security-hardening/progress/`; state/checkpoint changed only by reviewed CMP-02/03 commands; compact inventory sidecar if needed | LIVE-01–03 |
@@ -165,9 +167,24 @@ all bytes necessary for independent replay. No future wildcard authorization.
 
 An independent Sol/medium review binds the proposal digest and exact source /
 reviewed tooling candidate. Adoption revalidates under `state_lock` with observed
-revision and expected ref/HEAD CAS. Reuse `state_transaction`'s narrowly scoped
-`reconciliation_validator` to permit only the reviewed source delta; generic
-`require_safe` still runs with CMP-01 and all other protections intact. Do not
+revision and expected ref/HEAD CAS. Extend `state_transaction`'s internal
+`reconciliation_validator` boundary to return an immutable verified adoption
+context as well as exact allowed source paths. The existing callback returns
+paths only and cannot authorize rejected projections before the transaction
+yields. Pass this context explicitly through `_require_reconciled` →
+`require_safe` → `inspect` → `_traceability_matches_checkpoint`, including the
+historical scope-compatible-result predicate. It binds proposal/review digests,
+observed state/checkpoint/HEAD, work identity, and exact projection replacement
+digests. Construct it only after independent-review and all live precondition
+checks under the lock; recheck before publication. Ordinary read-only inspection,
+writer admission and generic CAS receive no exceptional context. Finding a
+proposal file on disk never grants authority. Missing, stale, substituted, or
+replayed context for another transition rejects; an exact completed-adoption retry
+only returns its retained receipt and never performs another state fold. After
+successful adoption, normal readers can use the
+immutable checkpoint-retained receipt bound to that checkpoint ancestry; an
+unadopted manifest remains inert. Generic `require_safe` still runs with CMP-01
+and all other protections intact. Do not
 route this exceptional entry through writer/implementation admission that itself
 requires recovery to have completed. The entry checks coordinator authority,
 review identity, source cleanliness, branch, complete evidence and stale inputs.
@@ -182,6 +199,71 @@ before publication leave the old authoritative state; faults afterward restore
 cache from the new checkpoint and exact retry succeeds without a second adoption.
 A stale revision/ref/HEAD, any unexplained commit/path, or any changed input fails
 before mutation. No environment bypass or generic force flag.
+
+The accepted plan already authorizes the CSH-01-authored CSH-T38/T39 early Red
+without starting CSH-10 (`plan.md` CSH-01 and CSH-10 designs). Preserve that
+contract with a narrowly typed early-Red continuity receipt in the independently
+reviewed adoption, not a process waiver or test-plan amendment. Locate and
+authenticate original baseline run `01ba1187a3584c9184579b9af66fdc07` at
+`371e4a5741f34afb0b2c37401fc847dc14309664` using retained checkpoint/archive
+provenance. Read-only parent inspection has found that original report and its
+single ledger row, both T38/T39 behavior-assertion failures, and matching raw
+output digest `c057cfc15fe7c32bc55763f75584b47c2053aff06fdf6abb06cfe9f96fc558cf`.
+Revalidate those exact bytes during execution rather than treating the planning
+observation as a new run. Bind original work/task/test/case IDs, run/report/ledger digests,
+candidate and accepted contract/spec/plan digests, original runner digest,
+execution/output digest and genuine behavior-assertion failures, baseline review,
+and the accepted early-capture authorization bytes. Preserve the later two Reds
+as their own historical evidence; they are not replacements for the authorized
+preproduction baseline. Missing original proof blocks continuity and completion.
+
+In the same receipt bind an independently reviewed per-assertion semantic mapping
+from baseline tests to the adopted tests and the exact accepted T38/T39
+obligations/criteria. Record original/current source and assertion AST digests for
+identity; AST equality is not a condition of continuity. For every original
+obligation, identify the original failing assertion, its current counterpart(s),
+the relevant accepted criterion, and why the adaptation preserves or strengthens
+that obligation. Capture additional checks separately without claiming they
+failed historically. Map the actual observed changes explicitly: flat credential
+expectations to the accepted versioned schema/tracker/URL/credentials shape;
+05-plan's expected Luna to the accepted Sol planning model; cp fault injection
+to sitecustomize/os.replace and refreshed trust; and the stronger second-token
+case. Do not call changed assertion bytes identical or claim fixture-only changes.
+
+The reviewer may accept representation/harness repairs, expectations already
+established by the accepted contract, and stronger checks when this mapping
+proves original criterion coverage with no weakening. Arbitrary unreviewed
+assertion changes, removed criterion coverage, unrelated runs/tasks, setup-only
+failures, and genuinely new or changed obligations cannot qualify. A genuinely
+changed obligation requires a scoped spec-change decision; do not manufacture
+equivalence to avoid it. Later test/fixture bytes invalidate the old mapping and
+require fresh independent review of the exact semantic map and receipt, while
+the accepted spec/test plan stay unchanged. The original Red candidate must be
+an ancestor of the adopted base and final candidate.
+
+Implement this check in `inner_loop/evidence.py` before `_execution_row`'s current
+active-base→run-candidate ancestry requirement. For this exact receipt-bound
+historical Red only, validate original runner/accepted contract at its historical
+candidate and Red→adopted-base ancestry; retain normal active-base ancestry and
+runner checks for every new run, especially final Green. Use the shared validator
+from traceability completion/selection where needed, passing trusted adopted
+receipt context explicitly; do not read authority from a free-floating file or
+edit `historical_red_continuity` in the accepted plan. Existing normal same-plan
+historical Red selection remains supported. Do not duplicate/relabel ledger rows.
+Store the reference as historical continuity in current task evidence, outside
+`traceability_runs` attributed to the new attempt, and make verification consult
+that reference deliberately.
+
+The new TaskResult keeps its fresh attempt/base and final candidate, and truthful
+`tdd.red` records the original command, nonzero exit, captured historical output
+and original source SHA, with a digest-bound continuity-receipt reference.
+`check_integrable` validates this reference and checks those fields against the
+retained original execution; `tdd.green` is a newly executed exact candidate run.
+No assertion says the old Red executed during this attempt. Public milestone
+summaries retain the provenance and outcome without copying captured raw output.
+Fresh final-Green, independent candidate review, integration and aggregate
+completion remain mandatory. No human waiver is needed to preserve the already
+accepted early-capture contract.
 
 ### CMP-03: milestone publication and clean gate
 
@@ -239,12 +321,18 @@ all `inner-loop/evidence/`. Remove only enumerated current runtime cache files f
 the index with worktree bytes/history preserved and an explicit reviewed inventory.
 Never blanket `git rm --cached` over workstream directories.
 
-New checkpoints/public progress must not introduce raw output to Git. Audit
-`checkpoint._runtime_files` and its consumers: keep validated structured reports,
-retain raw outputs in private storage with digest/custody references, and preserve
-existing historical checkpoint bytes unchanged. Exercise restore/export/import
-and `_valid_historical_output` compatibility; missing private raw custody blocks
-claims depending on it. Do not rewrite old Git history to remove legacy outputs.
+Keep the existing local checkpoint recovery retention mechanism unchanged:
+`checkpoint._runtime_files`, `_valid_historical_output`, traceability
+`completion.py` and `service.py` continue to see their required repo-relative
+outputs. This plan does not move raw outputs behind a new storage abstraction or
+change restore/export/import formats. New normal source/progress commits and
+public recovery bundles exclude raw output; local checkpoint refs/object custody
+are recovery state and are never automatically pushed or published. Store any
+checkpoint bundle/export that contains raw output privately (0700/0600), and
+restore required output paths from private archives only after digest/path/type
+checks with private directory/file modes. Missing matching raw output blocks
+dependent verification. Retain existing checkpoint bytes/history and private
+archives; do not claim local refs remove raw data from the local Git object store.
 
 ### CMP-04: real operational escalation
 
@@ -304,7 +392,9 @@ Execute in disposable repositories/private runtime directories before live adopt
 | REC-06 | Wrong reviewer/worker authority, stale state/ref/HEAD/proposal/digest, unexplained source commit or dirty/staged source rejects without effects. |
 | REC-07 | Competing adopters: one CAS succeeds; old checkpoint retained and new checkpoint links it. |
 | REC-08 | Crash before ref publication, after ref/before cache, and retry recover exactly once; export/import retains required source/contract objects. |
-| REC-09 | First real CSH10 start follows adoption and increments attempt now; historical Reds never become fabricated attempts or new Red evidence. |
+| REC-09 | First real CSH10 start follows adoption and increments attempt now; original Red remains explicitly historical, with no fabricated attempt or newly attributed execution. |
+| REC-10 | Exact adopted early baseline legitimately satisfies T38/T39 Red continuity despite preceding the fresh attempt base; truthful TaskResult provenance and fresh Green integrate. Reviewed per-assertion semantic mappings accept the observed credential representation, accepted planning-model expectation, fault-injection/trust harness adaptations and stronger token checks while preserving original criterion coverage. Source/AST digests identify both versions without requiring equality. Missing custody/review, unrelated task/run, report/output/runner substitution, unreviewed assertion changes, weakening/removed coverage, changed accepted obligations, nonancestor baseline and setup-only failure reject. Later source bytes require renewed exact semantic-map review. |
+| REC-11 | Explicit verified adoption context reaches projection validation before transaction yield; absence or forged-on-disk manifest, stale/substituted/replayed context, wrong work/HEAD/ref/reviewer/replacement bytes reject before effects. Generic read-only inspect/CAS/writer paths gain no authority from an unadopted manifest. Normal inspect after adoption succeeds solely from authenticated checkpoint-bound receipt ancestry. |
 | MIL-01 | Deterministic one-file-per-task projection; no-op rerun changes no commit/revision; source candidate and publication commit stay distinct. |
 | MIL-02 | Rejected/stale review versions, correction candidates, refactor notes, attempts and historical unattached runs survive rerenders/backfill. |
 | MIL-03 | Dirty/unrelated staged/generated-byte mismatch, wrong branch, symlink/type/mode, source drift and concurrent writer reject without index/source loss. |
@@ -313,7 +403,7 @@ Execute in disposable repositories/private runtime directories before live adopt
 | MIL-06 | CSH01–09 backfill succeeds with CSH10 pending after adoption; arbitrary source advance without adoption remains rejected. |
 | MIL-07 | Clean gate accepts only retained runtime bytes and known lock; staged runtime/progress/source, forged ignored bytes, missing/corrupt checkpoint and symlink remain dirty. |
 | MIL-08 | Enumerated untracking preserves worktree/history and source docs; arbitrary evidence paths remain visible; repeat migration is harmless. |
-| MIL-09 | Raw logs/output/secret canary excluded from all new public/checkpoint commits; private custody modes/digests and restore/export/import behavior verified. |
+| MIL-09 | Raw logs/output/secret canary excluded from normal source/progress commits and public bundles; existing local checkpoint capture/restore/export/import and repo-relative verification remain compatible. Raw-bearing recovery bundles stay private with 0700/0600 custody; no automatic push/publication of checkpoint refs; missing/tampered private output refuses dependent completion. |
 | LAD-01 | 90 consults; >90 continues; malformed/nonfinite/out-of-range confidence rejects. |
 | LAD-02 | Ordered once-per-decision rungs, same-decision prior later-rung assessment reuse, changed evidence invalidation, no cycles. |
 | LAD-03 | Unavailable catalog/model/effort, timeout, permission denial, wrong returned identity and unknown runtime move on or exhaust explicitly; bindings alone insufficient. |
@@ -374,7 +464,11 @@ the other focused modules above remain explicit final verification obligations.
   with exact inventory migration. Verify normal Git records contain no raw
   output. Reconcile again; next candidate base includes these evidence commits.
 - LIVE-04: Start CSH10 attempt now. Assess current accepted T38/T39 fixtures and
-  preserve the historical real Reds as historical. Run actual existing journey
+  attach the independently reviewed adoption-bound original early-Red continuity
+  reference, preserving original source/runner/output and accepted test identities.
+  Check `_execution_row` and truthful TaskResult validation accept the historical
+  baseline despite its preceding the new base, without recording it as a new
+  attempt execution. Preserve later Reds as separate historical records. Run actual existing journey
   tests; a currently passing case is Green, never made artificially Red. Diagnose
   any failure and reproduce before a focused repair. New source candidate gets
   fresh exact independent Sol/medium review and task final-Green evidence under
@@ -402,7 +496,8 @@ the other focused modules above remain explicit final verification obligations.
 - LIVE-06: Final compact inventory names source candidate, independent review,
   task/aggregate receipts, progress publication commits, checkpoint and private
   raw archive manifest. Check clean status and accepted digests. Verify evidence
-  completeness, old-history preservation, no raw/secret publication, private
+  completeness, old-history preservation, no raw/secret publication to the normal
+  source branch or public bundles, private local recovery custody,
   permissions, exact receipt/candidate identities, and generated/runtime
   consistency. Do not claim that the full check proves every possible regression;
   report any environment-dependent check that could not run. Product failure
@@ -421,7 +516,8 @@ recovery, backfill and final completion have independently verified replacements
 
 Plan confidence: 94% subjective confidence in this bounded design. Remaining
 implementation risks are native runtime availability/effort proof, current
-projection-chain compatibility, and raw-output custody during checkpoint migration;
+projection-chain compatibility, and independently verifying the exact semantic
+mapping of original early-Red assertions to current accepted obligations;
 they have explicit failure cases and cannot be resolved by inventing evidence.
 If exact source inspection or independent review lowers confidence to 90% or below,
 consult the next available approved rung before interrupting the human, preserving
@@ -430,3 +526,15 @@ scope/authority limits. No model selection is required at each plan gate.
 At the plan-ready handoff, report review findings/corrections, exact committed plan
 SHA, execution task order, and the stop endpoint. Do not begin CMP-01 until the
 human has switched the coordinator and explicitly continued implementation.
+
+## Independent plan review corrections
+
+Sol/medium review of planning candidate `b2619a3` requested changes:
+CPR01 (P1) lacked executable original-Red continuity across the fresh task base;
+CPR02 (P2) proposed raw-checkpoint migration without all existing path consumers;
+CPR03 (P2) treated the paths-only reconciliation callback as projection authority.
+This revision resolves them with the exact adoption-bound early-Red validator and
+REC-10, unchanged existing local checkpoint/raw retention with normal-branch
+publication controls in MIL-09, and explicitly passed immutable verified adoption
+context before pre-yield validation with REC-11. Re-review the exact revised plan
+candidate; the earlier review is not approval of these edits.
