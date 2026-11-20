@@ -24,7 +24,7 @@ families:
   - gpt
   - kimi
 
-implementation_family: grok
+implementation_family: composer
 
 handoff:
   capabilities:
