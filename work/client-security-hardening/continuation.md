@@ -2,6 +2,13 @@
 
 ## Current endpoint: combined completion plan, then Luna handoff
 
+Plan ready: companion plan at `d932660b9fc5e597fad3721e631ae96b90984632`
+received independent plan approval with 94% confidence; see
+`completion-plan-review.md` for findings, corrections and planning checks.
+CMP-01 through CMP-06 are the serialized execution order. Implementation and
+test execution have not started. Stop for the human's Luna coordinator switch
+and explicit continuation; preserve the private archives and old state/refs.
+
 The latest human direction authorizes planning recovery, milestone evidence,
 and laddered escalation together as prerequisites for current-task completion.
 See `completion-scope.md` and `completion-implementation-plan.md`. This
