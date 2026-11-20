@@ -1,7 +1,7 @@
 {
   "schema": "ask-accepted-tests/v1",
   "capability": "ask-traceability/v1",
-  "contract_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6",
+  "contract_sha": "18783adf1f922fa902215b49a45938ddeea9cba0",
   "work_id": "client-security-hardening",
   "reviewer": "gpt-6.1-sol (medium)",
   "recorded_by": "codex-coordinator",
@@ -10,23 +10,24 @@
   "plan_review": {
     "decision": "APPROVED",
     "reviewer": "gpt-6.1-sol (medium)",
-    "reviewed_candidate_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6",
+    "reviewed_candidate_sha": "18783adf1f922fa902215b49a45938ddeea9cba0",
     "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
     "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
-    "scope": "CSH-01 TaskGraph owned_paths amendment only",
+    "scope": "CSH-10 TaskGraph owned_paths amendment only",
     "change": {
       "path": "work/client-security-hardening/inner-loop/tasks.yaml",
       "added_owned_paths": [
-        "_ask/tests/test-prepare-skills-refuses-latest.sh",
-        "_ask/tests/test_tdd_preparation_overlay.py"
+        "ask",
+        "_ask/scripts/tracker-config.py",
+        "_ask/scripts/launcher-trust.py"
       ]
     },
-    "assessment": "Both added paths exercise skill preparation owned by CSH-01. Specification, canonical test cases, plan text, task order, and dependencies are unchanged. No additional contract obligations were introduced.",
+    "assessment": "The added paths implement existing CSH-T38 public journey behavior: public command dispatch, legacy credential migration and tracker metadata, and executable identity classification after metadata is written. Tracker metadata has no runtime code consumer. The early test assertions, accepted specification and canonical plan text, criteria, task order, and dependencies are unchanged.",
     "implementation_reviewed": false,
     "tests_run": false
   },
-  "plan_review_digest": "43d3385a388dcefbf59262a1c0ef2bf51e20d76f0d2cab1ac211ba482dbacb45",
+  "plan_review_digest": "104ec9e68d33310d6cfb3ffc823511b456d4ac7b3c033261ead9579d363a1513",
   "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
   "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
-  "graph_digest": "aff18ca84b1cc196ae6e5a7e0c20064d97505705b318358bf370165602d23228"
+  "graph_digest": "5060b9468d00f27d69f925e0d1bd528ea1d5b0dc360d259cdb6ab2d81516a9e2"
 }
