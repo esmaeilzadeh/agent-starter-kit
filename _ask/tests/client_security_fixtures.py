@@ -154,8 +154,9 @@ class ClientFixture:
             "with open(os.environ['ASK_MODEL_RUNTIME_LOG'], 'a', encoding='utf-8') as f:\n"
             "    f.write(json.dumps(request) + '\\n')\n"
             "action = request['action']\n"
-            "response = {'models': config['models']} if action == 'catalog' else "
-            "({'model': config['identity']} if action == 'identity' else "
+            "response = {'models': config['models'], 'authenticated': True, "
+            "'access_verified': True} if action == 'catalog' else "
+            "({'model': config['identity'], 'switch_supported': config['can_switch']} if action == 'identity' else "
             "({'supported': config['can_switch'], 'model': request.get('model')} if action == 'switch' else {}))\n"
             "print(json.dumps(response))\n",
             encoding="utf-8",

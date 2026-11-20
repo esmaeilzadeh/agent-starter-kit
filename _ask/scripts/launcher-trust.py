@@ -21,6 +21,7 @@ import tempfile
 METADATA = {
     ".agents/ask.local/bindings/models.yaml",
     ".agents/ask.local/bindings/models.json",
+    ".agents/ask.local/tracker.json",
     "_ask/bindings/models.yaml",
     "_ask/bindings/models.json",
 }

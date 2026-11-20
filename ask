@@ -92,6 +92,10 @@ Commands:
       Human-only tracker + MCP wizard. Needs a TTY. Agents must not run this.
       --help   usage without a TTY
 
+  credentials migrate
+      Move supported legacy tracker credentials to private storage and remove
+      secret assignments from .ask.env without changing the Git index or history.
+
   inner-loop validate|status|run|resume|cancel [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
 
@@ -302,6 +306,14 @@ case "$cmd" in
     ;;
   setup)
     exec "$SCRIPTS/setup.sh" "$@"
+    ;;
+  credentials)
+    if [[ "${1:-}" != "migrate" ]]; then
+      echo "usage: ./ask credentials migrate" >&2
+      exit 2
+    fi
+    shift
+    exec python3 "$SCRIPTS/tracker-config.py" migrate --root "$ROOT" --yes "$@"
     ;;
   inner-loop)
     exec python3 "$SCRIPTS/inner_loop/__main__.py" "$@"

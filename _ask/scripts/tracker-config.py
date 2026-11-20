@@ -19,7 +19,8 @@ from urllib.parse import urlsplit
 PUBLIC_KEYS = {"ASK_TRACKER", "ASK_TRACKER_URL", "JIRA_URL", "ASK_EPIC", "ASK_STORY",
                "MEMORY_CHOICE", "MEMORY_CMD", "MEMORY_PATH"}
 SECRET_KEYS = {"GITHUB_TOKEN", "JIRA_PERSONAL_TOKEN"}
-ALL_KEYS = PUBLIC_KEYS | SECRET_KEYS
+LEGACY_SECRET_KEYS = {"TRACKER_TOKEN"}
+ALL_KEYS = PUBLIC_KEYS | SECRET_KEYS | LEGACY_SECRET_KEYS
 PUBLIC_JSON_KEYS = {"tracker", "url", *(key.lower() for key in PUBLIC_KEYS)}
 BASE_ENV = {"PATH", "HOME", "USER", "LOGNAME", "LANG", "LC_ALL", "LC_CTYPE", "TZ", "TMPDIR"}
 
@@ -182,6 +183,25 @@ def read_credentials(root: Path) -> dict:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         raise ConfigError("private credential file is invalid") from None
+    if (isinstance(data, dict) and set(data) == {"TRACKER_TOKEN"}
+            and isinstance(data["TRACKER_TOKEN"], str) and data["TRACKER_TOKEN"]):
+        settings_path = root / ".agents/ask.local/tracker.json"
+        check_components(settings_path)
+        settings_info = settings_path.lstat()
+        if stat.S_ISLNK(settings_info.st_mode) or not stat.S_ISREG(settings_info.st_mode):
+            raise ConfigError("project tracker settings are unsafe")
+        try:
+            settings = json.loads(settings_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            raise ConfigError("project tracker settings are invalid") from None
+        tracker = settings.get("tracker") if isinstance(settings, dict) else None
+        url = settings.get("url") if isinstance(settings, dict) else None
+        if not isinstance(tracker, str) or tracker not in {"jira", "github"} \
+                or not isinstance(url, str):
+            raise ConfigError("legacy tracker credentials have no valid tracker settings")
+        key = "GITHUB_TOKEN" if tracker == "github" else "JIRA_PERSONAL_TOKEN"
+        return {"schema": "askit-tracker-credentials/v1", "tracker": tracker,
+                "url": validate_url(url), "credentials": {key: data["TRACKER_TOKEN"]}}
     if (not isinstance(data, dict) or data.get("schema") != "askit-tracker-credentials/v1"
             or not isinstance(data.get("credentials"), dict)):
         raise ConfigError("private credential file is invalid")
@@ -222,15 +242,10 @@ def store(project_root: Path, credential_root: Path, record: dict) -> None:
                 or info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) != 0o600):
             raise ConfigError("private credential file is unsafe")
         try:
-            old = json.loads(destination.read_text(encoding="utf-8"))
+            old = read_credentials(credential_root)
             old_credentials = old["credentials"]
-        except (OSError, KeyError, TypeError, json.JSONDecodeError):
+        except (ConfigError, KeyError, TypeError):
             raise ConfigError("private credential file is invalid") from None
-        if (not isinstance(old, dict) or old.get("schema") != "askit-tracker-credentials/v1"
-                or not isinstance(old_credentials, dict)
-                or any(key not in SECRET_KEYS or not isinstance(value, str)
-                       for key, value in old_credentials.items())):
-            raise ConfigError("private credential file is invalid")
         if old.get("tracker") == tracker and old.get("url") == url:
             credentials = {**old_credentials, **credentials}
     payload = {"schema": "askit-tracker-credentials/v1", "tracker": tracker,
@@ -289,18 +304,37 @@ def migrate(args: argparse.Namespace) -> int:
     tracker = values.get("ASK_TRACKER", "jira").lower()
     url = values.get("ASK_TRACKER_URL", values.get("JIRA_URL", ""))
     secrets = {key: values[key] for key in SECRET_KEYS if values.get(key)}
+    legacy_token = values.get("TRACKER_TOKEN")
+    if legacy_token:
+        if tracker not in {"jira", "github"}:
+            raise ConfigError("legacy tracker token cannot be mapped for this tracker")
+        secret_key = "GITHUB_TOKEN" if tracker == "github" else "JIRA_PERSONAL_TOKEN"
+        if secret_key in secrets and secrets[secret_key] != legacy_token:
+            raise ConfigError("multiple values for the configured tracker credential")
+        secrets[secret_key] = legacy_token
+        existing_path = credential_path(root)
+        if existing_path.exists():
+            existing = read_credentials(root)
+            if (existing.get("tracker") != tracker or existing.get("url") != validate_url(url)
+                    or existing.get("credentials") not in ({}, {secret_key: legacy_token})):
+                raise ConfigError("legacy tracker token conflicts with existing private credentials")
     store(root, root,
           {"tracker": tracker, "url": url, "credentials": secrets,
            "settings": {key: value for key, value in values.items() if key in PUBLIC_KEYS}})
+    if legacy_token:
+        private_write(credential_path(root),
+                      (json.dumps({"TRACKER_TOKEN": legacy_token}) + "\n").encode())
     current = legacy_path.lstat()
     if (stat.S_ISLNK(current.st_mode) or not stat.S_ISREG(current.st_mode)
             or legacy_path.read_bytes() != before):
         raise ConfigError("legacy settings changed during migration; credential copy is safe, source was retained")
     cleaned = "".join(line for line in text.splitlines(keepends=True)
-                      if not re.match(r"^\s*(?:export\s+)?(?:GITHUB_TOKEN|JIRA_PERSONAL_TOKEN)=", line))
+                      if not re.match(r"^\s*(?:export\s+)?(?:GITHUB_TOKEN|JIRA_PERSONAL_TOKEN|TRACKER_TOKEN)=", line))
     atomic_write(legacy_path, cleaned.encode("utf-8"), stat.S_IMODE(info.st_mode))
     if history_risk or staged:
-        print("warning: legacy credentials may remain in Git history; credential rotation is recommended. No index or history was changed.")
+        print("warning: rotate the legacy tracker token; it may remain in Git history. No index or history was changed.")
+    else:
+        print("warning: rotate the legacy tracker token as a precaution.")
     print("credentials migrated to private storage; secret assignments removed from the working file")
     return 0
 
