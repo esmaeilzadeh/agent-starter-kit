@@ -27,7 +27,7 @@ class ClientTests(unittest.TestCase):
         legacy = client / ".ask.env"
         legacy.write_text(
             "ASK_TRACKER=github\nASK_TRACKER_URL=https://github.com/example/project\n"
-            "TRACKER_TOKEN=dummy-never-real\n",
+            "TRACKER_TOKEN=dummy-never-real\nJIRA_PERSONAL_TOKEN=dummy-second-secret\n",
             encoding="utf-8",
         )
         legacy.chmod(0o600)
@@ -73,8 +73,15 @@ class ClientTests(unittest.TestCase):
         if not credentials.exists():
             failures.append("migration did not create private external credentials")
         else:
-            self.assertEqual(json.loads(credentials.read_text(encoding="utf-8")),
-                             {"TRACKER_TOKEN": "dummy-never-real"})
+            self.assertEqual(json.loads(credentials.read_text(encoding="utf-8")), {
+                "schema": "askit-tracker-credentials/v1",
+                "tracker": "github",
+                "url": "https://github.com/example/project",
+                "credentials": {
+                    "GITHUB_TOKEN": "dummy-never-real",
+                    "JIRA_PERSONAL_TOKEN": "dummy-second-secret",
+                },
+            })
             self.assertEqual(credentials.stat().st_mode & 0o777, 0o600)
             self.assertEqual(credentials.parent.stat().st_mode & 0o777, 0o700)
         migrated_env = legacy.read_text(encoding="utf-8")
@@ -171,8 +178,15 @@ class ClientTests(unittest.TestCase):
             failures.append("installed launcher did not restore interrupted upgrade bytes")
         self.assertEqual(migrated.read_bytes(), settings.read_bytes())
         if credentials.exists():
-            self.assertEqual(json.loads(credentials.read_text(encoding="utf-8")),
-                             {"TRACKER_TOKEN": "dummy-never-real"})
+            self.assertEqual(json.loads(credentials.read_text(encoding="utf-8")), {
+                "schema": "askit-tracker-credentials/v1",
+                "tracker": "github",
+                "url": "https://github.com/example/project",
+                "credentials": {
+                    "GITHUB_TOKEN": "dummy-never-real",
+                    "JIRA_PERSONAL_TOKEN": "dummy-second-secret",
+                },
+            })
         self.assertEqual((client / "README.md").read_bytes(), readme)
 
         startup_before = {

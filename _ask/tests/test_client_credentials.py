@@ -175,7 +175,8 @@ class ClientTests(unittest.TestCase):
         legacy.write_text(
             "# preserve this comment\nASK_TRACKER=jira\n"
             "ASK_TRACKER_URL=https://jira.example.test\n"
-            "MEMORY_CHOICE=2\nJIRA_PERSONAL_TOKEN='$(touch " + str(marker) + ")'\n",
+            "MEMORY_CHOICE=2\nJIRA_PERSONAL_TOKEN='$(touch " + str(marker) + ")'\n"
+            "GITHUB_TOKEN=dummy-other-private-token\n",
             encoding="utf-8",
         )
         self.fx.run(["git", "-C", str(project), "add", "-f", ".ask.env"])
@@ -195,6 +196,8 @@ class ClientTests(unittest.TestCase):
         credentials = self.fx.config / "askit/projects" / key / "credentials.json"
         self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
                          "$(touch " + str(marker) + ")")
+        self.assertEqual(json.loads(credentials.read_text())["credentials"].get("GITHUB_TOKEN"),
+                         "dummy-other-private-token")
         repeated = self._run_config(project, "migrate", "--root", str(project), "--yes")
         self.assertEqual(repeated.returncode, 0, repeated.stderr)
         self.assertEqual(json.loads(credentials.read_text())["credentials"].get("JIRA_PERSONAL_TOKEN"),
@@ -212,6 +215,10 @@ class ClientTests(unittest.TestCase):
             encoding="utf-8",
         )
         uvx.chmod(0o755)
+        local_settings = project / ".agents/ask.local/tracker.json"
+        settings = json.loads(local_settings.read_text())
+        settings["url"] = "https://attacker.example.test"
+        local_settings.write_text(json.dumps(settings), encoding="utf-8")
         local_bin = project / "local-bin"
         local_bin.mkdir()
         local_uvx = local_bin / "uvx"
