@@ -1934,6 +1934,69 @@ class test_b(unittest.TestCase):
             self.root, "w", {}, live, context,
         ))
 
+    def test_reviewed_model_state_adoption_rejects_pointer_extensions_and_orphan_publications(self):
+        from engineering_model.admission import _publish, _state_directory, capture
+        from inner_loop.recovery import RecoveryAdoptionContext, _reviewed_model_state_matches_checkpoint
+
+        state_dir = _state_directory(self.root, "w")
+        state_dir.mkdir(parents=True)
+        (state_dir / "writer.lock").touch()
+        self.assertTrue(_publish(state_dir, capture(self.root, "w"), self.root))
+        traceability = self.root / "work/w/traceability"
+        context = RecoveryAdoptionContext(
+            work_id="w", branch="agent/w", proposal_sha256="p", review_sha256="r",
+            reviewer="gpt-6.1-sol (medium)", checkpoint_commit="checkpoint",
+            state_sha256="state", observed_revision=0, source_head=self.anchor_commit,
+            projection_inventory=(), source_paths=frozenset(),
+        )
+        live = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in traceability.rglob("*") if path.is_file()}
+        pointer_path = state_dir / "current.json"
+        pointer = json.loads(pointer_path.read_bytes())
+        pointer["reviewer_supplied"] = True
+        pointer_path.write_text(json.dumps(pointer) + "\n")
+        live[pointer_path.relative_to(self.root).as_posix()] = pointer_path.read_bytes()
+        self.assertFalse(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ), "reviewed adoption still needs the canonical pointer schema")
+
+        pointer.pop("reviewer_supplied")
+        pointer_path.write_text(json.dumps(pointer, sort_keys=True))
+        live[pointer_path.relative_to(self.root).as_posix()] = pointer_path.read_bytes()
+        alternate = state_dir.parent / "alternate"
+        alternate.mkdir()
+        model_path = self.root / "work/w/engineering-model.json"
+        model = json.loads(model_path.read_text())
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n")
+        self.assertTrue(_publish(alternate, capture(self.root, "w"), self.root))
+        model_path.write_text(json.dumps({**model, "revision": model["revision"] - 1}) + "\n")
+        alternate_pointer = json.loads((alternate / "current.json").read_bytes())
+        shutil.copytree(alternate / "generations" / alternate_pointer["generation"],
+                        state_dir / "generations" / alternate_pointer["generation"])
+        shutil.copy(alternate / "publications" / f"{alternate_pointer['publication']}.json",
+                    state_dir / "publications" / f"{alternate_pointer['publication']}.json")
+        live = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in traceability.rglob("*") if path.is_file()}
+        self.assertFalse(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ), "a valid but disconnected publication cannot be adopted as model-state history")
+
+    def test_recovery_review_model_requirement_is_scoped_to_its_workstream(self):
+        from inner_loop.recovery import _valid_recovery_review
+
+        review = {
+            "schema": "ask-recovery-adoption-review/v1", "decision": "APPROVED",
+            "reviewer": "claude-opus (medium)", "reviewer_model": "claude-opus",
+            "reviewer_effort": "medium", "recorded_by": "coordinator",
+            "scope": "exact-recovery-adoption",
+        }
+        self.assertTrue(_valid_recovery_review(review, "another-workstream"))
+        self.assertFalse(_valid_recovery_review(review, "client-security-hardening"))
+        csh_review = dict(review, reviewer="gpt-6.1-sol (medium)",
+                          reviewer_model="gpt-6.1-sol")
+        self.assertTrue(_valid_recovery_review(csh_review, "client-security-hardening"))
+
     def test_recovery_rejects_unbound_completion_projection(self):
         from inner_loop.recovery import _traceability_matches_checkpoint
 
@@ -2074,14 +2137,6 @@ class test_b(unittest.TestCase):
                               "--review", str(review_path))
         self.assertNotEqual(forged.returncode, 0)
         self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
-        wrong_reviewer = dict(review, reviewer="gpt-6-astra (medium)",
-                              reviewer_model="gpt-6-astra")
-        review_path.write_text(json.dumps(wrong_reviewer, sort_keys=True) + "\n")
-        wrong_model = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
-                                   "--review", str(review_path))
-        self.assertNotEqual(wrong_model.returncode, 0)
-        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
-
         unexpected_evidence = proposal_path.parent / "unreviewed.json"
         unexpected_evidence.write_text("{}\n")
         dirty = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),

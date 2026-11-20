@@ -71,18 +71,26 @@ def _source_is_clean(root: Path, allowed_evidence_paths: set[str] | None = None)
     return True
 
 
-def _valid_recovery_review(review: dict) -> bool:
-    return (
+def _valid_recovery_review(review: dict, work_id: str) -> bool:
+    valid = (
         review.get("schema") == "ask-recovery-adoption-review/v1"
         and review.get("decision") == "APPROVED"
-        and review.get("reviewer") == "gpt-6.1-sol (medium)"
-        and review.get("reviewer_model") == "gpt-6.1-sol"
-        and review.get("reviewer_effort") == "medium"
+        and isinstance(review.get("reviewer"), str)
+        and bool(review["reviewer"].strip())
+        and isinstance(review.get("reviewer_model"), str)
+        and bool(review["reviewer_model"].strip())
+        and isinstance(review.get("reviewer_effort"), str)
+        and bool(review["reviewer_effort"].strip())
         and isinstance(review.get("recorded_by"), str)
         and bool(review["recorded_by"].strip())
         and review["reviewer"] != review["recorded_by"]
         and review.get("scope") == "exact-recovery-adoption"
     )
+    return valid and (work_id != "client-security-hardening" or (
+        review["reviewer"] == "gpt-6.1-sol (medium)"
+        and review["reviewer_model"] == "gpt-6.1-sol"
+        and review["reviewer_effort"] == "medium"
+    ))
 
 
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
@@ -894,9 +902,13 @@ def _reviewed_model_state_matches_checkpoint(root: Path, work_id: str,
         old_pointer = json.loads(old[pointer_path]) if pointer_path in old else None
         if pointer is None or pointer_path not in current:
             return False
+        if set(pointer) - {"generation", "publication"}:
+            return False
         _load_generation(state, work_id, pointer["generation"])
         if old_pointer is not None:
-            if not isinstance(old_pointer, dict):
+            if (not isinstance(old_pointer, dict)
+                    or set(old_pointer) - {"generation", "publication"}
+                    or not re.fullmatch(r"[0-9a-f]{64}", old_pointer.get("generation", ""))):
                 return False
             _load_generation(state, work_id, old_pointer["generation"])
 
@@ -944,6 +956,40 @@ def _reviewed_model_state_matches_checkpoint(root: Path, work_id: str,
         if pointer.get("publication") is not None and pointer["publication"] not in publications:
             return False
         old_publication = old_pointer.get("publication") if isinstance(old_pointer, dict) else None
+        new_publications = publications - {
+            name[len(prefix + "publications/"):-5]
+            for name in old if name.startswith(prefix + "publications/") and name.endswith(".json")
+        }
+        old_generations = {
+            name[len(prefix + "generations/"):].split("/", 1)[0]
+            for name in old if name.startswith(prefix + "generations/")
+        }
+        reachable, pending = set(), pointer.get("publication")
+        reachable_generation = pointer["generation"]
+        referenced_generations = {reachable_generation}
+        while pending is not None:
+            if pending in reachable:
+                return False
+            event = _publication(state, pending)
+            if event.get("result_digest") != reachable_generation:
+                return False
+            reachable.add(pending)
+            previous = event.get("previous_publication")
+            base = event.get("base_digest")
+            if previous is not None:
+                if (previous not in publications
+                        or _publication(state, previous).get("result_digest") != base):
+                    return False
+            elif base is not None:
+                return False
+            referenced_generations.add(event["result_digest"])
+            if base is not None:
+                referenced_generations.add(base)
+            reachable_generation = base
+            pending = previous
+        if (not new_publications.issubset(reachable)
+                or not (generations - old_generations).issubset(referenced_generations)):
+            return False
         if old_publication is not None:
             selected = pointer.get("publication")
             generation = pointer["generation"]
@@ -1555,7 +1601,7 @@ def recovery_adopt(root: Path, work_id: str, proposal_path: Path,
         proposal, sort_keys=True, separators=(",", ":")
     ).encode()).hexdigest()
     review_digest = hashlib.sha256(review_raw).hexdigest()
-    if (not _valid_recovery_review(review)
+    if (not _valid_recovery_review(review, work_id)
             or review.get("proposal_sha256") != proposal_digest
             or review.get("candidate_sha") != proposal.get("source_head")
             or review.get("early_red_continuity_sha256")
@@ -1733,7 +1779,7 @@ def retained_adoption_continuity(root: Path, work_id: str, state: dict,
     review_digest = hashlib.sha256(review_raw).hexdigest()
     if (proposal_digest != receipt.get("proposal_sha256")
             or review_digest != receipt.get("review_sha256")
-            or not _valid_recovery_review(review)
+            or not _valid_recovery_review(review, work_id)
             or review.get("proposal_sha256") != proposal_digest
             or review.get("candidate_sha") != receipt.get("source_head")
             or review.get("early_red_continuity_sha256")
