@@ -59,7 +59,7 @@ class ClientTests(unittest.TestCase):
         return path, yaml.safe_load(path.read_text(encoding='utf-8'))
 
     def test_one_grill_decision(self):
-        result = self.decision(DECISION, 'submit')
+        result = self.decision(DECISION, 'save')
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         _, record = self.model_record()
         plan = record['model_plan']
@@ -68,16 +68,20 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(plan['runtime'], 'codex')
         self.assertEqual(plan['implementation_policy'], 'latest-accessible')
         self.assertEqual(plan['selections']['07-review']['model'], 'gpt-6-astra')
+        shown = self.decision(None, 'show')
+        self.assertEqual(shown.returncode, 0, shown.stderr or shown.stdout)
+        self.assertEqual(json.loads(shown.stdout)['selections']['07-review']['model'],
+                         'gpt-6-astra')
         grill = (self.root / '.agents/ask/stages/01-grill.md').read_text(encoding='utf-8')
         self.assertEqual(grill.count('Confirm model plan'), 1)
         self.assertIn('Change selected models', grill)
 
     def test_reuse_and_resume(self):
-        saved = self.decision(DECISION, 'submit')
+        saved = self.decision(DECISION, 'save')
         self.assertEqual(saved.returncode, 0, saved.stderr or saved.stdout)
         for stage, expected in (
             ('03-spec-challenge', 'gpt-6-astra'),
-            ('05-plan', 'gpt-6-luna'),
+            ('05-plan', 'gpt-6.1-sol'),
             ('06-implement', 'gpt-6-luna'),
             ('07-review', 'gpt-6-astra'),
             ('continuation', 'gpt-6.1-sol'),
@@ -101,6 +105,12 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(result.stdout.strip(), 'legacy-exact-model')
         self.assertEqual(models.read_text(encoding='utf-8'), legacy)
         self.assertNotIn('model_plan:', models.read_text(encoding='utf-8'))
+        shown = self.decision(None, 'show')
+        self.assertEqual(shown.returncode, 0, shown.stderr or shown.stdout)
+        shown_plan = json.loads(shown.stdout)
+        self.assertFalse(shown_plan['confirmed'])
+        self.assertFalse(shown_plan['policy_confirmed'])
+        self.assertEqual(shown_plan['implementation_policy'], 'legacy-configured')
 
     def test_portable_projections(self):
         models = self.root / f'work/{WORK_ID}/models.yaml'
@@ -144,7 +154,7 @@ class ClientTests(unittest.TestCase):
             self.assertNotIn('Present the model picker', text, path)
 
     def test_decision_persistence(self):
-        result = self.decision(DECISION, 'submit')
+        result = self.decision(DECISION, 'save')
         self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
         path, record = self.model_record()
         plan = record['model_plan']
@@ -161,13 +171,30 @@ class ClientTests(unittest.TestCase):
         self.assertNotIn('06-implement', record['codex'])
 
         runtime = self.root / '.agents/ask/bindings/runtimes/codex.yaml'
-        config = yaml.safe_load(runtime.read_text(encoding='utf-8'))
-        config['roles']['typing'] = 'new-typing-default'
-        runtime.write_text(yaml.safe_dump(config, sort_keys=False), encoding='utf-8')
+        config = runtime.read_text(encoding='utf-8')
+        self.assertIn('  typing: gpt-6-luna\n', config)
+        runtime.write_text(config.replace('  typing: gpt-6-luna\n',
+                                          '  typing: new-typing-default\n', 1),
+                           encoding='utf-8')
         resolved = self.decision(None, 'resolve', '--stage', '06-implement')
         self.assertEqual(resolved.returncode, 0, resolved.stderr or resolved.stdout)
         self.assertEqual(resolved.stdout.strip(), 'new-typing-default')
         self.assertTrue(path.is_file())
+
+        outside = self.root / 'outside'
+        outside.mkdir()
+        (outside / 'models.yaml').write_text('keep: true\n', encoding='utf-8')
+        (self.root / 'work/escape-work').symlink_to(outside, target_is_directory=True)
+        (self.root / 'work/escape-file').mkdir()
+        (self.root / 'work/escape-file/models.yaml').symlink_to(outside / 'models.yaml')
+        for work_id in ('escape-work', 'escape-file'):
+            rejected = subprocess.run(
+                [sys.executable, str(self.root / '_ask/scripts/model-decisions.py'),
+                 'save', '--work-id', work_id], cwd=self.root, env=self.env(),
+                input=json.dumps(DECISION), text=True, capture_output=True,
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertEqual((outside / 'models.yaml').read_text(encoding='utf-8'), 'keep: true\n')
 
 
 if __name__ == '__main__':

@@ -55,6 +55,10 @@ If the human is using the kit:
 
 `./ask check-workstream <work-id>` is the machine check that the **default path is complete**. Exit non-zero means “incomplete,” not “forbidden.” On-path response: prepare what is missing.
 
+### Model decisions
+
+Grill records one complete model plan in `work/<work-id>/models.yaml`, including runtime, resolved stage roles/models, exact exceptions, and implementation update policy. This model choice is separate from approval of `intent.md` and from final Accept. Challenge and Review reuse the saved plan without routine model or same-family confirmation. A legacy workstream without the new policy keeps its configured implementor until its next authorized Grill or explicit policy change; do not infer historical consent.
+
 When continuing an identified workstream, first inspect its branch, artifacts,
 inner-loop state, and recent commits. If an authorized next action is blocked by
 a missing or stale confirmation, present that exact confirmation as selectable

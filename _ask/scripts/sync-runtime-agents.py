@@ -339,6 +339,15 @@ def resolve_slug(
     )
     risk = str(risk).upper()
 
+    for overlay in (work,):
+        hit = value_from_overlay(overlay, stage, runtime)
+        if hit is MISSING:
+            continue
+        validate_model(hit, runtime, stage)
+        if not is_role_or_pool(hit):
+            return hit
+        return slug_from_role_or_pool(hit, stage, risk, defaults, runtime_cfg)
+
     env_rt_key = f"{env_stage_key(stage)}_{runtime.upper()}"
     env_any_key = env_stage_key(stage)
     if env_rt_key in env:
@@ -349,7 +358,7 @@ def resolve_slug(
         if not is_role_or_pool(env_any):
             return env_any
 
-    for overlay in (work, consumer):
+    for overlay in (consumer,):
         hit = value_from_overlay(overlay, stage, runtime)
         if hit is MISSING:
             continue

@@ -13,6 +13,10 @@ Do not put slugs in `.agents/ask/stages/*.md` or in `models.defaults.yaml`.
 5. `runtimes/<id>.yaml` (slug)
 
 An unqualified slug applies only to the runtime being generated.
+The workstream overlay is checked before ambient model variables, so an exact
+saved stage choice cannot be replaced by the environment. Grill records the
+complete resolved table under `model_plan`; only exact stage exceptions belong
+in the runtime-specific overlay. Role-based defaults stay dynamic.
 
 ## Consumer `models.yaml` example
 

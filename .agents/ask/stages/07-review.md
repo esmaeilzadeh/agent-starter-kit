@@ -26,7 +26,7 @@ See `_ask/policies/workflow.md`. Prepare `review.md`. After defaults-OK, do not 
 
 ## Model spawn (required)
 
-Spawn the generated Review subagent for the current runtime. Present the model picker as selectable choices (default is resolved cheap/diverse pool for workstream risk; unset risk is LOW → cheap). A highlight alone is not consent. If the selected model is the same family as Implement, explain why and offer “Continue with this model” / “Choose another model” as choices; proceed only on the submitted continue choice. If buttons are unavailable, offer numbered choices and accept the number or option label, never a written confirmation sentence. Record model, runtime, and parent_model on review.md. Do not author the review only in the parent context.
+Resolve `07-review` with `python3 _ask/scripts/model-decisions.py resolve --work-id <id> --stage 07-review --runtime <runtime>` and spawn the generated Review subagent with that model. Reuse the saved Grill decision on continuation. Record model, runtime, and parent_model on review.md. Do not ask for a routine picker or same-family approval; request only a genuine unavailable-model, capability, or scope decision, preserving the saved choices. Do not author the review only in the parent context.
 
 ## Inner-loop
 

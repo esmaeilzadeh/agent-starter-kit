@@ -107,9 +107,13 @@ guarded-edit contract in `_ask/docs/engineering-model.md`. Keep product identity
 separate from execution ownership. A missing model is an incomplete workstream;
 prepare it before continuing, including when resuming older work.
 
-## Model spawn (optional)
+## One model decision
 
-When this stage’s resolved model differs from the parent, or `work/<id>/models.yaml` / env sets an explicit override, you may spawn the generated Grill subagent for that runtime. The child expands questions and returns them. The parent asks the human and writes `intent.md`. The child must not close Grill.
+Before asking for the intent confirmation, run `python3 _ask/scripts/model-decisions.py show --work-id <id> --runtime <runtime>` and present its complete stage table: role, resolved model, source, Review-to-Implement relationship, and implementation update policy. Include saved exact overrides and any legacy choices. For an older workstream without a saved policy, show that its current configured implementor remains in effect until this decision; do not claim it already approved latest-accessible.
+
+Ask one decision with choices **Confirm model plan** and **Change selected models**, plus optional added text. Confirm accepts the displayed defaults and any existing exact overrides. Change collects all requested stage exceptions and the implementation policy (`latest-accessible` or `exact`) together. Keep this decision separate from intent approval and final Accept. Do not ask per-stage model questions or separate same-family reviewer approval.
+
+After the submitted choice, save the complete decision once with `python3 _ask/scripts/model-decisions.py save --work-id <id>` and its JSON input (`runtime`, `risk`, `submission`, `implementation_policy`, and `overrides`). The saved table records every resolved role/model and its source; only submitted exact overrides (and an explicitly exact implementor policy) enter the stage overlay. Defaults remain resolved from the configured roles when later stages run. If the saved exact model is unavailable or a real capability/scope question blocks execution, ask only for that missing decision and retain the existing choices.
 
 ## E2E
 
