@@ -1,11 +1,18 @@
 # Completion handoff
 
-Status: incomplete; implementation paused after diagnosis at the human's request.
-This handoff is stored and pushed on `agent/client-security-hardening` by explicit
-human direction. It adds no implementation changes or passing verification claim.
-Resume the remaining work below when implementation is requested.
+The user authorized merging into `develop` and `main` and deferred final
+verification until they return to the original development machine. Workstream
+acceptance remains pending.
 
-## Baseline and authority
+On this checkout, `./ask verify` stopped before running any checks at source
+commit `30ea49e75d7b80756436005e650ac38f7a8c80ff`. It could not find
+`refs/ask/accepted-tests/client-security-hardening`, which should point to
+`768d42f27894017c109213285aede23e89105e7c`. The revision 119 checkpoint named
+below was also absent. On the original machine, confirm both refs and their
+evidence are available, reconcile the source history, then run final
+verification against the merged code and record the exact verified commit.
+
+## Baseline and authority from the original checkout
 
 - Diagnosed source: `7022e057` (resolve to its full SHA when resuming).
 - All CSH-01 through CSH-10 tasks are recorded as integrated. Milestone records
