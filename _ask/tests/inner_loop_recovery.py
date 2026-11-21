@@ -2773,6 +2773,11 @@ class test_b(unittest.TestCase):
         history_ref = f"refs/ask/accepted-tests-history/w/{self.base}"
         self.git("update-ref", history_ref, self.base)
         bundle = Path(self.temp.name) / "private.bundle"
+        self.git("update-ref", "-d", authority_ref)
+        with self.assertRaisesRegex(CheckpointError, "missing accepted-tests authority"):
+            export_bundle(self.root, "w", bundle)
+        self.assertFalse(bundle.exists())
+        self.git("update-ref", authority_ref, authority)
         previous_umask = os.umask(0)
         try:
             export_bundle(self.root, "w", bundle)
@@ -2787,6 +2792,10 @@ class test_b(unittest.TestCase):
         self.git("clone", "-q", "--no-local", str(self.root), str(clone))
         with self.assertRaisesRegex(Invalid, "missing coordinator accepted-tests ref"):
             load_accepted(clone, "w", self.candidate, self.candidate)
+        incomplete = Path(self.temp.name) / "incomplete.bundle"
+        self.git("bundle", "create", str(incomplete), "refs/ask/inner-loop/w")
+        with self.assertRaisesRegex(CheckpointError, "bundle omits accepted-tests authority"):
+            import_bundle(clone, "w", incomplete)
         checkpoint = import_bundle(clone, "w", bundle)
         self.assertEqual(checkpoint, self._checkpoint_ref())
         self.assertEqual(self.git("-C", str(clone), "rev-parse", authority_ref), authority)
@@ -2815,6 +2824,7 @@ class test_b(unittest.TestCase):
         self.git("reflog", "expire", "--expire=now", "--all")
         self.git("gc", "--prune=now")
         self.assertEqual(self.git("cat-file", "-t", checkpoint), "commit")
+        self.git("update-ref", "refs/ask/accepted-tests/w", self.anchor_commit)
 
         bundle = self.root / "checkpoint.bundle"
         exported = self.run_cli("checkpoint-export", "w", "--out", str(bundle))

@@ -718,6 +718,8 @@ def export_bundle(root: Path, work_id: str, destination: Path) -> None:
                      f"refs/ask/accepted-tests-history/{work_id}/").decode().splitlines():
         if line == authority_ref or line.startswith(f"refs/ask/accepted-tests-history/{work_id}/"):
             refs.append(line)
+    if _contract_sha(root, work_id) and authority_ref not in refs:
+        raise CheckpointError("missing accepted-tests authority; restore it from the source machine before exporting")
     # Git creates bundle files using the umask; keep raw evidence private throughout.
     destination = Path(destination).absolute()
     with tempfile.TemporaryDirectory(prefix=".ask-checkpoint-", dir=destination.parent) as temp:
@@ -738,6 +740,8 @@ def import_bundle(root: Path, work_id: str, source: Path) -> str:
         heads = _git(root, "bundle", "list-heads", str(source)).decode().splitlines()
         available_refs = {line.split()[-1] for line in heads if len(line.split()) >= 2}
         authority_ref = f"refs/ask/accepted-tests/{work_id}"
+        if _contract_sha(root, work_id) and authority_ref not in available_refs:
+            raise CheckpointError("bundle omits accepted-tests authority; re-export with current tooling on the source machine")
         history_prefix = f"refs/ask/accepted-tests-history/{work_id}/"
         authority_updates = []
         for line in heads:

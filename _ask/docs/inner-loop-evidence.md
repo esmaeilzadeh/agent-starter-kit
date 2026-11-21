@@ -126,6 +126,8 @@ The bundle contains the last retained checkpoint, not newer unretained runs.
 Retain new evidence through the normal reviewed checkpoint operations before
 exporting it. Export again with current tooling if an older bundle omitted
 accepted-test authority; do not recreate approvals on the receiving machine.
+For work with an accepted contract, export refuses missing authority and import
+refuses a bundle that omits it, before publishing a partial handoff.
 
 ## Delegated review
 
