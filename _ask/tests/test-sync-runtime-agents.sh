@@ -3,6 +3,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 TMP="$(mktemp -d)"
+OWNERSHIP_PATH="$(git rev-parse --git-path askit-transactions)/owned-files.json"
+if [[ -f "$OWNERSHIP_PATH" ]]; then
+  cp "$OWNERSHIP_PATH" "$TMP/owned-files.json"
+  touch "$TMP/owned-files-present"
+fi
 PROJECTION_DIRS=(
   .cursor/agents
   .claude/agents
@@ -25,6 +30,11 @@ restore_projections() {
       cp -a "$TMP/projection-$index" "$projection_dir"
     fi
   done
+  if [[ -e "$TMP/owned-files-present" ]]; then
+    cp "$TMP/owned-files.json" "$OWNERSHIP_PATH"
+  else
+    rm -f "$OWNERSHIP_PATH"
+  fi
   rm -rf "$TMP"
 }
 trap restore_projections EXIT

@@ -7,6 +7,7 @@ import sys
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from verification.traceability.completion import evaluate_completion
 from verification.traceability.contracts import Invalid,POLICY,digest
 from verification.traceability.evidence import (record_test_review,review_errors,write_json,
