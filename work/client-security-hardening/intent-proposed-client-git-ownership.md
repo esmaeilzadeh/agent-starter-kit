@@ -1,5 +1,7 @@
 # Intent: AskIt client security hardening
 
+**Status: historical draft.** This is the companion intent for the unapproved [Git ownership and uninstall proposal](spec-change-client-git-ownership.md). See [intent.md](intent.md) for the accepted workstream intent.
+
 ## What
 
 Make AskIt safer to install, upgrade, and use in fresh and existing client repositories.

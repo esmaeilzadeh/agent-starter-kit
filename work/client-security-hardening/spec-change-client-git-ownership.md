@@ -1,18 +1,20 @@
 # Specification change proposal: client Git ownership and uninstall
 
-## Current specification
+**Status: historical draft.** This proposal was never approved. The [accepted security specification](../../specs/current/client-security-hardening.md) assigns CSH-009 and CSH-010 to model flow. A revived proposal needs new criterion IDs and approval against the current spec.
 
-The current security specification and criterion registry are at `853f37d`. CSH-002 protects client settings and CSH-007 validates generated agent configuration. Neither defines the complete Git ownership boundary for installed files. See `client-git-audit.md` for the observed gaps.
+## Specification at the time of drafting
+
+This draft used the security specification and criterion registry at `853f37d`. CSH-002 protects client settings and CSH-007 validates generated agent configuration. Neither defines the complete Git ownership boundary for installed files. See `client-git-audit.md` for the observed gaps.
 
 ## Proposed change
 
-Add CSH-009. AskIt must leave every path it introduces in a client checkout either ignored as kit-owned or local state, or trackable and documented as project-owned. The ordinary install, reinstall, upgrade, and sync paths maintain this policy. No manual ignore or untracking step is required for a conflict-free installation or migration.
+Git ownership: AskIt must leave every path it introduces in a client checkout either ignored as kit-owned or local state, or trackable and documented as project-owned. The ordinary install, reinstall, upgrade, and sync paths maintain this policy. No manual ignore or untracking step is required for a conflict-free installation or migration.
 
 Use the kit's owned-file inventory to generate one managed client ignore block. Cover the installed package, protocol, dispatcher, stock docs and examples, generated skills and runtime bindings, and local state. Preserve existing client ignore entries and never ignore a whole shared editor directory. Remove the managed Codex skill exception in clients and keep those skills available locally. The source kit repository controls its own tracking policy.
 
 Keep project-owned files trackable: project instructions, overlays, skill pins and lock, CheckPlan, public tracker metadata, custom editor definitions, specs, workstream artifacts, and deliberate evidence archives. Classify mixed files by ownership: keep a client-maintained config trackable, preserve its edits, and use a separate generated companion where the runtime supports it.
 
-Add CSH-010 for reversible installation. Provide `ask uninstall --dry-run` for one client checkout and `askit self-uninstall --dry-run` for the global installation. Both commands support applying the same previewed operation. Use the same ownership records as install and upgrade. Uninstall removes verified kit files and reverses AskIt-managed entries in shared files, preserving project settings, credentials, unrelated edits and the Git index. Global uninstall removes its verified launcher, cache and opted-in completion entries. It leaves installed client projects intact. Project uninstall does not change the global installation.
+Reversible installation: provide `ask uninstall --dry-run` for one client checkout and `askit self-uninstall --dry-run` for the global installation. Both commands support applying the same previewed operation. Use the same ownership records as install and upgrade. Uninstall removes verified kit files and reverses AskIt-managed entries in shared files, preserving project settings, credentials, unrelated edits and the Git index. Global uninstall removes its verified launcher, cache and opted-in completion entries. It leaves installed client projects intact. Project uninstall does not change the global installation.
 
 For project uninstall, a file is eligible for deletion only if AskIt can prove it owns the file and Git does not track it. Preserve project-owned files even when untracked, and report tracked kit artifacts as retained. Keep project instructions, verification settings, overlays, specs, and work records. In a shared file such as `.gitignore`, remove only the verified AskIt-managed entries and preserve all project entries. Never delete the shared file or modify the Git index.
 
@@ -37,5 +39,3 @@ For uninstall, preflight the complete operation. If a legacy artifact lacks owne
 ## Impact and decision
 
 Update the canonical spec and criterion registry, engineering model, task plan and client ownership documentation after approval. Sequence this with installer ownership and rollback tasks. Keep the separate Cursor rule preservation repair scoped to its reproduced defect.
-
-Status: Proposed. Stage 04 will present this proposal and the full revised intent together after the pending Spec Challenge.
