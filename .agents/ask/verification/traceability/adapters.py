@@ -10,6 +10,7 @@ import uuid
 from . import CAPABILITY
 from .contracts import Invalid, digest, file_digest
 from .coverage import scoped_tests
+from verification.environment import build_environment, private_directory, private_open, warn_tracked_logs
 
 
 def git(root,*args):
@@ -20,11 +21,11 @@ def git(root,*args):
 
 def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, phase='final_green'):
     root=Path(root).resolve();plan=contracts['plan'];spec=contracts['spec']
+    warn_tracked_logs(root)
     sha=git(root,'rev-parse','--verify',candidate_sha+'^{commit}')
     selected=scoped_tests(plan,scope,task_id)
     run_id=uuid.uuid4().hex
-    directory=root/'work'/spec['work_id']/'traceability'/'runs'/run_id
-    directory.mkdir(parents=True)
+    directory=private_directory(root/'work'/spec['work_id']/'traceability'/'runs'/run_id, root)
     report={'schema':'ask-test-results/v1','run_id':run_id,'scope':scope,'task_id':task_id,
             'candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan),
             'runner_identity':{'capability':CAPABILITY,'adapter_digest':file_digest(Path(__file__).with_name('unittest_runner.py'))},
@@ -40,19 +41,25 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 if runner['adapter']!='unittest' or len(argv)<4 or argv[1:3]!=['-m','unittest']:
                     raise Invalid('unsupported runner adapter/invocation')
                 eid=uuid.uuid4().hex;raw=directory/(eid+'.json');log=directory/(eid+'.log')
-                package_root = checkout / '.agents' / 'ask'
-                inherited_path = os.environ.get('PYTHONPATH', '')
-                python_path = os.pathsep.join(
-                    value for value in (str(package_root), inherited_path) if value)
-                env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
-                         PYTHONPATH=python_path,
-                         ASK_TRACEABILITY_RUNTIME_ROOT=str(root))
+                start = '.'
+                if 'discover' in argv:
+                    try: start = argv[argv.index('-s') + 1]
+                    except (ValueError, IndexError): pass
+                test_root = (checkout / start).resolve()
+                if not test_root.is_relative_to(checkout):
+                    raise Invalid('unittest collection root escapes candidate')
+                python_path = os.pathsep.join((str(checkout/'.agents'/'ask'), str(test_root)))
+                env=build_environment(os.environ, runner.get('env_allow', []), {
+                    'PYTHONDONTWRITEBYTECODE':'1', 'PYTHONPATH':python_path,
+                    'ASK_ROOT':str(checkout), 'ASK_TRACEABILITY_RUNTIME_ROOT':str(root),
+                    'ASK_TRACEABILITY_RUN_DIR':str(directory),
+                })
                 # Coordinator/worker mode belongs to the outer CLI command.
                 # Do not leak that one-command role into the isolated test
                 # process, whose fixtures exercise both coordinator and worker
                 # operations explicitly.
                 env.pop('ASK_INNER_LOOP_ROLE', None)
-                with log.open('w') as stream:
+                with private_open(log, 'w') as stream:
                     try:
                         selection=[t['case_id'] for t in expected] if scope=='task' else None
                         actual_argv=[sys.executable,str(runner_file),str(raw),json.dumps(selection),*argv[3:]]
@@ -73,7 +80,8 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
             if git(checkout,'rev-parse','HEAD')!=sha or git(checkout,'status','--porcelain'):
                 raise Invalid('candidate source changed during test execution')
         finally:git(root,'worktree','remove','--force',str(checkout))
-    (directory/'results.json').write_text(json.dumps(report,indent=2)+'\n')
+    with private_open(directory/'results.json', 'w') as stream:
+        stream.write(json.dumps(report,indent=2)+'\n')
     if os.environ.get('ASK_TRACEABILITY_CRASH_AT') == 'after_report_publication':
         os._exit(81)
     from .evidence import write_json

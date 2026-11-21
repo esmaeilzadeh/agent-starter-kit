@@ -1,6 +1,7 @@
 """Immutable contract and coordinator review bindings for cooperative local writers."""
 from __future__ import annotations
 import ast
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -157,8 +158,27 @@ def load_historical_accepted(root, work_id, candidate_sha):
     return dict(contracts,pin=pin)
 
 
+def retained_adoption_context(root, work_id, *, state=None, checkpoint=None):
+    """Return adoption authority only when the current checkpoint retains it."""
+    import sys
+    scripts = Path(root) / '_ask' / 'scripts'
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    from inner_loop.checkpoint import read_checkpoint
+    from inner_loop.recovery import retained_adoption_continuity
+    from inner_loop.state import load_state
+
+    checkpoint = checkpoint or read_checkpoint(root, work_id)
+    if checkpoint is None:
+        return None
+    if state is None:
+        state = load_state(root, work_id)
+    return retained_adoption_continuity(root, work_id, state, checkpoint)
+
+
 def validate_historical_continuity(root, work_id, original, current, report,
-                                  ledger_row, decisions, current_candidate_sha):
+                                  ledger_row, decisions, current_candidate_sha,
+                                  *, adoption_context=None):
     """Validate per-case historical Red provenance and reviewed applicability."""
     import hashlib
     from .coverage import scoped_tests
@@ -181,6 +201,127 @@ def validate_historical_continuity(root, work_id, original, current, report,
     authority_path=f'work/{work_id}/traceability-accepted.json'
     candidate_pin_object=git(root,'rev-parse',f'{original_candidate}:{authority_path}')
     original_authority_digest=digest(original['pin'])
+    original_tests={t['id']:t for t in scoped_tests(original['plan'],'task',report['task_id'])}
+    current_tests={t['id']:t for t in scoped_tests(current['plan'],'task',report['task_id'])}
+    failures={case.get('test_id'):case for case in report.get('cases',[])
+              if case.get('phase')=='red' and case.get('outcome')=='failed'
+              and case.get('failure_kind')=='behavior_assertion'}
+    continuity = (getattr(adoption_context, 'early_red_continuity', None)
+                  if adoption_context is not None else None)
+    if isinstance(continuity, str):
+        try:
+            continuity = json.loads(continuity)
+        except ValueError as exc:
+            raise Invalid('adopted early-Red continuity map is invalid JSON') from exc
+    expected_reviewer = ((getattr(adoption_context, 'reviewer', None)
+                          if adoption_context is not None else None)
+                         or (current.get('pin') or {}).get('reviewer'))
+    if continuity is not None:
+        report_digest = hashlib.sha256(json.dumps(
+            report, sort_keys=True, separators=(',', ':')
+        ).encode()).hexdigest()
+        if (continuity.get('report_digest') != report_digest
+                or continuity.get('ledger_row_digest') != ledger_identity):
+            raise Invalid('adopted early-Red report or ledger digest changed')
+        authorization = continuity.get('early_authorization')
+        if not isinstance(authorization, dict):
+            raise Invalid('adopted early-Red authorization evidence is missing')
+        if adoption_context is not None:
+            authorization_raw = read_at(
+                root, adoption_context.checkpoint_commit,
+                'artifacts/' + authorization.get('path', ''),
+            )
+        else:
+            authorization_raw = read_at(
+                root, authorization.get('candidate_sha'), authorization.get('path'),
+            )
+        if hashlib.sha256(authorization_raw).hexdigest() != authorization.get('sha256'):
+            raise Invalid('accepted early-Red authorization bytes changed')
+        authorization_review = json.loads(authorization_raw)
+        amendment = authorization_review.get('authorization_amendment_review') or {}
+        baseline = amendment.get('early_baseline') or {}
+        if (baseline.get('candidate_sha') != original_candidate
+                or baseline.get('run_id') != run_id
+                or baseline.get('cases') != ['CSH-T38', 'CSH-T39']
+                or baseline.get('task_state') != 'CSH-10 remains pending; early Red does not advance it'):
+            raise Invalid('accepted plan review does not authorize this early Red')
+        if (authorization_review.get('schema') != 'ask-plan-review/v1'
+                or authorization_review.get('work_id') != work_id
+                or authorization_review.get('spec_digest') != original['pin'].get('spec_digest')
+                or authorization_review.get('plan_digest') != original['pin'].get('plan_digest')
+                or authorization_review.get('independent') is not True
+                or not text(authorization_review.get('reviewer'))
+                or authorization_review.get('reviewed_candidate_sha')
+                != authorization.get('candidate_sha')
+                or authorization_review.get('decision') != 'APPROVED'
+                or amendment.get('candidate_sha') != authorization.get('candidate_sha')
+                or amendment.get('decision') != 'APPROVED'
+                or amendment.get('human_acceptance_remains_required') is not True):
+            raise Invalid('early-Red authorization is not bound to the independent plan review')
+        executions = report.get('executions')
+        if not isinstance(executions, list) or len(executions) != 1:
+            raise Invalid('adopted early-Red run must retain its single original execution')
+        execution = executions[0]
+        runner_path = '.agents/ask/verification/traceability/unittest_runner.py'
+        original_runner_digest = file_digest_bytes(read_at(root, original_candidate, runner_path))
+        output_path = execution.get('output_artifact')
+        output_root = Path(root) / 'work' / work_id / 'traceability' / 'runs' / run_id
+        try:
+            output = Path(root) / output_path
+            if (not isinstance(output_path, str) or output.is_symlink()
+                    or not output.resolve().is_relative_to(output_root.resolve())):
+                raise Invalid('adopted early-Red output path is unsafe')
+            output_raw = (read_at(root, adoption_context.checkpoint_commit,
+                                  'artifacts/' + output_path)
+                          if adoption_context is not None else output.read_bytes())
+        except (OSError, RuntimeError, TypeError) as exc:
+            raise Invalid('adopted early-Red output is unavailable') from exc
+        failure_ids = {case.get('test_id') for case in report.get('cases', [])
+                       if isinstance(case, dict) and case.get('phase') == 'red'
+                       and case.get('outcome') == 'failed'
+                       and case.get('failure_kind') == 'behavior_assertion'}
+        if (execution.get('phase') != 'red' or execution.get('exit_code') != 1
+                or execution.get('collection_status') != 'ok'
+                or execution.get('source_sha') != original_candidate
+                or continuity.get('original_runner_digest') != original_runner_digest
+                or report.get('runner_identity') != {
+                    'capability': CAPABILITY, 'adapter_digest': original_runner_digest,
+                }
+                or execution.get('output_digest') != continuity.get('output_digest')
+                or hashlib.sha256(output_raw).hexdigest() != continuity.get('output_digest')
+                or failure_ids != {'CSH-T38', 'CSH-T39'}):
+            raise Invalid('adopted early-Red execution is not the exact behavior-failing baseline')
+        ancestry = subprocess.run(
+            ['git', 'merge-base', '--is-ancestor', original_candidate, current_candidate_sha],
+            cwd=root, capture_output=True,
+        )
+        if ancestry.returncode != 0:
+            raise Invalid('early-Red candidate is outside adopted source ancestry')
+        authority_commit = continuity.get('original_authority_object')
+        original_pin_object = git(root, 'rev-parse', f'{original_candidate}:{authority_path}')
+        generated = []
+        for case in continuity.get('cases', []):
+            test_id = case.get('test_id')
+            generated.append({
+                'work_id': work_id, 'task_id': report.get('task_id'), 'run_id': run_id,
+                'test_id': test_id,
+                'candidate_sha': original_candidate,
+                'original_plan_digest': original_plan_digest,
+                'report_digest': report_digest, 'ledger_row_digest': ledger_identity,
+                'original_authority_object': authority_commit,
+                'original_candidate_pin_object': original_pin_object,
+                'original_authority_digest': original_authority_digest,
+                'original_contract_digest': digest(original['pin']),
+                'reviewer': expected_reviewer,
+                'behavioral_continuity': case.get('behavioral_continuity'),
+                'original_source_digests': source_digests(
+                    root, original_candidate, original['plan'], [test_id],
+                ),
+                'current_source_digests': source_digests(
+                    root, current_candidate_sha, current['plan'], [test_id],
+                ),
+            })
+        decisions = generated
     rows={}
     for decision in decisions:
         test_id=decision.get('test_id')
@@ -189,12 +330,9 @@ def validate_historical_continuity(root, work_id, original, current, report,
         rows[test_id]=decision
     if not rows:
         raise Invalid('historical run has no per-case continuity decisions')
-    original_tests={t['id']:t for t in scoped_tests(original['plan'],'task',report['task_id'])}
-    current_tests={t['id']:t for t in scoped_tests(current['plan'],'task',report['task_id'])}
-    failures={case.get('test_id'):case for case in report.get('cases',[])
-              if case.get('phase')=='red' and case.get('outcome')=='failed'
-              and case.get('failure_kind')=='behavior_assertion'}
-    expected_reviewer=(current.get('pin') or {}).get('reviewer')
+    if continuity is not None:
+        _validate_early_red_semantic_map(root, work_id, original, current,
+                                         current_candidate_sha, continuity, rows)
     for test_id,decision in rows.items():
         old_test=original_tests.get(test_id);new_test=current_tests.get(test_id)
         case=failures.get(test_id)
@@ -229,6 +367,133 @@ def validate_historical_continuity(root, work_id, original, current, report,
             or decision.get('current_source_digests')!=new_sources):
             raise Invalid(f'{test_id}: historical continuity source identities are stale')
     return rows
+
+
+def assertion_identity(root, candidate_sha, plan, test_id):
+    """Digest one planned test method and its assertion ASTs at an exact commit."""
+    tests = {item.get('id'): item for item in plan.get('tests', [])
+             if isinstance(item, dict) and isinstance(item.get('id'), str)}
+    test = tests.get(test_id)
+    if not isinstance(test, dict):
+        raise Invalid(f'{test_id}: accepted test identity is missing')
+    case = test.get('case_id')
+    sources = test.get('source_paths')
+    if (not isinstance(case, str) or len(case.split('.')) < 3
+            or not isinstance(sources, list) or len(sources) != 1
+            or not isinstance(sources[0], str) or not sources[0].endswith('.py')):
+        raise Invalid(f'{test_id}: accepted test source identity is ambiguous')
+    raw = read_at(root, candidate_sha, sources[0])
+    try:
+        tree = ast.parse(raw)
+    except SyntaxError as exc:
+        raise Invalid(f'{test_id}: source does not parse at its retained candidate') from exc
+    parts = case.split('.')
+    classes = [node for node in ast.walk(tree)
+               if isinstance(node, ast.ClassDef) and node.name == parts[-2]]
+    methods = [node for parent in classes for node in parent.body
+               if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+               and node.name == parts[-1]]
+    if len(methods) != 1:
+        raise Invalid(f'{test_id}: test method identity is missing or ambiguous')
+    method = methods[0]
+    assertion_nodes = [node for node in ast.walk(method)
+                       if isinstance(node, ast.Assert)
+                       or (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+                           and node.func.attr.startswith('assert'))]
+    assertion_nodes.sort(key=lambda node: (getattr(node, 'lineno', 0),
+                                           getattr(node, 'col_offset', 0)))
+    assertions = [hashlib.sha256(ast.dump(node, include_attributes=False).encode()).hexdigest()
+                  for node in assertion_nodes]
+    return {
+        'source_path': sources[0],
+        'source_sha256': hashlib.sha256(raw).hexdigest(),
+        'method_ast_sha256': hashlib.sha256(
+            ast.dump(method, include_attributes=False).encode()
+        ).hexdigest(),
+        'assertion_ast_sha256': assertions,
+    }
+
+
+def _validate_early_red_semantic_map(root, work_id, original, current,
+                                     current_candidate_sha, continuity, decisions):
+    from .coverage import scoped_tests
+
+    if (continuity.get('schema') != 'ask-early-red-continuity/v1'
+            or continuity.get('work_id') != work_id
+            or continuity.get('task_id') != 'CSH-10'
+            or continuity.get('run_id') != '01ba1187a3584c9184579b9af66fdc07'
+            or continuity.get('candidate_sha') != '371e4a5741f34afb0b2c37401fc847dc14309664'
+            or continuity.get('original_plan_digest') != digest(original['plan'])
+            or continuity.get('original_spec_digest') != digest(original['spec'])
+            or continuity.get('current_plan_digest') != digest(current['plan'])
+            or continuity.get('current_spec_digest') != digest(current['spec'])):
+        raise Invalid('adopted early-Red continuity identity is stale')
+    adaptations = continuity.get('adaptations')
+    required_adaptations = {'versioned-credentials', 'planning-model',
+                            'fault-injection', 'fixture-runtime'}
+    if (not isinstance(adaptations, list) or len(adaptations) != len(required_adaptations)
+            or {item.get('id') for item in adaptations if isinstance(item, dict)} != required_adaptations
+            or any(not isinstance(item.get('assessment'), str) or not item['assessment'].strip()
+                   for item in adaptations if isinstance(item, dict))):
+        raise Invalid('early-Red map must account for every observed journey and fixture adaptation')
+    current_ids = {test['id'] for test in scoped_tests(current['plan'], 'task', 'CSH-10')}
+    original_ids = {test['id'] for test in scoped_tests(original['plan'], 'task', 'CSH-10')}
+    if current_ids != {'CSH-T38', 'CSH-T39'} or original_ids != current_ids:
+        raise Invalid('early-Red map does not cover the exact accepted CSH-10 scope')
+    cases = continuity.get('cases')
+    if (not isinstance(cases, list) or len(cases) != len(current_ids)
+            or {row.get('test_id') for row in cases if isinstance(row, dict)} != current_ids):
+        raise Invalid('early-Red semantic map must cover each accepted journey exactly once')
+    for row in cases:
+        test_id = row['test_id']
+        old_identity = assertion_identity(root, continuity['candidate_sha'], original['plan'], test_id)
+        new_identity = assertion_identity(root, current_candidate_sha, current['plan'], test_id)
+        if row.get('original_identity') != old_identity or row.get('current_identity') != new_identity:
+            raise Invalid(f'{test_id}: source or assertion AST changed after its semantic review')
+        mappings = row.get('assertion_mappings')
+        if not isinstance(mappings, list) or len(mappings) != len(old_identity['assertion_ast_sha256']):
+            raise Invalid(f'{test_id}: semantic map omits original assertions')
+        old_indexes, new_indexes = set(), set()
+        for mapping in mappings:
+            if not isinstance(mapping, dict):
+                raise Invalid(f'{test_id}: invalid per-assertion semantic mapping')
+            old_index, current_indexes = mapping.get('original_index'), mapping.get('current_indexes')
+            if (type(old_index) is not int or old_index in old_indexes
+                    or not isinstance(current_indexes, list) or not current_indexes
+                    or not isinstance(mapping.get('assessment'), str)
+                    or not mapping['assessment'].strip()):
+                raise Invalid(f'{test_id}: invalid per-assertion semantic mapping')
+            if (old_index < 0 or old_index >= len(old_identity['assertion_ast_sha256'])
+                    or old_identity['assertion_ast_sha256'][old_index]
+                    != mapping.get('original_assertion_sha256')
+                    or len(current_indexes) != len(set(current_indexes))
+                    or any(type(index) is not int or index < 0
+                           or index >= len(new_identity['assertion_ast_sha256'])
+                           for index in current_indexes)
+                    or [new_identity['assertion_ast_sha256'][index] for index in current_indexes]
+                       != mapping.get('current_assertion_sha256')):
+                raise Invalid(f'{test_id}: assertion mapping digest does not identify its source AST')
+            old_indexes.add(old_index)
+            new_indexes.update(current_indexes)
+        if old_indexes != set(range(len(old_identity['assertion_ast_sha256']))):
+            raise Invalid(f'{test_id}: semantic map omits original assertions')
+        additional = row.get('additional_current_assertions')
+        expected_additional = sorted(set(range(len(new_identity['assertion_ast_sha256']))) - new_indexes)
+        if (not isinstance(additional, list)
+                or any(not isinstance(item, dict) for item in additional)
+                or {item.get('current_index') for item in additional if isinstance(item, dict)}
+                != set(expected_additional)
+                or any(not isinstance(item.get('assessment'), str) or not item['assessment'].strip()
+                       for item in additional)):
+            raise Invalid(f'{test_id}: new assertions need separately reviewed rationale')
+        required = {item['id']: set(item.get('criterion_ids') or [])
+                    for item in current['plan'].get('tests', []) if item.get('id') == test_id}
+        if row.get('criterion_ids') != sorted(required.get(test_id, set())):
+            raise Invalid(f'{test_id}: semantic map changes its accepted criterion coverage')
+        decision = decisions.get(test_id)
+        if (not isinstance(decision, dict)
+                or decision.get('behavioral_continuity') != row.get('behavioral_continuity')):
+            raise Invalid(f'{test_id}: adopted continuity decision differs from its semantic map')
 
 
 def file_digest_bytes(raw):

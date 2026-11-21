@@ -16,6 +16,7 @@ from inner_loop.driver import (  # noqa: E402
     NotIntegrable,
     cancel,
     git_sha,
+    _implementation_handoff,
     resume_from_state,
     run_until,
 )
@@ -36,6 +37,8 @@ from inner_loop.recovery import (  # noqa: E402
     audit_legacy_workstream,
     inspect as inspect_recovery,
     legacy_adoption_proposal,
+    recovery_adopt,
+    recovery_proposal,
     validate_legacy_adoption_proposal,
 )
 from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle  # noqa: E402
@@ -114,6 +117,7 @@ def cmd_cas_apply(root: Path, work_id: str, observed: int) -> int:
 
 
 def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
+    _implementation_handoff(root, work_id)
     with workflow_admission(root, work_id, delivery_task_id=task_id):
         doc = spawn_writer(root, work_id, task_id)
     print(f"running={task_id} revision={doc['revision']}")
@@ -239,9 +243,32 @@ def main(argv: list[str] | None = None) -> int:
     lv.add_argument("--audit", required=True)
     lv.add_argument("--proposal", required=True)
 
+    rp = sub.add_parser("recovery-propose", help="read-only exact recovery adoption inventory")
+    rp.add_argument("work_id")
+
+    ra = sub.add_parser("recovery-adopt", help="CAS-adopt an exact independently reviewed recovery proposal")
+    ra.add_argument("work_id")
+    ra.add_argument("--proposal", required=True)
+    ra.add_argument("--review", required=True)
+
+    pe = sub.add_parser("publish-evidence", help="commit compact retained task milestones")
+    pe.add_argument("work_id")
+    mg = sub.add_parser("migrate-runtime", help="untrack exact reviewed runtime inventory, preserving bytes")
+    mg.add_argument("work_id")
+    mg.add_argument("--inventory", required=True)
+
     args = p.parse_args(argv)
     root = repo_root(args.root)
     try:
+        if args.cmd == "publish-evidence":
+            from inner_loop.milestones import publish_milestones
+            print(publish_milestones(root, args.work_id))
+            return 0
+        if args.cmd == "migrate-runtime":
+            from inner_loop.milestones import migrate_runtime
+            inventory = json.loads(Path(args.inventory).read_bytes())
+            print(json.dumps(migrate_runtime(root, args.work_id, inventory)))
+            return 0
         if args.cmd == "validate":
             return cmd_validate(root, args.work_id)
         if args.cmd == "status":
@@ -340,6 +367,13 @@ def main(argv: list[str] | None = None) -> int:
             result = validate_legacy_adoption_proposal(root, audit, proposal)
             print(json.dumps(result, indent=2, sort_keys=True))
             return 0 if result["status"] == "preconditions_validated" else 2
+        if args.cmd == "recovery-propose":
+            print(json.dumps(recovery_proposal(root, args.work_id), indent=2, sort_keys=True))
+            return 0
+        if args.cmd == "recovery-adopt":
+            result = recovery_adopt(root, args.work_id, Path(args.proposal), Path(args.review))
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2
     except ProtocolViolation as e:

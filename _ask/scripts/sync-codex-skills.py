@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Project ASK stages into Codex's repository skill directory."""
+import os
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,18 @@ def update_ignore():
 
 
 def main():
+    if ('--check' not in sys.argv and '--check-trackability' not in sys.argv
+            and os.environ.get('ASKIT_TRANSACTION_ACTIVE') != '1'):
+        command = [
+            sys.executable, str(ROOT / '_ask/scripts/write-transaction.py'), 'run',
+            '--root', str(ROOT), '--path', '.agents/skills',
+            '--input-path', '_ask/scripts', '--input-path', '.cursor/skills',
+            '--input-path', '.agents/ask/stages', '--input-path', '_ask/agents',
+        ]
+        if '--update-ignore' in sys.argv:
+            command.extend(['--path', '.gitignore'])
+        command.extend(['--', 'python3', '{target}/_ask/scripts/sync-codex-skills.py', *sys.argv[1:]])
+        raise SystemExit(subprocess.run(command).returncode)
     if '--update-ignore' in sys.argv:
         update_ignore()
         return

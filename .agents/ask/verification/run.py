@@ -13,6 +13,7 @@ import uuid
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(HERE.parent))
 from verification.isolation import check_isolation
+from verification.environment import build_environment, private_directory, private_open, warn_tracked_logs
 from verification.plan import expand_plan,load_plan
 from verification.traceability.adapters import git,run_tests
 from verification.traceability.contracts import Invalid,digest,file_digest
@@ -53,6 +54,7 @@ def main():
     completion=None
     checkout=None;tmp=None
     try:
+        warn_tracked_logs(runtime)
         with ExitStack() as admission:
             admission.enter_context(workflow_context(runtime,work_id,code_root=runtime,
                                                      delivery_task_id=delivery_task_id))
@@ -77,28 +79,36 @@ def main():
                 for runner in contracts['plan']['runners']:
                     runs=[r for r in cases['executions'] if r['runner_id']==runner['id']]
                     if len(runs)==1 and scope=='workstream':
-                        cache[tuple(runner['argv'])]=runs[0]['exit_code'] if runs[0]['collection_status']=='ok' else 1
+                        key=(tuple(runner['argv']),tuple(runner.get('env_allow', [])))
+                        cache.setdefault(key,[]).append(runs[0])
             command_cache={}
             run_id=uuid.uuid4().hex
             static_dir=runtime/'work'/work_id/'traceability'/'static-runs'/run_id if work_id else None
-            if static_dir:static_dir.mkdir(parents=True)
+            if static_dir:private_directory(static_dir, runtime)
             for check in checks:
                 command=check['command'];print(f'verify: running: {command}',flush=True)
                 artifact=None
-                if command in command_cache:code,artifact=command_cache[command]
-                elif tuple(shlex.split(command)) in cache and command==shlex.join(shlex.split(command)):
-                    code=cache[tuple(shlex.split(command))]
-                    match=next(r for r in cases['executions'] if tuple(r['argv'])==tuple(shlex.split(command)))
+                cache_key=(command,tuple(check.get('env_allow', [])))
+                matching=cache.get((tuple(shlex.split(command)),cache_key[1]),[])
+                if cache_key in command_cache:code,artifact=command_cache[cache_key]
+                elif (command==shlex.join(shlex.split(command))
+                      and len(matching)==1):
+                    match=matching[0]
+                    code=match['exit_code'] if match['collection_status']=='ok' else 1
                     artifact=match['output_artifact']
                 else:
-                    env=dict(os.environ,ASK_ROOT=str(check_root),PYTHONDONTWRITEBYTECODE='1')
+                    env=build_environment(os.environ, check.get('env_allow', []), {
+                        'ASK_ROOT':str(check_root), 'PYTHONDONTWRITEBYTECODE':'1',
+                        'ASK_TRACEABILITY_RUNTIME_ROOT':str(runtime),
+                        **({'ASK_TRACEABILITY_RUN_DIR':str(static_dir)} if static_dir else {}),
+                    })
                     if static_dir:
                         logfile=static_dir/(str(len(doc['checks']))+'.log')
-                        with logfile.open('w') as stream:proc=subprocess.run(['bash','-lc',command],cwd=check_root,env=env,stdout=stream,stderr=subprocess.STDOUT)
+                        with private_open(logfile, 'w') as stream:proc=subprocess.run(['bash','--noprofile','--norc','-c',command],cwd=check_root,env=env,stdout=stream,stderr=subprocess.STDOUT)
                         print(logfile.read_text(),end='',flush=True);artifact=str(logfile.relative_to(runtime))
-                    else:proc=subprocess.run(['bash','-lc',command],cwd=check_root,env=env)
+                    else:proc=subprocess.run(['bash','--noprofile','--norc','-c',command],cwd=check_root,env=env)
                     code=proc.returncode
-                command_cache[command]=(code,artifact)
+                command_cache[cache_key]=(code,artifact)
                 doc['checks'].append({'id':check.get('id',command),'tier':check.get('tier','mandatory'),'command':command,'status':'pass' if code==0 else 'fail','exit_code':code,'evidence':artifact or '', 'output_digest':file_digest(runtime/artifact) if artifact else None})
             if any(c['exit_code'] for c in doc['checks']):raise Invalid('required candidate verification failed')
             if git(check_root,'rev-parse','HEAD')!=sha or (work_id and source_changes(check_root,work_id)):raise Invalid('candidate source/CheckPlan changed during verification')

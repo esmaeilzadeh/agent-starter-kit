@@ -1,0 +1,85 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "/root",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "a1ac2195120450dd2e0a570ae2d06e485ba63449474c697f5bdc3b4a9348323b",
+  "review_digest": "2e81fea63ec345f381744961118361f4c0e0581d7eb923b434ea7d50cf2fa05a",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "reviewer": "/root/review_task1",
+    "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+    "spec_digest": "9bd9107a4d9490528178e2ac204c44926aa9b0e8675fd58f042e2a6fa2a77a3e",
+    "plan_digest": "39a429b92988afb3f2ed097e6dabafa181bea6c183447f8d937d53d91a3fbe7f",
+    "scope": "task",
+    "task_id": "1",
+    "test_ids": [
+      "1/1",
+      "1/2"
+    ],
+    "criterion_ids": [
+      "SH-11",
+      "SH-12"
+    ],
+    "source_digests": {
+      ".agents/ask/workflow_refs/benchmark.py": "d9007c78cb2ace25d6798679576cff2fd263d1a46d0aa2161ae744095308a7f9",
+      "_ask/tests/test_workflow_refs_baseline.py": "757b756f33a1b1d52e694f238ee852abcdc95a747b10da2d6f6df4b71d936fbd",
+      "work/shorter-hashes/benchmark/baseline.json": "e492b8773bb58fccfccab38f123565a499a423cc3d46becf7f7b6d8f440be29f",
+      "work/shorter-hashes/benchmark/requirements.txt": "ac785205f5d97970c4a7f8aef135c62cfda01985ba2000973008c823ccc01d2f"
+    },
+    "criteria": [
+      {
+        "id": "SH-11",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Case 1/2 exercises a representative projection and lookup workflow, asserting that mapped tests and obligations plus recorded authority/outcomes survive projection and that necessary inputs are accounted for. This supports the Task 1 slice of SH-11."
+          }
+        },
+        "assessment": "Task 1's assigned integration case checks projection fidelity and lookup accounting. It does not claim full SH-11 coverage beyond this task."
+      },
+      {
+        "id": "SH-12",
+        "coverage_decision": "APPROVED",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Cases 1/1 and 1/2 exercise the frozen baseline inputs, tokenizer, reproducibility, metadata accounting, projections, and refusal behavior at the benchmark integration seam. Aggregate candidate savings and final acceptance remain assigned elsewhere."
+          }
+        },
+        "assessment": "Task 1's integration cases establish reproducible baseline measurements and reject incomplete or incomparable input. They do not claim full SH-12 acceptance."
+      }
+    ],
+    "tests": [
+      {
+        "id": "1/1",
+        "decision": "APPROVED",
+        "assertion_assessment": "Checks deterministic corpus and tokenizer output, expected corpus identity and metadata totals, and refusal for a wrong tokenizer version, unavailable tokenizer data, corrupted or missing frozen sources, and altered workload inputs. The new unavailable-data assertion checks both BenchmarkError type and its diagnostic.",
+        "counterexample": "If encoding retrieval raises OSError, the measurement previously leaked that exception; the Red run reproduces this and fails on the BenchmarkError assertion. If the candidate stopped converting OSError, the final assertion would fail.",
+        "tdd_continuity_assessment": "Red commit f6d6791cbdfe985c89df38226808ebb86968bc3b adds the unavailable-tokenizer-data assertion and its recorded run fails on the expected leaked OSError. Candidate 9b51116a620c89f4979d0b838ec35e26e66091b0 adds OSError to the existing tokenizer-load exception handling; the recorded final Green run passes. No exemption is used."
+      },
+      {
+        "id": "1/2",
+        "decision": "APPROVED",
+        "assertion_assessment": "Checks that the three equivalent journeys retain their questions, source inputs and token counts, that required projection fields survive, and that every referenced lookup/evidence input is represented and counted against the frozen manifest.",
+        "counterexample": "Omitting a required projection field, lookup source, or selected evidence input would break the equality and source-accounting assertions.",
+        "tdd_continuity_assessment": "The mapped case passed in the recorded Red run and again in the candidate's final Green run; the change is isolated to missing-tokenizer-data error normalization and does not alter this case's behavior."
+      }
+    ],
+    "base_sha": "c98f089c0a0f3d11608f37289a0d43165a35556e",
+    "inspected_sources": [
+      ".agents/ask/workflow_refs/benchmark.py",
+      "_ask/tests/test_workflow_refs_baseline.py"
+    ],
+    "changed_cases": [
+      "1/1",
+      "1/2"
+    ],
+    "inventory_exclusions": {},
+    "decision": "APPROVED"
+  },
+  "candidate_sha": "9b51116a620c89f4979d0b838ec35e26e66091b0",
+  "scope": "task",
+  "task_id": "1"
+}

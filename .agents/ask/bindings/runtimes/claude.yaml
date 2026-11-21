@@ -10,6 +10,10 @@ roles:
   typing: sonnet
   adversarial: opus
 
+confidence_escalation:
+  - claude-opus-5-5
+  - claude-fable-5-2
+
 pools:
   cheap: sonnet
   diverse: opus
@@ -21,9 +25,21 @@ families:
   - fable
   - claude
 
+implementation_family: sonnet
+
+handoff:
+  capabilities:
+    catalog: unknown
+    identity: unknown
+    switch: unknown
+  manual_action: "select {model} in Claude Code's active model selector"
+  evidence: https://docs.anthropic.com/en/docs/claude-code/model-config
+
 picker:
   - haiku
   - sonnet
   - opus
   - fable
+  - claude-opus-5-5
+  - claude-fable-5-2
   - inherit

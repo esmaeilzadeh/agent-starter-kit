@@ -6,6 +6,7 @@ import os
 import fcntl
 import tempfile
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -24,6 +25,12 @@ class SecondWriter(RuntimeError):
     pass
 
 
+@dataclass(frozen=True)
+class ReconciliationAuthorization:
+    allowed_source_paths: frozenset[str]
+    adoption_context: object
+
+
 def state_path(root: Path, work_id: str) -> Path:
     return root / "work" / work_id / "inner-loop" / "state.json"
 
@@ -36,7 +43,8 @@ def _require_coordinator() -> None:
 
 def _require_reconciled(root: Path, work_id: str, state: dict | None,
                         task_ids: list[str] | None = None,
-                        allowed_source_paths: set[str] | None = None) -> None:
+                        allowed_source_paths: set[str] | None = None,
+                        adoption_context=None) -> None:
     """Apply the recovery guard at every state mutation boundary."""
     from inner_loop.graph import load_graph
     from inner_loop.recovery import require_safe
@@ -50,7 +58,8 @@ def _require_reconciled(root: Path, work_id: str, state: dict | None,
             "tasks": [{"id": task_id, "depends_on": [], "owned_paths": []}
                       for task_id in (task_ids or (state or {}).get("tasks", {}))],
         }
-    require_safe(root, work_id, graph, state, allowed_source_paths=allowed_source_paths)
+    require_safe(root, work_id, graph, state, allowed_source_paths=allowed_source_paths,
+                 adoption_context=adoption_context)
 
 
 def load_state(root: Path, work_id: str) -> dict:
@@ -120,11 +129,14 @@ def _write_state(path: Path, doc: dict) -> None:
             Path(name).unlink(missing_ok=True)
 
 
-def _publish_state(root: Path, work_id: str, doc: dict) -> None:
+def _publish_state(root: Path, work_id: str, doc: dict, *,
+                   expected_head: str | None = None,
+                   expected_branch: str | None = None) -> None:
     from inner_loop.checkpoint import is_repository, publish
 
     if is_repository(root):
-        publish(root, work_id, doc)
+        publish(root, work_id, doc, expected_head=expected_head,
+                expected_branch=expected_branch)
     _write_state(state_path(root, work_id), doc)
 
 
@@ -235,11 +247,20 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         before = copy.deepcopy(doc)
         if observed_revision is not None and stored != observed_revision:
             raise CasConflict(f"revision mismatch: observed={observed_revision} stored={stored}")
-        allowed_source_paths = (reconciliation_validator(doc)
-                                if reconciliation_validator is not None else None)
+        authorization = (reconciliation_validator(doc)
+                         if reconciliation_validator is not None else None)
+        allowed_source_paths = (authorization.allowed_source_paths
+                                if isinstance(authorization, ReconciliationAuthorization)
+                                else authorization)
+        adoption_context = (authorization.adoption_context
+                            if isinstance(authorization, ReconciliationAuthorization) else None)
         _require_reconciled(root, work_id, doc,
-                            allowed_source_paths=allowed_source_paths)
+                            allowed_source_paths=allowed_source_paths,
+                            adoption_context=adoption_context)
         yield doc
+        if reconciliation_validator is not None:
+            if reconciliation_validator(before) != authorization:
+                raise CasConflict("recovery adoption inputs changed during the state transaction")
         _preserve_attempt_history(before, doc)
         _preserve_attempt_evidence(before, doc, archive=archive_attempt_evidence,
                                    update_review=update_review,
@@ -248,7 +269,11 @@ def state_transaction(root: Path, work_id: str, observed_revision: int | None = 
         if revision < stored:
             raise CasConflict(f"transaction revision moved backwards: started={stored} current={revision}")
         doc["revision"] = revision + 1
-        _publish_state(root, work_id, doc)
+        _publish_state(
+            root, work_id, doc,
+            expected_head=getattr(adoption_context, "source_head", None),
+            expected_branch=getattr(adoption_context, "branch", None),
+        )
 
 
 def cas_init(root: Path, work_id: str, task_ids: list[str], coordinator_sha: str = "") -> dict:

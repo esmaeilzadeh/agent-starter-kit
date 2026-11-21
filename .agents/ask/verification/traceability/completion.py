@@ -82,6 +82,16 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                 errors.append('invalid or duplicate run identity');continue
             seen_runs.add(run_id)
             report_task_id=execution_report.get('task_id')
+            adoption_context=trusted_context.get('adoption_context')
+            adopted_map=(json.loads(adoption_context.early_red_continuity)
+                         if adoption_context is not None and adoption_context.early_red_continuity
+                         else None)
+            adopted_early_red=(
+                isinstance(adopted_map,dict)
+                and adopted_map.get('run_id')==run_id
+                and adopted_map.get('candidate_sha')==execution_report.get('candidate_sha')
+                and adopted_map.get('task_id')==report_task_id
+            )
             historical_decisions=[d for d in plan.get('historical_red_continuity', [])
                                   if isinstance(d,dict) and d.get('work_id')==work_id
                                   and d.get('task_id')==report_task_id and d.get('run_id')==run_id
@@ -90,6 +100,9 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             historical_decisions_by_test={d.get('test_id'):d for d in historical_decisions
                                           if isinstance(d.get('test_id'),str)}
             historical_decision=historical_decisions[0] if historical_decisions else None
+            if adopted_early_red and not historical_decision:
+                historical_decision=adopted_map
+                historical_decisions=[adopted_map]
             retained=load(root/'work'/work_id/'traceability'/'runs'/run_id/'results.json')
             if retained!=execution_report:errors.append(f'{run_id}: report differs from coordinator execution record')
             report_adapter=expected_adapter
@@ -108,7 +121,8 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                     errors.append(f'{run_id}: original ledger identity is missing or duplicated')
                 else:
                     validate_historical_continuity(root,work_id,original,contracts,execution_report,
-                                                   original_rows[0],historical_decisions,sha)
+                                                   original_rows[0],historical_decisions,sha,
+                                                   adoption_context=adoption_context if adopted_early_red else None)
                 report_adapter=file_digest_bytes(read_at(root,execution_report['candidate_sha'],
                     '.agents/ask/verification/traceability/unittest_runner.py'))
             if (execution_report.get('schema')!='ask-test-results/v1'

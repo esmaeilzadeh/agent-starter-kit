@@ -11,6 +11,7 @@ echo x > README.md
 git add README.md && git commit -q -m init
 mkdir -p _ask/scripts results/demo .agents/ask
 cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/record-run.sh" _ask/scripts/
+cp -a "$ROOT/_ask/scripts/inner_loop" _ask/scripts/
 mkdir -p .agents/ask/workflow_refs
 cp "$ROOT"/.agents/ask/workflow_refs/*.py .agents/ask/workflow_refs/
 chmod +x _ask/scripts/*.sh

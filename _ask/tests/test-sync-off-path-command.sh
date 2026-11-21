@@ -6,6 +6,11 @@ trap 'rm -rf "$TMP"' EXIT
 cp -a "$ROOT/_ask" "$TMP/_ask"
 mkdir -p "$TMP/.agents"
 cp -a "$ROOT/.agents/ask" "$TMP/.agents/ask"
+git -C "$TMP" init -q -b main
+git -C "$TMP" config user.name fixture
+git -C "$TMP" config user.email fixture@example.test
+git -C "$TMP" add _ask .agents
+git -C "$TMP" commit -qm fixture
 mkdir -p "$TMP/.cursor/commands"
 (cd "$TMP" && ASK_ROOT="$TMP" ./_ask/scripts/sync-cursor-binding.sh >/dev/null)
 test -f "$TMP/.cursor/commands/off-path.md"

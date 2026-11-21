@@ -167,11 +167,12 @@ echo base > "$FF/f"
 git -C "$FF" add f
 git -C "$FF" commit -q -m base
 base=$(git -C "$FF" rev-parse HEAD)
+base_branch=$(git -C "$FF" symbolic-ref --short HEAD)
 git -C "$FF" checkout -q -b task
 echo task > "$FF/f"
 git -C "$FF" add f
 git -C "$FF" commit -q -m task
-git -C "$FF" checkout -q master 2>/dev/null || git -C "$FF" checkout -q main
+git -C "$FF" checkout -q "$base_branch"
 sha="$("${PY[@]}" --root "$FF" integrate --task-ref task --method ff-only)"
 [[ "$sha" == "$(git -C "$FF" rev-parse HEAD)" ]] || fail "ff HEAD"
 [[ "$sha" != "$base" ]] || fail "ff advanced"
@@ -197,6 +198,7 @@ git -C "$DRV" config user.name t
 echo base > "$DRV/f"
 git -C "$DRV" add f
 git -C "$DRV" commit -q -m base
+git -C "$DRV" checkout -q -b agent/drv
 mkdir -p "$DRV/work/drv/inner-loop/results"
 cat > "$DRV/work/drv/inner-loop/tasks.yaml" <<'YAML'
 schema: ask-inner-loop-tasks/v1
@@ -212,6 +214,7 @@ YAML
 mkdir -p "$DRV/.agents" "$DRV/_ask/policies" "$DRV/work/drv/inner-loop/evidence"
 mkdir -p "$DRV/_ask/scripts"
 cp -R "$ROOT/_ask/scripts/engineering_model" "$DRV/_ask/scripts/"
+cp -R "$ROOT/_ask/scripts/inner_loop" "$DRV/_ask/scripts/"
 mkdir -p "$DRV/.agents/ask"
 cp -R "$ROOT/.agents/ask/verification" "$DRV/.agents/ask/"
 cat > "$DRV/.agents/verification.yaml" <<'YAML'

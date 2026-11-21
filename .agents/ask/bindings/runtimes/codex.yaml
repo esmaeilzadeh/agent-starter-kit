@@ -24,8 +24,23 @@ reasoning_effort:
   stages:
     09-verify: low
 
+confidence_escalation:
+  - gpt-6.1-sol@high
+  - gpt-6-astra@medium
+  - gpt-6-astra@high
+
 families:
   - gpt
+
+implementation_family: gpt
+implementation_variant: luna
+handoff:
+  capabilities:
+    catalog: unknown
+    identity: unknown
+    switch: unknown
+  manual_action: "run /model {model} in the active Codex session and verify it with /status"
+  evidence: https://learn.chatgpt.com/docs/developer-commands?surface=cli
 
 picker:
   - gpt-6.1-sol

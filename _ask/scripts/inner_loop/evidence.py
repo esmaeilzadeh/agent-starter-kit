@@ -214,6 +214,73 @@ def check_integrable(result: dict, *, root: Path | None = None,
             raise NotIntegrable(f'{name} requires command, captured output and integer exit_code')
         if (name == 'red' and step['exit_code'] == 0) or (name == 'green' and step['exit_code'] != 0):
             raise NotIntegrable(f'{name} did not {"fail" if name == "red" else "pass"}')
+    if result.get('work_id') == 'client-security-hardening' and result.get('task_id') == 'CSH-10':
+        _validate_adopted_early_red_result(result, Path(root).resolve() if root else None,
+                                           candidate_sha)
+
+
+def _validate_adopted_early_red_result(result: dict, root: Path | None,
+                                       candidate_sha: str | None) -> None:
+    if root is None or not candidate_sha:
+        raise NotIntegrable('CSH-10 early-Red validation requires repository candidate identity')
+    import shlex
+    sys.path.insert(0, str(root / '.agents' / 'ask'))
+    from verification.traceability.evidence import (
+        load_accepted, load_historical_accepted, read_at,
+        retained_adoption_context, validate_historical_continuity,
+    )
+    from verification.traceability.contracts import Invalid as TraceabilityInvalid
+    work_id = 'client-security-hardening'
+    context = retained_adoption_context(root, work_id)
+    if context is None or not context.early_red_continuity:
+        raise NotIntegrable('CSH-10 requires checkpoint-retained early-Red adoption authority')
+    try:
+        continuity = json.loads(context.early_red_continuity)
+        red = result['tdd']['red']
+        reference = red.get('continuity_receipt')
+        expected_reference = {
+            'schema': 'ask-early-red-continuity-reference/v1',
+            'run_id': continuity['run_id'],
+            'candidate_sha': continuity['candidate_sha'],
+            'report_digest': continuity['report_digest'],
+            'ledger_row_digest': continuity['ledger_row_digest'],
+            'continuity_sha256': context.early_red_continuity_sha256,
+            'proposal_sha256': context.proposal_sha256,
+            'review_sha256': context.review_sha256,
+            'checkpoint_commit': context.checkpoint_commit,
+        }
+        if reference != expected_reference:
+            raise NotIntegrable('CSH-10 Red lacks its exact digest-bound continuity receipt reference')
+        report_path = (f'work/{work_id}/traceability/runs/{continuity["run_id"]}/results.json')
+        report_raw = read_at(root, context.checkpoint_commit, 'artifacts/' + report_path)
+        report = json.loads(report_raw)
+        output_path = report['executions'][0]['output_artifact']
+        output = read_at(root, context.checkpoint_commit, 'artifacts/' + output_path)
+        ledger = json.loads(read_at(
+            root, context.checkpoint_commit,
+            f'artifacts/work/{work_id}/traceability/executions.json',
+        ))
+        rows = [row for row in ledger if isinstance(row, dict)
+                and row.get('run_id') == continuity['run_id']]
+        if len(rows) != 1:
+            raise NotIntegrable('CSH-10 early-Red ledger row is missing or duplicated')
+        execution = report['executions'][0]
+        if (red.get('source_sha') != continuity['candidate_sha']
+                or red.get('exit_code') != execution.get('exit_code')
+                or red.get('output_digest') != continuity['output_digest']
+                or red.get('command') != shlex.join(execution.get('argv', []))
+                or red.get('output') != output.decode('utf-8', errors='replace')):
+            raise NotIntegrable('CSH-10 Red command, output, exit status, or source differs from the retained baseline')
+        original = load_historical_accepted(root, work_id, continuity['candidate_sha'])
+        current = load_accepted(root, work_id, candidate_sha, candidate_sha)
+        validate_historical_continuity(
+            root, work_id, original, current, report, rows[0], [], candidate_sha,
+            adoption_context=context,
+        )
+    except NotIntegrable:
+        raise
+    except (TraceabilityInvalid, OSError, ValueError, KeyError, TypeError) as exc:
+        raise NotIntegrable(f'CSH-10 early-Red continuity proof is invalid: {exc}') from exc
 
 
 def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
@@ -224,7 +291,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         raise NotIntegrable('invalid traceability run ID')
     sys.path.insert(0, str(root / '.agents' / 'ask'))
     from verification.traceability.evidence import load_accepted
-    from verification.traceability.evidence import load_historical_accepted
+    from verification.traceability.evidence import load_historical_accepted, retained_adoption_context
     from verification.traceability.contracts import Invalid as TraceabilityInvalid
     from verification.traceability.coverage import scoped_tests
     from verification.traceability.contracts import digest as contract_digest
@@ -248,9 +315,6 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
             if not attempts:
                 raise NotIntegrable('interrupted run has no retained original task base')
             base = attempts[-1].get('base_sha') or ''
-    if not base or not _commit_is_ancestor(root, base, git(root, 'rev-parse', 'HEAD')):
-        raise NotIntegrable('run validation has no valid original/active task base')
-
     run_dir = root / 'work' / work_id / 'traceability' / 'runs' / run_id
     try:
         report_raw = (run_dir / 'results.json').read_bytes()
@@ -262,26 +326,53 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
             or report.get('task_id') != task_id):
         raise NotIntegrable('migration_required/incomplete: traceability report identity/schema does not match the selected task/run')
     candidate = report.get('candidate_sha')
+    current_sha = git(root, 'rev-parse', 'HEAD')
+    adoption_context = retained_adoption_context(root, work_id, state=state)
+    continuity = None
+    if adoption_context is not None and adoption_context.early_red_continuity:
+        try:
+            continuity = json.loads(adoption_context.early_red_continuity)
+        except ValueError as exc:
+            raise NotIntegrable('retained early-Red continuity map is invalid') from exc
+    adopted_early_red = bool(
+        isinstance(continuity, dict)
+        and continuity.get('run_id') == run_id
+        and continuity.get('candidate_sha') == candidate
+        and continuity.get('task_id') == task_id
+        and report.get('phase', 'red') == 'red'
+    )
+    if (not base or not _commit_is_ancestor(root, base, current_sha)):
+        raise NotIntegrable('run validation has no valid original/active task base')
     if (not isinstance(candidate, str) or not candidate
-            or not _commit_is_ancestor(root, base, candidate)
-            or not _candidate_in_task_lineage(root, task, candidate)):
+            or (not adopted_early_red and (
+                not _commit_is_ancestor(root, base, candidate)
+                or not _candidate_in_task_lineage(root, task, candidate)
+            ))
+            or (adopted_early_red and not _commit_is_ancestor(
+                root, candidate, adoption_context.source_head
+            ))):
         raise NotIntegrable('traceability candidate is outside the active task ancestry')
 
     historical_context = None
-    try:
-        contracts = load_accepted(root, work_id, candidate, candidate)
-    except TraceabilityInvalid:
-        current_sha = git(root, 'rev-parse', 'HEAD')
+    if adopted_early_red:
+        original_contracts = load_historical_accepted(root, work_id, candidate)
         current = load_accepted(root, work_id, current_sha, current_sha)
-        contracts = load_historical_accepted(root, work_id, candidate)
-        continuity = [item for item in current['plan'].get('historical_red_continuity', [])
-                      if isinstance(item, dict) and item.get('work_id') == work_id
-                      and item.get('task_id') == task_id and item.get('run_id') == run_id
-                      and item.get('candidate_sha') == candidate
-                      and item.get('original_plan_digest') == report.get('plan_digest')]
-        if not continuity:
-            raise NotIntegrable('historical Red has no exact current continuity decision')
-        historical_context = (current, contracts, continuity, current_sha)
+        contracts = original_contracts
+        historical_context = (current, original_contracts, [], current_sha, adoption_context)
+    else:
+        try:
+            contracts = load_accepted(root, work_id, candidate, candidate)
+        except TraceabilityInvalid:
+            current = load_accepted(root, work_id, current_sha, current_sha)
+            contracts = load_historical_accepted(root, work_id, candidate)
+            continuity = [item for item in current['plan'].get('historical_red_continuity', [])
+                          if isinstance(item, dict) and item.get('work_id') == work_id
+                          and item.get('task_id') == task_id and item.get('run_id') == run_id
+                          and item.get('candidate_sha') == candidate
+                          and item.get('original_plan_digest') == report.get('plan_digest')]
+            if not continuity:
+                raise NotIntegrable('historical Red has no exact current continuity decision')
+            historical_context = (current, contracts, continuity, current_sha, None)
     plan, spec = contracts['plan'], contracts['spec']
     if (report.get('plan_digest') != contract_digest(plan)
             or report.get('spec_digest') != contract_digest(spec)):
@@ -292,7 +383,13 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         raise NotIntegrable('accepted task scope has no mapped tests')
 
     runner_path = '.agents/ask/verification/traceability/unittest_runner.py'
-    base_runner = subprocess.run(['git', 'show', f'{base}:{runner_path}'], cwd=root,
+    runner_revision = candidate if adopted_early_red else base
+    if work_id == 'continuation-recovery' and task_id == 'CR-3':
+        migration = _authorized_cr3_migration(root, Candidate({}, {
+            'work_id': work_id, 'task_id': task_id, 'base_sha': base,
+            'candidate_sha': candidate}, ''))
+        runner_revision = migration['verifier_sha']
+    base_runner = subprocess.run(['git', 'show', f'{runner_revision}:{runner_path}'], cwd=root,
                                  capture_output=True)
     if base_runner.returncode:
         raise NotIntegrable('active task base has no pinned traceability runner')
@@ -433,11 +530,12 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         'plan_digest': report['plan_digest'],
     }
     if historical_context:
-        current_contracts, original_contracts, decisions, current_sha = historical_context
+        current_contracts, original_contracts, decisions, current_sha, adoption_context = historical_context
         try:
             from verification.traceability.evidence import validate_historical_continuity
             validate_historical_continuity(root, work_id, original_contracts, current_contracts,
-                                           report, ledger_row, decisions, current_sha)
+                                           report, ledger_row, decisions, current_sha,
+                                           adoption_context=adoption_context)
         except TraceabilityInvalid as exc:
             raise NotIntegrable(str(exc)) from exc
     return report, ledger_row

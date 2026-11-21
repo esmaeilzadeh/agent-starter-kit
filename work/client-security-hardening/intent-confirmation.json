@@ -1,0 +1,8 @@
+{
+  "schema": "ask-intent-confirmation/v1",
+  "work_id": "client-security-hardening",
+  "scope": "complete-intent-and-assumptions",
+  "prompt": "Do you approve the complete intent and every listed assumption as written?",
+  "intent_sha256": "38106bb1ca9437cc0da5044e0fb5f0c7a5bf4e2835d743f7873fa1b2c5147115",
+  "human_response": "approved"
+}

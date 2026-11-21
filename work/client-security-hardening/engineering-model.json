@@ -1,0 +1,1949 @@
+{
+  "edges": [
+    {
+      "source": "csh-02",
+      "target": "csh-01",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-02",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-04",
+      "target": "csh-03",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-05",
+      "target": "csh-04",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-06",
+      "target": "csh-05",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-07",
+      "target": "csh-06",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-08",
+      "target": "csh-07",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-09",
+      "target": "csh-08",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-10",
+      "target": "csh-09",
+      "type": "depends_on"
+    },
+    {
+      "source": "csh-t01-test",
+      "target": "csh-t01-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-01",
+      "target": "csh-t01-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t02-test",
+      "target": "csh-t02-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-01",
+      "target": "csh-t02-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t03-test",
+      "target": "csh-t03-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-01",
+      "target": "csh-t03-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t04-test",
+      "target": "csh-t04-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-01",
+      "target": "csh-t04-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t05-test",
+      "target": "csh-t05-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-02",
+      "target": "csh-t05-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t06-test",
+      "target": "csh-t06-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-02",
+      "target": "csh-t06-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t07-test",
+      "target": "csh-t07-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-02",
+      "target": "csh-t07-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t08-test",
+      "target": "csh-t08-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-02",
+      "target": "csh-t08-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t09-test",
+      "target": "csh-t09-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-t09-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t10-test",
+      "target": "csh-t10-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-t10-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t11-test",
+      "target": "csh-t11-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-t11-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t12-test",
+      "target": "csh-t12-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-t12-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t13-test",
+      "target": "csh-t13-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-t13-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t14-test",
+      "target": "csh-t14-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-03",
+      "target": "csh-t14-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t15-test",
+      "target": "csh-t15-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-04",
+      "target": "csh-t15-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t16-test",
+      "target": "csh-t16-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-04",
+      "target": "csh-t16-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t17-test",
+      "target": "csh-t17-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-04",
+      "target": "csh-t17-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t18-test",
+      "target": "csh-t18-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-04",
+      "target": "csh-t18-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t19-test",
+      "target": "csh-t19-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-05",
+      "target": "csh-t19-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t20-test",
+      "target": "csh-t20-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-05",
+      "target": "csh-t20-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t21-test",
+      "target": "csh-t21-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-05",
+      "target": "csh-t21-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t22-test",
+      "target": "csh-t22-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-05",
+      "target": "csh-t22-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t23-test",
+      "target": "csh-t23-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-05",
+      "target": "csh-t23-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t24-test",
+      "target": "csh-t24-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-06",
+      "target": "csh-t24-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t25-test",
+      "target": "csh-t25-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-06",
+      "target": "csh-t25-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t26-test",
+      "target": "csh-t26-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-06",
+      "target": "csh-t26-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t27-test",
+      "target": "csh-t27-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-07",
+      "target": "csh-t27-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t28-test",
+      "target": "csh-t28-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-07",
+      "target": "csh-t28-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t29-test",
+      "target": "csh-t29-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-08",
+      "target": "csh-t29-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t30-test",
+      "target": "csh-t30-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-08",
+      "target": "csh-t30-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t31-test",
+      "target": "csh-t31-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-08",
+      "target": "csh-t31-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t32-test",
+      "target": "csh-t32-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-08",
+      "target": "csh-t32-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t33-test",
+      "target": "csh-t33-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-09",
+      "target": "csh-t33-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t34-test",
+      "target": "csh-t34-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-09",
+      "target": "csh-t34-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t35-test",
+      "target": "csh-t35-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-09",
+      "target": "csh-t35-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t36-test",
+      "target": "csh-t36-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-09",
+      "target": "csh-t36-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t37-test",
+      "target": "csh-t37-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-09",
+      "target": "csh-t37-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t38-test",
+      "target": "csh-t38-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-10",
+      "target": "csh-t38-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t39-test",
+      "target": "csh-t39-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-10",
+      "target": "csh-t39-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "csh-t40-test",
+      "target": "csh-t40-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "csh-08",
+      "target": "csh-t40-scenario",
+      "type": "contributes_to"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "purpose",
+      "lifecycle": "active",
+      "title": "Protect client files and credentials with predictable model decisions",
+      "type": "intent"
+    },
+    {
+      "id": "csh-001",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Launcher trust",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-002",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-002",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Write boundaries",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-003",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-003",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Recovery after interrupted writes",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-004",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-004",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Private tracker credentials",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-005",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-005",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Pinned distribution and skills",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-006",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Trusted local verification",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-007",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-007",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Generated agent configuration",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-008",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-008",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Workbench network default",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-009",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-009",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "One model decision during Grill",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-010",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-010",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Automatic stage model reuse",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-011",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-011",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Implementation orchestrator handoff",
+      "type": "requirement"
+    },
+    {
+      "id": "csh-012",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-012",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Portable model decisions and capability evidence",
+      "type": "requirement"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-01"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-01",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-01",
+      "lifecycle": "planned",
+      "title": "Verified distribution and dependency approvals",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-02"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-02",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-02",
+      "lifecycle": "planned",
+      "title": "Launcher trust and completion opt-in",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-03"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-03",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-03",
+      "lifecycle": "planned",
+      "title": "Complete write preflight and durable recovery",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-04"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-04",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-04",
+      "lifecycle": "planned",
+      "title": "Private tracker credentials and migration",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-05"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-05",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-05",
+      "lifecycle": "planned",
+      "title": "Allowlisted verifier environments and private outputs",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-06"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-06",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-06",
+      "lifecycle": "planned",
+      "title": "Validated atomic runtime generation",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-07"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-07",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-07",
+      "lifecycle": "planned",
+      "title": "Explicit loopback workbench startup",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Approved model-flow extension (revision 2)"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-08"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-08",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-08",
+      "lifecycle": "planned",
+      "title": "One Grill model decision and resumable stage reuse",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening",
+              "Approved model-flow extension (revision 2)"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-09"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-09",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-09",
+      "lifecycle": "planned",
+      "title": "Runtime capability adapters and orchestrator handoff",
+      "type": "task"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-security-hardening.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Specification: AskIt client security hardening"
+            ]
+          }
+        },
+        {
+          "path": "work/client-security-hardening/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan: client security and model decision flow",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CSH-10"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CSH-10",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-10",
+      "lifecycle": "planned",
+      "title": "Complete client journeys and migration guidance",
+      "type": "task"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T01",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t01-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-005",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Pins and approval identities are resolved",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t01-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T01",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_distribution.ClientTests.test_immutable_pins",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T02",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t02-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-005",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Self-install and upgrade select fetched code",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t02-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T02",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_distribution.ClientTests.test_reject_mismatched_source",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T03",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t03-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-005",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Prepare runs with an instrumented local fetch stand-in",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t03-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T03",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_distribution.ClientTests.test_source_approval_before_fetch",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T04",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t04-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-005",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Public prepare, install and upgrade commands run",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t04-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T04",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_distribution.ClientTests.test_mandatory_failure_propagates",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T05",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t05-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Trust keys and content identities are computed",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t05-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T05",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_launcher.ClientTests.test_identity_scope",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T06",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t06-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Daily invocation runs without a TTY then with explicit trust",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t06-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T06",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_launcher.ClientTests.test_delegation_requires_trust",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T07",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t07-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "The installed --complete candidate lookup is invoked",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t07-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T07",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_launcher.ClientTests.test_completion_stays_installed",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T08",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t08-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Self-install, completion snippet generation, launcher help and daily use precede explicit completion installation",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t08-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T08",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_launcher.ClientTests.test_completion_requires_opt_in",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T09",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t09-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-002",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "The complete write inventory is classified",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t09-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T09",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_writes.ClientTests.test_classify_paths",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T10",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t10-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-002",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Fresh install, reinstall, upgrade and standalone sync preflight runs",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t10-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T10",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_writes.ClientTests.test_late_conflict_no_writes",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T11",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t11-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-002",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Install and upgrade valid known kit outputs",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t11-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T11",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_writes.ClientTests.test_preserve_client_settings",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T12",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t12-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-003",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Copy, prepare, render and publish failures are injected at each boundary",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t12-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T12",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_writes.ClientTests.test_caught_failure_restores",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T13",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t13-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-003",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Installed launcher recovery is restarted twice before retry",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t13-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T13",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_writes.ClientTests.test_kill_restart_recovers",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T14",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t14-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-003",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Recovery attempts rollback",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t14-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T14",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_writes.ClientTests.test_recovery_preserves_intervening_edits",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T15",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t15-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-004",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Legacy and URL parsers load settings",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t15-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T15",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T16",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t16-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-004",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Credentials are created/replaced and MCP opt-in is denied or granted",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t16-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T16",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T17",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t17-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-004",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Public migration runs and a pinned tracker stand-in loads them",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t17-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T17",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T18",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t18-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-004",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "The human-only setup journey is driven through a PTY",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t18-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T18",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T19",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t19-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Each check environment is built",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t19-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T19",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_verification.ClientTests.test_allowlist_and_owned_metadata",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T20",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t20-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Static verification runs with a declared extra",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t20-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T20",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_verification.ClientTests.test_checkplan_environment",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T21",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t21-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "The instrumented traceability runner executes it",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t21-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T21",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_verification.ClientTests.test_instrumented_environment",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T22",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t22-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Both verifiers retain output and ordinary git add is inspected",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t22-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T22",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_verification.ClientTests.test_private_retained_outputs",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T23",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t23-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-006",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Public verify and help run",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t23-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T23",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_verification.ClientTests.test_trusted_verify_journey",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T24",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t24-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-007",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "All runtime model serializers/parsers run",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t24-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T24",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_runtime_config.ClientTests.test_scalar_roundtrip",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T25",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t25-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-007",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Public sync runs across all runtime outputs",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t25-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T25",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_runtime_config.ClientTests.test_sync_atomic_invalid",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T26",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t26-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-007",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Sync publishes and runtime files are parsed",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t26-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T26",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_runtime_config.ClientTests.test_sync_valid_formats",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T27",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t27-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-008",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "UI wrapper constructs invocation",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t27-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T27",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_workbench.ClientTests.test_address_precedence",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T28",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t28-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-008",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "UI starts first with defaults then explicit non-loopback address",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t28-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T28",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_workbench.ClientTests.test_actual_listener",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T29",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t29-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-009",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Grill receives confirm defaults or one complete changed selection",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t29-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T29",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_model_decisions.ClientTests.test_one_grill_decision",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T30",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t30-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-010",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Challenge, Plan and Review start then resume",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t30-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T30",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_model_decisions.ClientTests.test_reuse_and_resume",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T31",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t31-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-010",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Continuation resolves stage and implementation models",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t31-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T31",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_model_decisions.ClientTests.test_legacy_choices",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T32",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t32-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-012",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Bindings resolve and projections regenerate",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t32-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T32",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_model_decisions.ClientTests.test_portable_projections",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T33",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t33-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-011",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Implementor resolution applies the confirmed policy",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t33-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T33",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_orchestrator.ClientTests.test_accessible_implementor",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T34",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t34-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-011",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Implementation preflight runs",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t34-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T34",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_orchestrator.ClientTests.test_automatic_switch_verified",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T35",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t35-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-011",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Implementation entry requests a manual handoff and resumes",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t35-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T35",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_orchestrator.ClientTests.test_manual_switch_resume",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T36",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t36-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-011",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Stage transition and resumed inner-loop entry evaluate authorization",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t36-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T36",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_orchestrator.ClientTests.test_plan_only_endpoint",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T37",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t37-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-012",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Capability results are recorded",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t37-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T37",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_orchestrator.ClientTests.test_capability_evidence",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T38",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t38-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-001",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "Fresh install, trust, rejected unsafe upgrade, recovery, migration and trusted verify run",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t38-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T38",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_journeys.ClientTests.test_client_upgrade_journey",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T39",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t39-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-009",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "One Grill decision is followed by Challenge, Plan, Implement and Review plus continuation",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t39-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T39",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_journeys.ClientTests.test_model_flow_journey",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CSH-T40",
+        "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+        "work_id": "client-security-hardening"
+      },
+      "id": "csh-t40-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-009",
+        "path": "specs/current/client-security-hardening.json"
+      },
+      "title": "The model decision is validated and saved",
+      "type": "scenario"
+    },
+    {
+      "id": "csh-t40-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CSH-T40",
+        "path": "work/client-security-hardening/test-plan.json"
+      },
+      "title": "test_client_model_decisions.ClientTests.test_decision_persistence",
+      "type": "test"
+    }
+  ],
+  "revision": 6,
+  "schema": "ask-engineering-model/v2",
+  "work_id": "client-security-hardening"
+}

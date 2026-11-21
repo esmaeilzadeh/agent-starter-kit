@@ -1,0 +1,741 @@
+{
+  "attempt_history": [],
+  "attempt_id": "CSH-04:attempt-1",
+  "checkpoint_sha": "20bbeada2754e1bf9ff98bd7de536c7a8e3f80e0",
+  "integration": {
+    "candidate_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+    "result": "pass",
+    "resulting_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+    "traceability_run_ids": [
+      "96700bd302b44f538e85a7e7b1292801"
+    ],
+    "tree_sha": "26c08161d776fc28cacf1f13816c1153da81c9c1"
+  },
+  "recovery": [
+    {
+      "previous_checkpoint": "c8ebe82a55f40fca95036c0555e5280bbe605add",
+      "proposal_sha256": "a269781bc5f24d5882f72efa99a5d703854e15f1a0711b76d8e7b9a5b91aa434",
+      "review_sha256": "b8f34c7da397326aa9a731d7d7ae4acbc1bba9bd940ff3e5e1705a3c1c259476",
+      "source_head": "8b31c4ff67a8e0ee0b70a05dbacb2fff3db6f8e6",
+      "source_tree": "1f0fafa617cf2c0cd92cbf97c932283b90db66b4"
+    }
+  ],
+  "reviews": [
+    {
+      "base_sha": "9fddfa57a0bdc6c142f356a8d38c47e4fb831d3e",
+      "boundary": "ok",
+      "candidate_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+      "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-04-review.md",
+      "evidence_digest": "8803de9ced1fea0bc03453ee31892fb6d6683f269ce053f2865d0d35261f59ce",
+      "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+      "result_digest": "8f0493583a326487be5b10f8ca00549dad92cd42d68f3cb5f21cb773f8179316",
+      "reviewer": "gpt-6.1-sol (medium)",
+      "verdict": "APPROVED"
+    }
+  ],
+  "runs": [
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "61aa4c1a8a42004a79c14664e65de5b46ed93ad2",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "61aa4c1a8a42004a79c14664e65de5b46ed93ad2",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "61aa4c1a8a42004a79c14664e65de5b46ed93ad2",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "61aa4c1a8a42004a79c14664e65de5b46ed93ad2",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "61aa4c1a8a42004a79c14664e65de5b46ed93ad2",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "e670142cbf8549c0fdabbe1ae84a306982fedcd322491a6e7a73b4f2dc94d4ed",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "23a3226a625547b08b56a9ec47315389",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "ffa832ffe1281c4801483ecb4951c82c6c029b75",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "ffa832ffe1281c4801483ecb4951c82c6c029b75",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "ffa832ffe1281c4801483ecb4951c82c6c029b75",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "ffa832ffe1281c4801483ecb4951c82c6c029b75",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "ffa832ffe1281c4801483ecb4951c82c6c029b75",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "f5d11b02272ecdd913cad2ecdde7ffcc2aad4e2a879cd3fbdfb823627b91c3be",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "d28f2e6292a142a3a9ec0647a49ae814",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "2945805244338122684f5b6d0747ce8be207be57",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "2945805244338122684f5b6d0747ce8be207be57",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "2945805244338122684f5b6d0747ce8be207be57",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "2945805244338122684f5b6d0747ce8be207be57",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "2945805244338122684f5b6d0747ce8be207be57",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "c170a21aa84576dbfd46b51bcd73096bb409b6c063f7d89c4522a99c28c86699",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "efc3d2fb405143e493f21f42f7c4febc",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "a8ff10e3254c80329560ce0aea361c6295d204b7",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "a8ff10e3254c80329560ce0aea361c6295d204b7",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "a8ff10e3254c80329560ce0aea361c6295d204b7",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "a8ff10e3254c80329560ce0aea361c6295d204b7",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "a8ff10e3254c80329560ce0aea361c6295d204b7",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "d4635d7d9d8054c0c545a26d5eb62153e50d5d1b394681a21bd16896a52eab3f",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "3c139737b0c74adea4c2b7806a5c7d64",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": "setup_or_runtime_error",
+          "outcome": "error",
+          "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "37f4bdd19b10250fc3f1565315e01a5881aacf81",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "51afcd73885358e56fc7089980db59b6c00f271e23bb0f32e62ebdf82e52a092",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "674ea2c587704cf9b19cc18eeee114b5",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "287eab866b79b354a150db697166359a16e6345e",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "287eab866b79b354a150db697166359a16e6345e",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "287eab866b79b354a150db697166359a16e6345e",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "287eab866b79b354a150db697166359a16e6345e",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "287eab866b79b354a150db697166359a16e6345e",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "dbf3fb60b36b8f3ba92428d4ef09851a7182ae7efd09fbe43d383050c75a141c",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "0d4b8d404406447daf5a89cc3d055fbe",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "42d3ed7677fbd0cc24f72b125fbade659f7af9fb",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "42d3ed7677fbd0cc24f72b125fbade659f7af9fb",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "42d3ed7677fbd0cc24f72b125fbade659f7af9fb",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "42d3ed7677fbd0cc24f72b125fbade659f7af9fb",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "42d3ed7677fbd0cc24f72b125fbade659f7af9fb",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "22f7ee025c0db92378a216f2b6c59b24d6ad2d3ea9542c64fdffc6516baf0203",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "4f4a3643436a412abd046dff1f1a8bfd",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "d0aea5d0a31baf3e9b90c416c2834bcff38aa825",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "d0aea5d0a31baf3e9b90c416c2834bcff38aa825",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "d0aea5d0a31baf3e9b90c416c2834bcff38aa825",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "d0aea5d0a31baf3e9b90c416c2834bcff38aa825",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "d0aea5d0a31baf3e9b90c416c2834bcff38aa825",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "bf7e258ded95e7abf1fffb4a9c1851e597689e1f8aba8c7aafddf86dbb2e8604",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "f9ef399bd3214141b389adf50a5ff99e",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+          "test_id": "CSH-T16"
+        }
+      ],
+      "digest": "5312cf0396458b10f20b9b87c72251effe821513211a0c941f543da7944e7bf6",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "96700bd302b44f538e85a7e7b1292801",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-04"
+    },
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T16"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_immutable_pins",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T01"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_mandatory_failure_propagates",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T04"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_reject_mismatched_source",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T02"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_source_approval_before_fetch",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T03"
+        },
+        {
+          "case_id": "test_client_journeys.ClientTests.test_client_upgrade_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T38"
+        },
+        {
+          "case_id": "test_client_journeys.ClientTests.test_model_flow_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T39"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_completion_requires_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T08"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_completion_stays_installed",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T07"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_delegation_requires_trust",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T06"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_identity_scope",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T05"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_decision_persistence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T40"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_legacy_choices",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T31"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_one_grill_decision",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T29"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_portable_projections",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T32"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_reuse_and_resume",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T30"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_accessible_implementor",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T33"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_automatic_switch_verified",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T34"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_capability_evidence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T37"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_manual_switch_resume",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T35"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_plan_only_endpoint",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T36"
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_python310_without_tomli_validates_toml_template",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": null
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_scalar_roundtrip",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T24"
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_sync_atomic_invalid",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T25"
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_sync_valid_formats",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T26"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_allowlist_and_owned_metadata",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T19"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_checkplan_environment",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T20"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_instrumented_environment",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T21"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_private_retained_outputs",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T22"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_trusted_verify_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T23"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T27"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_caught_failure_restores",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T12"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_classify_paths",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T09"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_kill_restart_recovers",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T13"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_late_conflict_no_writes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T10"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_preserve_client_settings",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T11"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_recovery_preserves_intervening_edits",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T14"
+        }
+      ],
+      "digest": "74ff7fc8ace20ae2f5d21bfe495ca57471390a97cafe8d81b0b3029287369758",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "bf2e9bdc52cb4e95b0242d78a4216c59",
+      "scope": "workstream",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": null
+    }
+  ],
+  "schema": "ask-task-milestone/v1",
+  "source_base_sha": "9fddfa57a0bdc6c142f356a8d38c47e4fb831d3e",
+  "source_candidate_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+  "status": "integrated",
+  "submissions": [
+    {
+      "base_sha": "9fddfa57a0bdc6c142f356a8d38c47e4fb831d3e",
+      "candidate_sha": "80a6c6ea4e5360ddd10f27029b7a3fe1317a397e",
+      "notes_sha256": "cfc4705454907f329fafcca80e5465416ea48bca4a429c18297a34bff532e710",
+      "sha256": "8f0493583a326487be5b10f8ca00549dad92cd42d68f3cb5f21cb773f8179316",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1
+        }
+      }
+    }
+  ],
+  "supporting_artifacts": [
+    {
+      "path": "work/client-security-hardening/inner-loop/evidence/CSH-04-review.md",
+      "sha256": "8803de9ced1fea0bc03453ee31892fb6d6683f269ce053f2865d0d35261f59ce"
+    },
+    {
+      "path": "work/client-security-hardening/inner-loop/results/CSH-04.json",
+      "sha256": "8f0493583a326487be5b10f8ca00549dad92cd42d68f3cb5f21cb773f8179316"
+    }
+  ],
+  "task_id": "CSH-04",
+  "work_id": "client-security-hardening"
+}

@@ -15,6 +15,7 @@ import unittest
 REPO = Path(__file__).resolve().parents[2]
 SCRIPTS = REPO / "_ask" / "scripts"
 sys.path.insert(0, str(SCRIPTS))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(REPO / ".agents" / "ask"))
 
 from _ask.tests.inner_loop_recovery_fixture import (
@@ -89,29 +90,29 @@ class RecoveryTests(unittest.TestCase):
             "work/*/inner-loop/state.json\n"
             "work/*/inner-loop/state.lock\n"
             "work/*/inner-loop/results/\n"
-            "work/*/inner-loop/evidence/\n"
             "work/*/traceability/\n",
         )
         self.write("work/w/inner-loop/tasks.yaml", TASKS)
         self.spec = {
             "schema": "ask-spec/v1",
-            "work_id": "w",
-            "criteria": [{"id": "C1", "given": "state", "when": "checked", "then": ["safe"]}],
+            "work_id": "w", "revision": 1,
+            "criteria": [{"id": "C1", "given": "state", "when": "checked", "then": ["safe"], "verification_mode": "tests"}],
         }
         self.case_a = {
             "id": "T-A", "task_id": "a", "criterion_ids": ["C1"],
             "case_id": "tests.test_a", "scenario": {"given": "a", "when": "runs", "then": ["passes"]},
             "expected_assertions": [{"criterion_id": "C1", "checks": ["passes"]}],
-            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration",
+            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new",
         }
         self.case_b = {
             "id": "T-B", "task_id": "a", "criterion_ids": ["C1"],
             "case_id": "tests.test_b", "scenario": {"given": "b", "when": "runs", "then": ["passes"]},
             "expected_assertions": [{"criterion_id": "C1", "checks": ["passes"]}],
-            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration",
+            "runner_id": "fixture", "source_paths": ["src/a.py"], "type": "integration", "change_kind": "new",
         }
         self.old_plan = {
-            "schema": "ask-test-plan/v1", "work_id": "w",
+            "schema": "ask-test-plan/v1", "work_id": "w", "spec_digest": self.json_digest(self.spec),
+            "obligations": [{"criterion_id": "C1", "required_types": ["integration"]}],
             "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
                          "adapter": "unittest"}],
             "tests": [self.case_a, self.case_b],
@@ -119,6 +120,7 @@ class RecoveryTests(unittest.TestCase):
                             {"task_id": "b", "test_ids": []}],
         }
         self.write("specs/current/w.json", json.dumps(self.spec, sort_keys=True))
+        self.write("specs/current/w.md", "# Disposable recovery specification\n")
         self.write(".agents/ask/verification/traceability/__init__.py",
                    "CAPABILITY = 'ask-traceability/v1'\n")
         self.write(".agents/ask/verification/traceability/unittest_runner.py",
@@ -145,6 +147,28 @@ class RecoveryTests(unittest.TestCase):
     def json_digest(value):
         return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
+    def install_valid_fixture_contract(self):
+        from traceability_support import accept, seed
+
+        self.write("_ask/policies/delegation.md", (REPO / "_ask/policies/delegation.md").read_bytes())
+        (self.root / "work/w/engineering-model.json").unlink()
+        seed(self.root, "w")
+        self.commit("valid recovery test contract")
+        accept(self.root, "w")
+        self.anchor_commit = self.git("rev-parse", "HEAD")
+
+    def recovery_review(self, proposal):
+        return {
+            "schema": "ask-recovery-adoption-review/v1", "decision": "APPROVED",
+            "reviewer": "gpt-6.1-sol (medium)", "reviewer_model": "gpt-6.1-sol",
+            "reviewer_effort": "medium", "recorded_by": "coordinator",
+            "proposal_sha256": hashlib.sha256(
+                json.dumps(proposal, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest(),
+            "candidate_sha": proposal["source_head"], "scope": "exact-recovery-adoption",
+            "early_red_continuity_sha256": proposal.get("early_red_continuity_sha256"),
+        }
+
     def git(self, *args):
         return subprocess.check_output(["git", *args], cwd=self.root, text=True, stderr=subprocess.PIPE).strip()
 
@@ -166,7 +190,8 @@ class RecoveryTests(unittest.TestCase):
         if env is not None:
             child_env.update(env)
         child_env["PYTHONPATH"] = os.pathsep.join(
-            part for part in (str(SCRIPTS), child_env.get("PYTHONPATH", "")) if part
+            part for part in (str(SCRIPTS), str(REPO / ".agents" / "ask"),
+                              child_env.get("PYTHONPATH", "")) if part
         )
         return subprocess.run(
             [sys.executable, "-m", "inner_loop", "--root", str(self.root), *args],
@@ -345,11 +370,11 @@ class test_b(unittest.TestCase):
             self.write("src/a.py", "green\n")
             self.commit("CR-3 real assertion green fixture")
             return red_sha, self.git("rev-parse", "HEAD")
-        if setup_error_sibling:
+        if setup_error_sibling or old_runner:
             env = dict(os.environ, ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
                        ASK_INNER_LOOP_ROLE="worker")
             env["PYTHONPATH"] = os.pathsep.join(
-                part for part in (str(self.root / ".agents/ask"),
+                part for part in (str(self.root / ".agents/ask"), str(SCRIPTS),
                                   os.environ.get("PYTHONPATH", "")) if part
             )
             red_process = subprocess.run(
@@ -371,7 +396,16 @@ class test_b(unittest.TestCase):
         green_sha = self.git("rev-parse", "HEAD")
         from verification.traceability.adapters import run_tests
         contracts = {"spec": self.spec, "plan": self.old_plan}
-        green = run_tests(self.root, contracts, green_sha, "task", "a", "final_green")
+        if old_runner:
+            green_process = subprocess.run(
+                [sys.executable, "-m", "verification.traceability.cli", "--root", str(self.root),
+                 "run", "w", "--candidate-sha", green_sha, "--anchor-sha", self.anchor_commit,
+                 "--scope", "task", "--task-id", "a", "--phase", "final_green"],
+                cwd=self.root, env=env, capture_output=True, text=True)
+            self.assertEqual(green_process.returncode, 0, green_process.stdout + green_process.stderr)
+            green = json.loads(green_process.stdout)
+        else:
+            green = run_tests(self.root, contracts, green_sha, "task", "a", "final_green")
         return red, green
 
     def test_checkpoint_real_red_and_green(self):
@@ -619,7 +653,8 @@ class test_b(unittest.TestCase):
                 driver.integrate_ready(self.root, "w", "a")
                 recovered = load_state(self.root, "w")
                 self.assertEqual(recovered["tasks"]["a"]["status"], "integrated")
-                self.assertEqual(recovered["coordinator_sha"], self.candidate)
+                self.assertEqual(recovered["coordinator_sha"], self.git("rev-parse", "HEAD"))
+                self.assertEqual(recovered["milestone_publications"][-1]["source_sha"], self.candidate)
                 recovered_receipt = recovered["tasks"]["a"]["evidence"]["verification"]
                 for key in ("candidate_sha", "completion_digest", "static_receipt_digest",
                             "traceability_run_ids", "result_digest"):
@@ -659,7 +694,8 @@ class test_b(unittest.TestCase):
                 driver.integrate_ready(self.root, "w", "a")
                 recovered = load_state(self.root, "w")
                 self.assertEqual(recovered["tasks"]["a"]["status"], "integrated")
-                self.assertEqual(recovered["coordinator_sha"], self.candidate)
+                self.assertEqual(recovered["coordinator_sha"], self.git("rev-parse", "HEAD"))
+                self.assertEqual(recovered["milestone_publications"][-1]["source_sha"], self.candidate)
 
         PostFastForwardRecoveryCase("test_interrupt_after_real_fast_forward").run(result)
         self.assertEqual(result.errors, [])
@@ -935,25 +971,10 @@ class test_b(unittest.TestCase):
                         historical[digest_key],
                     )
                 completion = self.root / "work/w/traceability/completion.json"
-                completion.write_text('{"status":"fail","reason":"later candidate"}\n')
-                traceability = self.root / "work/w/traceability"
-                (traceability / "static-later.json").write_text('{"status":"fail"}\n')
-                (traceability / "static-runs/later/0.log").parent.mkdir(parents=True, exist_ok=True)
-                (traceability / "static-runs/later/0.log").write_text("failed verifier output\n")
-                (traceability / "reviews/later.json").parent.mkdir(parents=True, exist_ok=True)
-                (traceability / "reviews/later.json").write_text('{"verdict":"REJECTED"}\n')
-                (traceability / "verification-later.json").write_text('{"result":"fail"}\n')
-                (traceability / "plan-review-later.json").write_text('{"decision":"APPROVED"}\n')
                 self.assertEqual(
                     _checkpointed_verification(self.root, "w", retained_state, checkpoint),
                     historical,
                     "a failed later verifier projection must not invalidate retained historical evidence",
-                )
-                self.assertTrue(
-                    _traceability_matches_checkpoint(
-                        self.root, "w", checkpoint, expected_verification=historical,
-                    ),
-                    "later derived verifier/review artifacts must coexist with exact retained evidence",
                 )
 
                 # Exercise the production continuation path: task B runs a
@@ -964,6 +985,7 @@ class test_b(unittest.TestCase):
                 # failed check.
                 from inner_loop.driver import run_once
                 self.assertEqual(run_once(self.root, "w"), "running=b")
+                b_candidate = load_state(self.root, "w")["tasks"]["b"]["base_sha"]
                 pythonpath = os.pathsep.join((str(self.root / ".agents/ask"), str(SCRIPTS),
                                               os.environ.get("PYTHONPATH", "")))
                 nested_env = dict(
@@ -974,8 +996,8 @@ class test_b(unittest.TestCase):
                 cli = [sys.executable, "-m", "verification.traceability.cli",
                        "--root", str(self.root)]
                 failed = subprocess.run(
-                    cli + ["check-completion", "w", "--candidate-sha", self.candidate,
-                           "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b"],
+                    cli + ["check-completion", "w", "--candidate-sha", b_candidate,
+                           "--anchor-sha", b_candidate, "--scope", "task", "--task-id", "b"],
                     cwd=self.root, env=nested_env,
                     capture_output=True, text=True,
                 )
@@ -983,10 +1005,16 @@ class test_b(unittest.TestCase):
                 self.assertEqual(json.loads(failed.stdout)["status"], "fail")
                 failed_projection = json.loads(completion.read_text(encoding="utf-8"))
                 self.assertEqual(failed_projection["status"], "fail")
+                self.assertTrue(
+                    _traceability_matches_checkpoint(
+                        self.root, "w", checkpoint, expected_verification=historical,
+                    ),
+                    "the canonical failed projection must coexist with retained passing evidence",
+                )
 
                 finalized = subprocess.run(
-                    cli + ["run", "w", "--candidate-sha", self.candidate,
-                           "--anchor-sha", self.candidate, "--scope", "task", "--task-id", "b",
+                    cli + ["run", "w", "--candidate-sha", b_candidate,
+                           "--anchor-sha", b_candidate, "--scope", "task", "--task-id", "b",
                            "--phase", "final_green"],
                     cwd=self.root, env=nested_env,
                     capture_output=True, text=True,
@@ -1202,7 +1230,8 @@ class test_b(unittest.TestCase):
                 ["git", "show", f"{old_sha}:.agents/ask/verification/run.py"], cwd=self.root,
             )
             self.assertEqual(runner.read_bytes(), expected)
-            output = self.root / "work/w/inner-loop/evidence/old-runner-verification.json"
+            output = self.root / "work/w/inner-loop/evidence/verify-oldrunner/verification.json"
+            output.parent.mkdir(parents=True, exist_ok=True)
             env = dict(os.environ, ASK_ROOT=str(self.root), ASK_WORK_ID="w",
                        ASK_TRACEABILITY_RUNTIME_ROOT=str(self.root),
                        ASK_TRACEABILITY_ANCHOR_SHA=old_sha,
@@ -1341,6 +1370,7 @@ class test_b(unittest.TestCase):
         quiescent = self.run_cli("run", "w")
         self.assertEqual(quiescent.returncode, 0, quiescent.stdout + quiescent.stderr)
         self.assertEqual(quiescent.stdout.strip(), "quiescent")
+        stopped = load_state(self.root, "w")
 
         premature = self.run_cli("reopen", "w", "a", "--reason", "must wait for plan acceptance")
         self.assertNotEqual(premature.returncode, 0)
@@ -1738,6 +1768,621 @@ class test_b(unittest.TestCase):
             recovered["static_receipt_digest"],
             hashlib.sha256((self.root / f"work/w/traceability/static-{candidate}.json").read_bytes()).hexdigest(),
         )
+
+    def test_recovery_accepts_guarded_model_projection_and_append_only_ledger(self):
+        from engineering_model.admission import _publish, _state_directory, capture
+        from inner_loop.recovery import _traceability_matches_checkpoint
+
+        state_dir = _state_directory(self.root, "w")
+        state_dir.mkdir(parents=True)
+        (state_dir / "writer.lock").touch()
+        snapshot = capture(self.root, "w")
+        self.assertTrue(_publish(state_dir, snapshot, self.root))
+        self.write("work/w/traceability/executions.json", "[]\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": self.anchor_commit, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        model_path = self.root / "work/w/engineering-model.json"
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n", encoding="utf-8")
+        updated = capture(self.root, "w")
+        with (state_dir / "writer.lock").open("a+b"):
+            self.assertTrue(_publish(state_dir, updated, self.root,
+                                     guarded_base=snapshot.identity["digest"]))
+
+        ledger = self.root / "work/w/traceability/executions.json"
+        ledger.write_text(json.dumps([{"run_id": "new-run"}]) + "\n", encoding="utf-8")
+        self.assertTrue(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a validated guarded publication and append-only ledger extension should remain recoverable",
+        )
+
+        extra = state_dir / "generations" / ("f" * 64) / "manifest.json"
+        extra.parent.mkdir(parents=True)
+        extra.write_text("{}\n", encoding="utf-8")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "unlinked model-state files must remain a recovery conflict",
+        )
+        extra.unlink()
+        extra.parent.rmdir()
+
+        pointer_path = state_dir / "current.json"
+        retained_pointer = pointer_path.read_bytes()
+        malformed_publication = b"[]\n"
+        malformed_digest = hashlib.sha256(malformed_publication).hexdigest()
+        publication_path = state_dir / "publications" / f"{malformed_digest}.json"
+        publication_path.write_bytes(malformed_publication)
+        pointer_path.write_text(json.dumps({
+            "generation": updated.identity["digest"], "publication": malformed_digest,
+        }) + "\n", encoding="utf-8")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "digest-correct but malformed publication JSON must fail closed",
+        )
+        pointer_path.write_bytes(retained_pointer)
+        publication_path.unlink()
+
+        pointer = json.loads(retained_pointer)
+        selected_publication = state_dir / "publications" / f"{pointer['publication']}.json"
+        retained_publication = selected_publication.read_bytes()
+        selected_generation = state_dir / "generations" / pointer["generation"]
+        manifest = json.loads((selected_generation / "manifest.json").read_text())
+        blob_digest = manifest["snapshot"]["model"]["sha256"]
+        blob_path = selected_generation / "blobs" / blob_digest
+        retained_blob = blob_path.read_bytes()
+        blob_path.write_bytes(retained_blob + b"tampered")
+        self.assertFalse(_traceability_matches_checkpoint(self.root, "w", checkpoint))
+        blob_path.write_bytes(retained_blob)
+
+        selected_publication.write_bytes(retained_publication + b"tampered")
+        self.assertFalse(_traceability_matches_checkpoint(self.root, "w", checkpoint))
+        selected_publication.write_bytes(retained_publication)
+
+        missing_ancestor = "a" * 64
+        orphan_event = json.dumps({
+            "schema": "ask-engineering-publication/v1", "kind": "guarded-edit",
+            "base_digest": snapshot.identity["digest"],
+            "result_digest": updated.identity["digest"],
+            "previous_publication": missing_ancestor,
+        }, sort_keys=True).encode() + b"\n"
+        orphan_digest = hashlib.sha256(orphan_event).hexdigest()
+        orphan_path = state_dir / "publications" / f"{orphan_digest}.json"
+        orphan_path.write_bytes(orphan_event)
+        pointer_path.write_text(json.dumps({
+            "generation": updated.identity["digest"], "publication": orphan_digest,
+        }) + "\n", encoding="utf-8")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a guarded publication with a missing ancestor must fail closed",
+        )
+        pointer_path.write_bytes(retained_pointer)
+        orphan_path.unlink()
+
+        from unittest.mock import patch
+        cycle_digest = "b" * 64
+        cycle_event = {
+            "kind": "guarded-edit", "result_digest": updated.identity["digest"],
+            "base_digest": snapshot.identity["digest"],
+            "previous_publication": cycle_digest,
+        }
+        pointer_path.write_text(json.dumps({
+            "generation": updated.identity["digest"], "publication": cycle_digest,
+        }) + "\n", encoding="utf-8")
+        with patch("engineering_model.admission._publication", return_value=cycle_event), \
+                patch("engineering_model.admission.guarded_publication_chain", return_value=True):
+            self.assertFalse(
+                _traceability_matches_checkpoint(self.root, "w", checkpoint),
+                "a cyclic guarded publication chain must fail closed",
+            )
+        pointer_path.write_bytes(retained_pointer)
+
+        outside = self.root.parent / "recovery-outside"
+        outside.write_text("outside the traceability root")
+        escape_link = state_dir / "publications" / "escape.json"
+        escape_link.symlink_to(outside)
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a symlink escaping model state must fail closed",
+        )
+        escape_link.unlink()
+        outside.unlink()
+
+        first_guarded_pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+        first_publication = state_dir / "publications" / f"{first_guarded_pointer['publication']}.json"
+        first_publication_bytes = first_publication.read_bytes()
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n", encoding="utf-8")
+        second = capture(self.root, "w")
+        with (state_dir / "writer.lock").open("a+b"):
+            self.assertTrue(_publish(
+                state_dir, second, self.root,
+                guarded_base=updated.identity["digest"],
+            ))
+        self.assertTrue(_traceability_matches_checkpoint(self.root, "w", checkpoint))
+        first_publication.write_bytes(first_publication_bytes + b"tampered")
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "tampering an intermediate publication in a multi-link chain must fail closed",
+        )
+        first_publication.write_bytes(first_publication_bytes)
+
+        model = json.loads(model_path.read_text(encoding="utf-8"))
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n", encoding="utf-8")
+        unreviewed = capture(self.root, "w")
+        self.assertTrue(_publish(state_dir, unreviewed, self.root))
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "an admission publication after the checkpoint requires reviewed adoption",
+        )
+
+    def test_reviewed_model_state_adoption_checks_selected_and_unlinked_objects(self):
+        from engineering_model.admission import _publish, _state_directory, capture
+        from inner_loop.recovery import RecoveryAdoptionContext, _reviewed_model_state_matches_checkpoint
+
+        state_dir = _state_directory(self.root, "w")
+        state_dir.mkdir(parents=True)
+        (state_dir / "writer.lock").touch()
+        self.assertTrue(_publish(state_dir, capture(self.root, "w"), self.root))
+        traceability = self.root / "work/w/traceability"
+        live = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in traceability.rglob("*") if path.is_file()}
+        context = RecoveryAdoptionContext(
+            work_id="w", branch="agent/w", proposal_sha256="p", review_sha256="r",
+            reviewer="gpt-6.1-sol (medium)", checkpoint_commit="checkpoint",
+            state_sha256="state", observed_revision=0, source_head=self.anchor_commit,
+            projection_inventory=(), source_paths=frozenset(),
+        )
+        self.assertTrue(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ))
+        unexpected = state_dir / "unlinked.json"
+        unexpected.write_text("{}\n")
+        live[unexpected.relative_to(self.root).as_posix()] = unexpected.read_bytes()
+        self.assertFalse(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ))
+
+    def test_reviewed_model_state_adoption_rejects_pointer_extensions_and_orphan_publications(self):
+        from engineering_model.admission import _publish, _state_directory, capture
+        from inner_loop.recovery import RecoveryAdoptionContext, _reviewed_model_state_matches_checkpoint
+
+        state_dir = _state_directory(self.root, "w")
+        state_dir.mkdir(parents=True)
+        (state_dir / "writer.lock").touch()
+        self.assertTrue(_publish(state_dir, capture(self.root, "w"), self.root))
+        traceability = self.root / "work/w/traceability"
+        context = RecoveryAdoptionContext(
+            work_id="w", branch="agent/w", proposal_sha256="p", review_sha256="r",
+            reviewer="gpt-6.1-sol (medium)", checkpoint_commit="checkpoint",
+            state_sha256="state", observed_revision=0, source_head=self.anchor_commit,
+            projection_inventory=(), source_paths=frozenset(),
+        )
+        live = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in traceability.rglob("*") if path.is_file()}
+        pointer_path = state_dir / "current.json"
+        pointer = json.loads(pointer_path.read_bytes())
+        pointer["reviewer_supplied"] = True
+        pointer_path.write_text(json.dumps(pointer) + "\n")
+        live[pointer_path.relative_to(self.root).as_posix()] = pointer_path.read_bytes()
+        self.assertFalse(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ), "reviewed adoption still needs the canonical pointer schema")
+
+        pointer.pop("reviewer_supplied")
+        pointer_path.write_text(json.dumps(pointer, sort_keys=True))
+        live[pointer_path.relative_to(self.root).as_posix()] = pointer_path.read_bytes()
+        alternate = state_dir.parent / "alternate"
+        alternate.mkdir()
+        model_path = self.root / "work/w/engineering-model.json"
+        model = json.loads(model_path.read_text())
+        model["revision"] += 1
+        model_path.write_text(json.dumps(model) + "\n")
+        self.assertTrue(_publish(alternate, capture(self.root, "w"), self.root))
+        model_path.write_text(json.dumps({**model, "revision": model["revision"] - 1}) + "\n")
+        alternate_pointer = json.loads((alternate / "current.json").read_bytes())
+        shutil.copytree(alternate / "generations" / alternate_pointer["generation"],
+                        state_dir / "generations" / alternate_pointer["generation"])
+        shutil.copy(alternate / "publications" / f"{alternate_pointer['publication']}.json",
+                    state_dir / "publications" / f"{alternate_pointer['publication']}.json")
+        live = {path.relative_to(self.root).as_posix(): path.read_bytes()
+                for path in traceability.rglob("*") if path.is_file()}
+        self.assertFalse(_reviewed_model_state_matches_checkpoint(
+            self.root, "w", {}, live, context,
+        ), "a valid but disconnected publication cannot be adopted as model-state history")
+
+    def test_recovery_review_model_requirement_is_scoped_to_its_workstream(self):
+        from inner_loop.recovery import _valid_recovery_review
+
+        review = {
+            "schema": "ask-recovery-adoption-review/v1", "decision": "APPROVED",
+            "reviewer": "claude-opus (medium)", "reviewer_model": "claude-opus",
+            "reviewer_effort": "medium", "recorded_by": "coordinator",
+            "scope": "exact-recovery-adoption",
+        }
+        self.assertTrue(_valid_recovery_review(review, "another-workstream"))
+        self.assertFalse(_valid_recovery_review(review, "client-security-hardening"))
+        legacy_review = {key: value for key, value in review.items()
+                         if key not in {"reviewer_model", "reviewer_effort"}}
+        self.assertTrue(_valid_recovery_review(legacy_review, "another-workstream"))
+        self.assertFalse(_valid_recovery_review(legacy_review, "client-security-hardening"))
+        csh_missing_metadata = dict(legacy_review, reviewer="gpt-6.1-sol (medium)")
+        self.assertFalse(_valid_recovery_review(csh_missing_metadata,
+                                                "client-security-hardening"))
+        csh_review = dict(review, reviewer="gpt-6.1-sol (medium)",
+                          reviewer_model="gpt-6.1-sol")
+        self.assertTrue(_valid_recovery_review(csh_review, "client-security-hardening"))
+
+    def test_recovery_rejects_unbound_completion_projection(self):
+        from inner_loop.recovery import _traceability_matches_checkpoint
+
+        self.write("work/w/traceability/completion.json", json.dumps({
+            "schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+            "task_id": None, "candidate_sha": self.anchor_commit,
+            "input_digests": {}, "criterion_evidence": [], "missing_evidence": [],
+            "errors": ["historical diagnostic"], "execution_artifacts": [],
+        }) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": self.anchor_commit, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        self.write("work/w/traceability/completion.json", '{"status":"fail","reason":"unbound"}\n')
+        self.assertFalse(
+            _traceability_matches_checkpoint(self.root, "w", checkpoint),
+            "a changed completion projection needs canonical or explicit receipt binding",
+        )
+        for invalid in (
+            {"schema": "ask-completion/v1", "status": "fail", "scope": "invalid",
+             "candidate_sha": self.anchor_commit},
+            {"schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+             "candidate_sha": "f" * 40},
+            {"schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+             "candidate_sha": self.anchor_commit, "work_id": "other"},
+        ):
+            self.write("work/w/traceability/completion.json", json.dumps(invalid) + "\n")
+            self.assertFalse(
+                _traceability_matches_checkpoint(self.root, "w", checkpoint),
+                "wrong scope, candidate, or work identity must fail closed",
+            )
+
+    def test_recovery_adopts_reviewed_historical_failed_completion_projection(self):
+        from unittest.mock import patch
+        from inner_loop.recovery import RecoveryAdoptionContext, _traceability_matches_checkpoint
+
+        candidate = self.anchor_commit
+        path = "work/w/traceability/completion.json"
+        retained = {
+            "schema": "ask-completion/v1", "status": "fail", "scope": "workstream",
+            "task_id": None, "candidate_sha": candidate, "input_digests": {},
+            "criterion_evidence": [], "missing_evidence": [],
+            "errors": ["older diagnostic"], "execution_artifacts": [],
+        }
+        self.write(path, json.dumps(retained, sort_keys=True) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": candidate, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        diagnostic = {**retained, "errors": ["required candidate verification failed"]}
+        raw = (json.dumps(diagnostic, sort_keys=True) + "\n").encode()
+        self.write(path, raw)
+        context = RecoveryAdoptionContext(
+            work_id="w", branch="agent/w", proposal_sha256="proposal", review_sha256="review",
+            reviewer="gpt-6.1-sol (medium)", checkpoint_commit=checkpoint[0],
+            state_sha256="state", observed_revision=1, source_head=candidate,
+            projection_inventory=((path, hashlib.sha256(raw).hexdigest()),),
+            source_paths=frozenset(),
+        )
+        fresh = {**diagnostic, "errors": ["candidate acceptance document differs"]}
+        with patch("verification.traceability.service.inspect_completion", return_value=(fresh, [])):
+            self.assertFalse(
+                _traceability_matches_checkpoint(self.root, "w", checkpoint),
+                "an unreviewed historical diagnostic change remains inadmissible",
+            )
+            self.assertTrue(
+                _traceability_matches_checkpoint(
+                    self.root, "w", checkpoint, adoption_context=context,
+                ),
+                "the exact reviewed failed projection remains diagnostic evidence",
+            )
+            passing = json.dumps({**diagnostic, "status": "pass"}, sort_keys=True) + "\n"
+            self.write(path, passing)
+            passing_context = RecoveryAdoptionContext(
+                **{**context.__dict__, "projection_inventory": (
+                    (path, hashlib.sha256(passing.encode()).hexdigest()),
+                )},
+            )
+            self.assertFalse(
+                _traceability_matches_checkpoint(
+                    self.root, "w", checkpoint, adoption_context=passing_context,
+                ),
+                "reviewed diagnostic adoption cannot authorize a passing completion",
+            )
+
+    def test_recovery_accepts_completion_bound_to_retained_verifier_receipt(self):
+        from inner_loop.recovery import _traceability_matches_checkpoint
+
+        candidate = self.anchor_commit
+        old_completion = {"schema": "legacy-completion-fixture", "status": "fail"}
+        self.write("work/w/traceability/completion.json", json.dumps(old_completion) + "\n")
+        static = {"schema": "static-fixture", "candidate_sha": candidate, "result": "pass"}
+        static_path = f"work/w/traceability/static-{candidate}.json"
+        self.write(static_path, json.dumps(static) + "\n")
+        state = {
+            "schema": "ask-inner-loop-state/v1", "work_id": "w", "revision": 1,
+            "coordinator_sha": candidate, "tasks": {},
+        }
+        publish(self.root, "w", state)
+        checkpoint = read_checkpoint(self.root, "w")
+        self.assertIsNotNone(checkpoint)
+
+        replacement = json.dumps({
+            "schema": "ask-completion/v1", "status": "pass", "scope": "workstream",
+            "task_id": None, "candidate_sha": candidate,
+        }, sort_keys=True).encode()
+        self.write("work/w/traceability/completion.json", replacement + b"\n")
+        verification = {
+            "result": "pass", "candidate_sha": candidate,
+            "completion_digest": hashlib.sha256(replacement + b"\n").hexdigest(),
+            "static_receipt_digest": hashlib.sha256((self.root / static_path).read_bytes()).hexdigest(),
+        }
+        self.assertTrue(
+            _traceability_matches_checkpoint(
+                self.root, "w", checkpoint, expected_verification=verification,
+            ),
+            "a passing projection is accepted only when its exact bytes match retained verifier evidence",
+        )
+
+    def test_historical_green_uses_task_base_runner_identity(self):
+        from inner_loop.recovery import _historical_runner_identity, _valid_final_green_scope
+
+        runner_base_sha = self.anchor_commit
+        runner_path = ".agents/ask/verification/traceability/unittest_runner.py"
+        self.write("src/a.py", "candidate = True\n")
+        self.write(runner_path, "# later candidate runner\n")
+        self.commit("candidate changes verifier after contract")
+        candidate_sha = self.git("rev-parse", "HEAD")
+        plan = {
+            "runners": [{"id": "fixture", "argv": ["python", "-m", "unittest", "fixture"],
+                         "adapter": "unittest"}],
+            "tests": [{"id": "T-A", "task_id": "a", "case_id": "tests.test_a",
+                       "runner_id": "fixture", "source_paths": ["src/a.py"]}],
+        }
+        run_id = "green-contract-runner"
+        output = b"pinned verifier output\n"
+        output_path = f"work/w/traceability/runs/{run_id}/exec.log"
+        self.write(output_path, output)
+        source_digest = hashlib.sha256((self.root / "src/a.py").read_bytes()).hexdigest()
+        report = {
+            "run_id": run_id,
+            "runner_identity": _historical_runner_identity(self.root, runner_base_sha),
+            "executions": [{"id": "execution", "phase": "final_green",
+                            "collection_status": "ok", "exit_code": 0,
+                            "runner_id": "fixture", "source_sha": candidate_sha,
+                            "argv": ["python", "-m", "unittest", "fixture"],
+                            "adapter": "unittest", "output_artifact": output_path,
+                            "output_digest": hashlib.sha256(output).hexdigest()}],
+            "cases": [{"test_id": "T-A", "case_id": "tests.test_a",
+                       "runner_id": "fixture", "execution_id": "execution",
+                       "phase": "final_green", "outcome": "passed",
+                       "source_sha": candidate_sha, "source_digests": {"src/a.py": source_digest},
+                       "output_artifact": output_path,
+                       "output_digest": hashlib.sha256(output).hexdigest()}],
+        }
+        self.assertTrue(_valid_final_green_scope(
+            self.root, "w", report, plan, "a", {"T-A"}, candidate_sha, runner_base_sha,
+        ))
+
+    def test_recovery_proposal_binds_state_checkpoint_and_source_without_mutation(self):
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        state_path = self.root / "work/w/inner-loop/state.json"
+        state_before = state_path.read_bytes()
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        head_before = self.git("rev-parse", "HEAD")
+
+        proposed = self.run_cli("recovery-propose", "w")
+
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        self.assertEqual(proposal["work_id"], "w")
+        self.assertEqual(proposal["branch"], "agent/w")
+        self.assertEqual(proposal["observed_revision"], 0)
+        self.assertEqual(proposal["state_sha256"], hashlib.sha256(state_before).hexdigest())
+        self.assertEqual(proposal["checkpoint_commit"], checkpoint_before)
+        self.assertEqual(proposal["source_head"], head_before)
+        self.assertEqual(proposal["source_tree"], self.git("rev-parse", "HEAD^{tree}"))
+        self.assertIn("commit_attribution", proposal)
+        self.assertEqual(state_path.read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        self.assertEqual(self.git("rev-parse", "HEAD"), head_before)
+
+    def test_recovery_adoption_requires_review_and_is_exactly_retryable(self):
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        original = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        head = self.git("rev-parse", "HEAD")
+
+        from verification.traceability.service import inspect_completion
+        completion, _ = inspect_completion(self.root, "w", head, head)
+        self.assertEqual(completion["status"], "fail")
+        self.write("work/w/traceability/completion.json", json.dumps(completion) + "\n")
+        from engineering_model.admission import _publish, _state_directory, capture
+        model_state = _state_directory(self.root, "w")
+        model_state.mkdir(parents=True, exist_ok=True)
+        (model_state / "writer.lock").touch()
+        with (model_state / "writer.lock").open("a+b"):
+            self.assertTrue(_publish(model_state, capture(self.root, "w"), self.root))
+
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        proposal_path = self.root / "work/w/inner-loop/evidence/recovery-proposal.json"
+        review_path = self.root / "work/w/inner-loop/evidence/recovery-review.json"
+        proposal_path.parent.mkdir(parents=True, exist_ok=True)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        unreviewed = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                  "--review", str(review_path))
+        self.assertNotEqual(unreviewed.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        generic_mutation = self.run_cli("cas-apply", "w", "--observed", "0")
+        self.assertNotEqual(generic_mutation.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+
+        review = self.recovery_review(proposal)
+        forged_review = dict(review, candidate_sha=self.anchor_commit)
+        review_path.write_text(json.dumps(forged_review, sort_keys=True) + "\n")
+        forged = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                              "--review", str(review_path))
+        self.assertNotEqual(forged.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        unexpected_evidence = proposal_path.parent / "unreviewed.json"
+        unexpected_evidence.write_text("{}\n")
+        dirty = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                             "--review", str(review_path))
+        self.assertNotEqual(dirty.returncode, 0)
+        unexpected_evidence.unlink()
+
+        completion_path = self.root / "work/w/traceability/completion.json"
+        valid_completion = completion_path.read_bytes()
+        completion_path.write_text('{"schema":"untrusted"}\n')
+        proposal_path.unlink()
+        review_path.unlink()
+        invalid_proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(invalid_proposed.returncode, 0, invalid_proposed.stderr)
+        proposal = json.loads(invalid_proposed.stdout)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review = self.recovery_review(proposal)
+        review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
+        invalid_completion = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                          "--review", str(review_path))
+        self.assertNotEqual(invalid_completion.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        completion_path.write_bytes(valid_completion)
+
+        unlinked_model_state = self.root / "work/w/traceability/model-state/unlinked.json"
+        unlinked_model_state.write_text("{}\n")
+        proposal_path.unlink()
+        review_path.unlink()
+        invalid_model_proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(invalid_model_proposed.returncode, 0, invalid_model_proposed.stderr)
+        proposal = json.loads(invalid_model_proposed.stdout)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review = self.recovery_review(proposal)
+        review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
+        invalid_model = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                                     "--review", str(review_path))
+        self.assertNotEqual(invalid_model.returncode, 0)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        unlinked_model_state.unlink()
+
+        proposal_path.unlink()
+        review_path.unlink()
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review = self.recovery_review(proposal)
+        review_path.write_text(json.dumps(review, sort_keys=True) + "\n")
+        adopted = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                              "--review", str(review_path))
+        self.assertEqual(adopted.returncode, 0, adopted.stderr + adopted.stdout)
+        receipt = json.loads(adopted.stdout)
+        state = json.loads((self.root / "work/w/inner-loop/state.json").read_text())
+        self.assertEqual(state["revision"], original["revision"] + 1)
+        self.assertEqual(state["coordinator_sha"], head)
+        self.assertEqual(state["tasks"], original["tasks"])
+        self.assertEqual(receipt["previous_checkpoint"], checkpoint_before)
+        self.assertEqual(receipt["checkpoint_commit"], self.git("rev-parse", "refs/ask/inner-loop/w"))
+
+        retry = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                             "--review", str(review_path))
+        self.assertEqual(retry.returncode, 0, retry.stderr + retry.stdout)
+        self.assertEqual(json.loads(retry.stdout), receipt)
+        self.assertEqual(json.loads((self.root / "work/w/inner-loop/state.json").read_text())["revision"],
+                         original["revision"] + 1)
+
+    def test_recovery_adoption_rejects_stale_source_and_preserves_checkpoint(self):
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        evidence = self.root / "work/w/inner-loop/evidence"
+        proposal_path, review_path = evidence / "proposal.json", evidence / "review.json"
+        evidence.mkdir(parents=True, exist_ok=True)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review_path.write_text(json.dumps(self.recovery_review(proposal), sort_keys=True) + "\n")
+        self.write("src/a.py", "source changed after reviewed proposal\n")
+        self.commit("stale reviewed source head")
+
+        refused = self.run_cli("recovery-adopt", "w", "--proposal", str(proposal_path),
+                               "--review", str(review_path))
+
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+
+    def test_recovery_adoption_atomically_checks_source_branch_at_checkpoint_publish(self):
+        from unittest.mock import patch
+        from inner_loop.recovery import recovery_adopt
+
+        self.install_valid_fixture_contract()
+        initialized = self.run_cli("cas-init", "w")
+        self.assertEqual(initialized.returncode, 0, initialized.stderr + initialized.stdout)
+        checkpoint_before = self.git("rev-parse", "refs/ask/inner-loop/w")
+        state_before = (self.root / "work/w/inner-loop/state.json").read_bytes()
+        self.write("src/a.py", "authorized pending-task source\n")
+        self.commit("pending task source candidate")
+        head = self.git("rev-parse", "HEAD")
+        proposed = self.run_cli("recovery-propose", "w")
+        self.assertEqual(proposed.returncode, 0, proposed.stderr + proposed.stdout)
+        proposal = json.loads(proposed.stdout)
+        evidence = self.root / "work/w/inner-loop/evidence"
+        proposal_path, review_path = evidence / "proposal.json", evidence / "review.json"
+        evidence.mkdir(parents=True, exist_ok=True)
+        proposal_path.write_text(json.dumps(proposal, sort_keys=True) + "\n")
+        review_path.write_text(json.dumps(self.recovery_review(proposal), sort_keys=True) + "\n")
+        competing = self.git("commit-tree", self.git("rev-parse", "HEAD^{tree}"), "-p", head,
+                             "-m", "competing source head")
+
+        def move_source_after_revalidation(_before, _after):
+            self.git("update-ref", "refs/heads/agent/w", competing, head)
+
+        with patch("inner_loop.state._preserve_attempt_history", side_effect=move_source_after_revalidation):
+            with self.assertRaises(CheckpointError):
+                recovery_adopt(self.root, "w", proposal_path, review_path)
+
+        self.assertEqual((self.root / "work/w/inner-loop/state.json").read_bytes(), state_before)
+        self.assertEqual(self.git("rev-parse", "refs/ask/inner-loop/w"), checkpoint_before)
+        self.assertEqual(self.git("rev-parse", "refs/heads/agent/w"), competing)
 
     def test_interrupted_candidate_paths_do_not_block_dependent_tasks(self):
         started = self.run_cli("run", "w")
@@ -2214,6 +2859,8 @@ class test_b(unittest.TestCase):
         )
         legacy_files = write_legacy_fixture(self.root)
         self.write("work/continuation-recovery/inner-loop/tasks.yaml", REPAIR_TASKS)
+        from traceability_support import seed
+        seed(self.root, 'continuation-recovery')
         self.commit("immutable blocked product fixture and isolated repair graph")
         contract_sha = self.git("rev-parse", "HEAD")
         self.write(
@@ -2248,9 +2895,10 @@ class test_b(unittest.TestCase):
         from inner_loop.state import cas_apply
         cas_apply(self.root, "continuation-recovery", repair_state["revision"],
                   lambda doc: doc["tasks"]["CR-1"].update(status="integrated"))
-        second = self.run_cli("run", "continuation-recovery")
-        self.assertEqual(second.returncode, 0, second.stderr + second.stdout)
-        self.assertIn("running=CR-2", second.stdout)
+        # This fixture exercises state isolation, not fabricated integration evidence.
+        from inner_loop.state import spawn_writer
+        second = spawn_writer(self.root, "continuation-recovery", "CR-2")
+        self.assertEqual(second['tasks']['CR-2']['status'], 'running')
         self.assertEqual({name: (self.root / name).read_bytes() for name in legacy_files}, state_before)
         self.assertEqual(self.git("rev-parse", authority_ref), authority_before)
 
@@ -2813,6 +3461,10 @@ class test_b(unittest.TestCase):
         (root / ".agents/verification.yaml").write_text(
             "schema: ask-checkplan/v1\nno_production_datastore: true\n"
             "checks:\n  - id: required\n    tier: mandatory\n    command: 'true'\n")
+        (root / "specs/current/continuation-recovery.md").write_text('# Disposable continuation recovery specification\n')
+        from traceability_support import seed_model
+        seed_model(root, work_id)
+        git("add", "work/continuation-recovery/engineering-model.json", "specs/current/continuation-recovery.md")
         git("add", "specs/current/continuation-recovery.json",
             "work/continuation-recovery/test-plan.json",
             migration["source_review_artifact"],
@@ -2967,7 +3619,11 @@ class test_b(unittest.TestCase):
         self.assertFalse(import_marker.exists(),
                          "current verifier code ran before the accepted verifier pin was checked")
         from inner_loop.driver import integrate_ready
-        integrated_sha = integrate_ready(root, work_id, task_id)
+        from unittest.mock import patch
+        # This C/V migration fixture has synthetic CR-1/2 terminal states and
+        # exercises CR-3 integration; complete milestone backfill has its own suite.
+        with patch('inner_loop.milestones.publish_milestones'):
+            integrated_sha = integrate_ready(root, work_id, task_id)
         self.assertEqual(integrated_sha, candidate_sha)
         final_state = load_state(root, work_id)
         task = final_state["tasks"][task_id]

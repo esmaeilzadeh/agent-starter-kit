@@ -1,0 +1,11 @@
+{
+  "archive": "recovery-evidence-bundle.tar.gz",
+  "archive_sha256": "6605baa865406e1137d66e1add0469cc4a649463535bc132bc6be5dbd5dd6091",
+  "checkpoint_ref": "c8ebe82a55f40fca95036c0555e5280bbe605add",
+  "file_count": 279,
+  "ledger_rows": 80,
+  "raw_logs_archived_privately": 128,
+  "schema": "ask-client-security-recovery-bundle/v1",
+  "source_head": "19645e8dab1ea615a7df54ab66040a0859ffca53",
+  "state_sha256": "c05a4f9478cf1888a2d721b8e84bb606c331537152dba736a865f1211cc57dc3"
+}

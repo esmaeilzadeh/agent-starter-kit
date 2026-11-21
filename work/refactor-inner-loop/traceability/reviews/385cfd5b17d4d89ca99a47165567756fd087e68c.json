@@ -1,0 +1,237 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "root-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "1eeb5796984407bd0d6280d7b29029decfc659ed42272fbe7257dc478646a1ff",
+  "review_digest": "00c87e88b7ac8997532fefb88412a38d1f27fbe5c049e74df08cea319c1eb078",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "reviewer": "rf03-review-gpt-6-luna",
+    "recorded_by": "root-coordinator",
+    "candidate_sha": "385cfd5b17d4d89ca99a47165567756fd087e68c",
+    "base_sha": "4a513749673f3548aac833d410ca5ae091f271f2",
+    "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
+    "plan_digest": "804e6972d262a44fcd6d427ee3b761efc03b2af584d0517cfdebf7cec22823bd",
+    "scope": "workstream",
+    "task_id": null,
+    "test_ids": [
+      "PREP-01",
+      "PREP-02",
+      "PREP-03",
+      "PREP-04",
+      "PREP-05",
+      "LOOP-01",
+      "LOOP-02",
+      "LOOP-03",
+      "LOOP-04",
+      "BUNDLE-01",
+      "BUNDLE-02",
+      "BUNDLE-03",
+      "PREP-06",
+      "TRACE-01",
+      "LOOP-05"
+    ],
+    "criterion_ids": [
+      "RF-001",
+      "RF-002",
+      "RF-003",
+      "RF-004",
+      "RF-005",
+      "RF-006",
+      "RF-007",
+      "RF-008",
+      "RF-009"
+    ],
+    "source_digests": {
+      "_ask/tests/test_refactor_bundle_parity.py": "fcaa9a662d6ec7489cd6c1d5fb2f33bed9aa6bca1ef194fb15f6e7cbe824a946",
+      "_ask/tests/test_refactor_loop_integration.py": "6dd9f505d6a3fb804a257130748e846840db3c18e72c8a3a9705ef5f86152660",
+      "_ask/tests/test_tdd_preparation_overlay.py": "0c31ee5f5cbfc2a13cfacbfae39fdac5de61571703cf9766eb9aed3634aad156",
+      "_ask/tests/test_traceability_inventory.py": "369986f603dee779e2937a24b38198537715e933b74a24c8972f00f2315ecb85"
+    },
+    "inspected_sources": [],
+    "changed_cases": [],
+    "inventory_exclusions": {},
+    "criteria": [
+      {
+        "id": "RF-001",
+        "coverage_decision": "APPROVED",
+        "assessment": "Scenario walkthrough: every behavioral slice runs Red, Green, then behavior-preserving Refactor before independent review. Review and correction remain in the task loop; aggregate Verify and Accept remain outside, with no unconditional outer Review/Refactor pair. The guides/specs and canonical task-loop contract agree.",
+        "type_adequacy": {}
+      },
+      {
+        "id": "RF-002",
+        "coverage_decision": "APPROVED",
+        "assessment": "Scenario walkthrough: valid local findings must be fixed and the changed candidate freshly reviewed; explanations do not waive work. Broader horizontal suggestions are handed to the coordinator for later-card handling, while mistaken findings require evidence-backed withdrawal.",
+        "type_adequacy": {}
+      },
+      {
+        "id": "RF-003",
+        "coverage_decision": "APPROVED",
+        "assessment": "Scenario walkthrough: broad refactors are tagged refactoring and persisted as attributed candidate-bound handoffs with source task, reviewer/finding, responsibilities, proposed What/Why, and publication status. No task-writer branch switch or premature card materialization occurs; coordinator publication waits until no writer/resumable candidate remains and uses normal develop integration.",
+        "type_adequacy": {}
+      },
+      {
+        "id": "RF-004",
+        "coverage_decision": "APPROVED",
+        "assessment": "Scenario walkthrough: an existing-spec behavior defect receives a failing regression and another Red-Green-Refactor cycle. A necessary meaning, behavior, or contract change stops for Spec Change and cannot be silently called optional refactoring or parked as task success.",
+        "type_adequacy": {}
+      },
+      {
+        "id": "RF-005",
+        "coverage_decision": "APPROVED",
+        "assessment": "LOOP-01..05 cover rejected and stale reviews, checked successful integration, retry bounds and vocabulary, and a failed mandatory check. The expected refusal and positive integration paths are both asserted through public inner-loop commands.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Integration is required and appropriate because the criterion concerns public command dispatch, candidate-bound approval/checks, coordinator and task integration state, and integrated tree identity. LOOP-01..05 exercise these through disposable Git consumers."
+          }
+        }
+      },
+      {
+        "id": "RF-006",
+        "coverage_decision": "APPROVED",
+        "assessment": "PREP-01..06 and TRACE-01 cover the managed TDD override in both installed views, idempotent re-preparation, validation-only semantics, required-install failure reporting, optional missing skills, missing required output, and accurate inventory treatment of unchanged regressions. New behavior cases have recorded Red failures and final Green passes; unchanged cases execute in the current final Green run.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Integration is required and appropriate because the public prepare/install workflow updates installed views and must preserve pins, unrelated content, validation-only behavior, and failure propagation. The temporary-repository and controlled-installer tests inspect those resulting public effects."
+          }
+        }
+      },
+      {
+        "id": "RF-007",
+        "coverage_decision": "APPROVED",
+        "assessment": "BUNDLE-01/02 cover install, sync, upgrade, canonical task-loop propagation, runtime projections, and preservation of consumer overlays/pins. BUNDLE-03 remains executed regression coverage for updated Grill and continuation contracts across runtime projections.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Integration is required and appropriate because consumer installation, synchronization, upgrades, and generated runtime views are the externally visible obligations. Temporary consumers exercise those workflows and inspect their resulting files."
+          }
+        }
+      },
+      {
+        "id": "RF-008",
+        "coverage_decision": "APPROVED",
+        "assessment": "Scenario walkthrough: Grill decisions present selectable options and an optional free-text path that can accompany a selected option in one response. Exclusive Other is insufficient. Native controls are used only when callable in the current mode and capable of preserving both values; otherwise numbered choices accept added text in the same reply.",
+        "type_adequacy": {}
+      },
+      {
+        "id": "RF-009",
+        "coverage_decision": "APPROVED",
+        "assessment": "Scenario walkthrough: a missing/stale confirmation is requested only when it blocks an otherwise authorized next action. An explicit plan stop is reported complete within scope and is not mislabeled as a pending future gate.",
+        "type_adequacy": {}
+      }
+    ],
+    "tests": [
+      {
+        "id": "PREP-01",
+        "decision": "APPROVED",
+        "assertion_assessment": "The temporary consumer assertion checks that both installed skill views contain the canonical managed TDD override and refer to the canonical task-loop contract.",
+        "counterexample": "If either installed view retained only the upstream TDD guidance or omitted the canonical reference, the content assertions for that view would fail.",
+        "tdd_continuity_assessment": "New behavior test: Red execution c10cb3a4f9084a0a9821491de1ad93ac at 3cd3193 failed with behavior_assertion; final Green execution 74c9689147964622a095b8f17e76e5c9 at candidate 020aca2 passed."
+      },
+      {
+        "id": "PREP-02",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test prepares twice and checks that exactly one managed override remains and the second pass refreshes the managed content without duplicating it.",
+        "counterexample": "A second preparation that appends a duplicate block or leaves stale managed content would fail count/content assertions.",
+        "tdd_continuity_assessment": "New behavior test: Red execution c10cb3a4f9084a0a9821491de1ad93ac at 3cd3193 failed with behavior_assertion; final Green execution 74c9689147964622a095b8f17e76e5c9 at candidate 020aca2 passed."
+      },
+      {
+        "id": "PREP-03",
+        "decision": "APPROVED",
+        "assertion_assessment": "The validation-only/skip-install case checks required pin validation while verifying the installer does not mutate installed output.",
+        "counterexample": "If validation-only mode wrote or removed managed output, the before/after filesystem assertion would fail; if invalid pins were accepted, the expected validation failure would be absent.",
+        "tdd_continuity_assessment": "Accepted unchanged regression. It passed in the RF-02 Red-preparation run and in final Green 74c9689147964622a095b8f17e76e5c9; no behavior Red is claimed."
+      },
+      {
+        "id": "PREP-04",
+        "decision": "APPROVED",
+        "assertion_assessment": "A controlled required installer failure is asserted as a nonzero preparation failure even when a prior/stale output exists, guarding against stale-file masking.",
+        "counterexample": "If the script returned success because an old output file remained after the required installer failed, the expected nonzero result assertion would fail.",
+        "tdd_continuity_assessment": "New behavior test: Red execution c10cb3a4f9084a0a9821491de1ad93ac at 3cd3193 failed with behavior_assertion; final Green execution 74c9689147964622a095b8f17e76e5c9 at candidate 020aca2 passed."
+      },
+      {
+        "id": "PREP-05",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test confirms a missing optional pinned skill is not fabricated or treated as a required installation failure.",
+        "counterexample": "Creating an absent optional skill or failing solely because it is optional and unavailable would violate the file/state and exit assertions.",
+        "tdd_continuity_assessment": "Accepted unchanged regression. It passed in the RF-02 baseline run and final Green 74c9689147964622a095b8f17e76e5c9."
+      },
+      {
+        "id": "LOOP-01",
+        "decision": "APPROVED",
+        "assertion_assessment": "The public inner-loop scenario supplies a candidate-bound REJECTED review and asserts refusal plus unchanged coordinator SHA and task integration state.",
+        "counterexample": "Advancing integration state or coordinator source despite the rejected review would fail the unchanged-state assertions.",
+        "tdd_continuity_assessment": "Accepted unchanged regression; passed in RF-03 pre-implementation run c7c6c8d9d7fb4378a51986565f47c2d0 and final Green 40311c290a974faab59240053e4d518c."
+      },
+      {
+        "id": "LOOP-02",
+        "decision": "APPROVED",
+        "assertion_assessment": "The public scenario changes candidate content after approval and verifies stale approval refusal until fresh candidate-bound review and checks are available.",
+        "counterexample": "Reusing approval for the old SHA to integrate changed content would fail the stale-review refusal assertion.",
+        "tdd_continuity_assessment": "Accepted unchanged regression; passed in RF-03 pre-implementation run c7c6c8d9d7fb4378a51986565f47c2d0 and final Green 40311c290a974faab59240053e4d518c."
+      },
+      {
+        "id": "LOOP-03",
+        "decision": "APPROVED",
+        "assertion_assessment": "The public successful integration scenario checks the integrated tree equals the checked candidate and records successful execution lineage for that candidate SHA.",
+        "counterexample": "Integrating a different tree or recording another SHA would fail tree equality or lineage assertions.",
+        "tdd_continuity_assessment": "Accepted unchanged regression; passed in RF-03 pre-implementation run c7c6c8d9d7fb4378a51986565f47c2d0 and final Green 40311c290a974faab59240053e4d518c."
+      },
+      {
+        "id": "LOOP-04",
+        "decision": "APPROVED",
+        "assertion_assessment": "The public next-action scenario checks the established implement/debug/blocked/integrate vocabulary at retry limits and confirms ownership boundary violations remain blocked.",
+        "counterexample": "Changing retry bounds/vocabulary or allowing an invalid boundary to proceed would produce an unexpected command result.",
+        "tdd_continuity_assessment": "Accepted unchanged regression; passed in RF-03 pre-implementation run c7c6c8d9d7fb4378a51986565f47c2d0 and final Green 40311c290a974faab59240053e4d518c."
+      },
+      {
+        "id": "BUNDLE-01",
+        "decision": "APPROVED",
+        "assertion_assessment": "Fresh-consumer install and sync assert canonical task-loop installation, canonical stage pointers for Claude/Codex/Cursor/OpenCode, and matching Cursor/Codex stage skill contents.",
+        "counterexample": "A missing canonical file, stale runtime pointer, or divergent generated skill body would fail the installed-file checks.",
+        "tdd_continuity_assessment": "New behavior test: Red run c7c6c8d9d7fb4378a51986565f47c2d0 at d73c28d failed with behavior_assertion; final Green 40311c290a974faab59240053e4d518c at candidate 020aca2 passed with the install/projection contract intact."
+      },
+      {
+        "id": "BUNDLE-02",
+        "decision": "APPROVED",
+        "assertion_assessment": "Upgrade from a local versioned kit into a consumer with stage and skill-pin overlays checks task-loop installation, updated guidance, and preservation of both consumer-owned contents.",
+        "counterexample": "An upgrade that omits the task loop or overwrites the consumer implementation note or custom pin would fail the corresponding file assertions.",
+        "tdd_continuity_assessment": "New behavior test: Red run c7c6c8d9d7fb4378a51986565f47c2d0 at d73c28d failed with behavior_assertion; final Green 40311c290a974faab59240053e4d518c at candidate 020aca2 passed with overlay/pin preservation assertions."
+      },
+      {
+        "id": "BUNDLE-03",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case checks Grill selectable options plus optional accompanying text, continuation explicit-stop semantics, and runtime pointers/projections for those canonical prompt contracts.",
+        "counterexample": "Omitting accompanying text support or the explicit-stop distinction from a generated projection would fail the contract assertions.",
+        "tdd_continuity_assessment": "Accepted unchanged regression: passed in the pre-RF-03 run and final Green 40311c290a974faab59240053e4d518c; its assertions remain assigned and executed, with no fabricated Red."
+      },
+      {
+        "id": "PREP-06",
+        "decision": "APPROVED",
+        "assertion_assessment": "The test simulates a nominally successful installer that fails to produce a required output and asserts preparation reports failure rather than accepting missing output.",
+        "counterexample": "Returning success on exit code zero while the required output is absent would violate the asserted result and output checks.",
+        "tdd_continuity_assessment": "Accepted unchanged regression; passed in RF-02 baseline execution and final Green 74c9689147964622a095b8f17e76e5c9."
+      },
+      {
+        "id": "TRACE-01",
+        "decision": "APPROVED",
+        "assertion_assessment": "The inventory regression distinguishes a newly added planned regression case from a modified existing test method: the new case is included but not mislabeled as changed behavior, while an edited existing case is classified changed.",
+        "counterexample": "If inventory omitted the new planned regression or treated it as changed behavior, or failed to detect the modified existing method, the paired assertions would fail.",
+        "tdd_continuity_assessment": "New behavior test: Red run 513f6c4875c04f80830ee1171e6d69fe at 91cd5cd failed with behavior_assertion; final Green 74c9689147964622a095b8f17e76e5c9 at candidate 020aca2 passed. Earlier RF-02 run's TRACE-01 pass predates its test source and is not used as Red evidence."
+      },
+      {
+        "id": "LOOP-05",
+        "decision": "APPROVED",
+        "assertion_assessment": "The public run scenario supplies an APPROVED current review but a failing mandatory check, then asserts refusal, failed execution evidence, and unchanged coordinator/task integration state.",
+        "counterexample": "Integrating despite the failed candidate check would violate the refusal and unchanged-state assertions.",
+        "tdd_continuity_assessment": "Accepted unchanged regression; passed in RF-03 pre-implementation run c7c6c8d9d7fb4378a51986565f47c2d0 and final Green 40311c290a974faab59240053e4d518c."
+      }
+    ]
+  },
+  "candidate_sha": "385cfd5b17d4d89ca99a47165567756fd087e68c",
+  "scope": "workstream",
+  "task_id": null
+}

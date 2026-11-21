@@ -6,7 +6,7 @@ Agents **must not** begin Explore, Grill, Plan, Implement, Review, Refactor, Ver
 
 Before any of that work:
 
-1. Run `./ask check-clean` (or equivalent `git status --porcelain` check).
+1. Run `./ask check-clean` (the shared checker validates retained runtime exceptions).
 2. If the tree is dirty, **stop**. Do not stash, reset, or absorb changes silently.
 3. Present the file list and request a submitted choice for every uncommitted and untracked path, individually or in a batch. Offer options such as:
    - commit now (with a proposed message to approve or revise)
@@ -78,3 +78,12 @@ recovery: `_ask/docs/inner-loop-evidence.md`.
 - **Later:** parked `.later/*.md` committed on `develop` (not live).
 
 Do not write a committed `work/INDEX.md` — it would split the same way.
+
+## Milestone evidence
+
+Commit compact task progress through `./ask inner-loop publish-evidence <work-id>`
+after integration or interruption and before another writer. Full checkpoint
+evidence stays local; source candidates and progress publication commits retain
+distinct identities. Retention, exact retries and reviewed runtime migration are
+defined in `_ask/docs/inner-loop-evidence.md`. A publication failure blocks the
+next writer until repaired.
