@@ -33,7 +33,7 @@ Gate:
 
 ```text
 PASS → eligible for acceptance
-ESCALATE → human decision required
+ESCALATE → consult configured model-confidence rungs; human decision remains required for scope/intent changes and other human-authority decisions
 ```
 
 ---
@@ -46,10 +46,14 @@ When the challenge writes prose, read the prepared `writing-for-agents` skill an
 
 ## Model spawn (required)
 
-Spawn the generated Spec Challenge subagent for the current runtime. Present its model picker as selectable choices from the runtime binding (default highlighted). A highlight alone is not consent. If the selected model is the same family as Spec, explain why and offer “Continue with this model” / “Choose another model” as choices; proceed only on the submitted continue choice. If buttons are unavailable, offer numbered choices and accept the number or option label, never a written confirmation sentence. Record model, runtime, and parent_model in spec-challenge.md. Do not author the challenge only in the parent context.
+Resolve `03-spec-challenge` with `python3 _ask/scripts/model-decisions.py resolve --work-id <id> --stage 03-spec-challenge --runtime <runtime>` and spawn the generated Spec Challenge subagent with that model. Reuse the saved Grill decision on continuation. Record model, runtime, and parent_model in spec-challenge.md. Do not ask for a routine picker or same-family approval; request only a genuine unavailable-model, capability, or scope decision, preserving the saved choices.
 
 ## Structured test evidence
 
 Challenge criterion observability, required test types, review-only authority and migration scope; record an independent decision for the exact contract digests.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+through the central decision operation before a human interruption. Preserve
+human scope/approval authority and the saved Grill model selections.

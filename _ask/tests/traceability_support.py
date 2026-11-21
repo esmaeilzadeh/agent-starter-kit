@@ -23,8 +23,8 @@ def seed_model(root, work_id):
     nodes = [{'id': 'purpose', 'type': 'intent', 'title': 'Orchestration fixture', 'lifecycle': 'active'}]
     edges = []
     for task in graph.get('tasks', []):
-        nodes.append({'id': task['id'], 'type': 'task', 'title': task['id'], 'lifecycle': 'planned'})
-        edges.append({'type': 'contains', 'source': 'purpose', 'target': task['id']})
+        nodes.append({'id': task['id'].lower(), 'type': 'task', 'title': task['id'], 'lifecycle': 'planned'})
+        edges.append({'type': 'contains', 'source': 'purpose', 'target': task['id'].lower()})
     if plan.get('tests'):
         nodes.extend([{'id': 'requirement', 'type': 'requirement', 'title': 'Fixture scope', 'lifecycle': 'draft'},
                       {'id': 'scenario', 'type': 'scenario', 'title': 'Fixture behavior', 'lifecycle': 'draft'}])

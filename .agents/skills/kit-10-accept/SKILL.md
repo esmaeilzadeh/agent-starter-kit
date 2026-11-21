@@ -48,3 +48,7 @@ See `_ask/policies/workflow.md`. **Accept is the second on-path confirm** (after
 Run `./ask check-workstream <work-id> --acceptance`; a task report or edited pass field cannot authorize workstream completion. Retain context-audit and semantic acceptance requirements.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+through the central decision operation before a human interruption. Preserve
+human scope/approval authority and the saved Grill model selections.

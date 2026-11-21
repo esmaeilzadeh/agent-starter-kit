@@ -3,6 +3,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 TMP="$(mktemp -d)"
+OWNERSHIP_PATH="$(git rev-parse --git-path askit-transactions)/owned-files.json"
+if [[ -f "$OWNERSHIP_PATH" ]]; then
+  cp "$OWNERSHIP_PATH" "$TMP/owned-files.json"
+  touch "$TMP/owned-files-present"
+fi
 PROJECTION_DIRS=(
   .cursor/agents
   .claude/agents
@@ -25,6 +30,11 @@ restore_projections() {
       cp -a "$TMP/projection-$index" "$projection_dir"
     fi
   done
+  if [[ -e "$TMP/owned-files-present" ]]; then
+    cp "$TMP/owned-files.json" "$OWNERSHIP_PATH"
+  else
+    rm -f "$OWNERSHIP_PATH"
+  fi
   rm -rf "$TMP"
 }
 trap restore_projections EXIT
@@ -43,10 +53,10 @@ fi
 
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
 
-grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
+grep -q 'model: "grok-4.6"' .cursor/agents/kit-07-review.md
 grep -q 'readonly: true' .cursor/agents/kit-07-review.md
-grep -q 'model: composer-2.5' .cursor/agents/kit-06-implement.md
-grep -q 'model: sonnet' .claude/agents/kit-07-review.md
+grep -q 'model: "composer-2.5"' .cursor/agents/kit-06-implement.md
+grep -q 'model: "sonnet"' .claude/agents/kit-07-review.md
 grep -q 'model = "gpt-6-luna"' .codex/agents/kit-06-implement.toml
 
 test -f .opencode/agents/kit-06-implement.md
@@ -60,10 +70,10 @@ fi
 grep -q 'edit: deny' .opencode/agents/kit-07-review.md
 
 env -u ASK_WORK_ID ASK_RISK=HIGH python3 _ask/scripts/sync-runtime-agents.py >/dev/null
-grep -q 'model: kimi-k3' .cursor/agents/kit-07-review.md
+grep -q 'model: "kimi-k3"' .cursor/agents/kit-07-review.md
 grep -q 'model = "gpt-6-astra"' .codex/agents/kit-07-review.toml
 env -u ASK_WORK_ID ASK_MODEL_07_REVIEW=thinking python3 _ask/scripts/sync-runtime-agents.py >/dev/null
-grep -q 'model: grok-4.6' .cursor/agents/kit-07-review.md
+grep -q 'model: "grok-4.6"' .cursor/agents/kit-07-review.md
 grep -q 'model = "gpt-6.1-sol"' .codex/agents/kit-07-review.toml
 ./_ask/scripts/sync-cursor-binding.sh >/dev/null
 
@@ -72,6 +82,6 @@ if [[ "${ASK_SYNC_TEST_FORCE_FAILURE:-0}" == "1" ]]; then
   exit 97
 fi
 
-python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
+env -u ASKIT_TRANSACTION_ACTIVE python3 -m unittest discover -s _ask/tests -p test_codex_effort.py
 
 echo "PASS: sync writes per-runtime Review/Implement models; defaults and 07-review have no slugs"

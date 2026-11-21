@@ -17,9 +17,13 @@ if [[ -z "$KIT" && -x "${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit/ask" ]]; then
   KIT="${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit"
 fi
 if [[ -z "$KIT" ]]; then
-  echo "askit: no kit cache. Install this command first:" >&2
-  echo "  curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash" >&2
+  echo "askit: no kit cache. Follow README.md's reviewed full-commit installation steps." >&2
   exit 1
+fi
+
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/askit/kit"
+if [[ -d "$CACHE" && "$(cd "$CACHE" && pwd -P)" == "$(cd "$KIT" && pwd -P)" ]]; then
+  "$KIT/askit" verify-release-cache
 fi
 
 # shellcheck disable=SC2086

@@ -10,6 +10,8 @@ ask_complete_emit() {
 }
 
 ask_complete_commands() {
+  ask_complete_emit trust "trust this checkout's executable identity"
+  ask_complete_emit completion-install "opt in to installing shell completion"
   ask_complete_emit check-clean "refuse dirty worktree"
   ask_complete_emit start-work "branch agent/<work-id> + seed work/<work-id>/"
   ask_complete_emit check-workstream "preconditions before implement"
@@ -174,7 +176,7 @@ ask_print_completions() {
   if [[ "$cword" -le 1 ]]; then
     ask_complete_commands
     if [[ "${words[0]:-}" == *askit ]]; then
-      ask_complete_emit self-install "put askit on PATH (same as curl | bash)"
+      ask_complete_emit self-install "install askit from a reviewed full-commit checkout"
     fi
     return 0
   fi

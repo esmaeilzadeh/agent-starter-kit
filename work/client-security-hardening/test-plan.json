@@ -1,0 +1,1640 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "client-security-hardening",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "obligations": [
+    {
+      "criterion_id": "CSH-001",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-002",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-003",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-004",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-005",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-006",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-007",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "CSH-008",
+      "required_types": [
+        "unit",
+        "integration"
+      ]
+    },
+    {
+      "criterion_id": "CSH-009",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-010",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-011",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CSH-012",
+      "required_types": [
+        "unit",
+        "integration",
+        "e2e"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "id": "test_client_credentials",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_credentials.py"
+      ]
+    },
+    {
+      "id": "test_client_distribution",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_distribution.py"
+      ]
+    },
+    {
+      "id": "test_client_journeys",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_journeys.py"
+      ]
+    },
+    {
+      "id": "test_client_launcher",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_launcher.py"
+      ]
+    },
+    {
+      "id": "test_client_model_decisions",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_model_decisions.py"
+      ]
+    },
+    {
+      "id": "test_client_orchestrator",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_orchestrator.py"
+      ]
+    },
+    {
+      "id": "test_client_runtime_config",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_runtime_config.py"
+      ]
+    },
+    {
+      "id": "test_client_verification",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_verification.py"
+      ]
+    },
+    {
+      "id": "test_client_workbench",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_workbench.py"
+      ]
+    },
+    {
+      "id": "test_client_writes",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_writes.py"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "CSH-T01",
+      "criterion_ids": [
+        "CSH-005"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Bundled dependencies and source approval records",
+        "when": "Pins and approval identities are resolved",
+        "then": [
+          "Every executable dependency has an exact reviewed pin and artifact identity",
+          "A changed source, commit or skill path does not reuse approval"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-005",
+          "checks": [
+            "Every executable dependency has an exact reviewed pin and artifact identity",
+            "A changed source, commit or skill path does not reuse approval"
+          ]
+        }
+      ],
+      "runner_id": "test_client_distribution",
+      "case_id": "test_client_distribution.ClientTests.test_immutable_pins",
+      "source_paths": [
+        "_ask/tests/test_client_distribution.py"
+      ],
+      "task_id": "CSH-01"
+    },
+    {
+      "id": "CSH-T02",
+      "criterion_ids": [
+        "CSH-005"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A local Git source and requested full commit disagree or a cache is modified",
+        "when": "Self-install and upgrade select fetched code",
+        "then": [
+          "Nonzero mismatch result before any fetched marker executable runs",
+          "Previous cache, launcher and project outputs remain usable"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-005",
+          "checks": [
+            "Nonzero mismatch result before any fetched marker executable runs",
+            "Previous cache, launcher and project outputs remain usable"
+          ]
+        }
+      ],
+      "runner_id": "test_client_distribution",
+      "case_id": "test_client_distribution.ClientTests.test_reject_mismatched_source",
+      "source_paths": [
+        "_ask/tests/test_client_distribution.py"
+      ],
+      "task_id": "CSH-01"
+    },
+    {
+      "id": "CSH-T03",
+      "criterion_ids": [
+        "CSH-005"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A project manifest adds a new source or changes its commit",
+        "when": "Prepare runs with an instrumented local fetch stand-in",
+        "then": [
+          "No fetch before explicit source approval",
+          "Approval is private and project edits cannot forge it"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-005",
+          "checks": [
+            "No fetch before explicit source approval",
+            "Approval is private and project edits cannot forge it"
+          ]
+        }
+      ],
+      "runner_id": "test_client_distribution",
+      "case_id": "test_client_distribution.ClientTests.test_source_approval_before_fetch",
+      "source_paths": [
+        "_ask/tests/test_client_distribution.py"
+      ],
+      "task_id": "CSH-01"
+    },
+    {
+      "id": "CSH-T04",
+      "criterion_ids": [
+        "CSH-005"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A disposable client and mandatory installer stand-in that fails",
+        "when": "Public prepare, install, bootstrap and upgrade commands run",
+        "then": [
+          "Every caller reports failure",
+          "No success result is emitted and the caller stops further delegation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-005",
+          "checks": [
+            "Every caller reports failure",
+            "No success result is emitted and the caller stops further delegation"
+          ]
+        }
+      ],
+      "runner_id": "test_client_distribution",
+      "case_id": "test_client_distribution.ClientTests.test_mandatory_failure_propagates",
+      "source_paths": [
+        "_ask/tests/test_client_distribution.py"
+      ],
+      "task_id": "CSH-01"
+    },
+    {
+      "id": "CSH-T05",
+      "criterion_ids": [
+        "CSH-001"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Physical root aliases and executable/public metadata changes",
+        "when": "Trust keys and content identities are computed",
+        "then": [
+          "Symlink aliases of one physical root share a key and moves require trust",
+          "Helper, mode and execution-bearing config changes invalidate identity; non-executable metadata does not"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-001",
+          "checks": [
+            "Symlink aliases of one physical root share a key and moves require trust",
+            "Helper, mode and execution-bearing config changes invalidate identity; non-executable metadata does not"
+          ]
+        }
+      ],
+      "runner_id": "test_client_launcher",
+      "case_id": "test_client_launcher.ClientTests.test_identity_scope",
+      "source_paths": [
+        "_ask/tests/test_client_launcher.py"
+      ],
+      "task_id": "CSH-02"
+    },
+    {
+      "id": "CSH-T06",
+      "criterion_ids": [
+        "CSH-001"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A marker dispatcher in an untrusted client with no private trust record",
+        "when": "Daily invocation runs without a TTY then with explicit trust",
+        "then": [
+          "No marker before trust and noninteractive refusal is actionable",
+          "Matching trust delegates; helper replacement invalidates trust before delegation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-001",
+          "checks": [
+            "No marker before trust and noninteractive refusal is actionable",
+            "Matching trust delegates; helper replacement invalidates trust before delegation"
+          ]
+        }
+      ],
+      "runner_id": "test_client_launcher",
+      "case_id": "test_client_launcher.ClientTests.test_delegation_requires_trust",
+      "source_paths": [
+        "_ask/tests/test_client_launcher.py"
+      ],
+      "task_id": "CSH-02"
+    },
+    {
+      "id": "CSH-T07",
+      "criterion_ids": [
+        "CSH-001"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "An installed launcher and an untrusted marker project",
+        "when": "The installed --complete candidate lookup is invoked",
+        "then": [
+          "Installed completion candidates are produced",
+          "Project dispatcher marker remains absent"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-001",
+          "checks": [
+            "Installed completion candidates are produced",
+            "Project dispatcher marker remains absent"
+          ]
+        }
+      ],
+      "runner_id": "test_client_launcher",
+      "case_id": "test_client_launcher.ClientTests.test_completion_stays_installed",
+      "source_paths": [
+        "_ask/tests/test_client_launcher.py"
+      ],
+      "task_id": "CSH-02"
+    },
+    {
+      "id": "CSH-T08",
+      "criterion_ids": [
+        "CSH-001"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Disposable user startup files and launcher prefix",
+        "when": "Self-install, completion snippet generation, launcher help and daily use precede explicit completion installation",
+        "then": [
+          "No startup edits or project help delegation occur before trust or explicit completion opt-in",
+          "Only explicit opt-in changes validated startup files"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-001",
+          "checks": [
+            "No startup edits or project help delegation occur before trust or explicit completion opt-in",
+            "Only explicit opt-in changes validated startup files"
+          ]
+        }
+      ],
+      "runner_id": "test_client_launcher",
+      "case_id": "test_client_launcher.ClientTests.test_completion_requires_opt_in",
+      "source_paths": [
+        "_ask/tests/test_client_launcher.py"
+      ],
+      "task_id": "CSH-02"
+    },
+    {
+      "id": "CSH-T09",
+      "criterion_ids": [
+        "CSH-002"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Destination trees containing safe files, links, escapes, special files and collisions",
+        "when": "The complete write inventory is classified",
+        "then": [
+          "Unsafe components and ambiguous ownership are rejected including under force",
+          "Known generated outputs and project-owned settings are distinguished"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-002",
+          "checks": [
+            "Unsafe components and ambiguous ownership are rejected including under force",
+            "Known generated outputs and project-owned settings are distinguished"
+          ]
+        }
+      ],
+      "runner_id": "test_client_writes",
+      "case_id": "test_client_writes.ClientTests.test_classify_paths",
+      "source_paths": [
+        "_ask/tests/test_client_writes.py"
+      ],
+      "task_id": "CSH-03"
+    },
+    {
+      "id": "CSH-T10",
+      "criterion_ids": [
+        "CSH-002"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A late destination is unsafe and outside sentinels are recorded",
+        "when": "Fresh install, reinstall, upgrade and standalone sync preflight runs",
+        "then": [
+          "Conflicting path is named without secret values",
+          "All earlier outputs, private state and outside sentinels are unchanged with and without force"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-002",
+          "checks": [
+            "Conflicting path is named without secret values",
+            "All earlier outputs, private state and outside sentinels are unchanged with and without force"
+          ]
+        }
+      ],
+      "runner_id": "test_client_writes",
+      "case_id": "test_client_writes.ClientTests.test_late_conflict_no_writes",
+      "source_paths": [
+        "_ask/tests/test_client_writes.py"
+      ],
+      "task_id": "CSH-03"
+    },
+    {
+      "id": "CSH-T11",
+      "criterion_ids": [
+        "CSH-002"
+      ],
+      "type": "e2e",
+      "change_kind": "regression",
+      "scenario": {
+        "given": "A client with tracked overlays and custom rules at the product base",
+        "when": "Install and upgrade valid known kit outputs",
+        "then": [
+          "Custom content and Git trackability survive",
+          "Only known kit outputs change"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-002",
+          "checks": [
+            "Custom content and Git trackability survive",
+            "Only known kit outputs change"
+          ]
+        }
+      ],
+      "runner_id": "test_client_writes",
+      "case_id": "test_client_writes.ClientTests.test_preserve_client_settings",
+      "source_paths": [
+        "_ask/tests/test_client_writes.py"
+      ],
+      "task_id": "CSH-03"
+    },
+    {
+      "id": "CSH-T12",
+      "criterion_ids": [
+        "CSH-003"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Existing kit bytes, modes and absent paths plus independent settings",
+        "when": "Copy, prepare, render and publish failures are injected at each boundary",
+        "then": [
+          "Failure restores bytes, executable modes and existence",
+          "Independent client settings are untouched and clean retry succeeds"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-003",
+          "checks": [
+            "Failure restores bytes, executable modes and existence",
+            "Independent client settings are untouched and clean retry succeeds"
+          ]
+        }
+      ],
+      "runner_id": "test_client_writes",
+      "case_id": "test_client_writes.ClientTests.test_caught_failure_restores",
+      "source_paths": [
+        "_ask/tests/test_client_writes.py"
+      ],
+      "task_id": "CSH-03"
+    },
+    {
+      "id": "CSH-T13",
+      "criterion_ids": [
+        "CSH-003"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A durable pending transaction and a process terminated after an early write",
+        "when": "Installed launcher recovery is restarted twice before retry",
+        "then": [
+          "Prior kit contents and existence are recovered idempotently before project delegation",
+          "Retry succeeds; recovery failure keeps backup and names unresolved path"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-003",
+          "checks": [
+            "Prior kit contents and existence are recovered idempotently before project delegation",
+            "Retry succeeds; recovery failure keeps backup and names unresolved path"
+          ]
+        }
+      ],
+      "runner_id": "test_client_writes",
+      "case_id": "test_client_writes.ClientTests.test_kill_restart_recovers",
+      "source_paths": [
+        "_ask/tests/test_client_writes.py"
+      ],
+      "task_id": "CSH-03"
+    },
+    {
+      "id": "CSH-T14",
+      "criterion_ids": [
+        "CSH-003"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A pending journal with an intervening client edit or tampered target",
+        "when": "Recovery attempts rollback",
+        "then": [
+          "Intervening client bytes are retained",
+          "Unsafe journal targets refuse without outside writes or backup deletion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-003",
+          "checks": [
+            "Intervening client bytes are retained",
+            "Unsafe journal targets refuse without outside writes or backup deletion"
+          ]
+        }
+      ],
+      "runner_id": "test_client_writes",
+      "case_id": "test_client_writes.ClientTests.test_recovery_preserves_intervening_edits",
+      "source_paths": [
+        "_ask/tests/test_client_writes.py"
+      ],
+      "task_id": "CSH-03"
+    },
+    {
+      "id": "CSH-T15",
+      "criterion_ids": [
+        "CSH-004"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Literal dummy tokens with shell substitution and malformed/credential-bearing URLs",
+        "when": "Legacy and URL parsers load settings",
+        "then": [
+          "Tokens are data and no shell marker runs",
+          "Unsupported assignment syntax, HTTP and URL credentials get value-free errors"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-004",
+          "checks": [
+            "Tokens are data and no shell marker runs",
+            "Unsupported assignment syntax, HTTP and URL credentials get value-free errors"
+          ]
+        }
+      ],
+      "runner_id": "test_client_credentials",
+      "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+      "source_paths": [
+        "_ask/tests/test_client_credentials.py"
+      ],
+      "task_id": "CSH-04"
+    },
+    {
+      "id": "CSH-T16",
+      "criterion_ids": [
+        "CSH-004"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Permissive umask, unsafe private paths and existing user MCP config",
+        "when": "Credentials are created/replaced and MCP opt-in is denied or granted",
+        "then": [
+          "Private directories/files are 0700/0600 and unsafe owners/links refuse",
+          "Denial leaves user MCP bytes unchanged; granted config contains no token values"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-004",
+          "checks": [
+            "Private directories/files are 0700/0600 and unsafe owners/links refuse",
+            "Denial leaves user MCP bytes unchanged; granted config contains no token values"
+          ]
+        }
+      ],
+      "runner_id": "test_client_credentials",
+      "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+      "source_paths": [
+        "_ask/tests/test_client_credentials.py"
+      ],
+      "task_id": "CSH-04"
+    },
+    {
+      "id": "CSH-T17",
+      "criterion_ids": [
+        "CSH-004"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A disposable client with staged/tracked synthetic legacy credentials",
+        "when": "Public migration runs and a pinned tracker stand-in loads them",
+        "then": [
+          "Private storage is durable before active secret cleanup",
+          "Index/history and public settings are preserved; rotation warning omits secret values"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-004",
+          "checks": [
+            "Private storage is durable before active secret cleanup",
+            "Index/history and public settings are preserved; rotation warning omits secret values"
+          ]
+        }
+      ],
+      "runner_id": "test_client_credentials",
+      "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+      "source_paths": [
+        "_ask/tests/test_client_credentials.py"
+      ],
+      "task_id": "CSH-04"
+    },
+    {
+      "id": "CSH-T18",
+      "criterion_ids": [
+        "CSH-004"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Disposable HOME/config and a dummy tracker service",
+        "when": "The human-only setup journey is driven through a PTY",
+        "then": [
+          "Credentials are external private data and usable by the tracker wrapper",
+          "Public records, diagnostics and command arguments omit dummy token values"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-004",
+          "checks": [
+            "Credentials are external private data and usable by the tracker wrapper",
+            "Public records, diagnostics and command arguments omit dummy token values"
+          ]
+        }
+      ],
+      "runner_id": "test_client_credentials",
+      "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+      "source_paths": [
+        "_ask/tests/test_client_credentials.py"
+      ],
+      "task_id": "CSH-04"
+    },
+    {
+      "id": "CSH-T19",
+      "criterion_ids": [
+        "CSH-006"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Caller secrets, shell/Python injection controls and explicit extra names",
+        "when": "Each check environment is built",
+        "then": [
+          "Base allowlist and only declared extras are retained",
+          "Runner-owned metadata cannot be replaced and unsafe extras refuse"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-006",
+          "checks": [
+            "Base allowlist and only declared extras are retained",
+            "Runner-owned metadata cannot be replaced and unsafe extras refuse"
+          ]
+        }
+      ],
+      "runner_id": "test_client_verification",
+      "case_id": "test_client_verification.ClientTests.test_allowlist_and_owned_metadata",
+      "source_paths": [
+        "_ask/tests/test_client_verification.py"
+      ],
+      "task_id": "CSH-05"
+    },
+    {
+      "id": "CSH-T20",
+      "criterion_ids": [
+        "CSH-006"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Direct and glob-expanded CheckPlan checks that observe their environment",
+        "when": "Static verification runs with a declared extra",
+        "then": [
+          "Dummy token and startup controls are absent",
+          "Declared extra and coordinator metadata survive preset expansion"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-006",
+          "checks": [
+            "Dummy token and startup controls are absent",
+            "Declared extra and coordinator metadata survive preset expansion"
+          ]
+        }
+      ],
+      "runner_id": "test_client_verification",
+      "case_id": "test_client_verification.ClientTests.test_checkplan_environment",
+      "source_paths": [
+        "_ask/tests/test_client_verification.py"
+      ],
+      "task_id": "CSH-05"
+    },
+    {
+      "id": "CSH-T21",
+      "criterion_ids": [
+        "CSH-006"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A candidate unittest with known selector and injected parent environment",
+        "when": "The instrumented traceability runner executes it",
+        "then": [
+          "Only allowed environment reaches the case",
+          "Collection, interpreter, source identity and case result recording remain valid"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-006",
+          "checks": [
+            "Only allowed environment reaches the case",
+            "Collection, interpreter, source identity and case result recording remain valid"
+          ]
+        }
+      ],
+      "runner_id": "test_client_verification",
+      "case_id": "test_client_verification.ClientTests.test_instrumented_environment",
+      "source_paths": [
+        "_ask/tests/test_client_verification.py"
+      ],
+      "task_id": "CSH-05"
+    },
+    {
+      "id": "CSH-T22",
+      "criterion_ids": [
+        "CSH-006"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Permissive umask and a client with legacy tracked logs",
+        "when": "Both verifiers retain output and ordinary git add is inspected",
+        "then": [
+          "New raw log dirs/files remain private and unstaged",
+          "Legacy tracked logs produce value-free cleanup guidance without altering index"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-006",
+          "checks": [
+            "New raw log dirs/files remain private and unstaged",
+            "Legacy tracked logs produce value-free cleanup guidance without altering index"
+          ]
+        }
+      ],
+      "runner_id": "test_client_verification",
+      "case_id": "test_client_verification.ClientTests.test_private_retained_outputs",
+      "source_paths": [
+        "_ask/tests/test_client_verification.py"
+      ],
+      "task_id": "CSH-05"
+    },
+    {
+      "id": "CSH-T23",
+      "criterion_ids": [
+        "CSH-006"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A trusted disposable client with a valid check and synthetic parent secrets",
+        "when": "Public verify and help run",
+        "then": [
+          "The valid check passes with its configured extras and no ambient dummy secrets",
+          "Help states account filesystem/network access and isolated-CI guidance"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-006",
+          "checks": [
+            "The valid check passes with its configured extras and no ambient dummy secrets",
+            "Help states account filesystem/network access and isolated-CI guidance"
+          ]
+        }
+      ],
+      "runner_id": "test_client_verification",
+      "case_id": "test_client_verification.ClientTests.test_trusted_verify_journey",
+      "source_paths": [
+        "_ask/tests/test_client_verification.py"
+      ],
+      "task_id": "CSH-05"
+    },
+    {
+      "id": "CSH-T24",
+      "criterion_ids": [
+        "CSH-007"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Valid quote/backslash/mapping-like model strings and invalid control/type values",
+        "when": "All runtime model serializers/parsers run",
+        "then": [
+          "Valid inputs decode to exactly one original model string",
+          "Empty, multiline, control and non-string values reject"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-007",
+          "checks": [
+            "Valid inputs decode to exactly one original model string",
+            "Empty, multiline, control and non-string values reject"
+          ]
+        }
+      ],
+      "runner_id": "test_client_runtime_config",
+      "case_id": "test_client_runtime_config.ClientTests.test_scalar_roundtrip",
+      "source_paths": [
+        "_ask/tests/test_client_runtime_config.py"
+      ],
+      "task_id": "CSH-06"
+    },
+    {
+      "id": "CSH-T25",
+      "criterion_ids": [
+        "CSH-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Existing generated files and an invalid late-runtime model override",
+        "when": "Public sync runs across all runtime outputs",
+        "then": [
+          "No generated file changes before rejection",
+          "Diagnostic identifies the invalid assignment and valid override sources still work"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-007",
+          "checks": [
+            "No generated file changes before rejection",
+            "Diagnostic identifies the invalid assignment and valid override sources still work"
+          ]
+        }
+      ],
+      "runner_id": "test_client_runtime_config",
+      "case_id": "test_client_runtime_config.ClientTests.test_sync_atomic_invalid",
+      "source_paths": [
+        "_ask/tests/test_client_runtime_config.py"
+      ],
+      "task_id": "CSH-06"
+    },
+    {
+      "id": "CSH-T26",
+      "criterion_ids": [
+        "CSH-007"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Supported runtime templates and valid escaped model overrides",
+        "when": "Sync publishes and runtime files are parsed",
+        "then": [
+          "Each model round-trips without additional fields or configuration injection",
+          "Review permissions and unrelated valid generated fields survive"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-007",
+          "checks": [
+            "Each model round-trips without additional fields or configuration injection",
+            "Review permissions and unrelated valid generated fields survive"
+          ]
+        }
+      ],
+      "runner_id": "test_client_runtime_config",
+      "case_id": "test_client_runtime_config.ClientTests.test_sync_valid_formats",
+      "source_paths": [
+        "_ask/tests/test_client_runtime_config.py"
+      ],
+      "task_id": "CSH-06"
+    },
+    {
+      "id": "CSH-T27",
+      "criterion_ids": [
+        "CSH-008"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Ambient non-loopback config and optional explicit address arguments",
+        "when": "UI wrapper constructs invocation",
+        "then": [
+          "Default argv forces loopback despite ambient settings",
+          "One explicit address override works and malformed duplicates refuse"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-008",
+          "checks": [
+            "Default argv forces loopback despite ambient settings",
+            "One explicit address override works and malformed duplicates refuse"
+          ]
+        }
+      ],
+      "runner_id": "test_client_workbench",
+      "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+      "source_paths": [
+        "_ask/tests/test_client_workbench.py"
+      ],
+      "task_id": "CSH-07"
+    },
+    {
+      "id": "CSH-T28",
+      "criterion_ids": [
+        "CSH-008"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Real installed Streamlit and isolated user/project configuration",
+        "when": "UI starts first with defaults then explicit non-loopback address",
+        "then": [
+          "Observed listener binds only loopback by default and HTTP health succeeds",
+          "Explicit address changes the actual binding; processes and ports are cleaned up"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-008",
+          "checks": [
+            "Observed listener binds only loopback by default and HTTP health succeeds",
+            "Explicit address changes the actual binding; processes and ports are cleaned up"
+          ]
+        }
+      ],
+      "runner_id": "test_client_workbench",
+      "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+      "source_paths": [
+        "_ask/tests/test_client_workbench.py"
+      ],
+      "task_id": "CSH-07"
+    },
+    {
+      "id": "CSH-T29",
+      "criterion_ids": [
+        "CSH-009"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A resolved stage model table and one explicit stage exception",
+        "when": "Grill receives confirm defaults or one complete changed selection",
+        "then": [
+          "One submitted decision records all defaults or only the requested exceptions",
+          "No per-stage or same-family confirmation sequence is emitted"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-009",
+          "checks": [
+            "One submitted decision records all defaults or only the requested exceptions",
+            "No per-stage or same-family confirmation sequence is emitted"
+          ]
+        }
+      ],
+      "runner_id": "test_client_model_decisions",
+      "case_id": "test_client_model_decisions.ClientTests.test_one_grill_decision",
+      "source_paths": [
+        "_ask/tests/test_client_model_decisions.py"
+      ],
+      "task_id": "CSH-08"
+    },
+    {
+      "id": "CSH-T30",
+      "criterion_ids": [
+        "CSH-010"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Recorded choices and an unrelated ambient model override",
+        "when": "Challenge, Plan and Review start then resume",
+        "then": [
+          "Exact saved choices control stage selection without routine prompts",
+          "Independent contexts, genuine escalations and prior approvals are preserved"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-010",
+          "checks": [
+            "Exact saved choices control stage selection without routine prompts",
+            "Independent contexts, genuine escalations and prior approvals are preserved"
+          ]
+        }
+      ],
+      "runner_id": "test_client_model_decisions",
+      "case_id": "test_client_model_decisions.ClientTests.test_reuse_and_resume",
+      "source_paths": [
+        "_ask/tests/test_client_model_decisions.py"
+      ],
+      "task_id": "CSH-08"
+    },
+    {
+      "id": "CSH-T31",
+      "criterion_ids": [
+        "CSH-010"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Legacy workstream choices without a new latest-policy consent record",
+        "when": "Continuation resolves stage and implementation models",
+        "then": [
+          "Existing configured choices are preserved without invented consent",
+          "New model record is collected at authorized Grill or explicit policy change, not every stage"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-010",
+          "checks": [
+            "Existing configured choices are preserved without invented consent",
+            "New model record is collected at authorized Grill or explicit policy change, not every stage"
+          ]
+        }
+      ],
+      "runner_id": "test_client_model_decisions",
+      "case_id": "test_client_model_decisions.ClientTests.test_legacy_choices",
+      "source_paths": [
+        "_ask/tests/test_client_model_decisions.py"
+      ],
+      "task_id": "CSH-08"
+    },
+    {
+      "id": "CSH-T32",
+      "criterion_ids": [
+        "CSH-012"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Canonical role/default maps and all supported runtime templates",
+        "when": "Bindings resolve and projections regenerate",
+        "then": [
+          "One override precedence yields correct runtime-specific identities",
+          "Generated agents, skills and commands contain no old routine model pickers"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-012",
+          "checks": [
+            "One override precedence yields correct runtime-specific identities",
+            "Generated agents, skills and commands contain no old routine model pickers"
+          ]
+        }
+      ],
+      "runner_id": "test_client_model_decisions",
+      "case_id": "test_client_model_decisions.ClientTests.test_portable_projections",
+      "source_paths": [
+        "_ask/tests/test_client_model_decisions.py"
+      ],
+      "task_id": "CSH-08"
+    },
+    {
+      "id": "CSH-T33",
+      "criterion_ids": [
+        "CSH-011"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Fake runtime catalogs with accessible/unavailable family versions and an exact override",
+        "when": "Implementor resolution applies the confirmed policy",
+        "then": [
+          "Newest accessible family version is chosen by explicit runtime ordering",
+          "Exact override wins; unknown ordering/access/catalog escalates without guessing"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-011",
+          "checks": [
+            "Newest accessible family version is chosen by explicit runtime ordering",
+            "Exact override wins; unknown ordering/access/catalog escalates without guessing"
+          ]
+        }
+      ],
+      "runner_id": "test_client_orchestrator",
+      "case_id": "test_client_orchestrator.ClientTests.test_accessible_implementor",
+      "source_paths": [
+        "_ask/tests/test_client_orchestrator.py"
+      ],
+      "task_id": "CSH-09"
+    },
+    {
+      "id": "CSH-T34",
+      "criterion_ids": [
+        "CSH-011"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A matching or mismatching orchestrator and a supported fake switch adapter",
+        "when": "Implementation preflight runs",
+        "then": [
+          "Matching model needs no prompt and supported switch verifies the actual parent",
+          "Switch failure or mismatched verification blocks dispatch and writes; child spawn cannot satisfy the gate"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-011",
+          "checks": [
+            "Matching model needs no prompt and supported switch verifies the actual parent",
+            "Switch failure or mismatched verification blocks dispatch and writes; child spawn cannot satisfy the gate"
+          ]
+        }
+      ],
+      "runner_id": "test_client_orchestrator",
+      "case_id": "test_client_orchestrator.ClientTests.test_automatic_switch_verified",
+      "source_paths": [
+        "_ask/tests/test_client_orchestrator.py"
+      ],
+      "task_id": "CSH-09"
+    },
+    {
+      "id": "CSH-T35",
+      "criterion_ids": [
+        "CSH-011"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Unsupported switching or uninspectable parent identity",
+        "when": "Implementation entry requests a manual handoff and resumes",
+        "then": [
+          "Exactly one named switch request precedes a stop with no implementation writes",
+          "Observation or explicit acknowledgment is recorded with provenance before resuming; failed verification stays stopped"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-011",
+          "checks": [
+            "Exactly one named switch request precedes a stop with no implementation writes",
+            "Observation or explicit acknowledgment is recorded with provenance before resuming; failed verification stays stopped"
+          ]
+        }
+      ],
+      "runner_id": "test_client_orchestrator",
+      "case_id": "test_client_orchestrator.ClientTests.test_manual_switch_resume",
+      "source_paths": [
+        "_ask/tests/test_client_orchestrator.py"
+      ],
+      "task_id": "CSH-09"
+    },
+    {
+      "id": "CSH-T36",
+      "criterion_ids": [
+        "CSH-011"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A plan-only authorization and an available implementation model",
+        "when": "Stage transition and resumed inner-loop entry evaluate authorization",
+        "then": [
+          "Plan completion returns before model handoff or task dispatch",
+          "A generic continue cannot authorize implementation"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-011",
+          "checks": [
+            "Plan completion returns before model handoff or task dispatch",
+            "A generic continue cannot authorize implementation"
+          ]
+        }
+      ],
+      "runner_id": "test_client_orchestrator",
+      "case_id": "test_client_orchestrator.ClientTests.test_plan_only_endpoint",
+      "source_paths": [
+        "_ask/tests/test_client_orchestrator.py"
+      ],
+      "task_id": "CSH-09"
+    },
+    {
+      "id": "CSH-T37",
+      "criterion_ids": [
+        "CSH-012"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Runtime bindings with supported, unsupported and unknown capabilities",
+        "when": "Capability results are recorded",
+        "then": [
+          "Static picker/cache/startup model flags are not live switch/access evidence",
+          "Runtime-specific evidence and unsupported/unknown states remain explicit"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-012",
+          "checks": [
+            "Static picker/cache/startup model flags are not live switch/access evidence",
+            "Runtime-specific evidence and unsupported/unknown states remain explicit"
+          ]
+        }
+      ],
+      "runner_id": "test_client_orchestrator",
+      "case_id": "test_client_orchestrator.ClientTests.test_capability_evidence",
+      "source_paths": [
+        "_ask/tests/test_client_orchestrator.py"
+      ],
+      "task_id": "CSH-09"
+    },
+    {
+      "id": "CSH-T38",
+      "criterion_ids": [
+        "CSH-001",
+        "CSH-002",
+        "CSH-003",
+        "CSH-004",
+        "CSH-005",
+        "CSH-006"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "Local verified distribution and an existing client with custom settings and dummy secrets",
+        "when": "Fresh install, trust, rejected unsafe upgrade, recovery, migration and trusted verify run",
+        "then": [
+          "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+          "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-001",
+          "checks": [
+            "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+            "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+          ]
+        },
+        {
+          "criterion_id": "CSH-002",
+          "checks": [
+            "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+            "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+          ]
+        },
+        {
+          "criterion_id": "CSH-003",
+          "checks": [
+            "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+            "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+          ]
+        },
+        {
+          "criterion_id": "CSH-004",
+          "checks": [
+            "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+            "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+          ]
+        },
+        {
+          "criterion_id": "CSH-005",
+          "checks": [
+            "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+            "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+          ]
+        },
+        {
+          "criterion_id": "CSH-006",
+          "checks": [
+            "Untrusted/mismatched code never executes and unsafe writes preserve sentinels",
+            "Recovery, settings preservation, private credentials and filtered successful verification are observed through public CLIs"
+          ]
+        }
+      ],
+      "runner_id": "test_client_journeys",
+      "case_id": "test_client_journeys.ClientTests.test_client_upgrade_journey",
+      "source_paths": [
+        "_ask/tests/test_client_journeys.py"
+      ],
+      "task_id": "CSH-10"
+    },
+    {
+      "id": "CSH-T39",
+      "criterion_ids": [
+        "CSH-009",
+        "CSH-010",
+        "CSH-011",
+        "CSH-012"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A fake coding-agent runtime with observable prompts, parent identity and task dispatch",
+        "when": "One Grill decision is followed by Challenge, Plan, Implement and Review plus continuation",
+        "then": [
+          "Only one routine model decision is requested and stage exceptions persist",
+          "A real escalation/manual handoff pauses correctly before writes; acceptance remains distinct"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-009",
+          "checks": [
+            "Only one routine model decision is requested and stage exceptions persist",
+            "A real escalation/manual handoff pauses correctly before writes; acceptance remains distinct"
+          ]
+        },
+        {
+          "criterion_id": "CSH-010",
+          "checks": [
+            "Only one routine model decision is requested and stage exceptions persist",
+            "A real escalation/manual handoff pauses correctly before writes; acceptance remains distinct"
+          ]
+        },
+        {
+          "criterion_id": "CSH-011",
+          "checks": [
+            "Only one routine model decision is requested and stage exceptions persist",
+            "A real escalation/manual handoff pauses correctly before writes; acceptance remains distinct"
+          ]
+        },
+        {
+          "criterion_id": "CSH-012",
+          "checks": [
+            "Only one routine model decision is requested and stage exceptions persist",
+            "A real escalation/manual handoff pauses correctly before writes; acceptance remains distinct"
+          ]
+        }
+      ],
+      "runner_id": "test_client_journeys",
+      "case_id": "test_client_journeys.ClientTests.test_model_flow_journey",
+      "source_paths": [
+        "_ask/tests/test_client_journeys.py"
+      ],
+      "task_id": "CSH-10"
+    },
+    {
+      "id": "CSH-T40",
+      "criterion_ids": [
+        "CSH-009"
+      ],
+      "type": "unit",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A proposed complete model table and submitted default or exception choice",
+        "when": "The model decision is validated and saved",
+        "then": [
+          "One decision persists runtime, roles and concrete selections",
+          "Only explicit exact overrides stay fixed; omitted stages retain resolved defaults and update policy"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CSH-009",
+          "checks": [
+            "One decision persists runtime, roles and concrete selections",
+            "Only explicit exact overrides stay fixed; omitted stages retain resolved defaults and update policy"
+          ]
+        }
+      ],
+      "runner_id": "test_client_model_decisions",
+      "case_id": "test_client_model_decisions.ClientTests.test_decision_persistence",
+      "source_paths": [
+        "_ask/tests/test_client_model_decisions.py"
+      ],
+      "task_id": "CSH-08"
+    }
+  ],
+  "task_scopes": [
+    {
+      "task_id": "CSH-01",
+      "test_ids": [
+        "CSH-T01",
+        "CSH-T02",
+        "CSH-T03",
+        "CSH-T04"
+      ]
+    },
+    {
+      "task_id": "CSH-02",
+      "test_ids": [
+        "CSH-T05",
+        "CSH-T06",
+        "CSH-T07",
+        "CSH-T08"
+      ]
+    },
+    {
+      "task_id": "CSH-03",
+      "test_ids": [
+        "CSH-T09",
+        "CSH-T10",
+        "CSH-T11",
+        "CSH-T12",
+        "CSH-T13",
+        "CSH-T14"
+      ]
+    },
+    {
+      "task_id": "CSH-04",
+      "test_ids": [
+        "CSH-T15",
+        "CSH-T16",
+        "CSH-T17",
+        "CSH-T18"
+      ]
+    },
+    {
+      "task_id": "CSH-05",
+      "test_ids": [
+        "CSH-T19",
+        "CSH-T20",
+        "CSH-T21",
+        "CSH-T22",
+        "CSH-T23"
+      ]
+    },
+    {
+      "task_id": "CSH-06",
+      "test_ids": [
+        "CSH-T24",
+        "CSH-T25",
+        "CSH-T26"
+      ]
+    },
+    {
+      "task_id": "CSH-07",
+      "test_ids": [
+        "CSH-T27",
+        "CSH-T28"
+      ]
+    },
+    {
+      "task_id": "CSH-08",
+      "test_ids": [
+        "CSH-T29",
+        "CSH-T30",
+        "CSH-T31",
+        "CSH-T32",
+        "CSH-T40"
+      ]
+    },
+    {
+      "task_id": "CSH-09",
+      "test_ids": [
+        "CSH-T33",
+        "CSH-T34",
+        "CSH-T35",
+        "CSH-T36",
+        "CSH-T37"
+      ]
+    },
+    {
+      "task_id": "CSH-10",
+      "test_ids": [
+        "CSH-T38",
+        "CSH-T39"
+      ]
+    }
+  ]
+}

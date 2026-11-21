@@ -1,0 +1,562 @@
+{
+  "attempt_history": [],
+  "attempt_id": "CSH-07:attempt-1",
+  "checkpoint_sha": "20bbeada2754e1bf9ff98bd7de536c7a8e3f80e0",
+  "integration": {
+    "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+    "result": "pass",
+    "resulting_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+    "traceability_run_ids": [
+      "cde7625afc9440f3b43ffd6b4d0efac0"
+    ],
+    "tree_sha": "c63d0acf65695689c9ad72328b7393f43e76cc8c"
+  },
+  "recovery": [
+    {
+      "previous_checkpoint": "c8ebe82a55f40fca95036c0555e5280bbe605add",
+      "proposal_sha256": "a269781bc5f24d5882f72efa99a5d703854e15f1a0711b76d8e7b9a5b91aa434",
+      "review_sha256": "b8f34c7da397326aa9a731d7d7ae4acbc1bba9bd940ff3e5e1705a3c1c259476",
+      "source_head": "8b31c4ff67a8e0ee0b70a05dbacb2fff3db6f8e6",
+      "source_tree": "1f0fafa617cf2c0cd92cbf97c932283b90db66b4"
+    }
+  ],
+  "reviews": [
+    {
+      "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+      "boundary": "ok",
+      "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+      "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-07-review.md",
+      "evidence_digest": "4d69309267f66679760469a66583ec263812eecbba599ebc185076143b587459",
+      "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+      "result_digest": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+      "reviewer": "gpt-6.1-sol (medium)",
+      "verdict": "APPROVED"
+    },
+    {
+      "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+      "boundary": "ok",
+      "candidate_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-07-review-round-1.md",
+      "evidence_digest": "ddb89bb18d0d6d7c02966234329ca06a579b68376bee019c1b17893b8a865c02",
+      "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+      "result_digest": "29e93b4fa2ccb2de13d333e80cce4061f4ac3dbd9d0fe1cd5793debfada80257",
+      "reviewer": "gpt-6.1-sol (medium)",
+      "verdict": "REJECTED"
+    }
+  ],
+  "runs": [
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "95a41a4a91f03751c1730f59cf95ce396788c171",
+      "cases": [
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": "setup_or_runtime_error",
+          "outcome": "error",
+          "source_sha": "95a41a4a91f03751c1730f59cf95ce396788c171",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": "setup_or_runtime_error",
+          "outcome": "error",
+          "source_sha": "95a41a4a91f03751c1730f59cf95ce396788c171",
+          "test_id": "CSH-T27"
+        }
+      ],
+      "digest": "1146be93c70e986972328665c015715ffe8cbcb04fdaa2c30cbbd860efd7c901",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "47b0a56a75884e4c92cca6a7ebb4d2f5",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-07"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "6996bc8857a671dd5c095dc69be700348869f170",
+      "cases": [
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "6996bc8857a671dd5c095dc69be700348869f170",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "6996bc8857a671dd5c095dc69be700348869f170",
+          "test_id": "CSH-T27"
+        }
+      ],
+      "digest": "5d991bbaf8bc7cc36bf9f0a161da5e9b1a38cef62c215478cb6aed596538fc36",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "e340b33388c245a59166035aa8db5722",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-07"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "cases": [
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+          "test_id": "CSH-T27"
+        }
+      ],
+      "digest": "a7d0c849be174b80f0b68d36922149203c3a313e762f5da1140685f9b34be896",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "1394030164e24fd8abdc4117954005d4",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-07"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "ed8ec2eccf2989dfdddeb3c19f4602c14cd6eef2",
+      "cases": [
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "ed8ec2eccf2989dfdddeb3c19f4602c14cd6eef2",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "ed8ec2eccf2989dfdddeb3c19f4602c14cd6eef2",
+          "test_id": "CSH-T27"
+        }
+      ],
+      "digest": "f4fe057013deb39de41d3b070d7073bd9665a5d0dbc0f6488186b934ad4a2745",
+      "phase": "red",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "9ec0fd2f73f24af781fff873a07ddd53",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-07"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+      "cases": [
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+          "test_id": "CSH-T27"
+        }
+      ],
+      "digest": "a9ea5055161d6ddf024474b14724f9b22a10bf56663b56f71ccfe9866769d674",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "cde7625afc9440f3b43ffd6b4d0efac0",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-07"
+    },
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+      "cases": [
+        {
+          "case_id": "test_client_credentials.ClientTests.test_fresh_setup_pty",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T18"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_legacy_data_and_urls",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T15"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_migrate_staged_credentials",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T17"
+        },
+        {
+          "case_id": "test_client_credentials.ClientTests.test_private_storage_and_mcp_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T16"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_immutable_pins",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T01"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_mandatory_failure_propagates",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T04"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_reject_mismatched_source",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T02"
+        },
+        {
+          "case_id": "test_client_distribution.ClientTests.test_source_approval_before_fetch",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T03"
+        },
+        {
+          "case_id": "test_client_journeys.ClientTests.test_client_upgrade_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T38"
+        },
+        {
+          "case_id": "test_client_journeys.ClientTests.test_model_flow_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T39"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_completion_requires_opt_in",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T08"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_completion_stays_installed",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T07"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_delegation_requires_trust",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T06"
+        },
+        {
+          "case_id": "test_client_launcher.ClientTests.test_identity_scope",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T05"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_decision_persistence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T40"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_legacy_choices",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T31"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_one_grill_decision",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T29"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_portable_projections",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T32"
+        },
+        {
+          "case_id": "test_client_model_decisions.ClientTests.test_reuse_and_resume",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T30"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_accessible_implementor",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T33"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_automatic_switch_verified",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T34"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_capability_evidence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T37"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_manual_switch_resume",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T35"
+        },
+        {
+          "case_id": "test_client_orchestrator.ClientTests.test_plan_only_endpoint",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T36"
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_python310_without_tomli_validates_toml_template",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": null
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_scalar_roundtrip",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T24"
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_sync_atomic_invalid",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T25"
+        },
+        {
+          "case_id": "test_client_runtime_config.ClientTests.test_sync_valid_formats",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T26"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_allowlist_and_owned_metadata",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T19"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_checkplan_environment",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T20"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_instrumented_environment",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T21"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_private_retained_outputs",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T22"
+        },
+        {
+          "case_id": "test_client_verification.ClientTests.test_trusted_verify_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T23"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_actual_listener",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T28"
+        },
+        {
+          "case_id": "test_client_workbench.ClientTests.test_address_precedence",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T27"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_caught_failure_restores",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T12"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_classify_paths",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T09"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_kill_restart_recovers",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T13"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_late_conflict_no_writes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T10"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_preserve_client_settings",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T11"
+        },
+        {
+          "case_id": "test_client_writes.ClientTests.test_recovery_preserves_intervening_edits",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "38fd792c82d1d3b05d8712541067fa97800b36fb",
+          "test_id": "CSH-T14"
+        }
+      ],
+      "digest": "74ff7fc8ace20ae2f5d21bfe495ca57471390a97cafe8d81b0b3029287369758",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "bf2e9bdc52cb4e95b0242d78a4216c59",
+      "scope": "workstream",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": null
+    }
+  ],
+  "schema": "ask-task-milestone/v1",
+  "source_base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+  "source_candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+  "status": "integrated",
+  "submissions": [
+    {
+      "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+      "candidate_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "notes_sha256": "36f9a7dbeea82a4d645a3b093ca82d91db514b51c90b09064a1bd82477349505",
+      "sha256": "29e93b4fa2ccb2de13d333e80cce4061f4ac3dbd9d0fe1cd5793debfada80257",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1
+        }
+      }
+    },
+    {
+      "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+      "candidate_sha": "cbad7b0b2f2d6320f06669c0e0c1e4928fe03b1a",
+      "notes_sha256": "d6dbdfadffb5eac5aab3fd9cdd49a58cbc000e4288bb8f5ccf2b22188943c596",
+      "sha256": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1
+        }
+      }
+    },
+    {
+      "base_sha": "c20e23b788b199073f014b3de5695db9b9cabb44",
+      "candidate_sha": "9e77e721b13a1e11785937a6097c3c89c211beb9",
+      "notes_sha256": "36f9a7dbeea82a4d645a3b093ca82d91db514b51c90b09064a1bd82477349505",
+      "sha256": "29e93b4fa2ccb2de13d333e80cce4061f4ac3dbd9d0fe1cd5793debfada80257",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1
+        }
+      }
+    }
+  ],
+  "supporting_artifacts": [
+    {
+      "path": "work/client-security-hardening/inner-loop/evidence/CSH-07-result-round-1.json",
+      "sha256": "29e93b4fa2ccb2de13d333e80cce4061f4ac3dbd9d0fe1cd5793debfada80257"
+    },
+    {
+      "path": "work/client-security-hardening/inner-loop/evidence/CSH-07-review-round-1.md",
+      "sha256": "ddb89bb18d0d6d7c02966234329ca06a579b68376bee019c1b17893b8a865c02"
+    },
+    {
+      "path": "work/client-security-hardening/inner-loop/evidence/CSH-07-review.md",
+      "sha256": "4d69309267f66679760469a66583ec263812eecbba599ebc185076143b587459"
+    },
+    {
+      "path": "work/client-security-hardening/inner-loop/results/CSH-07.json",
+      "sha256": "3f9e6a05c74d556a8b4db47421026b87b77d1c3a3e54522883bd0a0d42237b7f"
+    },
+    {
+      "path": "work/client-security-hardening/inner-loop/results/CSH-07.json",
+      "sha256": "29e93b4fa2ccb2de13d333e80cce4061f4ac3dbd9d0fe1cd5793debfada80257"
+    }
+  ],
+  "task_id": "CSH-07",
+  "work_id": "client-security-hardening"
+}

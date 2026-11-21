@@ -1,0 +1,105 @@
+{
+  "schema": "ask-dependency-pins/v1",
+  "reviewed_at": "2026-11-19",
+  "packages": {
+    "skills": {
+      "version": "1.5.18",
+      "repository": "https://github.com/vercel-labs/skills",
+      "source_commit": "7d338e40181942ce8077b14110898299658ebd9e",
+      "node": ">=18",
+      "tarball": "https://registry.npmjs.org/skills/-/skills-1.5.18.tgz",
+      "integrity": "sha512-WwQuqIhmS2nrn1H3HAbE2tGe7e2npc1cwMcucMKqmkBdqzm7nxzcZBTqXiHjUKhpalQLE/nNPtEdcx3QYX4TTw=="
+    },
+    "mcp-atlassian": {
+      "version": "0.24.6",
+      "repository": "https://github.com/sooperset/mcp-atlassian",
+      "source_commit": "a423ea579955bd4e00bf97ef64effea21f6ad1a3",
+      "source_tree": "2bf7de6ce02907413f99be9655e1b9cbe4bcf01e",
+      "python": ">=3.10",
+      "wheel": "https://files.pythonhosted.org/packages/69/ec/3af03eea48868ac48bc34e57e590693baf34a9323e1c860f0af8d60293fe/mcp_atlassian-0.24.6-py3-none-any.whl",
+      "wheel_sha256": "d515b53b7b3f330c94ac6b675bcf2bdd244deb725f5db575575627dfe0786070"
+    }
+  },
+  "skills": {
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "commit": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "tree": "b764c10625518a1fddad54597a4039152608cc3f",
+      "skill": "frontend-design",
+      "path": "skills/frontend-design/SKILL.md",
+      "skill_sha256": "d91970639e9f5c37682ac7ab60094d35f1c7c1f38d731bd56396563aee10c1d3"
+    },
+    "wayfinder": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "wayfinder",
+      "path": "skills/engineering/wayfinder/SKILL.md",
+      "skill_sha256": "d33e2141f7c8bbfd137fef0213cbec465820e4680e67da5d0f0815d6742d26c2"
+    },
+    "research": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "research",
+      "path": "skills/engineering/research/SKILL.md",
+      "skill_sha256": "af378829f015775a3bcd65ff466826722e99359017ae6bae227ca4c9bd14049c"
+    },
+    "prototype": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "prototype",
+      "path": "skills/engineering/prototype/SKILL.md",
+      "skill_sha256": "2579ecf89a7fb7e73345117405c7ba9b9fb5ab22a78ecb08b0ce68b73f0148c2"
+    },
+    "codebase-design": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "codebase-design",
+      "path": "skills/engineering/codebase-design/SKILL.md",
+      "skill_sha256": "a8d50abac5a4018f60e1d911d4b6f4e36454ca14d6c390c0695a578c7de65dad"
+    },
+    "tdd": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "tdd",
+      "path": "skills/engineering/tdd/SKILL.md",
+      "skill_sha256": "5e6b9c16b547113e90afbb946489d1c1384be5c2128f0159bd0bee57251ecf08"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "grilling",
+      "path": "skills/productivity/grilling/SKILL.md",
+      "skill_sha256": "fa5c1e5ee76b1c8f1ae56101f52c9e239de75d5c578adc61227b92d10b7e52ef"
+    },
+    "developing-with-streamlit": {
+      "source": "streamlit/agent-skills",
+      "commit": "d84e3344dade2b689f3d9164f55f346106344dfd",
+      "tree": "a9687d84eff8e9d7f66f07b2296c452fadab07b2",
+      "skill": "developing-with-streamlit",
+      "path": "developing-with-streamlit/SKILL.md",
+      "skill_sha256": "e4db5baf3eab471482e0f76f20b78f1e7994e405df6181c90f8c3efb1537bdc8"
+    },
+    "humanizer": {
+      "source": "blader/humanizer",
+      "commit": "9862685f575c65a8247f90369951df1b3416e3d6",
+      "tree": "5a7260aab6ed0b28f1f464f1757f4704d3a7ab5c",
+      "skill": "humanizer",
+      "path": "SKILL.md",
+      "skill_sha256": "e8269e236bed06ed0fe4824c274112e54950b0cb46b0bafe5e1576ef7c9f93d5"
+    },
+    "writing-for-agents": {
+      "source": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "tree": "7e0251de7d262684e5e4a326c3ef1132314b9dc2",
+      "skill": "writing-for-agents",
+      "path": "skills/productivity/writing-for-agents/SKILL.md",
+      "skill_sha256": "a842323e664e5af104eac5c97ad22fda929ebeb62d81c501161ac1f6f482db58"
+    }
+  }
+}

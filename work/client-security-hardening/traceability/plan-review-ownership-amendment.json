@@ -1,0 +1,18 @@
+{
+  "decision": "APPROVED",
+  "reviewer": "gpt-6.1-sol (medium)",
+  "reviewed_candidate_sha": "ab109ead101e409f8f30b5339cd3ecf2157bf4c6",
+  "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "scope": "CSH-01 TaskGraph owned_paths amendment only",
+  "change": {
+    "path": "work/client-security-hardening/inner-loop/tasks.yaml",
+    "added_owned_paths": [
+      "_ask/tests/test-prepare-skills-refuses-latest.sh",
+      "_ask/tests/test_tdd_preparation_overlay.py"
+    ]
+  },
+  "assessment": "Both added paths exercise skill preparation owned by CSH-01. Specification, canonical test cases, plan text, task order, and dependencies are unchanged. No additional contract obligations were introduced.",
+  "implementation_reviewed": false,
+  "tests_run": false
+}

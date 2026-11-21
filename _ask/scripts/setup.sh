@@ -218,213 +218,105 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   echo "setup: not a git repository" >&2
   exit 2
 fi
-ENV_FILE="$ASK_ROOT/.ask.env"
+ENV_FILE=/dev/null
 MCP_JSON="${MCP_JSON:-$HOME/.cursor/mcp.json}"
-
-_remote_https() {
-  local raw host path
-  raw="$(git remote get-url origin 2>/dev/null || true)"
-  [[ -z "$raw" ]] && return 0
-  if [[ "$raw" =~ ^git@([^:]+):(.+)$ ]]; then
-    host="${BASH_REMATCH[1]}"
-    path="${BASH_REMATCH[2]}"
-    path="${path%.git}"
-    printf 'https://%s/%s' "$host" "$path"
-  elif [[ "$raw" =~ ^https?:// ]]; then
-    printf '%s' "${raw%.git}"
-  fi
-}
-
-_merge_mcp_server() {
-  local name="$1" spec_json="$2"
-  MCP_JSON="$MCP_JSON" MCP_NAME="$name" MCP_SPEC="$spec_json" python3 - <<'PY'
-import json, os
-from pathlib import Path
-path = Path(os.environ["MCP_JSON"])
-name = os.environ["MCP_NAME"]
-spec = json.loads(os.environ["MCP_SPEC"])
-data = {"mcpServers": {}}
-if path.exists():
-    raw = path.read_text() or "{}"
-    data = json.loads(raw)
-    if not isinstance(data, dict):
-        data = {"mcpServers": {}}
-data.setdefault("mcpServers", {})
-data["mcpServers"][name] = spec
-path.parent.mkdir(parents=True, exist_ok=True)
-path.write_text(json.dumps(data, indent=2) + "\n")
-print(f"  merged MCP server {name} → {path} (no token values written)")
-PY
-}
-
-_write_tracker_md() {
-  local kind="$1" url="$2"
-  mkdir -p "$ASK_ROOT/.ask"
-  cat > "$ASK_ROOT/.ask/tracker.md" <<EOF
-# Tracker
-
-- **type:** ${kind}
-- **url:** ${url}
-
-Public only. Secrets live in \`.ask.env\` (gitignored).
-EOF
-  note "wrote .ask/tracker.md (safe to commit)"
-}
-
-_write_tracker_context() {
-  mkdir -p "$ASK_ROOT/.ask"
-  if [[ ! -f "$ASK_ROOT/.ask/tracker-context.md" ]]; then
-    cat > "$ASK_ROOT/.ask/tracker-context.md" <<'EOF'
-# Current issue (local; gitignored)
-
-- **epic:**
-- **story:**
-EOF
-    note "wrote .ask/tracker-context.md (gitignored)"
-  fi
-}
-
 TOTAL_STAGES=4
 
+_store_tracker() {
+  printf '%s\0' "$ASK_TRACKER" "$ASK_TRACKER_URL" "${TRACKER_TOKEN:-}" |
+    python3 "$ASK_ROOT/_ask/scripts/tracker-config.py" store --root "$ASK_ROOT" --stdin-fields
+}
+
+_add_memory_mcp() {
+  local name="$1" command="$2"
+  python3 -c 'import json,sys; print(json.dumps({"command":sys.argv[1]}))' "$command" |
+    python3 "$ASK_ROOT/_ask/scripts/tracker-config.py" merge-mcp --config "$MCP_JSON" --name "$name"
+}
+
 banner "Ask setup (human-only)"
+stage "Choose issue tracker"
+say "gitlab · github · jira · none"
+ask ASK_TRACKER "Tracker:"
+ASK_TRACKER="$(printf '%s' "$ASK_TRACKER" | tr '[:upper:]' '[:lower:]')"
+case "$ASK_TRACKER" in jira|github|gitlab|none) ;; *) echo "setup: unknown tracker" >&2; exit 2 ;; esac
 
-ASK_TRACKER=""
-while true; do
-  stage "Choose issue tracker"
-  say "gitlab · github · jira · none"
-  say "none skips URL and API key; you can only go back and choose again."
-  ask ASK_TRACKER "Tracker:"
-  ASK_TRACKER="$(printf '%s' "$ASK_TRACKER" | tr '[:upper:]' '[:lower:]')"
+ASK_TRACKER_URL=""
+TRACKER_TOKEN=""
+CONFIGURE_TRACKER_MCP=no
+MEMORY_MCP_NAME=""
+MEMORY_MCP_COMMAND=""
+if [[ "$ASK_TRACKER" != none ]]; then
+  stage "Tracker address and credentials"
   case "$ASK_TRACKER" in
-    gitlab|github|jira)
-      break
-      ;;
-    none)
-      say "Skipped. The only next step is to choose a tracker."
-      if confirm "Choose a tracker now?"; then
-        continue
-      fi
-      warn "No tracker selected. Re-run ./ask setup when you want one."
-      write_env ASK_TRACKER "none"
-      write_env ASK_TRACKER_URL ""
-      _write_tracker_md "none" ""
-      break
-      ;;
-    *)
-      warn "Unknown tracker. Use gitlab, github, jira, or none."
-      ;;
+    jira) prefill="https://jira.partcorp.ir/"; note "Default Jira URL is a Partai prefill; edit it for another host." ;;
+    github) prefill="https://github.com/" ;;
+    gitlab) prefill="https://gitlab.com" ;;
   esac
-done
-
-if [[ "$ASK_TRACKER" != "none" ]]; then
-  stage "Tracker address"
-  remote="$(_remote_https || true)"
+  say "Prefill: $prefill"
+  ask ASK_TRACKER_URL "HTTPS tracker URL:"
+  [[ -n "$ASK_TRACKER_URL" ]] || ASK_TRACKER_URL="$prefill"
+  if ! printf '%s' "$ASK_TRACKER_URL" | python3 "$ASK_ROOT/_ask/scripts/tracker-config.py" validate-url --stdin >/dev/null; then
+    warn "Tracker URL must use HTTPS and must not contain credentials."
+    exit 2
+  fi
   case "$ASK_TRACKER" in
     jira)
-      prefill="${ASK_TRACKER_URL:-https://jira.partcorp.ir/}"
-      [[ -z "$(_existing ASK_TRACKER_URL || true)" ]] || prefill="$(_existing ASK_TRACKER_URL)"
-      note "Default Jira URL is a Partai prefill; clear or edit it if this is not your host."
-      say "Prefill: $prefill"
-      ask ASK_TRACKER_URL "Jira URL (Enter uses prefill if empty and none saved):"
-      [[ -z "$ASK_TRACKER_URL" ]] && ASK_TRACKER_URL="$prefill"
-      write_env ASK_TRACKER "$ASK_TRACKER"
-      write_env ASK_TRACKER_URL "$ASK_TRACKER_URL"
-      write_env JIRA_URL "$ASK_TRACKER_URL"
       open_url "${ASK_TRACKER_URL%/}/secure/ViewProfile.jspa"
       step "Create or copy a Jira personal access token (or API token)."
-      ask_secret JIRA_PERSONAL_TOKEN "Paste the Jira token:"
-      write_env JIRA_PERSONAL_TOKEN "$JIRA_PERSONAL_TOKEN"
-      _merge_mcp_server mcp-atlassian "$(cat <<'JSON'
-{"command":"uvx","args":["mcp-atlassian"],"env":{"JIRA_URL":"${env:JIRA_URL}","JIRA_PERSONAL_TOKEN":"${env:JIRA_PERSONAL_TOKEN}"}}
-JSON
-)"
-      _write_tracker_md jira "$ASK_TRACKER_URL"
+      ask_secret TRACKER_TOKEN "Paste the Jira token:"
+      if confirm "Configure the Jira MCP in ${MCP_JSON}?"; then
+        CONFIGURE_TRACKER_MCP=yes
+      fi
       ;;
     github)
-      prefill="https://github.com/"
-      if [[ "$remote" == *github.com* ]]; then
-        prefill="$remote"
-      fi
-      say "Prefill: $prefill"
-      ask ASK_TRACKER_URL "GitHub URL (Enter uses prefill if empty and none saved):"
-      [[ -z "$ASK_TRACKER_URL" ]] && ASK_TRACKER_URL="$prefill"
-      write_env ASK_TRACKER "$ASK_TRACKER"
-      write_env ASK_TRACKER_URL "$ASK_TRACKER_URL"
       open_url "https://github.com/settings/tokens"
-      step "Create a PAT with repo issue scopes. Do not paste it into git."
-      ask_secret GITHUB_TOKEN "Paste the GitHub PAT:"
-      write_env GITHUB_TOKEN "$GITHUB_TOKEN"
-      _merge_mcp_server github "$(cat <<'JSON'
-{"url":"https://api.githubcopilot.com/mcp/","headers":{"Authorization":"Bearer ${env:GITHUB_TOKEN}"}}
-JSON
-)"
-      _write_tracker_md github "$ASK_TRACKER_URL"
-      ;;
-    gitlab)
-      prefill="https://gitlab.com"
-      if [[ "$remote" == *gitlab* ]]; then
-        prefill="$remote"
-        prefill="${prefill%%/*}"
-        # remote may be https://gitlab.com/group/repo — keep origin host
-        if [[ "$remote" =~ ^(https://[^/]+) ]]; then
-          prefill="${BASH_REMATCH[1]}"
-        fi
-      fi
-      say "Prefill: $prefill"
-      note "GitLab official MCP uses browser OAuth. No PAT is stored in .ask.env."
-      ask ASK_TRACKER_URL "GitLab instance URL (Enter uses prefill if empty and none saved):"
-      [[ -z "$ASK_TRACKER_URL" ]] && ASK_TRACKER_URL="$prefill"
-      ASK_TRACKER_URL="${ASK_TRACKER_URL%/}"
-      write_env ASK_TRACKER "$ASK_TRACKER"
-      write_env ASK_TRACKER_URL "$ASK_TRACKER_URL"
-      gitlab_mcp="${ASK_TRACKER_URL}/api/v4/mcp"
-      open_url "$gitlab_mcp"
-      step "After Cursor reloads, approve the GitLab OAuth prompt in the browser."
-      _merge_mcp_server GitLab "$(printf '{"type":"http","url":%s}' "$(python3 -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$gitlab_mcp")")"
-      _write_tracker_md gitlab "$ASK_TRACKER_URL"
+      step "Create a PAT if your tracker workflow needs one."
+      ask_secret TRACKER_TOKEN "Paste the GitHub PAT (optional):"
       ;;
   esac
 fi
 
 stage "Memory MCP"
-say "Optional. Default on this machine: codebase-memory-mcp."
-say "1) codebase-memory-mcp  2) skip  3) custom command"
+say "Optional: configure a memory MCP in your user MCP file."
+say "1) default  2) skip  3) custom command"
 ask MEMORY_CHOICE "Choice [1/2/3]:"
-case "${MEMORY_CHOICE:-1}" in
-  2|skip|none)
-    note "Skipped memory MCP."
-    ;;
+case "${MEMORY_CHOICE:-2}" in
+  2|skip|none) MEMORY_CHOICE=2 ;;
   3|custom)
+    MEMORY_CHOICE=3
     ask MEMORY_CMD "Command for the memory MCP:"
-    if [[ -n "${MEMORY_CMD:-}" ]]; then
-      spec="$(python3 -c 'import json,sys; print(json.dumps({"command": sys.argv[1]}))' "$MEMORY_CMD")"
-      _merge_mcp_server memory-mcp "$spec"
+    if [[ -n "$MEMORY_CMD" ]] && confirm "Add memory MCP to ${MCP_JSON}?"; then
+      MEMORY_MCP_NAME=memory-mcp
+      MEMORY_MCP_COMMAND="$MEMORY_CMD"
     fi
     ;;
   *)
-    default_mem="${HOME}/.local/bin/codebase-memory-mcp"
-    ask MEMORY_PATH "Path to codebase-memory-mcp (Enter uses default if empty):"
-    [[ -z "${MEMORY_PATH:-}" ]] && MEMORY_PATH="$default_mem"
-    spec="$(python3 -c 'import json,sys; print(json.dumps({"command": sys.argv[1]}))' "$MEMORY_PATH")"
-    _merge_mcp_server codebase-memory-mcp "$spec"
+    MEMORY_CHOICE=1
+    ask MEMORY_PATH "Path to codebase-memory-mcp (Enter uses default):"
+    [[ -n "$MEMORY_PATH" ]] || MEMORY_PATH="${HOME}/.local/bin/codebase-memory-mcp"
+    if confirm "Add memory MCP to ${MCP_JSON}?"; then
+      MEMORY_MCP_NAME=codebase-memory-mcp
+      MEMORY_MCP_COMMAND="$MEMORY_PATH"
+    fi
     ;;
 esac
 
 stage "Current issue context"
-say "Epic/story stay in gitignored .ask/tracker-context.md. Edit them anytime."
-_write_tracker_context
+say "Epic/story stay in gitignored .ask/tracker-context.md."
 ask ASK_EPIC "Current epic (optional):"
 ask ASK_STORY "Current story (optional):"
-if [[ -n "${ASK_EPIC:-}" || -n "${ASK_STORY:-}" ]]; then
-  cat > "$ASK_ROOT/.ask/tracker-context.md" <<EOF
-# Current issue (local; gitignored)
-
-- **epic:** ${ASK_EPIC:-}
-- **story:** ${ASK_STORY:-}
-EOF
-  note "updated .ask/tracker-context.md"
+_store_tracker
+if [[ "$CONFIGURE_TRACKER_MCP" == yes ]]; then
+  python3 "$ASK_ROOT/_ask/scripts/tracker-config.py" mcp \
+    --root "$ASK_ROOT" --config "$MCP_JSON" --opt-in yes
 fi
-
-note "Restart Cursor (or toggle MCP servers) so new stubs load."
-note "Source .ask.env in your shell before launching Cursor if you set tokens."
+if [[ -n "$MEMORY_MCP_NAME" ]]; then
+  _add_memory_mcp "$MEMORY_MCP_NAME" "$MEMORY_MCP_COMMAND"
+fi
+printf '{"epic":%s,"story":%s}\n' \
+  "$(python3 -c 'import json,sys; print(json.dumps(sys.argv[1]), end="")' "${ASK_EPIC:-}")" \
+  "$(python3 -c 'import json,sys; print(json.dumps(sys.argv[1]), end="")' "${ASK_STORY:-}")" |
+  python3 "$ASK_ROOT/_ask/scripts/tracker-config.py" context --root "$ASK_ROOT" --stdin
+note "Credentials are private; public tracker settings are local to this checkout."
+note "Restart Cursor (or toggle MCP servers) after changing MCP servers."
 finish

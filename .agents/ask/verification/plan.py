@@ -40,6 +40,7 @@ def expand_plan(root: Path, plan: dict) -> list[dict]:
                             "id": f"{c.get('id', glob)}:{path.relative_to(root)}",
                             "tier": c.get("tier", "mandatory"),
                             "command": str(path.relative_to(root)),
+                            **({"env_allow": c["env_allow"]} if "env_allow" in c else {}),
                         }
                     )
         elif c.get("command"):

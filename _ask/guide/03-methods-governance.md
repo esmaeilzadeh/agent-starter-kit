@@ -212,6 +212,12 @@ Not simply by number of changed lines.
 
 An agent should not merely know what to do. It should know **when not to continue**.
 
+For consequential decisions with material uncertainty, consult the active
+runtime's verified model-confidence ladder before asking the human. Continue
+within existing authority only above 90% subjective confidence. Model
+consultation never supplies human authority or replaces required independent
+review or verification; see `_ask/policies/delegation.md` for the ladder.
+
 Typical escalation triggers:
 
 ```text

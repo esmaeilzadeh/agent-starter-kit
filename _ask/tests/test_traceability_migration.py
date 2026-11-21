@@ -10,6 +10,12 @@ class MigrationTests(unittest.TestCase):
     def test_I08_missing_contract_migration_preserves_history_and_config(self):
         c=Consumer();self.addCleanup(c.close)
         config=(c.root/'.agents/verification.yaml').read_bytes()
+        model_path=c.root/'work/w/engineering-model.json'
+        model=json.loads(model_path.read_text())
+        model['nodes']=[node for node in model['nodes'] if node.get('type')!='test']
+        model['edges']=[edge for edge in model['edges'] if edge.get('type')!='covers']
+        model_path.write_text(json.dumps(model,indent=2)+'\n')
+        c.git('add','work/w/engineering-model.json');c.commit('prepare model for legacy contract migration test')
         c.write('work/w/legacy-results.json',{'schema':'ask-task-result/v1','result':'pass'})
         c.git('rm','specs/current/w.json','work/w/test-plan.json','work/w/traceability-accepted.json');c.commit('simulate legacy metadata')
         result=c.command('verify');self.assertNotEqual(result.returncode,0)

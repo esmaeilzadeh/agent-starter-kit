@@ -1,0 +1,307 @@
+"""Installed launcher trust and completion behavior."""
+
+from __future__ import annotations
+
+import json
+import hashlib
+import shutil
+import unittest
+from pathlib import Path
+
+from client_security_fixtures import ClientFixture, ROOT
+
+
+class ClientTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.fx = ClientFixture()
+
+    def tearDown(self) -> None:
+        self.fx.close()
+
+    def identity(self, root: Path) -> dict:
+        proc = self.fx.run([
+            "python3", str(ROOT / "_ask/scripts/launcher-trust.py"),
+            "identity", "--root", str(root),
+        ])
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        return json.loads(proc.stdout)
+
+    def test_identity_scope(self) -> None:
+        project = self.fx.git_project(self.fx.root / "identity-project")
+        (project / "ask").write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        (project / "ask").chmod(0o755)
+        helper = project / "_ask/scripts/helper.py"
+        helper.parent.mkdir(parents=True)
+        helper.write_text("print('ok')\n", encoding="utf-8")
+
+        preset = project / ".agents/ask/verification/presets/ask-kit.yaml"
+        preset.parent.mkdir(parents=True)
+        shutil.copyfile(ROOT / ".agents/ask/verification/presets/ask-kit.yaml", preset)
+        first = self.identity(project)
+
+        alias = self.fx.root / "identity-alias"
+        alias.symlink_to(project, target_is_directory=True)
+        self.assertEqual(self.identity(alias)["digest"], first["digest"])
+
+        metadata = project / ".agents/ask.local/bindings/models.yaml"
+        metadata.parent.mkdir(parents=True)
+        metadata.write_text("review: sol-medium\n", encoding="utf-8")
+        self.assertEqual(self.identity(project)["digest"], first["digest"])
+
+        helper.write_text("print('changed')\n", encoding="utf-8")
+        second = self.identity(project)
+        self.assertNotEqual(second["digest"], first["digest"])
+        helper.chmod(0o755)
+        changed_mode = self.identity(project)
+        self.assertNotEqual(changed_mode["digest"], second["digest"])
+
+        ui_source = project / "_ask/ui/streamlit_app.py"
+        ui_source.parent.mkdir(parents=True)
+        ui_source.write_text("print('ui one')\n", encoding="utf-8")
+        with_ui = self.identity(project)
+        ui_source.write_text("print('ui two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_ui["digest"])
+
+        check_source = project / "custom_check.py"
+        check_source.write_text("print('check one')\n", encoding="utf-8")
+        with_check = self.identity(project)
+        check_source.write_text("print('check two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_check["digest"])
+
+        configured_source = project / "verify-check"
+        configured_source.write_text("print('configured one')\n", encoding="utf-8")
+        plan = project / ".agents/verification.yaml"
+        plan.parent.mkdir(parents=True, exist_ok=True)
+        plan.write_text(
+            "schema: ask-checkplan/v1\nchecks:\n  - id: local\n"
+            "    command: python3 verify-check\n"
+            f"  - id: absolute\n    command: python3 {configured_source}\n"
+            "  - id: quoted-glob\n"
+            "    command: python3 -m unittest discover -s _ask/tests -p 'test_traceability*.py'\n",
+            encoding="utf-8",
+        )
+        configured = self.identity(project)
+        configured_source.write_text("print('configured two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], configured["digest"])
+        absolute_source = project / "absolute-check"
+        absolute_source.write_text("print('absolute one')\n", encoding="utf-8")
+        plan.write_text(
+            f"schema: ask-checkplan/v1\nchecks:\n  - id: absolute\n"
+            f"    command: python3 {absolute_source}\n", encoding="utf-8",
+        )
+        with_absolute = self.identity(project)
+        absolute_source.write_text("print('absolute two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_absolute["digest"])
+
+        hooks = project / ".githooks"
+        hooks.mkdir()
+        hook = hooks / "pre-commit"
+        hook.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        hook.chmod(0o755)
+        self.fx.run(["git", "-C", str(project), "config", "core.hooksPath", ".githooks"])
+        with_hooks = self.identity(project)
+        self.assertNotEqual(with_hooks["digest"], changed_mode["digest"])
+        hook.write_text("#!/bin/sh\nexit 1\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], with_hooks["digest"])
+        self.fx.run(["git", "-C", str(project), "config", "filter.unsafe.clean", "run-me"])
+        with self.assertRaisesRegex(AssertionError, "cannot safely trust configured Git executable"):
+            self.identity(project)
+        self.fx.run(["git", "-C", str(project), "config", "--unset", "filter.unsafe.clean"])
+
+        shared = project / "shared-code"
+        shared.mkdir()
+        target = shared / "runtime.py"
+        target.write_text("print('one')\n", encoding="utf-8")
+        local = project / ".agents/ask.local/shared"
+        local.parent.mkdir(parents=True, exist_ok=True)
+        local.symlink_to(Path("../../shared-code"), target_is_directory=True)
+        linked = self.identity(project)
+        target.write_text("print('two')\n", encoding="utf-8")
+        self.assertNotEqual(self.identity(project)["digest"], linked["digest"])
+
+        escaping = project / "_ask/scripts/outside.py"
+        outside = self.fx.root / "outside.py"
+        outside.write_text("print('outside')\n", encoding="utf-8")
+        escaping.symlink_to(outside)
+        with self.assertRaisesRegex(AssertionError, "escapes checkout"):
+            self.identity(project)
+        escaping.unlink()
+
+        moved = self.fx.root / "moved-project"
+        project.rename(moved)
+        moved_identity = self.identity(moved)
+        self.assertNotEqual(moved_identity["root"], first["root"])
+
+    def test_delegation_requires_trust(self) -> None:
+        launcher = self.fx.install_launcher()
+        project = self.fx.git_project(self.fx.root / "untrusted-project")
+        (project / "_ask/scripts").mkdir(parents=True)
+        (project / "_ask/scripts/helper.py").write_text("print('original')\n", encoding="utf-8")
+        marker = self.fx.root / "dispatcher-ran"
+        dispatcher = project / "ask"
+        dispatcher.write_text(
+            "#!/bin/sh\nprintf executed > \"$ASKIT_TEST_MARKER\"\n", encoding="utf-8"
+        )
+        dispatcher.chmod(0o755)
+        env = {**self.fx.env, "ASKIT_TEST_MARKER": str(marker)}
+
+        refused = self.fx.run([str(launcher), "verify"], cwd=project, env=env)
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertIn("trust", (refused.stdout + refused.stderr).lower())
+        self.assertFalse(marker.exists())
+
+        trusted = self.fx.run_tty([str(launcher), "trust"], cwd=project, env=env, input="y\n")
+        self.assertEqual(trusted.returncode, 0, trusted.stderr)
+        self.assertIn("sha-256", (trusted.stdout + trusted.stderr).lower())
+        allowed = self.fx.run([str(launcher), "verify"], cwd=project, env=env)
+        self.assertEqual(allowed.returncode, 0, allowed.stderr)
+        self.assertTrue(marker.exists())
+
+        marker.unlink()
+        moved = self.fx.root / "moved-project"
+        project.rename(moved)
+        moved_trust = self.fx.run([str(launcher), "verify"], cwd=moved, env=env)
+        self.assertNotEqual(moved_trust.returncode, 0)
+        self.assertIn("trust", (moved_trust.stdout + moved_trust.stderr).lower())
+        moved_approved = self.fx.run_tty(
+            [str(launcher), "trust"], cwd=moved, env=env, input="y\n"
+        )
+        self.assertEqual(moved_approved.returncode, 0, moved_approved.stderr)
+
+        (moved / "_ask/scripts/helper.py").write_text("print('replacement')\n", encoding="utf-8")
+        stale = self.fx.run([str(launcher), "verify"], cwd=moved, env=env)
+        self.assertNotEqual(stale.returncode, 0)
+        self.assertIn("trust", (stale.stdout + stale.stderr).lower())
+        self.assertFalse(marker.exists())
+        trust_helper = ROOT / "_ask/scripts/launcher-trust.py"
+        self.assertEqual(
+            self.fx.run_tty(["python3", str(trust_helper), "trust", "--root", str(moved)],
+                            cwd=moved, env=env, input="y\n").returncode,
+            0,
+        )
+
+        project_hash = hashlib.sha256(str(moved.resolve()).encode()).hexdigest()
+        record_dir = self.fx.config / "askit/projects" / project_hash
+        record = record_dir / "trust.json"
+        controlled = moved / ".agents/private-trust"
+        controlled.mkdir(parents=True)
+        shutil.copyfile(record, controlled / "trust.json")
+        (controlled / "trust.json").chmod(0o600)
+        record.unlink()
+        record_dir.rmdir()
+        record_dir.symlink_to(controlled, target_is_directory=True)
+
+        refused = self.fx.run(
+            ["python3", str(trust_helper), "check", "--root", str(moved)], cwd=moved,
+        )
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertIn("trust directory", refused.stderr.lower())
+        self.assertFalse(marker.exists())
+
+    def test_completion_stays_installed(self) -> None:
+        launcher = self.fx.install_launcher()
+        project = self.fx.git_project(self.fx.root / "completion-project")
+        (project / "_ask").mkdir()
+        marker = self.fx.root / "completion-dispatcher-ran"
+        dispatcher = project / "ask"
+        dispatcher.write_text(
+            "#!/bin/sh\nprintf executed > \"$ASKIT_TEST_MARKER\"\n", encoding="utf-8"
+        )
+        dispatcher.chmod(0o755)
+        result = self.fx.run(
+            [str(launcher), "--complete", "1", "askit"], cwd=project,
+            env={**self.fx.env, "ASKIT_TEST_MARKER": str(marker)},
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("status", result.stdout)
+        self.assertFalse(marker.exists())
+
+    def test_completion_requires_opt_in(self) -> None:
+        startup = {name: (self.fx.home / name).read_bytes() if (self.fx.home / name).exists() else None
+                   for name in (".bashrc", ".zshrc")}
+        launcher = self.fx.install_launcher()
+        self.assertEqual(
+            {name: (self.fx.home / name).read_bytes() if (self.fx.home / name).exists() else None
+             for name in startup}, startup,
+            "self-install must not edit shell startup files",
+        )
+        project = self.fx.git_project(self.fx.root / "completion-opt-in-project")
+        (project / "_ask").mkdir()
+        marker = self.fx.root / "help-dispatcher-ran"
+        dispatcher = project / "ask"
+        dispatcher.write_text(
+            "#!/bin/sh\nprintf executed > \"$ASKIT_TEST_MARKER\"\n", encoding="utf-8"
+        )
+        dispatcher.chmod(0o755)
+        env = self.fx.env.copy()
+        env.pop("ASKIT_SKIP_COMPLETION_INSTALL", None)
+        env["ASKIT_TEST_MARKER"] = str(marker)
+        help_result = self.fx.run([str(launcher), "--help"], cwd=project, env=env)
+        completion = self.fx.run([str(launcher), "completion", "bash"], cwd=project, env=env)
+        self.assertEqual(help_result.returncode, 0, help_result.stderr)
+        self.assertEqual(completion.returncode, 0, completion.stderr)
+        self.assertFalse(marker.exists())
+        self.assertEqual(
+            {name: (self.fx.home / name).read_bytes() if (self.fx.home / name).exists() else None
+             for name in startup}, startup,
+        )
+
+        installed = self.fx.run([str(launcher), "completion-install"], cwd=project, env=env)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertTrue((self.fx.home / ".bashrc").exists())
+        self.assertTrue((self.fx.home / ".zshrc").exists())
+        self.assertFalse(marker.exists())
+
+        unsafe_home = self.fx.root / "unsafe-home"
+        unsafe_home.mkdir()
+        sentinel = self.fx.root / "startup-sentinel"
+        sentinel.write_text("keep\n", encoding="utf-8")
+        (unsafe_home / ".bashrc").symlink_to(sentinel)
+        rejected = self.fx.run(
+            [str(launcher), "completion-install"], cwd=project,
+            env={**env, "HOME": str(unsafe_home)},
+        )
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn("regular file", rejected.stderr)
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "keep\n")
+
+        linked_home = self.fx.root / "linked-home"
+        linked_home.mkdir()
+        redirected = self.fx.root / "redirected-home-data"
+        redirected.mkdir()
+        (linked_home / ".local").symlink_to(redirected, target_is_directory=True)
+        unsafe_env = env.copy()
+        unsafe_env["HOME"] = str(linked_home)
+        unsafe_env.pop("XDG_DATA_HOME", None)
+        unsafe_env.pop("BASH_COMPLETION_USER_DIR", None)
+        ancestor_rejected = self.fx.run(
+            [str(ROOT / "_ask/scripts/install-user-completion.sh")], cwd=project,
+            env={**unsafe_env, "ASKIT_DIR": str(ROOT)},
+        )
+        self.assertNotEqual(ancestor_rejected.returncode, 0)
+        self.assertFalse((redirected / "share/askit").exists())
+
+        real_home = self.fx.root / "real-home"
+        (real_home / "home").mkdir(parents=True)
+        linked_parent = self.fx.root / "linked-home-parent"
+        linked_parent.symlink_to(real_home, target_is_directory=True)
+        external_data = self.fx.root / "external-data"
+        external_completion = self.fx.root / "external-completion"
+        outside_home_env = env.copy()
+        outside_home_env.update({
+            "HOME": str(linked_parent / "home"),
+            "XDG_DATA_HOME": str(external_data),
+            "BASH_COMPLETION_USER_DIR": str(external_completion),
+        })
+        outside_home_rejected = self.fx.run(
+            [str(ROOT / "_ask/scripts/install-user-completion.sh")], cwd=project,
+            env={**outside_home_env, "ASKIT_DIR": str(ROOT)},
+        )
+        self.assertNotEqual(outside_home_rejected.returncode, 0)
+        self.assertFalse(external_data.exists())
+        self.assertFalse(external_completion.exists())
+        self.assertFalse((real_home / "home/.bashrc").exists())
+
+
+if __name__ == "__main__":
+    unittest.main()
