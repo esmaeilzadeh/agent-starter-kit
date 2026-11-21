@@ -21,7 +21,7 @@ if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
       --path .cursor --path .agents/skills \
       --path .codex/agents --path .claude/agents --path .opencode/agents \
       --input-path _ask/scripts --input-path .agents/ask --input-path .agents/ask.local \
-      --input-path _ask/agents --input-path _ask/cursor-commands "${EXTRA_INPUTS[@]}" -- \
+      --input-path _ask/agents --input-path _ask/bindings --input-path _ask/cursor-commands "${EXTRA_INPUTS[@]}" -- \
       bash "{target}/_ask/scripts/sync-cursor-binding.sh"
   fi
 fi

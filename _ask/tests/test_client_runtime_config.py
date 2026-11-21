@@ -212,6 +212,19 @@ class ClientTests(unittest.TestCase):
         self.assertEqual(opencode_review['permission']['edit'], 'deny')
         self.assertIn('developer_instructions', codex_review)
 
+    def test_sync_preserves_legacy_project_and_workstream_models(self):
+        legacy = self.root / '_ask/bindings/models.yaml'
+        legacy.parent.mkdir(parents=True)
+        legacy.write_text('codex:\n  05-plan: gpt-6-astra\n  06-implement: gpt-6-astra\n',
+                          encoding='utf-8')
+        (self.root / 'work/example/models.yaml').write_text(
+            'codex:\n  06-implement: gpt-6.1-sol\n', encoding='utf-8')
+        result = self.run_sync()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        agents = self.root / '.codex/agents'
+        self.assertEqual(self.model(agents / 'kit-05-plan.toml')['model'], 'gpt-6-astra')
+        self.assertEqual(self.model(agents / 'kit-06-implement.toml')['model'], 'gpt-6.1-sol')
+
 
 if __name__ == '__main__':
     unittest.main()
