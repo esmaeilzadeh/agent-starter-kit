@@ -1,8 +1,16 @@
 {
   "attempt_history": [],
-  "attempt_id": "",
-  "checkpoint_sha": "20bbeada2754e1bf9ff98bd7de536c7a8e3f80e0",
-  "integration": {},
+  "attempt_id": "CSH-10:attempt-1",
+  "checkpoint_sha": "d30aadd153dee211c62fbac9a12fc5f70ee65001",
+  "integration": {
+    "candidate_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+    "result": "pass",
+    "resulting_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+    "traceability_run_ids": [
+      "ec1941d7bd9d46469cb9a4f00d56cc02"
+    ],
+    "tree_sha": "61667f14e9f01526591e975b68cd5953e8ddc0ad"
+  },
   "recovery": [
     {
       "previous_checkpoint": "c8ebe82a55f40fca95036c0555e5280bbe605add",
@@ -12,7 +20,19 @@
       "source_tree": "1f0fafa617cf2c0cd92cbf97c932283b90db66b4"
     }
   ],
-  "reviews": [],
+  "reviews": [
+    {
+      "base_sha": "552be9911495588e632a71146ff25707af39ac08",
+      "boundary": "ok",
+      "candidate_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+      "evidence": "work/client-security-hardening/inner-loop/evidence/CSH-10-final-review.md",
+      "evidence_digest": "56b7ef6c888abd75e2cad29567a8cecd6bfbdce75a09f4eef0a7bbf8b6f92e51",
+      "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+      "result_digest": "e67fa68559a70904b70a837138f47409e38d12b4479ac79fa736de19e16ffa79",
+      "reviewer": "csh10-final-independent-review (Sol/medium)",
+      "verdict": "APPROVED"
+    }
+  ],
   "runs": [
     {
       "attribution": "historical-unattached",
@@ -475,14 +495,96 @@
       "scope": "workstream",
       "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
       "task_id": null
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "552be9911495588e632a71146ff25707af39ac08",
+      "cases": [
+        {
+          "case_id": "test_client_journeys.ClientTests.test_client_upgrade_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "552be9911495588e632a71146ff25707af39ac08",
+          "test_id": "CSH-T38"
+        },
+        {
+          "case_id": "test_client_journeys.ClientTests.test_model_flow_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "552be9911495588e632a71146ff25707af39ac08",
+          "test_id": "CSH-T39"
+        }
+      ],
+      "digest": "e35fdd35e9f490545bc5c979b74d1c95ab1e9513005d9e5ddb11b5211850cc66",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "cf883d1090414d9d9c7e94dfbe507ba9",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-10"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+      "cases": [
+        {
+          "case_id": "test_client_journeys.ClientTests.test_client_upgrade_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+          "test_id": "CSH-T38"
+        },
+        {
+          "case_id": "test_client_journeys.ClientTests.test_model_flow_journey",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+          "test_id": "CSH-T39"
+        }
+      ],
+      "digest": "85b78d93b2a9011bff484c751948e885e297a6d98a92a2d3648938910a797169",
+      "phase": "final_green",
+      "plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+      "run_id": "ec1941d7bd9d46469cb9a4f00d56cc02",
+      "scope": "task",
+      "spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+      "task_id": "CSH-10"
     }
   ],
   "schema": "ask-task-milestone/v1",
-  "source_base_sha": "",
-  "source_candidate_sha": null,
-  "status": "pending",
-  "submissions": [],
-  "supporting_artifacts": [],
+  "source_base_sha": "552be9911495588e632a71146ff25707af39ac08",
+  "source_candidate_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+  "status": "integrated",
+  "submissions": [
+    {
+      "base_sha": "552be9911495588e632a71146ff25707af39ac08",
+      "candidate_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd",
+      "notes_sha256": "723cb9419450e9de055928b70cdf46846db847d73601d593f5f58aa7b5f17461",
+      "sha256": "e67fa68559a70904b70a837138f47409e38d12b4479ac79fa736de19e16ffa79",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0,
+          "source_sha": "f3a4be41d96d4d391b16727d34e25852b0c694bd"
+        },
+        "red": {
+          "continuity_reference_sha256": "d7a3613cabbcebcbe5d9fb1e187809e3ce0f982e111ccf3764840357e5ea6bc4",
+          "exit_code": 1,
+          "source_sha": "371e4a5741f34afb0b2c37401fc847dc14309664"
+        }
+      }
+    }
+  ],
+  "supporting_artifacts": [
+    {
+      "path": "work/client-security-hardening/inner-loop/evidence/CSH-10-final-review.md",
+      "sha256": "56b7ef6c888abd75e2cad29567a8cecd6bfbdce75a09f4eef0a7bbf8b6f92e51"
+    },
+    {
+      "path": "work/client-security-hardening/inner-loop/results/CSH-10.json",
+      "sha256": "e67fa68559a70904b70a837138f47409e38d12b4479ac79fa736de19e16ffa79"
+    }
+  ],
   "task_id": "CSH-10",
   "work_id": "client-security-hardening"
 }
