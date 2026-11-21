@@ -1,0 +1,125 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "root-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "1eeb5796984407bd0d6280d7b29029decfc659ed42272fbe7257dc478646a1ff",
+  "review_digest": "46b9b41e188a2d52052061d97ced056defd034aac9fdffc8de440d6e9e967a32",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "reviewer": "rf03-review-gpt-6-luna",
+    "recorded_by": "root-coordinator",
+    "candidate_sha": "020aca2bb83419b91bd9605bc4369434a86dca38",
+    "base_sha": "4a513749673f3548aac833d410ca5ae091f271f2",
+    "spec_digest": "dd5dc51976d5796b86605b93e33b44a562a7b575e4d57a684fc0a91473c4ad3d",
+    "plan_digest": "804e6972d262a44fcd6d427ee3b761efc03b2af584d0517cfdebf7cec22823bd",
+    "scope": "task",
+    "task_id": "RF-03",
+    "test_ids": [
+      "LOOP-01",
+      "LOOP-02",
+      "LOOP-03",
+      "LOOP-04",
+      "BUNDLE-01",
+      "BUNDLE-02",
+      "BUNDLE-03",
+      "LOOP-05"
+    ],
+    "criterion_ids": [
+      "RF-005",
+      "RF-007"
+    ],
+    "source_digests": {
+      "_ask/tests/test_refactor_bundle_parity.py": "fcaa9a662d6ec7489cd6c1d5fb2f33bed9aa6bca1ef194fb15f6e7cbe824a946",
+      "_ask/tests/test_refactor_loop_integration.py": "6dd9f505d6a3fb804a257130748e846840db3c18e72c8a3a9705ef5f86152660"
+    },
+    "inspected_sources": [],
+    "changed_cases": [],
+    "inventory_exclusions": {},
+    "criteria": [
+      {
+        "id": "RF-005",
+        "coverage_decision": "APPROVED",
+        "assessment": "The five accepted RF-005 integration cases exercise public inner-loop commands and disposable consumer state across review rejection, stale approval, successful checked integration, retry vocabulary/bounds, and failed mandatory checks. Together they cover both refusal and allowed integration behavior at the integration seam.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Integration is the required type and is appropriate: the criterion concerns public command dispatch, candidate-bound approvals/checks, integration state, and exact integrated source. LOOP-01..05 exercise those outcomes through the existing disposable-Git-consumer scenarios."
+          }
+        }
+      },
+      {
+        "id": "RF-007",
+        "coverage_decision": "APPROVED",
+        "assessment": "BUNDLE-01/02 cover public fresh install, sync, and local-source upgrade with canonical contract propagation and overlay preservation. BUNDLE-03 retains regression coverage for Grill/continuation projections across supported runtimes. Assertions inspect installed/generated consumer artifacts and runtime pointers.",
+        "type_adequacy": {
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "Integration is required and appropriate because these obligations concern public install/sync/upgrade flows and generated consumer/runtime views. The temporary consumer tests exercise those public paths and inspect the resulting files and preserved overlay state."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "LOOP-01",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case delegates to the public integration scenario that gives a disposable consumer a candidate-bound REJECTED review, runs public inner-loop commands, and asserts refusal plus unchanged coordinator source SHA and task integration state.",
+        "counterexample": "If a rejected candidate advanced task integration state or coordinator source SHA, the scenario's unchanged-state assertions would fail.",
+        "tdd_continuity_assessment": "Accepted unchanged regression case; the recorded final-green execution at candidate 020aca2 passes. No behavior change or manufactured Red is claimed."
+      },
+      {
+        "id": "LOOP-02",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case delegates to the public stale-approval scenario and verifies that changing a candidate after approval prevents integration until a fresh candidate-bound review and required checks exist.",
+        "counterexample": "If approval for the old SHA were reused after candidate content changed, the scenario would observe integration instead of the required stale-review refusal.",
+        "tdd_continuity_assessment": "Accepted unchanged regression case; final-green execution at candidate 020aca2 passes. The test is not represented as newly changed behavior."
+      },
+      {
+        "id": "LOOP-03",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case delegates to the public successful-integration scenario and checks that the integrated tree exactly matches the checked candidate and that execution lineage records its SHA and success.",
+        "counterexample": "Integrating a different tree or recording a different candidate SHA would fail the equality or lineage assertions.",
+        "tdd_continuity_assessment": "Accepted unchanged regression case; final-green execution at candidate 020aca2 passes. This preserves existing integration behavior."
+      },
+      {
+        "id": "LOOP-04",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case exercises the public next-action command over existing review/debug bounds and boundary-rejection conditions, checking implement/debug/blocked/integrate outputs and blocked handling for an invalid ownership boundary.",
+        "counterexample": "Changing a bound, returning a new/incorrect action value, or allowing a scope-boundary violation to proceed would differ from the expected outputs and fail the case.",
+        "tdd_continuity_assessment": "Accepted unchanged regression case; final-green execution at candidate 020aca2 passes. No retry policy or CLI vocabulary behavior is newly claimed."
+      },
+      {
+        "id": "BUNDLE-01",
+        "decision": "APPROVED",
+        "assertion_assessment": "The integration case installs the candidate into a fresh temporary consumer, runs sync, and checks for the canonical task-loop, stage-source references in Cursor/Claude/Codex/OpenCode agents, and canonical stage content in Cursor/Codex skill projections.",
+        "counterexample": "Omitting task-loop.md, leaving a runtime agent without its canonical stage reference, or generating a divergent Cursor/Codex skill body would fail the corresponding installed-file assertions.",
+        "tdd_continuity_assessment": "New behavior test with recorded Red \u2192 Green continuity: BUNDLE-01 failed with behavior_assertion in the Red run at d73c28d; it passes in final-green results bound to candidate 020aca2. Its installation and projection assertions remain the same intended contract across the runs."
+      },
+      {
+        "id": "BUNDLE-02",
+        "decision": "APPROVED",
+        "assertion_assessment": "The integration case installs an older kit into a disposable consumer, adds consumer stage and skill-pin overlays, upgrades from the candidate source, and checks the task-loop contract, generated workflow guidance, overlay content, and retained pin.",
+        "counterexample": "An upgrade that drops the canonical task loop or overwrites the consumer implementation note or skill pin would fail the resulting-file assertions.",
+        "tdd_continuity_assessment": "New behavior test with recorded Red \u2192 Green continuity: BUNDLE-02 failed with behavior_assertion in the Red run at d73c28d; it passes in final-green results bound to candidate 020aca2. The same overlay-preservation and installation assertions are evaluated in Green."
+      },
+      {
+        "id": "BUNDLE-03",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case checks that the canonical Grill contract retains selectable choices and optional accompanying text, the continuation contract retains explicit-stop handling, and runtime agents/skill projections lead to the canonical contracts.",
+        "counterexample": "If generated prompts omitted the optional accompanying-text path or continuation stop distinction, or runtime pointers ceased to reference canonical stages, the assertions would fail.",
+        "tdd_continuity_assessment": "Accepted unchanged regression case assigned to RF-007. It passed in the pre-RF-03 run and in final-green at candidate 020aca2; the test remains required and is not given a TDD exemption."
+      },
+      {
+        "id": "LOOP-05",
+        "decision": "APPROVED",
+        "assertion_assessment": "The case exercises public run with a current APPROVED review and a failing mandatory candidate check, then verifies failed execution evidence and unchanged coordinator source SHA/integrated state.",
+        "counterexample": "If the candidate were integrated despite its failed mandatory check, the refusal and unchanged-source/state assertions would fail.",
+        "tdd_continuity_assessment": "Accepted unchanged regression case; final-green execution at candidate 020aca2 passes. The existing gate is preserved rather than represented as a new behavior change."
+      }
+    ]
+  },
+  "candidate_sha": "020aca2bb83419b91bd9605bc4369434a86dca38",
+  "scope": "task",
+  "task_id": "RF-03"
+}
