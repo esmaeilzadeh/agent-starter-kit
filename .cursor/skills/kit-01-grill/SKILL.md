@@ -13,6 +13,12 @@ Output artifact: `work/<work-id>/intent.md` (from `_ask/templates/intent.md`).
 
 ## Adopted subject intake
 
+Before this stage or its subject-intake command, apply the mandatory request
+route gate in root `AGENTS.md` and `_ask/policies/workflow.md`. A reported defect
+against existing behavior does not enter Grill. If a request mixes a defect and
+a behavior change, Grill only the separate feature workstream. Direct `/01-grill`
+invocation does not bypass routing.
+
 Before selecting/creating execution work or recording intent, invoke the shared
 read-only intake for this request:
 
@@ -91,6 +97,15 @@ work/<work-id>/intent.md
 A submitted “Approve defaults” choice (or “Approve all recommendations” after an expanded load-bearing frontier) is the first on-path confirmation. Record it with `./ask confirm-intent --work-id <id> --choice approve` against the exact intent digest. Keep an optional comment available alongside the selected choice. If the runtime cannot carry both, offer numbered options and invite the selected number or label plus added text in the same reply. Do not ask for an approval sentence. Any edit to `intent.md` invalidates that confirmation; present the changed intent as choices and obtain a new submitted choice. `./ask check-workstream` is the hard implementation gate. Then prepare later artifacts without re-confirming until Accept.
 
 If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
+
+## Required Engineering Model
+
+`./ask start-work <work-id>` seeds `work/<work-id>/engineering-model.json`.
+Before closing Grill, populate its purpose from the approved intent and record
+the decisions and assumptions that affect this work. Follow the lifecycle and
+guarded-edit contract in `_ask/docs/engineering-model.md`. Keep product identity
+separate from execution ownership. A missing model is an incomplete workstream;
+prepare it before continuing, including when resuming older work.
 
 ## Model spawn (optional)
 

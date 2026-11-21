@@ -1,0 +1,1 @@
+{"cases": [{"case_id": "_ask.tests.test_workflow_refs_migration.ReferenceTests.test_legacy_migration_and_bundle_retention", "outcome": "passed", "failure_kind": null}, {"case_id": "_ask.tests.test_workflow_refs_migration.ReferenceTests.test_missing_import_and_atomic_retry", "outcome": "passed", "failure_kind": null}], "collection_status": "ok"}

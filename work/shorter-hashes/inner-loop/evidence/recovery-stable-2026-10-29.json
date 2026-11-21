@@ -1,0 +1,30 @@
+{
+  "schema": "ask-stable-continuation-recovery/v1",
+  "work_id": "shorter-hashes",
+  "date": "2026-10-29",
+  "status": "ready",
+  "authorization": "work/shorter-hashes/recovery-exception-authorization.md",
+  "coordinator_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
+  "state_revision": 49,
+  "task6": {
+    "status": "running",
+    "base_sha": "311d53278ab2f776b3c0ae5a11d759804fac0e02",
+    "attempt_id": "6:attempt-2",
+    "accepted_plan_ref": "876094655bb8074493eea9faeff0bcb1f60d37de",
+    "accepted_plan_digest": "7470b02a5d97dab68e93c416a416f9810208b8ee0a5392a269479313bc5d36e7",
+    "reopened_from_attempt": "6:attempt-1"
+  },
+  "accepted_authority": "876094655bb8074493eea9faeff0bcb1f60d37de",
+  "accepted_contract": "5911780b48469d1027bc8bcdd3bbb35ebba3694a",
+  "checkpoint_sha": "cf6c2af0f3c9757c8db1cc3bf2200aeb0c02d5a0",
+  "tasks_1_to_5_unchanged": true,
+  "native_operations": [
+    "interrupt",
+    "accept-plan",
+    "cas_apply",
+    "reopen_task"
+  ],
+  "temporary_exception": "Current-only checkpoint reconstruction and direct instrumented historical execution bypassed outer kit preflight; normal recovery predicates are now passing without altered source or disabled checks.",
+  "normal_recovery": "ready",
+  "authority_equals_pin": true
+}

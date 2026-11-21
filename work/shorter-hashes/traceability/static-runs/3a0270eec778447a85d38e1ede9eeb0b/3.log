@@ -1,0 +1,10 @@
+askit: kit /tmp/ask-static-59p3xdz6/candidate @ HEAD
+askit: cache /tmp/tmp.UMQ5XK5T9a/.cache/askit/kit
+Cloning into '/tmp/tmp.UMQ5XK5T9a/.cache/askit/kit'...
+done.
+Your branch is up to date with 'origin/agent/shorter-hashes'.
+askit: /tmp/tmp.UMQ5XK5T9a/.local/bin/askit -> /tmp/tmp.UMQ5XK5T9a/.cache/askit/kit/askit
+askit: /tmp/tmp.UMQ5XK5T9a/.local/bin is not on PATH. Add this to your shell rc:
+  export PATH="/tmp/tmp.UMQ5XK5T9a/.local/bin:$PATH"
+askit: done. In an app git repo, run askit and confirm to add the kit.
+PASS: askit installs itself (curl | bash and self-install)

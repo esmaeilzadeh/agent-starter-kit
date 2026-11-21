@@ -15,6 +15,10 @@ LATER_ONLY=0
 WORK_ONLY=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --references)
+      ROOT="$(git rev-parse --show-toplevel)"
+      exec "$ROOT/_ask/scripts/references.sh" status
+      ;;
     --work-id)
       WORK_ID_SET=1
       if [[ $# -lt 2 || "$2" == -* ]]; then
@@ -29,11 +33,12 @@ while [[ $# -gt 0 ]]; do
     --work-only) WORK_ONLY=1; shift ;;
     -h|--help)
       cat <<'EOF'
-Usage: ./ask status [--work-id <id>] [--json] [--later-only] [--work-only]
+Usage: ./ask status [--work-id <id>] [--json] [--later-only] [--work-only] [--references]
 
 Live workstreams are inferred from local refs/heads/agent/* (no checkout).
 Archived workstreams are work/* on the default branch with no matching agent/* branch.
 Later cards are committed .later/*.md from develop (or origin/develop) on every checkout. --later-only / --work-only print one inventory.
+--references prints the coherent numeric reference inventory.
 EOF
       exit 0
       ;;

@@ -1,0 +1,75 @@
+{
+  "schema": "ask-direct-acceptance/v1",
+  "work_id": "shorter-hashes",
+  "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95",
+  "decision": "ACCEPTED",
+  "confidence": 0.95,
+  "recorded_by": "/root",
+  "authority": {
+    "user_instruction": "review and accept if more than 90 percent are you certain",
+    "workflow": "direct self-development; kit disabled",
+    "source": "AGENTS.md highest-priority kit self-development rule"
+  },
+  "intent_sha256": "8784f3748505fe0ac51ccb9a7dfe78de0c04f79cd26dac58689fdee10cb084e6",
+  "historical_result_preserved_sha256": "3cc7563bb988ef463ac26aa9496c90e2923b92a31f8fd3e2c0540eb4eaf02370",
+  "reviews": [
+    {
+      "reviewer": "/root/standards_review",
+      "axis": "standards and correctness",
+      "decision": "APPROVED",
+      "confidence": 0.95,
+      "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95"
+    },
+    {
+      "reviewer": "/root/spec_review",
+      "axis": "specification",
+      "decision": "APPROVED",
+      "confidence": 0.96,
+      "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95"
+    }
+  ],
+  "reference_execution": {
+    "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95",
+    "run_id": "3f2b484f45f64f67b112babbd91f86ee",
+    "report": "work/shorter-hashes/traceability/runs/3f2b484f45f64f67b112babbd91f86ee/results.json",
+    "methods_passed": 47,
+    "runner_processes": 14,
+    "all_runner_exit_codes_zero": true,
+    "observed_rows": 49,
+    "adapter_diagnostics": {
+      "unsupported_subtest": 2
+    },
+    "summary_wrapper_exit_code": 1,
+    "summary_wrapper_reason": "The summary demanded passed for every row; the adapter records successful subtests as unsupported_subtest. Raw rows and wrapper failure are preserved, not relabeled."
+  },
+  "broad_verification": {
+    "candidate_sha": "18997d274302370461bab0ec53a59482b73b1013",
+    "mandatory_checks_passed": 39,
+    "overall_result": "fail",
+    "overall_error": "spec-to-test completion failed: {\"errors\": [\"dirty or non-current candidate source\"], \"missing_evidence\": [], \"report\": \"work/shorter-hashes/traceability/completion.json\"}",
+    "report": "work/shorter-hashes/acceptance-evidence/verify-18997d2.json",
+    "log": "work/shorter-hashes/acceptance-evidence/verify-18997d2.log",
+    "applicability": "Immutable broad-check candidate has identical production code to final candidate. The only subsequent change adds the candidate _ask/scripts path to CLI test imports; the complete reference run then executed the final candidate.",
+    "complete_candidate_diff": "diff --git a/_ask/tests/test_workflow_refs_cli.py b/_ask/tests/test_workflow_refs_cli.py\nindex b85f194..6e8a639 100644\n--- a/_ask/tests/test_workflow_refs_cli.py\n+++ b/_ask/tests/test_workflow_refs_cli.py\n@@ -11,6 +11,7 @@ import sys\n import shutil\n \n sys.path.insert(0, str(Path(__file__).resolve().parents[2] / \".agents/ask\"))\n+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / \"_ask/scripts\"))\n from workflow_refs.store import CatalogError, initialize_catalog, register_revision\n \n \n"
+  },
+  "benchmark": {
+    "candidate_sha": "36b06f3bfa846e6d168a74ebb57aaf8c9fa62a95",
+    "status": "pass",
+    "report": "work/shorter-hashes/benchmark/results/direct-acceptance/report.json",
+    "totals": {
+      "baseline": {
+        "agent_input_tokens": 16598,
+        "metadata_bytes": 195626,
+        "non_json_bytes": 43219
+      },
+      "candidate": {
+        "agent_input_tokens": 14178,
+        "metadata_bytes": 154054,
+        "non_json_bytes": 53532
+      }
+    },
+    "equivalent_evidence": true,
+    "retained_outputs_compared": 60
+  },
+  "legacy_workflow_completion": "Not established: historical result.json remains fail; task states and formal review/acceptance refs are not advanced. This is direct acceptance under the highest-priority self-development rule."
+}

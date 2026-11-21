@@ -1,0 +1,28 @@
+test_decide_allocates_after_existing_review_and_public_show_resolves_it (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_projection_handles_unhashable_rows_and_commented_yaml (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ERROR
+test_public_numeric_show_and_scoped_errors (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_public_show_projects_only_selected_verified_json (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_record_run_numeric_provenance (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_start_work_cooperating_inventory_publication (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ok
+test_task_process_waiver_is_hash_and_candidate_bound (_ask.tests.test_workflow_refs_cli.ReferenceTests) ... ERROR
+
+======================================================================
+ERROR: test_projection_handles_unhashable_rows_and_commented_yaml (_ask.tests.test_workflow_refs_cli.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-g94_31cd/candidate/_ask/tests/test_workflow_refs_cli.py", line 117, in test_projection_handles_unhashable_rows_and_commented_yaml
+    from inner_loop.yaml_lite import parse_yaml
+ModuleNotFoundError: No module named 'inner_loop'
+
+======================================================================
+ERROR: test_task_process_waiver_is_hash_and_candidate_bound (_ask.tests.test_workflow_refs_cli.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-g94_31cd/candidate/_ask/tests/test_workflow_refs_cli.py", line 260, in test_task_process_waiver_is_hash_and_candidate_bound
+    from inner_loop.evidence import NotIntegrable, check_integrable, digest
+ModuleNotFoundError: No module named 'inner_loop'
+
+----------------------------------------------------------------------
+Ran 7 tests in 5.006s
+
+FAILED (errors=2)

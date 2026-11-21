@@ -1,0 +1,33 @@
+{
+  "schema": "ask-task-review/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "2",
+  "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+  "red_sha": null,
+  "candidate_sha": "66737ef3892193f4e0e729396a2194afb6f07910",
+  "reviewer": "/root/spec_review",
+  "decision": "REJECTED",
+  "findings": [
+    {
+      "id": "T2-R4",
+      "severity": "P2",
+      "classification": "existing-spec behavior defect",
+      "location": ".agents/ask/workflow_refs/store.py:112",
+      "requirement": "specs/proposals/shorter-hashes.md:156-160 requires unchanged complete payload/bindings to retain its revision and unavailable or unsupported comparison to report incomplete.",
+      "reproduction": "In an isolated Git fixture using exact candidate 66737ef, publish a valid structured items document with item x.value equal to 500 nested arrays around 0. The initial registration succeeds as alpha/spec/1@1. Recommit the exact same document with only a space added after each colon, then register x again.",
+      "actual": "The second registration raises unhandled RecursionError: maximum recursion depth exceeded from the local recursive canonicalizer. The same raw source passed ordinary JSON parsing and integrity hashing.",
+      "expected": "Retain the existing revision when comparison can be completed, or return a scoped incomplete-comparison error without successful publication if the comparison depth is unsupported.",
+      "fix": "Handle supported nested values without exhausting the stack, or convert the unsupported comparison depth to a scoped refusal. Do not turn the failure into None followed by publishing a new revision. Add the focused reproduction before changing production code."
+    }
+  ],
+  "summary": "Decimal item parsing fixes the independently reproduced precision collision, and no Task3 helper is imported. Direct checks confirm accepted JSON nesting of depth 500 reaches the local canonicalizer and crashes on an otherwise presentation-only reuse operation. No separate finding is made for an extreme Decimal exponent that cannot reach this helper through registration due to earlier payload rejection. Review stopped on the concrete recursion failure; broad suite was not repeated.",
+  "candidate_file_digests": {
+    ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+    ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+    ".agents/ask/workflow_refs/store.py": "28148dfa860dc3cf55432a860b66e8832f7f55efb4b13d1b7bf9e738228be15a",
+    ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+    "_ask/tests/test_workflow_refs_identity.py": "b90abf2b93880855629c8622549989c00eb74ae8c8b4b60990b47504696f3161",
+    "_ask/tests/test_workflow_refs_store.py": "7cd93706ddb84ec5c91013b42c875d6624df11ef00cd25bc6bf1951488dd8c2e",
+    "_ask/tests/test_workflow_refs_codec.py": "a7255d7f9df017a3975857596c5fd1abec5d61382f4e6c8b3b7109c036a4957c"
+  }
+}

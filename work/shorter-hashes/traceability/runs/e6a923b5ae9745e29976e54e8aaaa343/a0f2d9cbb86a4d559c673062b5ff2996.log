@@ -1,0 +1,35 @@
+test_evidence_projection_and_exact_runner (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests) ... FAIL
+test_qualified_tasks_and_cas_recovery (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests) ... ok
+
+======================================================================
+FAIL: test_evidence_projection_and_exact_runner (_ask.tests.test_workflow_refs_inner_loop.ReferenceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-4xxyampo/candidate/_ask/tests/test_workflow_refs_inner_loop.py", line 166, in test_evidence_projection_and_exact_runner
+    self._assert_task_scoped_run()
+  File "/tmp/ask-cases-4xxyampo/candidate/_ask/tests/test_workflow_refs_inner_loop.py", line 269, in _assert_task_scoped_run
+    self.assertEqual(inner_loop_source_changes(self.root, "fixture-work"), [
+AssertionError: Lists differ: ['wor[21 chars]nces/integrity.json', 'work/fixture-work/refer[113 chars]son'] != ['wor[21 chars]nces/other.json', 'work/other-work/references/integrity.json']
+
+First differing element 0:
+'work/fixture-work/references/integrity.json'
+'work/fixture-work/references/other.json'
+
+First list contains 2 additional elements.
+First extra element 2:
+'work/fixture-work/references/other.json'
+
+- ['work/fixture-work/references/integrity.json',
+-  'work/fixture-work/references/integrity.json.pending',
+-  'work/fixture-work/references/other.json',
+? ^
+
++ ['work/fixture-work/references/other.json',
+? ^
+
+   'work/other-work/references/integrity.json']
+
+----------------------------------------------------------------------
+Ran 2 tests in 6.457s
+
+FAILED (failures=1)

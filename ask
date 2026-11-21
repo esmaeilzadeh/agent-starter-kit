@@ -17,6 +17,9 @@ Same help: no command, -h, --help, or help.
 In a repo that already has the kit, `askit` prints this same text (it wraps ./ask).
 
 Commands:
+  access-check
+      Probe write access to local Git metadata and the workspace. No flags.
+
   check-clean
       Refuse if the worktree is dirty. No flags.
 
@@ -39,6 +42,13 @@ Commands:
       --json           machine-readable rows
       --later-only     parked .later/ cards only
       --work-only      workstreams only
+
+  refs show <qualified-ref> [--integrity]
+  refs status [<qualified-ref>] [--shared-owner <owner>]
+  refs impact --source <capture.json> --candidate <capture.json>
+  refs decide --evidence <decision.json> --recorded-by <actor>
+  refs migrate <owner> | export <owner> --out <bundle> | import <bundle>
+      Numeric workflow-reference lookup, scoped project analysis and migration.
 
   traceability validate-plan|accept-plan|record-review|run|check-completion|migrate <work-id>
       Structured spec-to-test contracts and evidence. Use --help for arguments.
@@ -232,6 +242,9 @@ fi
 shift
 
 case "$cmd" in
+  access-check)
+    exec "$SCRIPTS/access-check.sh" "$@"
+    ;;
   check-clean|check-clean-worktree)
     exec "$SCRIPTS/check-clean-worktree.sh" "$@"
     ;;
@@ -246,6 +259,9 @@ case "$cmd" in
     ;;
   status)
     exec "$SCRIPTS/status.sh" "$@"
+    ;;
+  refs|references)
+    exec "$SCRIPTS/references.sh" "$@"
     ;;
   verify)
     exec "$SCRIPTS/verify.sh" "$@"

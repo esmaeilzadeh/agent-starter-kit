@@ -1,0 +1,7 @@
+check-clean-worktree: clean
+access-check: Git metadata and workspace are writable
+start-work: work-id=demo
+start-work: branch=agent/demo
+start-work: HEAD=a4763bfb0f066b3ac47680d344012d90b4ae8771
+start-work: workstream=work/demo
+PASS: start-work does not seed explore-map.md

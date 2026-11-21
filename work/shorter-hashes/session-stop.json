@@ -1,0 +1,28 @@
+{
+  "status": "stopped-at-user-request",
+  "request": "store state and commit and push",
+  "saved_at": "2026-10-30T09:47:07.101287+00:00",
+  "branch": "agent/shorter-hashes",
+  "evidence_head_before_save": "cbe12b6b503db3a595d8495168e548c9e974d77d",
+  "reviewed_source_candidate": "fab05ca5f9455aede8e56ce9b32433111ce236d9",
+  "source_approval": {
+    "decision": "APPROVED",
+    "confidence_percent": 98,
+    "python_tests_passed": 73,
+    "shell_checks_passed": 3
+  },
+  "whole_workstream_approval": "WITHHELD: frozen public whole-file lookup replay failed both savings thresholds",
+  "evidence": [
+    "work/shorter-hashes/final-verification.json",
+    "work/shorter-hashes/final-source-review.md",
+    "work/shorter-hashes/benchmark/results/fab05ca/report.json"
+  ],
+  "resume_boundary": "Await user direction. Kit self-development workflow remains disabled. Do not restart the inner loop or claim feature acceptance. Any future savings work must preserve the frozen questions, accounting, original evidence and strict thresholds.",
+  "preserved_agents_change": {
+    "path": "AGENTS.md",
+    "status": "committed",
+    "commit": "8f39ecd5f58c9c38def247007c1365c4036052bd",
+    "sha256": "aed4faa0c03129d432a550c07b8c20be269bf3d1dc24dcb5b8783376420dab4b"
+  },
+  "publication": "User requested pushing agent/shorter-hashes after this state commit."
+}

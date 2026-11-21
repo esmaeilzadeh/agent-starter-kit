@@ -10,10 +10,11 @@ import tempfile
 from verification.traceability.adapters import run_tests
 from verification.traceability.contracts import POLICY,digest
 from verification.traceability.evidence import accept_plan,inventory,load_accepted,record_test_review,source_digests,write_json
+from traceability_support import seed_model
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
-    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False):
+    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False,start_task_before_candidate=False):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         self.git('init','-q','-b','agent/w');self.git('config','user.email','test@example.com');self.git('config','user.name','Test')
         self.write('.gitignore','__pycache__/\nverification-result.json\nwork/w/traceability/\nwork/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n')
@@ -37,12 +38,17 @@ class Consumer:
                 self.write('work/w/inner-loop/tasks.yaml','schema: ask-inner-loop-tasks/v1\nwork_id: w\ntasks:\n  - id: a\n    depends_on: []\n    owned_paths: [app.py]\n  - id: b\n    depends_on: [a]\n    owned_paths: [app.py]\n')
                 self.plan['task_scopes']=[{'task_id':'a','test_ids':['U']},{'task_id':'b','test_ids':['E']}]
         self.write('work/w/plan.md','# Plan\nExecute explicit unit and separate-process CLI cases.\n')
-        self.write('specs/current/w.json',self.spec);self.write('work/w/test-plan.json',self.plan)
+        self.write('specs/current/w.json',self.spec);self.write('specs/current/w.md','# Workstream specification\n');self.write('work/w/test-plan.json',self.plan)
+        seed_model(self.root, 'w')
         self.red_sha=self.commit('faulty implementation with behavior assertions')
         decision={'decision':'APPROVED','reviewer':'fixture-independent','spec_digest':digest(self.spec),'plan_digest':digest(self.plan)}
         self.write('work/w/traceability/plan-review.json',decision)
         accept_plan(self.root,'w',self.red_sha,'fixture-independent','fixture-coordinator','work/w/traceability/plan-review.json')
         self.commit('pin accepted obligations')
+        if start_task_before_candidate:
+            started=self.command('inner-loop','run','w')
+            if started.returncode:
+                raise AssertionError(started.stdout+started.stderr)
         self.contracts=load_accepted(self.root,'w','HEAD')
         self.red=run_tests(self.root,self.contracts,self.red_sha,phase='red')
         self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(render(sys.argv[1]))\n")

@@ -1,0 +1,74 @@
+{
+  "schema": "ask-continuation-recovery-report/v1",
+  "work_id": "shorter-hashes",
+  "date": "2026-10-29",
+  "status": "escalated; recovery choice pending",
+  "delegation": "User authorizes implementor decisions only when confidence is above 90%; otherwise escalate.",
+  "amendment": {
+    "decision": "APPROVED",
+    "reviewed_commit": "5911780b48469d1027bc8bcdd3bbb35ebba3694a",
+    "review": "work/shorter-hashes/inner-loop/evidence/task6-plan-review.json",
+    "registration": "not performed"
+  },
+  "observed": {
+    "checkpoint_ref": {
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "fatal: Needed a single revision"
+    },
+    "historical_checkpoint_object": {
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "fatal: Not a valid object name 5208e95d6a1e49097863db6e1a3752a567ba9375^{commit}"
+    },
+    "local_accepted_authority": {
+      "exit_code": 0,
+      "stdout": "e1ca2a523c5417687479c09ffc1bf6c1cc337763",
+      "stderr": ""
+    },
+    "local_authority_contract_sha": "02ad31b6e5ef5130986a920f943788cbbe970631",
+    "tracked_pin_contract_sha": "8d2ac720bf970b0571a774556a82f80d729e0929",
+    "state_revision": 46,
+    "recovery_check": {
+      "status": "recovery_required",
+      "work_id": "shorter-hashes",
+      "task_ids": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "evidence_paths": [
+        "work/shorter-hashes/inner-loop/results/1.json",
+        "work/shorter-hashes/inner-loop/results/2.json",
+        "work/shorter-hashes/inner-loop/results/3.json",
+        "work/shorter-hashes/inner-loop/results/4.json",
+        "work/shorter-hashes/inner-loop/results/5.json"
+      ],
+      "conflicts": [
+        "work/shorter-hashes/inner-loop/results/1.json: TaskResult contract identity mismatch"
+      ],
+      "next_actions": [
+        "inspect the listed state, result, review, and source history",
+        "write an explicit reconciliation record that preserves every prior attempt",
+        "resume only after the reconciled state and evidence are reviewed"
+      ]
+    },
+    "remote_shorter_hashes_refs": [],
+    "unreachable_search": "git fsck --full --unreachable --no-reflogs found no shorter-hashes checkpoint or newer shorter-hashes accepted authority among unreachable commits"
+  },
+  "preserved": {
+    "state_sha256": "67ab24c6699900cbee1226de6149bf472efa5e8ec12b2df4998b661b3ee8adf8",
+    "intent_sha256": "8784f3748505fe0ac51ccb9a7dfe78de0c04f79cd26dac58689fdee10cb084e6"
+  },
+  "decision_needed": [
+    "Restore original Git metadata/checkpoint bundle and authority closure from a known location.",
+    "Prepare an independently reviewed reconstruction proposal from committed evidence."
+  ],
+  "constraints": [
+    "No task-state or authority changes performed.",
+    "Do not fabricate historical checkpoint/approval/execution provenance.",
+    "Reseal/register Task 6 amendment only after recovery and safe attempt interruption."
+  ]
+}

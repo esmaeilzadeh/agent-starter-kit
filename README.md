@@ -2,6 +2,9 @@
 
 Portable repository protocol for delegating engineering labor to AI agents while keeping **human ownership** of intent, policy, and acceptance. Cursor is the first-class runtime binding; the protocol stays copyable into ordinary software repos.
 
+Numeric workflow-reference lookup and explicit history migration are available
+through [`./ask refs`](./_ask/docs/workflow-references.md).
+
 This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage contracts + small scripts + pinned Community Skills.
 
 ## Start here

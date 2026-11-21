@@ -1,7 +1,6 @@
 """Join captured task scopes to Engineering Model relationships."""
 from __future__ import annotations
 
-from .snapshot import decode
 from .identities import execution_identity, product_identity
 from inner_loop.yaml_lite import parse_yaml
 
@@ -30,13 +29,7 @@ def _runtime_task_record(owner_entry, task_id):
 
 
 def _captured_json(snapshot, path):
-    raw = snapshot.files.get(path)
-    if raw is None:
-        return None
-    try:
-        return decode(raw)
-    except (UnicodeError, ValueError, TypeError):
-        return None
+    return snapshot.documents.get(path)
 
 
 def build_workbench(snapshot, model, model_task_states, runtime_states=None):

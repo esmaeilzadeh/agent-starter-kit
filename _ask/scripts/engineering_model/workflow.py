@@ -47,6 +47,19 @@ def adopted(root, work_id):
     return _git(root, 'cat-file', '-e', f'HEAD:work/{work_id}/engineering-model.json').returncode == 0
 
 
+def require_model(root, work_id):
+    """Every named workflow needs its Engineering Model before admission."""
+    if work_id is not None:
+        adopted(root, work_id)
+        path = f'work/{work_id}/engineering-model.json'
+        model = Path(root) / path
+        if not model.exists() and not model.is_symlink():
+            raise Refused('EM007_MODEL_REQUIRED',
+                          f'{path} is required. Prepare it from _ask/templates/engineering-model.json '
+                          f'with work_id {work_id!r}, populate the current intent/spec/plan links, '
+                          f'and run ./ask model validate --work-id {work_id}.', path)
+
+
 def _refuse(diagnostics):
     if diagnostics:
         first = diagnostics[0]
@@ -57,11 +70,49 @@ def _refuse(diagnostics):
         raise refusal
 
 
+def require_plan_links(snapshot):
+    """An implementation preflight requires the real tasks/tests in its model."""
+    from inner_loop.yaml_lite import parse_yaml
+    work_id = snapshot.work_id
+    nodes = snapshot.document.get('nodes', [])
+    path = f'work/{work_id}/engineering-model.json'
+    graph_raw = snapshot.files.get(f'work/{work_id}/inner-loop/tasks.yaml')
+    graph = parse_yaml(graph_raw.decode('utf-8')) if graph_raw is not None else {}
+    tasks = graph.get('tasks', [])
+    if not isinstance(tasks, list) or any(not isinstance(task, dict) or not isinstance(task.get('id'), str)
+                                          for task in tasks):
+        raise Refused('EM016_PLAN_MODEL', 'TaskGraph tasks must be valid task records', path)
+    missing = []
+    for task in tasks:
+        if snapshot.document.get('schema') == SCHEMA_V2:
+            matches = [node for node in nodes if node.get('type') == 'task'
+                       and node.get('execution') == {'work_id': work_id, 'task_id': task['id']}]
+        else:
+            matches = [node for node in nodes if node.get('type') == 'task' and node.get('id') == task['id']]
+        if matches and snapshot.document.get('schema') == SCHEMA_V2 and required_task_passages(snapshot, matches[0]['id']):
+            missing.append('spec/plan context for task ' + task['id'])
+    plan_path = f'work/{work_id}/test-plan.json'
+    plan = snapshot.documents.get(plan_path, {})
+    if not isinstance(plan, dict) or not isinstance(plan.get('tests', []), list):
+        raise Refused('EM016_PLAN_MODEL', 'test-plan.json must contain valid test records', path)
+    for test in plan.get('tests', []):
+        if not isinstance(test, dict) or not isinstance(test.get('id'), str):
+            raise Refused('EM016_PLAN_MODEL', 'test-plan.json must contain valid test records', path)
+        if not any(node.get('type') == 'test'
+                   and node.get('reference') == {'path': plan_path, 'id': test['id']} for node in nodes):
+            missing.append('test ' + test['id'])
+    if missing:
+        raise Refused('EM016_PLAN_MODEL', 'Populate the required Engineering Model before implementation: '
+                      + ', '.join(missing), path)
+
+
 def _require_task_context(snapshot, selected_task_id=None, selected_execution=None, delivery_task_id=None):
     # Nested guards use the snapshot returned by their own freshness check.
     # Preserve v1 compatibility without consulting a separate generation.
     if snapshot.document.get('schema') != SCHEMA_V2:
         selected_execution = None
+    if delivery_task_id is not None:
+        require_plan_links(snapshot)
     try:
         if delivery_task_id is not None:
             if selected_task_id is not None or selected_execution is not None:
@@ -126,17 +177,14 @@ def workflow_admission(root, work_id, expected=None, *, selected_task_id=None, s
     chain from that event. Only the outermost call publishes its result. No
     document writer lock survives entry/exit admission or is held while the
     action/subprocess runs.
-    Unadopted work yields None and acquires no validated-state label.
+    Named workstreams require a model; repository-only actions may omit work_id.
     """
     root = Path(root).resolve()
-    if not adopted(root, work_id):
+    require_model(root, work_id)
+    if work_id is None:
         if selected_task_id is not None or selected_execution is not None:
             raise Refused('EM015_TASK_ID', 'selected Task requires an adopted captured Engineering Model')
         yield None
-        if adopted(root, work_id):
-            _snapshot, diagnostics = validate_current(root, work_id)
-            _refuse(diagnostics)
-            raise Refused('EM007_INPUT_CHANGED', 'workflow cannot implicitly adopt new canonical definitions')
         return
     key = (str(root), work_id)
     active = _active.get()
@@ -200,14 +248,12 @@ def _validate_candidate(root, work_id, revision):
     root = Path(root).resolve()
     if work_id is None:
         return revision
+    require_model(root, work_id)
     resolved = _git(root, 'rev-parse', '--verify', revision + '^{commit}')
     if resolved.returncode:
         raise Refused('EM007_CANDIDATE', resolved.stderr.strip())
     sha = resolved.stdout.strip()
     selected = adopted(root, work_id)
-    contains = _git(root, 'cat-file', '-e', f'{sha}:work/{work_id}/engineering-model.json').returncode == 0
-    if not selected and not contains:
-        return revision
     base = None
     if selected:
         base, diagnostics = validate_current(root, work_id)
@@ -250,8 +296,8 @@ def main(argv=None):
     parser.add_argument('--work-id', required=True)
     args = parser.parse_args(argv)
     try:
-        with workflow_admission(args.root, args.work_id):
-            pass
+        with workflow_admission(args.root, args.work_id) as snapshot:
+            require_plan_links(snapshot)
         return 0
     except (OSError, ValueError, KeyError, TypeError) as exc:
         diagnostic = getattr(exc, 'diagnostic', {'code': 'EM007_ADMISSION', 'message': str(exc), 'path': '$'})

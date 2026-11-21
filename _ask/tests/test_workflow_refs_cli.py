@@ -1,0 +1,399 @@
+from __future__ import annotations
+
+import contextlib
+import io
+import json
+from pathlib import Path
+import subprocess
+import tempfile
+import unittest
+import sys
+import shutil
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / ".agents/ask"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_ask/scripts"))
+from workflow_refs.store import CatalogError, initialize_catalog, register_revision
+
+
+class ReferenceTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="refs-cli-")
+        self.root = Path(self.temp.name)
+        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=self.root, check=True)
+        subprocess.run(["git", "config", "user.name", "Fixture"], cwd=self.root, check=True)
+        subprocess.run(["git", "config", "user.email", "fixture@example.test"], cwd=self.root, check=True)
+        self.source = self.root / "work/demo/source.json"
+        self.source.parent.mkdir(parents=True)
+        self.source.write_text(json.dumps({"items": [{"id": "task-two", "value": 7, "inputs": []}]}))
+        subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "fixture source"], cwd=self.root, check=True)
+        self.commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root, text=True).strip()
+        catalog = self.root / "work/demo/references/integrity.json"
+        catalog.parent.mkdir(parents=True)
+        initialize_catalog(catalog, "demo")
+        register_revision(catalog, "demo", "demo/spec/1/plan/1/task/2",
+                          {"commit": self.commit, "path": "work/demo/source.json"},
+                          "task-two", "structured-item/1", self.source.read_bytes())
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def test_public_numeric_show_and_scoped_errors(self):
+        from workflow_refs.cli import main
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/1/plan/1/task/2@1"], root=self.root)
+        value = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(value["revision"], 1)
+        self.assertEqual(value["parents"], {"spec": 1, "plan": 1})
+        self.assertNotIn("integrity", value)
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/1/plan/1/task/2@1", "--integrity"], root=self.root)
+        detailed = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertIn("digests", detailed["integrity"])
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/1/plan/1/task/2@2"], root=self.root)
+        missing = json.loads(output.getvalue())
+        self.assertEqual(code, 2)
+        self.assertEqual(missing["reason"], "missing")
+
+    def test_public_show_projects_only_selected_verified_json(self):
+        from workflow_refs.cli import main
+
+        raw = (b'{"schema":"v1","precision":1.234567890123456789,'
+               b'"tests":[{"id":"selected","value":"kept"},'
+               b'{"id":"other","value":"omitted"}],'
+               b'"exemptions":{"task-a":{"reason":"kept"},'
+               b'"task-b":{"reason":"omitted"}}}')
+        self.source.write_bytes(raw)
+        subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "projectable JSON source"], cwd=self.root, check=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root, text=True).strip()
+        catalog = self.root / "work/demo/references/integrity.json"
+        register_revision(catalog, "demo", "demo/spec/2",
+                          {"commit": commit, "path": "work/demo/source.json"},
+                          "work/demo/source.json", "prose-item/1", raw)
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/2@1", "--include", "schema",
+                         "--include", "precision", "--select", "tests.id=selected",
+                         "--map-entry", "exemptions=task-a"], root=self.root)
+        shown = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(shown["payload"]["tests"], [{"id": "selected", "value": "kept"}])
+        self.assertEqual(shown["payload"]["exemptions"], {"task-a": {"reason": "kept"}})
+        self.assertNotIn("other", output.getvalue())
+        self.assertNotIn("task-b", output.getvalue())
+        self.assertIn("1.234567890123456789", output.getvalue())
+
+        for duplicate, expected in ((False, "missing"), (True, "ambiguous")):
+            value = json.loads(raw)
+            if duplicate:
+                value["tests"].append(dict(value["tests"][0]))
+            replacement = json.dumps(value, separators=(",", ":")).encode()
+            self.source.write_bytes(replacement)
+            subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+            subprocess.run(["git", "commit", "-qm", f"projection {expected}"], cwd=self.root, check=True)
+            commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root, text=True).strip()
+            reference = f"demo/spec/{3 if not duplicate else 4}@1"
+            register_revision(catalog, "demo", reference.rsplit("@", 1)[0],
+                              {"commit": commit, "path": "work/demo/source.json"},
+                              "work/demo/source.json", "prose-item/1", replacement)
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                selector = "tests.id=selected" if duplicate else "tests.id=absent"
+                code = main(["show", reference, "--select", selector], root=self.root)
+            self.assertEqual(code, 2)
+            self.assertEqual(json.loads(output.getvalue())["reason"], expected)
+
+    def test_projection_handles_unhashable_rows_and_commented_yaml(self):
+        from workflow_refs.cli import main
+        from inner_loop.yaml_lite import parse_yaml
+
+        catalog = self.root / "work/demo/references/integrity.json"
+
+        def register(reference, raw, message):
+            self.source.write_bytes(raw)
+            subprocess.run(["git", "add", "work/demo/source.json"], cwd=self.root, check=True)
+            subprocess.run(["git", "commit", "-qm", message], cwd=self.root, check=True)
+            commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root,
+                                             text=True).strip()
+            register_revision(catalog, "demo", reference.rsplit("@", 1)[0],
+                              {"commit": commit, "path": "work/demo/source.json"},
+                              "work/demo/source.json", "prose-item/1", raw)
+
+        raw_json = b'{"items":[{"id":"task-two","value":7},{"id":[]}]}'
+        register("demo/spec/2@1", raw_json, "JSON with unrelated non-string id")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/2@1", "--select", "items.id=task-two",
+                         "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output.getvalue()),
+                         {"items": [{"id": "task-two", "value": 7}]})
+
+        raw_yaml = (b"# comment\nschema: ask-inner-loop-tasks/v1\nwork_id: demo\n"
+                    b"annotations:\n  - id: note\n    detail: retained\n"
+                    b"tasks:\n  - id: one\n    depends_on: []\n  - id: two\n"
+                    b"    depends_on: []\nnotes: omit from task projection\n")
+        register("demo/spec/3@1", raw_yaml, "YAML with leading comment")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/3@1", "--yaml-task", "two",
+                         "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(output.getvalue(),
+                         "# comment\nschema: ask-inner-loop-tasks/v1\nwork_id: demo\n"
+                         "annotations:\n  - id: note\n    detail: retained\n"
+                         "tasks:\n  - id: two\n    depends_on: []\n")
+        self.assertEqual([task["id"] for task in parse_yaml(output.getvalue())["tasks"]], ["two"])
+
+        for number, duplicate in enumerate((
+                b"tasks:\n  - id: two\ntasks: []\n",
+                b"tasks: []\ntasks:\n  - id: two\n"), 4):
+            reference = f"demo/spec/{number}@1"
+            register(reference, duplicate, f"duplicate YAML tasks field {number}")
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = main(["show", reference, "--yaml-task", "two"], root=self.root)
+            self.assertEqual(code, 2)
+            self.assertEqual(json.loads(output.getvalue())["reason"], "invalid_projection")
+
+        register("demo/spec/6@1", b"| two | selected |\n|   continuation |\n\n"
+                 b"## Notes\nunrelated\n", "last Markdown table row")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", "demo/spec/6@1", "--task-row", "two",
+                         "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(output.getvalue(),
+                         "## First task row\n| two | selected |\n|   continuation |\n")
+
+    def test_decide_allocates_after_existing_review_and_public_show_resolves_it(self):
+        from workflow_refs.cli import main
+        from workflow_refs.project import capture_project
+
+        source = json.loads(self.source.read_text())
+        source["items"].append({"id": "review-one", "summary": "existing review"})
+        self.source.write_text(json.dumps(source))
+        index = self.root / "work/INDEX.md"
+        index.parent.mkdir(parents=True, exist_ok=True)
+        index.write_text("# Workstreams\n")
+        subprocess.run(["git", "add", "work/demo/source.json", "work/INDEX.md"],
+                       cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "add existing review and inventory"],
+                       cwd=self.root, check=True)
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=self.root,
+                                         text=True).strip()
+        catalog = self.root / "work/demo/references/integrity.json"
+        register_revision(catalog, "demo", "demo/review/1",
+                          {"commit": commit, "path": "work/demo/source.json"},
+                          "review-one", "structured-item/1", self.source.read_bytes())
+        subprocess.run(["git", "branch", "develop"], cwd=self.root, check=True)
+        subprocess.run(["git", "branch", "agent/demo"], cwd=self.root, check=True)
+        capture = capture_project(self.root)
+        self.assertEqual(capture["status"], "complete")
+
+        evidence = {
+            "action": "retain",
+            "old_upstream": "demo/spec/1/plan/1/task/1@1",
+            "new_upstream": "demo/spec/1/plan/1/task/1@2",
+            "dependent": "demo/spec/1/plan/1/task/2@1",
+            "profile": "structured-item/1",
+            "context_generation": capture["generation"],
+            "examined_paths": {"work/demo/source.json": "unchanged"},
+            "review_evidence": "reviewed against the captured source",
+            "reviewer": "independent-reviewer",
+            "coordinator": "coordinator",
+            "outward_equal": True,
+            "satisfies_new_inputs": True,
+            "reuse_allowed": True,
+            "required_paths": ["work/demo/source.json"],
+            "eligible_consumers": ["demo/spec/1/plan/1/task/2@1"],
+            "new_dependent": "demo/spec/1/plan/1/task/2@1",
+            "retirement_safe": False,
+        }
+        evidence_path = self.root / "decision.json"
+        evidence_path.write_text(json.dumps(evidence))
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["decide", "--evidence", str(evidence_path),
+                         "--recorded-by", "coordinator"], root=self.root)
+        decided = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(decided["reference"], "demo/review/2@1")
+        with self.assertRaisesRegex(CatalogError, "already allocated to a decision"):
+            register_revision(catalog, "demo", "demo/review/2",
+                              {"commit": commit, "path": "work/demo/source.json"},
+                              "review-one", "structured-item/1", self.source.read_bytes())
+
+        for reference in ("demo/review/1@1", decided["reference"]):
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = main(["show", reference], root=self.root)
+            shown = json.loads(output.getvalue())
+            self.assertEqual(code, 0)
+            self.assertEqual(shown["reference"], reference)
+            self.assertEqual(shown["status"], "resolved")
+        self.assertEqual(shown["payload"]["status"], "retained")
+        self.assertEqual(shown["payload"]["decision"]["coordinator"], "coordinator")
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", decided["reference"], "--payload-only"], root=self.root)
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(output.getvalue()), shown["payload"])
+
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", decided["reference"], "--include", "absent"], root=self.root)
+        self.assertEqual(code, 2)
+        self.assertEqual(json.loads(output.getvalue())["reason"], "invalid_projection")
+
+    def test_task_process_waiver_is_hash_and_candidate_bound(self):
+        from inner_loop.evidence import NotIntegrable, check_integrable, digest
+
+        candidate = "a" * 40
+        plan_digest = "b" * 64
+        reason = "Task 8 may omit an unwarranted Red under the explicit user direction."
+        artifact_path = "work/demo/inner-loop/evidence/task-8-process-waiver.json"
+        path = self.root / artifact_path
+        path.parent.mkdir(parents=True)
+        authorization = {
+            "schema": "ask-task-process-waiver/v1",
+            "work_id": "demo",
+            "task_id": "8",
+            "candidate_sha": candidate,
+            "accepted_plan_digest": plan_digest,
+            "kind": "user-authorized-process-waiver",
+            "waived_gate": "behavioral-red",
+            "reason": reason,
+            "authorization_source": "explicit-user-direction",
+            "user_authorization": (
+                "do not let this loop on Red requirements or hash-sum integrity checks while developing "
+                "the ask kit; temporary integrity breaks are allowed during development, with the system "
+                "stabilized at the end."
+            ),
+            "constraints": ["do-not-fabricate-or-reuse-red", "green-required",
+                            "review-and-integration-checks-remain-required"],
+        }
+        raw = json.dumps(authorization, sort_keys=True).encode()
+        path.write_bytes(raw)
+        result = {
+            "work_id": "demo", "task_id": "8",
+            "exemption": {"kind": authorization["kind"], "reason": reason,
+                          "authorization_artifact": artifact_path,
+                          "authorization_sha256": digest(raw)},
+        }
+        check_integrable(result, root=self.root, candidate_sha=candidate,
+                         accepted_plan_digest=plan_digest)
+
+        for kwargs in (
+                {"candidate_sha": "c" * 40, "accepted_plan_digest": plan_digest},
+                {"candidate_sha": candidate, "accepted_plan_digest": "d" * 64}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(NotIntegrable):
+                check_integrable(result, root=self.root, **kwargs)
+
+        path.write_bytes(raw + b" ")
+        with self.assertRaisesRegex(NotIntegrable, "digest mismatch"):
+            check_integrable(result, root=self.root, candidate_sha=candidate,
+                             accepted_plan_digest=plan_digest)
+
+    def test_record_run_numeric_provenance(self):
+        repo = self.root / "run-fixture"
+        repo.mkdir()
+        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.name", "Fixture"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.email", "fixture@example.test"], cwd=repo, check=True)
+        kit_root = Path(__file__).resolve().parents[2]
+        (repo / "_ask/scripts").mkdir(parents=True)
+        shutil.copy(kit_root / "_ask/scripts/check-clean-worktree.sh", repo / "_ask/scripts/")
+        shutil.copy(kit_root / "_ask/scripts/record-run.sh", repo / "_ask/scripts/")
+        package = repo / ".agents/ask/workflow_refs"
+        package.mkdir(parents=True)
+        for module in (kit_root / ".agents/ask/workflow_refs").glob("*.py"):
+            shutil.copy(module, package / module.name)
+        (repo / "results/demo").mkdir(parents=True)
+        (repo / "results/demo/config.yaml").write_text("lr: 0.1\n")
+        subprocess.run(["git", "add", "_ask", ".agents", "results/demo/config.yaml"], cwd=repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "record-run fixture"], cwd=repo, check=True)
+        source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
+        command = ["bash", "_ask/scripts/record-run.sh", "--run-id", "demo",
+                   "--commit-sha", source_sha, "--metric", "0.91", "--notes", "kept"]
+        subprocess.run(command, cwd=repo, check=True, capture_output=True, text=True)
+        manifest = json.loads((repo / "results/demo/run_manifest.json").read_text())
+        summary = json.loads((repo / "results/demo/summary.json").read_text())
+        integrity = json.loads((repo / "results/references/integrity.json").read_text())
+        self.assertEqual(manifest["schema"], "eval-run-meta/v2")
+        self.assertEqual(manifest["run_reference"], "repository-runs/run/1@1")
+        self.assertEqual(manifest["notes"], "kept")
+        self.assertNotIn(source_sha, json.dumps(manifest))
+        self.assertEqual(summary["metric"], "0.91")
+        self.assertEqual(integrity["source_bindings"][manifest["run_reference"]]["commit"], source_sha)
+
+        from workflow_refs.cli import main
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            code = main(["show", manifest["run_reference"]], root=repo)
+        public_run = json.loads(output.getvalue())
+        self.assertEqual(code, 0)
+        self.assertEqual(public_run["reference"], "repository-runs/run/1@1")
+        self.assertEqual(public_run["owner"], "repository-runs")
+        self.assertEqual(public_run["payload"]["items"][0]["metric"], "0.91")
+
+        dirty = subprocess.run(["bash", "_ask/scripts/record-run.sh", "--run-id", "dirty",
+                                "--commit-sha", source_sha, "--metric", "0.2"], cwd=repo,
+                               capture_output=True, text=True)
+        self.assertNotEqual(dirty.returncode, 0)
+        self.assertIn("dirty", dirty.stderr.lower())
+        subprocess.run(["git", "add", "results"], cwd=repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "persist recorded run"], cwd=repo, check=True)
+        head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
+        wrong = subprocess.run(["bash", "_ask/scripts/record-run.sh", "--run-id", "wrong",
+                                "--commit-sha", "deadbeef", "--metric", "0.1"], cwd=repo,
+                               capture_output=True, text=True)
+        missing_config = subprocess.run(["bash", "_ask/scripts/record-run.sh", "--run-id", "absent",
+                                         "--commit-sha", head, "--metric", "0.1"], cwd=repo,
+                                        capture_output=True, text=True)
+        missing_sha = subprocess.run(["bash", "_ask/scripts/record-run.sh", "--run-id", "absent",
+                                      "--metric", "0.1"], cwd=repo, capture_output=True, text=True)
+        self.assertNotEqual(wrong.returncode, 0)
+        self.assertNotEqual(missing_config.returncode, 0)
+        self.assertNotEqual(missing_sha.returncode, 0)
+
+    def test_start_work_cooperating_inventory_publication(self):
+        repo = self.root / "start-fixture"
+        repo.mkdir()
+        subprocess.run(["git", "init", "-q", "-b", "main"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.name", "Fixture"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.email", "fixture@example.test"], cwd=repo, check=True)
+        kit_root = Path(__file__).resolve().parents[2]
+        (repo / "_ask/scripts").mkdir(parents=True)
+        shutil.copy(kit_root / "_ask/scripts/check-clean-worktree.sh", repo / "_ask/scripts/")
+        shutil.copy(kit_root / "_ask/scripts/access-check.sh", repo / "_ask/scripts/")
+        shutil.copy(kit_root / "_ask/scripts/start-work.sh", repo / "_ask/scripts/")
+        shutil.copytree(kit_root / "_ask/templates", repo / "_ask/templates")
+        (repo / "work").mkdir()
+        (repo / "work/INDEX.md").write_text("# Workstreams\n")
+        subprocess.run(["git", "add", "_ask", "work/INDEX.md"], cwd=repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "fixture kit"], cwd=repo, check=True)
+        subprocess.run(["git", "branch", "develop"], cwd=repo, check=True)
+        subprocess.run(["bash", "_ask/scripts/start-work.sh", "fresh-owner"], cwd=repo,
+                       check=True, capture_output=True, text=True)
+        from workflow_refs.project import capture_project
+        capture = capture_project(repo)
+        self.assertEqual(capture["status"], "complete")
+        self.assertIn("fresh-owner", capture["owners"])
+        self.assertFalse((repo / "work/fresh-owner/explore-map.md").exists())
+        common = Path(subprocess.check_output(["git", "rev-parse", "--git-common-dir"], cwd=repo,
+                                              text=True).strip())
+        if not common.is_absolute():
+            common = repo / common
+        self.assertTrue((common / "ask-locks/references.lock").is_file())

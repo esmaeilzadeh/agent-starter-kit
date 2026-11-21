@@ -6,6 +6,12 @@ retry limits, and evidence transitions.
 
 ## Lifecycle
 
+For a reported bug, use the reproduction-first path in
+`_ask/policies/workflow.md`: reproduce the observed fault against the existing
+contract before writing its regression test. Keep Red focused on that failure,
+make the smallest fix, and retain other accepted edge guards as Green checks.
+Do not turn hypothetical failure modes into separate Red targets or tests.
+
 For each behavioral slice, capture the failing behavior at an immutable Red
 revision, implement the smallest Green change, then Refactor while preserving
 behavior and keeping the checks green. Once the task's slices are complete,

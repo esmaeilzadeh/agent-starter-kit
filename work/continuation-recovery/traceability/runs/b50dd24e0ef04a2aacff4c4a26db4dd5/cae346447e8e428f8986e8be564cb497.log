@@ -1,0 +1,29 @@
+test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+test_clone_and_cli_recovery_diagnostics (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_crash_after_verification_or_ff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_guard_rollback_and_explicit_attempts (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_nested_verifier_coordinator_finalization (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_old_pinned_runner_handoff (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_stale_review_preserves_execution (_ask.tests.inner_loop_recovery.RecoveryTests) ... ok
+test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests) ... FAIL
+
+======================================================================
+FAIL: test_checkpoint_real_red_and_green (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-eiropk_g/candidate/_ask/tests/inner_loop_recovery.py", line 246, in test_checkpoint_real_red_and_green
+    self.assertTrue(
+AssertionError: False is not true : coordinator must checkpoint validated standalone run milestones
+
+======================================================================
+FAIL: test_standalone_run_finalization_interruptions (_ask.tests.inner_loop_recovery.RecoveryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ask-cases-eiropk_g/candidate/_ask/tests/inner_loop_recovery.py", line 296, in test_standalone_run_finalization_interruptions
+    self.assertTrue(
+AssertionError: False is not true : coordinator must recover a complete report interrupted before ledger insertion
+
+----------------------------------------------------------------------
+Ran 8 tests in 17.861s
+
+FAILED (failures=2)

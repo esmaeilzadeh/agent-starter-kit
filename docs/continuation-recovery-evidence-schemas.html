@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Continuation Recovery Evidence Schema Map</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+  </script>
+  <style>
+    :root { color-scheme: light; font: 16px/1.55 system-ui, sans-serif; color: #182230; background: #f5f7fa; }
+    body { max-width: 1180px; margin: 0 auto; padding: 32px 22px 56px; }
+    h1, h2 { line-height: 1.2; }
+    h1 { margin-bottom: 8px; }
+    .intro, .note { color: #465467; max-width: 900px; }
+    section { margin-top: 30px; padding: 22px; background: white; border: 1px solid #dbe2ea; border-radius: 12px; box-shadow: 0 2px 8px #1822300a; }
+    .diagram { overflow-x: auto; }
+    .note { border-left: 4px solid #c17b17; padding: 10px 14px; background: #fff8e9; border-radius: 4px; }
+    code { background: #eef2f6; padding: 2px 5px; border-radius: 4px; }
+    footer { margin-top: 24px; color: #667487; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Continuation Recovery: Evidence Schemas</h1>
+  <p class="intro">How accepted contracts, test runs, coordinator state, checkpoints, reviews, and integration evidence refer to one another—and where the current checkout breaks that chain.</p>
+
+  <section>
+    <h2>1. Behavior: evidence lifecycle and recovery</h2>
+    <div class="diagram mermaid">
+sequenceDiagram
+    autonumber
+    participant Pin as Accepted contract pin
+    participant C as Coordinator
+    participant R as Traceability runner
+    participant F as Runtime evidence files
+    participant L as Execution ledger
+    participant G as Git checkpoint ref
+    participant Rev as Independent reviewer
+    participant V as Integration verifier
+
+    Note over Pin,C: The accepted pin binds the current spec, plan, and graph digests.
+    C->>R: Run mapped cases on exact candidate
+    R->>F: Write per-execution JSON and log artifacts
+    R->>F: Write ask-test-results/v1 report
+    R->>L: Append run summary with report digest and candidate/contract identities
+    C->>F: Validate report, artifacts, and ledger row
+    C->>F: Record run summary in task evidence
+    C->>G: Checkpoint state and runtime evidence blobs
+    G-->>C: Publish checkpoint commit and workstream ref
+
+    rect rgb(247, 243, 232)
+      Note over C,G: Interruption preserves the attempt and its run history.
+      C->>F: Archive attempt, evidence, and execution rows in state
+      C->>G: Publish interrupted checkpoint
+      Rev->>F: Record reviewed reconciliation receipt for exact transition
+      C->>F: Validate receipt against checkpoint, state, plan, candidate, and review
+      C->>G: Reopen as a new attempt and checkpoint state
+    end
+
+    C->>G: Read retained checkpoint for preflight
+    C->>F: Read selected report and execution ledger row
+    C-->>C: Produce read-only preflight result, do not mutate task state
+
+    Rev->>F: Record candidate-bound review
+    C->>V: Verify TaskResult, review, contracts, and required run evidence
+    V-->>C: Return integration evidence bound to candidate and verifier
+    C->>G: Integrate candidate and publish final checkpoint
+    </div>
+    <p class="note"><strong>Key distinction:</strong> the checkpoint receipt records the checkpoint SHA and summary facts. It does not contain the checkpoint manifest, state snapshot, or evidence blobs. Recovery needs the checkpoint commit and its expected ref.</p>
+  </section>
+
+  <section>
+    <h2>2. Current checkout: missing links</h2>
+    <div class="diagram mermaid">
+flowchart LR
+    handoff["handoff.md<br/>claims CR-3 revision 29<br/>interrupted"]
+    cpnote["CR-3 checkpoint receipt<br/>names checkpoint SHA<br/>state revision 21"]
+    cpcommit["Checkpoint commit<br/>SHA named by receipt"]
+    cpref["Coordinator checkpoint ref"]
+    state["Runtime state.json<br/>expected revision 29"]
+    accepted["traceability-accepted.json<br/>accepted contract anchor"]
+    sources["Task-owned source changes<br/>after accepted anchor"]
+    status["Read-only coordinator status<br/>recovery_required: CR-1"]
+    reconcile["Explicit reconciliation<br/>+ independent review required"]
+    resume["Resume CR-3 / address T13"]
+
+    handoff -. "describes" .-> state
+    cpnote -. "points to" .-> cpcommit
+    cpnote -. "names" .-> cpref
+    accepted --> status
+    sources --> status
+    cpcommit -- "absent in this Git object database" --> missing1["Unavailable"]
+    cpref -- "absent in this checkout" --> missing2["Unavailable"]
+    state -- "file absent" --> missing3["Unavailable"]
+    missing1 --> reconcile
+    missing2 --> reconcile
+    missing3 --> reconcile
+    status --> reconcile
+    reconcile -. "only after evidence is restored/reconciled" .-> resume
+    </div>
+    <p class="note">The handoff and receipts preserve useful identities, but they cannot substitute for the missing checkpoint object and coordinator state. The current status is derived from the checkout’s available state and accepted anchor.</p>
+  </section>
+
+  <section>
+    <h2>3. JSON structure (nested objects vs. linked files)</h2>
+    <p class="intro">This chart summarizes the principal fields and nesting in the implementation’s runtime records. Solid arrows show objects stored inside a JSON document; dashed arrows show identities that link separate files or Git objects.</p>
+    <div class="diagram mermaid">
+flowchart TB
+    pin["ask-accepted-tests/v1<br/>schema, work_id, contract_sha<br/>reviewer, recorded_by<br/>spec_digest, plan_digest, graph_digest"]
+    pinReview["plan_review object<br/>decision, reviewer, reviewed_commit<br/>contract_source_sha, digests, findings"]
+    pin -->|nested| pinReview
+
+    report["ask-test-results/v1<br/>run_id, scope, task_id, candidate_sha<br/>spec_digest, plan_digest"]
+    runner["runner_identity object<br/>capability, adapter_digest"]
+    reportExec["executions array<br/>id, runner_id, phase, source_sha<br/>exit_code, output_artifact, output_digest"]
+    reportCases["cases array<br/>case_id, test_id, outcome, phase<br/>execution_id, source_digests, output_artifact"]
+    report -->|nested| runner
+    report -->|nested| reportExec
+    report -->|nested| reportCases
+
+    ledger["executions.json<br/>array of summary rows"]
+    ledgerRow["run_id, digest, phase, scope<br/>task_id, candidate_sha<br/>spec_digest, plan_digest"]
+    ledger -->|array item| ledgerRow
+    report -. "same run_id; row digest covers report" .-> ledgerRow
+
+    state["ask-inner-loop-state/v1<br/>work_id, revision, coordinator_sha<br/>coordinator_branch, tasks map"]
+    task["Task state<br/>status, base_sha, task_branch, result_path<br/>attempt_number, attempt_id<br/>accepted_plan_ref + digest<br/>attempt_started_revision"]
+    taskEvidence["evidence object<br/>traceability_runs, review<br/>verification + receipt digests"]
+    history["attempt_history array<br/>immutable archived attempts"]
+    attempt["Attempt snapshot<br/>attempt_id, attempt_number, status, reason<br/>base_sha, interrupted_candidate_sha<br/>accepted plan ref + digest, revisions"]
+    attemptEvidence["archived evidence object"]
+    attemptRuns["execution_runs array<br/>run summary rows"]
+    state -->|tasks map values| task
+    task -->|nested| taskEvidence
+    task -->|nested| history
+    history -->|array item| attempt
+    attempt -->|nested| attemptEvidence
+    attempt -->|nested| attemptRuns
+
+    manifest["ask-inner-loop-checkpoint/v1<br/>work_id, generation, previous_checkpoint<br/>coordinator_sha, accepted_contract_sha<br/>retained_commits, state_path"]
+    artifacts["artifacts map<br/>repository path → artifact entry"]
+    artifact["Artifact entry<br/>path, blob, sha256, size"]
+    gitTree["Checkpoint Git tree<br/>checkpoint.json + artifact blobs"]
+    manifest -->|nested| artifacts
+    artifacts -->|map value| artifact
+    manifest -->|stored in| gitTree
+    state -->|snapshot file| gitTree
+    ledger -->|runtime artifact file| gitTree
+    report -->|runtime artifact file| gitTree
+
+    recon["ask-inner-loop-reconciliation/v1<br/>work_id, task_id<br/>previous_checkpoint_sha + revision<br/>previous/new attempt IDs<br/>accepted_plan_ref + digest<br/>candidate_sha, source_postimage"]
+    reconReview["review object<br/>decision, reviewer, candidate_sha<br/>payload_sha256"]
+    sourceMap["source_postimage map<br/>path → SHA-256"]
+    recon -->|nested| reconReview
+    recon -->|nested| sourceMap
+    recon -. "must match checkpoint + state" .-> manifest
+    recon -. "authorizes exact reopen transition" .-> state
+
+    taskResult["ask-task-result/v2<br/>work_id, task_id, base_sha, candidate_sha<br/>tdd, exemption"]
+    tdd["tdd object<br/>seam, red, green"]
+    redGreen["Red / Green record<br/>command, output, exit_code"]
+    taskResult -->|nested| tdd
+    tdd -->|nested| redGreen
+    taskResult -. "candidate/base identity" .-> task
+    </div>
+    <p class="note"><strong>Interpretation:</strong> these are schema-shaped summaries, not a substitute for the validators. For example, <code>attempt_history</code> is nested in coordinator state, while the reconciliation receipt is a separate JSON file; the checkpoint manifest is stored inside a Git commit whose tree carries the state and runtime artifact bytes.</p>
+  </section>
+
+  <footer>Schemas and paths are based on the current repository implementation and CR-3 evidence files. Mermaid is loaded from jsDelivr, so an internet connection is needed when opening this HTML file.</footer>
+</body>
+</html>

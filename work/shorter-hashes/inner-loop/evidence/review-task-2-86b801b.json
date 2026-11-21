@@ -1,0 +1,34 @@
+{
+  "schema": "ask-task-review/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "2",
+  "base_sha": "b008400c6bbbc4d41ff60b59b4a5f393b4568e7a",
+  "red_sha": null,
+  "candidate_sha": "86b801b69c347c3b32bdab3d494dbf7d5a53ff55",
+  "reviewer": "/root/spec_review",
+  "decision": "REJECTED",
+  "findings": [
+    {
+      "id": "T2-R3",
+      "severity": "P1",
+      "classification": "existing-spec behavior defect",
+      "location": ".agents/ask/workflow_refs/store.py:76",
+      "requirement": "specs/proposals/shorter-hashes.md:150 and 156-158: numeric values are significant; a changed item payload requires a new revision.",
+      "reproduction": "In an isolated Git fixture using source extracted from exact candidate 86b801b, register alpha/spec/1 for item x from {\"items\":[{\"id\":\"x\",\"value\":1.00000000000000001,\"inputs\":[]}]}. Commit the same document with x.value changed to 1.00000000000000002 and register again under structured-item/1.",
+      "actual": "Both registrations return alpha/spec/1@1; _structured_item_digest returns the same digest for the different numeric values.",
+      "expected": "The changed numeric obligation publishes alpha/spec/1@2 and preserves @1.",
+      "cause": "The local helper parses JSON decimals through binary float and delegates to payload_digests, collapsing both distinct source numbers to 1.0 before hashing.",
+      "fix": "Use lossless typed numeric comparison/canonicalization within the Task2 source boundary; add this reproduced high-precision numeric change to the focused regression before changing production code."
+    }
+  ],
+  "summary": "The prior unbound Task3 comparison dependency is removed. Isolated helper checks confirm unknown fields participate, JSON true differs from number 1, and duplicate IDs/keys do not produce an equivalence digest. Approval is withheld because a direct publication reproduction shows high-precision numeric obligations collapse and incorrectly reuse a published revision. Review stopped on this source defect; no coordinator state or source was edited.",
+  "candidate_file_digests": {
+    ".agents/ask/workflow_refs/__init__.py": "453649d8a39628f961230dd764f079122e72ff53946e4cb1589e34c3941b3c3c",
+    ".agents/ask/workflow_refs/identity.py": "217d2997cad9689066a205b6749183cf06f76be66a625b35591f90780adc417c",
+    ".agents/ask/workflow_refs/store.py": "a9def3a3c87c465c84abec122eb1d7a3ccd58c7b43adcd1ebc4890f3ad1543b4",
+    ".agents/ask/workflow_refs/codec.py": "fd6e487911ff7bdc9a449f592fc783d27f474f57393dde3ae284c52c6a311cfb",
+    "_ask/tests/test_workflow_refs_identity.py": "b90abf2b93880855629c8622549989c00eb74ae8c8b4b60990b47504696f3161",
+    "_ask/tests/test_workflow_refs_store.py": "5cefb098b3590987683f2f568daa0455b06ee74bf75c207a39f03cc00b3a0bc7",
+    "_ask/tests/test_workflow_refs_codec.py": "a7255d7f9df017a3975857596c5fd1abec5d61382f4e6c8b3b7109c036a4957c"
+  }
+}

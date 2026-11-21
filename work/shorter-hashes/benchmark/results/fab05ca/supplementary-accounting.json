@@ -1,0 +1,51 @@
+{
+  "journeys": [
+    {
+      "id": "resume",
+      "baseline_metadata_bytes": 16086,
+      "candidate_metadata_bytes": 26770,
+      "shared_file_accounting": "Per-journey unique required paths overlap; aggregate report counts the global union once."
+    },
+    {
+      "id": "review",
+      "baseline_metadata_bytes": 171404,
+      "candidate_metadata_bytes": 198945,
+      "shared_file_accounting": "Per-journey unique required paths overlap; aggregate report counts the global union once."
+    },
+    {
+      "id": "completion",
+      "baseline_metadata_bytes": 19732,
+      "candidate_metadata_bytes": 31594,
+      "shared_file_accounting": "Per-journey unique required paths overlap; aggregate report counts the global union once."
+    }
+  ],
+  "non_json_legacy_inputs": [
+    {
+      "path": "work/status-template-stage-detection/intent.md",
+      "bytes_each_side": 1914,
+      "sha256": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb"
+    },
+    {
+      "path": "work/status-template-stage-detection/plan.md",
+      "bytes_each_side": 3565,
+      "sha256": "edfc889d58bb587923ebdb556c12b0fa9a59881bb989274ba2c803d791c64a3a"
+    },
+    {
+      "path": "work/structured-agentic-environment/inner-loop/tasks.yaml",
+      "bytes_each_side": 8550,
+      "sha256": "f6c778ba7521166785358ca34cc5f4ff3a5c8c10025f4a0244eff9b93fb4fac2"
+    },
+    {
+      "path": "work/structured-agentic-environment/plan.md",
+      "bytes_each_side": 26827,
+      "sha256": "dc3db2c5843f3ef83f81c9a85ba52bb42304e654b9185ed0f6df5fdf77560e48"
+    },
+    {
+      "path": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+      "bytes_each_side": 2363,
+      "sha256": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3"
+    }
+  ],
+  "non_json_archive_bytes_each_side": 43219,
+  "accounting": "Non-JSON archives and raw transcripts are retained separately and do not offset JSON metadata totals. Candidate response JSON includes any prose/log payloads it embeds."
+}

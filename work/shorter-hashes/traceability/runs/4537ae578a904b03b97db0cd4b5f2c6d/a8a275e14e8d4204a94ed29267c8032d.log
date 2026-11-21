@@ -1,0 +1,9 @@
+test_authoritative_inventory_and_cycles (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ok
+test_coherent_capture_new_owner_and_aba (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ok
+test_task_ref_movement_does_not_stale_capture (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ok
+test_unlogged_transient_owner_stales_capture (_ask.tests.test_workflow_refs_project.ReferenceTests) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 3.184s
+
+OK

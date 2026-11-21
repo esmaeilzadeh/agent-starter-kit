@@ -1,0 +1,11 @@
+{
+  "schema": "ask-task-reproduction/v1",
+  "work_id": "shorter-hashes",
+  "task_id": "4",
+  "candidate_sha": "0b57bef2c47248623046b7f757594530138019f4",
+  "case_id": "4/1",
+  "command": "GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=init.defaultBranch GIT_CONFIG_VALUE_0=worktree PYTHONPATH=.agents/ask _ask/.venv/bin/python3 -m unittest _ask.tests.test_workflow_refs_project.ReferenceTests.test_authoritative_inventory_and_cycles",
+  "setup": "The test fixture committed a catalog with entries:[null], advanced refs/ask/references/shared to that authority commit, captured project state, then called load_project_graph.",
+  "exit_code": 1,
+  "output": "AttributeError: 'NoneType' object has no attribute 'get' (project.py:288, reading entry.get('reference')); unittest failed with 1 error."
+}

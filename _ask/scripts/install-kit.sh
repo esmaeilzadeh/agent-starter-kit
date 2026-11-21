@@ -47,21 +47,13 @@ copy_path() {
   mkdir -p "$(dirname "$dest")"
   if [[ -d "$src" ]]; then
     mkdir -p "$dest"
-    # copy contents; skip consumer-owned manifest if exists unless --force
-    if [[ "$rel" == "_ask" ]]; then
-      excl=(--exclude tests/)
-      if [[ -f "$dest/skills/manifest.yaml" && "$FORCE" -eq 0 ]]; then
-        excl+=(--exclude skills/manifest.yaml)
-      fi
-      if [[ -f "$dest/bindings/models.yaml" && "$FORCE" -eq 0 ]]; then
-        excl+=(--exclude bindings/models.yaml)
-      fi
-      rsync -a "${excl[@]}" "$src/" "$dest/"
-    elif [[ "$rel" == "_ask/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
-      rsync -a --exclude manifest.yaml "$src/" "$dest/"
-    else
-      rsync -a "$src/" "$dest/"
+    excl=(--exclude __pycache__/ --exclude '*.pyc')
+    if [[ "$rel" == "_ask/skills" && -f "$dest/manifest.yaml" && "$FORCE" -eq 0 ]]; then
+      excl+=(--exclude manifest.yaml)
+    elif [[ "$rel" == "_ask/bindings" && -f "$dest/models.yaml" && "$FORCE" -eq 0 ]]; then
+      excl+=(--exclude models.yaml)
     fi
+    rsync -a "${excl[@]}" "$src/" "$dest/"
   else
     if [[ -e "$dest" && "$FORCE" -eq 0 ]]; then
       echo "install-kit: skip existing $rel (use --force)"
@@ -75,16 +67,29 @@ if [[ "$DRY_RUN" -eq 0 ]]; then
   bash "$ROOT/_ask/scripts/copy-project-config.sh" "$TARGET" "$ROOT/_ask/skills/manifest.yaml"
 fi
 
-# Paths to overlay
+# Consumer runtime only; kit specs, tests, authoring guides and local environments stay here.
 for rel in \
-  _ask \
+  _ask/agents \
+  _ask/bindings \
+  _ask/cursor-commands \
+  _ask/policies \
+  _ask/scripts \
+  _ask/skills \
+  _ask/templates \
+  _ask/ui \
+  _ask/docs/codex-integration.md \
+  _ask/docs/codex-model-routing.md \
+  _ask/docs/engineering-model.md \
+  _ask/docs/inner-loop-evidence.md \
+  _ask/docs/spec-test-traceability.md \
+  _ask/docs/workflow-references.md \
+  _ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md \
+  _ask/docs/adr/0017-humanizer-docs-specs.md \
   .agents/ask \
   .cursor \
   .gitignore \
   AGENTS.md \
   ask \
-  ai-agent-engineering-guide.md \
-  ai-agent-starter-kit-spec.md \
   .ask.env.example \
   .ask/README.md
  do
@@ -93,14 +98,14 @@ for rel in \
   copy_path "$rel"
 done
 
-# Ensure target gitignores prepared skills, setup secrets, and the installed kit
+# Ensure target gitignores the installed kit and prepared skills
 if [[ "$DRY_RUN" -eq 0 ]]; then
+  if ! grep -qxF '/_ask/' "$TARGET/.gitignore" 2>/dev/null; then
+    printf '\n# Installed AskIt kit\n/_ask/\n' >> "$TARGET/.gitignore"
+  fi
   python3 "$TARGET/_ask/scripts/sync-codex-skills.py" --update-ignore
   if ! grep -q '^\.ask\.env$' "$TARGET/.gitignore" 2>/dev/null; then
     echo -e '\n# Setup wizard secrets\n.ask.env\n.ask/tracker-context.md' >> "$TARGET/.gitignore"
-  fi
-  if ! grep -qxF '/_ask/' "$TARGET/.gitignore" 2>/dev/null; then
-    printf '\n# Installed AskIt kit\n/_ask/\n' >> "$TARGET/.gitignore"
   fi
 fi
 

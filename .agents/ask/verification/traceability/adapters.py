@@ -40,8 +40,18 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 if runner['adapter']!='unittest' or len(argv)<4 or argv[1:3]!=['-m','unittest']:
                     raise Invalid('unsupported runner adapter/invocation')
                 eid=uuid.uuid4().hex;raw=directory/(eid+'.json');log=directory/(eid+'.log')
-                env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',
+                package_root = checkout / '.agents' / 'ask'
+                inherited_path = os.environ.get('PYTHONPATH', '')
+                python_path = os.pathsep.join(
+                    value for value in (str(package_root), inherited_path) if value)
+                env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1',
+                         PYTHONPATH=python_path,
                          ASK_TRACEABILITY_RUNTIME_ROOT=str(root))
+                # Coordinator/worker mode belongs to the outer CLI command.
+                # Do not leak that one-command role into the isolated test
+                # process, whose fixtures exercise both coordinator and worker
+                # operations explicitly.
+                env.pop('ASK_INNER_LOOP_ROLE', None)
                 with log.open('w') as stream:
                     try:
                         selection=[t['case_id'] for t in expected] if scope=='task' else None
@@ -64,6 +74,8 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
                 raise Invalid('candidate source changed during test execution')
         finally:git(root,'worktree','remove','--force',str(checkout))
     (directory/'results.json').write_text(json.dumps(report,indent=2)+'\n')
+    if os.environ.get('ASK_TRACEABILITY_CRASH_AT') == 'after_report_publication':
+        os._exit(81)
     from .evidence import write_json
     import fcntl
     ledger=directory.parent.parent/'executions.json'
@@ -72,4 +84,6 @@ def run_tests(root, contracts, candidate_sha, scope='workstream', task_id=None, 
         entries=json.loads(ledger.read_text()) if ledger.exists() else []
         entries.append({'run_id':run_id,'digest':digest(report),'phase':phase,'scope':scope,'task_id':task_id,'candidate_sha':sha,'spec_digest':digest(spec),'plan_digest':digest(plan)})
         write_json(ledger,entries)
+    if os.environ.get('ASK_TRACEABILITY_CRASH_AT') == 'after_ledger_insertion':
+        os._exit(82)
     return report

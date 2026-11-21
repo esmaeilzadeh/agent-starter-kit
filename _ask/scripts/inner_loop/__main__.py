@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -10,7 +11,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from inner_loop.allowlist import classify_paths, outside_paths, staged_paths  # noqa: E402
-from inner_loop.evidence import record_review  # noqa: E402
+from inner_loop.evidence import checkpoint_run, preflight_run, record_review  # noqa: E402
 from inner_loop.driver import (  # noqa: E402
     NotIntegrable,
     cancel,
@@ -30,6 +31,15 @@ from inner_loop.state import (  # noqa: E402
     load_state,
     spawn_writer,
 )
+from inner_loop.recovery import (  # noqa: E402
+    RecoveryRequired,
+    audit_legacy_workstream,
+    inspect as inspect_recovery,
+    legacy_adoption_proposal,
+    validate_legacy_adoption_proposal,
+)
+from inner_loop.checkpoint import CheckpointError, export_bundle, import_bundle  # noqa: E402
+from inner_loop.attempts import interrupt_task, reopen_task  # noqa: E402
 from engineering_model.actions import Refused
 from engineering_model.workflow import adopted, branch_work_id, guarded_workflow, workflow_admission
 
@@ -51,12 +61,37 @@ def cmd_status(root: Path, work_id: str) -> int:
     try:
         doc = load_state(root, work_id)
     except FileNotFoundError:
+        doc = None
+    except json.JSONDecodeError:
+        doc = None
+    graph = load_graph(root, work_id)
+    report = inspect_recovery(root, work_id, graph, doc)
+    if report is not None:
+        print(json.dumps(report, indent=2))
+        return 2
+    if doc is None:
         print("no state")
         return 1
     print(f"revision={doc.get('revision')} sha={doc.get('coordinator_sha')}")
     for tid, t in sorted((doc.get("tasks") or {}).items()):
         print(f"{tid}\t{t.get('status')}")
     return 0
+
+
+def cmd_reconcile(root: Path, work_id: str) -> int:
+    graph = load_graph(root, work_id)
+    try:
+        doc = load_state(root, work_id)
+    except FileNotFoundError:
+        doc = None
+    except json.JSONDecodeError:
+        doc = None
+    report = inspect_recovery(root, work_id, graph, doc)
+    if report is None:
+        print(json.dumps({"status": "ready", "work_id": work_id}, indent=2))
+        return 0
+    print(json.dumps(report, indent=2))
+    return 2
 
 
 @guarded_workflow
@@ -85,6 +120,16 @@ def cmd_spawn(root: Path, work_id: str, task_id: str) -> int:
     return 0
 
 
+@guarded_workflow
+def cmd_interrupt(root: Path, work_id: str, task_id: str, reason: str) -> dict:
+    return interrupt_task(root, work_id, task_id, reason)
+
+
+@guarded_workflow
+def cmd_reopen(root: Path, work_id: str, task_id: str, reason: str) -> dict:
+    return reopen_task(root, work_id, task_id, reason)
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="ask inner-loop", allow_abbrev=False)
     p.add_argument("--root", default=None)
@@ -95,6 +140,9 @@ def main(argv: list[str] | None = None) -> int:
 
     s = sub.add_parser("status", help="print coordinator state")
     s.add_argument("work_id")
+
+    rc = sub.add_parser("reconcile", help="read-only recovery preflight")
+    rc.add_argument("work_id")
 
     ci = sub.add_parser("cas-init", help="initialize state.json without overwriting existing state")
     ci.add_argument("work_id")
@@ -145,12 +193,51 @@ def main(argv: list[str] | None = None) -> int:
     rn = sub.add_parser("run", help="start next ready writer or integrate_ready")
     rn.add_argument("work_id")
 
+    ce = sub.add_parser("checkpoint-export", help="export retained checkpoint and its object closure")
+    ce.add_argument("work_id")
+    ce.add_argument("--out", required=True)
+
+    ci_bundle = sub.add_parser("checkpoint-import", help="import a retained checkpoint bundle")
+    ci_bundle.add_argument("work_id")
+    ci_bundle.add_argument("bundle")
+
     rm = sub.add_parser("resume", help="abort to state.json coordinator_sha, then run")
     rm.add_argument("work_id")
 
     cn = sub.add_parser("cancel", help="cancel task_id or all")
     cn.add_argument("work_id")
     cn.add_argument("target")
+
+    it = sub.add_parser("interrupt", help="preserve and stop the current task attempt")
+    it.add_argument("work_id")
+    it.add_argument("task_id")
+    it.add_argument("--reason", required=True)
+
+    ro = sub.add_parser("reopen", help="start a new attempt after explicit interruption")
+    ro.add_argument("work_id")
+    ro.add_argument("task_id")
+    ro.add_argument("--reason", required=True)
+
+    cr = sub.add_parser("checkpoint-run", help="validate and retain one traceability run")
+    cr.add_argument("work_id")
+    cr.add_argument("task_id")
+    cr.add_argument("--run-id", required=True)
+
+    pf = sub.add_parser("preflight-run", help="read-only validation of a retained run for an interrupted task")
+    pf.add_argument("work_id")
+    pf.add_argument("task_id")
+    pf.add_argument("--run-id", required=True)
+
+    la = sub.add_parser("legacy-audit", help="read-only audit of a pre-checkpoint workstream")
+    la.add_argument("work_id")
+    la.add_argument("--ref", required=True, help="exact product branch or commit to audit")
+
+    lp = sub.add_parser("legacy-proposal", help="prepare a non-mutating legacy adoption proposal")
+    lp.add_argument("--audit", required=True, help="JSON produced by legacy-audit")
+
+    lv = sub.add_parser("legacy-validate-adoption", help="validate reviewed proposal preconditions without adopting")
+    lv.add_argument("--audit", required=True)
+    lv.add_argument("--proposal", required=True)
 
     args = p.parse_args(argv)
     root = repo_root(args.root)
@@ -159,6 +246,8 @@ def main(argv: list[str] | None = None) -> int:
             return cmd_validate(root, args.work_id)
         if args.cmd == "status":
             return cmd_status(root, args.work_id)
+        if args.cmd == "reconcile":
+            return cmd_reconcile(root, args.work_id)
         if args.cmd == "cas-init":
             return cmd_cas_init(root, args.work_id)
         if args.cmd == "cas-apply":
@@ -208,16 +297,59 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "run":
             print(run_until(root, args.work_id))
             return 0
+        if args.cmd == "checkpoint-export":
+            export_bundle(root, args.work_id, Path(args.out))
+            return 0
+        if args.cmd == "checkpoint-import":
+            print(import_bundle(root, args.work_id, Path(args.bundle)))
+            return 0
         if args.cmd == "resume":
             print(resume_from_state(root, args.work_id))
             return 0
         if args.cmd == "cancel":
             print(cancel(root, args.work_id, args.target))
             return 0
+        if args.cmd == "interrupt":
+            doc = cmd_interrupt(root, args.work_id, args.task_id, args.reason)
+            print(f"interrupted={args.task_id} revision={doc['revision']}")
+            return 0
+        if args.cmd == "reopen":
+            doc = cmd_reopen(root, args.work_id, args.task_id, args.reason)
+            print(f"running={args.task_id} revision={doc['revision']}")
+            return 0
+        if args.cmd == "checkpoint-run":
+            with workflow_admission(root, args.work_id, delivery_task_id=args.task_id):
+                result = checkpoint_run(root, args.work_id, args.task_id, args.run_id)
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.cmd == "preflight-run":
+            result = preflight_run(root, args.work_id, args.task_id, args.run_id)
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.cmd == "legacy-audit":
+            report = audit_legacy_workstream(root, args.work_id, args.ref)
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
+        if args.cmd == "legacy-proposal":
+            audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
+            print(json.dumps(legacy_adoption_proposal(audit), indent=2, sort_keys=True))
+            return 0
+        if args.cmd == "legacy-validate-adoption":
+            audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
+            proposal = json.loads(Path(args.proposal).read_text(encoding="utf-8"))
+            result = validate_legacy_adoption_proposal(root, audit, proposal)
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0 if result["status"] == "preconditions_validated" else 2
         print(f"{args.cmd} not implemented yet", file=sys.stderr)
         return 2
     except ProtocolViolation as e:
         print(e, file=sys.stderr)
+        return 2
+    except RecoveryRequired as e:
+        print(json.dumps(e.report, indent=2), file=sys.stderr)
+        return 2
+    except CheckpointError as e:
+        print(json.dumps({"status": "recovery_required", "error": str(e)}, indent=2), file=sys.stderr)
         return 2
     except CasConflict as e:
         print(e, file=sys.stderr)

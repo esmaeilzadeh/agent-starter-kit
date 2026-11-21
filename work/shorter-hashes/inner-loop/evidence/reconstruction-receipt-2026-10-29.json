@@ -1,0 +1,14 @@
+{
+  "schema": "ask-current-checkpoint-reconstruction/v1",
+  "work_id": "shorter-hashes",
+  "date": "2026-10-29",
+  "authorization": "work/shorter-hashes/recovery-exception-authorization.md",
+  "checkpoint_sha": "1235d64de24e0db3ef206ac2e2cf58911a8af09b",
+  "previous_checkpoint": null,
+  "provenance": "New snapshot of retained runtime published now; missing historical checkpoint chain was not reconstructed or claimed.",
+  "state_revision": 46,
+  "original_state_sha256": "67ab24c6699900cbee1226de6149bf472efa5e8ec12b2df4998b661b3ee8adf8",
+  "state_unchanged": true,
+  "backup": "/tmp/shorter-hashes-before-reconstruction-2026-10-29.tar.gz",
+  "backup_sha256": "9755e7e4a4ac5abc928a83a3af5e634211f3aacf0ff1a510a6a63d7415440ffb"
+}

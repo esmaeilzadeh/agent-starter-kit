@@ -1,0 +1,148 @@
+{
+  "schema": "ask-reference-benchmark/v1",
+  "baseline_source": "9a3d25d035baafc23508f242020d46fae7ff5b14",
+  "tokenizer": {
+    "package": "tiktoken",
+    "version": "0.12.0",
+    "encoding": "cl100k_base",
+    "operation": "encode_ordinary",
+    "text_encoding": "utf-8",
+    "source": "https://pypi.org/project/tiktoken/0.12.0/"
+  },
+  "workload_version": "references-journeys/1",
+  "journeys": [
+    {
+      "id": "resume",
+      "question": "Identify the recorded next/first task and all its assigned test IDs/scenarios, exact spec/plan/source lineage, complete-intent approval validity, and any missing prerequisite; do not infer completed execution.",
+      "source_paths": [
+        "work/status-template-stage-detection/intent.md",
+        "work/status-template-stage-detection/plan.md",
+        "work/status-template-stage-detection/test-plan.json",
+        "work/status-template-stage-detection/intent-confirmation.json",
+        "work/status-template-stage-detection/traceability-accepted.json"
+      ],
+      "baseline_projection": "First task scope and its full tests/obligations/runners; intent assumptions and exact approval/accepted identities.",
+      "projection_serialization": "legacy JSON projections use json.dumps(value, indent=2, ensure_ascii=False) plus newline; prose/log bytes preserved. Include question and request labels as agent inputs.",
+      "candidate_projection": "Equivalent declared question and evidence through refs show/impact/status and on-demand reads; count every needed context and lookup."
+    },
+    {
+      "id": "review",
+      "question": "Review the first declared task scope: retrieve its complete mapped tests, obligations/required types and assertions, dependency/owned-path context, accepted contract/source/policy identities and actual independent plan decision. Preserve actual historical review status.",
+      "source_paths": [
+        "specs/current/structured-agentic-environment.json",
+        "work/structured-agentic-environment/plan.md",
+        "work/structured-agentic-environment/test-plan.json",
+        "work/structured-agentic-environment/inner-loop/tasks.yaml",
+        "work/structured-agentic-environment/traceability-accepted.json",
+        "work/structured-agentic-environment/traceability/plan-review.json"
+      ],
+      "baseline_projection": "First task scope, all assigned tests, their complete obligations/assertions and runner definitions; plan task row and all actual input constraints/authority fields.",
+      "projection_serialization": "legacy JSON projections use json.dumps(value, indent=2, ensure_ascii=False) plus newline; prose/log bytes preserved. Include question and request labels as agent inputs.",
+      "candidate_projection": "Equivalent declared question and evidence through refs show/impact/status and on-demand reads; count every needed context and lookup."
+    },
+    {
+      "id": "completion",
+      "question": "Determine the recorded completion status and reasons; inspect the frozen historical run and all its cases, runner/source/contract identities and selected bound log bytes. Do not relabel a historical run current or turn a recorded failure into success.",
+      "source_paths": [
+        "work/structured-agentic-environment/traceability/completion.json",
+        "work/structured-agentic-environment/traceability-accepted.json",
+        "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+        "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log"
+      ],
+      "baseline_projection": "Complete recorded completion report, accepted pin and frozen run report, plus selected log bytes.",
+      "projection_serialization": "legacy JSON projections use json.dumps(value, indent=2, ensure_ascii=False) plus newline; prose/log bytes preserved. Include question and request labels as agent inputs.",
+      "candidate_projection": "Equivalent declared question and evidence through refs show/impact/status and on-demand reads; count every needed context and lookup."
+    }
+  ],
+  "files": [
+    {
+      "path": "specs/current/structured-agentic-environment.json",
+      "sha256": "a6f8c64e2f15903ef3dffb4592062d4bf55e72140987298da4a6b419381053eb",
+      "bytes": 7476,
+      "metadata": true
+    },
+    {
+      "path": "work/status-template-stage-detection/intent-confirmation.json",
+      "sha256": "b070997b15f953527b07f2bf2203fd12fae28172d091ba5d603f86aafbcb6352",
+      "bytes": 345,
+      "metadata": true
+    },
+    {
+      "path": "work/status-template-stage-detection/intent.md",
+      "sha256": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb",
+      "bytes": 1914,
+      "metadata": false
+    },
+    {
+      "path": "work/status-template-stage-detection/plan.md",
+      "sha256": "edfc889d58bb587923ebdb556c12b0fa9a59881bb989274ba2c803d791c64a3a",
+      "bytes": 3565,
+      "metadata": false
+    },
+    {
+      "path": "work/status-template-stage-detection/test-plan.json",
+      "sha256": "f9f96c4dbafac80ec492370e155aaaade7469db2f8b53137313b41561edd1bd4",
+      "bytes": 6676,
+      "metadata": true
+    },
+    {
+      "path": "work/status-template-stage-detection/traceability-accepted.json",
+      "sha256": "b2f434b2bf14129741ae529c52313b1b93b9095983d7856ded336fc3a75fc294",
+      "bytes": 1022,
+      "metadata": true
+    },
+    {
+      "path": "work/structured-agentic-environment/inner-loop/tasks.yaml",
+      "sha256": "f6c778ba7521166785358ca34cc5f4ff3a5c8c10025f4a0244eff9b93fb4fac2",
+      "bytes": 8550,
+      "metadata": false
+    },
+    {
+      "path": "work/structured-agentic-environment/plan.md",
+      "sha256": "dc3db2c5843f3ef83f81c9a85ba52bb42304e654b9185ed0f6df5fdf77560e48",
+      "bytes": 26827,
+      "metadata": false
+    },
+    {
+      "path": "work/structured-agentic-environment/test-plan.json",
+      "sha256": "d6761389de988f4e125c5f02ea02a879baa91659f9a3d931db53f98fcb63a90b",
+      "bytes": 72133,
+      "metadata": true
+    },
+    {
+      "path": "work/structured-agentic-environment/traceability-accepted.json",
+      "sha256": "df5734caf3c217d1c79c4fea7e53578f9d71c8e5c4b4e78094b90eccfc95bd4f",
+      "bytes": 5798,
+      "metadata": true
+    },
+    {
+      "path": "work/structured-agentic-environment/traceability/completion.json",
+      "sha256": "b02965d97a5bb668db3b4c41972469459c15076b8eba7f6acd6d8004b23965f5",
+      "bytes": 349,
+      "metadata": true
+    },
+    {
+      "path": "work/structured-agentic-environment/traceability/plan-review.json",
+      "sha256": "c0617547282d4b347565bded28e55f7c5dfb78a47ab6a1e7bc211059093b49b5",
+      "bytes": 295,
+      "metadata": true
+    },
+    {
+      "path": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/6da66e942ce3447ca329242c39254aa2.log",
+      "sha256": "1aa78d76169d599f97be123c9bbcbd36eb2d6ce5dd33708c4c9ac19baba38cf3",
+      "bytes": 2363,
+      "metadata": false
+    },
+    {
+      "path": "work/structured-agentic-environment/traceability/runs/03333875786242e2bc771c816a81fbf7/results.json",
+      "sha256": "feec59958ec73bc47655e635f0fb20d5dffda6a6d75b83bf7c94fe0506aceeb8",
+      "bytes": 3719,
+      "metadata": true
+    }
+  ],
+  "accounting": {
+    "agent_input": "Sum every necessary request/context/result and lookup response; independent context per journey. Include exact selected log bytes. No omitted necessary integrity or decision data.",
+    "metadata_bytes": "Count unique complete generated JSON metadata outputs for each replay, including every required new catalog/context/profile/impact index/registration. Keep a separate immutable legacy-input archive in both replay roots and include its equal bytes on both sides; baseline generates legacy-shaped outputs, candidate generates new outputs. Never delete migration inputs to claim savings. Report YAML/source-prose/log bytes separately; they cannot offset a JSON-byte regression.",
+    "acceptance": "candidate aggregate agent-input tokens < baseline AND candidate generated metadata bytes < baseline; report all individual regressions and full-value exceptions; no byte/token substitution."
+  }
+}

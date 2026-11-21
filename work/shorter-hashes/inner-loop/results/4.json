@@ -1,0 +1,29 @@
+{
+  "schema": "ask-task-result/v2",
+  "work_id": "shorter-hashes",
+  "task_id": "4",
+  "base_sha": "decfb1b23675f0253b626015ce6d86a19224fdd4",
+  "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+  "tdd": {
+    "seam": ".agents/ask/workflow_refs/project.py::load_project_graph catalog entry loop; _ask/tests/test_workflow_refs_project.py::test_authoritative_inventory_and_cycles",
+    "red": {
+      "command": "PATH=\"$PWD/_ask/.venv/bin:$PATH\" ./ask traceability run shorter-hashes --candidate-sha 0b57bef2c47248623046b7f757594530138019f4 --anchor-sha decfb1b23675f0253b626015ce6d86a19224fdd4 --phase red --scope task --task-id 4; run_id=5f1d5a61b14146a691de74cb738b543b",
+      "output": "The mapped Red run collected setup/runtime errors in all seven cases because the test fixtures inherited init.defaultBranch=develop and then attempted to create develop/main. The coordinator refused to checkpoint it as behavior Red. The focused direct reproduction at candidate 0b57bef independently captured the actual AttributeError for entries:[null]: work/shorter-hashes/inner-loop/evidence/task-4-malformed-catalog-red.json. User waiver is recorded in work/shorter-hashes/completion-authorization-2026-10-28.md. Traceability report: work/shorter-hashes/traceability/runs/5f1d5a61b14146a691de74cb738b543b/results.json.",
+      "exit_code": 1
+    },
+    "green": {
+      "command": "PATH=\"$PWD/_ask/.venv/bin:$PATH\" ./ask traceability run shorter-hashes --candidate-sha dfcad00f78bba45a0fd0f86fca430ba4ed451a57 --anchor-sha decfb1b23675f0253b626015ce6d86a19224fdd4 --phase final_green --scope task --task-id 4; run_id=34e9b7568b2a449d974b50af7e662ab9",
+      "output": "All seven accepted cases 4/1–4/7 passed across the project and impact runners. Traceability report: work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/results.json.",
+      "exit_code": 0
+    }
+  },
+  "exemption": null,
+  "verification_report": {
+    "schema": "ask-task-verification-report/v1",
+    "candidate_sha": "dfcad00f78bba45a0fd0f86fca430ba4ed451a57",
+    "run_id": "34e9b7568b2a449d974b50af7e662ab9",
+    "report_path": "work/shorter-hashes/traceability/runs/34e9b7568b2a449d974b50af7e662ab9/results.json",
+    "sha256": "52e0ca577ccc2f3281b847328ba8fe36937e848d2ecb7fc65c2b36060f6b3e01"
+  },
+  "notes": "Refactor: no additional structural cleanup was applicable in the project catalog loader. The task-local type guard reports malformed entries as incomplete. Project and impact fixtures use an explicit temporary initial branch to avoid ambient global Git configuration."
+}

@@ -1,0 +1,19 @@
+COMMAND: REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt _ask/.venv/bin/python -m unittest _ask.tests.test_workflow_refs_baseline.ReferenceTests.test_frozen_corpus_and_tokenizer
+EXIT_CODE: 1
+
+STDOUT:
+
+STDERR:
+F
+======================================================================
+FAIL: test_frozen_corpus_and_tokenizer (_ask.tests.test_workflow_refs_baseline.ReferenceTests.test_frozen_corpus_and_tokenizer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/media/mohammadesmailzade/storagebox1/Projects/partai/agent-starter-kit/_ask/tests/test_workflow_refs_baseline.py", line 79, in test_frozen_corpus_and_tokenizer
+    self.assertIsInstance(tokenizer_error, BenchmarkError)
+AssertionError: OSError('encoding cache unavailable') is not an instance of <class 'workflow_refs.benchmark.BenchmarkError'>
+
+----------------------------------------------------------------------
+Ran 1 test in 0.231s
+
+FAILED (failures=1)

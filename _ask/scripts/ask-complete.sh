@@ -15,6 +15,7 @@ ask_complete_commands() {
   ask_complete_emit check-workstream "preconditions before implement"
   ask_complete_emit confirm-intent "record human confirmation of intent and assumptions"
   ask_complete_emit status "live/archived workstreams + later inbox"
+  ask_complete_emit refs "numeric workflow-reference lookup and migration"
   ask_complete_emit traceability "structured spec-to-test evidence"
   ask_complete_emit verify "run checks; print commit SHA"
   ask_complete_emit record-result "workstream provenance"
@@ -72,6 +73,15 @@ ask_complete_flags_for() {
       ask_complete_emit --work-only "workstreams only"
       ask_complete_emit -h "help"
       ask_complete_emit --help "help"
+      ;;
+    refs|references)
+      ask_complete_emit show "resolve one qualified numeric reference"
+      ask_complete_emit status "compact owner inventory or one version"
+      ask_complete_emit impact "assess source and candidate captures"
+      ask_complete_emit decide "record reviewed impact evidence"
+      ask_complete_emit migrate "apply explicit legacy mappings"
+      ask_complete_emit export "export trusted records and objects"
+      ask_complete_emit import "verify against local catalog authority"
       ;;
     verify)
       ask_complete_emit -h "help"
