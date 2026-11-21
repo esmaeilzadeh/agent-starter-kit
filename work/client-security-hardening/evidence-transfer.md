@@ -51,6 +51,23 @@ After adding the missing-authority guards, the two focused transfer tests passed
 in 13.287 seconds. The original source's aggregate separately passed its 47
 recovery tests in 493.181 seconds. These results do not claim an aggregate pass.
 
+## Verification result
+
+[`verification.json`](verification.json) now records the exact aggregate source,
+all 39 passing mandatory CheckPlan entries and their output digests, all 40
+accepted case outcomes, and the ten client-runner receipts. The aggregate's
+client run collected 54 cases: 52 passed and 2 failed (`CSH-T23`, `CSH-T38`).
+The traceability suite passed 33 cases and skipped 3. The final aggregate
+identity check rejected the original source after the transfer-fix commits
+advanced HEAD during that run; its result remains failed and historical.
+
+A separate detached-worktree check at `6894982966a9847c25aa34293c1c6167c5b580e0`
+passed `CSH-T38` and reproduced `CSH-T23`: its trusted-verifier fixture lacks a
+runner `adapter` field. The original `CSH-T38` failure was at fixture branch
+creation (`git checkout -qb main`), before its remaining journey assertions.
+The full aggregate was not rerun after the transfer changes. There is no new
+workstream completion or acceptance claim.
+
 ## Receiving machine
 
 Transfer the private bundle as well as the source branch containing the corrected
