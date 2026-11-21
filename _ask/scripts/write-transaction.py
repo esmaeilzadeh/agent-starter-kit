@@ -451,6 +451,25 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
                     if os.path.exists(temporary):
                         os.unlink(temporary)
             fsync_dir(target.parent)
+        for item in files:
+            if item["after_hash"] is not None:
+                continue
+            rel = Path(item["path"])
+            scopes = [path for path in paths if path in rel.parents]
+            if not scopes:
+                continue
+            scope = max(scopes, key=lambda path: len(path.parts))
+            directory = (root / rel).parent
+            while directory != root / scope:
+                staged = stage / directory.relative_to(root)
+                if staged.exists():
+                    break
+                try:
+                    directory.rmdir()
+                    fsync_dir(directory.parent)
+                except OSError:
+                    break
+                directory = directory.parent
         fd, temporary = tempfile.mkstemp(prefix=".owned-files-", dir=state)
         try:
             current_ownership_hash = digest(ownership_path)

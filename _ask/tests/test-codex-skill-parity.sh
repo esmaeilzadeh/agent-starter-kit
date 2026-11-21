@@ -8,6 +8,7 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 cp -a "$ROOT/_ask" "$TMP/_ask"
 mkdir -p "$TMP/.agents/ask" "$TMP/.agents/ask.local/stages"
+git init -q "$TMP"
 cp -a "$ROOT/.agents/ask/." "$TMP/.agents/ask/"
 printf '%s\n' 'local-parity-canary' > "$TMP/.agents/ask.local/stages/06-implement.md"
 bash "$TMP/_ask/scripts/sync-cursor-binding.sh" >/dev/null
@@ -126,13 +127,29 @@ printf '%s\n' '_ask/.venv/' > "$SOURCE/.gitignore"
 git -C "$SOURCE" add .
 git -C "$SOURCE" -c user.name=fixture -c user.email=fixture@example.com commit -qm source
 git -C "$SOURCE" tag parity-fixture
+SOURCE_COMMIT="$(git -C "$SOURCE" rev-parse HEAD)"
 # Start with the actual previous upgrader; execute migration from the target
 # version so replacing the consumer's running old script is not relied upon.
 printf '%s\n' '# consumer rules' 'consumer-private/' '.agents/skills/' > "$CONSUMER/.gitignore"
 printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$CONSUMER/_ask/skills/prepare-skills.sh"
 cp "$ROOT/_ask/tests/fixtures/codex-parity/upgrade-kit-before-parity.sh" "$CONSUMER/_ask/scripts/upgrade-kit.sh"
+python3 - "$CONSUMER" <<'PY'
+import hashlib, json, stat, sys
+from pathlib import Path
+root = Path(sys.argv[1])
+manifest = root / '.git/askit-transactions/owned-files.json'
+document = json.loads(manifest.read_text())
+for name in ('_ask/scripts/upgrade-kit.sh', '_ask/skills/prepare-skills.sh'):
+    script = root / name
+    document['files'][name].update(sha256=hashlib.sha256(script.read_bytes()).hexdigest(),
+                                   mode=stat.S_IMODE(script.stat().st_mode))
+manifest.write_text(json.dumps(document, sort_keys=True, indent=2) + '\n')
+PY
 rm -rf "$CONSUMER/.agents/skills/kit-"*
-SKIP_INSTALL=1 bash "$SOURCE/_ask/scripts/upgrade-kit.sh" --target "$CONSUMER" --version parity-fixture --source "$SOURCE" --skip-prepare > "$TMP/upgrade.log" 2>&1
+if ! SKIP_INSTALL=1 bash "$SOURCE/_ask/scripts/upgrade-kit.sh" --target "$CONSUMER" --version "$SOURCE_COMMIT" --source "$SOURCE" --skip-prepare > "$TMP/upgrade.log" 2>&1; then
+  cat "$TMP/upgrade.log" >&2
+  exit 1
+fi
 assert_consumer
 cp "$CONSUMER/_ask/skills/manifest.yaml" "$TMP/consumer-manifest.saved"
 cat >> "$CONSUMER/_ask/skills/manifest.yaml" <<'YAML'
@@ -147,7 +164,7 @@ if SKIP_INSTALL=1 "$CONSUMER/ask" prepare > "$TMP/upgraded-prepare.log" 2>&1; th
 fi
 mv "$TMP/consumer-manifest.saved" "$CONSUMER/_ask/skills/manifest.yaml"
 cp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
-SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
+SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version "$SOURCE_COMMIT" --source "$SOURCE" > "$TMP/upgrade.log" 2>&1
 cmp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
 echo 'PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages'
 
@@ -163,7 +180,7 @@ grep -q 'not trackable' "$TMP/blocked-install.log"
 grep -q '\.agents/' "$TMP/blocked-install.log"
 grep -qx '\.agents/' "$BLOCKED/.gitignore"
 printf '%s\n' '.agents/' >> "$CONSUMER/.gitignore"
-if "$CONSUMER/ask" upgrade --version parity-fixture --source "$SOURCE" --skip-prepare > "$TMP/blocked-upgrade.log" 2>&1; then
+if "$CONSUMER/ask" upgrade --version "$SOURCE_COMMIT" --source "$SOURCE" --skip-prepare > "$TMP/blocked-upgrade.log" 2>&1; then
   echo 'FAIL: upgrade succeeded despite ignored Codex skills' >&2; exit 1
 fi
 grep -q 'not trackable' "$TMP/blocked-upgrade.log"

@@ -2,6 +2,7 @@
 # Refresh kit-owned files from an explicit kit version tag/sha.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd -P)"
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/$(basename "${BASH_SOURCE[0]}")"
 VERSION=""
 EXPECTED_COMMIT=""
 SKIP_PREPARE=0
@@ -44,7 +45,7 @@ if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
     ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md; do
     args+=(--path "$rel")
   done
-  args+=(-- bash "$ROOT/_ask/scripts/upgrade-kit.sh" --version "$VERSION" --target "{target}")
+  args+=(-- bash "$SCRIPT_PATH" --version "$VERSION" --target "{target}")
   [[ -z "$EXPECTED_COMMIT" ]] || args+=(--expected-commit "$EXPECTED_COMMIT")
   [[ "$SKIP_PREPARE" -eq 0 ]] || args+=(--skip-prepare)
   args+=(--source "$SOURCE_REPO")
