@@ -1,5 +1,8 @@
 # Client security completion and maintenance implementation plan
 
+Resume handoff: [completion-handoff.md](completion-handoff.md) records the latest
+diagnosed blockers, implementer order, and bounded closeout at source `7022e057`.
+
 Status: implementation in progress; the later human instruction “finish it”
 authorizes execution through verified closeout on this branch. The earlier
 plan-ready stop was fulfilled and is retained below as historical handoff context.
