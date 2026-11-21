@@ -112,12 +112,12 @@ unverifiable rungs count as unavailable. Record the assessment, confidence,
 and actual model/settings in the existing work artifact; confidence is not a
 measured probability or verification evidence.
 
-Use only the active runtime's verified `confidence_escalation` binding. Entries
-are native picker names; Codex encodes effort as `model@effort`. The current
-Codex ladder is Sol/high → Astra/medium → Astra/high. Claude entries are candidates until current native capability evidence verifies
-the model IDs and supported efforts. Cursor and OpenCode have no verified ladder yet; do not infer one
-from their diverse/adversarial defaults. Report unavailable rungs as
-unavailable.
+Use only the active runtime's configured `confidence_escalation` ladder. Each
+runtime binding defines its native model names and optional effort settings;
+project and workstream model settings may override that runtime's ordered list.
+Do not infer a ladder from another runtime's role names or model defaults.
+Current-session capability evidence must verify each selected model and effort
+before dispatch. Report unverified or unavailable rungs as unavailable.
 
 Model consultation cannot approve a scope or acceptance change, supply human
 preference or authority, authorize destructive or production-impacting actions,

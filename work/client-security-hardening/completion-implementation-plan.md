@@ -355,9 +355,11 @@ as unavailable and move to the next rung. Do not fake an assessment. Bind reuse
 to the same material decision and evidence, not merely a model name.
 
 Strict rule: consequential unresolved decisions continue autonomously only when
-confidence is >90. At 90 or below, consult available rungs once in order: Codex
-Sol/high → Astra/medium → Astra/high. Reuse an applicable existing assessment
-from that rung or later rung; avoid cycles. Human authority/preference, scope
+confidence is >90. At 90 or below, consult available rungs once in the order
+configured for the active runtime. Runtime bindings provide their native
+defaults; existing project or workstream model settings may replace the list.
+The Codex binding currently defaults to Sol/high → Astra/medium → Astra/high.
+Reuse an applicable existing assessment from that rung or later rung; avoid cycles. Human authority/preference, scope
 changes, explicit model restrictions, exhausted available rungs with material
 uncertainty, or unsafe irreversible action remain human decisions. Consultation
 does not substitute for Sol/medium independent review or any verification.
@@ -373,7 +375,8 @@ and records them; otherwise mark unavailable/exhausted. Do not invent equivalent
 model names or prompt for a model at every gate.
 
 Every canonical stage and task-loop instruction references the central policy;
-only that policy states thresholds/ordering. Regenerate existing runtime views.
+only that policy states thresholds and defers ordering to runtime/user settings.
+Regenerate existing runtime views.
 Preserve one Grill `Confirm model plan` / `Change selected models` interaction,
 stage reuse and implementor handoff. Sol/high planning override stays local to
 this task; Luna execution coordinator and Sol/medium reviewer assignments persist.

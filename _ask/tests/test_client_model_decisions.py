@@ -250,6 +250,16 @@ class ConfidenceDecisions(unittest.TestCase):
         cls.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cls.module)
 
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix='ask-confidence-ladder-')
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        shutil.copytree(ROOT / '.agents/ask', self.root / '.agents/ask')
+        (self.root / '_ask/bindings').mkdir(parents=True)
+        shutil.copy2(ROOT / '_ask/bindings/models.yaml', self.root / '_ask/bindings/models.yaml')
+        (self.root / 'work/w').mkdir(parents=True)
+        self.module.ROOT = self.root
+
     def request(self, **values):
         return {'decision_id': 'repair-cas', 'evidence_digest': 'a' * 64,
                 'session_id': 'current-session', 'runtime': 'codex',
@@ -290,6 +300,46 @@ class ConfidenceDecisions(unittest.TestCase):
         self.assertEqual(self.module.decide('w', request)['model'], 'gpt-6.1-sol')
         request['session_id'] = 'another-session'
         self.assertEqual(self.module.decide('w', request)['action'], 'ask-human')
+
+    def test_confidence_ladder_comes_from_runtime_and_user_overrides(self):
+        request = self.request()
+        self.assertEqual(self.module.decide('w', request)['model'], 'gpt-6.1-sol')
+
+        project_models = self.root / '.agents/ask.local/bindings/models.yaml'
+        project_models.parent.mkdir(parents=True)
+        project_models.write_text(
+            'confidence_escalation:\n  codex:\n    - gpt-6-astra@high\n',
+            encoding='utf-8',
+        )
+        request['capability_evidence']['models'] = [
+            {'model': 'gpt-6-astra', 'efforts': ['high']},
+        ]
+        self.assertEqual(self.module.decide('w', request)['model'], 'gpt-6-astra')
+
+        work_models = self.root / 'work/w/models.yaml'
+        work_models.parent.mkdir(exist_ok=True)
+        work_models.write_text(
+            'confidence_escalation:\n  codex:\n    - gpt-6.1-sol@medium\n',
+            encoding='utf-8',
+        )
+        request['capability_evidence']['models'] = [
+            {'model': 'gpt-6.1-sol', 'efforts': ['medium']},
+        ]
+        self.assertEqual(self.module.decide('w', request)['model'], 'gpt-6.1-sol')
+        self.assertEqual(self.module.decide('w', request)['effort'], 'medium')
+        work_models.write_text('confidence_escalation: codex\n', encoding='utf-8')
+        self.assertEqual(self.module.decide('w', request)['action'], 'ask-human')
+
+    def test_confidence_ladder_is_runtime_specific(self):
+        request = self.request(runtime='claude')
+        request['capability_evidence'] = {
+            'session_id': 'current-session', 'runtime': 'claude',
+            'source': 'native-tool-metadata', 'authenticated': True,
+            'access_verified': True,
+            'models': [{'model': 'claude-opus-5-5', 'efforts': []}],
+        }
+        decision = self.module.decide('w', request)
+        self.assertEqual((decision['model'], decision['effort']), ('claude-opus-5-5', None))
 
     def test_unavailable_effort_catalog_and_human_authority(self):
         request = self.request()

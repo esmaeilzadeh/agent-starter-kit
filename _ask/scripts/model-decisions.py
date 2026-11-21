@@ -404,6 +404,33 @@ def _confidence(value) -> float:
     return float(value)
 
 
+def _confidence_ladder(work_id: str, runtime: str, runtime_cfg: dict) -> list[tuple[str, str | None]]:
+    _, _, _, consumer, work = load_inputs(work_id)
+    configured = runtime_cfg.get('confidence_escalation') or []
+    for source in (consumer, work):
+        if 'confidence_escalation' in source:
+            overrides = source['confidence_escalation']
+            if not isinstance(overrides, dict):
+                raise ValueError('confidence_escalation overrides must map runtimes to ordered lists')
+        else:
+            overrides = {}
+        if runtime in overrides:
+            configured = overrides[runtime]
+    if not isinstance(configured, list):
+        raise ValueError('confidence_escalation must be an ordered list for the active runtime')
+    ladder = []
+    for value in configured:
+        if not isinstance(value, str) or not value.strip() or value.count('@') > 1:
+            raise ValueError('confidence_escalation entries must be native model names with optional @effort')
+        model, separator, effort = value.partition('@')
+        if not model or (separator and not effort):
+            raise ValueError('confidence_escalation entries must be native model names with optional @effort')
+        pair = (model, effort if separator else None)
+        if pair not in ladder:
+            ladder.append(pair)
+    return ladder
+
+
 def decide(work_id: str, request: dict) -> dict:
     """Choose one native consultation rung for one material decision."""
     for field in ('decision_id', 'evidence_digest', 'session_id'):
@@ -425,14 +452,9 @@ def decide(work_id: str, request: dict) -> dict:
     runtime = request.get('runtime') or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
     try:
         cfg = runtime_config(_MODELS.bindings_dir(ROOT), runtime)
+        ladder = _confidence_ladder(work_id, runtime, cfg)
     except ValueError:
         return outcome('ask-human', 'runtime has no verified confidence ladder')
-    ladder = []
-    for value in cfg.get('confidence_escalation') or []:
-        model, separator, effort = value.partition('@')
-        pair = (model, effort if separator else None)
-        if pair not in ladder:
-            ladder.append(pair)
     if not ladder:
         return outcome('ask-human', 'runtime has no verified confidence ladder')
     evidence = request.get('capability_evidence') or {}
