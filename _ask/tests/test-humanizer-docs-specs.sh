@@ -4,7 +4,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 grep -q 'source: blader/humanizer' _ask/skills/manifest.yaml
-grep -q 'revision: "v3.0.0"' _ask/skills/manifest.yaml
+grep -A1 'source: blader/humanizer' _ask/skills/manifest.yaml | grep -q 'revision: "9862685f575c65a8247f90369951df1b3416e3d6"'
 grep -q 'role: docs-voice' _ask/skills/manifest.yaml
 grep -q 'skill: humanizer' _ask/skills/manifest.yaml
 

@@ -181,8 +181,10 @@ class ClientTests(unittest.TestCase):
         repo = ASK.parents[1]
         raw = subprocess.run(['git', 'check-ignore', '--no-index', 'work/client-security-hardening/traceability/runs/run/raw.log'], cwd=repo, capture_output=True)
         summary = subprocess.run(['git', 'check-ignore', '--no-index', 'work/client-security-hardening/traceability/runs/run/results.json'], cwd=repo, capture_output=True)
+        progress = subprocess.run(['git', 'ls-files', '--error-unmatch', 'work/client-security-hardening/progress/CSH-05.json'], cwd=repo, capture_output=True)
         self.assertEqual(raw.returncode, 0, raw.stdout + raw.stderr)
-        self.assertNotEqual(summary.returncode, 0)
+        self.assertEqual(summary.returncode, 0, summary.stdout + summary.stderr)
+        self.assertEqual(progress.returncode, 0, progress.stdout + progress.stderr)
 
     def test_trusted_verify_journey(self):
         c = Consumer()

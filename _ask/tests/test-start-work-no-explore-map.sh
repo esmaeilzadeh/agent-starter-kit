@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # start-work must not seed explore-map.md (00 creates it; real skip leaves none)
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-git init -q "$TMP"
+git init -q -b main "$TMP"
 cd "$TMP"
 git config user.email t@e.com
 git config user.name t
@@ -12,6 +13,7 @@ echo x > README.md
 git add README.md && git commit -q -m init
 mkdir -p _ask/scripts _ask/templates
 cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/access-check.sh" "$ROOT/_ask/scripts/start-work.sh" _ask/scripts/
+cp -r "$ROOT/_ask/scripts/inner_loop" _ask/scripts/
 chmod +x _ask/scripts/*.sh
 cp "$ROOT/_ask/templates/"*.md "$ROOT/_ask/templates/"*.json _ask/templates/ 2>/dev/null || \
   cp "$ROOT/_ask/templates/"* _ask/templates/

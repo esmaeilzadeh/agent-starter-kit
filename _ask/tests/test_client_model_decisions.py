@@ -282,7 +282,7 @@ class ConfidenceDecisions(unittest.TestCase):
         self.assertEqual(self.module.decide('w', self.request(confidence=90))['action'], 'consult')
         self.assertEqual(self.module.decide('w', self.request(confidence=90.1))['action'], 'continue')
         for value in (True, '91', None, -1, 101, float('nan'), float('inf')):
-            with self.subTest(value=value), self.assertRaises(ValueError):
+            with self.assertRaises(ValueError, msg=f'accepted confidence {value!r}'):
                 self.module.decide('w', self.request(confidence=value))
 
     def test_rungs_reuse_and_material_evidence_binding(self):
