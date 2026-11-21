@@ -183,6 +183,7 @@ askit_self_install() {
   fi
   if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
     echo "askit: a full expected commit is required (--expected-commit or a full-SHA --ref)" >&2
+    echo "askit: use the pinned download or checkout instructions at https://github.com/esmaeilzadeh/agent-starter-kit#how-a-product-uses-this-kit" >&2
     return 2
   fi
 

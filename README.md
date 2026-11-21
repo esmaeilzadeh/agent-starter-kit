@@ -28,6 +28,23 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 Put `askit` on your PATH (once per machine):
 
 ```bash
+(
+  set -e
+  sha='REPLACE_WITH_REVIEWED_FULL_COMMIT_SHA'
+  launcher="$(mktemp)"
+  trap 'rm -f "$launcher"' EXIT
+  curl -fsSL "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" -o "$launcher"
+  bash "$launcher" self-install --ref "$sha" --expected-commit "$sha"
+)
+```
+
+Use a full commit SHA you reviewed through a trusted channel. The download
+finishes before Bash runs the launcher. The launcher checks that the kit it
+fetches matches the same SHA.
+
+To review and run the installer from a local checkout:
+
+```bash
 # Review the source at the full commit SHA you trust before running it.
 git clone https://github.com/esmaeilzadeh/agent-starter-kit.git /tmp/askit-source
 git -C /tmp/askit-source checkout --detach <reviewed-full-commit>

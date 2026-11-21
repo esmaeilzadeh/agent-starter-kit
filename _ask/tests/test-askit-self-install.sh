@@ -9,6 +9,14 @@ export ASKIT_SKIP_COMPLETION_INSTALL=1
 
 REF="$(git -C "$ROOT" rev-parse HEAD)"
 
+# The legacy no-argument invocation directs users to the pinned install.
+code=0
+out="$(env -u KIT_REF -u KIT_COMMIT bash -s <"$ROOT/askit" 2>&1)" || code=$?
+[[ "$code" -eq 2 ]]
+[[ "$out" == *"full expected commit is required"* ]]
+[[ "$out" == *"#how-a-product-uses-this-kit"* ]]
+[[ ! -e "$HOME/.local/bin/askit" ]]
+
 # Exercise the installer entry point with a pinned source revision.
 bash -s -- --source "$ROOT" --ref "$REF" --expected-commit "$REF" \
   --prefix "$HOME/.local" <"$ROOT/askit"
