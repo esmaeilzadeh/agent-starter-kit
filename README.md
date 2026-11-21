@@ -28,8 +28,19 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 Put `askit` on your PATH (once per machine):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/main/askit | bash
+# Review the source at the full commit SHA you trust before running it.
+git clone https://github.com/esmaeilzadeh/agent-starter-kit.git /tmp/askit-source
+git -C /tmp/askit-source checkout --detach <reviewed-full-commit>
+git -C /tmp/askit-source rev-parse HEAD
+/tmp/askit-source/askit self-install \
+  --source https://github.com/esmaeilzadeh/agent-starter-kit.git \
+  --ref <reviewed-full-commit> --expected-commit <reviewed-full-commit>
 ```
+
+Compare the printed revision with the one you reviewed through a trusted
+channel before running `askit`. The first launch still means you trust that
+reviewed launcher. See [client acquisition and security](_ask/docs/client-security.md)
+for recovery and upgrade steps.
 
 Then in **your** app git repo:
 
@@ -79,7 +90,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 
 ## Quick commands
 
-`askit` is the PATH installer and daily command. In a repo that already has the kit, `./ask` is the same dispatcher. Both exec `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Tab completion: run `askit` once (installs a `~/.bashrc` / `~/.zshrc` hook and bash-completion files). No `eval`. `sta<Tab>` matches both `start-work` and `status`; type `start<Tab>` for `start-work`.
+`askit` is the PATH installer and daily command. In a repo that already has the kit, `./ask` is the same dispatcher. Both exec `_ask/scripts/` (and `prepare` → `skills/prepare-skills.sh`). Run `./ask` or `./ask --help` for commands and flags. Install optional tab completion with `askit completion-install`. No `eval`. `sta<Tab>` matches both `start-work` and `status`; type `start<Tab>` for `start-work`.
 
 | Command | Purpose |
 | --- | --- |
@@ -92,7 +103,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 | `./ask record-run …` | Experiment provenance (SHA must be `HEAD`) |
 | `./ask sync` | Regenerate `.cursor` projections |
 | `./ask install <repo>` | Overlay kit package + adapter only |
-| `./ask upgrade --version <tag>` | Refresh kit-owned files |
+| `./ask upgrade --version <tag-or-sha> --expected-commit <full-sha>` | Refresh kit-owned files from a revision you verified |
 | `./ask prepare` | Install pinned Community Skills |
 | `./ask setup` | **Human-only** tracker + MCP wizard (TTY required; agents must not run it) |
 | `./ask completion bash\|zsh` | Print tab-completion snippet (debug; `askit` installs this) |
@@ -104,6 +115,7 @@ Guide and Build Spec modules live under `_ask/guide/` and `_ask/spec/`. Root mon
 - **Build Spec:** [_ask/spec/README.md](_ask/spec/README.md)
 - **Guide ↔ Spec map:** [_ask/MAPPING.md](_ask/MAPPING.md)
 - **Owned paths / upgrades:** [_ask/OWNED-PATHS.md](_ask/OWNED-PATHS.md)
+- **Client acquisition, credentials and verification privacy:** [_ask/docs/client-security.md](_ask/docs/client-security.md)
 - **ADRs:** [_ask/docs/adr/](_ask/docs/adr/)
 - **Issue tracker (this kit repo):** [_ask/docs/agents/issue-tracker.md](_ask/docs/agents/issue-tracker.md)
 

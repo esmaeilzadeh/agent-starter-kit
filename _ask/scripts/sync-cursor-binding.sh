@@ -3,10 +3,33 @@
 # Merges .agents/ask.local/stages/<stage>.md then _ask/agents/<stage>.local.md.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
+  if [[ ! -f "$ROOT/_ask/scripts/write-transaction.py" ]]; then
+    if [[ -e "$ROOT/.git" ]]; then
+      echo "sync-cursor-binding: missing write-transaction.py in Git repository" >&2
+      exit 1
+    fi
+    # shortcut: direct writes are only for disposable non-Git fixtures without the transaction helper.
+    export ASKIT_TRANSACTION_ACTIVE=1
+  else
+    EXTRA_INPUTS=()
+    if [[ -n "${ASK_WORK_ID:-}" ]]; then
+      EXTRA_INPUTS+=(--input-path "work/$ASK_WORK_ID")
+    fi
+    exec python3 "$ROOT/_ask/scripts/write-transaction.py" run \
+      --root "$ROOT" \
+      --path .cursor --path .agents/skills \
+      --path .codex/agents --path .claude/agents --path .opencode/agents \
+      --input-path _ask/scripts --input-path .agents/ask --input-path .agents/ask.local \
+      --input-path _ask/agents --input-path _ask/cursor-commands "${EXTRA_INPUTS[@]}" -- \
+      bash "{target}/_ask/scripts/sync-cursor-binding.sh"
+  fi
+fi
 cd "$ROOT"
 OUT_SKILLS=".cursor/skills"
 OUT_CMDS=".cursor/commands"
 python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check
+ASK_ROOT="$ROOT" python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"
 mkdir -p "$OUT_SKILLS" "$OUT_CMDS"
 
 if [[ -d .agents/ask/stages ]]; then
@@ -57,6 +80,5 @@ for src in _ask/cursor-commands/*.md; do
 done
 
 python3 "$ROOT/_ask/scripts/sync-codex-skills.py"
-python3 "$ROOT/_ask/scripts/sync-runtime-agents.py"
 
 echo "sync-cursor-binding: generated projections under ${OUT_SKILLS} and ${OUT_CMDS}"

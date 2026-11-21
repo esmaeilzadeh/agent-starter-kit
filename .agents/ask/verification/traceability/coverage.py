@@ -65,6 +65,8 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
         if (not isinstance(argv,list) or not argv or not all(text(x) for x in argv) or len(argv)<4 or argv[1:3]!=['-m','unittest']
             or r.get('adapter')!='unittest' or argv[0] not in {'python','python3'}):
             errors.append(Violation('unsupported_runner',field=rid))
+        if 'env_allow' in r and (not isinstance(r['env_allow'],list) or any(not isinstance(x,str) for x in r['env_allow'])):
+            errors.append(Violation('invalid_env_allow',field=rid))
     graph_ids=set(indexed((accepted_task_graph or {}).get('tasks',[]),'graph.tasks',errors))
     if set(scopes)!=graph_ids: errors.append(Violation('task_graph_mismatch'))
     assigned=set()

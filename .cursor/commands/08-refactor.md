@@ -57,3 +57,7 @@ FIX / ACCEPT WITH RATIONALE / ESCALATE dispositions above.
 ## Kit path
 
 See `_ask/policies/workflow.md`. Stay on the path: fix or escalate; do not silently drop findings. Off-path only if they explicitly leave the kit.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+through the central decision operation before a human interruption. Preserve
+human scope/approval authority and the saved Grill model selections.

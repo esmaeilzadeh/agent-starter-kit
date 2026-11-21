@@ -3,6 +3,6 @@
   "work_id": "client-security-hardening",
   "scope": "complete-intent-and-assumptions",
   "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "16067684cb4705dffbe627c935edd4901628f317edf5102ef3d057bc635d1814",
-  "human_response": "approve"
+  "intent_sha256": "38106bb1ca9437cc0da5044e0fb5f0c7a5bf4e2835d743f7873fa1b2c5147115",
+  "human_response": "approved"
 }

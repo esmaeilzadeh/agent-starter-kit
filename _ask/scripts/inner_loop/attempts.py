@@ -110,12 +110,34 @@ def _reviewed_reconciliation(root: Path, work_id: str, task_id: str, doc: dict):
         raise ProtocolViolation("attempt reconciliation identity is stale or conflicts with coordinator state")
     if not pin_ref or not pin_digest:
         raise ProtocolViolation("attempt reconciliation requires an accepted plan ref and digest")
-    if not _is_ancestor(root, expected["new_attempt_base_sha"], expected["interrupted_candidate_sha"]):
+    if not _is_ancestor(root, prior.get("base_sha", ""), expected["interrupted_candidate_sha"]):
         raise ProtocolViolation("interrupted candidate is outside the recorded coordinator ancestry")
+    if not _is_ancestor(root, expected["new_attempt_base_sha"], expected["interrupted_candidate_sha"]):
+        from inner_loop.checkpoint import _git
+        receipts = doc.get("milestone_publications") or []
+        matches = [r for r in receipts if r.get("source_sha") == expected["interrupted_candidate_sha"]
+                   and r.get("publication_sha") == expected["new_attempt_base_sha"]]
+        valid = len(matches) == 1
+        if valid:
+            receipt = matches[0]
+            publication = receipt["publication_sha"]
+            source = receipt["source_sha"]
+            valid = (_git(root, "rev-parse", publication + "^").decode().strip() == source)
+            changed = set(_git(root, "diff", "--name-only", source, publication).decode().splitlines())
+            valid = valid and bool(changed) and changed <= receipt.get("records", {}).keys()
+            for name in changed:
+                if (not name.startswith(f"work/{work_id}/progress/")
+                        or hashlib.sha256(_git(root, "show", f"{publication}:{name}")).hexdigest()
+                        != receipt["records"][name]):
+                    valid = False
+        if not valid:
+            raise ProtocolViolation("interrupted candidate has no exact retained progress publication lineage")
+    if not _is_ancestor(root, expected["new_attempt_base_sha"], expected["candidate_sha"]):
+        raise ProtocolViolation("reconciled source postimage is outside the new attempt base ancestry")
     if not _is_ancestor(root, expected["interrupted_candidate_sha"], expected["candidate_sha"]):
         raise ProtocolViolation("reconciled source postimage is outside the interrupted candidate ancestry")
-    if subprocess.run(["git", "status", "--porcelain"], cwd=root, capture_output=True,
-                      text=True).stdout.strip():
+    from inner_loop.evidence import source_changes
+    if source_changes(root, work_id):
         raise ProtocolViolation("attempt reconciliation requires a clean source postimage")
 
     review = record.get("review")

@@ -150,6 +150,10 @@ class CompletionRepository:
                         ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copytree(source / "_ask/scripts", self.root / "_ask/scripts",
                         ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(source / ".agents/ask/bindings", self.root / ".agents/ask/bindings",
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        shutil.copytree(source / "_ask/bindings", self.root / "_ask/bindings",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copy2(source / "ask", self.root / "ask")
         from verification.traceability.contracts import POLICY, digest
         policy = self.root / POLICY
@@ -178,8 +182,11 @@ class CompletionRepository:
                                 "runner_id": "unit", "case_id": "test_app.Cases.test_value",
                                 "source_paths": ["app.py", "test_app.py"]}]}
         self.write("specs/current/e2e.json", self.spec)
+        self.write("specs/current/e2e.md", "# E2E specification\nCurrent fixture contract.\n")
         self.write("work/e2e/test-plan.json", self.plan)
         self.write("work/e2e/plan.md", "# E2E consumer plan\nVerify current accepted evidence.\n")
+        from traceability_support import seed_model
+        seed_model(self.root, "e2e")
         self.commit("prepare accepted E2E consumer")
         review_path = "work/e2e/traceability/plan-review.json"
         self.write(review_path, {"decision": "APPROVED", "reviewer": "independent",

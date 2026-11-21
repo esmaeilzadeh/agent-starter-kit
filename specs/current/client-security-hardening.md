@@ -6,7 +6,7 @@ CURRENT
 
 ## Goal and scope
 
-Protect client files, credentials, and repository trust during AskIt setup, upgrade and use. Preserve project settings in Git and keep familiar CLI entry points. The existing upgrade preservation defect has its own repair record. Local verification is for trusted code. Managed execution of untrusted code and hosted workbench access are outside scope.
+Protect client files, credentials, and repository trust during AskIt setup, upgrade and use. Preserve project settings in Git and keep familiar CLI entry points. The existing upgrade preservation defect has its own repair record. Local verification is for trusted code. Managed execution of untrusted code and hosted workbench access are outside scope. Revision 2 also includes the approved upfront model decision and implementation-orchestrator handoff; existing security criteria are unchanged.
 
 ## Interfaces and constraints
 
@@ -82,6 +82,44 @@ Given a developer starts the workbench with the default settings, when the liste
 
 - The service listens only on loopback by default.
 - Any non-loopback listener requires explicit user configuration.
+
+## Approved model-flow extension (revision 2)
+
+### CSH-009 One model decision during Grill
+
+Given a feature reaches Grill in a supported coding-agent runtime, when the agent presents model selection:
+
+- Present the complete resolved stage model plan, existing overrides, same-family reviewer relationships and implementation orchestrator policy in one Confirm model plan or Change selected models interaction.
+- One confirmation accepts all defaults; collect only requested stage exceptions together, with accompanying free text and no per-stage questionnaire.
+- Record the runtime and resolved identities using the existing workstream model precedence; retain independent review contexts.
+
+### CSH-010 Automatic stage model reuse
+
+Given a confirmed model plan or an existing workstream with recorded choices and configured defaults, when a stage starts or the workstream resumes:
+
+- Reuse recorded choices automatically without routine model pickers, defaults confirmations or same-family confirmations.
+- Preserve authorized endpoints, scope, safety and acceptance decisions; model selection does not authorize intent or implementation.
+- Pause only for a requested model change, unavailable selected model, unmet runtime capability or genuine scope or policy escalation, requesting only the missing decision.
+- Preserve existing explicit choices and configured defaults without inventing historical consent or requiring a new-format record at every stage; collect a model decision at the next authorized Grill or explicit policy change.
+
+### CSH-011 Implementation orchestrator handoff
+
+Given the authorized next action is implementation and Grill confirmed the implementor update policy or an exact override, when implementation preflight evaluates the actual orchestrator:
+
+- Use the latest accessible implementor for the active runtime under the confirmed policy, retaining an exact human override; verify live runtime and account availability rather than treating a static catalog as availability evidence.
+- Continue without prompting if the orchestrator already matches; otherwise automatically switch and verify the actual orchestrator when supported before implementation writes.
+- When automatic switching is unsupported, stop before implementation and request the named manual model change; resume on observable verification or explicit human acknowledgment when identity is not inspectable, recording which evidence was available.
+- A child-model change or config edit is not orchestrator-switch evidence; unavailable models or catalogs require a concrete escalation without silent family substitution.
+- A plan-only endpoint stops before this preflight and never requests an implementation model switch just to finish planning.
+
+### CSH-012 Portable model decisions and capability evidence
+
+Given cursor, Codex or another supported runtime supplies model selection and handoff capabilities, when the model workflow resolves defaults and produces runtime instructions:
+
+- Keep stage roles portable and model catalogs and capability information in runtime bindings; reuse the existing override precedence.
+- Confirm during Grill the latest-accessible-implementor policy at implementation entry while retaining exact stage overrides; Composer for Cursor and Luna for Codex are current family examples, not permanent version slugs.
+- Represent unknown and unsupported discovery or switch capabilities explicitly and obtain actual runtime capability evidence during implementation of this feature.
+- Carry the decision flow through canonical prompts, policies, generated runtime agents, skills and commands and user guidance so old projections do not restore routine stage model questions.
 
 ## Source and change control
 

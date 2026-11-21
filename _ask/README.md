@@ -16,7 +16,7 @@ Root `AGENTS.md` is the short operational entrypoint. This tree holds the durabl
 | `skills/` | Skill Manifest (`manifest.yaml`) + `prepare-skills.sh` |
 | `scripts/` | Kit guardrails (clean tree, start-work, verify, install, upgrade) |
 | `tests/` | Tests of the kit, not of the product |
-| `docs/` | Kit-author ADRs, demo, research |
+| `docs/` | Kit docs, including [client acquisition and security](docs/client-security.md) |
 | `templates/` | Workstream templates (explore-map, intent, spec, plan, …) |
 | `decisions/` | Optional kit-level decision records |
 

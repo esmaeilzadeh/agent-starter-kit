@@ -46,12 +46,17 @@ printf '%s\n' "$out" | grep -q 'not ask-based'
 [[ ! -d "$TMP/_ask" ]]
 
 help="$("$ASKIT" --help 2>&1 || true)"
-printf '%s\n' "$help" | grep -q 'not ask-based'
+printf '%s\n' "$help" | grep -q 'installed launcher'
 ! printf '%s\n' "$help" | grep -q start-work
-! printf '%s\n' "$help" | grep -q 'no ./ask yet'
+! printf '%s\n' "$help" | grep -q 'no ./ask'
 
-# Confirm via env: then overlay and run the command.
-ASKIT_ADD_ASK=1 "$ASKIT" status
+# Explicit overlay does not imply trust; commands stay gated until that choice.
+set +e
+out="$(ASKIT_ADD_ASK=1 "$ASKIT" status 2>&1)"
+code=$?
+set -e
+[[ "$code" -ne 0 ]]
+printf '%s\n' "$out" | grep -q 'run askit trust'
 [[ -x "$TMP/ask" ]]
 [[ -d "$TMP/_ask" ]]
 

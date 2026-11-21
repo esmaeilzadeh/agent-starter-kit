@@ -6,17 +6,19 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
 if [[ $# -lt 1 || -z "${1:-}" ]]; then
-  echo "usage: check-workstream.sh <work-id> [--allow-dirty]" >&2
+  echo "usage: check-workstream.sh <work-id> [--allow-dirty] [--acceptance] [--implementation]" >&2
   exit 2
 fi
 WORK_ID="$1"
 ALLOW_DIRTY=0
 ACCEPTANCE=0
+IMPLEMENTATION=0
 shift || true
 for arg in "$@"; do
   case "$arg" in
     --allow-dirty) ALLOW_DIRTY=1 ;;
     --acceptance) ACCEPTANCE=1 ;;
+    --implementation) IMPLEMENTATION=1 ;;
     *) echo "unknown arg: $arg" >&2; exit 2 ;;
   esac
 done
@@ -90,6 +92,10 @@ if [[ -f "${WS}/review.md" ]] && ! grep -qiE '^## Model' "${WS}/review.md"; then
 fi
 if [[ -f "${WS}/spec-challenge.md" ]] && ! grep -qiE '^## Model' "${WS}/spec-challenge.md"; then
   echo "check-workstream: warning — ${WS}/spec-challenge.md has no ## Model record" >&2
+fi
+
+if [[ "$IMPLEMENTATION" -eq 1 ]]; then
+  python3 "$ROOT/_ask/scripts/orchestrator-handoff.py" preflight --work-id "$WORK_ID"
 fi
 
 echo "check-workstream: ok work-id=${WORK_ID} branch=${BRANCH}"

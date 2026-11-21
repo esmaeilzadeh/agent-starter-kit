@@ -47,3 +47,7 @@ Run confirmed E2E checks from `.agents/verification.yaml` unless
 `./ask verify` composes static checks and actual per-case execution through the shared Python completion gate; retain its candidate SHA and per-criterion completion report.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+through the central decision operation before a human interruption. Preserve
+human scope/approval authority and the saved Grill model selections.

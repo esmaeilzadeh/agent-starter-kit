@@ -1,7 +1,7 @@
 {
   "schema": "ask-spec/v1",
   "work_id": "client-security-hardening",
-  "revision": 1,
+  "revision": 2,
   "criteria": [
     {
       "id": "CSH-001",
@@ -87,6 +87,54 @@
       "then": [
         "The service listens only on loopback by default",
         "Any non-loopback listener requires explicit user configuration"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "CSH-009",
+      "given": "A feature reaches Grill in a supported coding-agent runtime",
+      "when": "The agent presents model selection",
+      "then": [
+        "Present the complete resolved stage model plan, existing overrides, same-family reviewer relationships and implementation orchestrator policy in one Confirm model plan or Change selected models interaction",
+        "One confirmation accepts all defaults; collect only requested stage exceptions together, with accompanying free text and no per-stage questionnaire",
+        "Record the runtime and resolved identities using the existing workstream model precedence; retain independent review contexts"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "CSH-010",
+      "given": "A confirmed model plan or an existing workstream with recorded choices and configured defaults",
+      "when": "A stage starts or the workstream resumes",
+      "then": [
+        "Reuse recorded choices automatically without routine model pickers, defaults confirmations or same-family confirmations",
+        "Preserve authorized endpoints, scope, safety and acceptance decisions; model selection does not authorize intent or implementation",
+        "Pause only for a requested model change, unavailable selected model, unmet runtime capability or genuine scope or policy escalation, requesting only the missing decision",
+        "Preserve existing explicit choices and configured defaults without inventing historical consent or requiring a new-format record at every stage; collect a model decision at the next authorized Grill or explicit policy change"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "CSH-011",
+      "given": "The authorized next action is implementation and Grill confirmed the implementor update policy or an exact override",
+      "when": "Implementation preflight evaluates the actual orchestrator",
+      "then": [
+        "Use the latest accessible implementor for the active runtime under the confirmed policy, retaining an exact human override; verify live runtime and account availability rather than treating a static catalog as availability evidence",
+        "Continue without prompting if the orchestrator already matches; otherwise automatically switch and verify the actual orchestrator when supported before implementation writes",
+        "When automatic switching is unsupported, stop before implementation and request the named manual model change; resume on observable verification or explicit human acknowledgment when identity is not inspectable, recording which evidence was available",
+        "A child-model change or config edit is not orchestrator-switch evidence; unavailable models or catalogs require a concrete escalation without silent family substitution",
+        "A plan-only endpoint stops before this preflight and never requests an implementation model switch just to finish planning"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "CSH-012",
+      "given": "Cursor, Codex or another supported runtime supplies model selection and handoff capabilities",
+      "when": "The model workflow resolves defaults and produces runtime instructions",
+      "then": [
+        "Keep stage roles portable and model catalogs and capability information in runtime bindings; reuse the existing override precedence",
+        "Confirm during Grill the latest-accessible-implementor policy at implementation entry while retaining exact stage overrides; Composer for Cursor and Luna for Codex are current family examples, not permanent version slugs",
+        "Represent unknown and unsupported discovery or switch capabilities explicitly and obtain actual runtime capability evidence during implementation of this feature",
+        "Carry the decision flow through canonical prompts, policies, generated runtime agents, skills and commands and user guidance so old projections do not restore routine stage model questions"
       ],
       "verification_mode": "tests"
     }

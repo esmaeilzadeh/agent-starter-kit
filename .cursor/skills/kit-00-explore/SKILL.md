@@ -109,7 +109,7 @@ Gate:
 
 ```text
 DESTINATION_CLEAR → eligible for Intent / 01 Grill
-STILL_FOGGY → continue Explore (or escalate to human)
+STILL_FOGGY → continue Explore; consult configured model-confidence rungs before human escalation (see `_ask/policies/workflow.md#model-confidence-escalation`)
 ```
 
 ---
@@ -122,3 +122,7 @@ STILL_FOGGY → continue Explore (or escalate to human)
 - Explore decision grilling uses the same filter as `01 Grill` (load-bearing numbered Qs + “I’ll assume…”). See `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 - Never start Explore on a dirty worktree; if dirty, grill the human per `_ask/policies/worktree.md`.
 - Kit path: `_ask/policies/workflow.md`. **If 00 runs for a feature**, create `work/<work-id>/explore-map.md` from `_ask/templates/explore-map.md` when missing, and do not skip that artifact. **If 00 is a real skip** (destination already ownable, and the human did not invoke `/00-explore`), do not create the map; record the skip in `intent.md` and go to 01 after the submitted intent approval choice. `/00-explore` starts this stage for feature work; the mandatory request route gate still decides whether the request belongs here. Off-path does not bypass that gate.
+
+For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
+through the central decision operation before a human interruption. Preserve
+human scope/approval authority and the saved Grill model selections.

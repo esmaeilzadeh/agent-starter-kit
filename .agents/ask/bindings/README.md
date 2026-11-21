@@ -13,6 +13,10 @@ Do not put slugs in `.agents/ask/stages/*.md` or in `models.defaults.yaml`.
 5. `runtimes/<id>.yaml` (slug)
 
 An unqualified slug applies only to the runtime being generated.
+The workstream overlay is checked before ambient model variables, so an exact
+saved stage choice cannot be replaced by the environment. Grill records the
+complete resolved table under `model_plan`; only exact stage exceptions belong
+in the runtime-specific overlay. Role-based defaults stay dynamic.
 
 ## Consumer `models.yaml` example
 
@@ -29,3 +33,28 @@ cursor:
 risk: HIGH
 07-review: diverse
 ```
+
+## Confidence consultation capabilities
+
+`confidence_escalation` entries are ordered candidate native names, with optional
+`@effort`. The central dispatcher is `model-decisions.py decide`; policy lives at
+`_ask/policies/workflow.md#model-confidence-escalation`. Runtime entries require
+current-session native catalog and effort evidence before dispatch. Claude names
+remain candidates until verified by that runtime; Cursor/OpenCode have no
+configured verified ladder. Availability failures advance to the next permitted
+rung and exhaustion reports the precise reason to the coordinator.
+
+The runtime binding supplies that code agent's default ladder. A user can replace
+it in project settings or `work/<work-id>/models.yaml` with an ordered,
+runtime-specific list:
+
+```yaml
+confidence_escalation:
+  codex:
+    - gpt-6.1-sol@high
+    - gpt-6-astra@medium
+```
+
+Workstream settings take precedence over project settings, which take precedence
+over the runtime default. Model names are native to the selected code agent;
+the dispatcher does not translate or assume another agent's model names.

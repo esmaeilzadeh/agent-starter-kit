@@ -55,10 +55,41 @@ checkout by default, or a task branch recorded in state and eligible for FF.
 Run the accepted task-scoped test runner after committing the candidate, then
 place its report reference in TaskResult before requesting review. The
 candidate SHA already exists, so TaskResult can bind the immutable report
-without a digest cycle. State, results and execution/review evidence are
-runtime paths; keep source/TaskGraph/intent changes committed. These runtime
-exceptions apply only to `work/<work-id>/inner-loop/{state.json,state.lock,
-.state-*.tmp,results/**,evidence/**}`. They do not exempt the whole workstream.
+without a digest cycle. Commit meaningful progress as one compact
+`work/<work-id>/progress/<task-id>.json` per task using
+`./ask inner-loop publish-evidence <work-id>`. The publisher reads authenticated
+checkpoint history, preserves rejected reviews, correction submissions, attempts,
+unattached historical runs and integration receipts, and excludes commands, raw
+output and free-form private prose. Supporting digests retain links to full local
+evidence, including notes. Git retains each public record's earlier versions.
+
+The driver publishes after integration and before the next writer. Publication
+failure blocks that writer. A running task, including a separate task ref, defers
+publication until integration or explicit interruption; its intermediate evidence
+remains checkpointed. Do not rebase an approved candidate for a progress commit.
+The next writer starts from the publication commit; the source candidate SHA
+continues to identify the tested/reviewed source. Publication receipts in the next
+checkpoint map source, record digests and publication commit without a hash cycle.
+Exact staged and postcommit retries complete once; an unchanged rerender creates
+neither a commit nor a state revision. Pending tasks may be backfilled after a
+reviewed recovery adoption; arbitrary source advances are rejected.
+
+`./ask check-clean` accepts known runtime cache paths only when their bytes and
+file types match a valid retained checkpoint and matching state cache. It checks
+ignored runtime files too. Staged runtime files and all progress/source changes
+remain dirty. Arbitrary authorization/review Markdown remains stageable. An empty
+known state lock is permitted; forged, missing or corrupt retention is refused.
+Use `inner-loop migrate-runtime <work-id> --inventory <json>` only with an explicit
+reviewed `{checkpoint_sha, paths: {path: sha256}}` inventory. It removes only exact
+retained runtime entries from the index, preserving worktree bytes and Git history.
+Commit that migration with its inventory; do not blanket-untrack work directories.
+
+Raw outputs stay in private repo-relative runtime caches and local checkpoint
+refs. Keep raw-bearing exports/snapshots outside normal source commits and public
+bundles, with directories 0700 and files 0600. Checkpoint capture/restore and
+traceability verification keep their existing path contracts. Local checkpoint
+refs are never automatically pushed. Missing matching raw output blocks dependent
+verification; a public summary cannot substitute for it.
 
 ## Delegated review
 
@@ -132,6 +163,34 @@ operation metadata, moves the coordinator ref and restores source paths only.
 An in-place TaskResult invalidated by that repair is refused until resubmitted;
 its recorded review and state revision are retained. External/manual Git writers
 remain outside this advisory coordination model.
+
+Checkpoint recovery keeps retained execution evidence byte-identical and accepts
+only append-only execution-ledger rows. A changed model-state pointer is carried
+forward only when the selected generation and every publication since the retained
+boundary validate as a guarded edit; ordinary admissions and unlinked files need
+an exact reviewed adoption. A changed completion projection must match retained
+passing verifier evidence or reproduce as a canonical failed report. Preserved
+historical failure diagnostics are not passing evidence and require reviewed
+adoption when their original contract is no longer current.
+
+### Reviewed recovery adoption
+
+Use `recovery-propose` to create a read-only proposal, then retain its exact
+bytes and the independent review under `work/<id>/inner-loop/evidence/` before
+`recovery-adopt`. The review binds the proposal digest, source candidate, and
+continuity digest. For this workstream, record the approved native reviewer as
+`gpt-6.1-sol (medium)` with `reviewer_model: gpt-6.1-sol` and
+`reviewer_effort: medium`. The command accepts only those exact proposal and
+review files as untracked evidence; other staged, changed, or untracked source
+blocks adoption.
+
+Reviewed adoption does not waive projection checks. Completion reports still
+pass the completion validator, and model-state pointers, selected generations,
+blobs, and publication records must remain structurally valid and match the
+reviewed inventory. The adoption receipt stays authoritative through descendant
+checkpoints when the coordinator advances from the adopted source commit.
+Ordinary inspection, CAS, and writer admission gain no authority from proposal
+files on disk.
 
 ## Structured spec-to-test gate
 

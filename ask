@@ -27,7 +27,7 @@ Commands:
       Create branch agent/<work-id> and seed work/<work-id>/.
       <work-id>   required slug
 
-  check-workstream <work-id> [--allow-dirty] [--acceptance]
+  check-workstream <work-id> [--allow-dirty] [--acceptance] [--implementation]
       Preconditions before implement (branch, spec, plan, current human intent confirmation).
       --allow-dirty   skip the clean-tree check
 
@@ -54,7 +54,7 @@ Commands:
       Structured spec-to-test contracts and evidence. Use --help for arguments.
 
   verify
-      Run repo checks; print commit SHA. No flags.
+      Run repo checks; print commit SHA. --help explains the trusted local execution boundary.
       Env: VERIFY_OUT_DIR, VERIFY_JSON
 
   record-result --work-id <id> --commit-sha <sha> --result <text> [--notes <text>]
@@ -78,7 +78,7 @@ Commands:
       <target-repo>     required path; must already be a git repo
       Does not touch that repo's docs/, scripts/, tests/, or src/.
 
-  upgrade --version <tag-or-sha> [--skip-prepare] [--source <git-url>]
+  upgrade --version <tag-or-sha> --expected-commit <full-sha> [--skip-prepare] [--source <git-url>]
       Refresh kit-owned files from an explicit version (never blind main).
       --version <tag-or-sha>   required
       --skip-prepare           skip prepare + sync after refresh
@@ -92,8 +92,18 @@ Commands:
       Human-only tracker + MCP wizard. Needs a TTY. Agents must not run this.
       --help   usage without a TTY
 
-  inner-loop validate|status|run|resume|cancel [work-id]
+  credentials migrate
+      Move supported legacy tracker credentials to private storage and remove
+      secret assignments from .ask.env without changing the Git index or history.
+
+  inner-loop validate|status|run|resume|cancel|publish-evidence [work-id]
       TaskGraph runner for stages 06–08. One committing writer.
+
+  model decision {save|submit|show|resolve|resolve-implementor|capability}
+      Save or inspect the confirmed stage-model plan and runtime evidence.
+
+  orchestrator-handoff preflight|resume
+      Verify or resume the confirmed implementation model handoff.
 
   model {validate|admit|show|edit|watch|context} --work-id <work-id>
       Validate the Engineering Model and its canonical references.
@@ -254,6 +264,16 @@ case "$cmd" in
   check-workstream|check)
     exec "$SCRIPTS/check-workstream.sh" "$@"
     ;;
+  model)
+    if [[ "${1:-}" == "decision" ]]; then
+      shift
+      exec python3 "$SCRIPTS/model-decisions.py" "$@"
+    fi
+    exec bash "$SCRIPTS/model.sh" "$@"
+    ;;
+  orchestrator-handoff)
+    exec python3 "$SCRIPTS/orchestrator-handoff.py" "$@"
+    ;;
   confirm-intent)
     exec python3 "$SCRIPTS/intent-confirmation.py" confirm --root "$ROOT" "$@"
     ;;
@@ -287,11 +307,16 @@ case "$cmd" in
   setup)
     exec "$SCRIPTS/setup.sh" "$@"
     ;;
+  credentials)
+    if [[ "${1:-}" != "migrate" ]]; then
+      echo "usage: ./ask credentials migrate" >&2
+      exit 2
+    fi
+    shift
+    exec python3 "$SCRIPTS/tracker-config.py" migrate --root "$ROOT" --yes "$@"
+    ;;
   inner-loop)
     exec python3 "$SCRIPTS/inner_loop/__main__.py" "$@"
-    ;;
-  model)
-    exec bash "$SCRIPTS/model.sh" "$@"
     ;;
   stage-intake)
     exec python3 "$SCRIPTS/stage-intake.py" "$@"

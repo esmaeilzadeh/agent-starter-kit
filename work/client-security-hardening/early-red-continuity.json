@@ -1,0 +1,486 @@
+{
+  "adaptations": [
+    {
+      "assessment": "Flat credentials become askit-tracker-credentials/v1 with tracker, URL, nested credentials, and both GITHUB_TOKEN and JIRA_PERSONAL_TOKEN.",
+      "id": "versioned-credentials"
+    },
+    {
+      "assessment": "The accepted 05-plan expectation changes from gpt-6-luna to gpt-6.1-sol.",
+      "id": "planning-model"
+    },
+    {
+      "assessment": "The external cp shim is replaced with sitecustomize/os.replace fault injection at the exact publication boundary, followed by refreshed trust.",
+      "id": "fault-injection"
+    },
+    {
+      "assessment": "The fake runtime adds authenticated, access_verified, and switch_supported fields required by the current harness.",
+      "id": "fixture-runtime"
+    }
+  ],
+  "candidate_sha": "371e4a5741f34afb0b2c37401fc847dc14309664",
+  "cases": [
+    {
+      "additional_current_assertions": [],
+      "assertion_mappings": [
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "253e50c0511e93a1ff943e598e991bebad5b5250c003ffe3a7d0dda05c431a1a"
+          ],
+          "current_indexes": [
+            0
+          ],
+          "original_assertion_sha256": "253e50c0511e93a1ff943e598e991bebad5b5250c003ffe3a7d0dda05c431a1a",
+          "original_index": 0
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8"
+          ],
+          "current_indexes": [
+            1
+          ],
+          "original_assertion_sha256": "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8",
+          "original_index": 1
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d"
+          ],
+          "current_indexes": [
+            2
+          ],
+          "original_assertion_sha256": "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d",
+          "original_index": 2
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "cb43277f625386a80af13a8bc55873e1fd22b780c94096f3b4afde53e689ea0f"
+          ],
+          "current_indexes": [
+            3
+          ],
+          "original_assertion_sha256": "cb43277f625386a80af13a8bc55873e1fd22b780c94096f3b4afde53e689ea0f",
+          "original_index": 3
+        },
+        {
+          "assessment": "The flat token object is represented by the versioned credential schema with tracker URL, credentials nesting, and the second-token case; the accepted credential behavior remains covered.",
+          "current_assertion_sha256": [
+            "df29c6211a657d80dc3c62272f04d964fbf31d4ce62cd8167dbde4acba49f615"
+          ],
+          "current_indexes": [
+            4
+          ],
+          "original_assertion_sha256": "82734e1dd053a41797ddc193bd2cf6bf563dd805861128c0face039a27c8b210",
+          "original_index": 4
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "53028ca50d25eacff27c51eb0f67142b9707fafaa8ba839fb7a967cec563825f"
+          ],
+          "current_indexes": [
+            5
+          ],
+          "original_assertion_sha256": "53028ca50d25eacff27c51eb0f67142b9707fafaa8ba839fb7a967cec563825f",
+          "original_index": 5
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "8cc981e2e66bd58ee2420369726a970140e698ea46d656e562f17b864fc71c85"
+          ],
+          "current_indexes": [
+            6
+          ],
+          "original_assertion_sha256": "8cc981e2e66bd58ee2420369726a970140e698ea46d656e562f17b864fc71c85",
+          "original_index": 6
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "b90ab76bae5d38828b4e7225daa79f0f6e4680999c647adc75eb9f6f1b03990b"
+          ],
+          "current_indexes": [
+            7
+          ],
+          "original_assertion_sha256": "b90ab76bae5d38828b4e7225daa79f0f6e4680999c647adc75eb9f6f1b03990b",
+          "original_index": 7
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "4a667200b69c57bd69757534155d9e3d83ace3b650ed0d93d74b02fee3b085b2"
+          ],
+          "current_indexes": [
+            8
+          ],
+          "original_assertion_sha256": "4a667200b69c57bd69757534155d9e3d83ace3b650ed0d93d74b02fee3b085b2",
+          "original_index": 8
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "06e786c8321c08b766ee4977afb23f13fba05313da983ab9d56f5aa1642a1a7f"
+          ],
+          "current_indexes": [
+            9
+          ],
+          "original_assertion_sha256": "06e786c8321c08b766ee4977afb23f13fba05313da983ab9d56f5aa1642a1a7f",
+          "original_index": 9
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "f895ae72d88babbe5688b97538a95f57b805a5a5febf784372e95a7289d960f2"
+          ],
+          "current_indexes": [
+            10
+          ],
+          "original_assertion_sha256": "f895ae72d88babbe5688b97538a95f57b805a5a5febf784372e95a7289d960f2",
+          "original_index": 10
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "8412ba319aeac58e2a253f3f4cd25ab20c1cd28b446aae1c3949e1bcffd438ad"
+          ],
+          "current_indexes": [
+            11
+          ],
+          "original_assertion_sha256": "8412ba319aeac58e2a253f3f4cd25ab20c1cd28b446aae1c3949e1bcffd438ad",
+          "original_index": 11
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100"
+          ],
+          "current_indexes": [
+            12
+          ],
+          "original_assertion_sha256": "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "original_index": 12
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "587f244a883fd139f4ef4e0de691de8d9b5b94ebe901872d6791b5c0220c2111"
+          ],
+          "current_indexes": [
+            13
+          ],
+          "original_assertion_sha256": "587f244a883fd139f4ef4e0de691de8d9b5b94ebe901872d6791b5c0220c2111",
+          "original_index": 13
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "7194770b26d9ad470afda729ce72d36d958991df601f649b7a9ad3c97b1bdc17"
+          ],
+          "current_indexes": [
+            14
+          ],
+          "original_assertion_sha256": "7194770b26d9ad470afda729ce72d36d958991df601f649b7a9ad3c97b1bdc17",
+          "original_index": 14
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "e9ee9363989b366a027aea917ec41a2111208479eebd76f10c61901921ea5c59"
+          ],
+          "current_indexes": [
+            15
+          ],
+          "original_assertion_sha256": "e9ee9363989b366a027aea917ec41a2111208479eebd76f10c61901921ea5c59",
+          "original_index": 15
+        },
+        {
+          "assessment": "The low-information process-handle assertion is represented by the exact assertion that the injected interruption occurred after publishing changed bytes.",
+          "current_assertion_sha256": [
+            "f3be687781fa519a89558bf5f0760e59eff2160e406a98fd47f360b844de6573"
+          ],
+          "current_indexes": [
+            16
+          ],
+          "original_assertion_sha256": "dd186128e87f1c160bb09d0cb1a34da57fc480bf599a3e1d871b04ee75bccb24",
+          "original_index": 16
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "f3be687781fa519a89558bf5f0760e59eff2160e406a98fd47f360b844de6573"
+          ],
+          "current_indexes": [
+            16
+          ],
+          "original_assertion_sha256": "f3be687781fa519a89558bf5f0760e59eff2160e406a98fd47f360b844de6573",
+          "original_index": 17
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d"
+          ],
+          "current_indexes": [
+            17
+          ],
+          "original_assertion_sha256": "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d",
+          "original_index": 18
+        },
+        {
+          "assessment": "The flat token object is represented by the versioned credential schema with tracker URL, credentials nesting, and the second-token case; the accepted credential behavior remains covered.",
+          "current_assertion_sha256": [
+            "df29c6211a657d80dc3c62272f04d964fbf31d4ce62cd8167dbde4acba49f615"
+          ],
+          "current_indexes": [
+            18
+          ],
+          "original_assertion_sha256": "82734e1dd053a41797ddc193bd2cf6bf563dd805861128c0face039a27c8b210",
+          "original_index": 19
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8"
+          ],
+          "current_indexes": [
+            19
+          ],
+          "original_assertion_sha256": "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8",
+          "original_index": 20
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "6ee0a801f977ad5ad63093fe08d0e7961100dcc67acb5bd631d9fbb33ca9a80e"
+          ],
+          "current_indexes": [
+            20
+          ],
+          "original_assertion_sha256": "6ee0a801f977ad5ad63093fe08d0e7961100dcc67acb5bd631d9fbb33ca9a80e",
+          "original_index": 21
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "e208e5bf1d885ae75c7a5204da02642d1fb16d63c06df467c29431dbab62882d"
+          ],
+          "current_indexes": [
+            21
+          ],
+          "original_assertion_sha256": "e208e5bf1d885ae75c7a5204da02642d1fb16d63c06df467c29431dbab62882d",
+          "original_index": 22
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0"
+          ],
+          "current_indexes": [
+            22
+          ],
+          "original_assertion_sha256": "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0",
+          "original_index": 23
+        }
+      ],
+      "behavioral_continuity": "The client-upgrade journey keeps its accepted install, migration, secret-protection, and safe-update obligations. The two credential checks now assert the versioned tracker/URL/credentials shape and the stronger second token; the cp process-handle assertion is represented by the exact interrupted-publish behavior check.",
+      "criterion_ids": [
+        "CSH-001",
+        "CSH-002",
+        "CSH-003",
+        "CSH-004",
+        "CSH-005",
+        "CSH-006"
+      ],
+      "current_identity": {
+        "assertion_ast_sha256": [
+          "253e50c0511e93a1ff943e598e991bebad5b5250c003ffe3a7d0dda05c431a1a",
+          "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8",
+          "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d",
+          "cb43277f625386a80af13a8bc55873e1fd22b780c94096f3b4afde53e689ea0f",
+          "df29c6211a657d80dc3c62272f04d964fbf31d4ce62cd8167dbde4acba49f615",
+          "53028ca50d25eacff27c51eb0f67142b9707fafaa8ba839fb7a967cec563825f",
+          "8cc981e2e66bd58ee2420369726a970140e698ea46d656e562f17b864fc71c85",
+          "b90ab76bae5d38828b4e7225daa79f0f6e4680999c647adc75eb9f6f1b03990b",
+          "4a667200b69c57bd69757534155d9e3d83ace3b650ed0d93d74b02fee3b085b2",
+          "06e786c8321c08b766ee4977afb23f13fba05313da983ab9d56f5aa1642a1a7f",
+          "f895ae72d88babbe5688b97538a95f57b805a5a5febf784372e95a7289d960f2",
+          "8412ba319aeac58e2a253f3f4cd25ab20c1cd28b446aae1c3949e1bcffd438ad",
+          "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "587f244a883fd139f4ef4e0de691de8d9b5b94ebe901872d6791b5c0220c2111",
+          "7194770b26d9ad470afda729ce72d36d958991df601f649b7a9ad3c97b1bdc17",
+          "e9ee9363989b366a027aea917ec41a2111208479eebd76f10c61901921ea5c59",
+          "f3be687781fa519a89558bf5f0760e59eff2160e406a98fd47f360b844de6573",
+          "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d",
+          "df29c6211a657d80dc3c62272f04d964fbf31d4ce62cd8167dbde4acba49f615",
+          "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8",
+          "6ee0a801f977ad5ad63093fe08d0e7961100dcc67acb5bd631d9fbb33ca9a80e",
+          "e208e5bf1d885ae75c7a5204da02642d1fb16d63c06df467c29431dbab62882d",
+          "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0"
+        ],
+        "method_ast_sha256": "4c77c7be00fcc17881171f9e15fcda1f147db105fbc66bd671e54eca23ef8cc1",
+        "source_path": "_ask/tests/test_client_journeys.py",
+        "source_sha256": "8b8a0711ab12f7980b01a13518f76ef8d3f1083840e5b555fd1559c0d0f2046f"
+      },
+      "original_identity": {
+        "assertion_ast_sha256": [
+          "253e50c0511e93a1ff943e598e991bebad5b5250c003ffe3a7d0dda05c431a1a",
+          "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8",
+          "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d",
+          "cb43277f625386a80af13a8bc55873e1fd22b780c94096f3b4afde53e689ea0f",
+          "82734e1dd053a41797ddc193bd2cf6bf563dd805861128c0face039a27c8b210",
+          "53028ca50d25eacff27c51eb0f67142b9707fafaa8ba839fb7a967cec563825f",
+          "8cc981e2e66bd58ee2420369726a970140e698ea46d656e562f17b864fc71c85",
+          "b90ab76bae5d38828b4e7225daa79f0f6e4680999c647adc75eb9f6f1b03990b",
+          "4a667200b69c57bd69757534155d9e3d83ace3b650ed0d93d74b02fee3b085b2",
+          "06e786c8321c08b766ee4977afb23f13fba05313da983ab9d56f5aa1642a1a7f",
+          "f895ae72d88babbe5688b97538a95f57b805a5a5febf784372e95a7289d960f2",
+          "8412ba319aeac58e2a253f3f4cd25ab20c1cd28b446aae1c3949e1bcffd438ad",
+          "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "587f244a883fd139f4ef4e0de691de8d9b5b94ebe901872d6791b5c0220c2111",
+          "7194770b26d9ad470afda729ce72d36d958991df601f649b7a9ad3c97b1bdc17",
+          "e9ee9363989b366a027aea917ec41a2111208479eebd76f10c61901921ea5c59",
+          "dd186128e87f1c160bb09d0cb1a34da57fc480bf599a3e1d871b04ee75bccb24",
+          "f3be687781fa519a89558bf5f0760e59eff2160e406a98fd47f360b844de6573",
+          "a9c74d82f8b417bf44c753dcbed704926f0578cd3c765dec34f7d22d765bbf2d",
+          "82734e1dd053a41797ddc193bd2cf6bf563dd805861128c0face039a27c8b210",
+          "9df1ea89f183dcf017019a2ad05fbd6cb20e1eb3f4a452942dc4b2d6b44422c8",
+          "6ee0a801f977ad5ad63093fe08d0e7961100dcc67acb5bd631d9fbb33ca9a80e",
+          "e208e5bf1d885ae75c7a5204da02642d1fb16d63c06df467c29431dbab62882d",
+          "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0"
+        ],
+        "method_ast_sha256": "03e6fc1cf6ce56481c9f8f063fa320c27882e2f18acdd24d45effb1c498da707",
+        "source_path": "_ask/tests/test_client_journeys.py",
+        "source_sha256": "d1bf47460106fa96ce0bdffd9a7a3908a2196220562ca5f239e484b031b4973f"
+      },
+      "test_id": "CSH-T38"
+    },
+    {
+      "additional_current_assertions": [],
+      "assertion_mappings": [
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100"
+          ],
+          "current_indexes": [
+            0
+          ],
+          "original_assertion_sha256": "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "original_index": 0
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100"
+          ],
+          "current_indexes": [
+            1
+          ],
+          "original_assertion_sha256": "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "original_index": 1
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "4d73f2ca1ba2ffcd4210e943d8e4a4be1ea78f93fabbcfb93496a9e46c1c5e09"
+          ],
+          "current_indexes": [
+            2
+          ],
+          "original_assertion_sha256": "4d73f2ca1ba2ffcd4210e943d8e4a4be1ea78f93fabbcfb93496a9e46c1c5e09",
+          "original_index": 2
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "a5c25b1272b6d060cb1ca75502908ab980913cce8cb56b83ece2beb28ca3910b"
+          ],
+          "current_indexes": [
+            3
+          ],
+          "original_assertion_sha256": "a5c25b1272b6d060cb1ca75502908ab980913cce8cb56b83ece2beb28ca3910b",
+          "original_index": 3
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "967c1301f9d63275512b12f1a7eb4678418a36547f3be6a68f789eb39bb7f4b4"
+          ],
+          "current_indexes": [
+            4
+          ],
+          "original_assertion_sha256": "967c1301f9d63275512b12f1a7eb4678418a36547f3be6a68f789eb39bb7f4b4",
+          "original_index": 4
+        },
+        {
+          "assessment": "Assertion AST is unchanged and preserves the same check.",
+          "current_assertion_sha256": [
+            "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0"
+          ],
+          "current_indexes": [
+            5
+          ],
+          "original_assertion_sha256": "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0",
+          "original_index": 5
+        }
+      ],
+      "behavioral_continuity": "The model-flow journey keeps the same six assertion ASTs and accepted criteria. Its expected planning model changes from Luna to Sol under the accepted planning-model contract, and the fake runtime now returns authentication, access-verification, and switch-support metadata required by the current harness.",
+      "criterion_ids": [
+        "CSH-009",
+        "CSH-010",
+        "CSH-011",
+        "CSH-012"
+      ],
+      "current_identity": {
+        "assertion_ast_sha256": [
+          "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "4d73f2ca1ba2ffcd4210e943d8e4a4be1ea78f93fabbcfb93496a9e46c1c5e09",
+          "a5c25b1272b6d060cb1ca75502908ab980913cce8cb56b83ece2beb28ca3910b",
+          "967c1301f9d63275512b12f1a7eb4678418a36547f3be6a68f789eb39bb7f4b4",
+          "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0"
+        ],
+        "method_ast_sha256": "128d57ddf4d93959d27f981480c6901208d10540804e960e15be6370f57259c4",
+        "source_path": "_ask/tests/test_client_journeys.py",
+        "source_sha256": "8b8a0711ab12f7980b01a13518f76ef8d3f1083840e5b555fd1559c0d0f2046f"
+      },
+      "original_identity": {
+        "assertion_ast_sha256": [
+          "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "2438c508ebccf696136d21428542900c289556c038ee3b9668bd492ed2d61100",
+          "4d73f2ca1ba2ffcd4210e943d8e4a4be1ea78f93fabbcfb93496a9e46c1c5e09",
+          "a5c25b1272b6d060cb1ca75502908ab980913cce8cb56b83ece2beb28ca3910b",
+          "967c1301f9d63275512b12f1a7eb4678418a36547f3be6a68f789eb39bb7f4b4",
+          "6ddeaf899405c1fb3a983039fe4b431f0cc04e46ab57bbed56ff7a13d01379b0"
+        ],
+        "method_ast_sha256": "8e7e0d66c53ee38d0adf0b7dcc27053ebe2fa6cbaca932bdafdaddb244ec20b1",
+        "source_path": "_ask/tests/test_client_journeys.py",
+        "source_sha256": "d1bf47460106fa96ce0bdffd9a7a3908a2196220562ca5f239e484b031b4973f"
+      },
+      "test_id": "CSH-T39"
+    }
+  ],
+  "current_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "current_spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "early_authorization": {
+    "candidate_sha": "eebe137bb70629716f5333b7e90d501a25d69586",
+    "path": "work/client-security-hardening/traceability/plan-review.json",
+    "sha256": "7de971719018bb9db74d8ff9844aa7ae1a8bf263fc341861a1783106e9ad672d"
+  },
+  "ledger_row_digest": "259b69589dd3cd9b54245d53d501dd4578140b9c53b961adcec75e3c6c7f5a55",
+  "original_authority_object": "95f797b3dfc41dce61bf20dd5d80ecff614fa75f",
+  "original_plan_digest": "c754f5576b91b34adfbe488475a89dff2809bc5ba0a754286704d5b365a22ebf",
+  "original_runner_digest": "fba7d101046f9bb7e15ba441224d833733398ecce6492dd83d85a6157d8a8ae2",
+  "original_spec_digest": "664778e240718fadd15f40f9bd23a10d2664b8d3d7d1fc3942426dfc4ad5e8cc",
+  "output_digest": "c057cfc15fe7c32bc55763f75584b47c2053aff06fdf6abb06cfe9f96fc558cf",
+  "report_digest": "1ac7627f19c274b6eeee93c11a813a301b3abe8e4f3ecf8f68140debb6557766",
+  "run_id": "01ba1187a3584c9184579b9af66fdc07",
+  "schema": "ask-early-red-continuity/v1",
+  "task_id": "CSH-10",
+  "work_id": "client-security-hardening"
+}

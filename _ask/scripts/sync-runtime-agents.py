@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import os
+import json
+import re
+import subprocess
 import sys
+import unicodedata
 from pathlib import Path
-
 
 STAGES = [
     "00-explore",
@@ -22,6 +25,7 @@ STAGES = [
 ]
 
 RUNTIMES = ("cursor", "claude", "codex", "opencode")
+MISSING = object()
 OUT_DIRS = {
     "cursor": Path(".cursor/agents"),
     "claude": Path(".claude/agents"),
@@ -38,31 +42,47 @@ def parse_yaml(text: str) -> dict:
     i = 0
 
     def strip_comment(s: str) -> str:
-        in_q = False
+        quote = None
         out = []
-        for ch in s:
-            if ch == '"' and not in_q:
-                in_q = True
-                out.append(ch)
-            elif ch == '"' and in_q:
-                in_q = False
-                out.append(ch)
-            elif ch == "#" and not in_q:
+        i = 0
+        while i < len(s):
+            ch = s[i]
+            if quote == "'" and ch == "'" and i + 1 < len(s) and s[i + 1] == "'":
+                out.extend((ch, s[i + 1]))
+                i += 2
+                continue
+            if quote == '"' and ch == "\\" and i + 1 < len(s):
+                out.extend((ch, s[i + 1]))
+                i += 2
+                continue
+            if quote:
+                if ch == quote:
+                    quote = None
+            elif ch in "'\"" and (not s[:i].strip() or s[:i].rstrip().endswith((":", "-"))):
+                quote = ch
+            elif ch == "#":
                 break
-            else:
-                out.append(ch)
+            out.append(ch)
+            i += 1
         return "".join(out).rstrip()
 
     def parse_scalar(raw: str):
         raw = raw.strip()
         if raw in ("", "~", "null"):
             return None
-        if (raw.startswith('"') and raw.endswith('"')) or (
-            raw.startswith("'") and raw.endswith("'")
-        ):
-            return raw[1:-1]
+        if raw.startswith('"') and raw.endswith('"'):
+            return json.loads(raw)
+        if raw.startswith("'") and raw.endswith("'"):
+            return raw[1:-1].replace("''", "'")
         if raw.lower() in ("true", "false"):
             return raw.lower() == "true"
+        if raw.startswith("[") and raw.endswith("]"):
+            inner = raw[1:-1].strip()
+            return [] if not inner else [parse_scalar(item) for item in inner.split(",")]
+        if raw.startswith("{") and raw.endswith("}"):
+            return {}
+        if re.fullmatch(r"[+-]?(?:0[xX][0-9a-fA-F_]+|0[oO][0-7_]+|0[bB][01_]+|(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9_]+)(?:[eE][+-]?[0-9_]+)?)", raw):
+            return 0
         return raw
 
     while i < len(lines):
@@ -152,7 +172,7 @@ def env_stage_key(stage: str) -> str:
 
 def value_from_overlay(data: dict, stage: str, runtime: str):
     if not data:
-        return None
+        return MISSING
     rt = data.get(runtime)
     if isinstance(rt, dict) and stage in rt:
         return rt[stage]
@@ -161,7 +181,141 @@ def value_from_overlay(data: dict, stage: str, runtime: str):
     stages = data.get("stages")
     if isinstance(stages, dict) and stage in stages:
         return stages[stage]
-    return None
+    return MISSING
+
+
+def validate_model(value, runtime: str, stage: str) -> str:
+    if (not isinstance(value, str) or not value.strip()
+            or any(unicodedata.category(ch) in {"Cc", "Zl", "Zp"} for ch in value)):
+        raise SystemExit(f"invalid model for {runtime} {stage}: expected a nonempty single-line string")
+    return value
+
+
+def parse_generated_toml(text: str) -> dict:
+    """Parse the assignment and multiline-string subset used by agent.toml.tpl."""
+    if any(unicodedata.category(char) == "Cc" and char not in "\t\n\r" for char in text):
+        raise ValueError("control character in TOML template")
+
+    def validate_multiline_escapes(value: str) -> None:
+        index = 0
+        while index < len(value):
+            char = value[index]
+            if char == "\\":
+                index += 1
+                if index == len(value):
+                    raise ValueError("unterminated TOML escape")
+                escape = value[index]
+                if escape == "\n":
+                    index += 1
+                    while index < len(value) and value[index] in " \t\n":
+                        index += 1
+                    continue
+                if escape in 'btnfr"\\':
+                    index += 1
+                    continue
+                if escape in "uU":
+                    width = 4 if escape == "u" else 8
+                    digits = value[index + 1:index + 1 + width]
+                    if len(digits) != width or not re.fullmatch(r"[0-9a-fA-F]+", digits):
+                        raise ValueError("invalid TOML Unicode escape")
+                    codepoint = int(digits, 16)
+                    if codepoint > 0x10FFFF or 0xD800 <= codepoint <= 0xDFFF:
+                        raise ValueError("invalid TOML Unicode scalar")
+                    index += width + 1
+                    continue
+                raise ValueError(f"invalid TOML escape: \\{escape}")
+            if unicodedata.category(char) == "Cc" and char not in "\t\n\r":
+                raise ValueError("control character in TOML multiline string")
+            index += 1
+
+    document = {}
+    lines = text.splitlines()
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        match = re.fullmatch(r"([A-Za-z][A-Za-z0-9_-]*)\s*=\s*(.*)", line)
+        if not match:
+            raise ValueError(f"invalid TOML assignment: {line}")
+        key, raw = match.groups()
+        if key in document:
+            raise ValueError(f"duplicate TOML field: {key}")
+        if raw.startswith('"""'):
+            body = [raw[3:]] if raw[3:] else []
+            if body and '"""' in body[0]:
+                raise ValueError(f"unsupported embedded TOML delimiter: {key}")
+            while not body or not body[-1].endswith('"""'):
+                if index == len(lines):
+                    raise ValueError(f"unterminated TOML multiline string: {key}")
+                line = lines[index]
+                index += 1
+                if line != '"""' and '"""' in line:
+                    raise ValueError(f"unsupported embedded TOML delimiter: {key}")
+                body.append(line)
+            if body[-1] != '"""':
+                raise ValueError(f"invalid TOML multiline string terminator: {key}")
+            body.pop()
+            value = "\n".join(body).lstrip("\n")
+            validate_multiline_escapes(value)
+            document[key] = value
+        else:
+            if not raw.startswith('"') or not raw.endswith('"'):
+                raise ValueError(f"expected TOML basic string: {key}")
+            validate_multiline_escapes(raw[1:-1])
+            value = json.loads(raw)
+            if not isinstance(value, str):
+                raise ValueError(f"expected TOML string field: {key}")
+            document[key] = value
+    allowed = {"name", "description", "model", "model_reasoning_effort", "developer_instructions"}
+    if not {"name", "description", "model", "developer_instructions"} <= document.keys() or document.keys() - allowed:
+        raise ValueError("unexpected generated TOML fields")
+    return document
+
+
+def validate_rendered_model(text: str, runtime: str, slug: str, stage: str) -> None:
+    try:
+        if runtime == "codex":
+            try:
+                import tomllib
+            except ImportError:
+                try:
+                    import tomli as tomllib
+                except ImportError:
+                    document = parse_generated_toml(text)
+                else:
+                    document = tomllib.loads(text)
+            else:
+                document = tomllib.loads(text)
+        else:
+            parts = text.split("---", 2)
+            if len(parts) != 3 or parts[0].strip():
+                raise ValueError("missing frontmatter")
+            frontmatter = parts[1]
+            if len(re.findall(r"^model:", frontmatter, re.MULTILINE)) != 1:
+                raise ValueError("expected exactly one model field")
+            document = parse_yaml(frontmatter)
+    except Exception as exc:
+        raise SystemExit(f"invalid {runtime} template for {stage}: {exc}") from exc
+    if not isinstance(document, dict) or document.get("model") != slug:
+        raise SystemExit(f"invalid {runtime} template for {stage}: model field failed round-trip")
+
+
+def run_transaction(root: Path) -> int:
+    inputs = ["_ask/scripts", ".agents/ask", ".agents/ask.local", "_ask/bindings"]
+    if work_id := os.environ.get("ASK_WORK_ID"):
+        inputs.append(f"work/{work_id}")
+    command = [
+        sys.executable, str(root / "_ask/scripts/write-transaction.py"), "run",
+        "--root", str(root),
+    ]
+    for path in (".cursor/agents", ".claude/agents", ".codex/agents", ".opencode/agents"):
+        command.extend(("--path", path))
+    for path in inputs:
+        command.extend(("--input-path", path))
+    command.extend(("--", sys.executable, "{target}/_ask/scripts/sync-runtime-agents.py"))
+    return subprocess.run(command, cwd=root, check=False).returncode
 
 
 def is_role_or_pool(val: str) -> bool:
@@ -185,27 +339,39 @@ def resolve_slug(
     )
     risk = str(risk).upper()
 
-    env_rt = env.get(f"{env_stage_key(stage)}_{runtime.upper()}")
-    if env_rt:
-        return env_rt
-    env_any = env.get(env_stage_key(stage))
-    if env_any and not is_role_or_pool(env_any):
-        return env_any
-
-    for overlay in (work, consumer):
+    for overlay in (work,):
         hit = value_from_overlay(overlay, stage, runtime)
-        if hit is None:
+        if hit is MISSING:
             continue
-        hit = str(hit)
+        validate_model(hit, runtime, stage)
         if not is_role_or_pool(hit):
             return hit
         return slug_from_role_or_pool(hit, stage, risk, defaults, runtime_cfg)
 
-    if env_any and is_role_or_pool(env_any):
+    env_rt_key = f"{env_stage_key(stage)}_{runtime.upper()}"
+    env_any_key = env_stage_key(stage)
+    if env_rt_key in env:
+        return validate_model(env[env_rt_key], runtime, stage)
+    env_any = env.get(env_any_key, MISSING)
+    if env_any is not MISSING:
+        validate_model(env_any, runtime, stage)
+        if not is_role_or_pool(env_any):
+            return env_any
+
+    for overlay in (consumer,):
+        hit = value_from_overlay(overlay, stage, runtime)
+        if hit is MISSING:
+            continue
+        validate_model(hit, runtime, stage)
+        if not is_role_or_pool(hit):
+            return hit
+        return slug_from_role_or_pool(hit, stage, risk, defaults, runtime_cfg)
+
+    if env_any is not MISSING and is_role_or_pool(env_any):
         return slug_from_role_or_pool(env_any, stage, risk, defaults, runtime_cfg)
 
     role = (defaults.get("stages") or {}).get(stage)
-    return slug_from_role_or_pool(str(role), stage, risk, defaults, runtime_cfg)
+    return slug_from_role_or_pool(validate_model(role, runtime, stage), stage, risk, defaults, runtime_cfg)
 
 
 def slug_from_role_or_pool(token: str, stage: str, risk: str, defaults: dict, runtime_cfg: dict) -> str:
@@ -215,24 +381,26 @@ def slug_from_role_or_pool(token: str, stage: str, risk: str, defaults: dict, ru
         slug = pools.get(token)
         if not slug:
             raise SystemExit(f"runtime missing pool {token}")
-        return str(slug)
+        return slug
     if token == "review":
         pool = (defaults.get("review_pool") or {}).get(risk, "cheap")
         slug = pools.get(pool)
         if not slug:
             raise SystemExit(f"runtime missing pool {pool} for risk {risk}")
-        return str(slug)
+        return slug
     slug = roles.get(token)
     if not slug:
         raise SystemExit(f"runtime missing role {token}")
-    return str(slug)
+    return slug
 
 
 def render(tpl: str, **kw: str) -> str:
-    out = tpl
-    for k, v in kw.items():
-        out = out.replace("{{" + k + "}}", v)
-    return out
+    def replace(match):
+        key = match.group(1)
+        if key not in kw:
+            raise ValueError(f"unknown template field: {key}")
+        return kw[key]
+    return re.sub(r"\{\{([a-z_]+)\}\}", replace, tpl)
 
 
 def resolve_effort(stage: str, model: str, cfg: dict, consumer: dict, work: dict, env: dict) -> str | None:
@@ -242,8 +410,10 @@ def resolve_effort(stage: str, model: str, cfg: dict, consumer: dict, work: dict
     if value is None:
         for overlay in (work, consumer):
             value = value_from_overlay(overlay.get("reasoning_effort") or {}, stage, "codex")
-            if value is not None:
+            if value is not MISSING:
                 break
+    if value is MISSING:
+        value = None
     if value is None:
         efforts = cfg.get("reasoning_effort") or {}
         models = efforts.get("models") or {}
@@ -264,7 +434,9 @@ def bindings_dir(root: Path) -> Path:
 
 
 def main() -> int:
-    root = Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2])
+    root = (Path(__file__).resolve().parents[2] if os.environ.get("ASKIT_TRANSACTION_ACTIVE") == "1"
+            else Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2]))
+    root = root.resolve()
     os.chdir(root)
     bind = bindings_dir(root)
     defaults = load_yaml(bind / "models.defaults.yaml")
@@ -289,7 +461,7 @@ def main() -> int:
             continue
         out_dir = root / OUT_DIRS[runtime]
         for stage in STAGES:
-            slug = resolve_slug(stage, runtime, defaults, cfg, consumer, work, os.environ)
+            slug = validate_model(resolve_slug(stage, runtime, defaults, cfg, consumer, work, os.environ), runtime, stage)
             name = f"kit-{stage}"
             desc = f"Kit protocol stage {stage} ({runtime})."
             readonly = "readonly: true\n" if stage == "07-review" else ""
@@ -300,7 +472,7 @@ def main() -> int:
                     toml_tpl,
                     name=name,
                     description=desc,
-                    model=slug,
+                    model=json.dumps(slug, ensure_ascii=False),
                     reasoning_effort_line=f'model_reasoning_effort = "{effort}"\n' if effort else "",
                     runtime=runtime,
                     stage=stage,
@@ -310,7 +482,7 @@ def main() -> int:
                 text = render(
                     opencode_tpl,
                     description=desc,
-                    model=slug,
+                    model=json.dumps(slug, ensure_ascii=False),
                     permission_block=permission_block,
                     runtime=runtime,
                     stage=stage,
@@ -321,12 +493,13 @@ def main() -> int:
                     md_tpl,
                     name=name,
                     description=desc,
-                    model=slug,
+                    model=json.dumps(slug, ensure_ascii=False),
                     readonly_line=readonly,
                     runtime=runtime,
                     stage=stage,
                 )
                 dest = out_dir / f"{name}.md"
+            validate_rendered_model(text, runtime, slug, stage)
             outputs.append((dest, text))
     # Preflight every assignment before touching any runtime's existing output.
     for dest, text in outputs:
@@ -338,4 +511,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    transaction_root = Path(os.environ.get("ASK_ROOT") or Path(__file__).resolve().parents[2]).resolve()
+    if os.environ.get("ASKIT_TRANSACTION_ACTIVE") != "1" and (transaction_root / ".git").exists():
+        raise SystemExit(run_transaction(transaction_root))
+    # shortcut: non-Git fixture roots run in place; standalone non-repository sync is unsupported.
     raise SystemExit(main())

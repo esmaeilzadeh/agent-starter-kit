@@ -5,10 +5,14 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from verification.traceability.completion import evaluate_completion
 from verification.traceability.contracts import Invalid,POLICY,digest
-from verification.traceability.evidence import record_test_review,review_errors,write_json
+from verification.traceability.evidence import (record_test_review,review_errors,write_json,
+    _validate_early_red_semantic_map)
+from inner_loop.recovery import retained_adoption_continuity
 from traceability_fixture import Consumer
 
 class EvidenceTests(unittest.TestCase):
@@ -22,6 +26,92 @@ class EvidenceTests(unittest.TestCase):
             if entry['run_id']==report['run_id']:entry['digest']=digest(report)
         write_json(runtime/'executions.json',ledger)
     def passing(self):self.assertEqual(self.evaluate()['status'],'pass')
+    def test_early_red_map_allows_reviewed_many_to_one_assertion_mapping(self):
+        plan={'tests':[{'id':tid,'criterion_ids':['C1']} for tid in ('CSH-T38','CSH-T39')],
+              'task_scopes':[{'task_id':'CSH-10','test_ids':['CSH-T38','CSH-T39']}]}
+        spec={'criteria':[{'id':'C1'}]}
+        old={'plan':plan,'spec':spec};current={'plan':plan,'spec':spec}
+        identities={}
+        for tid in ('CSH-T38','CSH-T39'):
+            identities[(tid,'old')]={'source_path':'test.py','source_sha256':'old-source',
+                'method_ast_sha256':'old-method','assertion_ast_sha256':['old-a','old-b']}
+            identities[(tid,'new')]={'source_path':'test.py','source_sha256':'new-source',
+                'method_ast_sha256':'new-method','assertion_ast_sha256':['new-a']}
+        cases=[]
+        for tid in ('CSH-T38','CSH-T39'):
+            cases.append({'test_id':tid,'criterion_ids':['C1'],'behavioral_continuity':'same accepted criterion',
+                'original_identity':identities[(tid,'old')],
+                'current_identity':identities[(tid,'new')],
+                'assertion_mappings':[
+                    {'original_index':index,'original_assertion_sha256':f'old-{letter}',
+                     'current_indexes':[0],'current_assertion_sha256':['new-a'],
+                     'assessment':'Both original assertions remain represented by the reviewed stronger assertion.'}
+                    for index,letter in enumerate(('a','b'))],
+                'additional_current_assertions':[]})
+        continuity={'schema':'ask-early-red-continuity/v1','work_id':'client-security-hardening',
+            'task_id':'CSH-10','run_id':'01ba1187a3584c9184579b9af66fdc07',
+            'candidate_sha':'371e4a5741f34afb0b2c37401fc847dc14309664',
+            'original_plan_digest':digest(plan),'original_spec_digest':digest(spec),
+            'current_plan_digest':digest(plan),'current_spec_digest':digest(spec),
+            'adaptations':[{'id':name,'assessment':'Reviewed against the accepted journey contract.'}
+                for name in ('versioned-credentials','planning-model','fault-injection','fixture-runtime')],
+            'cases':cases}
+        decisions={row['test_id']:{'behavioral_continuity':row['behavioral_continuity']} for row in cases}
+        with patch('verification.traceability.evidence.assertion_identity',
+                   side_effect=lambda _root,candidate,_plan,test_id:
+                       identities[(test_id,'old' if candidate==continuity['candidate_sha'] else 'new')]):
+            _validate_early_red_semantic_map(Path('.'),continuity['work_id'],old,current,
+                'adopted-candidate',continuity,decisions)
+            continuity['cases'][0]['assertion_mappings'].pop()
+            with self.assertRaisesRegex(Invalid,'omits original assertions'):
+                _validate_early_red_semantic_map(Path('.'),continuity['work_id'],old,current,
+                    'adopted-candidate',continuity,decisions)
+    def test_adoption_continuity_survives_later_checkpoint_descendants(self):
+        from inner_loop.checkpoint import read_checkpoint
+        continuity={'schema':'ask-early-red-continuity/v1'}
+        continuity_sha=hashlib.sha256(json.dumps(continuity,sort_keys=True,
+            separators=(',',':')).encode()).hexdigest()
+        proposal={'schema':'ask-recovery-adoption-proposal/v1','work_id':'w','branch':'agent/w',
+            'source_head':'source','source_tree':'tree',
+            'checkpoint_commit':'prior','observed_revision':0,
+            'early_red_continuity':continuity,'early_red_continuity_sha256':continuity_sha}
+        proposal_digest=hashlib.sha256(json.dumps(proposal,sort_keys=True,
+            separators=(',',':')).encode()).hexdigest()
+        review={'schema':'ask-recovery-adoption-review/v1','decision':'APPROVED',
+            'reviewer':'gpt-6.1-sol (medium)','reviewer_model':'gpt-6.1-sol','reviewer_effort':'medium',
+            'recorded_by':'coordinator','scope':'exact-recovery-adoption',
+            'proposal_sha256':proposal_digest,'candidate_sha':'source',
+            'early_red_continuity_sha256':continuity_sha}
+        proposal_raw=json.dumps(proposal).encode();review_raw=json.dumps(review).encode()
+        receipt={'schema':'ask-recovery-adoption-receipt/v1','proposal_sha256':proposal_digest,
+            'review_sha256':hashlib.sha256(review_raw).hexdigest(),
+            'proposal_path':'work/w/inner-loop/evidence/proposal.json',
+            'review_path':'work/w/inner-loop/evidence/review.json',
+            'previous_checkpoint':'prior','observed_revision':0,'resulting_revision':1,
+            'source_head':'source','source_tree':'tree',
+            'early_red_continuity_sha256':continuity_sha}
+        state={'coordinator_sha':'integrated','revision':3,'recovery_adoptions':[receipt]}
+        old_state={'coordinator_sha':'source','revision':1,'recovery_adoptions':[receipt]}
+        state_path='artifacts/work/w/inner-loop/state.json'
+        docs={
+            'latest':({'work_id':'w','previous_checkpoint':'adoption','state_path':state_path},
+                      {state_path:json.dumps(state).encode()}),
+            'adoption':({'work_id':'w','previous_checkpoint':'prior','coordinator_sha':'source',
+                         'state_path':state_path},
+                        {state_path:json.dumps(old_state).encode(),
+                         'artifacts/work/w/inner-loop/evidence/proposal.json':proposal_raw,
+                         'artifacts/work/w/inner-loop/evidence/review.json':review_raw}),
+        }
+        def checkpoint(_root,_work,commit=None):
+            name=commit or 'latest';manifest,files=docs[name]
+            return name,(state if name=='latest' else old_state),files
+        with patch('inner_loop.recovery._is_ancestor',return_value=True), \
+             patch('inner_loop.checkpoint.read_checkpoint',side_effect=checkpoint), \
+             patch('inner_loop.checkpoint._read_tree',side_effect=lambda _root,sha:docs[sha]):
+            context=retained_adoption_continuity(Path('.'),'w',state)
+        self.assertIsNotNone(context)
+        self.assertEqual(context.checkpoint_commit,'adoption')
+        self.assertEqual(context.early_red_continuity_sha256,continuity_sha)
     def test_U04_every_required_outcome_collection_and_case_identity_matters(self):
         self.passing()
         for outcome in ['skipped','expected_failure','unexpected_success','error','failed']:

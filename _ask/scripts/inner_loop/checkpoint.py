@@ -232,7 +232,8 @@ def _is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
                           cwd=root, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
 
 
-def publish(root: Path, work_id: str, state: dict) -> str:
+def publish(root: Path, work_id: str, state: dict, *,
+            expected_head: str | None = None, expected_branch: str | None = None) -> str:
     """Publish a complete snapshot using the ref as the transaction commit point.
 
     Caller must hold the work state's lock. The ref compare-and-swap happens
@@ -293,7 +294,21 @@ def publish(root: Path, work_id: str, state: dict) -> str:
         os._exit(75)
     zero = "0" * len(commit)
     # update-ref is an atomic CAS even when refs.lock contention occurs.
-    _git(root, "update-ref", ref, commit, previous or zero)
+    if expected_head is None:
+        _git(root, "update-ref", ref, commit, previous or zero)
+    else:
+        branch_ref = "refs/heads/" + str(expected_branch or "")
+        symbolic = _git(root, "symbolic-ref", "--short", "HEAD").decode().strip()
+        if symbolic != expected_branch:
+            raise CheckpointError("source branch changed before recovery checkpoint publication")
+        transaction = (
+            "start\n"
+            f"verify {branch_ref} {expected_head}\n"
+            f"update {ref} {commit} {previous or zero}\n"
+            "prepare\n"
+            "commit\n"
+        ).encode()
+        _git(root, "update-ref", "--stdin", input=transaction)
     if os.environ.get("ASK_INNER_LOOP_CRASH_AT") == "after_ref_publication":
         os._exit(76)
     return commit
