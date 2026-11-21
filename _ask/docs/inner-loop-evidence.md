@@ -91,6 +91,42 @@ traceability verification keep their existing path contracts. Local checkpoint
 refs are never automatically pushed. Missing matching raw output blocks dependent
 verification; a public summary cannot substitute for it.
 
+## Moving work to another machine
+
+A normal clone or branch push transfers source and committed progress summaries.
+It does not transfer `refs/ask/inner-loop/<work-id>`, accepted-test authority,
+authority history, or the workflow reference catalog. Copying `work/` alone
+does not restore those refs. Keep the source commit and checkpoint identity in
+the committed handoff so the receiving machine can check both.
+
+On the source machine, export the retained checkpoint to a private directory:
+
+```sh
+mkdir -p -m 700 /private/askit-transfer
+./ask inner-loop checkpoint-export <work-id> --out /private/askit-transfer/work.bundle
+git bundle list-heads /private/askit-transfer/work.bundle
+```
+
+The bundle includes the checkpoint's progress/evidence and source object closure,
+the workflow catalog when present, `refs/ask/accepted-tests/<work-id>` and its
+history. Export publishes a mode-0600 file atomically. Transfer that file through
+a private channel, then on the receiving machine check out the handoff's source
+commit and run:
+
+```sh
+./ask inner-loop checkpoint-import <work-id> /private/askit-transfer/work.bundle
+./ask inner-loop status <work-id>
+ASK_WORK_ID=<work-id> ./ask verify
+```
+
+Import validates the checkpoint and restores authority refs with the checkpoint
+in one ref transaction. Conflicting local authority is rejected and preserved.
+Status restores the retained runtime cache, including progress and raw outputs.
+The bundle contains the last retained checkpoint, not newer unretained runs.
+Retain new evidence through the normal reviewed checkpoint operations before
+exporting it. Export again with current tooling if an older bundle omitted
+accepted-test authority; do not recreate approvals on the receiving machine.
+
 ## Delegated review
 
 The independent reviewer inspects the exact candidate, writes its decision in

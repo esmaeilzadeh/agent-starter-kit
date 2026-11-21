@@ -2759,6 +2759,52 @@ class test_b(unittest.TestCase):
         self.assert_recovery_required(refused, "checkpoint", "state.json")
         self.assertEqual(state_path.read_text(encoding="utf-8"), divergent_raw)
 
+    def test_bundle_transfers_accepted_authority_and_private_progress(self):
+        from inner_loop.checkpoint import export_bundle, import_bundle, restore_cache
+        from verification.traceability.evidence import load_accepted
+        from verification.traceability.contracts import Invalid
+
+        self.install_valid_fixture_contract()
+        raw_path = "work/w/traceability/runs/portable/output.log"
+        self.write(raw_path, "private transfer canary\n")
+        self.start_candidate()
+        authority_ref = "refs/ask/accepted-tests/w"
+        authority = self.git("rev-parse", authority_ref)
+        history_ref = f"refs/ask/accepted-tests-history/w/{self.base}"
+        self.git("update-ref", history_ref, self.base)
+        bundle = Path(self.temp.name) / "private.bundle"
+        previous_umask = os.umask(0)
+        try:
+            export_bundle(self.root, "w", bundle)
+        finally:
+            os.umask(previous_umask)
+        heads = self.git("bundle", "list-heads", str(bundle))
+        self.assertIn(f"{authority} {authority_ref}", heads)
+        self.assertIn(f"{self.base} {history_ref}", heads)
+        self.assertEqual(bundle.stat().st_mode & 0o777, 0o600)
+
+        clone = Path(self.temp.name) / "portable-clone"
+        self.git("clone", "-q", "--no-local", str(self.root), str(clone))
+        with self.assertRaisesRegex(Invalid, "missing coordinator accepted-tests ref"):
+            load_accepted(clone, "w", self.candidate, self.candidate)
+        checkpoint = import_bundle(clone, "w", bundle)
+        self.assertEqual(checkpoint, self._checkpoint_ref())
+        self.assertEqual(self.git("-C", str(clone), "rev-parse", authority_ref), authority)
+        self.assertEqual(self.git("-C", str(clone), "rev-parse", history_ref), self.base)
+        self.assertEqual(load_accepted(clone, "w", self.candidate, self.candidate)["pin"],
+                         load_accepted(self.root, "w", self.candidate, self.candidate)["pin"])
+        restored = restore_cache(clone, "w")
+        self.assertEqual(restored, load_state(self.root, "w"))
+        self.assertEqual((clone / raw_path).read_text(), "private transfer canary\n")
+        self.assertEqual((clone / raw_path).stat().st_mode & 0o777, 0o600)
+        self.assertEqual(import_bundle(clone, "w", bundle), checkpoint)
+
+        self.git("-C", str(clone), "update-ref", authority_ref, self.base)
+        with self.assertRaisesRegex(CheckpointError, "accepted-tests authority"):
+            import_bundle(clone, "w", bundle)
+        self.assertEqual(self.git("-C", str(clone), "rev-parse", authority_ref), self.base)
+        self.assertEqual(self.git("-C", str(clone), "rev-parse", "refs/ask/inner-loop/w"), checkpoint)
+
     def test_retain_objects_after_gc_and_bundle_transfer(self):
         self.start_candidate()
         checkpoint = self._checkpoint_ref()
