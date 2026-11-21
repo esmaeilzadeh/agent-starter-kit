@@ -7,6 +7,24 @@ through [`./ask refs`](./_ask/docs/workflow-references.md).
 
 This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage contracts + small scripts + pinned Community Skills.
 
+## Install AskIt v2.0.0
+
+Copy and paste this into a terminal:
+
+```bash
+(
+  sha=f74d4fad2db2155bd83ae3ef411e6ef125003159
+  installer="$(mktemp)" || exit
+  trap 'rm -f "$installer"' EXIT
+  curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
+    bash "$installer" self-install --ref v2.0.0 --expected-commit "$sha"
+)
+```
+
+The command downloads the launcher from the pinned commit and checks that
+the release tag resolves to that same commit. In your app's Git repo, run
+`askit` and confirm the install, then run `askit trust` in the terminal.
+
 ## Start here
 
 | Step | Action |
@@ -25,24 +43,8 @@ This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage 
 
 ## How a product uses this kit
 
-Put `askit` on your PATH (once per machine):
-
-```bash
-(
-  set -e
-  sha='REPLACE_WITH_REVIEWED_FULL_COMMIT_SHA'
-  launcher="$(mktemp)"
-  trap 'rm -f "$launcher"' EXIT
-  curl -fsSL "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" -o "$launcher"
-  bash "$launcher" self-install --ref "$sha" --expected-commit "$sha"
-)
-```
-
-Use a full commit SHA you reviewed through a trusted channel. The download
-finishes before Bash runs the launcher. The launcher checks that the kit it
-fetches matches the same SHA.
-
-To review and run the installer from a local checkout:
+Use the [release installer](#install-askit-v200) to put `askit` on your PATH.
+To review and install a specific commit from a local checkout:
 
 ```bash
 # Review the source at the full commit SHA you trust before running it.
