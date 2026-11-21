@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -9,6 +10,7 @@ import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from verification.traceability.adapters import run_tests
 from verification.traceability.contracts import digest
+from traceability_support import supports_node_tests
 
 class RunnerTests(unittest.TestCase):
     def setUp(self):
@@ -44,5 +46,61 @@ class RunnerTests(unittest.TestCase):
         self.assertNotEqual(a['source_digests'],b['source_digests'])
         self.assertIn('AssertionError',(self.root/a['output_artifact']).read_text())
         self.assertEqual(len(self.git('worktree','list','--porcelain').split('worktree '))-1,1)
+
+    @unittest.skipUnless(supports_node_tests(), 'Node.js 22.18 or later required')
+    def test_node_rejects_empty_files_import_errors_and_hooks_as_red(self):
+        self.contract['plan']['runners']=[{
+            'id':'r','adapter':'node-test','argv':['node','--test','test_app.cjs'],
+        }]
+        test_file=self.root/'test_app.cjs'
+        self.contract['plan']['tests']=[{
+            'id':'U','runner_id':'r','case_id':'test_app.cjs::unit','source_paths':['test_app.cjs'],
+        }]
+        for source in ('', "require('./unavailable.cjs')", """
+const { test, beforeEach } = require('node:test')
+beforeEach(() => require('node:assert/strict').fail())
+test('unit', () => {})
+"""):
+            with self.subTest(source=source):
+                test_file.write_text(source)
+                report=self.run_at(self.commit(),'red')
+                self.assertEqual(report['executions'][0]['collection_status'],'error')
+                self.assertNotIn('behavior_assertion',[case['failure_kind'] for case in report['cases']])
+
+
+    @unittest.skipUnless(shutil.which('node'), 'Node.js unavailable')
+    def test_jest_environment_only_recognizes_assertions_from_test_body(self):
+        runner=Path(__file__).resolve().parents[2]/'.agents/ask/verification/traceability/jest_runner.cjs'
+        base=self.root/'base.cjs'
+        base.write_text('module.exports = class {}')
+        events=self.root/'events.json'
+        script="""
+const [runner, file] = process.argv.slice(1)
+const Environment = require(runner)
+const suite = { name: 'Controller', parent: { name: 'ROOT' } }
+const assertion = { matcherResult: { pass: true } }
+const test = name => ({ name, parent: suite, errors: [[assertion, new Error()]] })
+async function main() {
+  const env = new Environment({}, { testPath: file })
+  const behavior = test('assertion')
+  await env.handleTestEvent({ name: 'test_fn_failure', test: behavior, error: assertion })
+  await env.handleTestEvent({ name: 'test_done', test: behavior })
+  const setup = test('setup')
+  await env.handleTestEvent({ name: 'hook_failure', test: setup, error: assertion })
+  await env.handleTestEvent({ name: 'test_done', test: setup })
+  await env.handleTestEvent({ name: 'run_finish' })
+}
+main().catch(error => { console.error(error); process.exitCode = 1 })
+"""
+        subprocess.run(['node','-e',script,str(runner),str(self.root/'app.spec.ts')],
+                       cwd=self.root,check=True,
+                       env=dict(os.environ,ASK_JEST_ENVIRONMENT=str(base),ASK_JEST_EVENTS=str(events)))
+        result=json.loads(events.read_text())
+        self.assertTrue(result['collectionFailed'])
+        self.assertEqual([case['case_id'] for case in result['cases']],
+                         ['app.spec.ts::Controller assertion','app.spec.ts::Controller setup'])
+        self.assertEqual([case['failure_kind'] for case in result['cases']],
+                         ['behavior_assertion','setup_or_runtime_error'])
+
 
 if __name__=='__main__':unittest.main()

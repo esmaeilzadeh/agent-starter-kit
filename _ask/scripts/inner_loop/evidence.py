@@ -293,6 +293,7 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
     from verification.traceability.evidence import load_accepted
     from verification.traceability.evidence import load_historical_accepted, retained_adoption_context
     from verification.traceability.contracts import Invalid as TraceabilityInvalid
+    from verification.traceability.adapters import adapter_digest
     from verification.traceability.coverage import scoped_tests
     from verification.traceability.contracts import digest as contract_digest
     from verification.traceability.contracts import file_digest
@@ -382,21 +383,28 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
     if not expected_by_id:
         raise NotIntegrable('accepted task scope has no mapped tests')
 
-    runner_path = '.agents/ask/verification/traceability/unittest_runner.py'
     runner_revision = candidate if adopted_early_red else base
     if work_id == 'continuation-recovery' and task_id == 'CR-3':
         migration = _authorized_cr3_migration(root, Candidate({}, {
             'work_id': work_id, 'task_id': task_id, 'base_sha': base,
             'candidate_sha': candidate}, ''))
         runner_revision = migration['verifier_sha']
-    base_runner = subprocess.run(['git', 'show', f'{runner_revision}:{runner_path}'], cwd=root,
-                                 capture_output=True)
-    if base_runner.returncode:
-        raise NotIntegrable('active task base has no pinned traceability runner')
+    runners = {item.get('id'): item for item in plan.get('runners', []) if isinstance(item, dict)}
+
+    def pinned_runner_hash(name):
+        path = '.agents/ask/verification/traceability/' + name
+        proc = subprocess.run(['git', 'show', f'{runner_revision}:{path}'], cwd=root,
+                              capture_output=True)
+        if proc.returncode:
+            raise NotIntegrable('active task base has no pinned traceability runner')
+        return hashlib.sha256(proc.stdout).hexdigest()
+
+    expected_adapter_digest = adapter_digest(
+        {runners[test['runner_id']]['adapter'] for test in expected}, pinned_runner_hash)
     runner_identity = report.get('runner_identity')
     if (not isinstance(runner_identity, dict)
             or runner_identity.get('capability') != 'ask-traceability/v1'
-            or runner_identity.get('adapter_digest') != hashlib.sha256(base_runner.stdout).hexdigest()):
+            or runner_identity.get('adapter_digest') != expected_adapter_digest):
         raise NotIntegrable('traceability runner differs from the task-base pinned runner')
 
     executions = report.get('executions')
@@ -406,7 +414,6 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         raise NotIntegrable(
             'migration_required/incomplete: traceability report lacks a complete execution/case inventory'
         )
-    runners = {item.get('id'): item for item in plan.get('runners', []) if isinstance(item, dict)}
     tests_by_runner: dict[str, dict] = {}
     for test_id, test in expected_by_id.items():
         tests_by_runner.setdefault(test['runner_id'], {})[test_id] = test
@@ -820,8 +827,10 @@ def snapshot_runner(root: Path, base_sha: str, destination: Path) -> tuple[Path,
     prefix = '.agents/ask/verification/'
     paths = git(root, 'ls-tree', '-r', '--name-only', base_sha, '--', prefix).splitlines()
     hashes = {}
+    adapter_paths = {prefix + 'traceability/' + filename
+                     for filename in ('node_test_runner.cjs', 'jest_runner.cjs')}
     for name in paths:
-        if not name.endswith('.py'):
+        if not name.endswith('.py') and name not in adapter_paths:
             continue
         raw = subprocess.run(['git', 'show', f'{base_sha}:{name}'], cwd=root,
                              check=True, capture_output=True).stdout

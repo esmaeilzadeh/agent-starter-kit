@@ -108,13 +108,28 @@ def _git_bytes(root: Path, *args: str) -> bytes | None:
     return proc.stdout if proc.returncode == 0 else None
 
 
-def _historical_runner_identity(root: Path, candidate_sha: str) -> dict | None:
+def _historical_runner_identity(root: Path, candidate_sha: str,
+                                adapters: set[str] | frozenset[str] = frozenset()) -> dict | None:
     init_path = ".agents/ask/verification/traceability/__init__.py"
-    runner_path = ".agents/ask/verification/traceability/unittest_runner.py"
     init_bytes = _git_bytes(root, "show", f"{candidate_sha}:{init_path}")
-    runner_bytes = _git_bytes(root, "show", f"{candidate_sha}:{runner_path}")
-    if init_bytes is None or runner_bytes is None:
+    if init_bytes is None:
         return None
+    prefix = ".agents/ask/verification/traceability/"
+    files = {'unittest': 'unittest_runner.py', 'node-test': 'node_test_runner.cjs',
+             'jest': 'jest_runner.cjs'}
+    adapters = adapters or {'unittest'}
+    if not adapters <= files.keys():
+        return None
+    adapter_hashes = {
+        adapter: _historical_file_digest(root, candidate_sha, prefix + files[adapter])
+        for adapter in adapters
+    }
+    if None in adapter_hashes.values():
+        return None
+    adapter_hash = adapter_hashes.get("unittest")
+    if adapters != {"unittest"}:
+        encoded = json.dumps(adapter_hashes, sort_keys=True, separators=(",", ":")).encode()
+        adapter_hash = hashlib.sha256(encoded).hexdigest()
     try:
         module = ast.parse(init_bytes.decode("utf-8"))
     except (UnicodeDecodeError, SyntaxError):
@@ -131,7 +146,7 @@ def _historical_runner_identity(root: Path, candidate_sha: str) -> dict | None:
     if not capability:
         return None
     return {"capability": capability,
-            "adapter_digest": hashlib.sha256(runner_bytes).hexdigest()}
+            "adapter_digest": adapter_hash}
 
 
 def _historical_file_digest(root: Path, candidate_sha: str, name: str) -> str | None:
@@ -518,7 +533,13 @@ def _valid_final_green_scope(root: Path, work_id: str, report: dict, plan: dict,
                              runner_base_sha: str) -> bool:
     """Check historical runner, output, source and exact final case bindings."""
     # The adapter runs from the task base while its tests execute against candidate_sha.
-    if report.get("runner_identity") != _historical_runner_identity(root, runner_base_sha):
+    executions = report.get("executions")
+    if not isinstance(executions, list) or any(
+        not isinstance(run, dict) or not isinstance(run.get("adapter"), str) for run in executions
+    ):
+        return False
+    adapters = {run["adapter"] for run in executions}
+    if report.get("runner_identity") != _historical_runner_identity(root, runner_base_sha, adapters):
         return False
     tests = {item.get("id"): item for item in plan.get("tests", [])
              if isinstance(item, dict) and isinstance(item.get("id"), str)}
@@ -542,14 +563,11 @@ def _valid_final_green_scope(root: Path, work_id: str, report: dict, plan: dict,
     if any(test.get("runner_id") not in runner_configs for test in expected.values()):
         return False
 
-    runs = report.get("executions")
     cases = report.get("cases")
-    if not isinstance(runs, list) or not runs or not isinstance(cases, list):
+    if not executions or not isinstance(cases, list):
         return False
     by_id = {}
-    for run in runs:
-        if not isinstance(run, dict):
-            return False
+    for run in executions:
         run_id = run.get("id")
         if not isinstance(run_id, str) or not run_id or run_id in by_id:
             return False

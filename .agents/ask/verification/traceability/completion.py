@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import subprocess
 from . import CAPABILITY
+from .adapters import adapter_digest
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
 from .coverage import scoped_tests, validate_plan
 from .evidence import (file_digest_bytes, git, read_at, review_errors, source_changes,
@@ -74,8 +75,6 @@ def evaluate_completion(contracts, review, executions, trusted_context):
         if policy_digest!=pin['policy_digest']:errors.append('changed policy artifact')
         finals={};reds={};seen_runs=set()
         runners={r['id']:r for r in plan['runners']};test_map={t['id']:t for t in plan['tests']}
-        expected_adapter=(file_digest_bytes(read_at(root,sha,'.agents/ask/verification/traceability/unittest_runner.py'))
-                          if historical else file_digest(Path(__file__).with_name('unittest_runner.py')))
         for execution_report in executions:
             run_id=execution_report.get('run_id')
             if not slug(run_id) or run_id in seen_runs:
@@ -105,7 +104,14 @@ def evaluate_completion(contracts, review, executions, trusted_context):
                 historical_decisions=[adopted_map]
             retained=load(root/'work'/work_id/'traceability'/'runs'/run_id/'results.json')
             if retained!=execution_report:errors.append(f'{run_id}: report differs from coordinator execution record')
-            report_adapter=expected_adapter
+            def runner_hash(name):
+                if historical:
+                    path='.agents/ask/verification/traceability/'+name
+                    return file_digest_bytes(read_at(root,sha,path))
+                return file_digest(Path(__file__).with_name(name))
+
+            report_adapter=adapter_digest({run.get('adapter') for run in execution_report.get('executions',[])},
+                                          runner_hash)
             if historical_decision:
                 original=load_historical_accepted(root,work_id,execution_report['candidate_sha'])
                 try:

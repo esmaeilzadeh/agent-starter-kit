@@ -15,7 +15,7 @@ sys.path.insert(0,str(HERE.parent))
 from verification.isolation import check_isolation
 from verification.environment import build_environment, private_directory, private_open, warn_tracked_logs
 from verification.plan import expand_plan,load_plan
-from verification.traceability.adapters import git,run_tests
+from verification.traceability.adapters import git,prepare_jest,run_tests
 from verification.traceability.contracts import Invalid,digest,file_digest
 from verification.traceability.evidence import load_accepted,source_changes,write_json
 from verification.traceability.service import check_completion
@@ -82,6 +82,8 @@ def main():
                         key=(tuple(runner['argv']),tuple(runner.get('env_allow', [])))
                         cache.setdefault(key,[]).append(runs[0])
             command_cache={}
+            prepare_static_jest=contracts is not None and any(
+                runner['adapter']=='jest' for runner in contracts['plan']['runners'])
             run_id=uuid.uuid4().hex
             static_dir=runtime/'work'/work_id/'traceability'/'static-runs'/run_id if work_id else None
             if static_dir:private_directory(static_dir, runtime)
@@ -104,7 +106,11 @@ def main():
                     })
                     if static_dir:
                         logfile=static_dir/(str(len(doc['checks']))+'.log')
-                        with private_open(logfile, 'w') as stream:proc=subprocess.run(['bash','--noprofile','--norc','-c',command],cwd=check_root,env=env,stdout=stream,stderr=subprocess.STDOUT)
+                        with private_open(logfile, 'w') as stream:
+                            if prepare_static_jest:
+                                prepare_jest(check_root,env,stream)
+                                prepare_static_jest=False
+                            proc=subprocess.run(['bash','--noprofile','--norc','-c',command],cwd=check_root,env=env,stdout=stream,stderr=subprocess.STDOUT)
                         print(logfile.read_text(),end='',flush=True);artifact=str(logfile.relative_to(runtime))
                     else:proc=subprocess.run(['bash','--noprofile','--norc','-c',command],cwd=check_root,env=env)
                     code=proc.returncode

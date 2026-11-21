@@ -2,6 +2,7 @@
 import argparse
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 ROOT=Path(__file__).resolve().parents[2]
@@ -9,6 +10,17 @@ sys.path.insert(0,str(ROOT/'.agents/ask'))
 from verification.traceability.contracts import POLICY,digest
 from verification.traceability.evidence import accept_plan,inventory,load_accepted,record_test_review,write_json
 from verification.yaml_lite import parse_yaml
+
+
+def supports_node_tests():
+    node = shutil.which('node')
+    if not node:
+        return False
+    try:
+        version = subprocess.check_output([node, '--version'], text=True, timeout=5)
+        return tuple(map(int, version.removeprefix('v').split('.')[:2])) >= (22, 18)
+    except (OSError, subprocess.SubprocessError, ValueError):
+        return False
 
 
 def seed_model(root, work_id):

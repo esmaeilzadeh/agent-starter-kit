@@ -53,4 +53,18 @@ class ContractTests(unittest.TestCase):
         plan['task_scoped_baseline_regression_exemptions']={'unknown':['INV-U01']}
         self.assertTrue(self.validate(spec,plan,graph))
 
+    def test_jest_requires_npm_test_script_and_explicit_candidate_files(self):
+        from verification.traceability.coverage import supported_runner
+        self.assertTrue(supported_runner({
+            'adapter': 'jest',
+            'argv': ['npm', 'run', 'test:e2e', '--', 'test/app.e2e-spec.ts'],
+        }))
+        for selectors in ([], ['--watch'], ['../app.spec.ts'], ['src/app.spec.ts'] * 2):
+            with self.subTest(selectors=selectors):
+                self.assertFalse(supported_runner({
+                    'adapter': 'jest',
+                    'argv': ['npm', 'run', 'test', '--', *selectors],
+                }))
+
+
 if __name__=='__main__': unittest.main()

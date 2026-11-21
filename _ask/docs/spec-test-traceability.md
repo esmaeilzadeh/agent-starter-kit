@@ -44,12 +44,39 @@ Before production changes, commit the failing behavior test and run:
 ./ask traceability run <work-id> --candidate-sha <red-sha> --phase red
 ```
 
-The unittest adapter owns instrumentation. Supported declarations use
-`["python3", "-m", "unittest", "module.Class.test_case"]` or unittest discovery
-with `-s`, `-p`, `-t`. Name every collected case explicitly. Unsupported runners
-and dynamic subtests refuse completion. A runner invokes the coordinator's
-Python interpreter; the result records both declared selectors and actual argv.
-A failed behavior assertion can supply red. Setup/import/runtime errors cannot.
+Use one of the instrumented adapters:
+
+- `unittest` accepts `["python3", "-m", "unittest", "module.Class.test_case"]`
+  or unittest discovery with `-s`, `-p` and `-t`. Case IDs are the dotted
+  unittest test IDs.
+- `node-test` requires Node.js 22.18 or later and accepts
+  `["node", "--test", "test/render.test.cjs"]` with one or more explicit
+  repository-relative `.js`, `.cjs` or `.mjs` files. Use a unique top-level test
+  name per file. Set `case_id` to `test/render.test.cjs::renders uppercase`
+  and include the file in `source_paths`. The adapter recognizes
+  `node:assert` failures inside tests as Red. A change to a mapped test file
+  requires a behavior-change review for each mapped case in that file.
+- `jest` accepts `["npm", "run", "test", "--", "src/app.service.spec.ts"]`
+  or a named Jest script such as `test:e2e`. Declare explicit test file paths
+  after `--`. Use the file path and the full Jest name, including any
+  `describe` names, as the case ID. For example,
+  `src/app.service.spec.ts::AppService returns uppercase`. Include the
+  test file in `source_paths`. The adapter uses the project's Jest
+  configuration, including TypeScript transforms, and instruments the configured
+  environment for one `jest-circus` project. Use the project-level environment
+  for the selected files. A case requires an assertion failure in the test body
+  to supply Red.
+- For Jest, commit the root `package.json` and `package-lock.json`, and ignore
+  `node_modules/`. AskIt installs the locked dependencies in the candidate
+  checkout with `npm ci --ignore-scripts`. The npm cache or registry must be
+  available. Mapped JavaScript and TypeScript test files are reviewed at file
+  granularity.
+
+Declare every collected case. Nested Node tests, dynamic Python subtests and
+unsupported runners cannot supply completion evidence. The report records
+declared selectors, actual arguments and the interpreter used. Setup, import
+and runtime errors cannot supply Red.
+
 Existing unchanged regression tests need current execution; new or changed
 behavior requires red and final green. The independent reviewer examines actual
 assertion continuity whenever source changes between those revisions. A changed
@@ -61,8 +88,8 @@ are mutually exclusive. New behavior always needs executed red.
 
 After implementation, commit the candidate. Independent review writes
 `ask-test-review/v1` JSON bound to candidate, spec/plan/source digests, inventory
-base (`contract_sha`), all inspected changed Python sources, mapped changed test
-IDs and explained exclusions for unmapped cases. Each criterion needs explicit
+base (`contract_sha`), inspected sources, mapped changed test IDs and explained
+exclusions for unmapped cases. Each criterion needs explicit
 coverage and per-required-type decisions; each test needs an assertion assessment,
 counterexample and continuity assessment. `inventory()` and `source_digests()`
 in the evidence module provide deterministic inventory/binding data, not semantic

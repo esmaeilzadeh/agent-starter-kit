@@ -8,7 +8,7 @@ import subprocess
 from . import CAPABILITY
 from .adapters import git
 from .contracts import EXEMPTIONS, Invalid, POLICY, digest, file_digest, load, safe_path, slug, text
-from .coverage import validate_plan
+from .coverage import JAVASCRIPT_ADAPTERS, JEST_SUFFIXES, validate_plan
 from verification.yaml_lite import parse_yaml
 
 
@@ -509,10 +509,20 @@ def source_digests(root,sha,plan,test_ids=None):
 
 def inventory(root,base,sha,plan):
     changed=git(root,'diff','--name-only',base,sha,'--','*.py').splitlines()
-    sources={name for t in plan['tests'] for name in t['source_paths']}
-    inspected=sorted(changed)
     cases=[];unmapped=[];behavior_changes=[]
-    for path in inspected:
+    node_runners={runner['id'] for runner in plan.get('runners', []) if runner.get('adapter') in JAVASCRIPT_ADAPTERS}
+    node_changed=[]
+    if node_runners:
+        patterns=['*'+suffix for suffix in sorted(JEST_SUFFIXES)]
+        node_changed=git(root,'diff','--name-only',base,sha,'--',*patterns).splitlines()
+        changed_paths=set(node_changed)
+        # A shared Node test file may hold any of its mapped assertions.
+        for test in plan['tests']:
+            if test['runner_id'] in node_runners and changed_paths.intersection(test['source_paths']):
+                cases.append(test['id'])
+                behavior_changes.append(test['id'])
+    inspected=sorted(set(changed+node_changed))
+    for path in changed:
         try:tree=ast.parse(read_at(root,sha,path))
         except (Invalid,SyntaxError):continue
         try: old_tree=ast.parse(read_at(root,base,path))

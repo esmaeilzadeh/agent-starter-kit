@@ -8,6 +8,7 @@ import tempfile
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'.agents/ask'))
 from traceability_fixture import Consumer
+from traceability_support import supports_node_tests
 
 class EntrypointTests(unittest.TestCase):
     def consumer(self,**kwargs):c=Consumer(**kwargs);self.addCleanup(c.close);return c
@@ -216,6 +217,42 @@ class EntrypointTests(unittest.TestCase):
         self.assertTrue(all(t['final_execution']['outcome']=='passed' for t in row['tests']))
         self.require_pass(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
         self.require_pass(c.command('check-workstream','w','--acceptance'))
+    @unittest.skipUnless(supports_node_tests(), 'Node.js 22.18 or later required')
+    def test_node_public_red_verify_and_accept(self):
+        c=self.consumer(node=True)
+        self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,'--phase','red'))
+        self.require_pass(c.command('verify'))
+        completion=json.loads((c.root/'work/w/traceability/completion.json').read_text())
+        self.assertEqual(completion['status'],'pass',completion)
+        self.assertTrue(all(t['tdd']=='red_green' for t in completion['criterion_evidence'][0]['tests']))
+        self.require_pass(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
+        self.require_pass(c.command('check-workstream','w','--acceptance'))
+
+    @unittest.skipUnless(supports_node_tests(), 'Node.js 22.18 or later required')
+    def test_node_task_scope_and_pinned_integration(self):
+        c=self.consumer(node=True,tasks='split')
+        sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
+        from inner_loop.evidence import Candidate, verify_candidate
+        from inner_loop.recovery import _valid_final_green_scope
+        self.require_pass(c.command('traceability','run','w','--candidate-sha',c.red_sha,
+                                    '--scope','task','--task-id','a','--phase','red'))
+        review=c.make_review()
+        review.update(scope='task',task_id='a',test_ids=['U'],tests=review['tests'][:1])
+        c.write('work/w/traceability/task-review.json',review)
+        self.require_pass(c.command('traceability','record-review','w','--candidate-sha',c.sha,
+                                    '--scope','task','--task-id','a',
+                                    '--evidence','work/w/traceability/task-review.json',
+                                    '--recorded-by','fixture-coordinator'))
+        green=c.command('traceability','run','w','--candidate-sha',c.sha,
+                        '--scope','task','--task-id','a')
+        self.require_pass(green)
+        report=json.loads(green.stdout)
+        self.assertEqual([case['test_id'] for case in report['cases']],['U'])
+        self.assertTrue(_valid_final_green_scope(c.root,'w',report,c.plan,'a',{'U'},c.sha,c.sha))
+        candidate=Candidate({}, {'work_id':'w','task_id':'a','base_sha':c.sha,
+                                 'candidate_sha':c.sha},'fixture-result-digest')
+        self.assertEqual(verify_candidate(c.root,candidate)['result'],'pass')
+
     def test_E02_omitted_e2e_names_missing_case_and_never_records_pass(self):
         c=self.consumer(omit_e2e=True);self.require_fail(c.command('verify'))
         report=json.loads((c.root/'work/w/traceability/completion.json').read_text())

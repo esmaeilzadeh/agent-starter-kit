@@ -1,7 +1,38 @@
 """Validate the whole accepted obligation registry before selecting task scope."""
 from __future__ import annotations
 import re
+from pathlib import Path
 from .contracts import TYPES, POLICY, Violation, digest, indexed, safe_path, scenario, slug, string_list, text
+
+
+NODE_SUFFIXES = {'.js', '.cjs', '.mjs'}
+JEST_SUFFIXES = NODE_SUFFIXES | {'.jsx', '.ts', '.tsx', '.mts', '.cts'}
+JAVASCRIPT_ADAPTERS = {'node-test', 'jest'}
+
+
+def runner_files(runner):
+    return runner['argv'][4:] if runner['adapter'] == 'jest' else runner['argv'][2:]
+
+
+def supported_runner(runner):
+    argv = runner.get('argv')
+    if not isinstance(argv, list) or len(argv) < 3 or not all(text(arg) for arg in argv):
+        return False
+    adapter = runner.get('adapter')
+    if adapter == 'unittest':
+        return len(argv) >= 4 and argv[0] in {'python', 'python3'} and argv[1:3] == ['-m', 'unittest']
+    if adapter == 'node-test' and argv[:2] == ['node', '--test']:
+        suffixes = NODE_SUFFIXES
+    elif (adapter == 'jest' and len(argv) >= 5 and argv[:2] == ['npm', 'run']
+          and re.fullmatch(r'test(?::[a-zA-Z0-9_.-]+)*', argv[2]) and argv[3] == '--'):
+        suffixes = JEST_SUFFIXES
+    else:
+        return False
+    files = runner_files(runner)
+    return len(set(files)) == len(files) and all(
+        safe_path(path) and Path(path).as_posix() == path and not path.startswith('-')
+        and '::' not in path and Path(path).suffix in suffixes for path in files)
+
 
 
 def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = None) -> list[Violation]:
@@ -57,13 +88,17 @@ def _validate_plan(spec: dict, plan: dict, accepted_task_graph: dict | None = No
             errors.append(Violation('invalid_source_paths',test_id=tid))
         if not text(t.get('runner_id')) or t.get('runner_id') not in runners or not text(t.get('case_id')):
             errors.append(Violation('invalid_runner_case',test_id=tid));continue
+        runner = runners[t['runner_id']]
+        if runner.get('adapter') in JAVASCRIPT_ADAPTERS and supported_runner(runner):
+            path, _, name = t['case_id'].partition('::')
+            if (not text(name) or path not in runner_files(runner)
+                    or not string_list(t.get('source_paths')) or path not in t['source_paths']):
+                errors.append(Violation('invalid_runner_case',test_id=tid))
         identity=(t['runner_id'],t['case_id'])
         if identity in seen: errors.append(Violation('duplicate_case',test_id=tid))
         seen.add(identity)
     for rid,r in runners.items():
-        argv=r.get('argv')
-        if (not isinstance(argv,list) or not argv or not all(text(x) for x in argv) or len(argv)<4 or argv[1:3]!=['-m','unittest']
-            or r.get('adapter')!='unittest' or argv[0] not in {'python','python3'}):
+        if not supported_runner(r):
             errors.append(Violation('unsupported_runner',field=rid))
         if 'env_allow' in r and (not isinstance(r['env_allow'],list) or any(not isinstance(x,str) for x in r['env_allow'])):
             errors.append(Violation('invalid_env_allow',field=rid))
