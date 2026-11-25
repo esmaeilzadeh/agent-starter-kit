@@ -153,5 +153,6 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual((target / "AGENTS.md").read_text(), "# Client-owned\n")
-        self.assertTrue((target / ".codex/hooks.json").is_file(), "Codex session hook was not installed by upgrade")
+        self.assertTrue((target / ".codex/hooks.json").is_file(),
+                        f"Codex session hook was not installed by upgrade: {upgraded.stdout} {upgraded.stderr}")
         self.assert_loaded(target)
