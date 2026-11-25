@@ -95,6 +95,7 @@ done
 
 # Refresh kit-owned trees
 for rel in _ask/skills _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts _ask/tests _ask/docs _ask/cursor-commands _ask/bindings .agents/ask \
+           .cursor/hooks/access-preflight.sh .cursor/rules/starter-kit-bootstrap.mdc \
            ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md _ask/OWNED-PATHS.md _ask/MAPPING.md _ask/README.md ask; do
   if [[ -e "$TMP/kit/$rel" ]]; then
     mkdir -p "$ROOT/$(dirname "$rel")"
