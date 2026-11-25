@@ -25,9 +25,9 @@ STAGES = (
 )
 COMMANDS = tuple(f"/.cursor/commands/{name}.md" for name in (*STAGES, "off-path"))
 SHARED = (
-    "/AGENTS.md", "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json",
+    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json", "/.codex/hooks.json",
     "/.cursor/hooks/README.md", "/.cursor/hooks/access-preflight.sh",
-    "/.cursor/hooks/git-guardrails.sh", "/.cursor/rules/commit-step-discipline.mdc",
+    "/.cursor/hooks/git-guardrails.sh", "/.codex/hooks.json", "/.cursor/rules/commit-step-discipline.mdc",
     "/.cursor/rules/humanizer-docs-specs.mdc", "/.cursor/rules/starter-kit-bootstrap.mdc",
     "/.cursor/rules/workflow-guidance.mdc", "/.cursor/rules/workstream-scope.mdc",
     "/.cursor/rules/writing-for-agents-machine-docs.mdc",
