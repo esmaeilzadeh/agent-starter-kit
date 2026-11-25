@@ -149,7 +149,7 @@ Copy and paste this into a terminal:
 
 ```bash
 (
-  sha=626f704b37b8fb20abd87e1e85250e3bbe53d753
+  sha=f13fc863160e5f545fe44712337768b14f834512
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
