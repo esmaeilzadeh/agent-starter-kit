@@ -7,12 +7,15 @@
 | Field | Required | Meaning |
 | --- | --- | --- |
 | `source` | yes | `owner/repo` or git URL (skills.sh / GitHub) |
-| `revision` | yes | tag, branch, or SHA — **never `latest`** for critical methods |
+| `revision` | yes | Git tag such as `v1.2.3` or a full commit SHA |
 | `skill` | yes when repo has many | CLI `--skill` name |
 | `role` | yes | kit semantics (`explore-map`, `intent-clarification`, `docs-voice`, …) |
 | `required` | no | prepare fails closed when true |
 
-Pins map to the skills CLI as `source#revision`.
+`./ask prepare` uses `.agents/ask.local/skills/manifest.yaml` when it exists.
+It resolves a tag to a commit before installing the skill. AskIt stores the
+approved commit locally and asks again if the tag moves. `SKIP_INSTALL=1`
+validates tag syntax without contacting the source.
 
 ## Dual lock
 

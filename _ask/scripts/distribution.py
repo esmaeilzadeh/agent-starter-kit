@@ -64,9 +64,11 @@ def read_manifest(path: Path) -> list[dict]:
         skill = entry.get("skill", entry["id"])
         source = entry.get("source", "")
         revision = entry.get("revision", "")
-        if not SHA.fullmatch(revision):
+        tag = revision.removeprefix("refs/tags/")
+        if not SHA.fullmatch(revision) and (tag.lower() == "latest" or subprocess.run(
+                ["git", "check-ref-format", f"refs/tags/{tag}"], capture_output=True).returncode):
             raise DistributionError(
-                f"invalid revision for skill {entry['id']}: expected full commit SHA, got {revision!r}")
+                f"invalid revision for skill {entry['id']}: expected a Git tag or full commit SHA, got {revision!r}")
         if (entry["id"] in seen or not SKILL_ID.fullmatch(skill) or skill.startswith("kit-")
                 or not source or source.startswith("-") or "#" in source
                 or re.search(r"[\s\x00-\x1f]", source)):
@@ -191,6 +193,17 @@ def git(args: list[str], *, cwd: Path | None = None) -> str:
     return result.stdout.strip()
 
 
+def resolve_tag(source: str, tag: str) -> str:
+    ref = f"refs/tags/{tag}"
+    peeled = ref + "^{}"
+    output = git(["ls-remote", "--tags", "--", source_url(source), ref, peeled])
+    refs = {name: sha for sha, name in (line.split("\t", 1) for line in output.splitlines())}
+    commit = refs.get(peeled, refs.get(ref, ""))
+    if not SHA.fullmatch(commit):
+        raise DistributionError(f"tag {tag!r} was not found at {source}")
+    return commit
+
+
 def verified_source(entry: dict, pins: dict, path: Path) -> Path:
     git(["clone", "--no-checkout", "--no-tags", source_url(entry["source"]), str(path)])
     git(["fetch", "--no-tags", "origin", entry["revision"]], cwd=path)
@@ -262,30 +275,66 @@ def install_skills_cli(pins: dict, root: Path, directory: Path) -> tuple[Path, P
     return trusted_executable("node", root), executable, env
 
 
-def approve_sources(entries: list[dict], pins: dict, root: Path) -> None:
+def confirm_source(prompt: str) -> None:
+    if not sys.stdin.isatty():
+        raise DistributionError("new skill source or revision requires interactive approval")
+    try:
+        answer = input(prompt).strip().lower()
+    except EOFError:
+        answer = ""
+    if answer not in {"y", "yes"}:
+        raise DistributionError("skill source was not approved")
+
+
+def approve_sources(entries: list[dict], pins: dict, root: Path, *, validate_only: bool) -> list[dict]:
     path = approval_path(root)
     approvals = load_approvals(path)
+    known_sources = {record.get("source") for record in [*pins["skills"].values(), *approvals]}
+    resolved_tags: dict[tuple[str, str], str] = {}
+    resolved_entries = []
     for entry in entries:
-        identity = {key: entry[key] for key in ("source", "revision", "skill")}
+        source, revision, skill = (entry[key] for key in ("source", "revision", "skill"))
+        tag = None
+        if not SHA.fullmatch(revision):
+            if validate_only:
+                resolved_entries.append(entry)
+                continue
+            tag = revision.removeprefix("refs/tags/")
+            if source not in known_sources:
+                print(f"New skill source for tag lookup: {source} @ {tag}")
+                confirm_source("Approve contacting this source? [y/N] ")
+                known_sources.add(source)
+            key = (source, tag)
+            if key not in resolved_tags:
+                resolved_tags[key] = resolve_tag(source, tag)
+            revision = resolved_tags[key]
+
+        identity = {"source": source, "revision": revision, "skill": skill}
         pinned = pins["skills"].get(entry["id"])
-        if pinned and all(identity[key] == pinned[value]
-                          for key, value in (("source", "source"), ("revision", "commit"),
-                                             ("skill", "skill"))):
-            continue
-        if identity in approvals:
-            continue
-        print("New skill source fetch:", identity["source"], "@", identity["revision"],
-              "--skill", identity["skill"])
-        if not sys.stdin.isatty():
-            raise DistributionError("new skill source requires interactive approval before fetch")
-        try:
-            answer = input("Approve this source? [y/N] ").strip().lower()
-        except EOFError:
-            answer = ""
-        if answer not in {"y", "yes"}:
-            raise DistributionError("skill source was not approved")
-        approvals.append(identity)
-        save_approvals(path, approvals)
+        bundled = pinned and (source, revision, skill) == (pinned["source"], pinned["commit"], pinned["skill"])
+        approved = bundled or any(all(record.get(key) == value for key, value in identity.items())
+                                  for record in approvals)
+        previous = next((record for record in approvals if tag is not None
+                         and (record.get("source"), record.get("tag"), record.get("skill")) == (source, tag, skill)), None)
+        moved = previous is not None and previous["revision"] != revision
+        if moved:
+            print(f"Skill tag moved: {source} @ {tag} from {previous['revision']} to {revision} --skill {skill}")
+        elif not approved:
+            print(f"New skill source fetch: {source} @ {revision} --skill {skill}")
+        if moved or not approved:
+            confirm_source("Approve this source and commit? [y/N] ")
+
+        if tag is not None and (previous is None or moved):
+            if previous is not None:
+                approvals.remove(previous)
+            approvals.append(dict(identity, tag=tag))
+            save_approvals(path, approvals)
+        elif not approved:
+            approvals.append(identity)
+            save_approvals(path, approvals)
+        known_sources.add(source)
+        resolved_entries.append(dict(entry, revision=revision))
+    return resolved_entries
 
 
 def apply_tdd_override(root: Path) -> None:
@@ -324,8 +373,9 @@ def prepare(root: Path, manifest: Path, pin_path: Path, installer=None, source_r
                     destination.parents[1], destination.parent, destination,
                     destination / "SKILL.md")):
                 raise DistributionError(f"skill destination cannot contain symlinks: {destination}")
-    approve_sources(entries, pins, root)
-    if os.environ.get("SKIP_INSTALL") == "1":
+    validate_only = os.environ.get("SKIP_INSTALL") == "1"
+    entries = approve_sources(entries, pins, root, validate_only=validate_only)
+    if validate_only:
         for entry in entries:
             print(f"prepare-skills: validated {entry['id']} @ {entry['revision']}")
         return 0

@@ -366,6 +366,56 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(upgrade.returncode, 0, "upgrade reported success after prepare failed")
         self.assertNotIn("upgrade-kit: refreshed", upgrade.stdout)
 
+    def test_tag_resolution_and_approval_follow_the_exact_commit(self) -> None:
+        source, first = self._source_project("tagged-skill")
+        tag = "v1.2.3"
+        tagged = self.fx.run(["git", "tag", "-a", tag, "-m", "Skill release"], cwd=source)
+        self.assertEqual(tagged.returncode, 0, tagged.stderr)
+        project = self.fx.git_project(self.fx.root / "tag-client")
+        env = self.fx.env | {"SKIP_INSTALL": "0"}
+        installed = self.fx.run([str(ROOT / "ask"), "install", "--skip-prepare", str(project)], env=env)
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        overlay = project / ".agents/ask.local/skills/manifest.yaml"
+        overlay.write_text(self._skill_manifest(source, tag), encoding="utf-8")
+        pin_path = project / "_ask/skills/dependency-pins.json"
+        calls = []
+
+        def install(entry, verified):
+            actual = self.fx.run(["git", "rev-parse", "HEAD"], cwd=verified).stdout.strip()
+            calls.append((entry["revision"], actual))
+            return SimpleNamespace(returncode=0)
+
+        class TTY:
+            @staticmethod
+            def isatty() -> bool:
+                return True
+
+        offline = self.fx.run(["./ask", "prepare"], cwd=project, env=self.fx.env)
+        self.assertEqual(offline.returncode, 0, offline.stderr)
+        with patch.dict("os.environ", env):
+            with patch("distribution.resolve_tag") as resolve:
+                with self.assertRaisesRegex(distribution.DistributionError, "interactive approval"):
+                    distribution.prepare(project, overlay, pin_path, installer=install)
+                resolve.assert_not_called()
+            with patch("distribution.sys.stdin", TTY()), patch("builtins.input", return_value="y"):
+                self.assertEqual(distribution.prepare(project, overlay, pin_path, installer=install), 0)
+            self.assertEqual(distribution.prepare(project, overlay, pin_path, installer=install), 0)
+            self.assertEqual(calls, [(first, first), (first, first)])
+
+            self.assertEqual(self.fx.run(["git", "commit", "--allow-empty", "-qm", "Move tag"], cwd=source).returncode, 0)
+            second = self.fx.run(["git", "rev-parse", "HEAD"], cwd=source).stdout.strip()
+            self.assertEqual(self.fx.run(["git", "tag", "-f", tag], cwd=source).returncode, 0)
+            with self.assertRaisesRegex(distribution.DistributionError, "interactive approval"):
+                distribution.prepare(project, overlay, pin_path, installer=install)
+            self.assertEqual(len(calls), 2)
+            with patch("distribution.sys.stdin", TTY()), patch("builtins.input", return_value="y"):
+                self.assertEqual(distribution.prepare(project, overlay, pin_path, installer=install), 0)
+            self.assertEqual(calls[-1], (second, second))
+
+            overlay.write_text(self._skill_manifest(source, "main"), encoding="utf-8")
+            with self.assertRaisesRegex(distribution.DistributionError, "tag 'main' was not found"):
+                distribution.prepare(project, overlay, pin_path, installer=install)
+
 
 if __name__ == "__main__":
     unittest.main()
