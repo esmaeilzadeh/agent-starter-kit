@@ -15,7 +15,7 @@ END = b"# END AskIt local installation"
 RUNTIME = (
     "/ask", "/_ask/", "/.agents/ask/", "/.agents/skills/",
     "/.cursor/skills/kit-*/", "/.cursor/agents/kit-*.md",
-    "/.claude/agents/kit-*.md", "/.codex/agents/kit-*.toml", "/.opencode/agents/kit-*.md",
+    "/.claude/agents/kit-*.md", "/.codex/agents/kit-*.toml", "/.codex/hooks.json", "/.opencode/agents/kit-*.md",
     "/.ask.env", "/.ask/tracker-context.md",
     "/ai-agent-engineering-guide.md", "/ai-agent-starter-kit-spec.md",
 )
@@ -25,7 +25,7 @@ STAGES = (
 )
 COMMANDS = tuple(f"/.cursor/commands/{name}.md" for name in (*STAGES, "off-path"))
 SHARED = (
-    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json", "/.codex/hooks.json",
+    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json",
     "/.cursor/hooks/README.md", "/.cursor/hooks/access-preflight.sh",
     "/.cursor/hooks/git-guardrails.sh", "/.cursor/rules/commit-step-discipline.mdc",
     "/.cursor/rules/humanizer-docs-specs.mdc", "/.cursor/rules/starter-kit-bootstrap.mdc",
