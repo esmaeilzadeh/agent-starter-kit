@@ -14,6 +14,8 @@ policies, stage prompts, skills, and workflow gates, including those below.
 - Keep the pin unchanged during the work. Resume dogfooding only after the
   frozen copy is ready; upgrade it deliberately between tasks, never from the
   changing checkout during a task.
+- When publishing changes to the AskIt source repository's `main`, follow its
+  [release procedure](README.md#releasing-the-kit).
 
 This repository uses the AI Engineering Starter Kit (Cursor-first).
 

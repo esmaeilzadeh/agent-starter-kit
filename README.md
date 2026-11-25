@@ -229,6 +229,14 @@ Your product code and documentation stay in their usual locations. See [kit layo
 
 When developing the kit itself, keep its workflow disabled unless you use a separate frozen copy pinned to an exact commit. The [self-development rule in AGENTS.md](AGENTS.md#highest-priority-kit-rule-self-development) explains that boundary.
 
+## Releasing the kit
+
+Every update published to `main` in the AskIt source repository includes a new annotated `vMAJOR.MINOR.PATCH` tag and a matching installer pin in this README.
+
+1. Commit and verify the release changes on `main`, then tag that commit with the next unused version.
+2. Set `tag` in the installer above to that version. Set `sha` to the full commit from `git rev-parse "$tag^{commit}"`. Commit the README pin as the final step of the same release.
+3. Push `main` and the new tag together with `git push --atomic origin main "refs/tags/$tag"`. Verify the published tag and run the README installer.
+
 ## Quick commands
 
 Run `./ask --help` for commands and flags. `askit` is the PATH launcher; `./ask` is the dispatcher inside an installed repository.
