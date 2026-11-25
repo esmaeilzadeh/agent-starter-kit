@@ -1,14 +1,62 @@
 {
-  "schema": "ask-engineering-model/v2",
-  "work_id": "client-workflow-hooks",
-  "revision": 1,
+  "edges": [],
   "nodes": [
     {
       "id": "purpose",
-      "type": "intent",
+      "lifecycle": "active",
       "title": "Load AskIt from client editor hooks without depending on client agent instructions",
-      "lifecycle": "draft"
+      "type": "intent"
+    },
+    {
+      "id": "cwh-001",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-001",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Load the shared workflow in new client installs",
+      "type": "requirement"
+    },
+    {
+      "id": "cwh-002",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-002",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Preserve client instructions and editor hooks",
+      "type": "requirement"
+    },
+    {
+      "id": "cwh-003",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-003",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Register the workflow hooks when migrating installed clients",
+      "type": "requirement"
+    },
+    {
+      "id": "runtime-trust",
+      "lifecycle": "confirmed",
+      "title": "Editor sessions use their native hook trust",
+      "type": "assumption"
+    },
+    {
+      "id": "merge-boundary",
+      "lifecycle": "confirmed",
+      "title": "Git and CI admission remain separate",
+      "type": "assumption"
+    },
+    {
+      "id": "client-ownership",
+      "lifecycle": "confirmed",
+      "title": "Client agent files and unrelated hook handlers are preserved",
+      "type": "assumption"
     }
   ],
-  "edges": []
+  "revision": 2,
+  "schema": "ask-engineering-model/v2",
+  "work_id": "client-workflow-hooks"
 }
