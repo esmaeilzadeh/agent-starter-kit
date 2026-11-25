@@ -1,0 +1,14 @@
+{
+  "schema": "ask-engineering-model/v2",
+  "work_id": "client-workflow-hooks",
+  "revision": 1,
+  "nodes": [
+    {
+      "id": "purpose",
+      "type": "intent",
+      "title": "Load AskIt from client editor hooks without depending on client agent instructions",
+      "lifecycle": "draft"
+    }
+  ],
+  "edges": []
+}
