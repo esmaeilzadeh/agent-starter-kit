@@ -247,8 +247,10 @@ def install_skills_cli(pins: dict, root: Path, directory: Path) -> tuple[Path, P
     tarball = directory / f"skills-{cli['version']}.tgz"
     tarball.write_bytes(archive)
     (directory / "package.json").write_text("{}\n", encoding="utf-8")
-    config = directory / "npmrc"
-    config.write_text("\n", encoding="utf-8")
+    user_config = directory / "user.npmrc"
+    global_config = directory / "global.npmrc"
+    user_config.write_text("\n", encoding="utf-8")
+    global_config.write_text("\n", encoding="utf-8")
     env = {key: value for key, value in os.environ.items()
            if not key.upper().startswith("NPM_CONFIG_") and key != "NODE_OPTIONS"}
     env["PATH"] = os.pathsep.join(
@@ -259,7 +261,7 @@ def install_skills_cli(pins: dict, root: Path, directory: Path) -> tuple[Path, P
     result = subprocess.run(
         [str(npm), "install", "--ignore-scripts", "--no-save", "--package-lock=false",
          "--no-audit", "--no-fund", "--registry=https://registry.npmjs.org",
-         f"--userconfig={config}", f"--globalconfig={config}", str(tarball)],
+         f"--userconfig={user_config}", f"--globalconfig={global_config}", str(tarball)],
         cwd=directory, env=env, text=True, capture_output=True,
     )
     if result.returncode:

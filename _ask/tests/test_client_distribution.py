@@ -118,6 +118,10 @@ class ClientTests(unittest.TestCase):
         self.assertNotEqual(cwd, project)
         self.assertIn("--ignore-scripts", argv)
         self.assertIn("--registry=https://registry.npmjs.org", argv)
+        npm_configs = [Path(arg.split("=", 1)[1]) for arg in argv
+                       if arg.startswith(("--userconfig=", "--globalconfig="))]
+        self.assertEqual(len(set(npm_configs)), 2)
+        self.assertTrue(all(path.read_text(encoding="utf-8").strip() == "" for path in npm_configs))
         self.assertNotIn(str(project / "node_modules/.bin"), npm_env["PATH"])
         self.assertTrue(node.is_file())
         self.assertTrue(executable.is_file())
