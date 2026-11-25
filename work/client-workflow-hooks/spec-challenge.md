@@ -4,7 +4,7 @@
 
 - Reviewer: `kit-03-spec-challenge`, `gpt-6-astra` per the child runtime and frozen model resolver.
 - Runtime: Codex.
-- Parent model: GPT-6. The exact parent variant was unavailable.
+- Parent model: `gpt-6.2-sol`, from the recorded Codex turn metadata.
 - Reviewed commit: `e557b0ad09312a18671406d4f12aa84f55ba3691`.
 
 ## Verdict
