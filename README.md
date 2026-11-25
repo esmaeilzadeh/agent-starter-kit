@@ -7,23 +7,23 @@ through [`./ask refs`](./_ask/docs/workflow-references.md).
 
 This is **not** a multi-agent runtime product. It is Guide + Build Spec + stage contracts + small scripts + pinned Community Skills.
 
-## Install AskIt v2.0.0
+## Install AskIt
 
 Copy and paste this into a terminal:
 
 ```bash
 (
-  sha=f74d4fad2db2155bd83ae3ef411e6ef125003159
+  sha=4196fa8457d7a9aae5997c1dfe37ab54a77f4378
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
-    bash "$installer" self-install --ref v2.0.0 --expected-commit "$sha"
+    bash "$installer" self-install --ref "$sha" --expected-commit "$sha"
 )
 ```
 
-The command downloads the launcher from the pinned commit and checks that
-the release tag resolves to that same commit. In your app's Git repo, run
-`askit` and confirm the install, then run `askit trust` in the terminal.
+The command downloads the launcher from the pinned commit. The installer
+verifies that the kit checkout matches that commit. In your app's Git repo,
+run `askit` and confirm the install, then run `askit trust` in the terminal.
 
 ## Start here
 
@@ -43,7 +43,7 @@ the release tag resolves to that same commit. In your app's Git repo, run
 
 ## How a product uses this kit
 
-Use the [release installer](#install-askit-v200) to put `askit` on your PATH.
+Use the [pinned installer](#install-askit) to put `askit` on your PATH.
 To review and install a specific commit from a local checkout:
 
 ```bash
