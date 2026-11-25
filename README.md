@@ -149,7 +149,7 @@ Copy and paste this into a terminal:
 
 ```bash
 (
-  sha=f13fc863160e5f545fe44712337768b14f834512
+  sha=c164aa9967b69b0903dc0fde22f92d2a8bc5b04e
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
@@ -202,7 +202,9 @@ In a repository with the kit installed:
 ./ask sync
 ```
 
-`prepare` installs Community Skills from Git tags or commit SHAs in your project manifest. See the [skills manifest guide](_ask/skills/README.md). `sync` regenerates runtime projections from the canonical protocol and local overlays. Start a new workstream from the integration branch using `./ask start-work <work-id>` after the entry decisions in AGENTS.md.
+`./ask prepare` fetches and installs the Community Skills in your project manifest, including on a fresh checkout. The manifest accepts Git tags and full commit SHAs. [Skills manifest guide](_ask/skills/README.md)
+
+`sync` regenerates runtime projections from the canonical protocol and local overlays. Start a new workstream from the integration branch using `./ask start-work <work-id>` after the entry decisions in AGENTS.md.
 
 In Cursor, `/00-explore` starts with an unclear destination; `/01-grill` starts clarifying intent when the destination is clear. In Codex, use `$kit-00-explore` or `$kit-01-grill`; see [Codex integration](_ask/docs/codex-integration.md). Report a bug with its reproduction steps and expected behavior so it enters the repair path.
 
