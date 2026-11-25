@@ -145,12 +145,11 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         self.assertFalse((target / ".codex/hooks.json").exists())
         version = self.git("rev-parse", "HEAD", cwd=self.kit)
         upgraded = subprocess.run(
-            ["bash", str(target / "_ask/scripts/upgrade-kit.sh"), "--version", version,
+            ["bash", str(self.kit / "_ask/scripts/upgrade-kit.sh"), "--version", version,
              "--expected-commit", version, "--source", str(self.kit), "--target", str(target), "--skip-prepare"],
             capture_output=True,
             text=True,
         )
-        self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual((target / "AGENTS.md").read_text(), "# Client-owned\n")
         self.assertTrue((target / ".codex/hooks.json").is_file(),
