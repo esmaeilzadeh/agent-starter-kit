@@ -1,0 +1,17 @@
+{
+  "attempt_history": [],
+  "attempt_id": "",
+  "checkpoint_sha": "0aeb16119b368dda4d55097152b8ed6b803bdb9e",
+  "integration": {},
+  "recovery": [],
+  "reviews": [],
+  "runs": [],
+  "schema": "ask-task-milestone/v1",
+  "source_base_sha": "",
+  "source_candidate_sha": null,
+  "status": "pending",
+  "submissions": [],
+  "supporting_artifacts": [],
+  "task_id": "CWH-01",
+  "work_id": "client-workflow-hooks"
+}
