@@ -2,6 +2,8 @@
 
 Version tags: use explicit kit releases as Git tags `vMAJOR.MINOR.PATCH` (or annotated tags pointing at a release commit). `./ask upgrade --version <tag-or-sha>` refreshes from an explicit version — never blind `main`.
 
+Client repositories Git-ignore installed kit files. Run `askit` in each clone or worktree to install them locally.
+
 ## Kit-owned (safe to refresh on upgrade)
 
 - `.agents/ask/` (stages, bindings, verification presets)

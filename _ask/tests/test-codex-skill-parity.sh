@@ -104,9 +104,7 @@ assert_consumer() {
   grep -q consumer-overlay-canary "$CONSUMER/.agents/skills/kit-06-implement/SKILL.md"
   grep -q consumer-verification-canary "$CONSUMER/.agents/verification.yaml"
   grep -q '^consumer-private/$' "$CONSUMER/.gitignore"
-  if git -C "$CONSUMER" check-ignore -q .agents/skills/kit-06-implement/SKILL.md; then
-    echo 'FAIL: generated Codex skill remains ignored' >&2; exit 1
-  fi
+  git -C "$CONSUMER" check-ignore -q .agents/skills/kit-06-implement/SKILL.md
   git -C "$CONSUMER" check-ignore -q .agents/skills/community/SKILL.md
   test "$(find "$CONSUMER/.agents/skills" -maxdepth 1 -type d -name 'kit-*' | wc -l)" -eq 11
 }
@@ -168,21 +166,14 @@ SKIP_INSTALL=1 "$CONSUMER/ask" upgrade --version "$SOURCE_COMMIT" --source "$SOU
 cmp "$CONSUMER/.gitignore" "$TMP/ignore.saved"
 echo 'PASS: install/upgrade migrate ignore rules, preserve consumer skills/config/overlays and regenerate stages'
 
-# Preserve unrelated ignore rules, but fail if Git says they hide ASK skills.
+# An existing broader ignore rule is compatible with local installations.
 BLOCKED="$TMP/blocked-consumer"
 mkdir -p "$BLOCKED"
 git init -q "$BLOCKED"
 printf '%s\n' '.agents/' '.agents/skills/' > "$BLOCKED/.gitignore"
-if "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$BLOCKED" > "$TMP/blocked-install.log" 2>&1; then
-  echo 'FAIL: install succeeded despite ignored Codex skills' >&2; exit 1
-fi
-grep -q 'not trackable' "$TMP/blocked-install.log"
-grep -q '\.agents/' "$TMP/blocked-install.log"
+"$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$BLOCKED" > "$TMP/blocked-install.log" 2>&1
 grep -qx '\.agents/' "$BLOCKED/.gitignore"
 printf '%s\n' '.agents/' >> "$CONSUMER/.gitignore"
-if "$CONSUMER/ask" upgrade --version "$SOURCE_COMMIT" --source "$SOURCE" --skip-prepare > "$TMP/blocked-upgrade.log" 2>&1; then
-  echo 'FAIL: upgrade succeeded despite ignored Codex skills' >&2; exit 1
-fi
-grep -q 'not trackable' "$TMP/blocked-upgrade.log"
+"$CONSUMER/ask" upgrade --version "$SOURCE_COMMIT" --source "$SOURCE" --skip-prepare > "$TMP/blocked-upgrade.log" 2>&1
 grep -qx '\.agents/' "$CONSUMER/.gitignore"
-echo 'PASS: install and upgrade fail clearly on blocking consumer ignore rules without deleting them'
+echo 'PASS: install and upgrade preserve an existing broader ignore rule'

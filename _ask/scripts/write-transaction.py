@@ -16,6 +16,9 @@ import tempfile
 import uuid
 from pathlib import Path
 
+sys.dont_write_bytecode = True
+from client_ignores import SHARED, consumer_rules
+
 
 def fail(message: str) -> None:
     raise ValueError(message)
@@ -299,15 +302,10 @@ def recover(root: Path) -> None:
 
 def shared_ignore_update(before: bytes, after: bytes) -> bool:
     """Only kit-managed ignore lines may change in a consumer-owned file."""
-    managed = {b'/_ask/', b'.ask.env', b'.ask/tracker-context.md',
-               b'.agents/skills/', b'/.agents/skills/', b'.agents/skills', b'/.agents/skills',
-               b'.agents/skills/*', b'!.agents/skills/kit-*/',
-               b'# Installed AskIt kit', b'# Setup wizard secrets',
-               b'# Prepared skills; ASK kit-* projections are committed'}
-    def consumer(raw):
-        return b''.join(line for line in raw.splitlines(keepends=True)
-                        if line.strip() not in managed).rstrip(b'\r\n')
-    return consumer(before) == consumer(after)
+    try:
+        return consumer_rules(before) == consumer_rules(after)
+    except ValueError:
+        return False
 
 
 def publish(root: Path, stage: Path, paths: list[Path]) -> None:
@@ -336,7 +334,7 @@ def publish(root: Path, stage: Path, paths: list[Path]) -> None:
     if not isinstance(known, dict):
         fail(f"invalid installed-file ownership manifest: {ownership_path}")
     next_files = {name: value for name, value in known.items()
-                  if not name.startswith(".cursor/") or generated(root / name)}
+                  if not name.startswith(".cursor/") or f"/{name}" in SHARED or generated(root / name)}
     for name in changes:
         rel = safe_relative(name)
         target = root / rel

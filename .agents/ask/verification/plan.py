@@ -14,8 +14,11 @@ def load_plan(root: Path) -> dict:
     return parse_yaml(path.read_text(encoding="utf-8"))
 
 
-def _preset_dir(root: Path) -> Path:
-    return root / ".agents" / "ask" / "verification" / "presets"
+def preset_path(root: Path, name: str) -> Path:
+    candidate = root / ".agents" / "ask" / "verification" / "presets" / f"{name}.yaml"
+    if candidate.is_file():
+        return candidate
+    return Path(__file__).parent / "presets" / f"{name}.yaml"
 
 
 def expand_plan(root: Path, plan: dict) -> list[dict]:
@@ -24,7 +27,7 @@ def expand_plan(root: Path, plan: dict) -> list[dict]:
     if isinstance(raw, list):
         checks.extend(raw)
     for name in plan.get("presets") or []:
-        pp = _preset_dir(root) / f"{name}.yaml"
+        pp = preset_path(root, name)
         if not pp.is_file():
             raise FileNotFoundError(f"unknown preset {name}")
         preset = parse_yaml(pp.read_text(encoding="utf-8"))

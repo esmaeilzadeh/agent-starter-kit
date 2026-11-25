@@ -15,6 +15,7 @@ import sys
 import tempfile
 
 from inner_loop.state import state_transaction
+from inner_loop.local_verifier import PREFIX, executable_source, read_pin
 
 POLICY = '_ask/policies/delegation.md'
 EXEMPTIONS = {'documentation-only', 'generated-projections', 'non-behavioral-config'}
@@ -391,13 +392,13 @@ def _execution_row(root: Path, work_id: str, task_id: str, run_id: str,
         runner_revision = migration['verifier_sha']
     runners = {item.get('id'): item for item in plan.get('runners', []) if isinstance(item, dict)}
 
+    runner_sources = verification_sources(root, runner_revision, local_base=base)
+
     def pinned_runner_hash(name):
-        path = '.agents/ask/verification/traceability/' + name
-        proc = subprocess.run(['git', 'show', f'{runner_revision}:{path}'], cwd=root,
-                              capture_output=True)
-        if proc.returncode:
+        path = PREFIX + 'traceability/' + name
+        if path not in runner_sources:
             raise NotIntegrable('active task base has no pinned traceability runner')
-        return hashlib.sha256(proc.stdout).hexdigest()
+        return digest(runner_sources[path])
 
     expected_adapter_digest = adapter_digest(
         {runners[test['runner_id']]['adapter'] for test in expected}, pinned_runner_hash)
@@ -822,18 +823,22 @@ def validate_review(root: Path, task: dict, candidate: Candidate) -> dict:
     return review
 
 
+def verification_sources(root: Path, revision: str, *, local_base: str | None = None) -> dict[str, bytes]:
+    paths = git(root, 'ls-tree', '-r', '--name-only', revision, '--', PREFIX).splitlines()
+    if not paths:
+        try:
+            return read_pin(root, local_base or revision)
+        except (OSError, ValueError) as exc:
+            raise NotIntegrable('recorded coordinator base has no pinned verification runner') from exc
+    return {name: subprocess.run(['git', 'show', f'{revision}:{name}'], cwd=root,
+                                 check=True, capture_output=True).stdout
+            for name in paths if executable_source(name)}
+
+
 def snapshot_runner(root: Path, base_sha: str, destination: Path) -> tuple[Path, str]:
     """Pin verifier and imports to the accepted coordinator base, even in-place."""
-    prefix = '.agents/ask/verification/'
-    paths = git(root, 'ls-tree', '-r', '--name-only', base_sha, '--', prefix).splitlines()
     hashes = {}
-    adapter_paths = {prefix + 'traceability/' + filename
-                     for filename in ('node_test_runner.cjs', 'jest_runner.cjs')}
-    for name in paths:
-        if not name.endswith('.py') and name not in adapter_paths:
-            continue
-        raw = subprocess.run(['git', 'show', f'{base_sha}:{name}'], cwd=root,
-                             check=True, capture_output=True).stdout
+    for name, raw in verification_sources(root, base_sha).items():
         relative = Path(name).relative_to('.agents/ask')
         path = destination / relative
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -1005,12 +1010,17 @@ def plan_identity(checkout: Path, runner: Path) -> tuple[str, list[dict]]:
 import sys,json,hashlib
 from pathlib import Path
 sys.path.insert(0,sys.argv[1])
+from verification import plan as plans
 from verification.plan import load_plan,expand_plan
 root=Path(sys.argv[2]);plan=load_plan(root);checks=expand_plan(root,plan)
-sources=[root/'.agents/verification.yaml']
-sources += [root/'.agents/ask/verification/presets'/f'{n}.yaml' for n in plan.get('presets') or []]
+def preset_path(name):
+    if hasattr(plans,'preset_path'):
+        return plans.preset_path(root,name)
+    return root/'.agents/ask/verification/presets'/f'{name}.yaml'
+sources={'.agents/verification.yaml':root/'.agents/verification.yaml'}
+sources.update({f'.agents/ask/verification/presets/{n}.yaml':preset_path(n) for n in plan.get('presets') or []})
 data={'plan':plan,'expanded_checks':checks,
-      'sources':{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}}
+      'sources':{name:hashlib.sha256(p.read_bytes()).hexdigest() for name,p in sources.items()}}
 print(json.dumps({'digest':hashlib.sha256(json.dumps(data,sort_keys=True).encode()).hexdigest(),'checks':checks}))
 '''
     proc = subprocess.run([sys.executable, '-c', code, str(runner.parent.parent), str(checkout)],
@@ -1074,6 +1084,8 @@ def verify_candidate(root: Path, candidate: Candidate) -> dict:
             checkout = Path(tmp) / 'checkout'
             git(root, 'worktree', 'add', '--detach', str(checkout), identity['candidate_sha'])
             try:
+                if (runner.parent / 'presets').is_dir() and (checkout / PREFIX).exists():
+                    raise NotIntegrable('candidate contains verifier files owned by the local AskIt installation')
                 report['tree_sha'] = git(checkout, 'rev-parse', 'HEAD^{tree}')
                 report['checkplan_digest'], expected = plan_identity(checkout, runner)
                 env = dict(os.environ, ASK_ROOT=str(checkout), VERIFY_JSON=str(out / 'verification.json'),

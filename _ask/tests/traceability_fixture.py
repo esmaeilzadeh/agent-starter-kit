@@ -14,17 +14,21 @@ from traceability_support import seed_model
 
 SOURCE=Path(__file__).resolve().parents[2]
 class Consumer:
-    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False,start_task_before_candidate=False,node=False):
+    def __init__(self,omit_e2e=False,tasks=False,behavior_change=True,change_kind="new",split_failure=False,start_task_before_candidate=False,node=False,local_kit=False):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
         self.git('init','-q','-b','agent/w');self.git('config','user.email','test@example.com');self.git('config','user.name','Test')
         self.write('.gitignore','__pycache__/\nverification-result.json\nwork/w/traceability/\nwork/w/inner-loop/state.*\nwork/w/inner-loop/results/\nwork/w/inner-loop/evidence/\n')
-        shutil.copytree(SOURCE/'.agents/ask/verification',self.root/'.agents/ask/verification',ignore=shutil.ignore_patterns('__pycache__'))
-        shutil.copytree(SOURCE/'.agents/ask/stages',self.root/'.agents/ask/stages',ignore=shutil.ignore_patterns('__pycache__'))
-        shutil.copytree(SOURCE/'_ask/scripts',self.root/'_ask/scripts',ignore=shutil.ignore_patterns('__pycache__'))
-        shutil.copytree(SOURCE/'.agents/ask/bindings',self.root/'.agents/ask/bindings',ignore=shutil.ignore_patterns('__pycache__'))
-        shutil.copytree(SOURCE/'_ask/bindings',self.root/'_ask/bindings',ignore=shutil.ignore_patterns('__pycache__'))
-        shutil.copy2(SOURCE/'ask',self.root/'ask')
-        self.write(POLICY,(SOURCE/POLICY).read_text())
+        if local_kit:
+            subprocess.run([str(SOURCE/'ask'),'install','--skip-prepare',str(self.root)],check=True,
+                           stdout=subprocess.DEVNULL)
+        else:
+            shutil.copytree(SOURCE/'.agents/ask/verification',self.root/'.agents/ask/verification',ignore=shutil.ignore_patterns('__pycache__'))
+            shutil.copytree(SOURCE/'.agents/ask/stages',self.root/'.agents/ask/stages',ignore=shutil.ignore_patterns('__pycache__'))
+            shutil.copytree(SOURCE/'_ask/scripts',self.root/'_ask/scripts',ignore=shutil.ignore_patterns('__pycache__'))
+            shutil.copytree(SOURCE/'.agents/ask/bindings',self.root/'.agents/ask/bindings',ignore=shutil.ignore_patterns('__pycache__'))
+            shutil.copytree(SOURCE/'_ask/bindings',self.root/'_ask/bindings',ignore=shutil.ignore_patterns('__pycache__'))
+            shutil.copy2(SOURCE/'ask',self.root/'ask')
+            self.write(POLICY,(SOURCE/POLICY).read_text())
         self.write('.agents/verification.yaml',"schema: ask-checkplan/v1\nno_production_datastore: true\nchecks:\n  - id: syntax\n    tier: mandatory\n    command: python3 -c 'import app'\n")
         self.write('app.py',"import sys\ndef render(value): return value\nif __name__=='__main__': print(render(sys.argv[1]))\n")
         if not behavior_change:self.write('app.py',"import sys\ndef render(value): return value.upper()\nif __name__=='__main__': print(render(sys.argv[1]))\n")

@@ -349,6 +349,8 @@ def spawn_writer(root: Path, work_id: str, task_id: str) -> dict:
         if task["status"] not in ("pending", "ready"):
             raise ProtocolViolation(f"cannot start {task_id}: {task['status']}")
         from inner_loop.attempts import new_attempt
+        from inner_loop.local_verifier import pin_for_task
+        pin_for_task(root, doc["coordinator_sha"])
         task.update(new_attempt(task_id, task, root, work_id, int(doc["revision"]) + 1))
         task["status"] = "running"
         task["base_sha"] = doc["coordinator_sha"]

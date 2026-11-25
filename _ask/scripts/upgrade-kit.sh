@@ -45,6 +45,7 @@ if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
     ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md; do
     args+=(--path "$rel")
   done
+  args+=(--input-path askit --input-path AGENTS.md --input-path .ask.env.example --input-path .ask/README.md)
   args+=(-- bash "$SCRIPT_PATH" --version "$VERSION" --target "{target}")
   [[ -z "$EXPECTED_COMMIT" ]] || args+=(--expected-commit "$EXPECTED_COMMIT")
   [[ "$SKIP_PREPARE" -eq 0 ]] || args+=(--skip-prepare)
@@ -115,7 +116,11 @@ done < <(find "$ROOT/_ask/agents" -name '*.local.md' -print0 2>/dev/null || true
 if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/_ask/skills/prepare-skills.sh"
 fi
-python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
 "$ROOT/_ask/scripts/sync-cursor-binding.sh"
-python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check-trackability
+if [[ -x "$ROOT/askit" && -f "$ROOT/_ask/OWNED-PATHS.md" ]]; then
+  python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
+  python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check-trackability
+else
+  python3 "$(dirname "$SCRIPT_PATH")/client_ignores.py" "$ROOT" "$TMP/kit"
+fi
 echo "upgrade-kit: refreshed kit-owned paths from $VERSION"

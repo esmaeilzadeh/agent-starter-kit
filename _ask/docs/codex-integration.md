@@ -13,16 +13,11 @@ through `/10-accept`. Stage gates and artifacts apply in either runtime.
 ## Ownership
 
 Direct child names `kit-*` in `.agents/skills/` are reserved for generated ASK
-stages. Commit these generated files with canonical changes. Community Skills
-use other names and remain ignored. `./ask prepare` rejects reserved names
-before invoking an installer. Install and upgrade migrate the kit's blanket
-ignore rule to selective rules and regenerate projections, including when
-`--skip-prepare` skips dependency installation.
-
-Install and upgrade ask Git whether generated skills can be tracked. If a
-consumer rule such as `.agents/` still blocks them, the command fails with the
-blocking rule's location. Adjust that consumer rule explicitly and retry;
-kit migration preserves unrelated ignore rules.
+stages. The kit source repository commits these projections with canonical
+changes. In a client checkout, `askit` installs and ignores them alongside
+the other runtime files. Community Skills use other names and remain ignored.
+`./ask prepare` rejects reserved names before invoking an installer. Install
+and upgrade regenerate projections even with `--skip-prepare`.
 
 Sync preserves unrelated skills. It cleans stale marked ASK stage directories,
 and refuses unmarked reserved directories, symlinks and unexpected extra
@@ -58,7 +53,7 @@ for this first migration. Subsequent upgrades can use the updated consumer's
 
 `_ask/tests/test-codex-skill-parity.sh` checks all eleven stages, overlay parity,
 repeat generation, ownership protection, preparation namespace validation,
-Git trackability and isolated install/upgrade flows.
+client Git ignore rules and isolated install/upgrade flows.
 
 In a Codex session that has refreshed repository skills, inspect the skill
 selector and invoke `$kit-00-explore`. Check that it loads the generated

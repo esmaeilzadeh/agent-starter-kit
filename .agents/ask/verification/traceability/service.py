@@ -9,7 +9,7 @@ from types import SimpleNamespace
 from .adapters import git
 from .completion import evaluate_completion,evidence_state
 from .contracts import Invalid,digest,load,slug
-from .evidence import (load_accepted,read_at,retained_adoption_context,
+from .evidence import (load_accepted,read_at,retained_adoption_context,runtime_digest_at,
                        source_changes,write_json)
 
 
@@ -175,7 +175,8 @@ def inspect_completion(root,work_id,sha=None,anchor_sha=None,scope='workstream',
             if receipt.get('checkplan_digest')!=identity:raise Invalid('stale static CheckPlan')
             executed=receipt.get('checks',[])
             check_identity=lambda cs:[(c.get('id',c.get('command')),c.get('tier','mandatory'),c.get('command')) for c in cs]
-            runner_digest=file_digest(inputs/'.agents/ask/verification/run.py') if historical else file_digest(Path(__file__).parents[1]/'run.py')
+            runner_path=Path(__file__).parents[1]/'run.py'
+            runner_digest=runtime_digest_at(root,sha,'.agents/ask/verification/run.py',runner_path) if historical else file_digest(runner_path)
             if (check_identity(executed)!=check_identity(checks) or any(type(c.get('exit_code')) is not int or c['exit_code']!=0 or c.get('status')!='pass' for c in executed) or receipt.get('runner_digest')!=runner_digest):raise Invalid('static check execution failed or differs from pinned runner/CheckPlan')
             for check in executed:
                 artifact=(runtime_root/check.get('evidence','')).resolve()

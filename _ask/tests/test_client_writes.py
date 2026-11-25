@@ -9,9 +9,11 @@ import shutil
 import stat
 import signal
 import subprocess
+import sys
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from client_security_fixtures import ClientFixture, ROOT
 
@@ -51,12 +53,15 @@ class ClientTests(unittest.TestCase):
         import importlib.util
         spec = importlib.util.spec_from_file_location('write_transaction_ignore', ROOT / '_ask/scripts/write-transaction.py')
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        with patch.object(sys, 'path', [str(ROOT / '_ask/scripts'), *sys.path]):
+            spec.loader.exec_module(module)
         original = b'consumer-cache/\n'
         self.assertTrue(module.shared_ignore_update(original, original + b'/_ask/\n'))
         self.assertFalse(module.shared_ignore_update(original, b'/_ask/\n'))
         self.assertFalse(module.shared_ignore_update(original, original + b'*\n'))
         self.assertFalse(module.shared_ignore_update(original, b'other-cache/\n'))
+        self.assertFalse(module.shared_ignore_update(original, original +
+            b'# BEGIN AskIt local installation\n*\n# END AskIt local installation\n'))
 
     def test_transaction_removes_empty_directories_for_deleted_generated_files(self):
         project = self.fx.git_project(self.fx.root / "empty-generated-dir")
@@ -201,6 +206,8 @@ class ClientTests(unittest.TestCase):
         cursor_settings = project / ".cursor/settings.json"
         cursor_settings.parent.mkdir(parents=True)
         cursor_settings.write_text('{"editor": "client"}\n', encoding="utf-8")
+        cursor_hooks = project / ".cursor/hooks.json"
+        cursor_hooks.write_text('{"hooks": {}}\n', encoding="utf-8")
         self.fx.run(["git", "-C", str(project), "add", ".agents/ask.local/stages/01-grill.md"])
         self.fx.run(["git", "-C", str(project), "commit", "-qm", "custom stage"])
 
@@ -224,6 +231,9 @@ class ClientTests(unittest.TestCase):
         ])
         self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual(cursor_settings.read_text(encoding="utf-8"), '{"editor": "client"}\n')
+        self.assertEqual(cursor_hooks.read_text(encoding="utf-8"), '{"hooks": {}}\n')
+        self.assertEqual(self.fx.run(["git", "check-ignore", "-q", ".cursor/hooks.json"],
+                                    cwd=project).returncode, 1)
         self.assertNotIn(".cursor/settings.json", json.loads(owner_path.read_text())["files"])
 
     def _fault_environment(self, project: Path, marker: Path, mode: str) -> dict[str, str]:

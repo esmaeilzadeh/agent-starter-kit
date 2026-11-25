@@ -22,8 +22,8 @@ Copy and paste this into a terminal:
 ```
 
 The command downloads the launcher from the pinned commit. The installer
-verifies that the kit checkout matches that commit. In your app's Git repo,
-run `askit` and confirm the install, then run `askit trust` in the terminal.
+verifies that the kit checkout matches that commit. In each clone or worktree
+of your app, run `askit` and confirm the install, then run `askit trust`.
 
 ## Start here
 
@@ -68,7 +68,14 @@ cd /path/to/your/app
 askit
 ```
 
-If the folder is not a git repo, askit refuses. If it is git but not ask-based (no `_ask/` and `./ask`), it asks whether to add ask capability — it does not overlay silently, and it does not list kit commands until you confirm. After that, `askit` is the same as `./ask`. `askit setup` is the tracker/MCP wizard on an already ask-based repo.
+`askit` prompts to install the kit in a Git checkout that needs it. The
+installation adds Git ignore rules for `./ask`, `_ask/`, the installed
+protocol, and the generated editor files. Commit your `.gitignore`, project
+settings under `.agents/ask.local/`, and project work. See the migration steps
+if your repo already tracks kit files. [Client migration](_ask/docs/client-security.md#remove-previously-tracked-kit-files)
+
+After installation and trust, `askit` runs the same commands as `./ask`.
+Run `askit setup` to open the tracker and MCP wizard.
 
 The overlay does not touch `docs/`, `scripts/`, `tests/`, or `src/`.
 
@@ -76,8 +83,8 @@ You can still overlay from a kit clone: `./ask install /path/to/your/app`.
 
 | Layer | Paths |
 | --- | --- |
-| Kit package | `_ask/` (protocol, scripts, kit tests, kit-author docs) |
-| Adapter | `ask`, `AGENTS.md`, `.cursor/` |
+| Local kit | `_ask/`, `.agents/ask/`, `ask`, stock instructions, generated editor files |
+| Project settings | `.agents/ask.local/`, `.agents/verification.yaml`, project-owned editor files |
 | Product state | `specs/`, `work/` (created by start-work) |
 | Product code/docs | everything else |
 

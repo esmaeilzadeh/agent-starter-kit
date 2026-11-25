@@ -25,6 +25,22 @@ to preserve recoverable state. When migrating an older consumer to a new
 install flow, use the target checkout's upgrader as described in
 [Codex integration](codex-integration.md).
 
+## Remove previously tracked kit files
+
+Run the current installer or upgrader to add the `AskIt local installation`
+block to `.gitignore`. Git continues to track files already in the index.
+List the tracked paths matched by the AskIt block from the client repo root.
+
+```bash
+git ls-files --cached --ignored --exclude-from=<(sed -n \
+  '/^# BEGIN AskIt local installation$/,/^# END AskIt local installation$/p' .gitignore)
+```
+
+Review the list and run `git rm --cached -- <path>` for each kit-owned file
+you want to stop tracking. This stages its removal and leaves the working
+copy on disk. Commit the staged removals and `.gitignore`. Run `askit` in each
+new clone or worktree to install the kit there.
+
 ## Credentials
 
 Review `.ask.env` before migration. Run `./ask credentials migrate`; it parses

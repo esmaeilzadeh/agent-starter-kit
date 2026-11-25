@@ -168,7 +168,18 @@ class EntrypointTests(unittest.TestCase):
         report=json.loads((c.root/'verification-result.json').read_text());self.assertEqual(report['result'],'fail')
         self.require_fail(c.command('record-result','--work-id','w','--commit-sha',c.sha,'--result','pass'))
     def test_I07_complete_evidence_agrees_across_entrypoints(self):
-        c=self.consumer(tasks=True,start_task_before_candidate=True);self.require_pass(c.command('verify'))
+        self.complete_evidence_agrees_across_entrypoints(local_kit=False)
+    def test_local_kit_verifies_and_integrates_without_tracked_runtime(self):
+        self.complete_evidence_agrees_across_entrypoints(local_kit=True)
+    def complete_evidence_agrees_across_entrypoints(self, *, local_kit):
+        c=self.consumer(tasks=True,start_task_before_candidate=True,local_kit=local_kit)
+        if local_kit:
+            self.assertEqual(c.git('ls-files','--','ask','_ask','.agents/ask'),'')
+        self.require_pass(c.command('verify'))
+        if local_kit:
+            from verification.traceability.service import inspect_completion
+            historical,_=inspect_completion(c.root,'w',c.sha,historical=True)
+            self.assertEqual(historical['status'],'pass',historical)
         self.require_pass(c.command('traceability','check-completion','w'))
         self.require_pass(c.command('check-workstream','w','--acceptance'))
         self.require_pass(c.command('inner-loop','run','w'))

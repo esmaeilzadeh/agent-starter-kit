@@ -11,6 +11,9 @@ mkdir -p docs
 echo consumer > docs/README.md
 echo init > README.md
 echo 'consumer-cache/' > .gitignore
+echo 'client instructions' > AGENTS.md
+mkdir -p .cursor/commands .cursor/rules/local .codex/agents
+touch .cursor/commands/20-deploy.md .cursor/rules/local/client.mdc .codex/agents/client.toml
 git add . && git commit -q -m init
 SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP"
 test -d "$TMP/_ask"
@@ -35,8 +38,31 @@ test ! -e "$TMP/askit"
 test ! -e "$TMP/install-askit.sh"
 grep -qxF 'consumer-cache/' "$TMP/.gitignore"
 git check-ignore -q _ask/scripts/check-clean-worktree.sh
-SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP" >/dev/null
+for path in ask .agents/ask/stages/00-explore.md .agents/skills/kit-00-explore/SKILL.md \
+    .cursor/commands/off-path.md .cursor/commands/00-explore.md \
+    .cursor/hooks.json .cursor/hooks/access-preflight.sh .cursor/rules/starter-kit-bootstrap.mdc \
+    .cursor/skills/kit-00-explore/SKILL.md .cursor/agents/kit-00-explore.md \
+    .codex/agents/kit-00-explore.toml .claude/agents/kit-00-explore.md .opencode/agents/kit-00-explore.md \
+    .ask.env.example .ask/README.md; do
+  test -f "$path"
+  git check-ignore -q "$path"
+done
+for path in AGENTS.md .cursor/commands/20-deploy.md .cursor/rules/local/client.mdc \
+    .codex/agents/client.toml .agents/ask.local/stages/00-explore.md .agents/verification.yaml .ask/tracker.md; do
+  if git check-ignore --no-index -q "$path"; then
+    echo "FAIL: client-owned path ignored: $path" >&2
+    exit 1
+  fi
+done
+grep -qx 'client instructions' AGENTS.md
+git add -f ask
+out="$(SKIP_INSTALL=1 "$ROOT/_ask/scripts/install-kit.sh" --skip-prepare "$TMP" 2>&1)"
+printf '%s\n' "$out" | grep -q '1 kit paths are still tracked'
+test "$(git ls-files -- ask)" = ask
+git rm --cached -q -- ask
+git check-ignore -q ask
 test "$(grep -cxF '/_ask/' "$TMP/.gitignore")" -eq 1
+test "$(grep -cxF '# BEGIN AskIt local installation' "$TMP/.gitignore")" -eq 1
 "$TMP/ask" --help >/dev/null
 "$TMP/ask" sync >/dev/null
 echo "PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/"

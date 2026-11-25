@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 from . import CAPABILITY
@@ -22,6 +23,21 @@ def read_at(root,sha,path):
 def json_at(root,sha,path):
     try:return json.loads(read_at(root,sha,path))
     except json.JSONDecodeError as exc:raise Invalid(f'invalid JSON {path}') from exc
+
+
+def runtime_digest_at(root, sha, name, installed):
+    try:
+        return file_digest_bytes(read_at(root, sha, name))
+    except Invalid:
+        ignore = subprocess.run(['git', 'show', f'{sha}:.gitignore'], cwd=root, capture_output=True)
+        if b'# BEGIN AskIt local installation' not in ignore.stdout.splitlines():
+            raise
+        return file_digest(installed)
+
+
+def policy_digest_at(root, sha):
+    runtime = Path(os.environ.get('ASK_TRACEABILITY_RUNTIME_ROOT') or root).resolve()
+    return runtime_digest_at(root, sha, POLICY, runtime / POLICY)
 
 
 def contract_paths(work_id):
@@ -100,7 +116,7 @@ def load_accepted(root,work_id,anchor_sha,candidate_sha=None):
     if candidate_sha:
         actual=contracts_at(root,work_id,candidate_sha)
         if any(digest(actual[k])!=pin[k+'_digest'] for k in actual):raise Invalid('candidate changed accepted obligations; reviewed amendment required')
-        if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:raise Invalid('candidate changed delegation policy')
+        if policy_digest_at(root,candidate_sha)!=pin['policy_digest']:raise Invalid('candidate changed delegation policy')
     return dict(contracts,pin=pin)
 
 
@@ -153,7 +169,7 @@ def load_historical_accepted(root, work_id, candidate_sha):
     actual=contracts_at(root,work_id,candidate_sha)
     if any(digest(actual[key])!=pin[key+'_digest'] for key in actual):
         raise Invalid('historical run candidate changed its accepted contract')
-    if file_digest_bytes(read_at(root,candidate_sha,POLICY))!=pin['policy_digest']:
+    if policy_digest_at(root,candidate_sha)!=pin['policy_digest']:
         raise Invalid('historical run candidate changed its accepted policy')
     return dict(contracts,pin=pin)
 

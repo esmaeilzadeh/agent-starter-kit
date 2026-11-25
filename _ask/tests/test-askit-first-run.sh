@@ -59,5 +59,16 @@ set -e
 printf '%s\n' "$out" | grep -q 'run askit trust'
 [[ -x "$TMP/ask" ]]
 [[ -d "$TMP/_ask" ]]
+git check-ignore -q ask
+git check-ignore -q AGENTS.md
+git add . && git commit -qm 'Keep project configuration only'
+git clone -q . "$NONE/fresh"
+cd "$NONE/fresh"
+[[ ! -e ask && ! -d _ask && ! -e AGENTS.md ]]
+[[ -z "$(git ls-files -- .cursor .codex .claude .opencode .agents/ask .agents/skills)" ]]
+out="$(ASKIT_ADD_ASK=1 "$ASKIT" 2>&1 || true)"
+printf '%s\n' "$out" | grep -q 'run askit trust'
+./ask access-check
+[[ -z "$(git status --porcelain)" ]]
 
-echo "PASS: first-run askit gates on git + confirm, then overlays"
+echo "PASS: first-run askit gates on Git and confirmation, then installs the ignored runtime per checkout"

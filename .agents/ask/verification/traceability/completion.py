@@ -7,7 +7,8 @@ from . import CAPABILITY
 from .adapters import adapter_digest
 from .contracts import Invalid, POLICY, digest, file_digest, load, slug, text
 from .coverage import scoped_tests, validate_plan
-from .evidence import (file_digest_bytes, git, read_at, review_errors, source_changes,
+from .evidence import (file_digest_bytes, git, policy_digest_at, read_at, review_errors,
+                       runtime_digest_at, source_changes,
                        source_digests,load_accepted,load_historical_accepted,
                        validate_historical_continuity)
 
@@ -71,7 +72,7 @@ def evaluate_completion(contracts, review, executions, trusted_context):
         if scope=='task' and review_scope not in {'workstream','task'}:errors.append('semantic review scope does not cover task completion')
         if scope=='task' and review_scope=='task' and review_task!=task_id:errors.append('semantic review belongs to another task')
         errors.extend(review_errors(root,contracts,semantic,sha))
-        policy_digest=file_digest_bytes(read_at(root,sha,POLICY)) if historical else file_digest(root/POLICY)
+        policy_digest=policy_digest_at(root,sha) if historical else file_digest(root/POLICY)
         if policy_digest!=pin['policy_digest']:errors.append('changed policy artifact')
         finals={};reds={};seen_runs=set()
         runners={r['id']:r for r in plan['runners']};test_map={t['id']:t for t in plan['tests']}
@@ -107,7 +108,7 @@ def evaluate_completion(contracts, review, executions, trusted_context):
             def runner_hash(name):
                 if historical:
                     path='.agents/ask/verification/traceability/'+name
-                    return file_digest_bytes(read_at(root,sha,path))
+                    return runtime_digest_at(root,sha,path,Path(__file__).with_name(name))
                 return file_digest(Path(__file__).with_name(name))
 
             report_adapter=adapter_digest({run.get('adapter') for run in execution_report.get('executions',[])},
