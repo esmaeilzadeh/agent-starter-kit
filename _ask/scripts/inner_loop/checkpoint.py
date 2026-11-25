@@ -713,7 +713,20 @@ def export_bundle(root: Path, work_id: str, destination: Path) -> None:
     if subprocess.run(["git", "show-ref", "--verify", "--quiet", catalog_ref],
                       cwd=root).returncode == 0:
         refs.append(catalog_ref)
-    _git(Path(root), "bundle", "create", str(destination), *refs)
+    authority_ref = f"refs/ask/accepted-tests/{work_id}"
+    for line in _git(root, "for-each-ref", "--format=%(refname)", authority_ref,
+                     f"refs/ask/accepted-tests-history/{work_id}/").decode().splitlines():
+        if line == authority_ref or line.startswith(f"refs/ask/accepted-tests-history/{work_id}/"):
+            refs.append(line)
+    if _contract_sha(root, work_id) and authority_ref not in refs:
+        raise CheckpointError("missing accepted-tests authority; restore it from the source machine before exporting")
+    # Git creates bundle files using the umask; keep raw evidence private throughout.
+    destination = Path(destination).absolute()
+    with tempfile.TemporaryDirectory(prefix=".ask-checkpoint-", dir=destination.parent) as temp:
+        private_bundle = Path(temp) / "checkpoint.bundle"
+        _git(Path(root), "bundle", "create", str(private_bundle), *refs)
+        private_bundle.chmod(0o600)
+        os.replace(private_bundle, destination)
 
 
 def import_bundle(root: Path, work_id: str, source: Path) -> str:
@@ -726,6 +739,23 @@ def import_bundle(root: Path, work_id: str, source: Path) -> str:
     with tempfile.TemporaryDirectory(prefix="ask-checkpoint-") as temp:
         heads = _git(root, "bundle", "list-heads", str(source)).decode().splitlines()
         available_refs = {line.split()[-1] for line in heads if len(line.split()) >= 2}
+        authority_ref = f"refs/ask/accepted-tests/{work_id}"
+        if _contract_sha(root, work_id) and authority_ref not in available_refs:
+            raise CheckpointError("bundle omits accepted-tests authority; re-export with current tooling on the source machine")
+        history_prefix = f"refs/ask/accepted-tests-history/{work_id}/"
+        authority_updates = []
+        for line in heads:
+            sha, name = line.split()
+            if name != authority_ref and not name.startswith(history_prefix):
+                continue
+            if name.startswith(history_prefix) and name.removeprefix(history_prefix) != sha:
+                raise CheckpointError("invalid accepted-tests authority history ref")
+            current = subprocess.run(["git", "rev-parse", "--verify", name], cwd=root,
+                                     capture_output=True, text=True)
+            old = current.stdout.strip() if current.returncode == 0 else "0" * len(sha)
+            if current.returncode == 0 and old != sha:
+                raise CheckpointError("imported accepted-tests authority differs from local authority")
+            authority_updates.append((name, sha, old))
         fetch_args = ["fetch", str(source), f"{ref}:{checkpoint_quarantine}"]
         has_catalog = catalog_ref in available_refs
         if has_catalog:
@@ -758,7 +788,11 @@ def import_bundle(root: Path, work_id: str, source: Path) -> str:
             current = _resolve_ref(root, work_id)
             if current and not _is_ancestor(root, current, candidate):
                 raise CheckpointError("imported checkpoint diverges from current checkpoint")
-            _git(root, "update-ref", ref, candidate, current or "0" * len(candidate))
+            updates = [(ref, candidate, current or "0" * len(candidate)), *authority_updates]
+            transaction = "start\n" + "".join(
+                f"update {name} {sha} {old}\n" for name, sha, old in updates
+            ) + "prepare\ncommit\n"
+            _git(root, "update-ref", "--stdin", input=transaction.encode())
         except Exception:
             if catalog_changed:
                 if old_catalog:
