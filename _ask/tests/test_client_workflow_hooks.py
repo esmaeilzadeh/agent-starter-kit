@@ -50,13 +50,16 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         )
 
     def invoke_cursor(self, target: Path) -> dict:
-        command = json.loads((target / ".cursor/hooks.json").read_text())["hooks"]["sessionStart"][0]["command"]
+        handlers = json.loads((target / ".cursor/hooks.json").read_text())["hooks"]["sessionStart"]
+        command = next(item["command"] for item in handlers if "access-preflight.sh" in item["command"])
         result = subprocess.run(command, shell=True, cwd=target, capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
 
     def invoke_codex(self, target: Path) -> dict:
-        hook = json.loads((target / ".codex/hooks.json").read_text())["hooks"]["SessionStart"][0]
+        handlers = json.loads((target / ".codex/hooks.json").read_text())["hooks"]["SessionStart"]
+        hook = next(item for item in handlers if any(
+            "session-start.py" in entry.get("command", "") for entry in item.get("hooks", [])))
         command = hook["hooks"][0]["command"]
         result = subprocess.run(command, shell=True, cwd=target / "nested", capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -67,7 +70,7 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         codex = self.invoke_codex(target)["hookSpecificOutput"]["additionalContext"]
         for context in (cursor, codex):
             self.assertIn("AskIt session instructions", context)
-            self.assertIn("request route gate", context)
+            self.assertIn("classify each deliverable", context)
             self.assertIn("project access preflight passed", context)
         self.assertIn(".agents/ask/session.md", (target / ".cursor/rules/starter-kit-bootstrap.mdc").read_text())
 
