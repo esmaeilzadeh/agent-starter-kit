@@ -78,8 +78,10 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         self.assertFalse((target / "AGENTS.md").exists())
         self.assert_loaded(target)
 
-        (target / ".git/askit-transactions/owned-files.json").write_text("unwritable")
+        (target / "ask").write_text("#!/bin/sh\necho 'write denied at .git' >&2\nexit 1\n", encoding="utf-8")
+        (target / "ask").chmod(0o755)
         failure = self.invoke_codex(target)["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("write denied at .git", failure)
         self.assertIn("STOP:", failure)
 
     def test_reinstall_preserves_client_instructions_and_hooks(self) -> None:
