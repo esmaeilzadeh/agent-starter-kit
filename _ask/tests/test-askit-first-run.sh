@@ -60,6 +60,7 @@ printf '%s\n' "$out" | grep -q 'run askit trust'
 [[ -x "$TMP/ask" ]]
 [[ -d "$TMP/_ask" ]]
 git check-ignore -q ask
+git check-ignore -q .codex/hooks.json
 ! git check-ignore -q AGENTS.md
 git add . && git commit -qm 'Keep project configuration only'
 git clone -q . "$NONE/fresh"
