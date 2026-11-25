@@ -183,7 +183,7 @@ askit_self_install() {
   fi
   if [[ ! "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
     echo "askit: a full expected commit is required (--expected-commit or a full-SHA --ref)" >&2
-    echo "askit: use the pinned download or checkout instructions at https://github.com/esmaeilzadeh/agent-starter-kit#how-a-product-uses-this-kit" >&2
+    echo "askit: use the pinned download or checkout instructions at https://github.com/esmaeilzadeh/agent-starter-kit#install-askit" >&2
     return 2
   fi
 
@@ -198,7 +198,13 @@ askit_self_install() {
   mkdir -p "$CACHE_PARENT"
   STAGING="$(mktemp -d "$CACHE_PARENT/kit.XXXXXX")"
   trap '[[ -z "${STAGING:-}" ]] || rm -rf "$STAGING"' RETURN
-  if ! git clone --depth 1 --branch "$REF" "$SOURCE" "$STAGING/repo" 2>/dev/null; then
+  if [[ "$REF" =~ ^[0-9a-f]{40}$ ]] \
+    && git init -q "$STAGING/commit" \
+    && git -C "$STAGING/commit" remote add -- origin "$SOURCE" \
+    && git -C "$STAGING/commit" fetch --depth 1 --no-tags origin "$REF" \
+    && git -C "$STAGING/commit" checkout --detach FETCH_HEAD; then
+    mv "$STAGING/commit" "$STAGING/repo"
+  elif ! git clone --depth 1 --branch "$REF" "$SOURCE" "$STAGING/repo" 2>/dev/null; then
     if ! git clone "$SOURCE" "$STAGING/repo" \
       || ! git -C "$STAGING/repo" checkout --detach "$REF"; then
       echo "askit: unable to fetch selected source revision $REF" >&2
