@@ -113,7 +113,6 @@ for rel in \
   .cursor \
   .codex/hooks.json \
   .gitignore \
-  AGENTS.md \
   ask \
   .ask.env.example \
   .ask/README.md
