@@ -1,5 +1,46 @@
 {
-  "edges": [],
+  "edges": [
+    {
+      "source": "cwh-t01-test",
+      "target": "cwh-t01-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "cwh-01",
+      "target": "cwh-t01-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "cwh-t02-test",
+      "target": "cwh-t02-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "cwh-01",
+      "target": "cwh-t02-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "cwh-t03-test",
+      "target": "cwh-t03-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "cwh-01",
+      "target": "cwh-t03-scenario",
+      "type": "contributes_to"
+    },
+    {
+      "source": "cwh-t04-test",
+      "target": "cwh-t04-scenario",
+      "type": "covers"
+    },
+    {
+      "source": "cwh-01",
+      "target": "cwh-t04-scenario",
+      "type": "contributes_to"
+    }
+  ],
   "nodes": [
     {
       "id": "purpose",
@@ -54,9 +95,146 @@
       "lifecycle": "confirmed",
       "title": "Client agent files and unrelated hook handlers are preserved",
       "type": "assumption"
+    },
+    {
+      "context": [
+        {
+          "path": "specs/current/client-workflow-hooks.md",
+          "revision": "snapshot",
+          "role": "spec",
+          "selector": {
+            "kind": "heading",
+            "path": [
+              "Client workflow startup hooks",
+              "Acceptance criteria"
+            ]
+          }
+        },
+        {
+          "path": "work/client-workflow-hooks/plan.md",
+          "revision": "snapshot",
+          "role": "plan",
+          "selector": {
+            "heading_path": [
+              "Plan for client workflow startup hooks",
+              "Work breakdown"
+            ],
+            "kind": "plan-task",
+            "task_id": "CWH-01"
+          }
+        }
+      ],
+      "execution": {
+        "task_id": "CWH-01",
+        "work_id": "client-workflow-hooks"
+      },
+      "id": "cwh-01",
+      "lifecycle": "planned",
+      "title": "Register shared client startup hooks",
+      "type": "task"
+    },
+    {
+      "case": {
+        "case_id": "CWH-T01",
+        "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+        "work_id": "client-workflow-hooks"
+      },
+      "id": "cwh-t01-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-001",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Install AskIt and invoke the configured hooks with both access outcomes",
+      "type": "scenario"
+    },
+    {
+      "id": "cwh-t01-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-T01",
+        "path": "work/client-workflow-hooks/test-plan.json"
+      },
+      "title": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CWH-T02",
+        "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+        "work_id": "client-workflow-hooks"
+      },
+      "id": "cwh-t02-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-002",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Install twice, including force reinstall",
+      "type": "scenario"
+    },
+    {
+      "id": "cwh-t02-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-T02",
+        "path": "work/client-workflow-hooks/test-plan.json"
+      },
+      "title": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CWH-T03",
+        "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+        "work_id": "client-workflow-hooks"
+      },
+      "id": "cwh-t03-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-002",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Install AskIt",
+      "type": "scenario"
+    },
+    {
+      "id": "cwh-t03-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-T03",
+        "path": "work/client-workflow-hooks/test-plan.json"
+      },
+      "title": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+      "type": "test"
+    },
+    {
+      "case": {
+        "case_id": "CWH-T04",
+        "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+        "work_id": "client-workflow-hooks"
+      },
+      "id": "cwh-t04-scenario",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-003",
+        "path": "specs/current/client-workflow-hooks.json"
+      },
+      "title": "Use the documented upgrade entry point against a reviewed candidate",
+      "type": "scenario"
+    },
+    {
+      "id": "cwh-t04-test",
+      "lifecycle": "active",
+      "reference": {
+        "id": "CWH-T04",
+        "path": "work/client-workflow-hooks/test-plan.json"
+      },
+      "title": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+      "type": "test"
     }
   ],
-  "revision": 2,
+  "revision": 3,
   "schema": "ask-engineering-model/v2",
   "work_id": "client-workflow-hooks"
 }
