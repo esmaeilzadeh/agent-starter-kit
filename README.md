@@ -149,15 +149,16 @@ Copy and paste this into a terminal:
 
 ```bash
 (
-  sha=c164aa9967b69b0903dc0fde22f92d2a8bc5b04e
+  tag=v2.0.1
+  sha=6894d8dde1d8ee330ae891a3d8cb6415fa8095d8
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
-    bash "$installer" self-install --ref "$sha" --expected-commit "$sha"
+    bash "$installer" self-install --ref "$tag" --expected-commit "$sha"
 )
 ```
 
-The launcher downloads and verifies the pinned kit commit. Run the following in each clone or worktree of your app.
+The command downloads the launcher by commit SHA. The launcher installs the release tag after verifying that it resolves to the pinned commit. Run the following in each clone or worktree of your app.
 
 ```bash
 cd /path/to/your/app
