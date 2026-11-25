@@ -1,0 +1,8 @@
+{
+  "schema": "ask-intent-confirmation/v2",
+  "work_id": "client-workflow-hooks",
+  "scope": "complete-intent-and-assumptions",
+  "prompt": "Do you approve the complete intent and every listed assumption as written?",
+  "intent_sha256": "c47d3719f5430a769f34b9bc8af68c6789ac9d5e90fbcadb82bd05fa9319acaa",
+  "human_choice": "approve"
+}

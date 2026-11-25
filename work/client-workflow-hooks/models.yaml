@@ -1,0 +1,64 @@
+codex:
+  06-implement: gpt-6-luna
+risk: MEDIUM
+runtime: codex
+model_plan:
+  status: confirmed
+  source: grill
+  submission: confirm
+  runtime: codex
+  risk: MEDIUM
+  implementation_policy: exact
+  explicit_overrides: []
+  materialized_overrides:
+    - "06-implement"
+  selections:
+    00-explore:
+      role: thinking
+      model: gpt-6.1-sol
+      source: default
+    01-grill:
+      role: thinking
+      model: gpt-6.1-sol
+      source: default
+    02-spec:
+      role: thinking
+      model: gpt-6.1-sol
+      source: default
+    03-spec-challenge:
+      role: adversarial
+      model: gpt-6-astra
+      source: default
+    04-spec-change:
+      role: thinking
+      model: gpt-6.1-sol
+      source: default
+    05-plan:
+      role: typing
+      model: gpt-6.1-sol
+      source: project-config
+    06-implement:
+      role: typing
+      model: gpt-6-luna
+      source: exact-policy
+    07-review:
+      role: review
+      model: gpt-6-luna
+      source: default
+    08-refactor:
+      role: typing
+      model: gpt-6-luna
+      source: default
+    09-verify:
+      role: typing
+      model: gpt-6-luna
+      source: default
+    10-accept:
+      role: thinking
+      model: gpt-6.1-sol
+      source: default
+  review_relationship:
+    review_stage: "07-review"
+    implementation_stage: "06-implement"
+    review_model: gpt-6-luna
+    implementation_model: gpt-6-luna
