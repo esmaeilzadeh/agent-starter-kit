@@ -83,9 +83,13 @@ class ClientWorkflowHooksTests(unittest.TestCase):
 
         (target / "ask").write_text("#!/bin/sh\necho 'write denied at .git' >&2\nexit 1\n", encoding="utf-8")
         (target / "ask").chmod(0o755)
-        failure = self.invoke_codex(target)["hookSpecificOutput"]["additionalContext"]
-        self.assertIn("write denied at .git", failure)
-        self.assertIn("STOP:", failure)
+        failures = (
+            self.invoke_cursor(target)["additional_context"],
+            self.invoke_codex(target)["hookSpecificOutput"]["additionalContext"],
+        )
+        for failure in failures:
+            self.assertIn("write denied at .git", failure)
+            self.assertIn("STOP:", failure)
 
     def test_reinstall_preserves_client_instructions_and_hooks(self) -> None:
         target = self.client("existing")
@@ -105,14 +109,16 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         (target / ".cursor/hooks.json").write_text(json.dumps(cursor_config))
         (target / ".codex").mkdir()
         (target / ".codex/hooks.json").write_text(json.dumps(codex_config))
-        for _ in range(2):
-            result = self.install(target, "--skip-prepare")
+        for flags in (("--skip-prepare",), ("--force", "--skip-prepare")):
+            result = self.install(target, *flags)
             self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual((target / "AGENTS.md").read_text(), agents)
         cursor_after = json.loads((target / ".cursor/hooks.json").read_text())
         codex_after = json.loads((target / ".codex/hooks.json").read_text())
         self.assertEqual(cursor_after["hooks"]["afterFileEdit"], cursor_config["hooks"]["afterFileEdit"])
         self.assertEqual(codex_after["hooks"]["PostToolUse"], codex_config["hooks"]["PostToolUse"])
+        self.assertEqual(cursor_after["hooks"]["sessionStart"][0], cursor_config["hooks"]["sessionStart"][0])
+        self.assertEqual(codex_after["hooks"]["SessionStart"][0], codex_config["hooks"]["SessionStart"][0])
         self.assertEqual(sum(item["command"] != "client-cursor-hook" for item in cursor_after["hooks"]["sessionStart"]), 1)
         self.assertEqual(sum(item["hooks"][0]["command"] != "client-codex-hook" for item in codex_after["hooks"]["SessionStart"]), 1)
         self.assert_loaded(target)
@@ -132,6 +138,19 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         target = self.client("upgrade")
         (target / "nested").mkdir()
         (target / "AGENTS.md").write_text("# Client-owned\n")
+        cursor_config = {
+            "version": 1,
+            "hooks": {"sessionStart": [{"command": "client-cursor-hook"}],
+                      "afterFileEdit": [{"command": "client-format-hook"}]},
+        }
+        codex_config = {
+            "hooks": {"SessionStart": [{"hooks": [{"type": "command", "command": "client-codex-hook"}]}],
+                      "PostToolUse": [{"matcher": "Write", "hooks": [{"type": "command", "command": "client-review-hook"}]}]},
+        }
+        (target / ".cursor").mkdir()
+        (target / ".cursor/hooks.json").write_text(json.dumps(cursor_config))
+        (target / ".codex").mkdir()
+        (target / ".codex/hooks.json").write_text(json.dumps(codex_config))
         previous = self.root / "previous"
         fetched = subprocess.run(
             ["git", "clone", "--quiet", "--shared", str(self.kit), str(previous)],
@@ -142,16 +161,27 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         self.git("checkout", "--quiet", "v2.0.1", cwd=previous)
         installed = self.install(target, "--skip-prepare", source=previous)
         self.assertEqual(installed.returncode, 0, installed.stderr)
-        self.assertFalse((target / ".codex/hooks.json").exists())
         version = self.git("rev-parse", "HEAD", cwd=self.kit)
-        upgraded = subprocess.run(
-            ["bash", str(self.kit / "_ask/scripts/upgrade-kit.sh"), "--version", version,
-             "--expected-commit", version, "--source", str(self.kit), "--target", str(target), "--skip-prepare"],
-            capture_output=True,
-            text=True,
-        )
-        self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
+        for _ in range(2):
+            upgraded = subprocess.run(
+                ["bash", str(self.kit / "_ask/scripts/upgrade-kit.sh"), "--version", version,
+                 "--expected-commit", version, "--source", str(self.kit), "--target", str(target), "--skip-prepare"],
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual((target / "AGENTS.md").read_text(), "# Client-owned\n")
+        cursor_after = json.loads((target / ".cursor/hooks.json").read_text())
+        codex_after = json.loads((target / ".codex/hooks.json").read_text())
+        self.assertEqual(cursor_after["hooks"]["afterFileEdit"], cursor_config["hooks"]["afterFileEdit"])
+        self.assertEqual(codex_after["hooks"]["PostToolUse"], codex_config["hooks"]["PostToolUse"])
+        self.assertEqual(cursor_after["hooks"]["sessionStart"][0], cursor_config["hooks"]["sessionStart"][0])
+        self.assertEqual(codex_after["hooks"]["SessionStart"][0], codex_config["hooks"]["SessionStart"][0])
+        self.assertEqual(sum("access-preflight.sh" in item["command"]
+                             for item in cursor_after["hooks"]["sessionStart"]), 1)
+        self.assertEqual(sum(any("session-start.py" in hook.get("command", "")
+                                 for hook in item.get("hooks", []))
+                             for item in codex_after["hooks"]["SessionStart"]), 1)
         self.assertTrue((target / ".codex/hooks.json").is_file(),
                         f"Codex session hook was not installed by upgrade: {upgraded.stdout} {upgraded.stderr}")
         self.assert_loaded(target)
