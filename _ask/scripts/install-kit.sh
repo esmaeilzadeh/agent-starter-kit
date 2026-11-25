@@ -30,6 +30,9 @@ fi
 
 if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" && "$DRY_RUN" -eq 0 ]]; then
   args=(python3 "$ROOT/_ask/scripts/write-transaction.py" run --root "$TARGET")
+  if [[ "$SKIP_PREPARE" -eq 0 && "${SKIP_INSTALL:-0}" != 1 ]]; then
+    args+=(--refresh-prepared-skills)
+  fi
   for rel in \
     _ask/agents _ask/bindings _ask/cursor-commands _ask/policies _ask/scripts \
     _ask/skills _ask/templates _ask/ui _ask/docs .agents/ask .agents/ask.local \
