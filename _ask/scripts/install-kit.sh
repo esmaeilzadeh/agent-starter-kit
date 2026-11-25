@@ -73,7 +73,7 @@ copy_path() {
       excl+=(--exclude models.yaml)
     elif [[ "$rel" == ".cursor" ]]; then
       excl+=(--exclude /rules/local/)
-      if [[ -f "$dest/hooks.json" && "$FORCE" -eq 0 ]]; then
+      if [[ -f "$dest/hooks.json" ]]; then
         excl+=(--exclude /hooks.json)
       fi
     fi
