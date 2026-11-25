@@ -1,6 +1,0 @@
-{
-  "work_id": "agent-decision-clarity",
-  "commit_sha": "fcf268b25a94c71139f4b67fb33a39d91b53ee66",
-  "result": "fail",
-  "notes": "Focused confirmation, workstream, status, and traceability tests pass; full verify stops before checks because coordinator accepted-tests ref is missing."
-}

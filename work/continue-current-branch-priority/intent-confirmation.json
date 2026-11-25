@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v2",
-  "work_id": "continue-current-branch-priority",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "9ce274a3368ab3a5b950ad3f5c423d04c7f987d77515f5d6120aca552a4dd147",
-  "human_choice": "approve"
-}

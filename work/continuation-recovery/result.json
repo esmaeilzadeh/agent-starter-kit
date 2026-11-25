@@ -1,6 +1,0 @@
-{
-  "work_id": "continuation-recovery",
-  "commit_sha": "622e89c879c1b09d4982b84b3327bcfcaa216059",
-  "result": "completed-under-scoped-exception",
-  "notes": "CR-1 through CR-4 integrated; coordinator revision 59 matches retained checkpoint. CR-4 exact candidate independently approved; pinned T15/T16 Green report consumed without rerunning tests. All 38 CheckPlan checks passed. Canonical outer completion remains fail for workstream semantic-review scope and stale CR-T10 historical source identity; CR-4 completion requires per-case historical Reds waived by the explicit one-time CR3/CR4 direction. No product adoption or scheduling. See cr4-completion.md."
-}

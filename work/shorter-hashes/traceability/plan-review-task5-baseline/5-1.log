@@ -1,6 +1,0 @@
-test_authority_rejects_candidate_substitution (_ask.tests.test_workflow_refs_traceability.ReferenceTests.test_authority_rejects_candidate_substitution) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.422s
-
-OK

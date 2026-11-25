@@ -1,6 +1,0 @@
-{
-  "work_id": "shorter-hashes",
-  "commit_sha": "9917aacdcfef0e99063d4c7efb1896d198c6ad59",
-  "result": "fail",
-  "notes": "./ask verify failed: inner_loop_recovery has two errors due missing refs/ask/accepted-tests/continuation-recovery; inner_loop and start-work checks fail on branch fixture setup. Focused integration-receipt regressions and traceability suite passed."
-}

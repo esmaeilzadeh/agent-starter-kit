@@ -1,6 +1,0 @@
-{
-  "work_id": "revising-workbench",
-  "commit_sha": "e514444977dcfd09cfff6114ac2e45251378018e",
-  "result": "unblocked",
-  "notes": "Recovered original historical WB-003 ledger; 12 pilot tests and all five substantive detached browser journeys passed. Narrow independent fix review approved. User requested stop during benchmark; final Verify interrupted, no complete benchmark or workstream acceptance claimed."
-}

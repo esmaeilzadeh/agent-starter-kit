@@ -1,9 +1,0 @@
-/home/mohammadesmailzade/.profile: line 31: /home/mohammadesmailzade/.deno/env___MY_VMOPTIONS_SHELL_FILE=/home/mohammadesmailzade/.jetbrains.vmoptions.sh: No such file or directory
-install-kit: note — will not modify target docs/ (consumer-owned)
-sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.claude/agents
-sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.codex/agents
-sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.cursor/agents
-sync-runtime-agents: wrote /tmp/ask-static-rky4w1tz/candidate/.opencode/agents
-sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
-install-kit: applied to /tmp/tmp.9MiiJOiGPr
-PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/

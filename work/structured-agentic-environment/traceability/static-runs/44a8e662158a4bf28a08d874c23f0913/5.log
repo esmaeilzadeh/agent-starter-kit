@@ -1,1 +1,0 @@
-PASS: check-clean-worktree dirty-tree negative + clean positive

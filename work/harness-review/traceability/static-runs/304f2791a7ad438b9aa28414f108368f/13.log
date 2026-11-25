@@ -1,8 +1,0 @@
-install-kit: note — will not modify target docs/ (consumer-owned)
-sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.cursor/agents
-sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.claude/agents
-sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.codex/agents
-sync-runtime-agents: wrote /tmp/ask-static-t7oinyt4/candidate/.opencode/agents
-sync-cursor-binding: generated projections under .cursor/skills and .cursor/commands
-install-kit: applied to /tmp/tmp.3bpdspOgLr
-PASS: install-kit apply leaves docs/ intact and does not overlay root scripts/ or kit tests/

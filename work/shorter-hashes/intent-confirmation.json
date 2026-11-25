@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v2",
-  "work_id": "shorter-hashes",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "8784f3748505fe0ac51ccb9a7dfe78de0c04f79cd26dac58689fdee10cb084e6",
-  "human_choice": "approve"
-}

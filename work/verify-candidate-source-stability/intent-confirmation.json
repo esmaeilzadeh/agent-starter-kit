@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v1",
-  "work_id": "verify-candidate-source-stability",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "93a032cbeb2c78865006a6d4ec1220795e518aaa00a82ff1a244382deb148df8",
-  "human_response": "I approve the complete intent and every listed assumption as written"
-}

@@ -1,8 +1,0 @@
-{
-  "schema": "ask-intent-confirmation/v2",
-  "work_id": "status-template-stage-detection",
-  "scope": "complete-intent-and-assumptions",
-  "prompt": "Do you approve the complete intent and every listed assumption as written?",
-  "intent_sha256": "d13d1a9966d21cdc7d800179915e246238715ccc88a3632354b4ad923864f2eb",
-  "human_choice": "approve"
-}
