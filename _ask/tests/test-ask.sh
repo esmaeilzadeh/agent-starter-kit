@@ -68,4 +68,26 @@ git add README.md && git commit -q -m init
 # invoke ask by absolute path; check-clean uses cwd git
 "$ASK" check-clean
 
-echo "PASS: ask help, unknown-command, check-clean on clean temp repo"
+cp "$ASK" ./ask
+./ask --help | grep -q 'Agent Starter Kit'
+
+if out="$(./ask status 2>&1)"; then
+  echo 'FAIL: status succeeded without the installed runtime' >&2
+  exit 1
+fi
+printf '%s\n' "$out" | grep -Fq 'missing _ask/scripts/'
+printf '%s\n' "$out" | grep -Fq './ask install --skip-prepare'
+
+mkdir -p _ask/scripts
+cp "$ROOT/_ask/scripts/access-check.sh" _ask/scripts/
+./ask access-check
+
+for completion_command in completion --complete; do
+  if out="$(./ask "$completion_command" bash 2>&1)"; then
+    echo "FAIL: $completion_command succeeded without the completion library" >&2
+    exit 1
+  fi
+  printf '%s\n' "$out" | grep -Fq 'missing _ask/scripts/ask-complete.sh'
+done
+
+echo "PASS: ask help, dispatch, completion, and missing-runtime recovery guidance"

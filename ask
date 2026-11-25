@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 SCRIPTS="$ROOT/_ask/scripts"
 SKILLS="$ROOT/_ask/skills"
+COMPLETION="$SCRIPTS/ask-complete.sh"
 
 usage() {
   cat <<'EOF'
@@ -125,7 +126,7 @@ EOF
 print_completion_snippet() {
   local shell="$1"
   local lib
-  lib="$(sed -e '/^#!/d' -e '/^set -euo pipefail$/d' -e '/^if \[\[ "\${BASH_SOURCE/,${d}' "$SCRIPTS/ask-complete.sh")"
+  lib="$(sed -e '/^#!/d' -e '/^set -euo pipefail$/d' -e '/^if \[\[ "\${BASH_SOURCE/,${d}' "$COMPLETION")"
   case "$shell" in
     bash)
       printf '%s\n' "$lib"
@@ -232,23 +233,29 @@ EOF
   esac
 }
 
-# shellcheck source=scripts/ask-complete.sh
-source "$SCRIPTS/ask-complete.sh"
+missing_runtime() {
+  printf 'ask: missing %s. From a trusted AskIt checkout, run:\n  ./ask install --skip-prepare %q\n' "$1" "$ROOT" >&2
+  exit 1
+}
 
 cmd="${1:-}"
 if [[ -z "$cmd" || "$cmd" == "-h" || "$cmd" == "--help" || "$cmd" == "help" ]]; then
   usage
   exit 0
 fi
-if [[ "$cmd" == "--complete" ]]; then
-  shift
-  ask_print_completions "$@"
+if [[ "$cmd" == "--complete" || "$cmd" == "completion" ]]; then
+  [[ -f "$COMPLETION" && -r "$COMPLETION" ]] || missing_runtime "_ask/scripts/ask-complete.sh"
+  if [[ "$cmd" == "--complete" ]]; then
+    shift
+    # shellcheck source=_ask/scripts/ask-complete.sh
+    source "$COMPLETION"
+    ask_print_completions "$@"
+  else
+    print_completion_snippet "${2:-}"
+  fi
   exit 0
 fi
-if [[ "$cmd" == "completion" ]]; then
-  print_completion_snippet "${2:-}"
-  exit 0
-fi
+[[ -d "$SCRIPTS" ]] || missing_runtime "_ask/scripts/"
 shift
 
 case "$cmd" in
