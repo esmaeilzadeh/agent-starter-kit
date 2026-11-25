@@ -113,16 +113,19 @@ class PreparationTests(unittest.TestCase):
             self.assertEqual(content.count("<!-- ASK TDD OVERRIDE END -->"), 1)
         self.assertEqual(self.overlay.read_bytes(), manifest_before)
 
+    def test_prepare_succeeds_with_only_shared_tdd_view(self):
         self.set_installer('''
 mkdir -p .agents/skills/tdd
 cat > .agents/skills/tdd/SKILL.md <<'SKILL'
 # TDD upstream
 SKILL
 ''')
-        (self.root / self.installed_views[1]).unlink()
-        missing_view = self.prepare()
-        self.assertNotEqual(missing_view.returncode, 0, missing_view.stdout)
-        self.assertIn("missing prepared TDD skill view", missing_view.stderr)
+        result = self.prepare()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        content = (self.root / self.installed_views[0]).read_text(encoding="utf-8")
+        self.assertIn("Red -> Green -> Refactor", content)
+        self.assertEqual(content.count("<!-- ASK TDD OVERRIDE START -->"), 1)
+        self.assertFalse((self.root / self.installed_views[1]).exists())
 
     def test_repeated_prepare_replaces_managed_override(self):
         self.set_installer('''

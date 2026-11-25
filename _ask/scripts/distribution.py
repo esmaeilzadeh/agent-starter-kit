@@ -345,7 +345,11 @@ def apply_tdd_override(root: Path) -> None:
     if not override.is_file():
         raise DistributionError(f"missing repository TDD override: {override}")
     block = f"{start}\n{override.read_text(encoding='utf-8').strip()}\n{end}"
-    for path in (root / ".agents/skills/tdd/SKILL.md", root / ".cursor/skills/tdd/SKILL.md"):
+    views = [root / ".agents/skills/tdd/SKILL.md"]
+    cursor_view = root / ".cursor/skills/tdd/SKILL.md"
+    if cursor_view.exists():
+        views.append(cursor_view)
+    for path in views:
         if not path.is_file():
             raise DistributionError(f"missing prepared TDD skill view: {path}")
         content = path.read_text(encoding="utf-8")
