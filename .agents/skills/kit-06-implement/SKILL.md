@@ -28,7 +28,7 @@ Purpose:
 Perform delegated implementation labor.
 ```
 
-When a TaskGraph is active, before the first implementation change use it as
+When a TaskGraph is active, use the accepted plan's task graph as
 the execution queue. Work only on its reviewed task IDs and owned paths. Record
 the task ID on its result and verification evidence, then update that task's
 state only when its planned completion evidence is present. A new deliverable
