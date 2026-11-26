@@ -1,14 +1,10 @@
 ---
-description: Starter Kit bootstrap — assemble context from protocol, not chat
+description: AskIt source and client startup instructions
 alwaysApply: true
 ---
 
-This repo uses the AI Engineering Starter Kit. Protocol source of truth is `.agents/ask/` (stages, bindings, verification) plus `_ask/` (guide, spec, policies). This rule is not SoT.
+In the AskIt source repository, read `AGENTS.md` first. Its self-development rule controls whether the kit workflow is enabled.
 
-In an AskIt client checkout, read and follow `.agents/ask/session.md` before starting or resuming project work if the session-start hook did not supply those instructions. Use the relevant policies and stage contracts linked there.
+In an installed client, if the session-start hook did not supply workflow context, read and follow `.agents/ask/session.md` before starting or resuming work. Use its linked policies and stage contracts.
 
-In the AskIt source repository, follow its self-development instructions.
-
-**Worktree (hard):** never start on an unclean tree. If dirty, grill the human about uncommitted/untracked files — do not stash/reset silently. One plan per `agent/<work-id>` branch; **commit each meaningful step on that branch without waiting for the human to ask** (overrides global “only commit when asked”); do not run overlapping related branches in parallel. See `_ask/policies/worktree.md`.
-
-Kit `00 Explore` is a protocol stage (explore-map artifact). It is not Cursor’s built-in Explore subagent.
+Protocol source of truth is `.agents/ask/`; `_ask/` holds scripts, policies, and documentation. This rule is a startup pointer.

@@ -194,7 +194,7 @@ See [client acquisition and security](_ask/docs/client-security.md) for recovery
 
 ## Start here
 
-Read [AGENTS.md](AGENTS.md) for the operational checklist, then use the [end-to-end demo](_ask/docs/demo/end-to-end-plan.md) to walk through a complete example.
+For development of AskIt itself, start with [AGENTS.md](AGENTS.md). It keeps the source rules short and links the [optional frozen-kit workflow checklist](_ask/docs/source-workflow.md). Installed clients receive their workflow through editor startup hooks. Use the [end-to-end demo](_ask/docs/demo/end-to-end-plan.md) to walk through a client workstream.
 
 In a repository with the kit installed:
 
@@ -218,7 +218,7 @@ The optional `./ask setup` tracker and MCP wizard is **human-only** and requires
 | Path | Purpose |
 | --- | --- |
 | `README.md` | Human introduction and starting points. |
-| `AGENTS.md` | Operational instructions for agents. |
+| `AGENTS.md` | Source-repository instructions and workflow pointers. |
 | `CONTEXT.md` | The kit's vocabulary. |
 | `ask` | Repository command dispatcher. |
 | `.agents/ask/` | Canonical stages, bindings, and verification protocol. |
