@@ -8,6 +8,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
+GIT_DIR = ROOT / subprocess.check_output(["git", "rev-parse", "--git-dir"], cwd=ROOT, text=True).strip()
 
 
 class AccessCheckTests(unittest.TestCase):
@@ -50,7 +51,7 @@ class AccessCheckTests(unittest.TestCase):
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         probe_files = [*ROOT.glob(".ask-access-check.*"),
-                       *ROOT.joinpath(".git").glob(".ask-access-check.*"),
+                       *GIT_DIR.glob(".ask-access-check.*"),
                        *ROOT.joinpath("work").glob(".ask-access-check.*")]
         self.assertEqual(probe_files, [])
         nested = subprocess.run([str(ROOT / "ask"), "access-check"],
@@ -83,7 +84,7 @@ class AccessCheckTests(unittest.TestCase):
         real_rm = shutil.which("rm")
         def cleanup_leftovers():
             probes = [*ROOT.glob(".ask-access-check.*"),
-                      *ROOT.joinpath(".git").glob(".ask-access-check.*"),
+                      *GIT_DIR.glob(".ask-access-check.*"),
                       *ROOT.joinpath("work").glob(".ask-access-check.*")]
             if real_rm and probes:
                 subprocess.run([real_rm, *map(str, probes)], check=False, capture_output=True)
