@@ -816,6 +816,7 @@ class PassageAdmissionTests(unittest.TestCase):
                     _repo(start_root, spec_text=None)
                     shutil.copytree(project / "_ask/scripts", start_root / "_ask/scripts",
                                     ignore=shutil.ignore_patterns("__pycache__"))
+                    shutil.copytree(project / ".agents/ask/bindings", start_root / "_ask/bindings")
                     cas_init(start_root, "product", ["WB-003"])
                     state_before = load_state(start_root, "product")
                     publication_before_start = load_published(start_root, "product")
@@ -849,6 +850,7 @@ class PassageAdmissionTests(unittest.TestCase):
                     _repo(valid_root)
                     shutil.copytree(project / "_ask/scripts", valid_root / "_ask/scripts",
                                     ignore=shutil.ignore_patterns("__pycache__"))
+                    shutil.copytree(project / ".agents/ask/bindings", valid_root / "_ask/bindings")
                     cas_init(valid_root, "product", ["WB-003"])
                     if route == "driver":
                         self.assertEqual(run_once(valid_root, "product"), "running=WB-003")
@@ -881,9 +883,11 @@ class PassageAdmissionTests(unittest.TestCase):
                             "green": {"command": "green", "output": "PASS", "exit_code": 0}},
                     "exemption": None,
                 })
+                review_evidence = "work/product/inner-loop/evidence/WB-003-review.md"
+                _put(review_root, review_evidence, b"Reviewed candidate and its task boundary.\n")
                 review = candidate_record_review(
                     review_root, "product", "WB-003", "independent-reviewer",
-                    "_ask/policies/delegation.md", "work/product/review.md",
+                    "_ask/policies/delegation.md", review_evidence,
                     selected_execution={"work_id": "product", "task_id": "WB-003"})
                 self.assertEqual(review["candidate_sha"], candidate_sha)
                 self.assertEqual(review["task_id"], "WB-003")
@@ -896,7 +900,11 @@ class PassageAdmissionTests(unittest.TestCase):
                                  "actual driver validates, reviews, verifies and fast-forwards selected candidate")
                 integrated = json.loads((review_root / "work/product/inner-loop/state.json").read_text())
                 self.assertEqual(integrated["tasks"]["WB-003"]["status"], "integrated")
-                self.assertEqual(integrated["coordinator_sha"], candidate_sha)
+                self.assertEqual(integrated["tasks"]["WB-003"]["evidence"]["verification"]["resulting_sha"],
+                                 candidate_sha)
+                self.assertEqual(integrated["milestone_publications"][-1]["source_sha"], candidate_sha)
+                self.assertEqual(integrated["coordinator_sha"], subprocess.check_output(
+                    ["git", "rev-parse", "HEAD"], cwd=review_root, text=True).strip())
 
                 # Missing models refuse integration before task-result handling.
                 unadopted_root = root / "unadopted-integrate-ready"
@@ -963,6 +971,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 workbench_model(legacy_routes)
                 shutil.copytree(project / "_ask/scripts", legacy_routes / "_ask/scripts",
                                 ignore=shutil.ignore_patterns("__pycache__"))
+                shutil.copytree(project / ".agents/ask/bindings", legacy_routes / "_ask/bindings")
                 shutil.copytree(project / ".agents/ask/verification", legacy_routes / ".agents/ask/verification",
                                 ignore=shutil.ignore_patterns("__pycache__"))
                 shutil.copytree(project / "_ask/policies", legacy_routes / "_ask/policies",
@@ -1034,6 +1043,7 @@ class PassageAdmissionTests(unittest.TestCase):
                 workbench_model(legacy_spawn)
                 shutil.copytree(project / "_ask/scripts", legacy_spawn / "_ask/scripts",
                                 ignore=shutil.ignore_patterns("__pycache__"))
+                shutil.copytree(project / ".agents/ask/bindings", legacy_spawn / "_ask/bindings")
                 legacy_sys_path = str(legacy_spawn / "_ask/scripts")
                 sys.path.insert(0, legacy_sys_path)
                 try:
