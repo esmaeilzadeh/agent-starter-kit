@@ -1,0 +1,14 @@
+{
+  "schema": "ask-engineering-model/v2",
+  "work_id": "check-workstream-guidance-fixture",
+  "revision": 1,
+  "nodes": [
+    {
+      "id": "purpose",
+      "type": "intent",
+      "title": "Make the check-workstream guidance test fixture self-contained",
+      "lifecycle": "active"
+    }
+  ],
+  "edges": []
+}
