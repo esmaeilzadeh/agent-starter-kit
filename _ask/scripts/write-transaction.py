@@ -331,7 +331,7 @@ def shared_hook_update(name: str, before: bytes, after: bytes) -> bool:
     def client_handlers(raw):
         try:
             config = json.loads(raw)
-            handlers = config["hooks"][event]
+            handlers = config.get("hooks", {}).get(event, [])
             if name == ".cursor/hooks.json":
                 return [entry for entry in handlers
                         if entry.get("command") != ".cursor/hooks/access-preflight.sh"]

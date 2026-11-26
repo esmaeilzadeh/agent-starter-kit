@@ -40,7 +40,7 @@ class AccessCheckTests(unittest.TestCase):
         real_mktemp = shutil.which("mktemp")
         wrapper = bindir / "mktemp"
         wrapper.write_text(
-            "#!/bin/sh\ncase \"$1\" in *" + marker + "*) exit 1;; esac\nexec "
+            "#!/bin/sh\ncase \"$1\" in " + marker + ") exit 1;; esac\nexec "
             + real_mktemp + " \"$@\"\n", encoding="utf-8")
         wrapper.chmod(0o755)
         return str(bindir) + os.pathsep + os.environ["PATH"]
@@ -67,14 +67,14 @@ class AccessCheckTests(unittest.TestCase):
 
     def test_denied_write_and_cleanup_failure_report_paths(self):
         denied = subprocess.run([str(ROOT / "ask"), "access-check"], cwd=ROOT,
-                                env=dict(os.environ, PATH=self.failing_mktemp(".git/")),
+                                env=dict(os.environ, PATH=self.failing_mktemp("*/.git/*")),
                                 capture_output=True, text=True)
         self.assertNotEqual(denied.returncode, 0)
         self.assertIn(".git", denied.stderr)
         self.assertIn("access", denied.stderr.lower())
         workspace_denied = subprocess.run(
             [str(ROOT / "ask"), "access-check"], cwd=ROOT,
-            env=dict(os.environ, PATH=self.failing_mktemp(ROOT.name + "/.ask-access-check.")),
+            env=dict(os.environ, PATH=self.failing_mktemp(str(ROOT) + "/.ask-access-check.*")),
             capture_output=True, text=True)
         self.assertNotEqual(workspace_denied.returncode, 0)
         self.assertIn("workspace", workspace_denied.stderr.lower())
@@ -100,6 +100,7 @@ class AccessCheckTests(unittest.TestCase):
     def test_start_work_refuses_before_mutation(self):
         for source in ("_ask/scripts/start-work.sh", "_ask/scripts/check-clean-worktree.sh"):
             self.copy_script(source, source)
+        shutil.copytree(ROOT / "_ask/scripts/inner_loop", self.root / "_ask/scripts/inner_loop")
         denied_probe = self.root / "_ask/scripts/access-check.sh"
         denied_probe.parent.mkdir(parents=True, exist_ok=True)
         denied_probe.write_text("#!/bin/sh\necho 'write denied at .git' >&2\nexit 1\n", encoding="utf-8")
@@ -115,7 +116,7 @@ class AccessCheckTests(unittest.TestCase):
         before = self.git("rev-parse", "HEAD").stdout.strip()
         result = subprocess.run(["bash", "_ask/scripts/start-work.sh", "access-denied"],
                                 cwd=self.root,
-                                env=dict(os.environ, PATH=self.failing_mktemp(".git/")),
+                                env=dict(os.environ, PATH=self.failing_mktemp("*/.git/*")),
                                 capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("write denied", result.stderr)
@@ -131,6 +132,9 @@ class AccessCheckTests(unittest.TestCase):
                             for entry in hooks.get("hooks", {}).get("sessionStart", [])))
         self.root.joinpath(".cursor/hooks").mkdir(parents=True)
         shutil.copy2(hook_source, self.root / ".cursor/hooks/access-preflight.sh")
+        self.copy_script("_ask/scripts/session-start.py", "_ask/scripts/session-start.py")
+        (self.root / ".agents/ask").mkdir(parents=True)
+        shutil.copy2(ROOT / ".agents/ask/session.md", self.root / ".agents/ask/session.md")
         fake_ask = self.root / "ask"
         fake_ask.write_text("#!/bin/sh\necho 'write denied at .git' >&2\nexit 1\n", encoding="utf-8")
         fake_ask.chmod(0o755)

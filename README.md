@@ -169,6 +169,8 @@ askit trust
 
 `askit` prompts to install the kit in a Git checkout that needs it. The installation adds Git ignore rules for `./ask`, `_ask/`, `.agents/ask/`, stock instructions, and generated editor files. Commit your `.gitignore`, project settings, and project work. [Remove previously tracked kit files](_ask/docs/client-security.md#remove-previously-tracked-kit-files)
 
+Fresh installs and upgrades register local Cursor and Codex startup hooks. These load the shared workflow and check write access before work begins. Your root `AGENTS.md` and unrelated hooks remain yours; AskIt preserves them and does not create a root instruction file. Cursor also has a fallback rule. See [session hooks](_ask/docs/client-security.md#session-hooks) for runtime trust and upgrades.
+
 Once installed, `askit` and `./ask` dispatch the same repository commands.
 
 <details>

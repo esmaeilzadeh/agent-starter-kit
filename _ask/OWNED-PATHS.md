@@ -28,7 +28,8 @@ Client repositories Git-ignore installed kit files. Run `askit` in each clone or
 ## Consumer-owned (never clobber by default)
 
 - Policies when customized (or a local policy overlay tree)
-- Local sections of root `AGENTS.md`
+- Root `AGENTS.md` (AskIt neither creates nor replaces it in client repositories)
+- Unrelated events and handlers in `.cursor/hooks.json` and `.codex/hooks.json`
 - `.cursor/rules/local/`
 - `.agents/ask.local/skills/manifest.yaml` (skill pins)
 - `.agents/ask.local/bindings/models.yaml` (optional project model settings)

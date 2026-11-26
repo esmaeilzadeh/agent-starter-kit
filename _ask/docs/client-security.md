@@ -25,6 +25,25 @@ to preserve recoverable state. When migrating an older consumer to a new
 install flow, use the target checkout's upgrader as described in
 [Codex integration](codex-integration.md).
 
+## Session hooks
+
+Fresh installs and supported upgrades register AskIt in `.cursor/hooks.json`
+(`sessionStart`) and `.codex/hooks.json` (`SessionStart`). Both load
+`.agents/ask/session.md` through the shared bootstrap and report the access
+preflight result. A blocked path produces a stop instruction. Cursor's
+`starter-kit-bootstrap.mdc` rule loads the same instructions when startup
+context is unavailable.
+
+These are local editor hooks. Codex project hooks depend on the runtime's trust
+choice and supported hook execution. The commands require Python 3, Git, and
+the local shell. The installer does not configure other editors.
+
+Client-owned `AGENTS.md`, unrelated hook events and handlers, and local editor
+settings are preserved. Repeating installation or upgrade adds no duplicate
+AskIt handler. Invalid hook configuration aborts the installation transaction
+without replacing client files. Legacy root instruction files remain in place;
+review them yourself if they duplicate the installed workflow.
+
 ## Remove previously tracked kit files
 
 Run the current installer or upgrader to add the `AskIt local installation`

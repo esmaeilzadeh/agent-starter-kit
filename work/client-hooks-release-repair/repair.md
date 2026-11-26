@@ -27,6 +27,25 @@ Build the fixture with `git archive HEAD _ask .agents/ask`. It exercises the
 committed source while excluding untracked or ignored environments and logs.
 The existing off-path projection assertions are unchanged.
 
+## Hook preservation regression
+
+The install journey with a pre-existing `.codex/hooks.json` containing only
+`PostToolUse` failed with `unowned destination collision`. The transaction
+comparison assumed the startup event already existed. Treat an absent event as
+an empty list, matching the hook merger. The focused regression covers both
+editors, preserving unrelated handlers and loading both registered commands.
+It failed before the production change.
+
+Access-preflight tests also exposed stale fixtures: the hook fixture omitted
+the shared bootstrap, the start-work fixture omitted its clean-check module,
+and a workspace-denial pattern also matched linked Git metadata. Correct the
+fixtures without changing access-check behavior. All five access tests pass.
+
+Add both suites to this source repository's mandatory CheckPlan and document
+client hook ownership and runtime trust. The original four CWH journeys pass
+at `5550dc86`; the expanded suite and aggregate will be rerun on the new commit.
+
 ## Verification
 
-Pending the focused rerun, hook journeys, and full release CheckPlan.
+The fixed off-path test passed in the original checkout in 4.92 seconds.
+Final expanded hook journeys and release CheckPlan are pending.

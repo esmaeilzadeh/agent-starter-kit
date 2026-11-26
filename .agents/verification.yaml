@@ -4,3 +4,10 @@ no_production_datastore: true
 adapters: []
 presets:
   - ask-kit
+checks:
+  - id: client-workflow-hooks
+    tier: mandatory
+    command: "python3 -m unittest discover -s _ask/tests -p 'test_client_workflow_hooks.py'"
+  - id: access-preflight
+    tier: mandatory
+    command: "python3 -m unittest discover -s _ask/tests -p 'test_access_check.py'"

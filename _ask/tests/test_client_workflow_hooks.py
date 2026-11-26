@@ -134,6 +134,24 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         self.assertEqual((target / ".codex/hooks.json").read_bytes(), prior)
         self.assertFalse((target / "ask").exists())
 
+    def test_install_preserves_hook_files_without_startup_events(self) -> None:
+        target = self.client("other-events-only")
+        (target / "nested").mkdir()
+        configurations = {
+            ".cursor": {"version": 1, "hooks": {"afterFileEdit": [{"command": "client-format"}]}},
+            ".codex": {"hooks": {"PostToolUse": [{"hooks": [{"type": "command", "command": "client-review"}]}]}},
+        }
+        for runtime, config in configurations.items():
+            (target / runtime).mkdir()
+            (target / runtime / "hooks.json").write_text(json.dumps(config))
+        result = self.install(target, "--skip-prepare")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for runtime, config in configurations.items():
+            installed = json.loads((target / runtime / "hooks.json").read_text())
+            for event, handlers in config["hooks"].items():
+                self.assertEqual(installed["hooks"][event], handlers)
+        self.assert_loaded(target)
+
     def test_upgrade_registers_hooks_for_previous_release_clients(self) -> None:
         target = self.client("upgrade")
         (target / "nested").mkdir()
