@@ -45,7 +45,7 @@ def _commit(root, ref):
 def _tree_entry(root, commit, path):
     result = _git(root, "ls-tree", "-z", commit, "--", path)
     if result.returncode:
-        return None
+        raise ValueError("committed tree is unreadable")
     for entry in result.stdout.split(b"\0"):
         if not entry:
             continue
@@ -59,7 +59,10 @@ def _tree_entry(root, commit, path):
 
 
 def _blob(root, commit, path):
-    entry = _tree_entry(root, commit, path)
+    try:
+        entry = _tree_entry(root, commit, path)
+    except ValueError:
+        return None, "unreadable-blob"
     if entry is None:
         return None, "missing-blob"
     mode, kind, oid = entry
@@ -122,17 +125,18 @@ def _local_workstreams(root):
 
 
 @lru_cache(maxsize=256)
-def _model_status(root, commit, work_id):
+def _model_status_fact(root, commit, work_id):
     _data, error = _blob(root, commit, f"work/{work_id}/engineering-model.json")
+    if error not in (None, "missing-blob", "unsafe-entry"):
+        raise ValueError("committed model is unreadable")
     return "available" if error is None else "missing"
 
 
-@lru_cache(maxsize=256)
-def _committed_ancestor(root, tip, default_commit):
-    result = _git(root, "merge-base", "--is-ancestor", tip, default_commit)
-    if result.returncode not in (0, 1):
-        raise ValueError("committed ancestry is unavailable")
-    return result.returncode == 0
+def _model_status(root, commit, work_id):
+    try:
+        return _model_status_fact(root, commit, work_id)
+    except ValueError:
+        return "missing"
 
 
 def discover_work(root):
@@ -166,15 +170,11 @@ def discover_work(root):
                 refs.setdefault(parts[1], []).append((name, tip.strip()))
 
     live, archived = {}, set()
+    unmerged = _git(root, "for-each-ref", f"--no-merged={default_commit}",
+                    "--format=%(objectname)", "refs/heads/agent", "refs/heads/maintenance")
+    unmerged_tips = set(_text(unmerged).splitlines()) if unmerged.returncode == 0 else set()
     for work_id, candidates in refs.items():
-        valid = []
-        for name, tip in candidates:
-            try:
-                ancestor = _committed_ancestor(root, tip, default_commit)
-            except ValueError:
-                continue
-            if not ancestor:
-                valid.append((name, tip))
+        valid = [(name, tip) for name, tip in candidates if tip in unmerged_tips]
         if valid:
             branch_name, tip = sorted(valid, key=lambda item: (item[0].count("/"), item[0]))[0]
             live[work_id] = (branch_name, tip)

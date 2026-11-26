@@ -139,6 +139,14 @@ class WorkbenchTests(unittest.TestCase):
         self.git("checkout", "main")
         self.git("merge", "--ff-only", "agent/pilot")
         self.assertEqual(discover_work(self.root)["workstreams"][0]["life"], "archived")
+        with patch.object(workbench_sources, "_blob", side_effect=[
+                (None, "unreadable-blob"), (b"{}", None)]):
+            tip = self.git("rev-parse", "HEAD")
+            self.assertEqual(workbench_sources._model_status(self.root, tip, "transient"), "missing")
+            self.assertEqual(workbench_sources._model_status(self.root, tip, "transient"), "available")
+        with patch.object(workbench_sources, "_git", return_value=subprocess.CompletedProcess([], 1)):
+            self.assertEqual(workbench_sources._blob(self.root, tip, "model.json"),
+                             (None, "unreadable-blob"))
 
     def test_standalone_maintenance_is_live_current_and_archived_without_feature_artifacts(self):
         self.write("README.md", "baseline\n")

@@ -58,10 +58,11 @@ repository verification plus expanded test results at the resulting commit.
 - The real-pilot benchmark updates a tracked admission-cache pointer. Restore
   its exact pre-test bytes with unittest cleanup, including after failed checks.
 - Real inventory profiling found 100 Git subprocesses per refresh. Cache only
-  model presence and ancestry keyed by repository and immutable commit IDs;
-  resolve refs and local cards anew. Regression: unchanged inventory reuses
+  model presence keyed by repository and immutable commit IDs; resolve refs,
+  ancestry (one Git batch) and local cards anew. Never cache transient read errors. Regression: unchanged inventory reuses
   facts while moved refs, removed/restored models and merges remain visible.
-  Real-repository measurements: 100 calls / 398 ms cold; 7 calls / 24–25 ms warm.
+  Real-repository baseline: 100 calls / 398 ms per refresh. Final measurements:
+  65 calls / 233 ms cold; 8 calls / 29 ms warm.
 
 ## Verification fixture provenance
 
