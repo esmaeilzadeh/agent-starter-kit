@@ -35,11 +35,12 @@ class ClientTests(unittest.TestCase):
         self.fake_python.write_text(
             '#!/usr/bin/env python3\n'
             'import json, os, sys\n'
+            'with open(os.environ["CAPTURE_ARGV"] + ".calls", "a") as calls: calls.write("call\\n")\n'
             'if sys.argv[1:] == ["-m", "streamlit", "--version"]:\n'
             '    print("Streamlit, version 1.59.2")\n'
             'else:\n'
             '    with open(os.environ["CAPTURE_ARGV"], "w") as output:\n'
-            '        json.dump(sys.argv[1:], output)\n',
+            '        json.dump((["-m", "streamlit"] + sys.argv[3:]) if sys.argv[1] == "-c" else sys.argv[1:], output)\n',
             encoding='utf-8',
         )
         self.fake_python.chmod(0o755)
@@ -111,6 +112,20 @@ class ClientTests(unittest.TestCase):
             result = self.run_fake(*invalid)
             self.assertNotEqual(result.returncode, 0, f'accepted {invalid!r}')
             self.assertFalse(self.capture.exists(), f'launched with {invalid!r}')
+
+    def test_startup_imports_streamlit_once(self):
+        result = self.run_fake('--server.port=8765')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(Path(str(self.capture) + '.calls').read_text().splitlines(), ['call'])
+
+    def test_missing_streamlit_has_actionable_error(self):
+        python = self.root / 'without-site-packages'
+        python.write_text(f'#!/bin/sh\nexec "{sys.executable}" -S "$@"\n')
+        python.chmod(0o755)
+        result = self.run_fake(ASK_PYTHON=str(python))
+        self.assertEqual(result.returncode, 127, result.stderr)
+        self.assertIn('Streamlit is unavailable', result.stderr)
+        self.assertIn('_ask/ui/requirements.txt', result.stderr)
 
     @staticmethod
     def listener_inodes(pid):

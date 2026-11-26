@@ -4,11 +4,6 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PYTHON_BIN="${ASK_PYTHON:-python3}"
 
-if ! "$PYTHON_BIN" -m streamlit --version >/dev/null 2>&1; then
-  echo "ask ui: Streamlit is unavailable; install _ask/ui/requirements.txt first." >&2
-  exit 127
-fi
-
 declare -a streamlit_args=()
 address_set=false
 while (($#)); do
@@ -53,4 +48,12 @@ if [[ "$address_set" == false ]]; then
   streamlit_args=("--server.address=127.0.0.1" "${streamlit_args[@]}")
 fi
 
-exec "$PYTHON_BIN" -m streamlit run "$ROOT/_ask/ui/streamlit_app.py" "${streamlit_args[@]}"
+exec "$PYTHON_BIN" -c '
+import sys
+try:
+    from streamlit.web.cli import main
+except ImportError:
+    print("ask ui: Streamlit is unavailable; install _ask/ui/requirements.txt first.", file=sys.stderr)
+    raise SystemExit(127)
+main(prog_name="streamlit")
+' run "$ROOT/_ask/ui/streamlit_app.py" "${streamlit_args[@]}"
