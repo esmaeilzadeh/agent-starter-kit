@@ -1,5 +1,5 @@
 {
-  "work_id": "",
+  "work_id": "dogfood-directory-persistence",
   "commit_sha": "9725d67e0cf515cecbc884ec8991fed7c0e4b30e",
   "checks": [
     {
@@ -19,5 +19,5 @@
     }
   ],
   "result": "pass",
-  "notes": "Focused operational verification; full ./ask verify is reserved for the final merged checkout."
+  "notes": "Focused operational verification passed. The frozen full verifier stopped before checks with migration_required: missing coordinator accepted-tests ref; formal record-result is blocked for the same reason."
 }
