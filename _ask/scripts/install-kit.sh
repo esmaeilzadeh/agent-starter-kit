@@ -36,8 +36,8 @@ if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" && "$DRY_RUN" -eq 0 ]]; then
   for rel in \
     _ask/agents _ask/bindings _ask/cursor-commands _ask/policies _ask/scripts \
     _ask/skills _ask/templates _ask/ui _ask/docs .agents/ask .agents/ask.local \
-    .agents/skills .cursor .codex/agents .claude/agents .opencode/agents \
-    .gitignore AGENTS.md ask .ask.env.example .ask; do
+    .agents/skills .cursor .codex/agents .codex/hooks.json .claude/agents .opencode/agents \
+    .gitignore ask .ask.env.example .ask; do
     args+=(--path "$rel")
   done
   args+=(-- bash "$ROOT/_ask/scripts/install-kit.sh")
@@ -73,7 +73,7 @@ copy_path() {
       excl+=(--exclude models.yaml)
     elif [[ "$rel" == ".cursor" ]]; then
       excl+=(--exclude /rules/local/)
-      if [[ -f "$dest/hooks.json" && "$FORCE" -eq 0 ]]; then
+      if [[ -f "$dest/hooks.json" ]]; then
         excl+=(--exclude /hooks.json)
       fi
     fi
@@ -111,8 +111,8 @@ for rel in \
   _ask/docs/adr/0017-humanizer-docs-specs.md \
   .agents/ask \
   .cursor \
+  .codex/hooks.json \
   .gitignore \
-  AGENTS.md \
   ask \
   .ask.env.example \
   .ask/README.md
@@ -137,6 +137,8 @@ if [[ -x "$TARGET/_ask/scripts/sync-cursor-binding.sh" ]]; then
   # itself. Generated runtime agents belong to the explicit install target.
   (cd "$TARGET" && ASK_ROOT="$TARGET" ASK_WORK_ID= ./_ask/scripts/sync-cursor-binding.sh)
 fi
+
+python3 "$TARGET/_ask/scripts/client-hooks.py" "$TARGET"
 
 python3 "$ROOT/_ask/scripts/client_ignores.py" "$TARGET" "$ROOT"
 

@@ -1,0 +1,20 @@
+{
+  "schema": "ask-accepted-tests/v1",
+  "capability": "ask-traceability/v1",
+  "contract_sha": "e7a2d0d2e7cbb6cae859cfbe396ab369791c63aa",
+  "work_id": "client-workflow-hooks",
+  "reviewer": "hook-spec-challenge-gpt-6-astra",
+  "recorded_by": "codex-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "plan_review": {
+    "decision": "APPROVED",
+    "reviewer": "hook-spec-challenge-gpt-6-astra",
+    "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+    "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18"
+  },
+  "plan_review_digest": "6041f5570fc14ecf0575a529f537c40eee9a0d2bc940a8f0f22a2dd362f0ca71",
+  "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+  "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+  "graph_digest": "ce79d210c04931844786af6f4334efbc5b231df8b90ebee8d6d30004a3421cdf"
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "ask-spec/v1",
+  "work_id": "client-workflow-hooks",
+  "revision": 1,
+  "criteria": [
+    {
+      "id": "CWH-001",
+      "given": "A fresh Git client checkout with no root AGENTS.md",
+      "when": "AskIt installs and the registered Cursor and Codex startup commands run",
+      "then": [
+        "The root AGENTS.md remains absent and the generated runtime files stay local",
+        "Both commands load the same kit-owned workflow after a successful access preflight",
+        "On access failure each command reports the blocked access and tells the agent to stop project work"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "CWH-002",
+      "given": "A client checkout with its own AGENTS.md and existing Cursor and Codex hooks",
+      "when": "AskIt is installed and installed again",
+      "then": [
+        "The client instructions and unrelated editor hook entries are preserved",
+        "Each editor has exactly one AskIt startup registration",
+        "Existing hook files that cannot be safely updated abort installation without replacing client settings"
+      ],
+      "verification_mode": "tests"
+    },
+    {
+      "id": "CWH-003",
+      "given": "A client checkout installed by the preceding AskIt release",
+      "when": "It is upgraded using the documented migration command",
+      "then": [
+        "Both editor startup commands load the new AskIt workflow",
+        "Existing client instructions and unrelated hooks are preserved"
+      ],
+      "verification_mode": "tests"
+    }
+  ]
+}

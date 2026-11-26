@@ -44,7 +44,7 @@ if [[ "${ASKIT_TRANSACTION_ACTIVE:-0}" != "1" ]]; then
     _ask/skills _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts \
     _ask/tests _ask/docs _ask/cursor-commands _ask/bindings _ask/OWNED-PATHS.md \
     _ask/MAPPING.md _ask/README.md .agents/ask .agents/ask.local .agents/skills \
-    .cursor .codex/agents .claude/agents .opencode/agents .gitignore ask \
+    .cursor .codex/agents .codex/hooks.json .claude/agents .opencode/agents .gitignore ask \
     ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md; do
     args+=(--path "$rel")
   done
@@ -95,6 +95,7 @@ done
 
 # Refresh kit-owned trees
 for rel in _ask/skills _ask/guide _ask/spec _ask/agents _ask/templates _ask/scripts _ask/tests _ask/docs _ask/cursor-commands _ask/bindings .agents/ask \
+           .cursor/hooks/access-preflight.sh .cursor/rules/starter-kit-bootstrap.mdc \
            ai-agent-engineering-guide.md ai-agent-starter-kit-spec.md _ask/OWNED-PATHS.md _ask/MAPPING.md _ask/README.md ask; do
   if [[ -e "$TMP/kit/$rel" ]]; then
     mkdir -p "$ROOT/$(dirname "$rel")"
@@ -120,6 +121,7 @@ if [[ "$SKIP_PREPARE" -eq 0 ]]; then
   SKIP_INSTALL="${SKIP_INSTALL:-0}" "$ROOT/_ask/skills/prepare-skills.sh"
 fi
 "$ROOT/_ask/scripts/sync-cursor-binding.sh"
+python3 "$ROOT/_ask/scripts/client-hooks.py" "$ROOT"
 if [[ -x "$ROOT/askit" && -f "$ROOT/_ask/OWNED-PATHS.md" ]]; then
   python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --update-ignore
   python3 "$ROOT/_ask/scripts/sync-codex-skills.py" --check-trackability

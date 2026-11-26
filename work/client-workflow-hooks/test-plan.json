@@ -1,0 +1,181 @@
+{
+  "schema": "ask-test-plan/v1",
+  "work_id": "client-workflow-hooks",
+  "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+  "obligations": [
+    {
+      "criterion_id": "CWH-001",
+      "required_types": [
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CWH-002",
+      "required_types": [
+        "integration",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "CWH-003",
+      "required_types": [
+        "e2e"
+      ]
+    }
+  ],
+  "runners": [
+    {
+      "id": "client-hook-journeys",
+      "adapter": "unittest",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "_ask/tests",
+        "-p",
+        "test_client_workflow_hooks.py"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "CWH-T01",
+      "criterion_ids": [
+        "CWH-001"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A new client without AGENTS.md",
+        "when": "Install AskIt and invoke the configured hooks with both access outcomes",
+        "then": [
+          "Root AGENTS.md stays absent, stock hook config is ignored, and the Cursor fallback points to kit-owned guidance",
+          "Registered Cursor and Codex commands deliver the shared workflow on successful preflight",
+          "Both responses report the blocked path and stop instruction on failed preflight"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CWH-001",
+          "checks": [
+            "Root AGENTS.md stays absent, stock hook config is ignored, and the Cursor fallback points to kit-owned guidance",
+            "Registered Cursor and Codex commands deliver the shared workflow on successful preflight",
+            "Both responses report the blocked path and stop instruction on failed preflight"
+          ]
+        }
+      ],
+      "runner_id": "client-hook-journeys",
+      "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+      "source_paths": [
+        "_ask/tests/test_client_workflow_hooks.py"
+      ]
+    },
+    {
+      "id": "CWH-T02",
+      "criterion_ids": [
+        "CWH-002"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A client has its own AGENTS.md and hook definitions for both editors",
+        "when": "Install twice, including force reinstall",
+        "then": [
+          "Client AGENTS.md bytes are unchanged",
+          "The runtime configs retain the unrelated client entries",
+          "A single AskIt session-start entry remains in each config"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CWH-002",
+          "checks": [
+            "Client AGENTS.md bytes are unchanged",
+            "The runtime configs retain the unrelated client entries",
+            "A single AskIt session-start entry remains in each config"
+          ]
+        }
+      ],
+      "runner_id": "client-hook-journeys",
+      "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+      "source_paths": [
+        "_ask/tests/test_client_workflow_hooks.py"
+      ]
+    },
+    {
+      "id": "CWH-T03",
+      "criterion_ids": [
+        "CWH-002"
+      ],
+      "type": "integration",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A client has a malformed or unsupported editor hook file",
+        "when": "Install AskIt",
+        "then": [
+          "The installer fails with a hook configuration diagnostic",
+          "The existing hook bytes stay unchanged and the kit runtime is not published"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CWH-002",
+          "checks": [
+            "The installer fails with a hook configuration diagnostic",
+            "The existing hook bytes stay unchanged and the kit runtime is not published"
+          ]
+        }
+      ],
+      "runner_id": "client-hook-journeys",
+      "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+      "source_paths": [
+        "_ask/tests/test_client_workflow_hooks.py"
+      ]
+    },
+    {
+      "id": "CWH-T04",
+      "criterion_ids": [
+        "CWH-003"
+      ],
+      "type": "e2e",
+      "change_kind": "new",
+      "scenario": {
+        "given": "A client checkout has the previous AskIt release and client settings",
+        "when": "Use the documented upgrade entry point against a reviewed candidate",
+        "then": [
+          "The registered commands load the replacement workflow for both runtimes",
+          "Client instructions and unrelated editor hooks survive migration",
+          "Repeating the upgrade preserves one AskIt startup registration per editor"
+        ]
+      },
+      "expected_assertions": [
+        {
+          "criterion_id": "CWH-003",
+          "checks": [
+            "The registered commands load the replacement workflow for both runtimes",
+            "Client instructions and unrelated editor hooks survive migration",
+            "Repeating the upgrade preserves one AskIt startup registration per editor"
+          ]
+        }
+      ],
+      "runner_id": "client-hook-journeys",
+      "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+      "source_paths": [
+        "_ask/tests/test_client_workflow_hooks.py"
+      ]
+    }
+  ],
+  "task_scopes": [
+    {
+      "task_id": "CWH-01",
+      "test_ids": [
+        "CWH-T01",
+        "CWH-T02",
+        "CWH-T03",
+        "CWH-T04"
+      ]
+    }
+  ]
+}

@@ -12,6 +12,7 @@ echo x > README.md
 git add README.md && git commit -q -m init
 mkdir -p _ask/scripts work/demo/inner-loop
 cp "$ROOT/_ask/scripts/check-clean-worktree.sh" "$ROOT/_ask/scripts/check-workstream.sh" _ask/scripts/
+cp "$ROOT/_ask/scripts/client_ignores.py" _ask/scripts/
 cp -r "$ROOT/_ask/scripts/engineering_model" _ask/scripts/
 cp -r "$ROOT/_ask/scripts/inner_loop" _ask/scripts/
 mkdir -p .agents

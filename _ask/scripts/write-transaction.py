@@ -325,6 +325,25 @@ def shared_ignore_update(before: bytes, after: bytes) -> bool:
         return False
 
 
+def shared_hook_update(name: str, before: bytes, after: bytes) -> bool:
+    event = "sessionStart" if name == ".cursor/hooks.json" else "SessionStart"
+
+    def client_handlers(raw):
+        try:
+            config = json.loads(raw)
+            handlers = config["hooks"][event]
+            if name == ".cursor/hooks.json":
+                return [entry for entry in handlers
+                        if entry.get("command") != ".cursor/hooks/access-preflight.sh"]
+            return [entry for entry in handlers
+                    if not any(item.get("type") == "command" and "session-start.py" in item.get("command", "")
+                               for item in entry.get("hooks", []))]
+        except (KeyError, TypeError, ValueError):
+            return None
+
+    return client_handlers(before) is not None and client_handlers(before) == client_handlers(after)
+
+
 def prepared_skill_outputs(root: Path, stage: Path, changes: list[str]) -> set[str]:
     from distribution import read_manifest
 
@@ -382,13 +401,16 @@ def publish(root: Path, stage: Path, paths: list[Path], *, refresh_prepared_skil
         new = after.get(name)
         shared_ignore = bool(name == '.gitignore' and prior and new and prior[1] == new[1]
                              and shared_ignore_update(target.read_bytes(), (stage / rel).read_bytes()))
-        if prior and not shared_ignore and name not in prepared_outputs:
+        shared_hook = bool(name in {".cursor/hooks.json", ".codex/hooks.json"} and prior and new
+                           and prior[1] == new[1]
+                           and shared_hook_update(name, target.read_bytes(), (stage / rel).read_bytes()))
+        if prior and not shared_ignore and not shared_hook and name not in prepared_outputs:
             recorded = known.get(name)
             if recorded is not None and recorded != {"sha256": prior[0], "mode": prior[1]}:
                 fail(f"installed file was edited since the last update: {target}")
             if recorded is None and not generated(target, name):
                 fail(f"unowned destination collision: {target}")
-        if shared_ignore or name in prepared_outputs:
+        if shared_ignore or shared_hook or name in prepared_outputs:
             next_files.pop(name, None)
         elif new:
             next_files[name] = {"sha256": new[0], "mode": new[1]}

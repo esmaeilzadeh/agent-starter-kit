@@ -1,0 +1,160 @@
+{
+  "schema": "ask-recorded-test-review/v1",
+  "recorded_by": "codex-coordinator",
+  "policy": "_ask/policies/delegation.md",
+  "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+  "contract_digest": "0009e2b134d82b63ff362f7d59b94db6eed3352143cc7a91d87470cf36756224",
+  "review_digest": "d697d0bdd822792e3dc3344e404ae89754024d189c2193435e668f84ebe8c87f",
+  "review": {
+    "schema": "ask-test-review/v2",
+    "work_id": "client-workflow-hooks",
+    "reviewer": "/root/hook_candidate_review",
+    "recorded_by": "codex-coordinator",
+    "model": "gpt-6-luna",
+    "runtime": "codex",
+    "parent_model": "gpt-6-luna",
+    "scope": "workstream",
+    "task_id": null,
+    "candidate_sha": "e4d18265c53867bc9cff4cf834623f4e966cd5fb",
+    "base_sha": "e7a2d0d2e7cbb6cae859cfbe396ab369791c63aa",
+    "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+    "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+    "test_ids": [
+      "CWH-T01",
+      "CWH-T02",
+      "CWH-T03",
+      "CWH-T04"
+    ],
+    "criterion_ids": [
+      "CWH-001",
+      "CWH-002",
+      "CWH-003"
+    ],
+    "source_digests": {
+      "_ask/tests/test_client_workflow_hooks.py": "c97511bdc5a9179f4d95218e2aa52ed1484824b991e1a24e17b21a41e5e87ab3"
+    },
+    "inspected_sources": [
+      "_ask/scripts/client-hooks.py",
+      "_ask/scripts/client_ignores.py",
+      "_ask/scripts/session-start.py",
+      "_ask/scripts/write-transaction.py",
+      "_ask/tests/test_client_workflow_hooks.py"
+    ],
+    "changed_cases": [
+      "CWH-T01",
+      "CWH-T02",
+      "CWH-T03",
+      "CWH-T04"
+    ],
+    "inventory_exclusions": {},
+    "inventory_exclusion_assessment": "No exclusions: all five changed Python sources were inspected; the only changed test source contains four cases, all mapped to the accepted test plan, with no unmapped cases.",
+    "decision": "APPROVED",
+    "boundary": "ok",
+    "criteria": [
+      {
+        "id": "CWH-001",
+        "coverage_decision": "APPROVED",
+        "assessment": "Fresh installation leaves root AGENTS.md absent, loads the same kit-owned workflow in both editors on successful preflight, and instructs both runtimes to stop and report the blocked path when access fails.",
+        "type_adequacy": {
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "The disposable Git client invokes the installed Cursor and nested-directory Codex handlers, checks both native response envelopes on success and failure, and verifies the Cursor fallback rule."
+          }
+        }
+      },
+      {
+        "id": "CWH-002",
+        "coverage_decision": "APPROVED",
+        "assessment": "First install and force reinstall preserve client instructions and unrelated editor hooks, retain handler order, and leave one AskIt startup entry per editor. Unsupported Codex hook configuration is rejected transactionally with prior bytes intact and no partial runtime publication.",
+        "type_adequacy": {
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "CWH-T02 exercises ordinary and force installation over pre-existing Cursor and Codex handlers and checks preservation, ordering, and uniqueness."
+          },
+          "integration": {
+            "decision": "APPROVED",
+            "assessment": "CWH-T03 runs through the installation transaction and checks the malformed-configuration diagnostic, unchanged input bytes, and absent runtime after refusal."
+          }
+        }
+      },
+      {
+        "id": "CWH-003",
+        "coverage_decision": "APPROVED",
+        "assessment": "The documented upgrade from v2.0.1 loads the replacement workflow for both runtimes, preserves client instructions and unrelated handlers, and remains idempotent on a second upgrade.",
+        "type_adequacy": {
+          "e2e": {
+            "decision": "APPROVED",
+            "assessment": "A disposable v2.0.1 client with existing editor handlers is upgraded twice through the documented upgrader; the test invokes both installed commands and checks preserved entries, order, and one AskIt registration each."
+          }
+        }
+      }
+    ],
+    "tests": [
+      {
+        "id": "CWH-T01",
+        "decision": "APPROVED",
+        "assertion_assessment": "Asserts fresh install creates no root AGENTS.md, both installed handlers deliver the same workflow on success, Cursor fallback points to kit-owned guidance, and both native envelopes report the blocked path plus STOP on access failure.",
+        "counterexample": "If Cursor or Codex omitted the access failure path or STOP instruction, its failure-envelope assertions would fail; creating a root AGENTS.md also fails the install assertion.",
+        "tdd_continuity_assessment": "The current test source digest is identical in Red d6727bbd and integrated workstream Green 5a30bd8. T01 passes in both; Red targets the force-install behavior in T02. Earlier initial Red runs recorded T01 failures before implementation. The integrated candidate's exact final Green passes T01."
+      },
+      {
+        "id": "CWH-T02",
+        "decision": "APPROVED",
+        "assertion_assessment": "Starts with client AGENTS.md and unrelated hooks in both editors, performs normal and force installation, then asserts client entries and order remain and exactly one AskIt entry exists per editor.",
+        "counterexample": "Overwriting the Cursor registry on force install removes the client handler and fails the preservation assertion; duplicate registrations fail the exact-count assertion.",
+        "tdd_continuity_assessment": "Red d6727bbd at c97dc041 fails T02 by behavior assertion because force install does not preserve the client Cursor hook. The same test-file digest c97511bd is used by integrated candidate e4d1826; exact workstream Green 5a30bd8 passes T02."
+      },
+      {
+        "id": "CWH-T03",
+        "decision": "APPROVED",
+        "assertion_assessment": "The malformed SessionStart configuration must produce a hook diagnostic, preserve the exact prior bytes, and leave the kit runtime unpublished.",
+        "counterexample": "Accepting or replacing the malformed registry changes its bytes or leaves the runtime installed, violating the failure-state assertions.",
+        "tdd_continuity_assessment": "The malformed-config test method is unchanged from initial Red candidate 138abfd, where it failed by behavior assertion. It is also byte-identical in current Red d6727bbd and final Green 5a30bd8; both execute and pass it on the fully implemented candidate."
+      },
+      {
+        "id": "CWH-T04",
+        "decision": "APPROVED",
+        "assertion_assessment": "Migrates a v2.0.1 checkout with client-owned instructions and handlers in both editors, invokes the documented upgrader twice, and checks the new workflow, preserved handler bytes/order, and exactly one AskIt registration per runtime.",
+        "counterexample": "Leaving the v2.0.1 Cursor adapter active fails the workflow assertion; removing client handlers fails preservation assertions; duplicating a registration on the second upgrade fails the count assertion.",
+        "tdd_continuity_assessment": "The expanded current T04 method is identical in Red d6727bbd and integrated Green 5a30bd8, and passes in both. Earlier Red b2f017b0 recorded the original v2.0.1 migration failure using the earlier test method. No claim is made that every expanded assertion independently failed Red; current Red and Green execute identical test bytes, and T02 supplies the behavior Red for the final implementation."
+      }
+    ],
+    "findings": [],
+    "limitations": [
+      "The workstream final-green evidence is current and passes all four accepted behavior cases; outer ./ask verify and workstream acceptance are separate gates and remain unevaluated by this semantic review.",
+      "The disposable runner invokes installed commands but does not smoke-test actual Cursor or Codex editor startup. Codex project-hook trust and shell prerequisites remain as stated in the approved intent.",
+      "The prior task-scoped recorded semantic review remains preserved at work/client-workflow-hooks/traceability/reviews/4ee61cb178d101cb3c71edecba643021ca8417a2.json."
+    ],
+    "execution_evidence": {
+      "d6727bbd3b444061ba843b7ad4b97b9c": {
+        "candidate_sha": "c97dc04183f1f99a2cf834e5d08513cba23a7e7d",
+        "phase": "red",
+        "report_file_sha256": "2709f37ce4a6c1f942ba52b2e74a6b2655916e9ce37f94dcf317af1656e22ee5",
+        "output_artifact": "work/client-workflow-hooks/traceability/runs/d6727bbd3b444061ba843b7ad4b97b9c/69c180dbf0f64ab6a1c17088a0c33bab.log",
+        "output_digest": "968aa44968592125465318109610d37e13561fa2a2a86c80a7af755b6c9ab308",
+        "outcomes": {
+          "CWH-T01": "passed",
+          "CWH-T02": "failed: behavior_assertion",
+          "CWH-T03": "passed",
+          "CWH-T04": "passed"
+        }
+      },
+      "5a30bd8ce2ed46018723ccdf13bd31e4": {
+        "candidate_sha": "e4d18265c53867bc9cff4cf834623f4e966cd5fb",
+        "phase": "final_green",
+        "report_file_sha256": "5afa61593f9930a01d66cd57a53bcd04f2e6be9af145e96b53bf96c3f11739b3",
+        "output_artifact": "work/client-workflow-hooks/traceability/runs/5a30bd8ce2ed46018723ccdf13bd31e4/f94144e487014270a9f3ff27cab9c12d.log",
+        "output_digest": "c7227149576a05dabdae190ff73c30b652d05156e4ca06773afc1700350acb75",
+        "outcomes": {
+          "CWH-T01": "passed",
+          "CWH-T02": "passed",
+          "CWH-T03": "passed",
+          "CWH-T04": "passed"
+        }
+      }
+    }
+  },
+  "candidate_sha": "e4d18265c53867bc9cff4cf834623f4e966cd5fb",
+  "scope": "workstream",
+  "task_id": null
+}

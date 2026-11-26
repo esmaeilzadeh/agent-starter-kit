@@ -1,0 +1,487 @@
+{
+  "attempt_history": [],
+  "attempt_id": "CWH-01:attempt-1",
+  "checkpoint_sha": "89fb45ee4739251800a11cf8447fe719b046a261",
+  "integration": {
+    "candidate_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+    "result": "pass",
+    "resulting_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+    "traceability_run_ids": [
+      "718503be561b47eaa34062d2e4d3d9ac"
+    ],
+    "tree_sha": "236d42615094a72810e685ef2ced8a84ca23f479"
+  },
+  "recovery": [],
+  "reviews": [
+    {
+      "base_sha": "86ea1616da99fbc44d5b5c57e42163c227d4b536",
+      "boundary": "ok",
+      "candidate_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+      "evidence": "work/client-workflow-hooks/inner-loop/evidence/CWH-01-review.md",
+      "evidence_digest": "93a40651eca1f5eea5087e072ea4cc538a6810ecf3c72a1953a90a7181a8ed43",
+      "policy_digest": "ee0c1a79fe2e2b1cd7db1897f49a90c2e8af50830646e68514eadcd43ce27e46",
+      "result_digest": "28bd15948ab9f55617a95714a290a07ddcbd6b1ce7939f35a678f0f5c48f12fb",
+      "reviewer": "kit-07-review-gpt-6-luna",
+      "verdict": "APPROVED"
+    }
+  ],
+  "runs": [
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "138abfd0345aed9fe9b77e79a96cc984ac9b93d6",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "138abfd0345aed9fe9b77e79a96cc984ac9b93d6",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "138abfd0345aed9fe9b77e79a96cc984ac9b93d6",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "138abfd0345aed9fe9b77e79a96cc984ac9b93d6",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": "setup_or_runtime_error",
+          "outcome": "error",
+          "source_sha": "138abfd0345aed9fe9b77e79a96cc984ac9b93d6",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "b60e34b8b3f0d0dc87324b2876eca6ebaab7a273f57374eff82e943bbbbfc776",
+      "phase": "red",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "705706f6c9a744968069342bde468f09",
+      "scope": "workstream",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": null
+    },
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "392390c2f2c0fdce7732431d338e9fc9122d98ea",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "392390c2f2c0fdce7732431d338e9fc9122d98ea",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "392390c2f2c0fdce7732431d338e9fc9122d98ea",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "392390c2f2c0fdce7732431d338e9fc9122d98ea",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "392390c2f2c0fdce7732431d338e9fc9122d98ea",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "3b843299c4604a0063892ded540d5a69728fc2d76ea79c62fbbe9441360cdaa9",
+      "phase": "red",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "8058724bb3ef4b1fbc484249b01e0bac",
+      "scope": "workstream",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": null
+    },
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "0649401eb4929413959e7bb6c34581017facdc3fd6b6aec7a556c2a8935fa3c9",
+      "phase": "final_green",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "1a9cbae550c442bb838481cce15d8696",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "8b4bbf0ad1b5caba695fba263113b429ce43ec19",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "fdcc30e2d299fea41ceb3599ab20345f2e5127a0bd0bad57fed544329a06af82",
+      "phase": "red",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "b2f017b0b0e94fa5b535f1dc807e5445",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "dff961b8539cd166c73d96f994605eb9f1679a28",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "dff961b8539cd166c73d96f994605eb9f1679a28",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "dff961b8539cd166c73d96f994605eb9f1679a28",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "dff961b8539cd166c73d96f994605eb9f1679a28",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "dff961b8539cd166c73d96f994605eb9f1679a28",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "a3704572d9a32d3b7c4c7c1c4f33b03f40d88d3fc77c6537f822036c65649e5a",
+      "phase": "final_green",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "f5221bacade141ec89093e76e356d24c",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    },
+    {
+      "attribution": "historical-unattached",
+      "candidate_sha": "68588884dd74877571e107687ddd95408771493c",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "d16217234f9f89f5523d386ea83b5580ba2ae2714d2d5eba6b4d5f0298590524",
+      "phase": "final_green",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "2e9ac2cba5b54a71ad49c113e6c615c7",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "68588884dd74877571e107687ddd95408771493c",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "68588884dd74877571e107687ddd95408771493c",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "6a2591887cca59ba14a1f08aa7c8ad2085a970efa017fd5fbeba06a5cbcc47f6",
+      "phase": "final_green",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "2fe61934fc41460590c4bb9f074fbad5",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "c97dc04183f1f99a2cf834e5d08513cba23a7e7d",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "c97dc04183f1f99a2cf834e5d08513cba23a7e7d",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "c97dc04183f1f99a2cf834e5d08513cba23a7e7d",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": "behavior_assertion",
+          "outcome": "failed",
+          "source_sha": "c97dc04183f1f99a2cf834e5d08513cba23a7e7d",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "c97dc04183f1f99a2cf834e5d08513cba23a7e7d",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "0ce2418e733fcc517b5d0b9bb3b0fc70d1488086bcea2257a4ac78ef3ab39a9b",
+      "phase": "red",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "d6727bbd3b444061ba843b7ad4b97b9c",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    },
+    {
+      "attribution": "attempt-recorded",
+      "candidate_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+      "cases": [
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_fresh_install_loads_workflow_in_both_runtimes",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+          "test_id": "CWH-T01"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_malformed_hook_configuration_aborts_install",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+          "test_id": "CWH-T03"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_reinstall_preserves_client_instructions_and_hooks",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+          "test_id": "CWH-T02"
+        },
+        {
+          "case_id": "test_client_workflow_hooks.ClientWorkflowHooksTests.test_upgrade_registers_hooks_for_previous_release_clients",
+          "failure_kind": null,
+          "outcome": "passed",
+          "source_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+          "test_id": "CWH-T04"
+        }
+      ],
+      "digest": "3602ab20e6ac9201b002a866803f312c9e04af561f36532ae2d8b6ed284824c8",
+      "phase": "final_green",
+      "plan_digest": "97cf5960adb502f6893e6e591decf52637964a43416bdb778d43c6e2b1012d18",
+      "run_id": "718503be561b47eaa34062d2e4d3d9ac",
+      "scope": "task",
+      "spec_digest": "159b017568002b18ba465c5dd6ca9684e6e9457e78ca3fa2707ac154f7dedfc8",
+      "task_id": "CWH-01"
+    }
+  ],
+  "schema": "ask-task-milestone/v1",
+  "source_base_sha": "86ea1616da99fbc44d5b5c57e42163c227d4b536",
+  "source_candidate_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+  "status": "integrated",
+  "submissions": [
+    {
+      "base_sha": "86ea1616da99fbc44d5b5c57e42163c227d4b536",
+      "candidate_sha": "68588884dd74877571e107687ddd95408771493c",
+      "notes_sha256": "2466e58e22bbb9eacaa57cab90b23a8dc9a18f9f5db84b91ad1df665e249d719",
+      "sha256": "0b7dc07ff4df1499ca258d0b6ffb8e97e6a27de4cc325a5155bf395b70a07d9d",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0,
+          "run_id": "2fe61934fc41460590c4bb9f074fbad5"
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1,
+          "run_id": "b2f017b0b0e94fa5b535f1dc807e5445"
+        }
+      }
+    },
+    {
+      "base_sha": "86ea1616da99fbc44d5b5c57e42163c227d4b536",
+      "candidate_sha": "dff961b8539cd166c73d96f994605eb9f1679a28",
+      "notes_sha256": "968b6da2afb52074ca82bd777649f1139d3e7dc99a9594b48b14cc7fc10c776d",
+      "sha256": "e6e2a51dac4739b6a24325d67ec622762475061114c56d3bb667ca018ae6ee66",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0,
+          "run_id": "f5221bacade141ec89093e76e356d24c"
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1,
+          "run_id": "b2f017b0b0e94fa5b535f1dc807e5445"
+        }
+      }
+    },
+    {
+      "base_sha": "86ea1616da99fbc44d5b5c57e42163c227d4b536",
+      "candidate_sha": "4ee61cb178d101cb3c71edecba643021ca8417a2",
+      "notes_sha256": "00e406c74ccc2421eb1befd49493b25cc00ef043a7ae95a88702e8954b21e2c4",
+      "sha256": "28bd15948ab9f55617a95714a290a07ddcbd6b1ce7939f35a678f0f5c48f12fb",
+      "tdd": {
+        "green": {
+          "continuity_reference_sha256": null,
+          "exit_code": 0,
+          "run_id": "718503be561b47eaa34062d2e4d3d9ac"
+        },
+        "red": {
+          "continuity_reference_sha256": null,
+          "exit_code": 1,
+          "run_id": "d6727bbd3b444061ba843b7ad4b97b9c"
+        }
+      }
+    }
+  ],
+  "supporting_artifacts": [
+    {
+      "path": "work/client-workflow-hooks/inner-loop/evidence/CWH-01-result-6858888.json",
+      "sha256": "0b7dc07ff4df1499ca258d0b6ffb8e97e6a27de4cc325a5155bf395b70a07d9d"
+    },
+    {
+      "path": "work/client-workflow-hooks/inner-loop/evidence/CWH-01-result-dff961b.json",
+      "sha256": "e6e2a51dac4739b6a24325d67ec622762475061114c56d3bb667ca018ae6ee66"
+    },
+    {
+      "path": "work/client-workflow-hooks/inner-loop/evidence/CWH-01-review-68588884-rejected.md",
+      "sha256": "9a556ab49852bb0b146aadd5a57f27cff8d329959742d653895e8a8c66f84d64"
+    },
+    {
+      "path": "work/client-workflow-hooks/inner-loop/evidence/CWH-01-review.md",
+      "sha256": "93a40651eca1f5eea5087e072ea4cc538a6810ecf3c72a1953a90a7181a8ed43"
+    },
+    {
+      "path": "work/client-workflow-hooks/inner-loop/evidence/CWH-01-review.md",
+      "sha256": "9a556ab49852bb0b146aadd5a57f27cff8d329959742d653895e8a8c66f84d64"
+    },
+    {
+      "path": "work/client-workflow-hooks/inner-loop/results/CWH-01.json",
+      "sha256": "28bd15948ab9f55617a95714a290a07ddcbd6b1ce7939f35a678f0f5c48f12fb"
+    }
+  ],
+  "task_id": "CWH-01",
+  "work_id": "client-workflow-hooks"
+}
