@@ -2,18 +2,18 @@
 
 # 31. Minimal complete example
 
-## 31.1 Foggy / R&D first (Explore)
+## 31.1 Missing evidence (Explore)
 
 For a large unclear effort `payments-v2`:
 
 ```text
 Human
-  → foggy destination
+  → knowledge gaps about payment providers and the existing system
 
 00 Explore
   → work/payments-v2/explore-map.md
-  → research + grilling tickets
-  → DESTINATION_CLEAR handoff
+  → documented research and experiments
+  → evidence and remaining human decisions for Grill
 
 01 Grill
   → work/payments-v2/intent.md
@@ -21,7 +21,7 @@ Human
 … then continue as in 31.2
 ```
 
-## 31.2 Clear intent (skip Explore)
+## 31.2 Sufficient evidence (skip Explore)
 
 For `cancel-order`:
 
@@ -163,11 +163,11 @@ This repository uses the AI Engineering Starter Kit.
 
 Protocol SoT: `.agents/ask/` (stages, bindings, verification). `_ask/agents` are pointers.
 
-If the destination is foggy:
-- run 00 Explore (kit stage — not Cursor’s built-in Explore subagent) until handoff is clear;
-- prepare Community Skills from .agents/ask.local/skills/manifest.yaml (do not vendor by default).
-If the destination is already clear: omit 00; do not write explore-map.md; record the skip in intent.md.
-Free on-path chat: announce foggy vs clear, then offer **Start Explore** / **Start Grill** as selectable choices. `/00-explore` starts Explore immediately.
+Classify features, bugs, investigation, review, and maintenance through the workflow policy.
+Use 00 Explore for missing facts and 01 Grill for goals, assumptions, or tradeoffs.
+Use either or both as needed; standalone research/review ends with its report.
+When feature evidence is sufficient, omit Explore and its map; record the skip in intent.
+Prepare required pinned Community Skills from .agents/ask.local/skills/manifest.yaml.
 
 Before independent Engineering Pipeline work:
 - invoke kit operations via `./ask` (not a generic root scripts/ folder);

@@ -212,11 +212,14 @@ Not simply by number of changed lines.
 
 An agent should not merely know what to do. It should know **when not to continue**.
 
-For consequential decisions with material uncertainty, consult the active
-runtime's verified model-confidence ladder before asking the human. Continue
-within existing authority only above 90% subjective confidence. Model
-consultation never supplies human authority or replaces required independent
-review or verification; see `_ask/policies/delegation.md` for the ladder.
+Identify what is missing first. Gather facts through documentation, code
+inspection, reproduction, or experiments. Ask the human for preferences and
+authority. For technical judgment over sufficient evidence, use the active
+runtime's verified consultation ladder at 90% subjective confidence or below.
+Confidence supports the assessment; it cannot replace evidence or permission.
+Consultation can reveal a need for further investigation and cannot replace
+independent review or verification. See
+`_ask/policies/workflow.md#model-confidence-escalation`.
 
 Typical escalation triggers:
 

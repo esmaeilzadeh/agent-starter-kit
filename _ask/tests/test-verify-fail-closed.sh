@@ -67,4 +67,35 @@ printf '%s\n' "$out" | grep -qi 'isolation leak' || {
   exit 1
 }
 
+# Standalone maintenance uses repository checks without feature artifacts.
+git -C "$TMP" checkout -qb maintenance/structure
+cat > "$TMP/.agents/verification.yaml" <<'YAML'
+schema: ask-checkplan/v1
+no_production_datastore: true
+checks:
+  - id: preserved-invariant
+    tier: mandatory
+    command: python3 check.py
+YAML
+printf '%s\n' 'def total(values): return sum(values)' > "$TMP/calculator.py"
+printf '%s\n' 'from calculator import total' 'assert total([]) == 0' 'assert total([1, -2, 3]) == 2' > "$TMP/check.py"
+git -C "$TMP" add .agents/verification.yaml calculator.py check.py
+git -C "$TMP" commit -qm 'preserve total behavior during maintenance'
+env -u ASK_WORK_ID ASK_ROOT="$TMP" VERIFY_OUT_DIR="$TMP" "$ROOT/_ask/scripts/verify.sh" > "$TMP/maintenance.log" 2>&1 || {
+  cat "$TMP/maintenance.log" >&2
+  exit 1
+}
+python3 - "$TMP" <<'PY'
+import json
+from pathlib import Path
+import subprocess
+import sys
+root = Path(sys.argv[1])
+result = json.loads((root / 'verification-result.json').read_text())
+assert result['result'] == 'pass', result
+assert result['commit_sha'] == subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
+assert not (root / 'specs').exists()
+assert not (root / 'work').exists()
+PY
+
 echo "PASS: verify fail-closed; ask-kit named; no language CLIs in core"

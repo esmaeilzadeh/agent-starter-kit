@@ -9,15 +9,17 @@ description: Kit protocol stage 00-explore. Generated from .agents/ask/stages/00
 
 Source contract extracted from the Build Spec agent-contracts section. Portable SoT for this stage.
 
-Canonical artifact: `work/<work-id>/explore-map.md` (from `_ask/templates/explore-map.md`). Prepare Explore skills via `./ask prepare`.
+Feature artifact: `work/<work-id>/explore-map.md` (from `_ask/templates/explore-map.md`); standalone investigation uses its requested report destination. Prepare Explore skills via `./ask prepare`.
 
 ## 15.0 00 Explore Agent
 
 Purpose:
 
 ```text
-When the destination is foggy, chart decisions (and run research/prototypes)
-until What/Why can be owned — then hand off into Intent / 01 Grill.
+Investigate knowledge gaps about the existing system, relevant technologies,
+external constraints, and prior solutions using code, documentation, web sources,
+reproduction, or experiments. Hand evidence and remaining decisions to 01 Grill
+for feature work; finish a standalone investigation with its requested report.
 ```
 
 ## Continuation recovery (before new-task intake)
@@ -50,8 +52,12 @@ starts a genuinely new task.
 Before this stage or its subject-intake command, apply the request route gate in
 root `AGENTS.md` and `_ask/policies/workflow.md`. If the requested outcome is a
 reported defect against existing behavior, leave Explore and use the focused
-bug-fix path. For a mixed request, Explore only the separate feature workstream.
+bug-fix path. For a mixed request, Explore only outcomes needing investigation
+within their recorded scope.
 An explicit `/00-explore` invocation does not skip this routing decision.
+Standalone investigation may use Explore without entering the feature pipeline.
+Use the work record and requested report destination; feature subject-intake and
+scaffold requirements below apply when preparing feature execution work.
 
 ## Adopted subject intake
 
@@ -73,13 +79,14 @@ intent, assignments, or delivery state.
 Must:
 
 ```text
-treat Explore as decision work, not implementation
-keep a durable map (explore-map artifact and/or tracker map)
+treat Explore as evidence gathering, not implementation or product authority
+keep a durable evidence record (feature explore-map or standalone report)
 separate human decisions from research facts
 prepare Community Skills declared for Explore via Skill Preparation
 before Explore decision grilling: propose extra related skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
 expand only load-bearing Explore decisions (Grilling Expansion: two-block + assume-list)
-stop and hand off when the destination is clear
+record sources, observations, remaining factual gaps, and unresolved human decisions
+hand off when evidence is sufficient for Grill; unresolved preferences go to Grill
 ```
 
 Must not:
@@ -87,7 +94,7 @@ Must not:
 ```text
 silently start Implement to "figure it out"
 vendor skill bodies instead of pinned prepare
-pretend fog is cleared while material decisions remain open
+claim missing evidence or unresolved decisions are settled
 reimplement a full community wayfinder stack when a pinned skill suffices
 ```
 
@@ -108,8 +115,10 @@ handoff notes sufficient for 01 Grill
 Gate:
 
 ```text
-DESTINATION_CLEAR → eligible for Intent / 01 Grill
-STILL_FOGGY → continue Explore; consult configured model-confidence rungs before human escalation (see `_ask/policies/workflow.md#model-confidence-escalation`)
+EVIDENCE_SUFFICIENT → hand off facts and open decisions to Intent / 01 Grill
+FACTS_MISSING → investigate; record blockers when evidence is unavailable
+GOALS_OR_TRADEOFFS_OPEN → Grill; human preference does not need model consultation
+RESEARCH_DELIVERABLE_COMPLETE → report evidence and limitations; stop within scope
 ```
 
 ---
@@ -121,8 +130,9 @@ STILL_FOGGY → continue Explore; consult configured model-confidence rungs befo
 - Run Skill Preparation for Explore-bound Community Skills before labor. Present extra related skills that would change What/Why as selectable choices; prepare only selected skills, then pin in `.agents/ask.local/skills/manifest.yaml` (never `latest`).
 - Explore decision grilling uses the same filter as `01 Grill` (load-bearing numbered Qs + “I’ll assume…”). See `_ask/docs/adr/0016-grilling-load-bearing-and-skill-before.md`.
 - Never start Explore on a dirty worktree; if dirty, grill the human per `_ask/policies/worktree.md`.
-- Kit path: `_ask/policies/workflow.md`. **If 00 runs for a feature**, create `work/<work-id>/explore-map.md` from `_ask/templates/explore-map.md` when missing, and do not skip that artifact. **If 00 is a real skip** (destination already ownable, and the human did not invoke `/00-explore`), do not create the map; record the skip in `intent.md` and go to 01 after the submitted intent approval choice. `/00-explore` starts this stage for feature work; the mandatory request route gate still decides whether the request belongs here. Off-path does not bypass that gate.
+- Kit path: `_ask/policies/workflow.md#explore-and-grill-entry`. **If 00 runs for a feature**, create `work/<work-id>/explore-map.md` from the template; fill its handoff with evidence, remaining gaps, and human decisions before 01. **If evidence is already sufficient**, omit the map and record `Explore skipped: evidence sufficient for intent.` in the intent. Preserve earlier approved skip records. `/00-explore` requests investigation; it does not authorize feature implementation. Off-path does not bypass routing.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

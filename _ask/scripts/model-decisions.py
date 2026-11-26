@@ -432,7 +432,7 @@ def _confidence_ladder(work_id: str, runtime: str, runtime_cfg: dict) -> list[tu
 
 
 def decide(work_id: str, request: dict) -> dict:
-    """Choose one native consultation rung for one material decision."""
+    """Route missing facts, human decisions, or uncertain technical judgment."""
     for field in ('decision_id', 'evidence_digest', 'session_id'):
         if not isinstance(request.get(field), str) or not request[field].strip():
             raise ValueError('decision requires ' + field)
@@ -447,6 +447,11 @@ def decide(work_id: str, request: dict) -> dict:
         return outcome('ask-human', 'human authority required: ' + str(authority))
     if request.get('human_decision_required') or request.get('model_restriction_requires_choice'):
         return outcome('ask-human', 'explicit human authority or model preference')
+    uncertainty_kind = request.get('uncertainty_kind', 'judgment')
+    if uncertainty_kind not in ('facts', 'judgment'):
+        raise ValueError('uncertainty_kind must be facts or judgment')
+    if uncertainty_kind == 'facts':
+        return outcome('investigate', 'gather missing facts before reassessing the decision')
     if confidence > 90:
         return outcome('continue', 'confidence above policy threshold', confidence=confidence)
     runtime = request.get('runtime') or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
@@ -493,10 +498,15 @@ def decide(work_id: str, request: dict) -> dict:
             if not verified or not isinstance(assessment.get('assessment'), str) or not assessment['assessment'].strip():
                 raise ValueError('assessment requires verified returned identity and reasoning; record unavailable otherwise')
             _confidence(assessment.get('confidence'))
+            if assessment.get('uncertainty_kind', 'judgment') not in ('facts', 'judgment'):
+                raise ValueError('assessment uncertainty_kind must be facts or judgment')
         if rank >= used:
             used, latest = rank, assessment
-    if latest and latest.get('status') == 'assessed' and latest['confidence'] > 90:
-        return outcome('continue', 'applicable verified assessment above threshold', assessment=latest)
+    if latest and latest.get('status') == 'assessed':
+        if latest.get('uncertainty_kind') == 'facts':
+            return outcome('investigate', 'consultation identified missing facts', assessment=latest)
+        if latest['confidence'] > 90:
+            return outcome('continue', 'applicable verified assessment above threshold', assessment=latest)
     unavailable = []
     for rank, (model, effort) in enumerate(ladder):
         if rank <= used:
@@ -519,6 +529,7 @@ def decide(work_id: str, request: dict) -> dict:
                                 'effort': effort, **identity, 'scope': request['scope'],
                                 'decision': request['decision'], 'evidence': request['evidence'],
                                 'confidence': confidence,
+                                'uncertainty_kind': uncertainty_kind,
                                 'uncertainty': request.get('uncertainty'), 'assessments': assessments})
     return outcome('ask-human', 'available ladder exhausted with material uncertainty', unavailable=unavailable)
 
@@ -543,8 +554,12 @@ def consult(work_id: str, request: dict) -> dict:
                 or not isinstance(response.get('assessment'), str) or not response['assessment'].strip()):
             raise ValueError('returned assessment identity or decision binding is unverifiable')
         confidence = _confidence(response.get('confidence'))
+        uncertainty_kind = response.get('uncertainty_kind', 'judgment')
+        if uncertainty_kind not in ('facts', 'judgment'):
+            raise ValueError('returned uncertainty_kind must be facts or judgment')
         record.update(status='assessed', confidence=confidence, assessment=response['assessment'],
-                      actual_model=response['actual_model'], actual_effort=response.get('actual_effort'), identity_verified=True)
+                      actual_model=response['actual_model'], actual_effort=response.get('actual_effort'),
+                      identity_verified=True, uncertainty_kind=uncertainty_kind)
     except ValueError as exc:
         record.update(status='unavailable', reason=str(exc))
     updated = dict(request, assessments=[*(request.get('assessments') or []), record])

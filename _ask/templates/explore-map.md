@@ -2,7 +2,16 @@
 
 ## Destination
 
-<what we are trying to make clear enough to own What/Why>
+<the question or knowledge gaps to investigate; the authorized deliverable>
+
+## Evidence
+
+<!-- Record sources/revisions, observations, reproduction or experiment results,
+and their limitations. Keep factual findings separate from product decisions. -->
+
+## Remaining knowledge gaps
+
+<!-- What facts remain unknown? Record blockers and the next investigation. -->
 
 ## Notes
 
@@ -27,7 +36,7 @@
 
 ## Handoff to Intent
 
-**Contract:** This section must be non-empty before `01 Grill`. Empty handoff → not eligible for the Engineering Pipeline.
+**Contract:** For feature exploration, this section must be non-empty before `01 Grill`. Standalone investigation ends with its report and does not require a feature handoff.
 
-<!-- Required non-empty before entering 01 Grill. Summarize the destination, owned What/Why, and pointers to resolved decisions. -->
-
+<!-- Summarize evidence, remaining factual gaps, and human decisions for Grill.
+Goals and tradeoffs may remain open; distinguish them from missing facts. -->

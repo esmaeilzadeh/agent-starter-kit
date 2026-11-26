@@ -14,4 +14,4 @@ This Cursor chat is **off the kit path** until it ends.
 
 ## On-path (not this session)
 
-Default for every new session: prepare each stage artifact; one defaults-OK + Accept. `/off-path` does not change that default for other chats.
+Default for every new session: follow the request route in `_ask/policies/workflow.md`. Feature work prepares its stage artifacts and intent/Accept decisions; investigation, review, and maintenance use their scoped deliverables. `/off-path` does not change other chats.

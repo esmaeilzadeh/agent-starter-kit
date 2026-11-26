@@ -4,25 +4,28 @@
 
 After resolving a continuation, classify each requested outcome against the
 existing expected behavior before selecting a stage prompt. A reproduced defect
-uses the short bug-fix path in `_ask/policies/workflow.md`; a behavior change
-uses the feature pipeline below. Split a mixed request into separate
-workstreams, and sequence overlapping work. Direct Explore or Grill commands do
-not bypass this gate.
+uses the short bug-fix path; a behavior change uses the feature pipeline below.
+Investigation ends with an evidence report, and review ends with findings against
+a named revision. Behavior-preserving maintenance records its scope and invariants,
+makes the change, and runs review and applicable checks. These routes need no
+invented feature, new feature specification, or failing behavior test. Split mixed
+outcomes by route and sequence overlapping work. See `_ask/policies/workflow.md`.
+A report's findings do not authorize implementation on their own.
 
 # 5. The canonical workflow
 
 The starter kit has two joined stages:
 
-1. **Explore Phase (`00`)** — optional when the destination is already clear; mandatory when R&D or wayfinding is required.
-2. **Engineering Pipeline (`01`–`10`)** — Grill through Accept once What/Why can be owned.
+1. **Explore (`00`)** investigates knowledge gaps when evidence is missing.
+2. **The feature pipeline (`01`–`10`)** starts with Grill to clarify or challenge goals, assumptions, and tradeoffs. Use Explore and Grill as needed; an unclear goal may need questions, research, or both.
 
 ```text
-[optional / when foggy]
+[when facts are missing]
 Explore (00)
   → map decisions
   → research facts
   → prototype when paper is not enough
-  → destination clear
+  → evidence and remaining human decisions
         ↓
 Intent
   ↓
@@ -49,7 +52,7 @@ unconditional Review/Refactor pair.
 
 Explore binds community methods (for example wayfinder, research, prototype, grilling) via a versioned skill manifest and agent-driven skill preparation — it does not require reinventing those methods inside every product repo. Discovery indexes such as [skills.sh](https://www.skills.sh/) are a starting point for finding pins; the project owns the pin and the preparation instruction.
 
-Skip Explore only when the human already has a destination sharp enough for Intent → Grill. Do not stuff R&D into Implement.
+Skip Explore when evidence is sufficient for intent. A clear goal can still need research; open preferences can pass directly to Grill. Keep factual investigation visible when new gaps appear during later stages.
 
 The important point is that the Engineering Pipeline is **not a rigid one-way path**. Discovery can send the work backward.
 
@@ -85,7 +88,7 @@ new implementation
 
 The workflow is therefore a **controlled feedback loop**, not just a sequence of prompts.
 
-**Guidance, not a lock.** On the feature pipeline, every next stage still needs the previous **artifact** — skipping documents is meaningless. What you may skip is extra *approvals*: after one submitted choice approves the complete intent and assumptions, later artifacts are prepared without a per-file bless. **Accept** is the second choice question. Required confirmations use selectable choices; agents never ask humans to write approval sentences. **00** may be omitted when the feature destination is already clear (real skip; no explore-map). `/off-path` (or “just code”) is **this session only** — warn once and follow; a new chat starts on-path. Off-path does not bypass request routing or defect reproduction. Policy: `_ask/policies/workflow.md`.
+**Guidance, not a lock.** On the feature pipeline, every next stage still needs the previous **artifact** — skipping documents is meaningless. What you may skip is extra *approvals*: after one submitted choice approves the complete intent and assumptions, later artifacts are prepared without a per-file bless. **Accept** is the second choice question. Required confirmations use selectable choices; agents never ask humans to write approval sentences. **00** may be omitted when evidence is sufficient for intent (no explore-map). `/off-path` (or “just code”) is **this session only** — warn once and follow; a new chat starts on-path. Off-path does not bypass request routing or defect reproduction. Policy: `_ask/policies/workflow.md`.
 
 ---
 
@@ -184,7 +187,9 @@ Source intent
 
 The most important property is not the format. It is **semantic explicitness and traceability**.
 
-The specification says what the implementation is expected to realize. It should not silently mix hard requirements with mere implementation preferences.
+The specification says what the implementation is expected to realize. Agents may derive requirements supported by approved intent, assumptions, and existing contracts, with the source or reasoning recorded. They bring unresolved product choices back to the human before dependent work. Approval of “customers can cancel orders” alone does not choose a cancellation deadline. A clarifying answer is recorded with its decision evidence; changes to approved intent or an existing contract go through Spec Change.
+
+Keep requirements separate from implementation preferences.
 
 For example:
 
@@ -425,7 +430,7 @@ The question is whether the artifact is trustworthy enough and sufficiently stru
 
 ---
 
-# 14. Refactoring is delegated correction inside the task loop
+# 14. Stage 08 resolves review findings inside the task loop
 
 The Refactor Agent consumes:
 
@@ -436,7 +441,13 @@ project rules
 review findings
 ```
 
-For each finding it should choose one of:
+Stage 08 retains the name Refactor, but the correction depends on the finding.
+Structural refactoring improves the code while preserving accepted behavior, as
+in the TDD Refactor step. A defect against the contract needs reproduction and a
+Red → Green repair. If the contract must change, use Spec Change. Each changed
+candidate needs fresh checks and review.
+
+Outside an active TaskGraph, each finding receives one disposition:
 
 ```text
 FIX
@@ -451,6 +462,13 @@ If a finding reveals that the specification is wrong, the agent should **not rew
 ---
 
 # 15. Verification is not the same as another LLM saying "looks good"
+
+Diagnose a failed check before choosing a repair. An implementation defect returns
+to Implement; a faulty check, fixture, or environment needs verification repair
+within scope. An incorrect acceptance criterion goes through Spec Change. An
+unavailable environment is a blocker with a recorded dependency, not a passing
+check or a reason to change product behavior. See
+`_ask/policies/verification.md#failure-diagnosis`.
 
 The engineering system should not make an AI agent the sole judge of its own correctness.
 

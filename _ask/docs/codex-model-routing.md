@@ -67,7 +67,11 @@ Use the central policy at
 `_ask/policies/workflow.md#model-confidence-escalation` and the existing
 `model-decisions.py decide --work-id <id>` operation. Input binds `decision_id`,
 `evidence_digest` (SHA256), `session_id`, `authority_kind` (`within-scope` for an
-already authorized decision), confidence (0–100), runtime, and assessments.
+already authorized decision), `uncertainty_kind` (`facts` or `judgment`),
+confidence (0–100), runtime, and assessments. `facts` returns `investigate`
+before confidence or consultation; gather evidence and update its digest before
+reassessment. Omitted kind retains legacy `judgment` semantics. Human authority
+and preferences return `ask-human` regardless of confidence.
 `capability_evidence` includes the same runtime/session, source
 `native-tool-metadata` or `current-session-adapter`, authenticated/access_verified
 flags, and `models: [{model, efforts: [...]}]`. Collect it from native tools in
@@ -76,7 +80,9 @@ the current session; runtime YAML alone does not establish access.
 A `consult` result supplies the exact native model/effort and decision context.
 Execute it with the native agent tool, then append the assessment with requested
 and actual model/effort, verified identity, decision/evidence/session, reasoning
-and confidence. Unavailable or unverifiable consultations record `unavailable`
+and confidence. An assessor identifying a factual gap records
+`uncertainty_kind: facts`, which returns the decision to investigation even if
+its confidence is high. Unavailable or unverifiable consultations record `unavailable`
 instead. The `consult` operation executes the same request through an installed
 `ASK_MODEL_RUNTIME_ADAPTER` and returns an assessment plus the next decision.
 Save these records in the existing work progress evidence. Human scope and

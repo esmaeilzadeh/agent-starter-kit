@@ -15,9 +15,14 @@ Output artifact: `work/<work-id>/intent.md` (from `_ask/templates/intent.md`).
 
 Before this stage or its subject-intake command, apply the mandatory request
 route gate in root `AGENTS.md` and `_ask/policies/workflow.md`. A reported defect
-against existing behavior does not enter Grill. If a request mixes a defect and
-a behavior change, Grill only the separate feature workstream. Direct `/01-grill`
+against existing behavior uses the focused bug path. For mixed work, clarify
+goals and tradeoffs within each outcome's recorded route. Direct `/01-grill`
 invocation does not bypass routing.
+
+Grill clarifies or challenges goals, assumptions, and tradeoffs. Use Explore
+for missing facts, including when a goal is already clear. Investigation,
+review, or maintenance may need a scoped clarification without inheriting the
+feature artifact and approval requirements below; follow the workflow policy.
 
 Before selecting/creating execution work or recording intent, invoke the shared
 read-only intake for this request:
@@ -96,7 +101,10 @@ work/<work-id>/intent.md
 
 A submitted “Approve defaults” choice (or “Approve all recommendations” after an expanded load-bearing frontier) is the first on-path confirmation. Record it with `./ask confirm-intent --work-id <id> --choice approve` against the exact intent digest. Keep an optional comment available alongside the selected choice. If the runtime cannot carry both, offer numbered options and invite the selected number or label plus added text in the same reply. Do not ask for an approval sentence. Any edit to `intent.md` invalidates that confirmation; present the changed intent as choices and obtain a new submitted choice. `./ask check-workstream` is the hard implementation gate. Then prepare later artifacts without re-confirming until Accept.
 
-If 00 was a **real skip**, this file must include `Explore skipped: destination already clear.` If the dest is still foggy, do not treat `/01-grill` as permission to omit 00 — run or return to Explore.
+If 00 was a **real skip**, record `Explore skipped: evidence sufficient for intent.`
+in the intent. Preserve existing approved skip records. An unclear goal calls for
+Grill; missing facts call for Explore. Use both when needed rather than treating
+every unresolved decision as a research gap.
 
 ## Required Engineering Model
 
@@ -121,6 +129,7 @@ After the submitted choice, save the complete decision once with `python3 _ask/s
 
 Record whether E2E `applies` or `not_applicable` plus reason on `intent.md`. If it applies, gather journeys, observable outcomes, environment, test data, and reset. Include this contract in the complete intent confirmation; do not request a separate written confirmation. If it changes afterward, use the Spec Change choice. Missing E2E with no reason refuses Plan/Implement.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

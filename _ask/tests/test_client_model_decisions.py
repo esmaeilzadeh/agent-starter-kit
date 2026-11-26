@@ -285,6 +285,33 @@ class ConfidenceDecisions(unittest.TestCase):
             with self.assertRaises(ValueError, msg=f'accepted confidence {value!r}'):
                 self.module.decide('w', self.request(confidence=value))
 
+    def test_missing_facts_require_investigation_before_confidence_or_consultation(self):
+        from unittest.mock import patch
+        for confidence in (60, 99):
+            request = self.request(uncertainty_kind='facts', confidence=confidence,
+                                   capability_evidence={})
+            request['assessments'] = [self.assessment(request, confidence=99)]
+            with self.subTest(confidence=confidence), patch.object(self.module, 'runtime_request') as adapter:
+                self.assertEqual(self.module.decide('w', request)['action'], 'investigate')
+                self.assertEqual(self.module.consult('w', request)['action'], 'investigate')
+                adapter.assert_not_called()
+        request['authority_kind'] = 'human-preference'
+        self.assertEqual(self.module.decide('w', request)['action'], 'ask-human')
+        for kind in ('unknown', None, [], {}):
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                self.module.decide('w', self.request(uncertainty_kind=kind))
+
+    def test_consultation_can_discover_missing_facts(self):
+        from unittest.mock import patch
+        request = self.request(uncertainty_kind='judgment')
+        response = self.assessment(request, confidence=99, uncertainty_kind='facts')
+        with patch.object(self.module, 'runtime_request', return_value=response):
+            result = self.module.consult('w', request)
+        self.assertEqual(result['assessment']['uncertainty_kind'], 'facts')
+        self.assertEqual(result['next']['action'], 'investigate')
+        request['assessments'] = [result['assessment']]
+        self.assertEqual(self.module.decide('w', request)['action'], 'investigate')
+
     def test_rungs_reuse_and_material_evidence_binding(self):
         request = self.request()
         decision = self.module.decide('w', request)

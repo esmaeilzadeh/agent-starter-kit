@@ -54,6 +54,7 @@ change business semantics without the required authority
 - Kit path: workflow policy — a spec change is a new decision, not covered by older defaults-OK. Prepare the change artifact and get a submitted choice using “Approve spec change” / “Keep current spec”. If buttons are unavailable, offer numbered options and accept the number or option label, never a written confirmation sentence.
 - Before finishing the change artifact, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the change artifact. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

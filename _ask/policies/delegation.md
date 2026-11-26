@@ -20,6 +20,18 @@ Request each required confirmation as a question with selectable choices. Never 
 
 Conservative default:
 
+Apply `_ask/policies/workflow.md#request-route-gate` to features, bug fixes,
+investigation, review, and behavior-preserving maintenance. Authority covers the
+requested outcome: a review or research request does not authorize implementing
+findings. For prepared specifications, follow
+`_ask/policies/workflow.md#intent-approval-and-specification-authority`: derive
+supported details and return unresolved product choices to the human.
+
+Route missing facts to investigation, technical judgment to the configured
+consultation ladder, and preferences/authority to the human under
+`_ask/policies/workflow.md#model-confidence-escalation`. High confidence cannot
+replace missing evidence or permission.
+
 ### Autonomous by default
 
 ```text

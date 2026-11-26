@@ -11,6 +11,12 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Output: review artifact from `_ask/templates/review.md`.
 
+For standalone review, inspect the named revision against the existing contract
+and project policy. Report evidence and limitations in the requested destination;
+feature intent, plan, and test-mapping artifacts are not prerequisites. A review
+request alone authorizes assessment, not fixes. For maintenance, review scope and
+preserved invariants. Follow `_ask/policies/workflow.md#investigation-review-and-maintenance`.
+
 ## 15.7 07 Review Agent
 
 Purpose:
@@ -52,10 +58,11 @@ Review commits nothing. Scratch writes are allowed. Write an attributable review
 
 ## Structured test evidence
 
-Independently review every criterion/type and test assertion, counterexample, changed-test inventory and TDD continuity. The coordinator records the candidate-bound decision with `./ask traceability record-review`.
+For an active feature test plan or TaskGraph, independently review every criterion/type and test assertion, counterexample, changed-test inventory and TDD continuity. The coordinator records the candidate-bound decision with `./ask traceability record-review`.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

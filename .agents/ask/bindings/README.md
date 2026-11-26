@@ -41,7 +41,11 @@ risk: HIGH
 `_ask/policies/workflow.md#model-confidence-escalation`. Runtime entries require
 current-session native catalog and effort evidence before dispatch. Claude names
 remain candidates until verified by that runtime; Cursor/OpenCode have no
-configured verified ladder. Availability failures advance to the next permitted
+configured verified ladder. Classify decision requests with `uncertainty_kind`:
+`facts` returns `investigate` before confidence or model selection; `judgment`
+uses the ladder. Human preferences and authority go directly to the human.
+Consultation can report `uncertainty_kind: facts` to request further investigation.
+Availability failures advance to the next permitted
 rung and exhaustion reports the precise reason to the coordinator.
 
 The runtime binding supplies that code agent's default ladder. A user can replace

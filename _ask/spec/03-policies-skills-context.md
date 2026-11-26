@@ -2,56 +2,28 @@
 
 # 15. Pre-built agent contracts
 
+Apply `_ask/policies/workflow.md#request-route-gate` before stage selection.
+Feature contracts below retain their artifacts and authority gates; standalone
+investigation/review and behavior-preserving maintenance use their scoped
+deliverables from that policy. Canonical executable stage instructions live in
+`.agents/ask/stages/`; generated client instructions come from those files.
+
 ## 15.0 00 Explore Agent
 
-Purpose:
+Investigate missing facts about the existing system, relevant technologies,
+external constraints, prior solutions, and documentation or web sources. Record
+sources, observations, experiments, and remaining gaps separately from decisions.
 
-```text
-When the destination is foggy, chart decisions (and run research/prototypes)
-until What/Why can be owned — then hand off into Intent / 01 Grill.
-```
+Follow `.agents/ask/stages/00-explore.md` and
+`_ask/policies/workflow.md#explore-and-grill-entry`. Feature exploration produces
+`work/<work-id>/explore-map.md` with a non-empty handoff to Grill; the handoff may
+contain unresolved human decisions. Standalone investigation ends with its
+requested report. Goals and tradeoffs are clarified through Grill, using either
+stage or both as needed.
 
-Must:
-
-```text
-treat Explore as decision work, not implementation
-keep a durable map (explore-map artifact and/or tracker map)
-separate human decisions from research facts
-prepare Community Skills declared for Explore via Skill Preparation
-before Explore decision grilling: offer extra related skills that would change What/Why as selectable choices; prepare only selected skills and pin them in the repo manifest
-expand only load-bearing Explore decisions (Grilling Expansion: two-block + assume-list)
-stop and hand off when the destination is clear
-```
-
-Must not:
-
-```text
-silently start Implement to "figure it out"
-vendor skill bodies instead of pinned prepare
-pretend fog is cleared while material decisions remain open
-reimplement a full community wayfinder stack when a pinned skill suffices
-```
-
-Bind (via Skill Manifest), do not copy by default:
-
-```text
-wayfinder / research / prototype / grilling (and related)
-discovery: skills.sh as a starting index
-```
-
-Output:
-
-```text
-work/<work-id>/explore-map.md (and/or tracker map pointer)
-handoff notes sufficient for 01 Grill
-```
-
-Gate:
-
-```text
-DESTINATION_CLEAR → eligible for Intent / 01 Grill
-STILL_FOGGY → continue Explore; consult configured model-confidence rungs before human escalation
-```
+Prepare pinned Explore Community Skills via Skill Preparation. Before decision
+grilling, offer extra skills as selectable choices; prepare only selected skills
+and pin them in the repo manifest. Keep investigation within its authorized scope.
 
 ---
 
@@ -122,6 +94,8 @@ make constraints explicit
 define observable acceptance criteria
 separate requirements from implementation preferences
 mark uncertainty explicitly
+trace derived requirements to approved intent, assumptions, or accepted contracts
+return unresolved product choices to the human before dependent work
 ```
 
 Output:
@@ -131,6 +105,11 @@ specs/proposals/<work-id>.md
 ```
 
 ---
+
+Specification authority is defined in
+`_ask/policies/workflow.md#intent-approval-and-specification-authority`. Mark a spec
+CURRENT only after its behavior choices are supported or resolved by the human;
+intent approval does not authorize choosing an unstated cancellation deadline.
 
 ## 15.3 03 Spec Challenge Agent
 
@@ -148,6 +127,8 @@ look for conflicting constraints
 construct concrete counterexamples
 challenge acceptance criteria
 look for unsupported assumptions
+trace product behavior choices to approved intent, accepted contracts, or human decisions
+escalate unsupported choices before dependent planning or implementation
 check alignment with Why
 ```
 
@@ -161,7 +142,7 @@ Gate:
 
 ```text
 PASS → eligible for acceptance
-ESCALATE → consult configured model-confidence rungs; human decision remains required for scope/intent changes and other human-authority decisions
+ESCALATE → investigate facts, consult on technical judgment, or seek human preferences/authority under the workflow policy
 ```
 
 ---
@@ -244,7 +225,7 @@ active plan
 no unrelated uncommitted changes
 ```
 
-Missing spec/plan means the default path is incomplete: on-path, prepare those artifacts from accepted defaults (`_ask/policies/workflow.md`). Clean working tree remains a hard safety gate.
+For feature work, missing spec/plan means the default path is incomplete: on-path, prepare those artifacts from accepted defaults (`_ask/policies/workflow.md`). Clean working tree remains a hard safety gate.
 
 Default branch convention:
 
@@ -299,7 +280,12 @@ current code
 project rules
 ```
 
-For each finding:
+Stage 08 resolves review findings. Structural refactoring preserves behavior
+and uses the TDD Refactor step; existing-contract defects use reproduction and
+Red → Green repair; required contract changes use Spec Change. Follow
+`.agents/ask/task-loop.md` for candidate checks and fresh review.
+
+For each finding outside an active TaskGraph:
 
 ```text
 FIX
@@ -337,7 +323,10 @@ Do not hard-code a universal Node/Nest command set.
 
 The verifier should inspect repository configuration and use project-specific commands.
 
-It must record the exact commit SHA.
+It must record the exact commit SHA. Diagnose failures using
+`_ask/policies/verification.md#failure-diagnosis`: distinguish implementation
+repair, verification/test-data/environment repair, contract changes, and blockers.
+A failure alone does not authorize changing code or weakening acceptance criteria.
 
 ---
 

@@ -90,7 +90,7 @@ richer dashboards
 
 The kit is complete when a developer can copy it into an ordinary software repository and:
 
-1. Run **Explore (`00`)** on a foggy idea until handoff is clear (or skip when already clear), preparing pinned Community Skills by instruction.
+1. Use **Explore (`00`)** for knowledge gaps and **Grill (`01`)** for unresolved goals or tradeoffs, preparing pinned Community Skills by instruction. Complete standalone research, review, and behavior-preserving maintenance through their scoped routes without inventing feature behavior.
 2. Execute a small task through:
 
 ```text
@@ -204,7 +204,7 @@ The core implementation strategy is:
 
 ```text
 Human intent
-→ [Explore when foggy → clear destination]
+→ [Explore for missing facts; Grill for goals and tradeoffs]
 → explicit artifacts
 → bounded agent labor
 → structured handoffs

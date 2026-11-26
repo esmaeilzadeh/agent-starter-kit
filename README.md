@@ -25,7 +25,7 @@ An agent can write working code for the wrong requirement. It can also miss a de
 | A fix grows into an unapproved redesign. | Scope changes go through Spec Change; broader cleanup is parked for later. |
 | A new session loses the reason behind a decision. | Workstream files, task evidence, and Git milestones retain the decisions and progress. |
 
-For example, “let customers cancel orders” leaves important questions open. Can they cancel after dispatch? What happens if cancellation and dispatch happen together? Grill and Spec make those decisions explicit. Challenge tests the interpretation. Implementation and verification then check the accepted behavior. If a different cancellation rule becomes necessary, that returns to you as a proposed change.
+For example, “let customers cancel orders” leaves important questions open. Can they cancel after dispatch? What happens if cancellation and dispatch happen together? Grill surfaces those decisions for you; Spec records the approved answers and their consequences. Approving cancellation alone does not authorize an agent to choose a cancellation deadline. Challenge tests the interpretation. Implementation and verification then check the accepted behavior. If a different cancellation rule becomes necessary, that returns to you as a proposed change.
 
 These controls help expose mistakes and make changes easier to review and recover. Their value still depends on the quality of the requirements, checks, and human decisions; passing the workflow does not guarantee defect-free software.
 
@@ -33,50 +33,62 @@ These controls help expose mistakes and make changes easier to review and recove
 
 The agent first identifies the kind of request. A **feature** adds or changes expected behavior. A **bug fix** repairs a violation of an existing expectation and starts by reproducing the reported fault. A request containing both is split into separate workstreams with explicit dependencies.
 
-A *workstream* is one bounded piece of work with its own branch, specification links, and files under `work/<work-id>/`.
+**Investigation, review, and maintenance** start from the requested question or deliverable and its boundaries. Investigation gathers evidence; review reports findings; behavior-preserving maintenance improves structure while retaining the existing contract. They do not need an invented behavior change or failing test. Use the relevant stages and checks for that outcome; findings that call for a feature or bug fix enter the corresponding route before implementation.
+
+A *workstream* is one bounded piece of work with its own branch, scope record, applicable specification links, and files under `work/<work-id>/`.
 
 The diagram shows the feature path with an active task graph. A task graph records the implementation tasks, their dependencies, allowed paths, and completion evidence.
 
 ```mermaid
 flowchart TD
-    Request[Feature request] --> Clear{Is the destination clear?}
-    Clear -->|No| Explore[00 Explore: investigate options]
-    Clear -->|Yes| Grill[01 Grill: clarify intent]
+    Request[Feature request] --> Gaps{Knowledge gaps to investigate?}
+    Gaps -->|Yes| Explore[00 Explore: gather evidence]
+    Gaps -->|No| Grill[01 Grill: clarify goals and decisions]
     Explore --> Grill
     Grill --> Intent{Human approves intent}
     Intent -->|Request changes| Grill
     Intent -->|Approve| Spec[02 Spec: define expected behavior]
+    Spec -->|Unresolved behavior choice| Clarify[Human resolves the choice]
+    Clarify -->|Within approved intent| Spec
+    Clarify -->|Intent must change| Change
     Spec --> Challenge[03 Spec Challenge: test the assumptions]
     Challenge -->|Ready| Plan[05 Plan: divide work into tasks]
     Challenge -->|Meaning must change| Change[04 Spec Change: propose a revision]
     Change --> Decision{Human decides}
     Decision -->|Approve revision| Spec
     Decision -->|Keep current contract| Reassess[Reassess a path within current scope]
-    Plan --> Implement[06 Implement: task loop with 07 Review and 08 Refactor]
+    Plan --> Implement[06 Implement: task loop with 07 Review and 08 finding resolution]
     Implement -->|Contract conflict| Change
     Implement -->|All tasks integrated| Verify[09 Verify: check the combined result]
     Verify -->|Evidence complete| Accept[10 Accept: human acceptance by default]
-    Verify -->|Failure| Repair[Correct within scope and recheck]
-    Repair --> Implement
+    Verify -->|Failure| Diagnose[Diagnose the failure]
+    Diagnose -->|Implementation violates contract| Implement
+    Diagnose -->|Check, test data, or environment fault| Repair[Repair verification within scope]
+    Repair --> Verify
+    Diagnose -->|Acceptance criterion or contract must change| Change
+    Diagnose -->|Unavailable environment or unresolved authority| Blocked[Record blocker and seek required input]
+    Blocked -->|Resolved| Verify
 ```
 
 | Stage | What it answers | What it leaves behind |
 | --- | --- | --- |
-| **00 Explore** | What direction is worth pursuing? | An exploration map and a handoff to Intent. Skip this stage when the destination is already clear. |
-| **01 Grill** | What do you want, why, and under which assumptions? | The complete intent for your approval, plus the workstream's model plan. |
+| **00 Explore** | Are there knowledge gaps we need to investigate? | Evidence about the existing system, technologies, constraints, prior solutions, and documentation or web sources; an exploration map and a handoff to Intent. Skip when the evidence is sufficient. |
+| **01 Grill** | Are there goals, assumptions, or tradeoffs we need to clarify or challenge? | The complete intent for your approval, plus the workstream's model plan. |
 | **02 Spec** | Exactly what should the software do? | A specification with behavior, constraints, and acceptance criteria. |
 | **03 Spec Challenge** | Does that specification actually express the intended problem? | Independent findings, including counterexamples and unresolved decisions. |
 | **04 Spec Change** | Does new evidence require a different contract? | A proposed change, its impact, and a human decision. This is an interrupt when needed. |
 | **05 Plan** | What tasks deliver the specification, and how will each be checked? | A plan with dependencies, ownership, and required evidence. |
 | **06 Implement** | Can the agent build the agreed behavior within its assigned scope? | Code, tests, commits, and task results. |
 | **07 Review** | Does the current candidate meet the specification and project policy? | Independent findings tied to that candidate. |
-| **08 Refactor** | How should valid findings be corrected? | Corrections with fresh checks, or an explicit escalation. |
-| **09 Verify** | What evidence supports the combined result? | Executed checks and the exact commit they verified. |
+| **08 Refactor** | How should valid review findings be resolved? | Structural refactoring or defect repair with fresh checks, or escalation to Spec Change. |
+| **09 Verify** | What evidence supports the combined result? | Executed checks and the exact commit they verified; failures diagnosed before choosing a repair or escalation. |
 | **10 Accept** | Is the work eligible to close under the project's policy? | An acceptance decision with its evidence. |
 
 With an active task graph, Review and Refactor happen **inside each implementation task**. They are not repeated as unconditional outer passes after every task has integrated. Aggregate Verify and Accept still follow. The [stage contracts](.agents/ask/stages/) define each role.
 
-On the default feature path, you approve the complete intent and later accept the finished work. Agents prepare the intervening artifacts and continue within that authorization. Changed scope, high-risk actions, and unresolved decisions can require additional human input. An explicit instruction to stop at an earlier stage remains binding.
+Explore gathers evidence; Grill uses questions to sharpen decisions. An unclear destination may require either or both: investigate when facts are missing, and clarify or challenge what you want and why when decisions remain open.
+
+On the default feature path, you approve the complete intent and later accept the finished work. Agents prepare the intervening artifacts and may derive details supported by that intent and its approved assumptions. They must bring unresolved behavior choices back to you before proceeding with dependent work; choosing among materially different product behaviors is not authorized elaboration. If the answer changes approved intent or an established contract, it goes through Spec Change. Changed scope and high-risk actions can also require additional human input. An explicit instruction to stop at an earlier stage remains binding.
 
 A reproduced bug follows a shorter path: record the expected and observed behavior, reproduce the fault, add a focused regression, make the smallest fix, review it, and verify it. It reuses the existing contract. If the bug cannot be reproduced, the agent records what it tried and gathers more evidence. See the [workflow policy](_ask/policies/workflow.md).
 
@@ -105,28 +117,37 @@ flowchart TD
 
 **Red → Green → Refactor** means first showing the expected behavior fail, then implementing it, then improving the code without changing the behavior. For a reported bug, reproduction comes before its regression test. Purely structural cleanup keeps existing checks green; it does not need an invented failing behavior test.
 
-Review findings determine the next action. A local defect returns to the loop. A valid local cleanup is completed and reviewed again. A broader refactor is recorded for later coordinator handling. A required behavior or contract change stops the task and enters Spec Change.
+Stage **08 Refactor** resolves review findings. Its structural-refactoring route uses the behavior-preserving TDD Refactor step shown above. A defect against the accepted specification returns to Red → Green for repair; correcting an incorrect cancellation rule is a defect repair. A required change to the specification enters Spec Change. Each changed candidate needs fresh checks and review. A broader structural refactor is recorded for later coordinator handling.
 
 Every changed candidate loses its previous approval. The coordinator integrates only the current approved candidate with passing checks; a worker's claim that tests passed is insufficient. Failed checks, unresolved findings, or exhausted retries block or escalate the task. See the [canonical task loop](.agents/ask/task-loop.md) and [evidence format](_ask/docs/inner-loop-evidence.md).
 
 ## When an agent continues, consults, or stops
 
-Two considerations guide escalation: **authority** and **uncertainty**. Some decisions belong to the human regardless of how confident an agent feels. Other decisions are already authorized but need another technical assessment.
+Route uncertainty by what is missing: facts need investigation, technical judgment may benefit from consultation, and preferences or authority need the human. Confidence supports that routing; it does not replace evidence or authorization.
 
 ```mermaid
 flowchart TD
     Decision[Consequential decision] --> Authority{Requires human authority or preference?}
     Authority -->|Yes| Human[Present evidence and choices; wait for the decision]
-    Authority -->|No| Confidence{Confidence above 90 percent?}
+    Authority -->|No| Missing{What is missing?}
+    Missing -->|Facts| Investigate[Read docs, inspect code, reproduce, or experiment]
+    Investigate --> Evidence{Enough evidence gathered?}
+    Evidence -->|Yes| Decision
+    Evidence -->|No, further investigation possible| Investigate
+    Evidence -->|No, blocked| Human
+    Missing -->|Technical judgment| Confidence{Confidence above 90 percent?}
+    Missing -->|Nothing material| Continue
     Confidence -->|Yes| Continue[Continue within authorized scope and required checks]
     Confidence -->|No| Rung{Another configured model rung available?}
     Rung -->|Yes| Consult[Consult the next distinct model or settings once]
     Consult --> Record[Record assessment and actual model settings]
-    Record --> Confidence
+    Record --> Decision
     Rung -->|No| Human
 ```
 
-For consequential uncertainty, the kit uses the active runtime's configured model ladder. At **90% confidence or below**, the agent consults the next distinct model or settings before escalating unresolved technical uncertainty to you. It checks availability, records the assessment, and does not repeat a rung for the same decision and evidence. If the ladder is exhausted or unavailable and material uncertainty remains, it asks you.
+The agent first gathers relevant evidence within the authorized scope. A missing fact calls for documentation, code inspection, reproduction, or an experiment; another assessment of the same incomplete evidence may leave that gap untouched. If evidence cannot be obtained, the agent records the limitation and seeks the access or decision needed to proceed.
+
+For consequential technical judgment that remains uncertain, the kit uses the active runtime's configured model ladder. At **90% confidence or below**, the agent consults the next distinct model or settings before escalating unresolved technical uncertainty to you. It checks availability, records the assessment, and does not repeat a rung for the same decision and evidence. New factual gaps return to investigation. If the ladder is exhausted or unavailable and material uncertainty remains, it asks you.
 
 That confidence is a subjective judgment, not a measured probability of correctness. Consultation cannot grant permission, change acceptance criteria, replace the assigned independent reviewer, or waive verification.
 
@@ -207,9 +228,9 @@ In a repository with the kit installed:
 
 `./ask prepare` fetches and installs the Community Skills in your project manifest, including on a fresh checkout. The manifest accepts Git tags and full commit SHAs. [Skills manifest guide](_ask/skills/README.md)
 
-`sync` regenerates runtime projections from the canonical protocol and local overlays. Start a new workstream from the integration branch using `./ask start-work <work-id>` after the entry decisions in AGENTS.md.
+`sync` regenerates runtime projections from the canonical protocol and local overlays. For feature work, `./ask start-work <work-id>` creates a scaffold from the integration branch after the entry decisions. Standalone maintenance uses `maintenance/<work-id>`, a concise scope record, and repository verification; investigation and review end with their reports. See [request routes](_ask/policies/workflow.md#request-route-gate).
 
-In Cursor, `/00-explore` starts with an unclear destination; `/01-grill` starts clarifying intent when the destination is clear. In Codex, use `$kit-00-explore` or `$kit-01-grill`; see [Codex integration](_ask/docs/codex-integration.md). Report a bug with its reproduction steps and expected behavior so it enters the repair path.
+In Cursor, `/00-explore` investigates knowledge gaps; `/01-grill` clarifies or challenges goals, assumptions, and tradeoffs. Use either or both as needed. In Codex, use `$kit-00-explore` or `$kit-01-grill`; see [Codex integration](_ask/docs/codex-integration.md). Report a bug with its reproduction steps and expected behavior so it enters the repair path. For investigation, review, or maintenance, state the question or deliverable and the boundaries to preserve.
 
 The optional `./ask setup` tracker and MCP wizard is **human-only** and requires a terminal. Agents must not run it. Cursor's `/off-path` changes the workflow for the current chat only; request classification and bug reproduction still apply.
 

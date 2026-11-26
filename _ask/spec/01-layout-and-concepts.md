@@ -288,7 +288,7 @@ The exact logical agent names are:
 10 Accept
 ```
 
-Preserve `01`–`10` names for Guide ↔ kit mapping stability. `00 Explore` is the first-class on-ramp for foggy / R&D work; it does not renumber the Engineering Pipeline.
+Preserve `01`–`10` names for Guide ↔ kit mapping stability. `00 Explore` is the first-class stage for evidence gathering; it does not renumber the Engineering Pipeline.
 
 When an inner-loop TaskGraph is active, `06 Implement` runs each task through
 Red → Green → Refactor, independent Review, and local correction before
@@ -299,55 +299,31 @@ retains aggregate Verify and Accept. See the canonical
 
 ## 5.1 Explore Phase (`00`)
 
-Use Explore when the destination is not yet clear enough to own What/Why as Intent:
+Use the request routes and entry rules in `_ask/policies/workflow.md`.
 
-```text
-foggy idea / large feature / R&D question
-→ 00 Explore
-   → decision map (wayfinder-shaped)
-   → research tickets (facts)
-   → prototypes when needed
-→ destination clear
-→ enter Engineering Pipeline at Intent / 01 Grill
-```
+| Routing question | Stage | Completion |
+| --- | --- | --- |
+| Are knowledge gaps blocking the requested work? | 00 Explore | Evidence about the system, technologies, constraints, prior solutions, and documentation; remaining gaps and human decisions recorded. |
+| Are goals, assumptions, or tradeoffs unresolved? | 01 Grill | Human decisions and complete intent for feature approval. |
 
-Explore **must**:
-
-```text
-keep decisions as durable artifacts (map + resolved tickets / ADRs as appropriate)
-distinguish decisions (human) from facts (research)
-bind Community Skills via the Skill Manifest + Skill Preparation
-hand off a clear destination into Grill / Spec — not silent chat residue
-```
-
-Explore **must not**:
-
-```text
-treat Implement as the place to discover the product destination
-vendor Community Skill bodies into the repo by default
-claim the destination is clear while material decisions remain open
-```
-
-Skip `00` when the human already has a destination sharp enough for Intent → Grill.
-
-### Fog test
-
-**Foggy** if any of: What/Why cannot be written without inventing; several plausible destinations; R&D / wayfinding required; the destination itself is in conflict.
-
-**Clear** if the human already stated a concrete What/Why sufficient for Intent (bugfix, well-bounded add, demo Path A).
-
-### Routing
+Use either or both stages as needed. A clear goal can still need investigation;
+an unclear goal alone does not make research mandatory. Explore separates facts
+from human decisions and binds pinned Community Skills through Skill Preparation.
 
 | Entry | Behavior |
 | --- | --- |
-| `/00-explore` or explicit “00-explore” | Start 00 immediately. Do not ask whether Explore is needed. Create `work/<id>/explore-map.md` from the template if missing. |
-| Free on-path new task | Agent announces foggy vs clear (short rationale), then offers **Start Explore** / **Start Grill** as selectable choices. Then 00 or real skip to 01. |
-| `/01-grill` while foggy | Do not skip 00. Run 00 or stop and say the dest is foggy. |
-| Real skip | Omit 00. Do not create or fill `explore-map.md`. `intent.md` contains `Explore skipped: destination already clear.` |
+| `/00-explore` or explicit “00-explore” | Apply request routing, then investigate the authorized question. For feature exploration, create `work/<id>/explore-map.md`. |
+| Free on-path new task | State its route and whether facts, goals, or both need work; enter the corresponding stage within the request's authority. |
+| `/01-grill` with unresolved goals | Clarify or challenge decisions; use Explore if factual gaps also block the work. |
+| Real skip | Omit Explore and its map when evidence is sufficient; record `Explore skipped: evidence sufficient for intent.` in feature intent. Preserve earlier approved skip records. |
 
-If 00 **runs**, `explore-map.md` is required and `## Handoff to Intent` must be non-empty before 01. If 00 is **omitted**, there is no explore-map — that is not “on-path with a missing artifact.” `./ask start-work` must not copy `explore-map.md`; Explore creates it when 00 runs.
+If Explore runs for a feature, its non-empty `Handoff to Intent` names evidence,
+remaining gaps, and human decisions before Grill. Open preference questions do
+not block that handoff. Standalone investigation ends with its report, without
+entering the feature pipeline. `./ask start-work` must not seed an Explore Map.
 
-`01`–`10` still require their artifacts; skip there means extra approvals only. Do not persist a skip-explore flag beyond the one-line skip record when skipped.
+Feature stages retain their required artifacts and authority gates. Other routes
+use the bounded deliverables in the workflow policy rather than feature paperwork.
 
 ## 5.2 Engineering Pipeline (`01`–`10`)
 

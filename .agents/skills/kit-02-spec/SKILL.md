@@ -27,6 +27,8 @@ make constraints explicit
 define observable acceptance criteria
 separate requirements from implementation preferences
 mark uncertainty explicitly
+trace derived requirements to approved intent, assumptions, or existing contracts
+return unresolved product behavior choices to the human before dependent work
 ```
 
 Output:
@@ -39,7 +41,13 @@ specs/proposals/<work-id>.md
 
 ## Kit path
 
-See `_ask/policies/workflow.md`. Prepare the spec artifact (do not skip the document). After defaults-OK, mark it CURRENT unless the human asked to stop. Off-path only if they explicitly leave the kit.
+Follow `_ask/policies/workflow.md#intent-approval-and-specification-authority`.
+Prepare the spec from supported elaborations of approved intent. Mark it CURRENT
+only when all behavior choices are supported or resolved by the human, and the
+human has not asked to stop. A cancellation request alone does not authorize a
+cancellation deadline. Record clarifying decisions with their evidence; changes
+to approved intent or an existing contract use Spec Change. Off-path applies
+only if the human explicitly leaves the kit.
 
 Before finishing the specification, read the prepared `writing-for-agents` skill and follow it in embedded mode (`.agents/skills/writing-for-agents/SKILL.md`; `./ask prepare` if missing). Do not apply `humanizer` to the specification. ADR: `_ask/docs/adr/0017-humanizer-docs-specs.md`.
 
@@ -58,6 +66,7 @@ Plan supplies their canonical case bindings. Use the guarded-edit contract in
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

@@ -11,6 +11,12 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Output: `work/<work-id>/plan.md` (template `_ask/templates/plan.md`).
 
+The feature requirements below derive from an accepted spec. For behavior-preserving
+maintenance, use the existing contract and a concise work record with scope,
+preserved invariants, and verification; no new feature spec or feature approval is
+required. Standalone investigation/review stops at its authorized deliverable.
+Follow `_ask/policies/workflow.md#investigation-review-and-maintenance`.
+
 ## 15.5 05 Plan Agent
 
 Purpose:
@@ -86,6 +92,7 @@ obtain review of the amended contract before starting it.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

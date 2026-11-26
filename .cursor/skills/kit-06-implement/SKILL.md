@@ -13,6 +13,12 @@ Requires: clean tree and dedicated branch. Feature work uses the accepted spec
 and plan under `work/<work-id>/`. A reproduced bug against an existing contract
 may reuse that contract and a concise repair record instead of creating a new
 feature spec/plan; follow `_ask/policies/workflow.md`.
+Behavior-preserving maintenance uses the existing contract and a concise work
+record of scope, invariants, and checks. It does not inherit feature spec/approval
+gates. Use `maintenance/<work-id>` and repository-level verification for standalone
+maintenance under `_ask/policies/workflow.md#investigation-review-and-maintenance`;
+preserve existing model/TaskGraph gates for work already governed by them.
+An investigation or review request alone does not authorize implementation.
 
 ## 15.6 06 Implement Agent
 
@@ -22,7 +28,7 @@ Purpose:
 Perform delegated implementation labor.
 ```
 
-Before the first implementation change, use the accepted plan's task graph as
+When a TaskGraph is active, before the first implementation change use it as
 the execution queue. Work only on its reviewed task IDs and owned paths. Record
 the task ID on its result and verification evidence, then update that task's
 state only when its planned completion evidence is present. A new deliverable
@@ -37,10 +43,11 @@ dedicated branch
 explicit complete-intent approval ← feature path
 accepted spec and plan      ← feature path; prepare from defaults if missing
 reporter-authorized repair request and concise reproduction record ← bug-fix path
+authorized maintenance request, preserved invariants, and checks ← maintenance path
 no unrelated uncommitted changes
 ```
 
-Default branch convention:
+Feature branch convention (standalone maintenance uses the route above):
 
 ```text
 agent/<work-id>
@@ -53,7 +60,7 @@ modify unrelated work
 rewrite acceptance criteria to make tests pass
 bypass policy
 perform forbidden high-risk actions
-continue through a mandatory human-approval gate; consult `_ask/policies/workflow.md#model-confidence-escalation` before escalating uncertainty to the human
+continue through a mandatory human-approval gate; route uncertainty through `_ask/policies/workflow.md#model-confidence-escalation`
 ```
 
 At meaningful milestones, create commits so that important engineering states are recoverable and attributable. **Do not wait until the plan is finished** — commit after each meaningful step. **Do not wait for the human to ask** to commit on `agent/<work-id>`; the dedicated branch is the safety boundary (`_ask/policies/worktree.md`).
@@ -62,12 +69,12 @@ At meaningful milestones, create commits so that important engineering states ar
 
 ## Kit emphasis
 
-- Require the populated `work/<work-id>/engineering-model.json` before starting or
+- For feature work or an existing TaskGraph, require the populated `work/<work-id>/engineering-model.json` before starting or
   resuming implementation. Keep model links and declared lifecycles current through
   guarded edits when the work changes. Execution results remain in their existing
   authoritative records; follow `_ask/docs/engineering-model.md`.
 
-- A missing or stale explicit intent confirmation blocks an otherwise authorized next step: present the full current intent and assumptions as a choice question with “Approve complete intent and assumptions” / “Request changes” buttons, keep an optional comment available alongside the choice, wait for a submitted approval, record it with ./ask confirm-intent --work-id <id> --choice approve, and re-run the gate. If the runtime cannot preserve both values, offer numbered choices and invite the selected number or option label plus added text in the same reply. Accept unsolicited concise affirmative text for compatibility and record the exact response with `--response`; never ask the human to write or repeat a confirmation sentence. A preselected option is not approval. Never infer confirmation from a request to implement alone or a prior approval of only the direction/order. If the approved plan explicitly stops before implementation or another future action, report completion within that scope instead of describing the future gate as missing.
+- For feature work, a missing or stale explicit intent confirmation blocks an otherwise authorized next step: present the full current intent and assumptions as a choice question with “Approve complete intent and assumptions” / “Request changes” buttons, keep an optional comment available alongside the choice, wait for a submitted approval, record it with ./ask confirm-intent --work-id <id> --choice approve, and re-run the gate. If the runtime cannot preserve both values, offer numbered choices and invite the selected number or option label plus added text in the same reply. Accept unsolicited concise affirmative text for compatibility and record the exact response with `--response`; never ask the human to write or repeat a confirmation sentence. A preselected option is not approval. Never infer confirmation from a request to implement alone or a prior approval of only the direction/order. If the approved plan explicitly stops before implementation or another future action, report completion within that scope instead of describing the future gate as missing.
 
 - A later explicit human direction can extend a previously approved execution endpoint. When What, Why, and assumptions stay the same, record that direction in the plan or a scoped authorization artifact and keep the approved `intent.md` byte-for-byte unchanged; do not ask the human to reapprove the complete intent. A generic “continue” does not override an explicit stop. A clear direction such as “continue through acceptance” does. If What, Why, or an assumption changes, use the normal intent/spec-change choice and bind renewed approval to the changed intent.
 
@@ -89,14 +96,15 @@ Future submissions use candidate-bound `ask-task-result/v2`. After committing th
 
 ## E2E
 
-Build the spec’s confirmed E2E journeys, or keep `not_applicable` plus reason. Missing E2E with no reason refuses Implement.
+For feature work, build the spec’s confirmed E2E journeys, or keep `not_applicable` plus reason. Missing E2E with no reason refuses feature implementation. Maintenance retains applicable existing journeys and checks without inventing a new behavior contract.
 
 ## Structured test evidence
 
-Capture actual failing behavior at immutable red revisions with `./ask traceability run`; commit the candidate and retain final green separately. For a bug fix, only the reproduced defect is a Red target; mapped regression guards require Green, not manufactured failures. Planned outcomes never count as execution.
+For behavioral slices, capture actual failing behavior at immutable red revisions with `./ask traceability run`; commit the candidate and retain final green separately. For a bug fix, only the reproduced defect is a Red target; mapped regression guards require Green, not manufactured failures. Structural maintenance keeps existing checks green and uses the structural exemption when a TaskGraph is active. Planned outcomes never count as execution.
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

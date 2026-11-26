@@ -34,7 +34,7 @@ Resolve review findings by class:
   Red -> Green -> Refactor cycle before fresh review.
 - **Broader horizontal refactor:** leave the implementation unchanged and keep
   an attributed `.later` draft tagged `refactoring` for coordinator review.
-- **Meaning, behavior, or contract change required:** stop and use Spec Change;
+- **Accepted requirements or contract must change:** stop and use Spec Change;
   do not call it optional refactoring or expand the task silently.
 - **Mistaken or withdrawn finding:** preserve evidence and the reviewer's
   evidence-backed withdrawal; do not describe unfinished local cleanup as
@@ -60,6 +60,9 @@ writer's branch to publish a card.
 
 The outer workflow still performs aggregate verification and Accept. It does
 not add unconditional task Review or Refactor passes outside this loop.
+Stage 08 Refactor resolves findings through the routes above; only the structural
+route is the behavior-preserving TDD Refactor step. Diagnose failed checks using
+`_ask/policies/verification.md#failure-diagnosis` before choosing a repair route.
 When a pending task needs explicit recovery adoption, follow the reviewed
 recovery procedure in `_ask/docs/inner-loop-evidence.md`.
 

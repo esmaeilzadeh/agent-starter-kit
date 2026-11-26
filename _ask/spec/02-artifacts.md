@@ -39,7 +39,7 @@ Minimum fields:
 ## Handoff to Intent
 ```
 
-**Gate:** `## Handoff to Intent` must be non-empty (clear destination + remaining human decisions) before `01 Grill`. Closing a tracker map alone is not sufficient. Grill must be able to produce `intent.md` from this file without re-deriving from chat.
+**Gate:** For feature exploration, `## Handoff to Intent` must record evidence, remaining factual gaps, and human decisions before `01 Grill`. Open goals or tradeoffs may pass to Grill. Closing a tracker map alone is insufficient; the file retains the evidence. Standalone investigation stops with its report. Use `_ask/templates/explore-map.md`.
 
 ## 6.1 Intent
 

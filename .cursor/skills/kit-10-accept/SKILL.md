@@ -11,6 +11,13 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Acceptance artifact from `_ask/templates/acceptance.md`; record commit SHA.
 
+The feature gates below apply to feature workstreams. Investigation/review closes
+with the requested report, source revisions, evidence, and limitations; maintenance
+closes with its scoped work record, review, and verification. Preserve explicit
+stops and any required risk approval. Follow
+`_ask/policies/workflow.md#investigation-review-and-maintenance` rather than
+manufacturing feature artifacts to close these routes.
+
 ## 15.10 10 Accept Agent
 
 Purpose:
@@ -49,6 +56,7 @@ Run `./ask check-workstream <work-id> --acceptance`; a task report or edited pas
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

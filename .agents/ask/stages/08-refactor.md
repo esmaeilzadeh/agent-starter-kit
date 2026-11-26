@@ -4,12 +4,18 @@ Source contract extracted from the Build Spec agent-contracts section. Portable 
 
 Correction labor against review findings; stay within accepted spec.
 
+The stage name covers finding resolution. Structural refactoring preserves
+behavior and uses the TDD Refactor step with existing checks green. A defect
+against the accepted contract uses reproduction and Red → Green repair; it is
+not structural refactoring. A required contract change uses Spec Change. Follow
+`.agents/ask/task-loop.md` for these routes and fresh candidate review.
+
 When an inner-loop task graph is active, follow `.agents/ask/task-loop.md`:
 finish every valid task-local finding and obtain fresh review of each changed
 candidate; only an evidence-backed reviewer withdrawal can close a finding
 without a fix. An empty Refactor pass is recorded without inventing edits.
 Park broader horizontal refactors for coordinator handling, and stop for Spec
-Change when meaning, behavior, or contract must change. Ambiguous or unsafe
+Change when accepted requirements or the contract must change. Ambiguous or unsafe
 findings remain escalated and block task completion.
 
 ## 15.8 08 Refactor Agent
@@ -56,6 +62,7 @@ FIX / ACCEPT WITH RATIONALE / ESCALATE dispositions above.
 
 See `_ask/policies/workflow.md`. Stay on the path: fix or escalate; do not silently drop findings. Off-path only if they explicitly leave the kit.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

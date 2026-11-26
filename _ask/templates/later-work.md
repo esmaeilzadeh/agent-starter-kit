@@ -3,7 +3,7 @@
 - **Status:** parked (not live; no `agent/*`)
 - **Found during:** `<work-id>`
 - **Start later:** new session, `./ask start-work <new-work-id>`
-- **First stage:** 00 Explore if dest is foggy; else 01 Grill
+- **First stage:** Route the outcome; Explore for missing facts, Grill for goals/assumptions/tradeoffs, or the applicable review/maintenance stage
 - **Tags:** `<for broad inner-loop refactors: include refactoring>`
 - **Attribution:** `<source task, finding id, reviewer, candidate SHA; required for broad inner-loop refactors>`
 - **Affected responsibilities:** `<task outcome(s) beyond which this proposal extends>`

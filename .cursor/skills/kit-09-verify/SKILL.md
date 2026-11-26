@@ -29,6 +29,12 @@ CLI.
 
 It must record the exact commit SHA.
 
+On failure, apply `_ask/policies/verification.md#failure-diagnosis` before changing
+the implementation. Distinguish implementation defects, verification/test-data
+faults, environment blockers, and incorrect acceptance criteria. Repair only
+within existing authority, use Spec Change for contract changes, and preserve
+failed or unavailable evidence until the obligation is rerun successfully.
+
 ---
 
 ## Kit path
@@ -48,6 +54,7 @@ Run confirmed E2E checks from `.agents/verification.yaml` unless
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

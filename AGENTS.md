@@ -21,7 +21,7 @@ policies, stage prompts, skills, and workflow gates, including those below.
 
 - Before starting or resuming work in Codex, Cursor, or OpenCode, run `./ask access-check`. If it fails, report the blocked path and stop until access is restored.
 - For a continuation, inspect the branch, workstream artifacts, task state, and recent commits. Resume the identified task within its recorded authorization; preserve explicit stops and prior approvals.
-- State whether each outcome is a bug fix, feature, or mixed request before choosing stages or skills. Reproduce a reported defect before adding a regression or changing production code.
+- State each outcome's route before choosing stages or skills: feature, bug fix, investigation, review, or behavior-preserving maintenance; separate mixed outcomes. Follow `_ask/policies/workflow.md` for route boundaries. Reproduce a reported defect before adding a regression or changing production code.
 - Start labor on a clean tree. Preserve human changes and resolve dirty paths with the human; never stash or discard them silently. Commit meaningful steps and verify the changed behavior before claiming completion.
 - Send meaningful progress updates at least every 60 seconds. `./ask setup` is human-only.
 

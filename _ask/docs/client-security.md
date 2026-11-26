@@ -115,7 +115,7 @@ reuse their configured choices; they are not treated as consent to a newer
 orchestrator identity. If the runtime cannot switch the current session and
 verify the result, stop at the manual handoff and name the required model and
 the runtime UI action. Do not infer a successful handoff from child-agent
-startup flags or edited settings. For consequential uncertainty, consult the
-active runtime's confidence ladder before asking the human; it never grants
-authority, changes scope, replaces independent review, or waives verification.
-See the [delegation policy](../policies/delegation.md) for configured ladders.
+startup flags or edited settings. For consequential uncertainty, investigate
+missing facts, consult on technical judgment, and ask the human for preferences
+or authority. Consultation cannot change scope, replace independent review, or
+waive verification. See [uncertainty routing](../policies/workflow.md#model-confidence-escalation).

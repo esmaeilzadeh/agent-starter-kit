@@ -27,6 +27,8 @@ look for conflicting constraints
 construct concrete counterexamples
 challenge acceptance criteria
 look for unsupported assumptions
+trace product behavior choices to approved intent, accepted contracts, or human decisions
+escalate unsupported choices before dependent planning or implementation
 check alignment with Why
 ```
 
@@ -40,7 +42,7 @@ Gate:
 
 ```text
 PASS → eligible for acceptance
-ESCALATE → consult configured model-confidence rungs; human decision remains required for scope/intent changes and other human-authority decisions
+ESCALATE → investigate missing facts, consult on technical judgment, or ask the human for unresolved behavior choices under the workflow policy
 ```
 
 ---
@@ -61,6 +63,7 @@ Challenge criterion observability, required test types, review-only authority an
 
 Contract, authority, commands and migration: `_ask/docs/spec-test-traceability.md`.
 
-For consequential uncertainty, apply `_ask/policies/workflow.md#model-confidence-escalation`
-through the central decision operation before a human interruption. Preserve
-human scope/approval authority and the saved Grill model selections.
+For consequential uncertainty, use `_ask/policies/workflow.md#model-confidence-escalation`
+to investigate missing facts, consult on technical judgment, or seek human
+preferences/authority. Classify `uncertainty_kind` explicitly; preserve saved
+model selections and required independent review.

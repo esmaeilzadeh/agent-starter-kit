@@ -17,23 +17,31 @@ The implementation contract for the Starter Kit. Shipped as multiple modular fil
 _Avoid_: single spec file, implementation plan (that is a workstream Plan artifact), root `docs/spec` as the shipped location
 
 **Engineering Agent**:
-One of the numbered labor roles in the kit: `00 Explore` (foggy / R&D on-ramp) and `01 Grill` … `10 Accept` (Engineering Pipeline). Names `01`–`10` stay stable with the Guide; Explore is prefixed as `00` rather than renumbering the pipeline.
+One of the numbered labor roles in the kit: `00 Explore` (evidence gathering) and `01 Grill` … `10 Accept` (Engineering Pipeline). Names `01`–`10` stay stable with the Guide; Explore is prefixed as `00` rather than renumbering the pipeline.
 _Avoid_: bot, assistant (when referring to a kit role), subagent (unless meaning a Cursor runtime mechanism)
 
 **Explore Phase**:
-The first-class kit stage for foggy or R&D work: chart a shared map of decisions, research, and prototypes until the destination is clear enough to enter Grill→Spec. It produces decisions and clarity, not accepted product software by itself.
+The kit stage for investigating knowledge gaps about the existing system, technologies, external constraints, and prior solutions. It gathers evidence through inspection, documentation, reproduction, and experiments. Feature exploration hands evidence and remaining human decisions to Grill; standalone investigation ends with its requested report.
 _Avoid_: stuffing R&D into Implement, treating chat exploration as canonical state
 
 **Explore Map**:
 The durable Explore artifact at `work/<work-id>/explore-map.md`, **only when 00 ran**. Canonical for consumers; may point at an optional tracker map. Must contain a non-empty `Handoff to Intent` before `01 Grill`. A real skip of 00 leaves no map.
 _Avoid_: chat as the map, tracker-only Explore without the workstream file
 
+**Grill**:
+The stage that clarifies or challenges goals, assumptions, and tradeoffs through questions. Missing facts call for Explore; unresolved preferences call for human decisions. A request may need either stage or both.
+_Avoid_: treating every unclear goal as a research gap, treating research findings as product approval
+
+**Structural refactoring**:
+Improving code structure while preserving accepted behavior. This is the Refactor step in Red → Green → Refactor. Stage `08 Refactor` covers review-finding resolution, which may instead require defect repair or Spec Change.
+_Avoid_: calling a behavior correction structural refactoring
+
 **Grilling Expansion**:
 Before a grilling round is eligible for resolution (“all ok” / accept recommendations), each open question must have been expanded enough that alternatives, tradeoffs, and failure modes are visible—not only a one-line A/B/C. If the human asks to expand, or the stakes are high, the agent re-issues the frontier with tables/scenarios before accepting a decision. This applies to kit `01 Grill` (and Explore grilling tickets), not only meta wayfinding.
 _Avoid_: resolving on bare letter choices with no shared understanding of what A/B/C imply
 
 **Engineering Pipeline**:
-The post-clarity labor path: Grill → Spec → Spec Challenge → Plan → Implement → Review → Refactor → Verify → Accept (with Spec Change as interrupt). Entered only after Explore Phase has cleared the destination (or the human already had one).
+The default feature path: Grill → Spec → Spec Challenge → Plan → Implement → Review → Resolve findings (08 Refactor) → Verify → Accept, with Spec Change as interrupt and Explore when facts are missing. Investigation, review, and behavior-preserving maintenance use their scoped routes without inventing a feature.
 _Avoid_: calling the whole kit “just 01–10” once Explore is in scope
 
 **Workstream**:

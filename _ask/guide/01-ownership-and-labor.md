@@ -75,7 +75,7 @@ Human
 
 This is **Division of Engineering Labor**, not merely "AI-assisted coding."
 
-**Explore is first-class.** When the way from here to the destination is still foggy — greenfield product shape, large feature map, unresolved R&D — do not pretend Grill→Spec can invent the destination. Chart decisions (wayfinder-shaped), research facts, and cheap prototypes until the destination is clear; then enter the Engineering Pipeline (`01`–`10`). Explore produces **decisions and clarity**, not accepted product software by itself.
+**Explore gathers evidence.** Use it to investigate the existing system, technologies, external constraints, and prior solutions through inspection, documentation, reproduction, or experiments. Grill clarifies or challenges goals, assumptions, and tradeoffs. A request may need either or both. Feature exploration hands its evidence and remaining decisions to Grill; a standalone research request ends with its report.
 
 The central question therefore changes from:
 
