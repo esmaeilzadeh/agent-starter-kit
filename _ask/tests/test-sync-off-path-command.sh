@@ -3,9 +3,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-cp -a "$ROOT/_ask" "$TMP/_ask"
-mkdir -p "$TMP/.agents"
-cp -a "$ROOT/.agents/ask" "$TMP/.agents/ask"
+# Test the committed kit without copying ignored local environments or run logs.
+git -C "$ROOT" archive HEAD _ask .agents/ask | tar -x -C "$TMP"
 git -C "$TMP" init -q -b main
 git -C "$TMP" config user.name fixture
 git -C "$TMP" config user.email fixture@example.test
