@@ -418,6 +418,9 @@ render_test(%r, %r, detail=%r)
                                "explicit refresh revalidates retained evidence")
 
     def test_measured_pilot_latency_budgets(self):
+        # The real pilot admits current inputs; keep its tracked cache out of later checks.
+        pointer = ROOT / "work/structured-agentic-environment/traceability/model-state/current.json"
+        self.addCleanup(pointer.write_bytes, pointer.read_bytes())
         candidate_sha = __import__("subprocess").run(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
             text=True, check=True).stdout.strip()

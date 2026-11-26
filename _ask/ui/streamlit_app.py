@@ -971,7 +971,7 @@ textarea:focus-visible,
 select:focus-visible {
   outline: 3px solid #000000 !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 5px #ffffff !important;
+  box-shadow: 0 0 0 5px #005e60 !important;
 }
 </style>
 """, unsafe_allow_html=True)
