@@ -1,0 +1,23 @@
+{
+  "work_id": "",
+  "commit_sha": "9725d67e0cf515cecbc884ec8991fed7c0e4b30e",
+  "checks": [
+    {
+      "id": "frozen-worktree-pin",
+      "status": "pass",
+      "evidence": "../ai-agent-start-kit-dogfood-0e303265 is registered, clean, and at 0e303265ceae1fbcdc9b2261bd922b003ab68924"
+    },
+    {
+      "id": "recreation-command",
+      "status": "pass",
+      "evidence": "Created and removed ../askit-dogfood-recreation-check with the exact command recorded in frozen-copy.md; commit matched the pin"
+    },
+    {
+      "id": "engineering-model",
+      "status": "pass",
+      "evidence": "./ask model validate --work-id dogfood-directory-persistence"
+    }
+  ],
+  "result": "pass",
+  "notes": "Focused operational verification; full ./ask verify is reserved for the final merged checkout."
+}
