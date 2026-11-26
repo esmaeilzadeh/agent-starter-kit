@@ -9,6 +9,7 @@ tag, and push to `main`.
 | --- | --- | --- |
 | `develop` | Integration and durable later-work | Agents prepare; human or agreed merge |
 | `agent/<work-id>` | Workstream writer | `./ask start-work` from `develop` |
+| `maintenance/<work-id>` | Standalone behavior-preserving maintenance | From `develop`; scope record and repository-level verification under the workflow policy |
 | `agent/<work-id>/task/<id>` | Optional isolated writer | Runner; fast-forward only onto coordinator |
 | `release/<version>` | Release prep | Agent prepares; human authorizes |
 | `main` | Releasable | Human merge, tag, push |

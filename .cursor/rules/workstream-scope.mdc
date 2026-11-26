@@ -5,4 +5,4 @@ globs:
   - specs/**
 ---
 
-Stay inside the active `work/<work-id>/` scope and the accepted specification. Do not silently change What/Why or acceptance criteria.
+Stay inside the authorized request or active work record and preserve its applicable accepted contract. Investigation/review ends with the requested report; maintenance preserves recorded invariants. Follow `_ask/policies/workflow.md` for route-specific artifacts and human authority. Changes to approved What/Why or acceptance criteria require Spec Change.

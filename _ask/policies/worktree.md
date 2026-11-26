@@ -21,11 +21,16 @@ Before any of that work:
 
 Every plan / workstream starts on its **own dedicated branch** (default: `agent/<work-id>` via `./ask start-work <work-id>`). Do not implement a plan on `main`/`master` or on another workstream’s branch.
 
+Standalone behavior-preserving maintenance uses `maintenance/<work-id>` and the
+concise work record and repository-level checks in `_ask/policies/workflow.md`.
+Investigation/review can finish with a report without an implementation branch.
+Already-governing Engineering Model or TaskGraph gates remain in force.
+
 That dedicated branch is the **safety boundary**: stepwise commits land on the workstream branch, not on `main`/`master`, so they do not put the default branch at risk.
 
 ## Commit at each meaningful step (hard)
 
-While executing a plan on `agent/<work-id>`, agents **must commit after each meaningful step**.
+While implementing on `agent/<work-id>` or `maintenance/<work-id>`, agents **must commit after each meaningful step**.
 
 **Do not wait** for the human to say “commit,” “please commit,” or similar. Waiting for permission to commit on the workstream branch is a **policy violation**.
 

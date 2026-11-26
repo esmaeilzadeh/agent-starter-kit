@@ -71,6 +71,10 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         for context in (cursor, codex):
             self.assertIn("AskIt session instructions", context)
             self.assertIn("classify each deliverable", context)
+            for route in ("investigation", "review", "maintenance"):
+                self.assertIn(route, context)
+            self.assertIn("workflow.md#model-confidence-escalation", context)
+            self.assertIn("_ask/policies/verification.md", context)
             self.assertIn("project access preflight passed", context)
         self.assertIn(".agents/ask/session.md", (target / ".cursor/rules/starter-kit-bootstrap.mdc").read_text())
 

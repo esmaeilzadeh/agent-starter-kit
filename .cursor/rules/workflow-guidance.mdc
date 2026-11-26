@@ -3,8 +3,8 @@ description: Mandatory request routing before workflow prompts
 alwaysApply: true
 ---
 
-**Request route gate (hard, before any stage prompt):** After continuation recovery, classify each outcome against the accepted behavior and state its route with evidence before any stage-specific question or action. Do not continue until every outcome has a route. A reproduced defect takes the focused bug-fix path; a behavior change takes the feature path; a mixed request becomes separate workstreams with linked dependencies. Reproduce from the reporter’s context before writing a regression or changing code. Keep existing guards Green; never manufacture a Red for them. An explicit `/00` or `/01` command does not bypass routing. If expected behavior is unclear, ask one concise question before choosing the path.
+Before any stage prompt, follow `_ask/policies/workflow.md#request-route-gate`: classify each outcome as feature, bug fix, investigation, review, or behavior-preserving maintenance. State its route and evidence; separate mixed outcomes. Reproduce reported defects before regression tests or production changes. Direct stage commands retain this gate.
 
-**Workflow (guidance, not a lock):** Apply the feature pipeline only to feature work: prepare each required artifact; one “defaults OK” then Accept. **00** is optional when the destination is already clear. `/00-explore` starts Explore for a feature without second-guess. Free chat: offer 00 vs 01 for a feature and wait. `/off-path` (or an explicit “just code”) is **this chat only** — warn once and follow; do not persist a flag. New chat = on-path again. Dirty tree, silent stash/reset, and fake verify/accept stay hard.
+Use `_ask/policies/workflow.md#explore-and-grill-entry` for missing facts versus unresolved goals/tradeoffs, and `#intent-approval-and-specification-authority` for supported elaboration versus human product decisions. Apply route-specific artifacts and completion; research/review findings alone do not authorize implementation.
 
-Canonical: `_ask/policies/workflow.md`.
+Route uncertainty through `_ask/policies/workflow.md#model-confidence-escalation` and diagnose failed checks under `_ask/policies/verification.md#failure-diagnosis`. `/off-path` applies only to this chat; request routing, reproduction, scope, and evidence rules remain in force.
