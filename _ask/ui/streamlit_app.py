@@ -182,7 +182,7 @@ def _capture_view(root: Path, work_id: str) -> dict:
 def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
     """Project a source resolved entirely from one immutable Git commit."""
     from types import MappingProxyType
-    from engineering_model.snapshot import Snapshot, decode, referenced_paths
+    from engineering_model.snapshot import Snapshot, _normalize_record, referenced_paths
     from engineering_model.passages import resolve
     import hashlib
 
@@ -190,8 +190,9 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
         initial = read_snapshot(root, ref, work_id)
         commit = initial.commit
         files = dict(initial.files)
+        documents, references = {}, {}
         requested = set()
-        pending = set(referenced_paths(decode(files[f"work/{work_id}/engineering-model.json"])))
+        pending = set(files)
         # The workstream test plan is a base input rather than necessarily a
         # model node reference, but canonical validation still needs its spec.
         pending.add(f"specs/current/{work_id}.json")
@@ -207,9 +208,12 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
                 if raw is None or not relative.endswith(".json"):
                     continue
                 try:
-                    linked = decode(raw)
+                    linked, linked_references = _normalize_record(raw)
                 except (UnicodeError, ValueError, TypeError):
-                    continue
+                    raise ValueError(f"cannot decode committed input: {relative}")
+                documents[relative] = linked
+                if linked_references:
+                    references[relative] = linked_references
                 if not isinstance(linked, dict):
                     continue
                 if linked.get("schema") == "ask-spec/v1":
@@ -234,7 +238,7 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
             statuses.setdefault(path, "missing")
             files.setdefault(path, None)
         passage_records = {}
-        document = decode(files[f"work/{work_id}/engineering-model.json"])
+        document = documents[f"work/{work_id}/engineering-model.json"]
         for node in document.get("nodes", []):
             for index, reference in enumerate(node.get("context", []) if isinstance(node.get("context"), list) else []):
                 path = reference.get("path")
@@ -263,7 +267,8 @@ def _capture_committed_view(root: Path, work_id: str, ref: str) -> dict:
                     "resolution": resolution,
                 }
         snapshot = Snapshot(work_id, MappingProxyType(files), MappingProxyType(statuses),
-                            MappingProxyType(passage_records))
+                            MappingProxyType(passage_records), MappingProxyType(documents),
+                            MappingProxyType(references))
         diagnostics = snapshot.diagnostics(root)
         if diagnostics:
             return {"snapshot": None, "projection": None, "captured": snapshot,
