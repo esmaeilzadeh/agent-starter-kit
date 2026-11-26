@@ -48,4 +48,18 @@ at `5550dc86`; the expanded suite and aggregate will be rerun on the new commit.
 ## Verification
 
 The fixed off-path test passed in the original checkout in 4.92 seconds.
-Final expanded hook journeys and release CheckPlan are pending.
+The full CheckPlan passed all 41 checks at `99682327`, including five hook
+journeys and five access checks. Three additional transaction safety cases pass.
+The only follow-up implementation delta is test probe cleanup in
+`test_access_check.py`; all five access tests pass in primary and linked
+checkouts at `91ba897c`, with no leftover probes. Production code and CheckPlan
+are unchanged. Reports: `verification.json` and `followup-verification.json`.
+
+## Reproduce on another machine
+
+Check out the annotated `v2.0.2` release in a clean clone and run `./ask verify`.
+To inspect the historical accepted test authority, fetch
+`refs/ask/accepted-tests/client-workflow-hooks` from origin explicitly. The
+release uses direct source verification; historical coordinator state remains
+unavailable and is not synthesized. The stable frozen-checkout pin and
+recreation command remain in `../dogfood-directory-persistence/frozen-copy.md`.

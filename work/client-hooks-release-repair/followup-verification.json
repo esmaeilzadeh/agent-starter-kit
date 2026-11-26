@@ -1,0 +1,39 @@
+{
+  "schema": "ask-source-verification/v1",
+  "candidate_sha": "91ba897c472a70a79ee165d67561eaa0da88c8dd",
+  "workflow": "disabled for source self-development",
+  "full_checkplan_commit": "996823277433505318b41b3fad9cf905055e6f52",
+  "full_checkplan_result": "pass",
+  "full_checkplan_checks": 41,
+  "followup_changes": [
+    "_ask/tests/test_access_check.py"
+  ],
+  "followup_checks": [
+    {
+      "command": "python3 -m unittest discover -s _ask/tests -p test_access_check.py -v",
+      "result": "pass",
+      "cases": 5,
+      "contexts": [
+        "primary checkout",
+        "linked worktree"
+      ],
+      "linked_worktree_probe_cleanup": "pass"
+    },
+    {
+      "command": "selected test_client_writes.ClientTests cases",
+      "result": "pass",
+      "cases": 3,
+      "coverage": [
+        "unsafe paths",
+        "late conflicts preserve client files",
+        "consumer ignore ownership"
+      ]
+    }
+  ],
+  "logs": {
+    "ask-hooks-missing-event-red.log": "b48a652a842a0596fe20644375e359fbb557ef26738d5744917f52cf0f507df9",
+    "ask-hooks-repair-green.log": "83ba2ce965ca9c52996514a7d6ab6253be7ae7e7e55fac77bc08b1a09b664a0d",
+    "ask-hooks-transaction-safety.log": "087e9d38cb4cdec2aa4aae902d4a4fec94d80e6e2932d828e289fd2b3c9b48cf",
+    "ask-access-linked-cleanup-green.log": "bdfb99ec81c69fc28fffc167bcc4b6ef94631d482a229a3813d4709357800664"
+  }
+}

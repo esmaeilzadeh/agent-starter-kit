@@ -1,6 +1,7 @@
 # Continuation handoff
 
-- Workflow authority remains pinned to `0e303265ceae1fbcdc9b2261bd922b003ab68924`; the frozen copy is at `../ai-agent-start-kit-dogfood-0e303265`. Its exact pin and recreation command are recorded in `work/dogfood-directory-persistence/frozen-copy.md`.
-- `progress/CWH-01.json` records integration at `4ee61cb178d101cb3c71edecba643021ca8417a2`, all four mapped cases passing, and an approved task review. The CWH pull request was merged to `main` at `8da1c39795f2cf42095d37431fd249924de8f425`.
-- CWH remains unaccepted. Independent review of candidate `796062269aa82458247cce70a2d9bfdcc89e0526` rejected completion because the ignored coordinator state/checkpoint is missing and the guidance-test fixture fix was outside CWH-01's owned paths. The fixture fix and its focused bugfix workstream are separately preserved and merged as a second parent.
-- The pinned recovery tool cannot create an adoption proposal without the missing state/checkpoint. Do not tag or publish a release until the recovery and task-boundary findings are resolved or a scoped human exception is recorded.
+- Source development proceeded with the kit workflow disabled under the highest-priority root rule. The frozen copy remains clean at `0e303265ceae1fbcdc9b2261bd922b003ab68924` in `../ai-agent-start-kit-dogfood-0e303265`; its pin and recreation command are tracked in `work/dogfood-directory-persistence/frozen-copy.md`.
+- CWH's PR was merged at `8da1c39795f2cf42095d37431fd249924de8f425`. The fixture and dogfood fixes have separate branch provenance in main's history.
+- The previous coordinator state/checkpoint is unavailable. Its rejected formal completion is preserved; no state or adoption receipt was synthesized.
+- Fresh source verification passes all 41 CheckPlan checks at `99682327`. The test-only linked-worktree cleanup follow-up passes at `91ba897c`; production code is unchanged. See `work/client-hooks-release-repair/` for portable reports.
+- Current source is accepted under the human's >90% confidence delegation and the source self-development rule. See `acceptance.md` for exact scope and limitations. Release v2.0.2 precedes the separate source-entry-point documentation feature.

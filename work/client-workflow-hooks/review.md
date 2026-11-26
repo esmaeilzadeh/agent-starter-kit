@@ -1,31 +1,21 @@
-# Review
+# Source closeout review
 
-## Model
+Candidate: `91ba897c472a70a79ee165d67561eaa0da88c8dd`. Reviewer: coordinating Codex agent.
+This is a source self-development review, not an independent TaskGraph receipt.
+The earlier independent task review remains in `inner-loop/evidence/`.
 
-<!-- model / runtime / parent_model -->
+- CWH-001: fresh install creates no root `AGENTS.md`; both registered commands
+  load shared instructions; failed access produces the blocked path and STOP.
+- CWH-002: repeated installs preserve instructions and unrelated hooks, reject
+  malformed configuration transactionally, and add one AskIt handler. Corrected
+  the reproduced absent-startup-event defect with a focused Red/Green journey.
+- CWH-003: two upgrades from v2.0.1 preserve client data and register both hooks.
+- Reviewed install/upgrade transaction boundaries and shared-hook admission.
+  The production fix treats an absent event as an empty handler list, matching
+  the merger. Transaction path/collision/ignore safety regressions pass.
+- The oversized off-path fixture now archives committed kit files; it passes
+  with the ignored local virtual environment still present.
 
-## Scope
-
-## Findings
-
-For each finding, include its classification from `.agents/ask/task-loop.md`
-(local structural suggestion, existing-spec behavior defect, broader horizontal
-refactor, required redesign, or evidence-backed withdrawal), an actionable
-location, and the evidence supporting it.
-
-## Suggested fixes
-
-List every valid task-local suggestion that must be completed. Mark broader
-horizontal refactors for coordinator parking rather than implementation.
-
-## Parked refactor handoffs
-
-For each broad inner-loop refactor, record a stable slug, source task, finding
-and reviewer identity, candidate SHA, affected task responsibilities, proposed
-What/Why, and publication status. Preserve this in candidate-bound review
-evidence; the coordinator materializes the `.later` card only after all task
-candidates integrate and no writer or resumable candidate remains.
-
-## Residual risks
-
-## Review verdict
+No blocking product findings remain. Historical missing coordinator state is
+preserved as a limitation of the old workflow run; source acceptance uses the
+root self-development rule. Live editor startup remains untested.
