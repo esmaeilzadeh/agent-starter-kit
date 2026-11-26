@@ -21,6 +21,23 @@ workflow disabled. CWH was accepted and released as v2.0.2 before this work bega
 
 ## Verification and acceptance
 
-Pending document-preservation/link checks, access tests, projection sync, and
-focused client regression checks. The production runtime and CheckPlan remain
-unchanged from the verified CWH release.
+Accepted implementation: `d826d1a86bc818e3502f82179eac80a64b8165ad`.
+Decision: accepted under the human's >90% confidence delegation and the source
+self-development rule. Confidence: 95% (subjective engineering judgment).
+
+The self-development rule is byte-identical and the complete old checklist is
+retained with only relative links adjusted. All local pointers resolve. Source
+entry context fell from 1,433 to 374 words. Projection sync leaves the committed
+source unchanged. Five access tests and all five installed client hook journeys
+pass. Canonical-source sync and document rules pass. See `verification.json`.
+
+Runtime scripts, shared session instructions, hook configurations, and CheckPlan
+are unchanged from v2.0.2. Cursor's bootstrap pointer text is the only client
+binding change. The baseline full CheckPlan passed all 41 checks; focused checks
+cover this documentation delta. The published v2.0.2 README installer also passed
+in an isolated cache.
+
+No new permanent tests were added for this document relocation. Interactive
+editor startup remains untested. Reproduce on a clean clone at v2.0.3 with
+`./ask verify`; the pinned frozen checkout can be recreated using its tracked
+instructions.
