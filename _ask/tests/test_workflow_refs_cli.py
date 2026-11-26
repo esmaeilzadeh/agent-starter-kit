@@ -315,6 +315,8 @@ class ReferenceTests(unittest.TestCase):
         kit_root = Path(__file__).resolve().parents[2]
         (repo / "_ask/scripts").mkdir(parents=True)
         shutil.copy(kit_root / "_ask/scripts/check-clean-worktree.sh", repo / "_ask/scripts/")
+        shutil.copytree(kit_root / "_ask/scripts/inner_loop", repo / "_ask/scripts/inner_loop",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copy(kit_root / "_ask/scripts/record-run.sh", repo / "_ask/scripts/")
         package = repo / ".agents/ask/workflow_refs"
         package.mkdir(parents=True)
@@ -352,7 +354,7 @@ class ReferenceTests(unittest.TestCase):
                                 "--commit-sha", source_sha, "--metric", "0.2"], cwd=repo,
                                capture_output=True, text=True)
         self.assertNotEqual(dirty.returncode, 0)
-        self.assertIn("dirty", dirty.stderr.lower())
+        self.assertIn("uncommitted source", dirty.stderr.lower())
         subprocess.run(["git", "add", "results"], cwd=repo, check=True)
         subprocess.run(["git", "commit", "-qm", "persist recorded run"], cwd=repo, check=True)
         head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
@@ -377,6 +379,8 @@ class ReferenceTests(unittest.TestCase):
         kit_root = Path(__file__).resolve().parents[2]
         (repo / "_ask/scripts").mkdir(parents=True)
         shutil.copy(kit_root / "_ask/scripts/check-clean-worktree.sh", repo / "_ask/scripts/")
+        shutil.copytree(kit_root / "_ask/scripts/inner_loop", repo / "_ask/scripts/inner_loop",
+                        ignore=shutil.ignore_patterns("__pycache__"))
         shutil.copy(kit_root / "_ask/scripts/access-check.sh", repo / "_ask/scripts/")
         shutil.copy(kit_root / "_ask/scripts/start-work.sh", repo / "_ask/scripts/")
         shutil.copytree(kit_root / "_ask/templates", repo / "_ask/templates")
