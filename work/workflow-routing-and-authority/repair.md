@@ -33,8 +33,11 @@ No feature spec/plan or TaskGraph is adopted for this focused repair.
 
 ## Completion evidence
 
-Pending focused reproductions, minimal repairs, independent review, and final
-repository verification plus expanded test results at the resulting commit.
+Functional repairs and independent review are complete. All 41 required checks
+pass at `e7d7c19f`; the full 305-case functional run's one remaining focus failure
+was repaired and both affected browser suites pass. Two measured performance
+tests still exceed their unchanged budgets. See [verification.md](verification.md)
+for exact candidates, rerun coverage, retained reviews and timing evidence.
 
 ## Repairs and diagnosis
 

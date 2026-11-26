@@ -1,0 +1,631 @@
+{
+  "structured": {
+    "code_candidate_sha": "e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16",
+    "code_file_bytes": {
+      "_ask/scripts/engineering_model/readability.py": 21934,
+      "_ask/scripts/engineering_model/readable_tests.py": 13962,
+      "_ask/scripts/engineering_model/workbench.py": 18147,
+      "_ask/scripts/engineering_model/workbench_evidence.py": 17543,
+      "_ask/ui/streamlit_app.py": 57923,
+      "_ask/ui/workbench_context.py": 5478,
+      "_ask/ui/workbench_debug.py": 1197,
+      "_ask/ui/workbench_loading.py": 44694,
+      "_ask/ui/workbench_navigation.py": 14281,
+      "_ask/ui/workbench_scenarios.py": 4154,
+      "_ask/ui/workbench_tasks.py": 16218,
+      "_ask/ui/workbench_tests.py": 15982
+    },
+    "code_source_sha256": "dcf327921a0c0023129f626e834267eec9c4dd7c346395184010d5a07899f2c5",
+    "cold_start_to_ready_ms": [
+      {
+        "elapsed": 5792.754358961247,
+        "ready": true,
+        "sample": 0
+      },
+      {
+        "elapsed": 4338.612285093404,
+        "ready": true,
+        "sample": 1
+      },
+      {
+        "elapsed": 5412.377460976131,
+        "ready": true,
+        "sample": 2
+      },
+      {
+        "elapsed": 5190.748309949413,
+        "ready": true,
+        "sample": 3
+      },
+      {
+        "elapsed": 5967.71388198249,
+        "ready": true,
+        "sample": 4
+      }
+    ],
+    "environment": {
+      "browser_channel": "",
+      "browser_version": "153.0.8010.12",
+      "platform": "Linux-6.2.0-26-generic-x86_64-with-glibc2.35",
+      "playwright": "1.63.0",
+      "python": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "streamlit": "1.59.2"
+    },
+    "initial_ready_ms": 3925.8061500731856,
+    "limits_ms": {
+      "cold": 4000,
+      "filter": 500,
+      "metadata_navigation": 500,
+      "overview": 1500,
+      "source_result": 1000
+    },
+    "model_file_bytes": {
+      "work/structured-agentic-environment/engineering-model.json": 4534,
+      "work/structured-agentic-environment/test-plan.json": 72133
+    },
+    "model_git_sha": "e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16",
+    "model_input_sha256": "d6c6db2b597603a4bb430d5e7bafb1cec9f3d1832a8409e161b73255f7829825",
+    "model_root": "/tmp/ask-verified-tests-hinah9hp/structured",
+    "model_work_id": "structured-agentic-environment",
+    "pilot_screenshot": {
+      "bytes": 85409,
+      "path": "/tmp/ask-wb009-evidence-bundled/WB-009-latency-e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16.overview.png",
+      "sha256": "4f56d861c69d83cf16dc3a2eb6262dac56b3821395defe4af49965e32b954db5"
+    },
+    "run_status": "complete",
+    "structural_workloads": [
+      {
+        "admitted": true,
+        "document_bytes": {
+          "specs/current/scale-100.json": 180,
+          "specs/current/scale-100.md": 22,
+          "work/scale-100/engineering-model.json": 37740,
+          "work/scale-100/inner-loop/tasks.yaml": 13358,
+          "work/scale-100/test-plan.json": 38640
+        },
+        "evidence_included": false,
+        "graph_edge_count": 202,
+        "model_node_count": 203,
+        "outline_ms": [
+          2.9687390197068453,
+          3.0755120096728206,
+          2.805199008435011,
+          2.9404970118775964,
+          3.1080059707164764
+        ],
+        "projection_ms": [
+          11.035258998163044,
+          11.874063988216221,
+          10.569605976343155,
+          10.024480987340212,
+          31.228210893459618
+        ],
+        "source_file_count": 100,
+        "task_count": 100,
+        "test_count": 100,
+        "total_document_bytes": 89940
+      },
+      {
+        "admitted": true,
+        "document_bytes": {
+          "specs/current/scale-1000.json": 181,
+          "specs/current/scale-1000.md": 22,
+          "work/scale-1000/engineering-model.json": 372643,
+          "work/scale-1000/inner-loop/tasks.yaml": 133059,
+          "work/scale-1000/test-plan.json": 383341
+        },
+        "evidence_included": false,
+        "graph_edge_count": 2002,
+        "model_node_count": 2003,
+        "outline_ms": [
+          175.69343000650406,
+          178.78551490139216,
+          187.1554310200736,
+          228.9758080150932,
+          234.74809096660465
+        ],
+        "projection_ms": [
+          592.2106910729781,
+          696.0731720319018,
+          694.16747498326,
+          692.4514140700921,
+          637.7159330295399
+        ],
+        "source_file_count": 1000,
+        "task_count": 1000,
+        "test_count": 1000,
+        "total_document_bytes": 889246
+      }
+    ],
+    "warm_ms": [
+      {
+        "filter": 570.3912220196798,
+        "metadata_navigation": 432.13213700801134,
+        "overview": 1187.2584410011768,
+        "sample": 0,
+        "source_result": 1785.5320590315387
+      },
+      {
+        "filter": 393.97958596237004,
+        "metadata_navigation": 210.87210706900805,
+        "overview": 374.548988067545,
+        "sample": 1,
+        "source_result": 852.7820039307699
+      },
+      {
+        "filter": 405.26541508734226,
+        "metadata_navigation": 220.17090499866754,
+        "overview": 355.43353704269975,
+        "sample": 2,
+        "source_result": 924.9808300519362
+      },
+      {
+        "filter": 299.8395679751411,
+        "metadata_navigation": 209.82738106977195,
+        "overview": 402.6844210457057,
+        "sample": 3,
+        "source_result": 822.6758949458599
+      },
+      {
+        "filter": 288.6004199972376,
+        "metadata_navigation": 262.2905280441046,
+        "overview": 326.003813999705,
+        "sample": 4,
+        "source_result": 778.5074360435829
+      },
+      {
+        "filter": 425.9853679686785,
+        "metadata_navigation": 258.1591249909252,
+        "overview": 379.65182203333825,
+        "sample": 5,
+        "source_result": 982.3206540895626
+      },
+      {
+        "filter": 287.22708590794355,
+        "metadata_navigation": 264.6438149968162,
+        "overview": 539.560710079968,
+        "sample": 6,
+        "source_result": 1059.14963001851
+      },
+      {
+        "filter": 466.09937003813684,
+        "metadata_navigation": 206.91881200764328,
+        "overview": 458.6138960439712,
+        "sample": 7,
+        "source_result": 966.1216490203515
+      },
+      {
+        "filter": 328.13290203921497,
+        "metadata_navigation": 237.83414310310036,
+        "overview": 608.4210559492931,
+        "sample": 8,
+        "source_result": 946.2212660582736
+      },
+      {
+        "filter": 484.181442996487,
+        "metadata_navigation": 247.35503201372921,
+        "overview": 602.156208944507,
+        "sample": 9,
+        "source_result": 1177.5541401002556
+      },
+      {
+        "filter": 384.65462892781943,
+        "metadata_navigation": 406.86323097907007,
+        "overview": 643.1580679491162,
+        "sample": 10,
+        "source_result": 1183.305175974965
+      },
+      {
+        "filter": 457.55538204684854,
+        "metadata_navigation": 273.1470620492473,
+        "overview": 460.81910899374634,
+        "sample": 11,
+        "source_result": 1277.3966200184077
+      },
+      {
+        "filter": 406.89026401378214,
+        "metadata_navigation": 360.6219630455598,
+        "overview": 572.2170230001211,
+        "sample": 12,
+        "source_result": 1194.7507730219513
+      },
+      {
+        "filter": 530.8040750678629,
+        "metadata_navigation": 329.926214995794,
+        "overview": 389.88535199314356,
+        "sample": 13,
+        "source_result": 1510.0559929851443
+      },
+      {
+        "filter": 393.3034549700096,
+        "metadata_navigation": 280.2087439922616,
+        "overview": 647.6086440961808,
+        "sample": 14,
+        "source_result": 1220.0656520435587
+      },
+      {
+        "filter": 737.734584021382,
+        "metadata_navigation": 278.08259800076485,
+        "overview": 437.96560703776777,
+        "sample": 15,
+        "source_result": 1509.9602070404217
+      },
+      {
+        "filter": 621.7319369316101,
+        "metadata_navigation": 440.933272941038,
+        "overview": 626.8532630056143,
+        "sample": 16,
+        "source_result": 1489.775775000453
+      },
+      {
+        "filter": 581.6652229987085,
+        "metadata_navigation": 607.3489550035447,
+        "overview": 777.3004929767922,
+        "sample": 17,
+        "source_result": 1577.9557640198618
+      },
+      {
+        "filter": 637.3456639703363,
+        "metadata_navigation": 364.13120198994875,
+        "overview": 535.8026260510087,
+        "sample": 18,
+        "source_result": 1362.0009869337082
+      },
+      {
+        "filter": 466.2421270040795,
+        "metadata_navigation": 265.73886908590794,
+        "overview": 657.5788509799168,
+        "sample": 19,
+        "source_result": 1177.0872720517218
+      }
+    ],
+    "workload": {
+      "code_candidate_sha": "e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16",
+      "document_bytes": {
+        "specs/current/structured-agentic-environment.json": 7476,
+        "specs/current/structured-agentic-environment.md": 19906,
+        "work/structured-agentic-environment/engineering-model.json": 4534,
+        "work/structured-agentic-environment/inner-loop/tasks.yaml": 8550,
+        "work/structured-agentic-environment/test-plan.json": 72133
+      },
+      "graph_edge_count": 12,
+      "kind": "real-pilot",
+      "model_input_sha256": "7b91318398eea32aec1bfed3e33efac5865bdb1e1ee70e459d9fbfbd9bfa472a",
+      "model_node_count": 12,
+      "model_task_count": 1,
+      "selected_case_id": "test_engineering_model.ModelValidationTests.test_valid_broad_model_and_external_refs",
+      "selected_scenario_id": "representative-model-is-accepted",
+      "selected_test_id": "MV-valid",
+      "synthetic_model": false,
+      "task_count": 9,
+      "test_count": 57,
+      "total_document_bytes": 112599
+    }
+  },
+  "revising": {
+    "budget_validation": {
+      "cold_limit_ms": 4000,
+      "cold_ms": [
+        4784.41074793227,
+        4369.663327001035,
+        4888.206720002927,
+        3988.840385922231,
+        3902.442174963653
+      ],
+      "limits_ms": {
+        "filter": 500,
+        "metadata_navigation": 500,
+        "overview": 1500,
+        "source_result": 1000
+      },
+      "p95_ms": {
+        "filter": 367.87988198921084,
+        "metadata_navigation": 224.08766602165997,
+        "overview": 568.5069389874116,
+        "source_result": 1635.091498028487
+      },
+      "passed": false
+    },
+    "code_candidate_sha": "e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16",
+    "code_file_bytes": {
+      "_ask/scripts/engineering_model/readability.py": 21934,
+      "_ask/scripts/engineering_model/readable_tests.py": 13962,
+      "_ask/scripts/engineering_model/workbench.py": 18147,
+      "_ask/scripts/engineering_model/workbench_evidence.py": 17543,
+      "_ask/ui/streamlit_app.py": 57923,
+      "_ask/ui/workbench_context.py": 5478,
+      "_ask/ui/workbench_debug.py": 1197,
+      "_ask/ui/workbench_loading.py": 44694,
+      "_ask/ui/workbench_navigation.py": 14281,
+      "_ask/ui/workbench_scenarios.py": 4154,
+      "_ask/ui/workbench_tasks.py": 16218,
+      "_ask/ui/workbench_tests.py": 15982
+    },
+    "code_source_sha256": "dcf327921a0c0023129f626e834267eec9c4dd7c346395184010d5a07899f2c5",
+    "cold_start_to_ready_ms": [
+      {
+        "elapsed": 4784.41074793227,
+        "ready": true,
+        "sample": 0
+      },
+      {
+        "elapsed": 4369.663327001035,
+        "ready": true,
+        "sample": 1
+      },
+      {
+        "elapsed": 4888.206720002927,
+        "ready": true,
+        "sample": 2
+      },
+      {
+        "elapsed": 3988.840385922231,
+        "ready": true,
+        "sample": 3
+      },
+      {
+        "elapsed": 3902.442174963653,
+        "ready": true,
+        "sample": 4
+      }
+    ],
+    "environment": {
+      "browser_channel": "",
+      "browser_version": "153.0.8010.12",
+      "platform": "Linux-6.2.0-26-generic-x86_64-with-glibc2.35",
+      "playwright": "1.63.0",
+      "python": "3.10.12 (main, Jan 26 2026, 14:55:28) [GCC 11.4.0]",
+      "streamlit": "1.59.2"
+    },
+    "initial_ready_ms": 2510.2510560536757,
+    "limits_ms": {
+      "cold": 4000,
+      "filter": 500,
+      "metadata_navigation": 500,
+      "overview": 1500,
+      "source_result": 1000
+    },
+    "model_file_bytes": {
+      "work/revising-workbench/engineering-model.json": 3246,
+      "work/revising-workbench/test-plan.json": 99998
+    },
+    "model_git_sha": "e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16",
+    "model_input_sha256": "88aa3c3a6ebf1d2c48dccd98e5ecd2a9a55c522383e22df034ccf250b865a65a",
+    "model_root": "/tmp/ask-verified-tests-hinah9hp/revising",
+    "model_work_id": "revising-workbench",
+    "pilot_screenshot": {
+      "bytes": 87492,
+      "path": "/tmp/ask-final-tests-_4ra9sc8/runtime/work/revising-workbench/traceability/rwb109/browser-benchmark.overview.png",
+      "sha256": "3cc85b1e97efc61b8ad133e23da9f32b7edcd4b5d2f4f896376361132a168e21"
+    },
+    "run_status": "complete",
+    "structural_workloads": [
+      {
+        "admitted": true,
+        "document_bytes": {
+          "specs/current/scale-100.json": 180,
+          "specs/current/scale-100.md": 22,
+          "work/scale-100/engineering-model.json": 37740,
+          "work/scale-100/inner-loop/tasks.yaml": 13358,
+          "work/scale-100/test-plan.json": 38640
+        },
+        "evidence_included": false,
+        "graph_edge_count": 202,
+        "model_node_count": 203,
+        "outline_ms": [
+          4.914220073260367,
+          4.484036006033421,
+          4.183338955044746,
+          2.751320949755609,
+          2.8398860013112426
+        ],
+        "projection_ms": [
+          17.989486106671393,
+          19.878783030435443,
+          34.79974588844925,
+          9.671327890828252,
+          10.269691003486514
+        ],
+        "source_file_count": 100,
+        "task_count": 100,
+        "test_count": 100,
+        "total_document_bytes": 89940
+      },
+      {
+        "admitted": true,
+        "document_bytes": {
+          "specs/current/scale-1000.json": 181,
+          "specs/current/scale-1000.md": 22,
+          "work/scale-1000/engineering-model.json": 372643,
+          "work/scale-1000/inner-loop/tasks.yaml": 133059,
+          "work/scale-1000/test-plan.json": 383341
+        },
+        "evidence_included": false,
+        "graph_edge_count": 2002,
+        "model_node_count": 2003,
+        "outline_ms": [
+          175.2131509128958,
+          173.27126301825047,
+          179.1340010240674,
+          183.23539092671126,
+          239.61242102086544
+        ],
+        "projection_ms": [
+          568.1028079707175,
+          653.659163042903,
+          697.3728359444067,
+          669.2215889925137,
+          669.1894240211695
+        ],
+        "source_file_count": 1000,
+        "task_count": 1000,
+        "test_count": 1000,
+        "total_document_bytes": 889246
+      }
+    ],
+    "warm_ms": [
+      {
+        "filter": 234.55566295888275,
+        "metadata_navigation": 335.81240999046713,
+        "overview": 336.0662440536544,
+        "sample": 0,
+        "source_result": 2392.8713380591944
+      },
+      {
+        "filter": 226.0905730072409,
+        "metadata_navigation": 204.10470198839903,
+        "overview": 360.47718196641654,
+        "sample": 1,
+        "source_result": 842.3377729486674
+      },
+      {
+        "filter": 318.4685780433938,
+        "metadata_navigation": 187.48373701237142,
+        "overview": 369.5698550436646,
+        "sample": 2,
+        "source_result": 711.5946769481525
+      },
+      {
+        "filter": 241.3677970180288,
+        "metadata_navigation": 183.3325739717111,
+        "overview": 390.6242980156094,
+        "sample": 3,
+        "source_result": 839.5307060563937
+      },
+      {
+        "filter": 337.5269250245765,
+        "metadata_navigation": 192.03822000417858,
+        "overview": 355.71640997659415,
+        "sample": 4,
+        "source_result": 750.2905940636992
+      },
+      {
+        "filter": 222.63268590904772,
+        "metadata_navigation": 172.67947795335203,
+        "overview": 363.3190089603886,
+        "sample": 5,
+        "source_result": 792.6833289675415
+      },
+      {
+        "filter": 223.7888079835102,
+        "metadata_navigation": 179.3947140686214,
+        "overview": 401.4968649717048,
+        "sample": 6,
+        "source_result": 764.0791070880368
+      },
+      {
+        "filter": 232.34148195479065,
+        "metadata_navigation": 218.98521692492068,
+        "overview": 568.5069389874116,
+        "sample": 7,
+        "source_result": 842.3948140116408
+      },
+      {
+        "filter": 226.71814099885523,
+        "metadata_navigation": 202.8422070434317,
+        "overview": 383.45926406327635,
+        "sample": 8,
+        "source_result": 710.7964479364455
+      },
+      {
+        "filter": 221.55196801759303,
+        "metadata_navigation": 218.86506699956954,
+        "overview": 349.02782703284174,
+        "sample": 9,
+        "source_result": 1209.9160810466856
+      },
+      {
+        "filter": 522.4887389922515,
+        "metadata_navigation": 183.96963807754219,
+        "overview": 365.81395799294114,
+        "sample": 10,
+        "source_result": 818.8685879576951
+      },
+      {
+        "filter": 237.6657440327108,
+        "metadata_navigation": 213.44666497316211,
+        "overview": 377.54889694042504,
+        "sample": 11,
+        "source_result": 856.2833310570568
+      },
+      {
+        "filter": 247.2225580131635,
+        "metadata_navigation": 209.63084895629436,
+        "overview": 369.25576895009726,
+        "sample": 12,
+        "source_result": 962.1992700267583
+      },
+      {
+        "filter": 223.70802401565015,
+        "metadata_navigation": 203.9817039621994,
+        "overview": 526.9447639584541,
+        "sample": 13,
+        "source_result": 976.9815809559077
+      },
+      {
+        "filter": 281.1308070085943,
+        "metadata_navigation": 203.49645894020796,
+        "overview": 443.04249295964837,
+        "sample": 14,
+        "source_result": 1635.091498028487
+      },
+      {
+        "filter": 367.87988198921084,
+        "metadata_navigation": 187.3454439919442,
+        "overview": 343.60776003450155,
+        "sample": 15,
+        "source_result": 1258.546573924832
+      },
+      {
+        "filter": 278.4603569889441,
+        "metadata_navigation": 195.78801398165524,
+        "overview": 575.9573070099577,
+        "sample": 16,
+        "source_result": 1172.8238669456914
+      },
+      {
+        "filter": 254.66003199107945,
+        "metadata_navigation": 224.08766602165997,
+        "overview": 385.17894002143294,
+        "sample": 17,
+        "source_result": 952.7411470189691
+      },
+      {
+        "filter": 221.37155197560787,
+        "metadata_navigation": 195.52737998310477,
+        "overview": 367.3324208939448,
+        "sample": 18,
+        "source_result": 1580.4328980157152
+      },
+      {
+        "filter": 252.31159897521138,
+        "metadata_navigation": 220.55187600199133,
+        "overview": 447.3669030703604,
+        "sample": 19,
+        "source_result": 1150.4415440140292
+      }
+    ],
+    "workload": {
+      "code_candidate_sha": "e7d7c19f9e34b93dc68e377f54dc1d4e4c21ba16",
+      "document_bytes": {
+        "specs/current/structured-agentic-environment.json": 7476,
+        "specs/current/structured-agentic-environment.md": 19906,
+        "work/revising-workbench/engineering-model.json": 3246,
+        "work/revising-workbench/inner-loop/tasks.yaml": 10705,
+        "work/revising-workbench/test-plan.json": 99998
+      },
+      "graph_edge_count": 3,
+      "kind": "real-pilot",
+      "model_input_sha256": "1546ef48ddffb71e209c63a7a89fbb4f0127fba822a93db4f84c992e9692f152",
+      "model_node_count": 5,
+      "model_task_count": 1,
+      "selected_case_id": "test_engineering_workbench_evidence.WorkbenchTests.test_results_match_work_test_run_and_contract",
+      "selected_scenario_id": "genuine-wb003-flow",
+      "selected_test_id": "WB-evidence-identity",
+      "synthetic_model": false,
+      "task_count": 9,
+      "test_count": 58,
+      "total_document_bytes": 141331
+    }
+  }
+}

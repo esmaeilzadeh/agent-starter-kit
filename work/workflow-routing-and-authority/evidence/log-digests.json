@@ -1,0 +1,26 @@
+{
+  "/tmp/ask-final-python-d25.log": {
+    "sha256": "4683f2b0f4b222dd0df130520f77445d825d9aec56782d999d1cd63d74f06b2f",
+    "bytes": 54974
+  },
+  "/tmp/ask-focus-browser-e7.log": {
+    "sha256": "f3ff81af488d7bcae0530299c51dda37d90842dbc5970982f8a0759b68ba1d8b",
+    "bytes": 798
+  },
+  "/tmp/ask-focus-engineering-e7.log": {
+    "sha256": "54c590af7e9783595544fde689207c4e0a9861d8d921483b72f0760031fffde4",
+    "bytes": 321
+  },
+  "/tmp/ask-final-checkplan-e7.log": {
+    "sha256": "0acfded2bd4b589846a8f981f769ee8c4ce05791f837fbac77278ad861df4f79",
+    "bytes": 23051
+  },
+  "/tmp/ask-structured-final-e7-bundled.log": {
+    "sha256": "58b535a65de62ce381d051a6bea33940089b3a78078db61214572e3098b2b54a",
+    "bytes": 2136
+  },
+  "/tmp/ask-revising-final-e7-bundled.log": {
+    "sha256": "edce6347df212dcb0157e10bcd767a83e8117e63253437fbf7c2ef54fed3d918",
+    "bytes": 1189
+  }
+}
