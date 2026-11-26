@@ -311,6 +311,14 @@ class ConfidenceDecisions(unittest.TestCase):
         self.assertEqual(result['next']['action'], 'investigate')
         request['assessments'] = [result['assessment']]
         self.assertEqual(self.module.decide('w', request)['action'], 'investigate')
+        request['confidence'] = 99
+        self.assertEqual(self.module.decide('w', request)['action'], 'investigate')
+        request['assessments'].append(self.assessment(request, 'gpt-6-astra', 'medium', confidence=99))
+        self.assertEqual(self.module.decide('w', request)['action'], 'investigate')
+
+        # A different evidence revision can resolve the reported factual gap.
+        request['evidence_digest'] = 'b' * 64
+        self.assertEqual(self.module.decide('w', request)['action'], 'continue')
 
     def test_rungs_reuse_and_material_evidence_binding(self):
         request = self.request()
@@ -408,6 +416,9 @@ class ConfidenceDecisions(unittest.TestCase):
     def test_forged_identity_is_not_an_assessment(self):
         request = self.request()
         request['assessments'] = [self.assessment(request, identity_verified=False)]
+        with self.assertRaises(ValueError):
+            self.module.decide('w', request)
+        request['confidence'] = 99
         with self.assertRaises(ValueError):
             self.module.decide('w', request)
 

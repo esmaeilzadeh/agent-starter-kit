@@ -452,7 +452,7 @@ def decide(work_id: str, request: dict) -> dict:
         raise ValueError('uncertainty_kind must be facts or judgment')
     if uncertainty_kind == 'facts':
         return outcome('investigate', 'gather missing facts before reassessing the decision')
-    if confidence > 90:
+    if confidence > 90 and not request.get('assessments'):
         return outcome('continue', 'confidence above policy threshold', confidence=confidence)
     runtime = request.get('runtime') or os.environ.get('ASK_MODEL_RUNTIME') or 'codex'
     try:
@@ -479,6 +479,7 @@ def decide(work_id: str, request: dict) -> dict:
         raise ValueError('assessments must be a list')
     used = -1
     latest = None
+    missing_facts = None
     for assessment in assessments:
         if not isinstance(assessment, dict):
             raise ValueError('assessment must be an object')
@@ -500,11 +501,15 @@ def decide(work_id: str, request: dict) -> dict:
             _confidence(assessment.get('confidence'))
             if assessment.get('uncertainty_kind', 'judgment') not in ('facts', 'judgment'):
                 raise ValueError('assessment uncertainty_kind must be facts or judgment')
+            if assessment.get('uncertainty_kind') == 'facts':
+                missing_facts = assessment
         if rank >= used:
             used, latest = rank, assessment
+    if missing_facts:
+        return outcome('investigate', 'consultation identified missing facts', assessment=missing_facts)
+    if confidence > 90:
+        return outcome('continue', 'confidence above policy threshold', confidence=confidence)
     if latest and latest.get('status') == 'assessed':
-        if latest.get('uncertainty_kind') == 'facts':
-            return outcome('investigate', 'consultation identified missing facts', assessment=latest)
         if latest['confidence'] > 90:
             return outcome('continue', 'applicable verified assessment above threshold', assessment=latest)
     unavailable = []
