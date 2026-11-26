@@ -3234,7 +3234,8 @@ class test_b(unittest.TestCase):
         }
         approved["historical_red_exceptions"] = [declaration]
         self.assertEqual(validate_plan(spec, approved, load_graph(REPO, "continuation-recovery")), [])
-        current = load_accepted(REPO, "continuation-recovery", "HEAD", "HEAD")
+        # Read historical authority without treating today's policy as its candidate.
+        current = load_accepted(REPO, "continuation-recovery", "HEAD")
         pin = copy.deepcopy(current["pin"])
         pin["plan_review"]["historical_red_exceptions"] = [declaration]
         pin["plan_review"]["coordinator_migration"] = {
