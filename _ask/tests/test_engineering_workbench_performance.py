@@ -144,7 +144,7 @@ render_test(%r, %r, detail=%r)
                              if case.get("test_id") == "U" and case.get("phase") == "final_green")
         tests = {item["id"]: item for item in projection.get("workbench", {}).get("tests", [])}
         self.assertIn("U", tests, "selected test metadata comes from the admitted projection")
-        test = tests["U"]
+        test = workbench_loading._captured_test(snapshot, tests["U"], "case")
         for field in ("case_id", "runner_id", "source_paths", "type", "scenario_ids"):
             self.assertIn(field, test, f"projection retains canonical test field {field}")
         self.assertEqual(test["id"], "U")
@@ -372,8 +372,8 @@ render_test(%r, %r, detail=%r)
                                     wraps=workbench_loading._working_source)
         history_reads = patch.object(workbench_loading, "execution_history",
                                      wraps=workbench_loading.execution_history)
-        evidence_reads = patch("engineering_model.projection.inspect_evidence",
-                               wraps=__import__("engineering_model.projection", fromlist=["inspect_evidence"]).inspect_evidence)
+        evidence_reads = patch.object(workbench_loading, "inspect_workstream_evidence",
+                                      wraps=workbench_loading.inspect_workstream_evidence)
         with (patch.dict(os.environ, {"ASK_MODEL_ROOT": str(consumer.root)}),
               source_reads as source, history_reads as history, evidence_reads as evidence):
             app = AppTest.from_file(str(ROOT / "_ask/ui/streamlit_app.py")).run(timeout=20)
@@ -394,17 +394,22 @@ render_test(%r, %r, detail=%r)
             app.button(key="route:test:U").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             self.assertGreater(source.call_count, 0, "selected test loads its qualified source")
-            self.assertGreater(history.call_count, 0, "selected test loads its retained outcome")
-            self.assertGreater(evidence.call_count, 0, "selected test evaluates only its retained evidence")
+            self.assertEqual(history.call_count, 0, "test source defers retained outcomes until Results")
+            self.assertEqual(evidence.call_count, 0, "test source defers evidence authority until Results")
+            app.button(key="route:result:U").click().run(timeout=20)
+            self.assertGreater(history.call_count, 0, "Results loads the selected retained outcome")
+            self.assertGreater(evidence.call_count, 0, "Results evaluates selected retained evidence")
             selected_counts = source.call_count, history.call_count, evidence.call_count
             app.button(key="route:purpose").click().run(timeout=20)
             app.button(key="route:test:U").click().run(timeout=20)
+            app.button(key="route:result:U").click().run(timeout=20)
             self.assertEqual((source.call_count, history.call_count, evidence.call_count), selected_counts,
                              "revisiting unchanged metadata and detail reuses the bounded cache")
 
             app.button(key="refresh").click().run(timeout=20)
             self.assertFalse(app.exception, app.exception)
             app.button(key="route:test:U").click().run(timeout=20)
+            app.button(key="route:result:U").click().run(timeout=20)
             self.assertGreater(source.call_count, selected_counts[0],
                                "explicit refresh re-reads selected source bytes")
             self.assertGreater(history.call_count, selected_counts[1],
