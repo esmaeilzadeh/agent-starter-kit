@@ -45,7 +45,7 @@ The default feature path: Grill → Spec → Spec Challenge → Plan → Impleme
 _Avoid_: calling the whole kit “just 01–10” once Explore is in scope
 
 **Workstream**:
-An isolated unit of delegated work identified by a `work-id`, with its own branch, `work/<work-id>/` artifacts, and linked specification.
+An isolated unit of delegated work identified by a `work-id`, with its own branch, `work/<work-id>/` record, and specification links where applicable. Standalone maintenance keeps a bounded scope record without inventing feature artifacts.
 _Avoid_: ticket (unless meaning tracker issue), chat thread, session
 
 **Intent Artifact**:

@@ -23,12 +23,14 @@ current branch, workstream artifacts, inner-loop state, and recent commits.
 - If the human names a workstream, resolve that target before considering the
   checkout. If it is ambiguous or unavailable, ask about that target; never
   substitute the checked-out workstream.
-- Otherwise, when the checkout is `agent/<work-id>` and matching workstream
+- Otherwise, when the checkout is `agent/<work-id>` or `maintenance/<work-id>` and matching workstream
   artifacts exist, treat it as the continuation target even if unrelated live
   workstreams exist. Check that its stage and authorization evidence agree
   before acting. Resume its exact authorized stage and task, retaining prior
   approvals, only when that evidence is consistent; otherwise ask for
   clarification before action.
+  Standalone maintenance uses its bounded scope record rather than feature
+  approval artifacts; preserve existing model/TaskGraph authority where adopted.
 - If that workstream is terminal or its plan explicitly stops, report the
   authorized endpoint. Do not offer a chooser among unrelated workstreams or
   infer permission for a later stage.

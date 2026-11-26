@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# List kit workstreams from agent/* refs (live) and default-branch work/ (archive).
+# List workstreams from agent/* and maintenance/* refs, plus default-branch archives.
 set -euo pipefail
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -35,8 +35,8 @@ while [[ $# -gt 0 ]]; do
       cat <<'EOF'
 Usage: ./ask status [--work-id <id>] [--json] [--later-only] [--work-only] [--references]
 
-Live workstreams are inferred from local refs/heads/agent/* (no checkout).
-Archived workstreams are work/* on the default branch with no matching agent/* branch.
+Live workstreams are inferred from local agent/* and maintenance/* refs (no checkout).
+Archived workstreams are work/* on the default branch with no matching live work branch.
 Later cards are committed .later/*.md from develop (or origin/develop) on every checkout. --later-only / --work-only print one inventory.
 --references prints the coherent numeric reference inventory.
 EOF
@@ -211,6 +211,10 @@ def warnings_for(wid, ref, default, st, life):
         return []
     if st not in ("seeded", "explored", "intent"):
         return []
+    if (ref.startswith("maintenance/")
+            and blob(ref, f"work/{wid}/engineering-model.json") is None
+            and blob(ref, f"work/{wid}/inner-loop/tasks.yaml") is None):
+        return []
     mb = subprocess.run(
         ["git", "merge-base", default, ref],
         capture_output=True, text=True,
@@ -275,18 +279,18 @@ as_json = os.environ.get("ASK_STATUS_JSON") == "1"
 later_only = os.environ.get("ASK_STATUS_LATER_ONLY") == "1"
 work_only = os.environ.get("ASK_STATUS_WORK_ONLY") == "1"
 
-agent_refs = []
-for line in git("for-each-ref", "--format=%(refname:short)", "refs/heads/agent").splitlines():
+work_refs = []
+for line in git("for-each-ref", "--format=%(refname:short)", "refs/heads/agent", "refs/heads/maintenance").splitlines():
     name = line.strip()
-    if not name.startswith("agent/"):
+    if not name.startswith(("agent/", "maintenance/")):
         continue
-    wid = name[len("agent/") :]
+    wid = name.split("/", 1)[1]
     if not wid:
         continue
-    agent_refs.append((wid, name))
+    work_refs.append((wid, name))
 
 default = default_branch()
-live_refs = [(wid, name) for wid, name in agent_refs if not is_ancestor(name, default)]
+live_refs = [(wid, name) for wid, name in work_refs if not is_ancestor(name, default)]
 live_ids = {w for w, _ in live_refs}
 archive_ids = []
 ls = subprocess.run(["git", "ls-tree", "-d", "--name-only", f"{default}:work"], capture_output=True, text=True)
@@ -347,9 +351,9 @@ if later_only:
 
 if not rows:
     if want:
-        print(f"status: no workstream '{want}' (no agent/{want} and no archived work/{want} on {default})")
+        print(f"status: no workstream '{want}' (no agent/{want}, maintenance/{want}, or archived work/{want} on {default})")
     else:
-        print(f"status: no live agent/* branches; no archived work/* on {default}")
+        print(f"status: no live agent/* or maintenance/* branches; no archived work/* on {default}")
     if later_out:
         print()
         print_later_block(later_out)

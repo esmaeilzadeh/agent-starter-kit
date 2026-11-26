@@ -142,7 +142,8 @@ def discover_work(root):
                 "workstreams": [], "later": _later_cards(root)}
     default_commit = _commit(root, default)
 
-    listing = _git(root, "for-each-ref", "--format=%(refname:short)%00%(objectname)", "refs/heads/agent")
+    listing = _git(root, "for-each-ref", "--format=%(refname:short)%00%(objectname)",
+                   "refs/heads/agent", "refs/heads/maintenance")
     refs = {}
     if listing.returncode == 0:
         for row in listing.stdout.splitlines():
@@ -151,7 +152,7 @@ def discover_work(root):
             except ValueError:
                 continue
             parts = name.split("/")
-            if len(parts) >= 2 and _WORK_ID.fullmatch(parts[1]):
+            if len(parts) >= 2 and parts[0] in {"agent", "maintenance"} and _WORK_ID.fullmatch(parts[1]):
                 refs.setdefault(parts[1], []).append((name, tip.strip()))
 
     live, archived = {}, set()
@@ -183,15 +184,15 @@ def discover_work(root):
     rows.sort(key=lambda item: (item["life"] != "live", item["work_id"]))
 
     current_work_id = None
-    note = "Choose a workstream; checkout is detached or not on an agent branch."
-    if current_branch and current_branch.startswith("agent/"):
+    note = "Choose a workstream; checkout is detached or not on a work branch."
+    if current_branch and current_branch.startswith(("agent/", "maintenance/")):
         parts = current_branch.split("/")
         candidate = parts[1] if len(parts) > 1 else ""
         if candidate in refs:
             current_work_id = candidate
-            note = "Selected from the checked-out agent work branch."
+            note = f"Selected from the checked-out {parts[0]} work branch."
         else:
-            note = "Checked-out agent branch has no matching local work ref."
+            note = "Checked-out work branch has no matching local work ref."
     return {"git_available": True, "default_branch": default, "current_branch": current_branch,
             "current_work_id": current_work_id, "selection_note": note,
             "workstreams": rows, "later": _later_cards(root)}

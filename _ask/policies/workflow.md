@@ -168,7 +168,7 @@ A new chat is on-path again. Saying “skip the kit” / “just code” in an o
 
 ## Status
 
-`./ask status` may flag `code-without-plan` on a **live** branch that changed files outside `work/<id>/` and `specs/` while stage is still `seeded` / `explored` / `intent`. Signal that labor left the path without artifacts — not a failure by itself.
+`./ask status` includes live `agent/*` and `maintenance/*` branches and their archived records. It may flag `code-without-plan` on feature work or work with an existing model/TaskGraph that changed files outside `work/<id>/` and `specs/` while stage is still `seeded` / `explored` / `intent`. Standalone maintenance uses its concise scope record. This warning is a signal, not a failure by itself.
 
 Parked later-tasks in `.later/` are not live. `./ask status` reads committed cards from `develop` (or its remote-tracking ref) on every checkout.
 

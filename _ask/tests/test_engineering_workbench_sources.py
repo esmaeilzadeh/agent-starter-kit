@@ -116,6 +116,49 @@ class WorkbenchTests(unittest.TestCase):
                          "the already captured view remains bound to its original commit")
         self.assertEqual(refreshed.files["src/check.py"], b"REVISION = 2\n")
 
+    def test_standalone_maintenance_is_live_current_and_archived_without_feature_artifacts(self):
+        self.write("README.md", "baseline\n")
+        self.commit("baseline")
+        self.git("checkout", "-b", "maintenance/cleanup")
+        self.write("work/cleanup/scope.md", "Preserve behavior while simplifying structure.\n")
+        self.write("app.py", "VALUE = 1\n")
+        candidate = self.commit("maintenance scope and implementation")
+        refs = self.git("show-ref")
+
+        inventory = discover_work(self.root)
+        self.assertEqual(inventory["current_work_id"], "cleanup")
+        row = next(item for item in inventory["workstreams"] if item["work_id"] == "cleanup")
+        self.assertEqual(row["branch"], "maintenance/cleanup")
+        self.assertEqual(row["life"], "live")
+        self.assertEqual(row["model_status"], "missing")
+        status_script = Path(__file__).resolve().parents[1] / "scripts/status.sh"
+
+        def status():
+            result = subprocess.run(["bash", str(status_script), "--json", "--work-id", "cleanup"],
+                                    cwd=self.root, check=True, capture_output=True, text=True)
+            return json.loads(result.stdout)["workstreams"]
+
+        self.assertEqual(status()[0]["warnings"], [])
+        self.assertEqual(self.git("rev-parse", "HEAD"), candidate)
+        self.assertEqual(self.git("show-ref"), refs)
+        self.git("checkout", "main")
+        self.git("merge", "--ff-only", "maintenance/cleanup")
+        self.assertEqual(status()[0]["life"], "archived")
+        archived = discover_work(self.root)
+        self.assertEqual(archived["workstreams"][0]["life"], "archived")
+
+    def test_maintenance_with_existing_task_graph_retains_missing_plan_warning(self):
+        self.write("README.md", "baseline\n")
+        self.commit("baseline")
+        self.git("checkout", "-b", "maintenance/governed")
+        self.write("work/governed/inner-loop/tasks.yaml", "tasks: []\n")
+        self.write("app.py", "VALUE = 1\n")
+        self.commit("existing task graph still governs work")
+        status_script = Path(__file__).resolve().parents[1] / "scripts/status.sh"
+        result = subprocess.run(["bash", str(status_script), "--json", "--work-id", "governed"],
+                                cwd=self.root, check=True, capture_output=True, text=True)
+        self.assertEqual(json.loads(result.stdout)["workstreams"][0]["warnings"], ["code-without-plan"])
+
     def test_missing_blobs_and_unsafe_paths_are_explained(self):
         self.write("work/pilot/engineering-model.json", '{"revision":1}')
         (self.root / "src").mkdir()
