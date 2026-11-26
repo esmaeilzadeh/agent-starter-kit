@@ -149,8 +149,8 @@ Copy and paste this into a terminal:
 
 ```bash
 (
-  tag=v2.0.2
-  sha=1585658ea0ca9bb913f6fdfb0f8e72fceb2a08c4
+  tag=v2.0.3
+  sha=3544816a466c2833cfd703c70d96808ed3b0b3ef
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
