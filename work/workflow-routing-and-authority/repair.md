@@ -42,9 +42,11 @@ repository verification plus expanded test results at the resulting commit.
   omitted decoded documents. Normalize each captured JSON record and retain its
   documents/references; malformed inputs still fail closed. Existing committed
   source, navigation and decision regressions now pass.
-- Keyboard focus used a white outline against the light surface. Retain the
-  contrasting teal outer shadow and use a black outline; verify both browser
-  contrast journeys, including historical results.
+- Keyboard focus needs contrast against both light controls and dark buttons.
+  The full rerun reproduced a black outline at only 1.17:1 on a dark button.
+  Use the control's text color for the inner ring and extend the contrasting
+  teal outer ring beyond it. Check each ring against its adjacent background;
+  retain the 3:1 limit in both browser contrast journeys.
 - Provenance CLI fixtures omitted the clean checker's Python package. Restore
   the real dependency and keep dirty-source rejection assertions.
 - Client-write fixtures now preserve a real client hook alongside exactly one
@@ -63,6 +65,10 @@ repository verification plus expanded test results at the resulting commit.
   facts while moved refs, removed/restored models and merges remain visible.
   Real-repository baseline: 100 calls / 398 ms per refresh. Final measurements:
   65 calls / 233 ms cold; 8 calls / 29 ms warm.
+- Start Streamlit through its CLI entry function once rather than importing it
+  for a version precheck and again for startup. Preserve argument validation,
+  listener binding and the actionable missing-module error; four launcher tests
+  pass.
 
 ## Verification fixture provenance
 

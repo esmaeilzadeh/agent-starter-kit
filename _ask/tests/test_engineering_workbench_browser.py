@@ -148,7 +148,8 @@ class WorkbenchTests(unittest.TestCase):
           const ratio=(a,b)=>(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
           const inside=background(el);
           const outside=background(el.parentElement?.parentElement||el.parentElement||el);
-          const colorInside=blend(indicator,inside), colorOutside=blend(indicator,outside);
+          const outerIndicator=shadow.map(parse).find(color=>color[3]>0)||indicator;
+          const colorInside=blend(indicator,inside), colorOutside=blend(outerIndicator,outside);
           return {visible:true, contrast:Math.min(ratio(luminance(colorInside),luminance(inside)),
             ratio(luminance(colorOutside),luminance(outside)))};
         }""")
