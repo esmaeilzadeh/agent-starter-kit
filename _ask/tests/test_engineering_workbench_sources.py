@@ -5,10 +5,12 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from engineering_model.workbench_sources import discover_work, read_snapshot
+from engineering_model import workbench_sources
 
 
 class WorkbenchTests(unittest.TestCase):
@@ -115,6 +117,28 @@ class WorkbenchTests(unittest.TestCase):
         self.assertEqual(selected.files["src/check.py"], b"REVISION = 1\n",
                          "the already captured view remains bound to its original commit")
         self.assertEqual(refreshed.files["src/check.py"], b"REVISION = 2\n")
+
+    def test_inventory_reuses_commit_facts_and_observes_moving_refs(self):
+        self.write("README.md", "baseline\n")
+        self.commit("baseline")
+        self.git("checkout", "-b", "agent/pilot")
+        self.write("work/pilot/engineering-model.json", '{"revision":1}')
+        self.commit("model")
+        with patch.object(workbench_sources, "_git", wraps=workbench_sources._git) as calls:
+            first = discover_work(self.root)
+            cold_calls = calls.call_count
+            calls.reset_mock()
+            self.assertEqual(discover_work(self.root), first)
+            self.assertLess(calls.call_count, cold_calls)
+        (self.root / "work/pilot/engineering-model.json").unlink()
+        self.commit("remove model")
+        self.assertEqual(discover_work(self.root)["workstreams"][0]["model_status"], "missing")
+        self.write("work/pilot/engineering-model.json", '{"revision":2}')
+        self.commit("restore model")
+        self.assertEqual(discover_work(self.root)["workstreams"][0]["model_status"], "available")
+        self.git("checkout", "main")
+        self.git("merge", "--ff-only", "agent/pilot")
+        self.assertEqual(discover_work(self.root)["workstreams"][0]["life"], "archived")
 
     def test_standalone_maintenance_is_live_current_and_archived_without_feature_artifacts(self):
         self.write("README.md", "baseline\n")

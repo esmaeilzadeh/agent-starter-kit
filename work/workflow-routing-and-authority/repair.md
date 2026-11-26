@@ -35,3 +35,42 @@ No feature spec/plan or TaskGraph is adopted for this focused repair.
 
 Pending focused reproductions, minimal repairs, independent review, and final
 repository verification plus expanded test results at the resulting commit.
+
+## Repairs and diagnosis
+
+- Committed-source UI reads failed canonical validation because their Snapshot
+  omitted decoded documents. Normalize each captured JSON record and retain its
+  documents/references; malformed inputs still fail closed. Existing committed
+  source, navigation and decision regressions now pass.
+- Keyboard focus used a white outline against the light surface. Retain the
+  contrasting teal outer shadow and use a black outline; verify both browser
+  contrast journeys, including historical results.
+- Provenance CLI fixtures omitted the clean checker's Python package. Restore
+  the real dependency and keep dirty-source rejection assertions.
+- Client-write fixtures now preserve a real client hook alongside exactly one
+  kit hook; the injected installer interruption waits up to the fixture's
+  existing 60-second operation allowance. Intervening edits still refuse recovery.
+- Passage-admission fixtures now include model bindings and retain review bytes
+  under the documented inner-loop evidence directory. Assertions distinguish the
+  verified source commit from its later progress-publication commit.
+- Lazy-detail checks follow the existing Results boundary and use the full
+  captured test identity; source-only navigation must not inspect execution.
+- The real-pilot benchmark updates a tracked admission-cache pointer. Restore
+  its exact pre-test bytes with unittest cleanup, including after failed checks.
+- Real inventory profiling found 100 Git subprocesses per refresh. Cache only
+  model presence and ancestry keyed by repository and immutable commit IDs;
+  resolve refs and local cards anew. Regression: unchanged inventory reuses
+  facts while moved refs, removed/restored models and merges remain visible.
+  Real-repository measurements: 100 calls / 398 ms cold; 7 calls / 24–25 ms warm.
+
+## Verification fixture provenance
+
+The historical execution ledger was removed from tracking by `24473ca4` and is
+absent locally. Restore its original bytes only in disposable test fixtures:
+`d21dfcc2cca1ebbacee5c7de4025b0d85e4e518a:work/structured-agentic-environment/traceability/executions.json`,
+SHA-256 `b5ce6be822ee7903442b9695ae8585bac2e324046c6ae1b933c21f38cc5451a2`
+(142 original rows, including the authority-checked WB-003 run). Do not synthesize
+execution results. Keep browser output outside the candidate. Avoid exporting test
+import paths into nested worktree tests. Measure each real working-tree pilot
+from its matching workstream branch; the harness otherwise first loads a committed
+source before selecting the working source. Preserve the original latency limits.

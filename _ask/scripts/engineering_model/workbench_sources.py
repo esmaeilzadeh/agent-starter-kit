@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
@@ -120,9 +121,18 @@ def _local_workstreams(root):
     return result
 
 
+@lru_cache(maxsize=256)
 def _model_status(root, commit, work_id):
     _data, error = _blob(root, commit, f"work/{work_id}/engineering-model.json")
     return "available" if error is None else "missing"
+
+
+@lru_cache(maxsize=256)
+def _committed_ancestor(root, tip, default_commit):
+    result = _git(root, "merge-base", "--is-ancestor", tip, default_commit)
+    if result.returncode not in (0, 1):
+        raise ValueError("committed ancestry is unavailable")
+    return result.returncode == 0
 
 
 def discover_work(root):
@@ -159,8 +169,11 @@ def discover_work(root):
     for work_id, candidates in refs.items():
         valid = []
         for name, tip in candidates:
-            ancestor = _git(root, "merge-base", "--is-ancestor", name, default)
-            if ancestor.returncode == 1:
+            try:
+                ancestor = _committed_ancestor(root, tip, default_commit)
+            except ValueError:
+                continue
+            if not ancestor:
                 valid.append((name, tip))
         if valid:
             branch_name, tip = sorted(valid, key=lambda item: (item[0].count("/"), item[0]))[0]
