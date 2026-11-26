@@ -1,22 +1,23 @@
 # Keep the off-path test fixture small
 
-- **Status:** parked (not live; no `agent/*`)
+- **Status:** resolved in v2.0.2
 - **Found during:** client-workflow-hooks merged-main verification
-- **Start later:** new session, `./ask start-work sync-off-path-check-fixture-size`
-- **First stage:** 01 Grill
+- **Resolution:** source repair `5550dc86`; no new workstream is needed
 - **Tags:** testing
-- **Attribution:** verification failure at `main` commit `c61ebc7b53a94ab52d3a09641084c6e830ee9db3`; `_ask/tests/test-sync-off-path-command.sh`
+- **Attribution:** verification failure at `c61ebc7b`; `_ask/tests/test-sync-off-path-command.sh`
 - **Affected responsibilities:** static-check fixture setup and cleanup
-- **Publication status:** draft
+- **Publication status:** released
 
-## Why
+## Reproduction and fix
 
-The test copies the entire `_ask` tree into a temporary Git repository. In the current checkout this includes a local `.venv` of about 594 MB, making `git add` and cleanup exceed the verification run window and fail the check.
+The original fixture copied the complete `_ask` directory, including a 589 MB
+ignored virtual environment. It exceeded a 45-second reproduction limit. The
+unchanged test in a clean checkout passed in 5.21 seconds.
 
-## Proposed What (unapproved)
+The fixture now uses `git archive HEAD _ask .agents/ask` to copy committed kit
+files. Its projection assertions are unchanged. It passed in the original
+checkout in 4.92 seconds with the virtual environment still present. The full
+41-check release CheckPlan also passes at `99682327`.
 
-Make the disposable fixture include only tracked kit files, excluding local environments and other ignored runtime data, while keeping the `/off-path` projection assertions unchanged.
-
-## Note
-
-Reproduce the timing and cleanup failure before changing the test. Do not treat the printed PASS line as success if the exit trap returns nonzero.
+See `work/client-hooks-release-repair/` for the retained reports and follow-up
+checks. Raw runtime logs are not required to reproduce the verification.
