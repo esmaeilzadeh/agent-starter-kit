@@ -1,0 +1,14 @@
+{
+  "schema": "ask-engineering-model/v2",
+  "work_id": "dogfood-directory-persistence",
+  "revision": 1,
+  "nodes": [
+    {
+      "id": "purpose",
+      "type": "intent",
+      "title": "Keep the pinned dogfood checkout outside temporary storage",
+      "lifecycle": "draft"
+    }
+  ],
+  "edges": []
+}
