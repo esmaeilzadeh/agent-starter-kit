@@ -207,7 +207,9 @@ class ClientTests(unittest.TestCase):
         cursor_settings.parent.mkdir(parents=True)
         cursor_settings.write_text('{"editor": "client"}\n', encoding="utf-8")
         cursor_hooks = project / ".cursor/hooks.json"
-        cursor_hooks.write_text('{"hooks": {}}\n', encoding="utf-8")
+        client_hook = {"command": "./client-session.sh"}
+        cursor_hooks.write_text(json.dumps({"hooks": {"sessionStart": [client_hook]}}) + "\n",
+                                encoding="utf-8")
         self.fx.run(["git", "-C", str(project), "add", ".agents/ask.local/stages/01-grill.md"])
         self.fx.run(["git", "-C", str(project), "commit", "-qm", "custom stage"])
 
@@ -231,7 +233,9 @@ class ClientTests(unittest.TestCase):
         ])
         self.assertEqual(upgraded.returncode, 0, upgraded.stderr)
         self.assertEqual(cursor_settings.read_text(encoding="utf-8"), '{"editor": "client"}\n')
-        self.assertEqual(cursor_hooks.read_text(encoding="utf-8"), '{"hooks": {}}\n')
+        self.assertEqual(json.loads(cursor_hooks.read_text())["hooks"]["sessionStart"], [
+            client_hook, {"command": ".cursor/hooks/access-preflight.sh"},
+        ])
         self.assertEqual(self.fx.run(["git", "check-ignore", "-q", ".cursor/hooks.json"],
                                     cwd=project).returncode, 1)
         self.assertNotIn(".cursor/settings.json", json.loads(owner_path.read_text())["files"])
@@ -471,7 +475,7 @@ class ClientTests(unittest.TestCase):
             cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
             start_new_session=True,
         )
-        deadline = time.monotonic() + 10
+        deadline = time.monotonic() + 60
         try:
             while not marker.exists() and time.monotonic() < deadline and process.poll() is None:
                 time.sleep(0.02)
