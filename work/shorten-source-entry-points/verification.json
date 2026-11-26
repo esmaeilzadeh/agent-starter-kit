@@ -1,0 +1,65 @@
+{
+  "schema": "ask-source-verification/v1",
+  "candidate_sha": "d826d1a86bc818e3502f82179eac80a64b8165ad",
+  "result": "pass",
+  "workflow": "disabled for source self-development",
+  "baseline_full_checkplan": "work/client-hooks-release-repair/verification.json",
+  "baseline_full_checkplan_checks": 41,
+  "runtime_scripts_and_checkplan_unchanged_from": "v2.0.2",
+  "checks": [
+    {
+      "id": "source-instruction-preservation",
+      "result": "pass",
+      "detail": "Highest-priority rule byte-identical; complete original checklist retained with adjusted relative links"
+    },
+    {
+      "id": "local-pointers",
+      "result": "pass"
+    },
+    {
+      "id": "client-fallback",
+      "result": "pass"
+    },
+    {
+      "id": "source-context-size",
+      "result": "pass",
+      "before_words": 1433,
+      "after_words": 374
+    },
+    {
+      "id": "access-preflight",
+      "result": "pass",
+      "cases": 5
+    },
+    {
+      "id": "client-workflow-hooks",
+      "result": "pass",
+      "cases": 5
+    },
+    {
+      "id": "projection-sync",
+      "result": "pass",
+      "source_diff_after_sync": "none"
+    },
+    {
+      "id": "canonical-source-sync",
+      "result": "pass"
+    },
+    {
+      "id": "document-rules",
+      "result": "pass"
+    },
+    {
+      "id": "diff-check",
+      "result": "pass"
+    }
+  ],
+  "logs": {
+    "ask-entry-access.log": "cb2442e9a6b5fe49575826139c473c1b0d00691203db354d214ff2884860fe8c",
+    "ask-entry-sync.log": "3299852598f93d4bcb4ed719083ff0e6fb494fe8140b7f99eda5a2e08aa63f6c",
+    "ask-entry-canonical.log": "81222379e0024485adcb555ddd436e51d47abefef2e4eb612c421d3728a5505a",
+    "ask-entry-docs.log": "1d38d1886d9ff5d31457e4636a1a07d437a63e8d544c094e872fcc22ea1621ac",
+    "ask-entry-hooks.log": "e4375b3f8fe0fab3dad05bca58ab59de6a6d3a9e9dc8b886d1668face52559b1"
+  },
+  "published_v2_0_2_installer_smoke": "pass in isolated cache using the README command"
+}
