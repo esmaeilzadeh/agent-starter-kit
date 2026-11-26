@@ -33,8 +33,8 @@ class ClientTests(unittest.TestCase):
             command = shlex.join(argv)
             checks = [{'id': 'static', 'command': command, 'env_allow': ['SAFE_A']}]
             contracts = {'plan': {'runners': [
-                {'id': 'r1', 'argv': argv, 'env_allow': ['SAFE_A']},
-                {'id': 'r2', 'argv': argv, 'env_allow': ['SAFE_B']},
+                {'id': 'r1', 'adapter': 'unittest', 'argv': argv, 'env_allow': ['SAFE_A']},
+                {'id': 'r2', 'adapter': 'unittest', 'argv': argv, 'env_allow': ['SAFE_B']},
             ]}}
             first_log = root / 'work/w/traceability/r1.log'
             second_log = root / 'work/w/traceability/r2.log'
