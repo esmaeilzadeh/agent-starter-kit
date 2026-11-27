@@ -130,6 +130,41 @@ class StageIntakeTests(unittest.TestCase):
         shutil.copytree(project / ".agents/ask/stages", root / ".agents/ask/stages", dirs_exist_ok=True)
         return root
 
+    def test_new_feature_bootstrap_seeds_model_before_read_only_intake(self):
+        project = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "client"
+            root.mkdir()
+            self._copy_caller(root)
+            shutil.copytree(project / "_ask/templates", root / "_ask/templates")
+            shutil.copytree(project / ".agents/ask/verification", root / ".agents/ask/verification")
+            for args in (("init", "-qb", "develop"),
+                         ("config", "user.email", "intake@example.invalid"),
+                         ("config", "user.name", "Intake Fixture"),
+                         ("add", "-A"), ("commit", "-qm", "fixture")):
+                subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
+            request = Path(directory) / "request.json"
+            request.write_text("{}\n")
+            intake = ["./ask", "stage-intake", "--stage", "00-explore",
+                      "--work-id", "new-feature", "--request", str(request)]
+            missing = subprocess.run(intake, cwd=root, text=True, capture_output=True)
+            self.assertNotEqual(missing.returncode, 0)
+            self.assertIn("engineering-model.json: missing", missing.stderr)
+            self.assertFalse((root / "work/new-feature").exists())
+            scaffold = subprocess.run(["./ask", "start-work", "new-feature"],
+                                      cwd=root, text=True, capture_output=True)
+            self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+            model = root / "work/new-feature/engineering-model.json"
+            before = model.read_bytes()
+            for stage in ("00-explore", "01-grill"):
+                intake[intake.index("--stage") + 1] = stage
+                result = subprocess.run(intake, cwd=root, text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(json.loads(result.stdout)["disposition"], "chooser")
+                self.assertEqual(model.read_bytes(), before)
+                stage_doc = (project / ".agents/ask/stages" / (stage + ".md")).read_text()
+                self.assertIn("new-feature bootstrap", stage_doc)
+
     def test_adopted_explore_and_grill_call_resolver_before_any_write(self):
         stage_gaps = []
         with tempfile.TemporaryDirectory() as directory:

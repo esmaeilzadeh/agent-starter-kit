@@ -54,10 +54,25 @@ Run `./ask model --help` and each subcommand's `--help` for arguments.
   tracker references as proposals/external context; supplied tracker data stays
   unverified without an authoritative read, and neither creates execution ownership.
 
-The adopted Explore and Grill stages call `./ask stage-intake` before selecting
-or creating execution work, intent, or delivery admission. The stage adapter
-and `./ask model context` use the same resolver and write no state. When a human
-confirms an association, the guarded semantic `associate_subject` action records
+## Initial-stage intake
+
+For an existing modeled subject, Explore and Grill call `./ask stage-intake`
+against its owning workstream before selecting or creating execution work,
+recording intent, or admitting delivery. A proposed execution work ID need not
+have a model yet; use the existing subject's work ID for intake.
+
+For a genuinely new feature with no existing modeled subject, first apply the
+request route and clean-tree checks, then run `./ask start-work <work-id>` to
+create the branch and seed model. Run `./ask stage-intake` against that seed
+before recording intent or admitting delivery. Scaffolding grants no intent or
+implementation approval. If a named existing workstream is missing its model,
+use the older-workstream recovery above instead of treating it as new work.
+An intake error is a tooling blocker when documented recovery cannot resolve it;
+follow the client tooling boundary in `.agents/ask/session.md`.
+
+The stage adapter and `./ask model context` use the same resolver and write no
+state. When a human confirms an association, the guarded semantic
+`associate_subject` action records
 the qualified subject, bounded contribution/exclusions, optional execution
 owner and attributable history against the captured snapshot. Before presenting
 the complete intent for approval, carry that bound subject, source revision,

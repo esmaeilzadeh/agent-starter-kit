@@ -70,6 +70,10 @@ class ClientWorkflowHooksTests(unittest.TestCase):
         codex = self.invoke_codex(target)["hookSpecificOutput"]["additionalContext"]
         for context in (cursor, codex):
             self.assertIn("AskIt session instructions", context)
+            self.assertIn("treat AskIt as installed workflow tooling", context)
+            self.assertIn("Never inspect, debug, or modify AskIt implementation or kit tests in a client checkout", context)
+            self.assertIn("AskIt repairs belong in the AskIt source repository", context)
+            self.assertIn("report the failing command and its diagnostic", context)
             self.assertIn("classify each deliverable", context)
             for route in ("investigation", "review", "maintenance"):
                 self.assertIn(route, context)

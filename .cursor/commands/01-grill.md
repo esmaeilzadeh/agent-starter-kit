@@ -19,8 +19,11 @@ for missing facts, including when a goal is already clear. Investigation,
 review, or maintenance may need a scoped clarification without inheriting the
 feature artifact and approval requirements below; follow the workflow policy.
 
-Before selecting/creating execution work or recording intent, invoke the shared
-read-only intake for this request:
+Before selecting/creating execution work for an existing modeled subject or
+recording intent, invoke the shared read-only intake for this request. For a
+genuinely new feature without an existing modeled subject, follow the
+[new-feature bootstrap](_ask/docs/engineering-model.md#initial-stage-intake)
+before running this command:
 
 ```sh
 ./ask stage-intake --stage 01-grill --work-id <work-id> --request <request.json>

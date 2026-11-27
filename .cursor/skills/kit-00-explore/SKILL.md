@@ -63,8 +63,11 @@ scaffold requirements below apply when preparing feature execution work.
 
 ## Adopted subject intake
 
-Before choosing or creating execution work, recording intent, or admitting a
-delivery, resolve the request through the shared read-only subject context:
+Before choosing or creating execution work for an existing modeled subject,
+recording intent, or admitting a delivery, resolve the request through the shared
+read-only subject context. For a genuinely new feature without an existing
+modeled subject, follow the [new-feature bootstrap](_ask/docs/engineering-model.md#initial-stage-intake)
+before running this command:
 
 ```sh
 ./ask stage-intake --stage 00-explore --work-id <work-id> --request <request.json>
