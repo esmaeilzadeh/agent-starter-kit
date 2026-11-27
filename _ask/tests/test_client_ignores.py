@@ -74,13 +74,13 @@ class ClientIgnoreTests(unittest.TestCase):
                      'work/demo/inner-loop/state.lock', '.ask.env'):
             self.assert_ignored(path, True)
 
-    def test_custom_hooks_are_trackable_and_stock_hooks_are_ignored(self):
+    def test_hooks_are_trackable_when_stock_or_custom(self):
         source = self.target / 'stock'
         for base in (source, self.target):
             (base / '.codex').mkdir(parents=True)
             (base / '.codex/hooks.json').write_text('{"hooks": {}}\n')
         update(self.target, source)
-        self.assert_ignored('.codex/hooks.json', True)
+        self.assert_ignored('.codex/hooks.json', False)
         (self.target / '.codex/hooks.json').write_text('{"hooks": {}, "custom": true}\n')
         update(self.target, source)
         self.assert_ignored('.codex/hooks.json', False)

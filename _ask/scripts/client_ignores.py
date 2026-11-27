@@ -29,7 +29,7 @@ STAGES = (
 )
 COMMANDS = tuple(f"/.cursor/commands/{name}.md" for name in (*STAGES, "off-path"))
 SHARED = (
-    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json", "/.codex/hooks.json",
+    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json",
     "/.cursor/hooks/README.md", "/.cursor/hooks/access-preflight.sh",
     "/.cursor/hooks/git-guardrails.sh", "/.cursor/rules/commit-step-discipline.mdc",
     "/.cursor/rules/humanizer-docs-specs.mdc", "/.cursor/rules/starter-kit-bootstrap.mdc",
@@ -38,6 +38,7 @@ SHARED = (
 )
 LEGACY = {
     b"/_ask/", b".ask.env", b".ask/tracker-context.md", b"/.ask/tracker-context.md",
+    b"/.codex/hooks.json",
     b".agents/skills/", b"/.agents/skills/", b".agents/skills", b"/.agents/skills",
     b".agents/skills/*", b"!.agents/skills/kit-*/",
     b"# Installed AskIt kit", b"# Setup wizard secrets",

@@ -105,7 +105,10 @@ assert_consumer() {
   grep -q consumer-verification-canary "$CONSUMER/.agents/verification.yaml"
   grep -q '^consumer-private/$' "$CONSUMER/.gitignore"
   git -C "$CONSUMER" check-ignore -q .agents/skills/kit-06-implement/SKILL.md
-  git -C "$CONSUMER" check-ignore -q .agents/skills/community/SKILL.md
+  if git -C "$CONSUMER" check-ignore -q .agents/skills/community/SKILL.md; then
+    echo 'FAIL: consumer-authored skills must stay trackable' >&2
+    exit 1
+  fi
   test "$(find "$CONSUMER/.agents/skills" -maxdepth 1 -type d -name 'kit-*' | wc -l)" -eq 11
 }
 assert_consumer
