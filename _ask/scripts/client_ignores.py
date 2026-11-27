@@ -13,11 +13,15 @@ import sys
 BEGIN = b"# BEGIN AskIt local installation"
 END = b"# END AskIt local installation"
 RUNTIME = (
-    "/ask", "/_ask/", "/.agents/ask/", "/.agents/skills/",
+    "/ask", "/_ask/", "/.agents/ask/", "/.agents/skills/kit-*/",
     "/.cursor/skills/kit-*/", "/.cursor/agents/kit-*.md",
-    "/.claude/agents/kit-*.md", "/.codex/agents/kit-*.toml", "/.codex/hooks.json", "/.opencode/agents/kit-*.md",
-    "/.ask.env", "/.ask/tracker-context.md",
+    "/.claude/agents/kit-*.md", "/.codex/agents/kit-*.toml", "/.opencode/agents/kit-*.md",
+    "/.ask.env",
     "/ai-agent-engineering-guide.md", "/ai-agent-starter-kit-spec.md",
+    "/work/**/*.log", "/work/*/traceability/runs/*/*.json",
+    "!/work/*/traceability/runs/*/results.json",
+    "/work/*/traceability/static-runs/*/*.json", "/work/*/traceability/executions.lock",
+    "/work/*/inner-loop/state.lock",
 )
 STAGES = (
     "00-explore", "01-grill", "02-spec", "03-spec-challenge", "04-spec-change",
@@ -25,22 +29,33 @@ STAGES = (
 )
 COMMANDS = tuple(f"/.cursor/commands/{name}.md" for name in (*STAGES, "off-path"))
 SHARED = (
-    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json",
+    "/.ask.env.example", "/.ask/README.md", "/.cursor/hooks.json", "/.codex/hooks.json",
     "/.cursor/hooks/README.md", "/.cursor/hooks/access-preflight.sh",
     "/.cursor/hooks/git-guardrails.sh", "/.cursor/rules/commit-step-discipline.mdc",
     "/.cursor/rules/humanizer-docs-specs.mdc", "/.cursor/rules/starter-kit-bootstrap.mdc",
     "/.cursor/rules/workflow-guidance.mdc", "/.cursor/rules/workstream-scope.mdc",
     "/.cursor/rules/writing-for-agents-machine-docs.mdc",
 )
-RULES = {rule.encode() for rule in (*RUNTIME, *COMMANDS, *SHARED)}
 LEGACY = {
-    b"/_ask/", b".ask.env", b".ask/tracker-context.md",
+    b"/_ask/", b".ask.env", b".ask/tracker-context.md", b"/.ask/tracker-context.md",
     b".agents/skills/", b"/.agents/skills/", b".agents/skills", b"/.agents/skills",
     b".agents/skills/*", b"!.agents/skills/kit-*/",
     b"# Installed AskIt kit", b"# Setup wizard secrets",
     b"# Prepared skills; ASK kit-* projections are committed",
     b"# Prepared Community Skills (regenerate via _ask/skills/prepare-skills.sh)",
+    b"# Setup wizard secrets and current-issue context",
+    b"# Exact retained caches; check-clean validates ignored runtime bytes too.",
+    b"work/*/inner-loop/state.json",
+    b"work/*/inner-loop/results/*.json",
+    b"work/*/inner-loop/evidence/verify-*/integration.json",
+    b"work/*/traceability/executions.json",
+    b"work/*/traceability/completion.json",
+    b"work/*/traceability/static-*.json",
+    b"work/*/traceability/model-state/",
+    b"work/*/traceability/runs/*/results.json",
 }
+# Accept previous managed rules so upgrades can replace them safely.
+RULES = {rule.encode() for rule in (*RUNTIME, *COMMANDS, *SHARED)} | LEGACY
 
 
 def consumer_rules(data: bytes) -> bytes:

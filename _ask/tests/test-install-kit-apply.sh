@@ -48,11 +48,18 @@ for path in ask .agents/ask/stages/00-explore.md .agents/skills/kit-00-explore/S
   git check-ignore -q "$path"
 done
 for path in AGENTS.md .cursor/commands/20-deploy.md .cursor/rules/local/client.mdc \
-    .codex/agents/client.toml .agents/ask.local/stages/00-explore.md .agents/verification.yaml .ask/tracker.md; do
+    .codex/agents/client.toml .agents/ask.local/stages/00-explore.md .agents/verification.yaml .ask/tracker.md \
+    .ask/tracker-context.md .agents/skills/client-custom/SKILL.md \
+    work/demo/inner-loop/state.json work/demo/inner-loop/results/task.json \
+    work/demo/traceability/completion.json work/demo/traceability/runs/run/results.json; do
   if git check-ignore --no-index -q "$path"; then
     echo "FAIL: client-owned path ignored: $path" >&2
     exit 1
   fi
+done
+for path in .ask.env work/demo/inner-loop/state.lock work/demo/inner-loop/worker.log \
+    work/demo/traceability/runs/run/stdout.log work/demo/traceability/runs/run/raw.json; do
+  git check-ignore --no-index -q "$path"
 done
 grep -qx 'client instructions' AGENTS.md
 git add -f ask
