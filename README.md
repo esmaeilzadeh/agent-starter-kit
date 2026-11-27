@@ -171,7 +171,7 @@ Copy and paste this into a terminal:
 ```bash
 (
   set -euo pipefail
-  tag="v2.0.3"
+  tag="v2.0.5"
   sha="$(git ls-remote https://github.com/esmaeilzadeh/agent-starter-kit.git "refs/tags/$tag^{}" | cut -f1)"
   [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "Could not resolve release $tag" >&2; exit 1; }
   installer="$(mktemp)" || exit
