@@ -171,7 +171,9 @@ Copy and paste this into a terminal:
 ```bash
 (
   set -euo pipefail
-  sha="$(git ls-remote https://github.com/esmaeilzadeh/agent-starter-kit.git refs/heads/main | cut -f1)"
+  tag="v2.0.3"
+  sha="$(git ls-remote https://github.com/esmaeilzadeh/agent-starter-kit.git "refs/tags/$tag^{}" | cut -f1)"
+  [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "Could not resolve release $tag" >&2; exit 1; }
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
@@ -179,7 +181,7 @@ Copy and paste this into a terminal:
 )
 ```
 
-The command resolves the latest `main` commit, downloads the launcher from that exact commit, and installs the same verified commit. Run the following in each clone or worktree of your app.
+The command resolves the pinned release tag, downloads the launcher from that exact commit, and installs the same verified commit. Run the following in each clone or worktree of your app.
 
 ```bash
 cd /path/to/your/app
@@ -255,10 +257,11 @@ When developing the kit itself, keep its workflow disabled unless you use a sepa
 
 ## Releasing the kit
 
-Every update published to `main` in the AskIt source repository includes a new annotated `vMAJOR.MINOR.PATCH` tag. The README installer always resolves the latest `main` commit.
+Every source update published to `main` in the AskIt source repository includes a new annotated `vMAJOR.MINOR.PATCH` tag. After a tag is pushed, the **Pin release in README** workflow updates the installer pin on `main` and `develop`. These automatic README-only commits do not need another release tag.
 
-1. Commit and verify the release changes on `main`, then tag that commit with the next unused version.
-2. Push `main` and the new tag together with `git push --atomic origin main "refs/tags/$tag"`. Verify the published tag and run the README installer.
+1. Verify and merge the release changes into `develop` and `main`, then annotate the `main` commit with the next unused version: `git tag -a "$tag" -m "Release $tag"`.
+2. Push both branches and the tag together with `git push --atomic origin main develop "refs/tags/$tag"`.
+3. Wait for **Pin release in README** to pass, then pull both branches. The workflow preserves other branch changes, publishes both README updates atomically, and never downgrades a newer pin. Verify the published tag and run the README installer.
 
 ## Quick commands
 

@@ -1,0 +1,43 @@
+name: Pin release in README
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-readme-pin
+  cancel-in-progress: false
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Update both branch pins
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git fetch origin main develop --tags
+          test "$(git cat-file -t "refs/tags/$RELEASE_TAG")" = tag
+          for branch in main develop; do
+            git merge-base --is-ancestor "$RELEASE_TAG^{commit}" "origin/$branch"
+          done
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for branch in main develop; do
+            git switch -C "pin-$branch" "origin/$branch"
+            python3 .github/scripts/pin-release.py "$RELEASE_TAG"
+            if ! git diff --quiet -- README.md; then
+              git add README.md
+              git commit -m "Pin README installer to $RELEASE_TAG"
+            fi
+          done
+          git push --atomic origin pin-main:main pin-develop:develop

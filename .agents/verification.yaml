@@ -5,6 +5,12 @@ adapters: []
 presets:
   - ask-kit
 checks:
+  - id: client-ignore-rules
+    tier: mandatory
+    command: "python3 -m unittest discover -s _ask/tests -p 'test_client_ignores.py'"
+  - id: release-readme-pin
+    tier: mandatory
+    command: "python3 -m unittest discover -s _ask/tests -p 'test_release_pin.py'"
   - id: client-workflow-hooks
     tier: mandatory
     command: "python3 -m unittest discover -s _ask/tests -p 'test_client_workflow_hooks.py'"
