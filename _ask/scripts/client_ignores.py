@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import subprocess
 import sys
@@ -16,7 +17,7 @@ RUNTIME = (
     "/ask", "/_ask/", "/.agents/ask/", "/.agents/skills/kit-*/",
     "/.cursor/skills/kit-*/", "/.cursor/agents/kit-*.md",
     "/.claude/agents/kit-*.md", "/.codex/agents/kit-*.toml", "/.opencode/agents/kit-*.md",
-    "/.ask.env",
+    "/.ask.env", "/skills-lock.json",
     "/ai-agent-engineering-guide.md", "/ai-agent-starter-kit-spec.md",
     "/work/**/*.log", "/work/*/traceability/runs/*/*.json",
     "!/work/*/traceability/runs/*/results.json",
@@ -67,7 +68,9 @@ def consumer_rules(data: bytes) -> bytes:
         if markers.count(BEGIN) != 1 or markers.count(END) != 1:
             raise ValueError("invalid AskIt managed block in .gitignore")
         start, end = markers.index(BEGIN), markers.index(END)
-        if start >= end or any(line not in RULES for line in markers[start + 1:end]):
+        if start >= end or any(line not in RULES and not re.fullmatch(
+                rb"/\.(?:agents|cursor)/skills/[A-Za-z0-9][A-Za-z0-9_-]*/", line)
+                for line in markers[start + 1:end]):
             raise ValueError("unexpected content in AskIt managed block in .gitignore")
         del lines[start:end + 1]
     return b"".join(line for line in lines if line.strip() not in LEGACY).rstrip(b"\r\n")
@@ -102,8 +105,22 @@ def installed_ownership(target: Path) -> dict:
 
 
 def update(target: Path, source: Path) -> None:
+    from distribution import DistributionError, read_manifest
+
     owned = installed_ownership(target)
-    rules = (*RUNTIME, *COMMANDS, *(rule for rule in SHARED if stock_file(target, source, rule, owned)))
+    manifest = target / ".agents/ask.local/skills/manifest.yaml"
+    if not manifest.is_file():
+        manifest = source / "_ask/skills/manifest.yaml"
+    try:
+        entries = read_manifest(manifest) if manifest.is_file() else []
+    except DistributionError:
+        # Skip-prepare installs preserve client manifests; prepare validates them.
+        entries = []
+    prepared = tuple(f"/{directory}/{entry['skill']}/"
+                     for entry in entries
+                     for directory in (".agents/skills", ".cursor/skills"))
+    rules = (*RUNTIME, *COMMANDS, *prepared,
+             *(rule for rule in SHARED if stock_file(target, source, rule, owned)))
     path = target / ".gitignore"
     client = consumer_rules(path.read_bytes() if path.exists() else b"")
     block = b"\n".join((BEGIN, *(rule.encode() for rule in rules), END, b""))

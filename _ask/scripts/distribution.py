@@ -386,6 +386,11 @@ def prepare(root: Path, manifest: Path, pin_path: Path, installer=None, source_r
             print(f"prepare-skills: validated {entry['id']} @ {entry['revision']}")
         return 0
 
+    from client_ignores import BEGIN, update
+    ignore = root / ".gitignore"
+    if ignore.is_file() and BEGIN in ignore.read_bytes().splitlines():
+        update(root, root)
+
     failed = False
     with tempfile.TemporaryDirectory(prefix="askit-skills-") as temporary:
         temporary = Path(temporary)

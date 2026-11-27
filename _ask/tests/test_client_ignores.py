@@ -85,6 +85,33 @@ class ClientIgnoreTests(unittest.TestCase):
         update(self.target, source)
         self.assert_ignored('.codex/hooks.json', False)
 
+    def test_prepared_skills_and_lock_do_not_dirty_client(self):
+        update(self.target, ROOT)
+        subprocess.run(['git', 'add', '.gitignore'], cwd=self.target, check=True)
+        skill = self.target / '.agents/skills/research/SKILL.md'
+        skill.parent.mkdir(parents=True)
+        skill.write_text('Prepared skill\n')
+        (self.target / 'skills-lock.json').write_text('{}\n')
+        status = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'],
+                                         cwd=self.target, text=True)
+        self.assertEqual(status, '', 'prepared runtime output must stay local')
+        self.assert_ignored('.cursor/skills/research/SKILL.md', True)
+        self.assert_ignored('.agents/skills/client-custom/SKILL.md', False)
+        before = (self.target / '.gitignore').read_bytes()
+        update(self.target, ROOT)
+        self.assertEqual((self.target / '.gitignore').read_bytes(), before)
+
+    def test_ignore_update_preserves_unprepared_client_manifest(self):
+        from distribution import DistributionError, prepare
+
+        manifest = self.target / '.agents/ask.local/skills/manifest.yaml'
+        manifest.parent.mkdir(parents=True)
+        manifest.write_text('client manifest\n')
+        update(self.target, ROOT)
+        self.assertEqual(manifest.read_text(), 'client manifest\n')
+        with self.assertRaisesRegex(DistributionError, 'unsupported manifest syntax'):
+            prepare(self.target, manifest, ROOT / '_ask/skills/dependency-pins.json')
+
 
 if __name__ == '__main__':
     unittest.main()

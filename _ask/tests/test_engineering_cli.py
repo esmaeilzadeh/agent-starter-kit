@@ -1,6 +1,7 @@
 """Public CLI journeys for the Engineering Model sidecar."""
 import json
 from pathlib import Path
+import re
 import sys
 import tempfile
 import unittest
@@ -12,6 +13,32 @@ from traceability.contracts import digest
 
 
 class CliJourneyTests(unittest.TestCase):
+    def test_documented_intent_batch_works_from_seed(self):
+        project = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            help_result = model_command(root, "edit", "--help")
+            self.assertEqual(help_result.returncode, 0, help_result.stderr)
+            self.assertIn("_ask/docs/engineering-model.md#intent-preparation", help_result.stdout)
+            guide = (project / "_ask/docs/engineering-model.md").read_text()
+            section = guide.split("## Intent preparation\n", 1)[1].split("\n## ", 1)[0]
+            batch = json.loads(re.search(r"```json\n(.*?)\n```", section, re.S).group(1))
+            seed = json.loads((project / "_ask/templates/engineering-model.json").read_text())
+            seed["work_id"] = "pilot"
+            write_json(root, "work/pilot/engineering-model.json", seed)
+            validated = model_command(root, "validate", "--work-id", "pilot")
+            self.assertEqual(validated.returncode, 0, validated.stdout)
+            proposal = write_json(root, "intent-batch.json", batch)
+            edited = model_command(root, "edit", "--work-id", "pilot", "--expected",
+                                   json.loads(validated.stdout)["snapshot"]["digest"],
+                                   "--batch", str(proposal))
+            self.assertEqual(edited.returncode, 0, edited.stdout + edited.stderr)
+            shown = model_command(root, "show", "--work-id", "pilot")
+            self.assertEqual(shown.returncode, 0, shown.stdout)
+            nodes = {node["id"]: node for node in json.loads(shown.stdout)["model"]["nodes"]}
+            self.assertEqual(nodes["scope-choice"]["lifecycle"], "open")
+            self.assertEqual(nodes["numeric-inputs"]["lifecycle"], "unverified")
+
     def test_cli_inspect_resolve_reload_and_invalid(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

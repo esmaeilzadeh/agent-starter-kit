@@ -405,6 +405,11 @@ class ClientTests(unittest.TestCase):
                 self.assertEqual(distribution.prepare(project, overlay, pin_path, installer=install), 0)
             self.assertEqual(distribution.prepare(project, overlay, pin_path, installer=install), 0)
             self.assertEqual(calls, [(first, first), (first, first)])
+            for path in ('.agents/skills/demo/SKILL.md', '.cursor/skills/demo/SKILL.md', 'skills-lock.json'):
+                self.assertEqual(self.fx.run(['git', 'check-ignore', '-q', path], cwd=project).returncode, 0)
+            self.assertEqual(self.fx.run(
+                ['git', 'check-ignore', '-q', '.agents/skills/client-custom/SKILL.md'], cwd=project,
+            ).returncode, 1)
 
             self.assertEqual(self.fx.run(["git", "commit", "--allow-empty", "-qm", "Move tag"], cwd=source).returncode, 0)
             second = self.fx.run(["git", "rev-parse", "HEAD"], cwd=source).stdout.strip()

@@ -30,7 +30,11 @@ def main(argv: list[str] | None = None) -> int:
     show_parser.add_argument("--format", choices=("json", "markdown"), default="json")
     show_parser.add_argument("--node", help="focus the projection on one stable node ID")
     show_parser.add_argument("--candidate", help="inspect evidence for this candidate revision")
-    edit_parser = commands.add_parser("edit", help="stage and validate a document change batch")
+    edit_parser = commands.add_parser(
+        "edit", help="stage and validate a document change batch",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="Batch examples and supported operations: _ask/docs/engineering-model.md#intent-preparation",
+    )
     edit_parser.add_argument("--work-id", required=True)
     edit_parser.add_argument("--expected", required=True, help="complete displayed input digest")
     edit_parser.add_argument("--batch", required=True, help="JSON proposal file")

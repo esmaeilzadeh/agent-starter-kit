@@ -61,7 +61,7 @@ against its owning workstream before selecting or creating execution work,
 recording intent, or admitting delivery. A proposed execution work ID need not
 have a model yet; use the existing subject's work ID for intake.
 
-For a genuinely new feature with no existing modeled subject, first apply the
+For the new-feature bootstrap (no existing modeled subject), first apply the
 request route and clean-tree checks, then run `./ask start-work <work-id>` to
 create the branch and seed model. Run `./ask stage-intake` against that seed
 before recording intent or admitting delivery. Scaffolding grants no intent or
@@ -104,6 +104,67 @@ prior choices/options retained in history. Other declared lifecycle transitions
 may use the type's allowed states; dependency edits reopen affected resolved
 decisions transitively. Only resolved decisions, confirmed assumptions and done
 tasks satisfy their respective prerequisites.
+
+## Intent preparation
+
+Use this sequence after `./ask start-work <work-id>` and initial-stage intake.
+Save the following batch as a JSON file outside the worktree (for example,
+`/tmp/intent-batch.json`), replacing the example titles and descriptions with the
+requested feature. It works against the v2 seed without reading kit source:
+
+```json
+{
+  "commands": [
+    {"op": "revise_node", "id": "purpose", "changes": {
+      "title": "Add two numbers",
+      "description": "Provide add(a, b) and a standard-library unit test. Intent approval is pending."
+    }},
+    {"op": "add_node", "node": {
+      "id": "scope-choice", "type": "decision", "title": "Addition behavior",
+      "lifecycle": "open", "options": [
+        {"id": "python-plus", "label": "Use Python addition directly"},
+        {"id": "validated", "label": "Add explicit input validation"}
+      ]
+    }},
+    {"op": "add_node", "node": {
+      "id": "numeric-inputs", "type": "assumption", "title": "Callers supply numbers",
+      "lifecycle": "unverified"
+    }}
+  ]
+}
+```
+
+Run `./ask model validate --work-id <work-id>`, read `snapshot.digest` from its
+JSON output, then run:
+
+```sh
+./ask model edit --work-id <work-id> --expected <full-snapshot-digest> --batch /tmp/intent-batch.json
+```
+
+Read the updated model with `./ask model show --work-id <work-id>`. Each batch
+changes the digest; validate again before another edit. An invalid batch or stale
+digest refuses the edit and leaves the model unchanged. Keep pending decisions
+open and assumptions unverified until their evidence or submitted human choice
+supports changing them. These model states do not replace intent confirmation.
+
+Supported batch operations:
+
+| `op` | Fields besides `op` |
+| --- | --- |
+| `add_node` | `node`: complete node definition; use the seed and examples for its shape. New decisions start `open` with at least two `{id, label}` options. |
+| `revise_node` | `id`, `changes`: any of `title`, `description`, `reference`, `lifecycle`, `options`; optional `actor`, `rationale`. IDs and types are immutable. |
+| `add_edge`, `remove_edge` | `edge`: exactly `{type, source, target}`. |
+| `resolve_decision` | `id`, `option_id`, `actor`, `rationale`. The option must belong to an open decision. |
+| `reopen_decision`, `retire_decision` | `id`, `actor`, `rationale`. Reopening requires a resolved decision; retirement is terminal. |
+| `associate_subject` | `subject`: `{work_id, node_id}`, `revision`: `"snapshot"`, `snapshot_digest`, `subject_snapshot_digest`, `contribution`, `exclusions`, `execution_owner`, `actor`, `rationale`. |
+
+`actor` and `rationale` must be nonempty when required. Change a decision's
+lifecycle through its decision operations. For an assumption, use `revise_node`
+with `changes: {"lifecycle": "confirmed"}` or `"rejected"`, retaining its evidence
+in the work record. A subject association binds `snapshot_digest` to the edited
+model and `subject_snapshot_digest` to the subject owner's captured digest;
+`execution_owner` is either `null` or an existing qualified Task execution alias.
+Supply every association field, using an empty list for no exclusions.
 
 ## Cooperating workflow actions
 
