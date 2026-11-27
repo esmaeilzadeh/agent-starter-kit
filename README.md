@@ -170,16 +170,16 @@ Copy and paste this into a terminal:
 
 ```bash
 (
-  tag=v2.0.3
-  sha=3544816a466c2833cfd703c70d96808ed3b0b3ef
+  set -euo pipefail
+  sha="$(git ls-remote https://github.com/esmaeilzadeh/agent-starter-kit.git refs/heads/main | cut -f1)"
   installer="$(mktemp)" || exit
   trap 'rm -f "$installer"' EXIT
   curl -fsSLo "$installer" "https://raw.githubusercontent.com/esmaeilzadeh/agent-starter-kit/$sha/askit" &&
-    bash "$installer" self-install --ref "$tag" --expected-commit "$sha"
+    bash "$installer" self-install --ref "$sha" --expected-commit "$sha"
 )
 ```
 
-The command downloads the launcher by commit SHA. The launcher installs the release tag after verifying that it resolves to the pinned commit. Run the following in each clone or worktree of your app.
+The command resolves the latest `main` commit, downloads the launcher from that exact commit, and installs the same verified commit. Run the following in each clone or worktree of your app.
 
 ```bash
 cd /path/to/your/app
@@ -255,11 +255,10 @@ When developing the kit itself, keep its workflow disabled unless you use a sepa
 
 ## Releasing the kit
 
-Every update published to `main` in the AskIt source repository includes a new annotated `vMAJOR.MINOR.PATCH` tag and a matching installer pin in this README.
+Every update published to `main` in the AskIt source repository includes a new annotated `vMAJOR.MINOR.PATCH` tag. The README installer always resolves the latest `main` commit.
 
 1. Commit and verify the release changes on `main`, then tag that commit with the next unused version.
-2. Set `tag` in the installer above to that version. Set `sha` to the full commit from `git rev-parse "$tag^{commit}"`. Commit the README pin as the final step of the same release.
-3. Push `main` and the new tag together with `git push --atomic origin main "refs/tags/$tag"`. Verify the published tag and run the README installer.
+2. Push `main` and the new tag together with `git push --atomic origin main "refs/tags/$tag"`. Verify the published tag and run the README installer.
 
 ## Quick commands
 
